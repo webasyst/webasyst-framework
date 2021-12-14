@@ -1,0 +1,27 @@
+{* Case when user already bound while primary connection to webasyst ID *}
+{$_webasyst_contact_info = $_auth_result.details.webasyst_contact_info}
+{$_bound_contact_info = $_auth_result.details.bound_contact_info}
+{$_current_user_info = $_auth_result.details.current_user_info}
+
+<img class="circle-check" src="{$wa_url}wa-content/img/wa-id/wrong.svg" alt="ERROR">
+<div class="text-center">
+
+    <p>
+        {sprintf(
+        _ws('Webasyst ID account <i class="icon16 userpic20" style="background-image: url(%s);"></i> <strong>%s</strong> is already connected to user <i class="icon16 userpic20" style="background-image: url(%s);"></i> <strong>%s</strong>'),
+        $_webasyst_contact_info.userpic,
+        $_webasyst_contact_info.name|escape,
+        $_bound_contact_info.userpic,
+        $_bound_contact_info.name|escape)}
+    </p>
+
+    <div class="actions-buttons">
+        <button onclick='location.href={$try_again_auth_url|json_encode}'>[s`Use another Webasyst ID`]</button>
+        {if $_auth_type !== 'invite'}
+            <div style="display: inline-block; padding: 8px 18px; margin-right: -18px; margin-bottom: 10px; vertical-align: middle;">[`or`]</div>
+            <button onclick='location.href={$_redirect_url|json_encode}' class="link">[`cancel`]</button>
+        {/if}
+    </div>
+</div>
+
+

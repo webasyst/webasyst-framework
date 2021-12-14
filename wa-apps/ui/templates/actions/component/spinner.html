@@ -1,0 +1,107 @@
+{$_title = ".spinner"}
+{$wa->title($_title)}
+
+{function name="_render" class=""}
+<div class="spinner"></div>
+{/function}
+
+{function name="_renderWithButton" class=""}
+<div class="flexbox middle space-12">
+    <button disabled="disabled">Sending data...</button>
+    <div class="spinner"></div>
+</div>
+{/function}
+
+{function name="_renderSize"}
+<div class="spinner custom-p-48"></div>
+<div class="spinner custom-p-32"></div>
+<div class="spinner custom-p-16"></div>
+<div class="spinner custom-p-8"></div>
+{/function}
+
+{function name="_icon" class=""}
+<i class="fas fa-spinner wa-animation-spin speed-1000"></i>
+{/function}
+
+{function name="_button" class=""}
+<button class="button js-push-me">
+    <i class="fas fa-spinner wa-animation-spin speed-1000 js-load-icon" style="display: none;"></i>
+    <i class="fas fa-check-circle js-ok-icon" style="display: none;"></i>
+    <span class="js-button-text" data-load-text="Loading" data-success-text="Success">Load more</span>
+</button>
+
+<script>
+  ( function($) {
+    $('.js-push-me').on('click', function() {
+      $(this).attr('disabled', true);
+
+      const text = $('.js-button-text').data('load-text');
+      $('.js-button-text').text(text);
+      $('.js-ok-icon').hide();
+      $('.js-load-icon').fadeIn();
+
+      // emulate callback
+      setTimeout(() => {
+        $(this).attr('disabled', false);
+        $(this).addClass('green');
+
+        const text = $('.js-button-text').data('success-text');
+        $('.js-button-text').text(text);
+        $('.js-load-icon').hide();
+        $('.js-ok-icon').fadeIn();
+      }, 2000)
+    });
+  })(jQuery);
+</script>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <div>Компонент для вывода «точечного» индикатора загрузки — спиннера.</div>
+    <div class="line">
+        {_render}
+    </div>
+    <div class="line custom-mb-24">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <div class="line">
+        {_renderWithButton}
+    </div>
+    <div class="line custom-mb-24">
+        <pre class="prettyprint">{_renderWithButton|escape}</pre>
+    </div>
+
+    <div>По умолчанию размер спиннера (установленное значение <code>1em</code>) зависит от размера шрифта родительского элемента, но его также можно отрегулировать посредством указания класса внутреннего отступа <code>.custom-p-X</code>.</div>
+    <div class="line flexbox wrap">
+        {_renderSize}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_renderSize|escape}</pre>
+    </div>
+
+    <hr class="custom-mt-24">
+
+    <p>Рекомендуется использовать только на чистом фоне в контентной области.</p>
+    <p>При выводе внутри других интерфейсных компонентов (например, кнопок), рекомендуется не использовать цветной вариант спиннера, а заменить его на вращающийся глиф Font Awesome. Лучше всего это сделать, используя <a href="{$wa_app_url}component/icon">компонент .icon</a> и <a href="{$wa_app_url}component/animations">стандартные анимации</a>.</p>
+    <div class="line">
+        {_icon}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_icon|escape}</pre>
+    </div>
+
+    <p>Пример спиннера внутри кнопки:</p>
+    <div class="line">
+        {_button}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_button|escape}</pre>
+    </div>
+</div>
+<script>
+  if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+    prettyPrint();
+  }
+</script>

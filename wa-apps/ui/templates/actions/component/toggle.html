@@ -1,0 +1,84 @@
+{$_title = ".waToggle()"}
+{$wa->title($_title)}
+
+{function name="_render" class="" id=""}
+<div class="toggle{if !empty($class)} {$class}{/if}" id="toggle-{$id}">
+    <span>Москва</span>
+    <span>Краснодар</span>
+    <span class="selected">Сочи</span>
+    <span>Ставрополь</span>
+    <span>Йошкар-Ола</span>
+</div>
+
+<script>
+    ( function($) {
+        $("#toggle-{$id}").waToggle({
+            change: function(event, target, toggle) {
+                //alert( $(target).text() );
+            }
+        });
+    })(jQuery);
+</script>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <h2><code>.toggle</code></h2>
+
+    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2.</blockquote>
+
+    <p>Переключатель режима, вида, фильтра, раздела.</p>
+    <p>Компонент подразумевает выполнение действия (например, смены фильтра) в рамках текущей страницы. Если требуется переход в браузере на другую страницу, используйте <a href="{$wa_app_url}component/tabs/">.tabs</a>.</p>
+
+    <div class="line">
+        {_render class="" id="1"}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="" id="2"}</pre>
+    </div>
+
+    <h3>Размеры</h3>
+    <p>Как и для кнопок, регулировать размеры переключателя можно с помощью классов <code>.small</code>, <code>.smaller</code>, <code>.smallest</code>, <code>.large</code>, <code>.larger</code>, <code>.largest</code>.</p>
+    <p>Изменяйте размер кнопок, только когда этого явно требует контекст и изменение размера действительно помогает пользователю.</p>
+    <div class="line">
+        {_render class="small" id="2"}
+    </div>
+    <div class="line">
+        {_render class="smaller" id="21"}
+    </div>
+    <div class="line">
+        {_render class="smallest" id="22"}
+    </div>
+    <div class="line">
+        {_render class="large" id="3"}
+    </div>
+    <div class="line">
+        {_render class="larger" id="31"}
+    </div>
+    <div class="line">
+        {_render class="largest" id="32"}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="small" id="1"}</pre>
+    </div>
+
+    <div class="line">
+        <p>.toggle<code>.rounded</code></p>
+        <div class="line">
+            {_render class="rounded" id="4"}
+        </div>
+        <div class="line">
+            {_render class="small rounded" id="5"}
+        </div>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

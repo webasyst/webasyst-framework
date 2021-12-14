@@ -55,7 +55,11 @@ class siteRoutingEditAction extends waViewAction
                     }
 
                     if (!$route && isset($app['routing_params']) && is_array($app['routing_params'])) {
-                        wa($app_id);
+                        if (wa()->appExists($app_id)) {
+                            // Make sure routing params are not cached, as wa()->getAppInfo() does.
+                            // This makes difference for routing params generated on-the-fly (e.g. shop checkout_storefront_id).
+                            $app['routing_params'] = wa($app_id)->getConfig()->getInfo('routing_params');
+                        }
                         foreach ($app['routing_params'] as $routing_param => $routing_param_value) {
                             if (is_callable($routing_param_value)) {
                                 $app['routing_params'][$routing_param] = call_user_func($routing_param_value);
@@ -76,7 +80,7 @@ class siteRoutingEditAction extends waViewAction
                                 $route_name = $title;
                             } else {
                                 $app_settings_model = new waAppSettingsModel();
-                                $route_name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+                                $route_name = $app_settings_model->get('webasyst', 'name', _ws('My company, LLC'));
                             }
                         } else {
                             $route_name = $app['name'];
@@ -146,6 +150,7 @@ class siteRoutingEditAction extends waViewAction
                 $result[] = $info;
             }
         }
+
         return $result;
     }
 
@@ -159,6 +164,13 @@ class siteRoutingEditAction extends waViewAction
             $value = $info['default'];
         }
 
+        if (!empty($route_id) && $info['type'] == 'select') {
+            if (!isset($info['items'][$value])) {
+                $new_value = ifset($value, '');
+                $info['items'] = array($new_value => $new_value) + $info['items'];
+            }
+        }
+
         $view = wa('site')->getView();
         $template = wa()->getAppPath('templates/actions/routing/RoutingRenderSetting.html', 'site');
         $view->assign(array(
@@ -169,5 +181,19 @@ class siteRoutingEditAction extends waViewAction
         ));
 
         return $view->fetch($template);
+    }
+
+    protected function whichUI($app_id = null)
+    {
+        $ui = $this->getRequest()->get('ui');
+
+        // control UI version of cheat sheet UI block
+        // it is all temporary
+        if (!$ui) {
+            return parent::whichUI($app_id);
+        }
+
+        $ui = $ui === '2.0' ? '2.0' : '1.3';
+        return $ui;
     }
 }

@@ -82,7 +82,7 @@ class webasystSettingsEmailSaveController extends webasystSettingsJsonController
 
     protected function isValidDomain($domain)
     {
-        if (!preg_match('~^(?:[-а-яА-ЯЁёA-Za-z0-9]+)(\.+[а-яА-ЯЁёA-Za-z]{2,6})?$~u', $domain)) {
+        if (!preg_match('~^(?:[^-.][-а-яА-ЯЁёA-Za-z0-9]{0,61}[^-.]\.)+([а-яА-ЯЁёA-Za-z]{2,6})$|^([а-яА-ЯЁёA-Za-z]+)$~u', $domain)) {
             return false;
         }
         return true;

@@ -199,6 +199,7 @@ $(".s-block-code").click(function () {
     {$confirm_message = '[`This will permanently delete this snipper. Are you sure?`]'}
 {/if}
 
+{if !empty($block.id)}
 $("#s-block-delete").click(function () {
     if (confirm('{$confirm_message}')) {
         $.post("?module=blocks&action=delete", { id: "{$block.id|escape}"}, function (response) {
@@ -223,6 +224,7 @@ $("#s-block-delete").click(function () {
     }
     return false;
 });
+{/if}
 
 $('.s-block-view-original').click(function() {
     var d = $('#s-block-view-original-dialog');

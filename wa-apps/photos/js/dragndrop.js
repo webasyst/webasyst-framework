@@ -4,12 +4,96 @@
         helper_shift: 20,
 
         init: function() {
-            this._extendJqueryUIDragAndDrop();
+/*            this._extendJqueryUIDragAndDrop();
 
             this._initDragPhotos();
             this._initDropPhotos();
             this._initDragAlbums();
-            this._initDropAlbums();
+            this._initDropAlbums();*/
+
+
+            const $album_list = document.querySelector('#album-list'),
+                options = {
+                forceFallback: true,
+                ghostClass: "p-sortable-ghost",
+                chosenClass: "p-sortable-chosen",
+                dragClass: "p-sortable-drag",
+                fallbackClass: "p-sortable-fallback",
+                waHighlightClass: 'p-sortable-nested',
+                group: "nested",
+                draggable: ">*:not(a)",
+                animation: 150,
+                fallbackOnBody: false,
+                swapThreshold: 0.45,
+                dragoverBubble: true,
+                onAdd(event) {
+                    // добавление элемента в группу
+                    const $closest_li = event.to.closest('li')
+                    if ($closest_li && !$closest_li.querySelector('.caret')) {
+                        $closest_li.querySelector('a').insertAdjacentHTML('afterbegin','<span class="caret"><i class="fas fa-caret-down"></i></span>');
+                    }
+                    //$.photos_sidebar.initCollapsibleWa2();
+                },
+                onRemove(event) {
+                    const $from = event.from;
+                    if(!$from.classList.contains('js-root-menu') && $from.childElementCount === 0) {
+                        const $caret = $from.closest('li').querySelector('.caret');
+                        if ($caret) {
+                            $caret.remove();
+                        }
+                    }
+                },
+                onMove(event) {
+                    const highlight_class = this.options?.waHighlightClass ?? 'bg-light-gray';
+                    nestedSortables.forEach(item => item.closest('li')?.classList.remove(highlight_class));
+
+                    // выделяем цветом элемент, над которым находится перетаскиваемый элемент
+                    const $related_parent = event.related.parentElement;
+                    $related_parent.classList.toggle(highlight_class, $related_parent.tagName === 'LI');
+                },
+                onUpdate(event) {
+                    // сортировка внутри одной группы
+                },
+                onEnd(event) {
+                    const highlight_class = this.options?.waHighlightClass ?? 'bg-light-gray';
+                    nestedSortables.forEach(item => item.closest('li')?.classList.remove(highlight_class));
+
+                    let $item = $(event.item),
+                        $list_parent = $item.parent('ul').parent('li'),
+                        id = $item.data('id') || $item.attr('rel'),
+                        before_id = $item.next().data('id') || null,
+                        parent_id = $list_parent.length ? $list_parent.data('id') : 0;
+
+                    $.post('?module=album&action=move', { id, before_id, parent_id }, function(response) {
+                        var current_album = $.photos.getAlbum(),
+                            album = response.data.album,
+                            counters = response.data.counters;
+
+                        if (album.status <= 0 && $.photos_dragndrop.privateDescendants(album.id))                            {
+                            $.photos.dispatch('album/'+album.id+'/');
+                        }
+
+                        if (current_album && current_album.id == album.id) {
+                            var frontend_link = response.data.frontend_link;
+                            if (frontend_link) {
+                                $('#photo-list-frontend-link').attr('href', frontend_link).text(frontend_link);
+                            }
+                            if (album.type == Album.TYPE_DYNAMIC) {
+                                $.photos.load("?module=album&action=photos&id=" + album.id, $.photos.onLoadPhotoList);
+                            }
+                        }
+                        if (!$.isEmptyObject(counters)) {
+                            for (let album_id in counters) {
+                                if (counters.hasOwnProperty(album_id)) {
+                                    $($album_list).find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
+                                }
+                            }
+                        }
+                    }, 'json');
+                }
+            }
+            const nestedSortables = Array.from($album_list.querySelectorAll('ul'));
+            nestedSortables.forEach(item => new Sortable(item, options))
 
         },
 
@@ -48,58 +132,60 @@
             var onStart = draggable_common_opts.start,
                 onStop  = draggable_common_opts.stop;
 
-            // drag photo to albums or sort
-            $("img", $('#photo-list')).liveDraggable($.extend({}, draggable_common_opts, {
-                containment: [
-                    0,
-                    0,
-                    $(window).width(),
-                    {
-                        toString: function() {
-                            return $(document).height();  // we have lengthened document, so make flexible calculating (use typecast method toString)
+            if($.support.touch != undefined && $.support.touch != true) {
+                // drag photo to albums or sort
+                $("img", $('#photo-list')).liveDraggable($.extend({}, draggable_common_opts, {
+                    containment: [
+                        0,
+                        0,
+                        $(window).width(),
+                        {
+                            toString: function() {
+                                return $(document).height();  // we have lengthened document, so make flexible calculating (use typecast method toString)
+                            }
+                        }
+                    ],
+                    helper: function(event) {
+                        var self = $(this).parents('li:first'),
+                            selected = $('#photo-list > li.selected'),
+                            count = selected.length ? selected.length : 1,
+                            photo_ids = [self.attr('data-photo-id')],
+                            included = false;
+
+                        var li = self.get(0);
+                        selected.each(function() {
+                            if (this != li) {
+                                photo_ids.push($(this).attr('data-photo-id'));
+                            } else {
+                                included = true;
+                            }
+                        });
+
+                        // if we have selected list, but drag start with unselected item than inclue this item (and select)
+                        if (!included && selected.length) {
+                            self.addClass('selected').find('input:first').trigger('select', true);
+                            ++count;
+                        }
+                        self.data('photo_ids', photo_ids);
+                        return '<div id="helper"><span class="indicator red">' + count + '</span><i class="icon10 no-bw" style="display:none;"></i></div>';
+                    },
+                    handle: '.p-image',
+                    start: function(event, ui) {
+                        onStart.apply(this, [event, ui]);
+                        var self = $(this).parents('li:first');
+                        if (self.data('photo_ids').length == 1) {
+                            self.addClass('selected');
+                        }
+                    },
+                    stop: function(event, ui) {
+                        onStop.apply(this, [event, ui]);
+                        var self = $(this).parents('li:first');
+                        if (self.data('photo_ids').length == 1) {
+                            self.removeClass('selected');
                         }
                     }
-                ],
-                helper: function(event) {
-                    var self = $(this).parents('li:first'),
-                        selected = $('#photo-list li.selected'),
-                        count = selected.length ? selected.length : 1,
-                        photo_ids = [self.attr('data-photo-id')],
-                        included = false;
-
-                    var li = self.get(0);
-                    selected.each(function() {
-                        if (this != li) {
-                            photo_ids.push($(this).attr('data-photo-id'));
-                        } else {
-                            included = true;
-                        }
-                    });
-
-                    // if we have selected list, but drag start with unselected item than inclue this item (and select)
-                    if (!included && selected.length) {
-                        self.addClass('selected').find('input:first').trigger('select', true);
-                        ++count;
-                    }
-                    self.data('photo_ids', photo_ids);
-                    return '<div id="helper"><span class="indicator red">' + count + '</span><i class="icon10 no-bw" style="display:none;"></i></div>';
-                },
-                handle: '.p-image',
-                start: function(event, ui) {
-                    onStart.apply(this, [event, ui]);
-                    var self = $(this).parents('li:first');
-                    if (self.data('photo_ids').length == 1) {
-                        self.addClass('selected');
-                    }
-                },
-                stop: function(event, ui) {
-                    onStop.apply(this, [event, ui]);
-                    var self = $(this).parents('li:first');
-                    if (self.data('photo_ids').length == 1) {
-                        self.removeClass('selected');
-                    }
-                }
-            }));
+                }));
+            }
 
             // drag one photo (big img in photo-card)
             $('#photo').liveDraggable($.extend({}, draggable_common_opts, {
@@ -156,7 +242,7 @@
                     }
 
                     // define selected item
-                    var selected = $('#photo-list li.selected');
+                    var selected = $('#photo-list > li.selected');
                     if (!selected.length) {
                         selected = draggable;
                     }
@@ -174,12 +260,12 @@
                         before_id = null;
                         self.after(selected);
                         self.removeClass('last');
-                        $('#photo-list li:last').addClass('last');
+                        $('#photo-list > li:last').addClass('last');
                     } else {
                         self.before(selected);
                         if (draggable.hasClass('last')) {
                             draggable.removeClass('last')
-                            $('#photo-list li:last').addClass('last');
+                            $('#photo-list > li:last').addClass('last');
                         }
                     }
                     // clear visuall hightlights
@@ -204,11 +290,11 @@
         },
 
         _initDragAlbums: function() {
-            var containment = $('#wa-app > .sidebar'),
+            var containment = $('#js-app-sidebar'),
                 containment_pos = containment.position(),
                 containment_metrics = { width: containment.width(), height: containment.height() };
 
-            $("li.dr", $('#album-list')).liveDraggable({
+            $('#album-list').find('li.dr').liveDraggable({
                 containment: [
                       containment_pos.left,
                       containment_pos.top,
@@ -222,7 +308,7 @@
                         clone = self.clone().addClass('ui-draggable').css({
                             position: 'absolute'
                         }).prependTo('#album-list > ul');
-                    clone.find('a:first').append('<i class="icon10 no-bw" style="margin-left: 0; margin-right: 0; display:none;"></i>');
+                    clone.find('a:first').append('<i class="fas fa-times" style="margin-left: 0; margin-right: 0; display:none;"></i>');
                     return clone;
                 },
                 cursor: "move",
@@ -248,7 +334,7 @@
 
         _initDropBetweenAlbums: function() {
             // drop between albums
-            $("li.drag-newposition", $('#album-list')).liveDroppable({
+            $('#album-list').find("li.drag-newposition").liveDroppable({
                 accept: 'li.dr',
                 greedy: true,
                 tolerance: 'pointer',
@@ -349,16 +435,16 @@
                 list = $();
             }
             changed = false;
-            list.add(li.find('li.dr')).each(function() {
+            list.add(li.find('li')).each(function() {
                 var self = $(this).find('>a');
-                if (!self.find('i.lock-bw').length) {
-                    var next = self.find('.pictures').next();
-                    var html = '<i class="icon10 lock-bw no-overhanging"></i>';
+                if (!self.find('.fa-lock').length) {
+                    var next = $(this).filter('.images').next();
+                    var html = '<span class="hint"><i class="fas fa-lock"></i></span>&nbsp;';
                     if (next.length) {
                         changed = true;
-                        next.before(html);
+                        next.find('count:first').prepend(html);
                     } else {
-                        self.append(html);
+                        self.find('count:first').prepend(html);
                     }
                 }
             });
@@ -484,7 +570,7 @@
                                 photo_id: photo_ids,
                                 album_id: album_id
                             });
-                            $('#photo-list li.selected').trigger('select', false);
+                            $('#photo-list > li.selected').trigger('select', false);
                         }
                         return false;
                     }
@@ -506,7 +592,7 @@
                         if (self.children('ul').length) {
                             list =  self.children('ul');
                         } else {
-                            list = $('<ul class="menu-v with-icons dr"><li class="drag-newposition"></li></ul>').appendTo(self);
+                            list = $('<ul class="menu dr"><li class="drag-newposition"></li></ul>').appendTo(self);
                             list.find('.drag-newposition').mouseover(); // init droppable
                             $('<i class="icon16 darr overhanging"></i>').insertBefore(self.children('a'));
                         }
@@ -747,11 +833,11 @@
                 this.each(function(i,el) {
                     var self = $(this);
                     if (self.data('init_draggable')) {
-                        self.die("mouseover", self.data('init_draggable'));
+                        self.off("mouseover", self.data('init_draggable'));
                     }
                 });
                 var h;
-                this.live("mouseover", h = function() {
+                this.on("mouseover", h = function() {
                     var self = $(this);
                     if (!self.data("init_draggable")) {
                         self.data("init_draggable", h).draggable(opts);
@@ -763,7 +849,7 @@
                 this.each(function(i,el) {
                     var self = $(this);
                     if (self.data('init_droppable')) {
-                        self.die("mouseover", self.data('init_droppable'));
+                        self.off("mouseover", self.data('init_droppable'));
                     }
                 });
 
@@ -775,8 +861,8 @@
                     }
                 };
                 init.call(this);
-                this.die("mouseover", init).live("mouseover", init);
-                this.live('mouseover', init);
+                this.off("mouseover", init).on("mouseover", init);
+                this.on('mouseover', init);
             };
 
             // Custom tolerance-mode realization because of jquery.ui doesn't have necessary functionality

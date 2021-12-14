@@ -195,7 +195,7 @@ var PhotoStream = (function() {
                     var photo = this.getById(before_id);
                     place = photo ? photo.index : 0;
                 }
-                
+
                 Array.prototype.splice.apply(photo_stream, [place, 0].concat(photos));
                 // clear spaces ('undefined' after delete operator) and reindex
                 this.clear();
@@ -235,16 +235,16 @@ Date.parseISO = function (string) {
 
 /**
  * Replace old src with new src in img tag with or not preloading. Also taking into account competition problem
- * 
+ *
  * @param jquery object img
  * @param string new_src
- * @param mixed fn. Optinality. 
- *     If parameter is null than just change src (without preloading). 
+ * @param mixed fn. Optinality.
+ *     If parameter is null than just change src (without preloading).
  *     If fn is function than it is callback after src changed (with preloading)
  *     If omitted (undefined) - with preloading
- * @param string namespace. Optionality. 
- *     Need for solving competition problem. Render only image of last calling of this namespace. 
- *     If omitted try to use id of tag or generate random namespace 
+ * @param string namespace. Optionality.
+ *     Need for solving competition problem. Render only image of last calling of this namespace.
+ *     If omitted try to use id of tag or generate random namespace
  */
 function replaceImg (img, new_src, fn, namespace) {
     namespace = namespace || img.attr('id') || ('' + Math.random()).slice(2);
@@ -252,20 +252,56 @@ function replaceImg (img, new_src, fn, namespace) {
     replaceImg.loading_map[namespace] = new_src;
     img.unbind('load');
     if (fn === null) {
-        img.attr('src', new_src);
+        if (img.smallSize) {
+            img.attr({
+                src: new_src,
+                srcset: ''
+            });
+
+            return;
+        }
+
+        img.attr({
+            src: new_src,
+            srcset: `${img.proper_thumb ? img.proper_thumb.url + ' 1x, ' + img.proper_thumb.url2x + ' 2x' : ""}`
+        });
     } else {
-        $('<img>').attr('src', new_src).load(function() {
-            // setTimeout need for fix FF "blink" problem with image rendering
-            setTimeout(function() {
+        if (img.smallSize) {
+            $('<img>').attr({
+                src: new_src,
+                srcset: ''
+            }).load(function() {
                 // render img only of last calling of function for this namespace
                 if (replaceImg.loading_map[namespace] == new_src) {
-                    img.attr('src', new_src);
+                    img.attr({
+                        src: new_src,
+                        srcset: ''
+                    });
                     if (typeof fn == 'function') {
                         fn.call(img);
                     }
                 }
                 $(this).remove();
-            }, 100);
+            });
+
+            return;
+        }
+
+        $('<img>').attr({
+            src: new_src,
+            srcset: `${img.proper_thumb ? img.proper_thumb.url + ' 1x, ' + img.proper_thumb.url2x + ' 2x' : ""}`
+        }).load(function() {
+            // render img only of last calling of function for this namespace
+            if (replaceImg.loading_map[namespace] == new_src) {
+                img.attr({
+                    src: new_src,
+                    srcset: `${img.proper_thumb ? img.proper_thumb.url + ' 1x, ' + img.proper_thumb.url2x + ' 2x' : ""}`
+                });
+                if (typeof fn == 'function') {
+                    fn.call(img);
+                }
+            }
+            $(this).remove();
         });
     }
     return namespace;

@@ -17,7 +17,8 @@
   overflow: hidden;
   text-align: center;
   font-weight: bold;
-  color: #555;
+  font-size: 18px;
+  color: var(--text-color);
 }
 .round-clock-wrapper .round-clock-block {
   position: absolute;
@@ -102,6 +103,7 @@
 .widget-1x1 .round-clock-wrapper .town-name-wrapper,
 .widget-2x1 .round-clock-wrapper .town-name-wrapper {
   padding: 0 0 0.5em;
+  font-size: 14px;
 }
 .widget-2x1 .round-clock-wrapper .round-clock-block {
   left: 25%;
@@ -109,28 +111,6 @@
 }
 .widget-2x2 .round-clock-wrapper .town-name-wrapper {
   padding: 0 0 1em;
-}
-.tv .round-clock-wrapper {
-  background: #000;
-  width: 100.5%;
-  height: 100.5%;
-  font-size: 1rem;
-}
-.tv .round-clock-wrapper .town-name-wrapper {
-  color: #d0d0d0;
-}
-.tv .round-clock-wrapper .round-clock-block .minute-hand,
-.tv .round-clock-wrapper .round-clock-block .hour-hand {
-  stroke: #fff;
-}
-.tv .round-clock-wrapper .round-clock-block .hour-tick {
-  stroke: #d0d0d0;
-}
-.tv .round-clock-wrapper .round-clock-block .second-tick {
-  stroke: #aaa;
-}
-.tv .round-clock-wrapper .round-clock-block .hands-cover {
-  fill: #000;
 }
 .mobile .round-clock-wrapper {
   font-size: 1rem;

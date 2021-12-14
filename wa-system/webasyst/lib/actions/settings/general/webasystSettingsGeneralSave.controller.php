@@ -16,7 +16,7 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
         }
 
         // Save locale adapter
-        $locale_adapter = waRequest::post('locale_adapter',null, waRequest::TYPE_STRING_TRIM);
+        $locale_adapter = waRequest::post('locale_adapter', null, waRequest::TYPE_STRING_TRIM);
         if ($locale_adapter) {
             $file_path = $this->getConfig()->getPath('config', 'factories');
             if ($locale_adapter == 'gettext') {
@@ -47,6 +47,7 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
         ### Save config ###
         $config_types = array(
             'debug' => 'boolean',
+            'image_adapter' => 'string',
         );
         $flush_settings = array('debug');
 
@@ -70,6 +71,9 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
                 case 'boolean':
                     $value = $value ? true : false;
                     break;
+                case 'string':
+                    $value = trim(strval($value));
+                    break;
             }
             if (!isset($config[$setting]) || ($config[$setting] !== $value)) {
                 $config[$setting] = $value;
@@ -82,8 +86,30 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
         if ($config_changed) {
             waUtils::varExportToFile($config, $config_path);
         }
+
         if ($flush) {
             wa()->getConfig()->clearCache();
+        }
+
+        $this->saveLogoSettings();
+    }
+
+    protected function saveLogoSettings()
+    {
+        $settings = new webasystLogoSettings();
+
+        $logo = $this->getRequest()->post('logo');
+        $logo = is_array($logo) ? $logo : [];
+
+        $settings->set($logo);
+
+        $file = waRequest::file('logo_image');
+        if ($file && $file->uploaded()) {
+            $settings->setImage($file);
+        }
+
+        if (!$file->uploaded() && $this->getRequest()->post('logo_image_delete')) {
+            $settings->deleteImage();
         }
     }
 }

@@ -1,0 +1,25 @@
+<div class="wa-theme-block custom-mt-0">
+    <h5 class="heading">{$theme.name}</h5>
+    {if $theme_usages && $route_url}
+        <div class="alert warning small custom-mx-16 custom-mt-16">
+            <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes.`]', implode(', ', $theme_usages_decoded), $route_url_decoded)}
+        </div>
+    {/if}
+    <ul class="menu wa-theme-templates">
+        {foreach $theme_files as $f_id => $f}
+            <li class="{if $f_id == $file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
+                <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f_id|escape}">
+                    <i class="{if substr($f_id, -4)=='.css'}fab fa-css3{elseif substr($f_id, -3)=='.js'}fab fa-js-square{else}fas fa-file-code{/if}"></i>
+                    <span>{$f_id|escape|truncate:25:'...':false:true}</span>
+                    <span class="count small">{if !empty($f.parent_exists)}<i class="fas fa-link" title="{if !empty($f.parent_exists)}[s`parent theme file`]{/if}"></i>{/if}</span>
+                </a>
+            </li>
+        {/foreach}
+        <li class="top-padded">
+            <a class="small" href="{$design_url}theme={$theme.id}&file=" title="[s`New file`]">
+                <i class="fas fa-plus-circle"></i>
+                <span>[s`New file`]</span>
+            </a>
+        </li>
+    </ul>
+</div>

@@ -42,8 +42,6 @@ class siteSettingsAction extends waViewAction
             'adapters' => isset($auth_config['adapters']) ? $auth_config['adapters'] : array()
         ));
 
-        $this->view->assign('auth_adapters', $this->getAuthAdapters());
-
         $this->view->assign('apps', $temp);
         $this->view->assign('domain_id', siteHelper::getDomainId());
         $this->view->assign('domain', siteHelper::getDomain());
@@ -156,30 +154,6 @@ class siteSettingsAction extends waViewAction
             'section'
         )));
     }
-
-
-    protected function getAuthAdapters()
-    {
-        $path = $this->getConfig()->getPath('system').'/auth/adapters/';
-        $dh = opendir($path);
-        if (!$dh) {
-            return array();
-        }
-        $result = array();
-        while (($f = readdir($dh)) !== false) {
-            if ($f === '.' || $f === '..' || is_dir($path.$f)) {
-                continue;
-            } elseif (substr($f, -14) == 'Auth.class.php') {
-                require_once($path.$f);
-                $id = substr($f, 0, -14);
-                $class_name = $id."Auth";
-                $result[$id] = new $class_name(array('app_id' => '', 'app_secret' => ''));
-            }
-        }
-        closedir($dh);
-        return $result;
-    }
-
 
     protected function getDomainUrl($domain)
     {

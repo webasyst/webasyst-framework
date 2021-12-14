@@ -5,6 +5,7 @@ var WAThemeSettings = ( function($) {
 
         // DOM
         that.$wrapper = options["$wrapper"];
+        that.is_wa2 = options["is_wa2"] || false;
         that.$form = that.$wrapper.find('#theme-settings');
         that.$button = that.$form.find(':submit');
         that.$error = that.$wrapper.find('#theme-settings-error');
@@ -17,6 +18,14 @@ var WAThemeSettings = ( function($) {
         that.$settings_list = that.$wrapper.find('.js-settings-list');
         that.$global_dividers = that.$settings_list.find('.js-theme-setting-divider[data-divider-level="1"]');
         that.$other_blocks = that.$wrapper.find('.js-theme-other-data');
+
+        if (that.is_wa2) {
+            that.$button = that.$wrapper.find('.js-bb-submit');
+            if(!that.$button.length) {
+                that.$button = that.$wrapper.parent().find('.js-bb-submit');
+            }
+            that.$search_input = that.$wrapper.find('.js-search-setting');
+        }
 
         // VARS
         that.theme_id = options["theme_id"];
@@ -64,12 +73,24 @@ var WAThemeSettings = ( function($) {
 
             if (expand_group == that.expand_all_storage_value || divider_id == expand_group) {
                 $divider.find('.js-settings-group').show();
-                $divider.find('i.js-divider-expand')
+                if (that.is_wa2) {
+                    const $caret = $divider[0]
+                        .querySelector('.fa-caret-right.js-divider-expand');
+
+                    if ($caret !== null) {
+                        $caret.setAttribute('title', that.locale.collapse);
+                        $caret.classList.remove('js-divider-expand');
+                        $caret.classList.add('js-divider-collapse', 'fa-rotate-90');
+                    }
+
+                }else{
+                    $divider.find('i.js-divider-expand')
                         .attr('title', that.locale.expand)
                         .removeClass('js-divider-expand')
                         .addClass('js-divider-collapse')
                         .removeClass('rarr')
                         .addClass('darr');
+                }
 
                 $divider.find('h1.js-divider-expand')
                         .removeClass('js-divider-expand')
@@ -86,23 +107,29 @@ var WAThemeSettings = ( function($) {
         }
 
         //
-        that.initThemeReameDialog();
-        //
-        that.initThemeImportSettingsDialog();
-        //
-        that.initThemeDownloadDialog();
-        //
-        that.initThemeUpdateDialog();
-        //
-        that.initThemeParentDialog();
-        //
-        that.initThemeCopyDialog();
-        //
-        that.initThemeResetDialog();
-        //
-        that.initThemeStartUsingDialog();
-        //
-        that.initThemeDelete();
+        if (that.is_wa2) {
+            that.initThemeRenameDialogWA2();
+            that.initThemeImportSettingsDialogWA2();
+            that.initThemeDownloadDialogWA2();
+            that.initThemeUpdateDialogWA2();
+            that.initThemeParentDialogWA2();
+            that.initThemeCopyDialogWA2();
+            that.initThemeResetDialogWA2();
+            that.initThemeStartUsingDialogWA2();
+            that.initThemeDeleteWA2();
+        }else{
+            that.initThemeRenameDialog();
+            that.initThemeImportSettingsDialog();
+            that.initThemeDownloadDialog();
+            that.initThemeUpdateDialog();
+            that.initThemeParentDialog();
+            that.initThemeCopyDialog();
+            that.initThemeResetDialog();
+            that.initThemeStartUsingDialog();
+            that.initThemeDelete();
+        }
+
+        that.initThemeExportSettingsDialog();
         //
         that.initAnchorLink();
         //
@@ -121,7 +148,7 @@ var WAThemeSettings = ( function($) {
         that.initSubmit();
     };
 
-    WAThemeSettings.prototype.initThemeReameDialog = function() {
+    WAThemeSettings.prototype.initThemeRenameDialog = function() {
         var that = this,
             $link = that.$wrapper.find('.theme-rename'),
             $dialog_wrapper = that.$wrapper.find('#wa-theme-name-dialog');
@@ -160,6 +187,81 @@ var WAThemeSettings = ( function($) {
 
     };
 
+    WAThemeSettings.prototype.initThemeRenameDialogWA2 = function() {
+        let that = this,
+            $link = that.$wrapper.find('.js-theme-rename'),
+            $wrapper = that.$wrapper.find('#wa-theme-name-dialog').clone();
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+            $.waDialog({
+                $wrapper,
+                onOpen($dialog) {
+                    const $form = $dialog.find('form'),
+                        $button = $dialog.find('[type="submit"]');
+
+                    $form.on('submit', function (e) {
+                        e.preventDefault();
+                        $button.attr('disabled', true).prop('disabled', true)
+                        let id = $.trim($dialog.find('#wa-theme-rename-id').val()),
+                            name = $.trim($dialog.find('#wa-theme-rename-name').val()),
+                            href= '?module=design&action=themeRename',
+                            data = {
+                                theme: that.theme_id,
+                                id: id,
+                                name: name
+                            };
+
+                        $.post(href, data, function (response) {
+                            if (response.status == 'ok') {
+                                if(response.data.redirect) {
+                                    location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                                    location.reload();
+                                } else {
+                                    location.reload();
+                                }
+                            } else {
+                                alert(response.errors);
+                            }
+                        }, "json");
+                    })
+                }
+            });
+        });
+    };
+
+    WAThemeSettings.prototype.initThemeExportSettingsDialog = function () {
+        var that = this,
+            $export_button = that.$wrapper.find('.js-export-theme-settings'),
+            $export_error = that.$wrapper.find('.js-export-error'),
+            $export_error_caption = that.$wrapper.find('.js-export-error-caption'),
+            href = $export_button.attr('href');
+
+        $export_button.on('click', function (e) {
+            $.ajax({
+                url: href,
+                type: 'POST',
+                async: false,
+                cache: false,
+            }).done(function(res) {
+                if (res.status === 'fail') {
+                    var app_link = '';
+                    if (res.errors.app_name != null) {
+                        app_link = '<a href="' + res.errors.app_url + '">' +
+                                    res.errors.app_name + ' - ' + res.errors.appearance_name + '</a>';
+                    }
+                    $export_error_caption.html(res.errors.message + app_link);
+                    $export_error.slideDown();
+                    $export_button.closest('li').addClass('disabled');
+                    e.preventDefault();
+                } else {
+                    $export_error_caption.empty();
+                    $export_error.slideUp();
+                }
+            });
+        });
+    };
+
     WAThemeSettings.prototype.initThemeImportSettingsDialog = function () {
         var that = this,
             $link = that.$wrapper.find('.js-import-theme-settings'),
@@ -180,6 +282,26 @@ var WAThemeSettings = ( function($) {
         });
     };
 
+    WAThemeSettings.prototype.initThemeImportSettingsDialogWA2 = function () {
+        const that = this,
+            $link = that.$wrapper.find('.js-import-theme-settings'),
+            $wrapper = that.$wrapper.find('#wa-theme-import-settings-dialog').clone();
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+            $.waDialog({
+                $wrapper,
+                onOpen($dialog, dialog) {
+                    new waThemeSettingsImport({
+                        $wrapper: $dialog,
+                        theme_id: that.theme_id,
+                        dialog: dialog
+                    });
+                }
+            });
+        });
+    };
+
     WAThemeSettings.prototype.initThemeDownloadDialog = function () {
         var that = this,
             $link = that.$wrapper.find('.theme-download'),
@@ -188,6 +310,19 @@ var WAThemeSettings = ( function($) {
         $link.on('click', function () {
             $dialog_wrapper.waDialog();
             return false;
+        });
+    };
+
+    WAThemeSettings.prototype.initThemeDownloadDialogWA2 = function () {
+        const that = this,
+            $link = that.$wrapper.find('.js-theme-download'),
+            $wrapper = that.$wrapper.find('#wa-theme-download-dialog').clone();
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+            $.waDialog({
+                $wrapper
+            });
         });
     };
 
@@ -235,6 +370,56 @@ var WAThemeSettings = ( function($) {
         });
     };
 
+    WAThemeSettings.prototype.initThemeUpdateDialogWA2 = function() {
+        const that = this,
+            $link = that.$wrapper.find('.js-theme-update'),
+            $dialog_wrapper = that.$wrapper.find('#wa-theme-update-dialog'),
+            href = '?module=design&action=themeUpdate&theme='+that.theme_id;
+
+        $dialog_wrapper.load(href);
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('disabled'))  {
+                $.waDialog({
+                    $wrapper: $dialog_wrapper.clone(),
+                    onOpen($dialog, dialog){
+                        $dialog.on('change', 'label.bold input:checkbox', function () {
+                            let l = $(this).parent();
+                            if ($(this).is(':checked')) {
+                                if (!l.find('span.hint').length) {
+                                    l.append(' <span class="hint">'+ that.locale.will_be_lost +'</span>');
+                                }
+                            } else {
+                                l.find('span.hint').remove();
+                            }
+                        });
+
+                        const $submit = $dialog.find('[type="submit"]');
+
+                        $submit.on('click', function (e) {
+                            e.preventDefault();
+                            $submit.attr('disabled', true).prop('disabled', true)
+                            if (confirm(that.locale.update_notice)) {
+                                let data = $dialog.serialize();
+                                $.post(href, data, function (response) {
+                                    if (response.status == 'ok') {
+                                        location.reload();
+                                    } else {
+                                        dialog.close();
+                                        alert(response.errors);
+                                    }
+                                }, "json");
+                            } else {
+                                $submit.removeAttr('disabled').prop('disabled', false)
+                            }
+                        })
+                    }
+                });
+            }
+        });
+    };
+
     WAThemeSettings.prototype.initThemeParentDialog = function() {
         var that = this,
             $link = that.$wrapper.find('.theme-parent'),
@@ -258,6 +443,39 @@ var WAThemeSettings = ( function($) {
                 }
             });
             return false;
+        });
+    };
+
+    WAThemeSettings.prototype.initThemeParentDialogWA2 = function() {
+        const that = this,
+            $link = that.$wrapper.find('.js-theme-parent'),
+            $dialog_wrapper = that.$wrapper.find('#wa-theme-parent-dialog'),
+            href = "?module=design&action=themeParent";
+
+        $dialog_wrapper.load(href);
+
+        let $wrapper = $dialog_wrapper.clone();
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+            $.waDialog({
+                $wrapper,
+                onOpen($dialog){
+                    const $submit = $dialog.find('[type="submit"]');
+                    $submit.on('click', function (e) {
+                        e.preventDefault();
+                        let data = $dialog.serialize();
+                        $.post(href, data, function (response) {
+                            if (response.status == 'ok') {
+                                location.reload();
+                            } else {
+                                dialog.close();
+                                alert(response.errors);
+                            }
+                        }, "json");
+                    })
+                }
+            });
         });
     };
 
@@ -311,6 +529,59 @@ var WAThemeSettings = ( function($) {
         });
     };
 
+    WAThemeSettings.prototype.initThemeCopyDialogWA2 = function() {
+        const that = this,
+            $link = that.$wrapper.find('.js-theme-copy'),
+            $wrapper = that.$wrapper.find('#wa-theme-copy-dialog');
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+
+            const themeCopy = (related, options) => {
+                const href = "?module=design&action=themeCopy",
+                    data = {
+                        theme: that.theme_id,
+                        related: related,
+                        options:options
+                    };
+
+                $.post(href, data, function (response) {
+                    if (response.status == 'ok') {
+                        if (response.data.redirect) {
+                            location.href = location.href.replace(/#.*$/, '') + response.data.redirect;
+                            location.reload();
+                        } else {
+                            $wrapper.remove()
+                            location.reload(true);
+                        }
+                    } else {
+                        alert(response.errors);
+                    }
+                }, "json");
+            };
+
+            if ($(this).data('related')) {
+                $.waDialog({
+                    $wrapper,
+                    onOpen($dialog){
+                        const $form = $dialog.find('form');
+                        $form.on('submit', function (e) {
+                            e.preventDefault();
+                            const options = {
+                                    id: $form.find("#wa-theme-copy-id").val(),
+                                    name: $form.find("#wa-theme-copy-name").val()
+                                };
+                            themeCopy($form.find(':input:checked').val(), options);
+                        })
+
+                    }
+                });
+            } else {
+                themeCopy(false,null);
+            }
+        });
+    };
+
     WAThemeSettings.prototype.initThemeResetDialog = function() {
         var that = this,
             $link = that.$wrapper.find('.theme-reset'),
@@ -335,6 +606,45 @@ var WAThemeSettings = ( function($) {
                             }
                         }, "json");
                         return false;
+                    }
+                });
+            }
+            return false;
+        });
+    };
+
+    WAThemeSettings.prototype.initThemeResetDialogWA2 = function() {
+        const that = this,
+            $link = that.$wrapper.find('.js-theme-reset'),
+            $dialog_wrapper = that.$wrapper.find('#wa-theme-reset-dialog'),
+            href = "?module=design&action=themeReset";
+
+        $dialog_wrapper.load(href);
+        let $wrapper = $dialog_wrapper.clone();
+        $link.on('click', function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('disabled'))  {
+                $.waDialog({
+                    $wrapper,
+                    onOpen($dialog, dialog) {
+                        const $form = $dialog.find('form');
+
+                        $form.on('submit', function (e) {
+                            e.preventDefault();
+                            $.post(href, $(this).serialize(), function (response) {
+                                if (response.status == 'ok') {
+                                    if(response.data.redirect) {
+                                        location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                                        location.reload();
+                                    } else {
+                                        location.reload();
+                                    }
+                                } else {
+                                    dialog.close();
+                                    alert(response.errors);
+                                }
+                            }, "json");
+                        })
                     }
                 });
             }
@@ -367,6 +677,39 @@ var WAThemeSettings = ( function($) {
                 });
             }
             return false;
+        });
+    };
+
+    WAThemeSettings.prototype.initThemeStartUsingDialogWA2 = function() {
+        let that = this,
+            $link = that.$wrapper.find('.js-theme-start-using'),
+            $wrapper = that.$wrapper.find('#wa-theme-start-using-dialog'),
+            href = "?module=design&action=themeUse";
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+            if (!$(this).hasClass('disabled'))  {
+                $.waDialog({
+                    $wrapper,
+                    onOpen($dialog) {
+                        const $form = $dialog.find('form'),
+                            $button = $dialog.find('[type="submit"]');
+
+                        $form.on('submit', function (e) {
+                            e.preventDefault();
+                            $button.attr('disabled', true).prop('disabled', true);
+                            $.post(href, $(this).serialize(), function (response) {
+                                if (response.status == 'ok') {
+                                    location.href = that.design_url + 'theme=' + response.data.theme + '&domain=' + response.data.domain + '&route=' + response.data.route;
+                                    location.reload();
+                                } else {
+                                    alert(response.errors);
+                                }
+                            }, "json");
+                        })
+                    }
+                });
+            }
         });
     };
 
@@ -440,6 +783,46 @@ var WAThemeSettings = ( function($) {
         });
     };
 
+    WAThemeSettings.prototype.initThemeDeleteWA2 = function() {
+        var that = this,
+            $link = that.$wrapper.find('.js-theme-delete'),
+            href = "?module=design&action=themeDelete";
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+            const $self = $(this);
+
+            if (that.theme_routes.length) {
+                const $wrapper = that.$wrapper.find('#wa-theme-blocking-removal-dialog');
+                $.waDialog({$wrapper});
+
+                return false;
+            }
+
+            if (!$self.hasClass('disabled') && confirm($self.data('confirm'))) {
+                $.post(href, { theme: that.theme_id }, function (response) {
+                    if (response.status === 'ok') {
+                        if(response.data.theme_id) {
+                            $('#wa-theme-block-' + response.data.theme_id).remove();
+                            $('#wa-theme-list-' + response.data.theme_id).remove();
+                        }
+                        $('#wa-theme-list a').each(function () {
+                            if ($(this).attr('href').indexOf('theme=' + that.theme_id) != -1) {
+                                $(this).parent().remove();
+                            }
+                        });
+                        alert($self.data('success'));
+                        location.href = $('#wa-theme-list li:first a').attr('href');
+                    } else {
+                        alert(response.errors);
+                    }
+                }, "json");
+
+            }
+            return false;
+        });
+    };
+
     WAThemeSettings.prototype.initSettingsSearch = function() {
         var that = this,
             timer = null,
@@ -447,6 +830,10 @@ var WAThemeSettings = ( function($) {
             $result_min_symbol = that.$wrapper.find('.js-search-min-symbol'),
             $result_label = that.$wrapper.find('.js-search-result'),
             $no_result_label = that.$wrapper.find('.js-search-no-result');
+
+        let $theme_actions = that.$wrapper.find('.js-theme-actions'),
+            $theme_info_section = that.$wrapper.find('.js-theme-info-section'),
+            $theme_settings_list = $('.js-theme-settings-list');
 
         // Show all group settings in search mode
         that.$wrapper.on('click', '.js-group-all-settings', function () {
@@ -459,8 +846,10 @@ var WAThemeSettings = ( function($) {
         $search_input.on('input', function (e) {
             var q = $.trim($(this).val());
 
-            that.setExpandAllItems();
-            that.$anchors.hide();
+            if (!that.is_wa2) {
+                that.setExpandAllItems();
+                that.$anchors.hide();
+            }
 
             timer && clearTimeout(timer);
             timer = setTimeout(function(){
@@ -487,6 +876,11 @@ var WAThemeSettings = ( function($) {
                 that.$global_dividers.each(function () {
                     $(this).hide();
                 });
+
+                if (that.is_wa2) {
+                    $theme_actions.hide();
+                    $theme_info_section.hide();
+                }
             }
 
             $settings_list.find('.js-search-item').each(function () {
@@ -498,10 +892,14 @@ var WAThemeSettings = ( function($) {
                     matched = null;
 
                 if (small_query) {
-                    $item_search_name.html(item_name);
-                    $item.show();
-                    $divider.show();
-                    that.collapseGroup($divider);
+                    if (that.is_wa2) {
+                        $settings_list.find('.selected').removeClass('selected').removeAttr('style');
+                    }else{
+                        $item_search_name.html(item_name);
+                        $item.show();
+                        $divider.show();
+                        that.collapseGroup($divider);
+                    }
                     return;
                 }
 
@@ -509,41 +907,87 @@ var WAThemeSettings = ( function($) {
                     matched = data_search.match(filter);
                 }
 
-                if (matched) {
-                    $item.show();
-                    $item.parents('.js-settings-group').siblings('.js-divider-name').show(); // Show all parents divider names
-                    $divider.show();
-                    that.expandGroup($divider); // Expand global divider
-                    if (!empty_query) {
-                        var match_value = $("<div />").text(matched[0]).html();
-                        item_name = item_name.replace(filter, '<span class="wa-setting-highlight">' + match_value + '</span>');
+                if (that.is_wa2) {
+                    if (matched) {
+                        if ($item.attr('data-level') == 1) {
+                            $item.parents('.fields-group').toggleClass('selected', !!matched);
+                        }
+                        if ($item.attr('data-level') == 2) {
+                            $item.closest('.fields-group[data-divider-id]').toggleClass('selected', !!matched);
+
+                            $item.parent('.fields-group').toggleClass('selected', !!matched).siblings().hide();
+                        }
+                        if (!empty_query) {
+                            let match_value = $("<div />").text(matched[0]).html();
+                            item_name = item_name.replace(filter, '<span class="highlighted">' + match_value + '</span>');
+                            $settings_list.find('.selected').show();
+                        }
+                    }else{
+                        $item.parent('.fields-group').toggleClass('selected', !!matched);
                     }
-                } else {
-                    $item.hide();
+                }else {
+                    if (matched) {
+                        $item.show();
+                        $item.parents('.js-settings-group').siblings('.js-divider-name').show(); // Show all parents divider names
+                        $divider.show();
+                        that.expandGroup($divider); // Expand global divider
+                        if (!empty_query) {
+                            var match_value = $("<div />").text(matched[0]).html();
+                            item_name = item_name.replace(filter, '<span class="wa-setting-highlight">' + match_value + '</span>');
+                        }
+                    } else {
+                        $item.hide();
+                    }
                 }
                 $item_search_name.html(item_name);
             });
 
             // Expand all global dividers on empty query
             if (empty_query) {
-                that.$global_dividers.each(function () {
-                    $(this).show();
-                });
-                that.$wrapper.find('.js-theme-other-data').show();
+                if (that.is_wa2) {
+                    $settings_list.find('.highlighted').removeClass('highlighted')
+                    $theme_settings_list.find('.selected > a').trigger('click');
+                    $theme_settings_list.find('a').show();
+                    $theme_actions.show();
+                }else{
+                    that.$global_dividers.each(function () {
+                        $(this).show();
+                    });
+                    that.$wrapper.find('.js-theme-other-data').show();
+                }
             }
 
-            that.$global_dividers.each(function () {
-                if ($(this).is(':visible')) {
-                    return results = true;
+            if (that.is_wa2) {
+                if($settings_list.find('.fields-group.selected').length > 0){
+                    results = true;
                 }
-            });
+            }else{
+                that.$global_dividers.each(function () {
+                    if ($(this).is(':visible')) {
+                        return results = true;
+                    }
+                });
+            }
 
             if (!empty_query) {
+                if (that.is_wa2) {
+                    $theme_actions.hide();
+                    $theme_info_section.hide();
+                }
+
                 if (small_query) {
                     $result_min_symbol.show();
                 } else if (!results) {
                     $no_result_label.show();
                 } else {
+                    // leave menu items which contains search query
+                    let $divider_id = $settings_list.find('> .selected');
+                    $theme_settings_list.find('a').hide();
+                    $divider_id.each(function () {
+                        let id = this.dataset.dividerId;
+                        $theme_settings_list.find(`a[data-divider-id="${id}"]`).show();
+                    })
+
                     $result_label.show();
                 }
             } else {
@@ -984,13 +1428,23 @@ var WAThemeSettings = ( function($) {
 
         // Colorpickers
         that.$form.find('.color').each(function() {
-            var $input = $(this),
-                $replacer = $('<span class="color-replacer"><i class="icon16 color" style="background: #'+$input.val().substr(1)+'"></i></span>').insertAfter($input),
-                $picker = $('<div style="display:none;" class="color-picker"></div>').insertAfter($replacer),
-                farbtastic = $.farbtastic($picker, function(color) {
-                    $replacer.find('i').css('background', color);
-                    $input.val(color);
-                });
+            var $input = $(this);
+            if (that.is_wa2) {
+                var $replacer = $('<span class="color-replacer icon" style="color: #'+$input.val().substr(1)+'"><i class="fas fa-circle fa-2x"></i></span>').insertAfter($input),
+                    $picker = $('<div style="display:none;" class="color-picker"></div>').insertAfter($replacer),
+                    farbtastic = $.farbtastic($picker, function(color) {
+                        $replacer.css('color', color);
+                        $input.val(color);
+                    });
+            }else{
+                var $replacer = $('<span class="color-replacer"><i class="icon16 color" style="background: #'+$input.val().substr(1)+'"></i></span>').insertAfter($input),
+                    $picker = $('<div style="display:none;" class="color-picker"></div>').insertAfter($replacer),
+                    farbtastic = $.farbtastic($picker, function(color) {
+                        $replacer.find('i').css('background', color);
+                        $input.val(color);
+                    });
+            }
+
 
             farbtastic.setColor('#'+$input.val());
 
@@ -1065,7 +1519,15 @@ var WAThemeSettings = ( function($) {
 
         that.$anchors.hide();
         that.$expand_collapse_all.removeClass(that.classes.collapse_all).addClass(that.classes.expand_all);
-        $icon16.removeClass('darr').addClass('rarr');
+        if (that.is_wa2) {
+            if (that.$expand_collapse_all[0] !== undefined) {
+                that.$expand_collapse_all[0]
+                    .querySelector('.wa-theme-expand-icon-wrapper > .fa-caret-right')
+                    .classList.remove('fa-rotate-90');
+            }
+        }else{
+            $icon16.removeClass('darr').addClass('rarr');
+        }
         $action_text.text(that.locale.expand_all);
     };
 
@@ -1076,7 +1538,14 @@ var WAThemeSettings = ( function($) {
 
         that.$anchors.show();
         that.$expand_collapse_all.removeClass(that.classes.expand_all).addClass(that.classes.collapse_all);
-        $icon16.removeClass('rarr').addClass('darr');
+        if (that.is_wa2) {
+            that.$expand_collapse_all[0]
+                .querySelector('.wa-theme-expand-icon-wrapper > .fa-caret-right')
+                .classList.add('fa-rotate-90');
+
+        }else{
+            $icon16.removeClass('rarr').addClass('darr');
+        }
         $action_text.text(that.locale.collapse_all);
     };
 
@@ -1115,12 +1584,14 @@ var WAThemeSettings = ( function($) {
         $divider.find('.js-settings-group').show();
 
         // Divider arrow icon
-        $divider.find('i.js-divider-expand')
-            .attr('title', that.locale.collapse)
-            .removeClass('js-divider-expand')
-            .addClass('js-divider-collapse')
-            .removeClass('rarr')
-            .addClass('darr');
+        if (!that.is_wa2) {
+            $divider.find('i.js-divider-expand')
+                .attr('title', that.locale.collapse)
+                .removeClass('js-divider-expand')
+                .addClass('js-divider-collapse')
+                .removeClass('rarr')
+                .addClass('darr');
+        }
 
         // GLOBAL Divider name
         $divider.find('h1.js-divider-expand')
@@ -1142,12 +1613,14 @@ var WAThemeSettings = ( function($) {
         $divider.find('.js-settings-group').hide();
 
         // Divider arrow icon
-        $divider.find('i.js-divider-collapse')
-            .attr('title', that.locale.expand)
-            .removeClass('js-divider-collapse')
-            .addClass('js-divider-expand')
-            .removeClass('darr')
-            .addClass('rarr');
+        if (!that.is_wa2) {
+            $divider.find('i.js-divider-collapse')
+                .attr('title', that.locale.expand)
+                .removeClass('js-divider-collapse')
+                .addClass('js-divider-expand')
+                .removeClass('darr')
+                .addClass('rarr');
+        }
 
         // GLOBAL Divider name
         $divider.find('h1.js-divider-collapse')
@@ -1182,8 +1655,18 @@ var WAThemeSettings = ( function($) {
                 that.collapseOtherBlock($(this));
             });
         }
+        if (that.is_wa2) {
+            const $caret = $label[0]
+                .querySelector('.fa-caret-right');
 
-        $icon16.removeClass('rarr').addClass('darr');
+            if ($caret !== null) {
+                $caret.classList.add('fa-rotate-90');
+            }
+
+        }else{
+            $icon16.removeClass('rarr').addClass('darr');
+        }
+
         $content.show();
 
         that.$anchors.find('.js-other-anchor-item[data-other-id="'+ block_id +'"]').addClass('selected');
@@ -1196,7 +1679,18 @@ var WAThemeSettings = ( function($) {
             $icon16 = $label.find('.icon16'),
             $content = $other_block.find('.js-other-content');
 
-        $icon16.removeClass('darr').addClass('rarr');
+        if (that.is_wa2) {
+            const $caret = $label[0]
+                .querySelector('.fa-caret-right');
+
+            if ($caret !== null) {
+                $caret.classList.remove('fa-rotate-90');
+            }
+
+        }else{
+            $icon16.removeClass('darr').addClass('rarr');
+        }
+
         $content.hide();
 
         that.$anchors.find('.js-other-anchor-item[data-other-id="'+ block_id +'"]').removeClass('selected');
@@ -1210,16 +1704,32 @@ var WAThemeSettings = ( function($) {
             that.$button.removeClass('green').addClass('yellow');
         });
 
-        that.$form.submit(function () {
+        let $status, saving;
+        if (that.is_wa2) {
+            $status = $('#wa-editor-status');
+            saving = that.locale.saving || 'Saving ...';
+        }
+        that.$form.on('submit', function () {
+            if (that.is_wa2) {
+                $status.empty().append(`<i class='fas fa-spin fa-spinner'></i> ${saving}`).fadeIn("slow");
+            }
             $iframe.one('load', function () {
                 var response = $.parseJSON($(this).contents().find('body').html());
 
                 if (response.status == 'ok') {
+                    if (that.is_wa2) {
+                        $status.empty().append(`<i class="fas fa-check-circle"></i> ${saving}`).fadeOut('slow');
+                    }
                     that.$button.removeClass('yellow').addClass('green');
                     that.$error.hide().empty();
                     that.$message.fadeIn('slow', function () { $(this).fadeOut('slow');});
-                    waDesignLoad();
+                    if (!that.is_wa2) {
+                        waDesignLoad();
+                    }
                 } else {
+                    if (that.is_wa2) {
+                        $status.show().html(`<span class="state-error">${response.errors ? response.errors : response}</span>`);
+                    }
                     that.$error.html(response.errors ? response.errors : response);
                     that.$error.fadeIn("slow");
                 }

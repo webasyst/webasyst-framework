@@ -1,5 +1,12 @@
-<span class="count" id="comments-count">{$comments_count}</span>
+{if $wa->whichUi() == '1.3'}
 <a href="#/comments/">
   <i class="icon16 comments"></i>[`Comments`]
   {if $comments_count_new}<strong class="small highlighted" id="new-comments-count">+{$comments_count_new}</strong>{/if}
 </a>
+{else}
+  <a href="#/comments/">
+    <i class="fas fa-comments"></i><span>[`Comments`]</span>
+    {if $comments_count_new}<span class="count bold highlighted" id="new-comments-count">+{$comments_count_new}</span>{/if}
+    <span class="count" id="comments-count">{$comments_count}</span>
+  </a>
+{/if}

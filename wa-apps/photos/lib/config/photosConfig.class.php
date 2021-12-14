@@ -2,13 +2,30 @@
 
 class photosConfig extends waAppConfig
 {
-    protected $sizes = array(
-        'big' => '970',
-        'middle' => '750',
-        'thumb' => '200x0',
-        'crop' => '96x96',
-        'mobile' => '512'
-    );
+    protected $sizes;
+
+    public function __construct($environment, $root_path, $application = null, $locale = null) {
+        parent::__construct($environment, $root_path, $application, $locale);
+
+        if(wa()->whichUI() === '1.3'){
+            $this->sizes = array(
+                'big' => '970',
+                'middle' => '750',
+                'thumb' => '200x0',
+                'crop' => '96x96',
+                'mobile' => '512'
+            );
+        }else{
+            $this->sizes = array(
+                'big' => '970',
+                'middle' => '750',
+                'thumb' => '300x0',
+                'crop' => '96x96',
+                'mobile' => '512',
+                'icon' => '40x40'
+            );
+        }
+    }
 
     public function getSize($name)
     {

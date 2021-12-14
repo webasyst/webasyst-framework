@@ -1,0 +1,58 @@
+{strip}
+
+<div class="t-users-page" id="t-users-page">
+    <header class="t-content-header">
+        <div class="t-layout">
+            <div class="t-column left">
+
+                <h1>[`All users`]</h1>
+
+            </div>
+            <div class="t-column right">
+
+                {* SORTING *}
+                <ul class="menu-h dropdown right">
+                    {$_sort_list = [
+                        'last_seen' => '[`Last seen`]',
+                        'name'      => '[`Name `]',
+                        'signed_up' => '[`Signed up`]'
+                    ]}
+                    <li>
+                        <span style="margin: 0 4px 0 0;">[`Sort by`]:</span>
+                        <a class="t-selected-item inline-link" href="{$wa_app_url}?sort={$sort|escape}" style="display: inline-block;">
+                            <b><i>{if isset($_sort_list[$sort])}{$_sort_list[$sort]|escape}{else}&mdash;{/if}</i></b>
+                            &nbsp;<i class="icon10 darr"></i>
+                        </a>
+                        <ul class="menu-v with-icons">
+                            {foreach $_sort_list as $_id=>$_name}
+                                <li class="t-menu-item {if $sort == $_id}selected{/if}">
+                                    <a href="{teamHelper::getUrl('sort', $_id)}">
+                                        {$_name|escape}
+                                    </a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="t-content-body">
+        {if !empty($contacts)}
+            {include file="./Users.inc.html" contacts=$contacts}
+        {else}
+            <p class="t-description">[`No users.`]</p>
+        {/if}
+    </div>
+
+    <script>
+        ( function($) {
+            $.team.setTitle("[`Users`]");
+            $.team.sidebar.updateCount("{$wa_app_url}", {count($contacts)});
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

@@ -331,23 +331,104 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
         }
         $str = get_class($value).' object';
 
-        // Cast to array to show protected and private members
-        $value_to_iterate = (array) $value;
+        // Special treatment for DOM nodes to make output useful and readable
+        if ($value instanceof DOMNodeList || $value instanceof DOMNamedNodeMap) {
+            $value_to_iterate = iterator_to_array($value);
+        } else if ($value instanceof DOMNode) {
+            if (!$value instanceof DOMDocument) {
+                $str = get_class($value);
+                if (!$value instanceof DOMText && !$value instanceof DOMComment && !$value instanceof DOMDocumentType) {
+                    $val = " <".$value->nodeName.">";
+                    if (!$cli) {
+                        $val = htmlspecialchars($val, $htmlspecialchars_mode, 'utf-8');
+                    }
+                    $str .= $val;
+                }
+            }
 
-        if ($value_to_iterate) {
+            if ($value->attributes) {
+                $arr = [];
+                foreach ($value->attributes as $k => $v) {
+                    $arr[$k] = $v->value;
+                }
+                if ($arr) {
+                    $level_arr[] =& $value->attributes;
+                    $dom_attributes_str = wa_dump_helper($arr, $level_arr, $cli);
+                    $dom_attributes_str = $br."  attributes ".$dom_attributes_str;
+                    array_pop($level_arr);
+                }
+            }
+
+            if ($value->childNodes) {
+                $value_to_iterate = iterator_to_array($value->childNodes);
+                $dont_show_keys = true;
+            } else {
+                $value_to_iterate = [];
+            }
+
+            if (!$value_to_iterate) {
+                if (trim($value->nodeValue)) {
+                    $lines = explode("\n", trim($value->nodeValue));
+                    $val = trim($lines[0]);
+                    if (mb_strlen($val) > 40 || count($lines) > 1) {
+                        $val = mb_substr(trim($lines[0]), 0, 25);
+                        if (strlen($val) < strlen($lines[0]) || count($lines) > 1) {
+                            $truncated = true;
+                            $val .= '...';
+                        }
+                        $val = wa_dump_helper($val, ref([]), $cli);
+                        if (count($lines) > 1) {
+                            $val .= " (".count($lines)." lines)";
+                        } else if (!empty($truncated)) {
+                            $val .= " (".mb_strlen($lines[0])." characters)";
+                        }
+                    } else {
+                        $val = wa_dump_helper($val, ref([]), $cli);
+                    }
+                    $str .= ' = '.$val;
+                } else if ($value->nodeValue) {
+                    $str .= ' whitespace';
+                }
+                if (empty($dom_attributes_str)) {
+                    return $str; // no {} at the end
+                }
+            }
+        } else {
+            // Cast to array to show protected and private members
+            $value_to_iterate = (array) $value;
+        }
+
+        if ($value_to_iterate || isset($dom_attributes_str)) {
             $str .= ' {';
+            if (isset($dom_attributes_str)) {
+                $str .= $dom_attributes_str;
+            }
+            if (!$value_to_iterate) {
+                return $str.$br.'}';
+            }
         } else {
             return $str.' {}';
         }
 
     } else {
-        $str = 'array';
-        if ($value) {
-            $str .= '(';
-        } else {
-            return $str.'()';
+        if (!$value) {
+            return '[]';
         }
+        $str = '[';
         $value_to_iterate =& $value;
+
+        // do not show indices if array only contains numeric keys from 0 up to its size
+        $size = count($value_to_iterate);
+        if (!isset($value_to_iterate[$size])) {
+            $value_to_iterate[] = false;
+            $dont_show_keys = isset($value_to_iterate[$size]);
+            array_pop($value_to_iterate);
+            if ($dont_show_keys) {
+                $dont_show_keys = array_reduce(array_keys($value_to_iterate), function($res, $n) {
+                    return $res && wa_is_int($n) && $n >= 0;
+                }, true);
+            }
+        }
     }
 
     $level_arr[] = &$value;
@@ -357,17 +438,21 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     }
     foreach($keys as $key) {
         if (is_array($value)) {
-            $escaped_key = wa_dump_helper($key);
+            $escaped_key = wa_dump_helper($key, ref([]), $cli);
         } else if (!$cli) {
             $escaped_key = htmlspecialchars($key, $htmlspecialchars_mode, 'utf-8');
         } else {
             $escaped_key = $key;
         }
-        $str .= $br."  ".$escaped_key.' => '.wa_dump_helper($value_to_iterate[$key], $level_arr, $cli).(is_array($value) ? ',' : '');
+        $str .= $br."  ";
+        if (empty($dont_show_keys)) {
+            $str .= $escaped_key.' => ';
+        }
+        $str .= wa_dump_helper($value_to_iterate[$key], $level_arr, $cli).(is_array($value) ? ',' : '');
     }
     array_pop($level_arr);
 
-    $str .= is_array($value) ? $br.')' : $br.'}';
+    $str .= is_array($value) ? $br.']' : $br.'}';
     return $str;
 }
 

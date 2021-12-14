@@ -66,17 +66,23 @@ class boxberryShippingCalculateValidate
      */
     public function validateRegions()
     {
-        $error = false;
-
         $country = $this->bxb->getAddress('country');
         $region = $this->bxb->getAddress('region');
         $city = trim(mb_strtolower($this->bxb->getAddress('city')));
 
+        $settings_countries = $this->bxb->getSettings('countries');
+        $settings_regions = $this->bxb->getSettings('regions');
         $settings_cities = $this->bxb->cities;
-        $settings_region = $this->bxb->region;
+
+        if (empty($settings_countries)) {
+            $settings_countries = array_flip(boxberryShippingCountriesAdapter::getAllowedCountries());
+        }
+        $error = array_search($country, $settings_countries) === false;
 
         //If the region is enabled in the settings, then we check the region from the checkout
-        if ($settings_region && $region != $settings_region) {
+        if (!$error && !empty($settings_regions[$country])
+            && array_search($region, $settings_regions[$country]) === false
+        ) {
             $error = true;
         }
 
@@ -84,7 +90,7 @@ class boxberryShippingCalculateValidate
         if (!$error && $settings_cities) {
             $settings_city_list = explode(',', $settings_cities);
 
-            $found = boxberryShippingCalculateHelper::findRusCityName($city, $settings_city_list);
+            $found = boxberryShippingCalculateHelper::findCityName($city, $settings_city_list);
             if (!$found) {
                 $error = true;
             }

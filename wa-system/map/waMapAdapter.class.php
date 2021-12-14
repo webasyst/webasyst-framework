@@ -4,6 +4,10 @@ abstract class waMapAdapter
 {
     protected $controls = array();
     protected $settings = null;
+    protected $env = null;
+
+    const FRONTEND_ENVIRONMENT = 'frontend';
+    const BACKEND_ENVIRONMENT = 'backend';
 
     /**
      * @var waAppSettingsModel
@@ -89,10 +93,10 @@ abstract class waMapAdapter
         $default = array(
             'instance'            => & $this,
             'title_wrapper'       => '%s',
-            'description_wrapper' => '<br><span class="hint">%s</span>',
+            'description_wrapper' => wa()->whichUI() == '2.0' ? '<p class="hint">%s</p>' : '<br><span class="hint">%s</span>',
             'control_wrapper'     => '
 <div class="field">
-    <div class="name">%s</div>
+    <div class="name' . ( wa()->whichUI() == '2.0' ? ' for-input' : '') .'">%s</div>
     <div class="value">%s%s</div>
 </div>
 ',
@@ -102,7 +106,6 @@ abstract class waMapAdapter
         unset($params['options']);
 
         $params = array_merge($default, $params);
-
         foreach ($this->controls as $name => $row) {
             $row = array_merge($row, $params);
             if (isset($options[$name])) {
@@ -120,14 +123,23 @@ abstract class waMapAdapter
 
     protected function getSettingsKey()
     {
-        return sprintf('map_adapter_%s', $this->getId());
+        $map_adapter_environment = 'map_adapter_%s';
+        if (wa()->getEnv() == 'backend' && (is_null($this->env) || $this->env == self::BACKEND_ENVIRONMENT)) {
+            $map_adapter_environment = 'backend_' . $map_adapter_environment;
+        }
+
+        return sprintf($map_adapter_environment, $this->getId());
     }
 
     protected function geocodingAllowed($allowed = null)
     {
         $sm = self::getSettingsModel();
         $app_id = 'webasyst';
-        $name = 'geocoding.'.$this->getId();
+        $env = '';
+        if (wa()->getEnv() == 'backend') {
+            $env = 'backend.';
+        }
+        $name = $env . 'geocoding.' . $this->getId();
         if ($allowed === null) {
             $last_geocoding = $sm->get($app_id, $name, 0);
             return ((time() - $last_geocoding) >= 3600);
@@ -153,30 +165,30 @@ abstract class waMapAdapter
 
     public function getSettings($name = null)
     {
-        if ($this->settings === null) {
+        if (!isset($this->settings[$this->env])) {
             $settings = self::getSettingsModel()->get('webasyst', $this->getSettingsKey(), '{}');
-            $this->settings = @json_decode($settings, true);
-            foreach ($this->settings as $key => $value) {
+            $this->settings[$this->env] = @json_decode($settings, true);
+            foreach ($this->settings[$this->env] as $key => $value) {
                 #decode non string values
                 if (!is_numeric($value)) {
                     $json = json_decode($value, true);
                     if (is_array($json)) {
-                        $this->settings[$key] = $json;
+                        $this->settings[$this->env][$key] = $json;
                     }
                 }
             }
 
             $this->initControls();
             foreach ($this->controls as $key => $row) {
-                if (!isset($this->settings[$key])) {
-                    $this->settings[$key] = is_array($row) ? (isset($row['value']) ? $row['value'] : null) : $row;
+                if (!isset($this->settings[$this->env][$key])) {
+                    $this->settings[$this->env][$key] = is_array($row) ? (isset($row['value']) ? $row['value'] : null) : $row;
                 }
             }
         }
         if ($name === null) {
-            return $this->settings;
+            return $this->settings[$this->env];
         } else {
-            return isset($this->settings[$name]) ? $this->settings[$name] : null;
+            return isset($this->settings[$this->env][$name]) ? $this->settings[$this->env][$name] : null;
         }
     }
 
@@ -187,7 +199,6 @@ abstract class waMapAdapter
     public function saveSettings($settings = array())
     {
         $data = $this->getSettings();
-
         foreach ($this->controls as $name => $row) {
             if (!isset($settings[$name])) {
                 if ((ifset($row['control_type']) == waHtmlControl::CHECKBOX) && !empty($row['value'])) {
@@ -195,14 +206,14 @@ abstract class waMapAdapter
                 } elseif ((ifset($row['control_type']) == waHtmlControl::GROUPBOX) && !empty($row['value'])) {
                     $settings[$name] = array();
                 } elseif (!empty($row['control_type']) || isset($row['value'])) {
-                    $this->settings[$name] = isset($row['value']) ? $row['value'] : null;
+                    $this->settings[$this->env][$name] = isset($row['value']) ? $row['value'] : null;
                     unset($data[$name]);
                 }
             }
         }
 
         foreach ($settings as $name => $value) {
-            $this->settings[$name] = $value;
+            $this->settings[$this->env][$name] = $value;
             // save to db
             $data[$name] = is_array($value) ? json_encode($value) : $value;
         }
@@ -231,4 +242,17 @@ abstract class waMapAdapter
      * @return string
      */
     abstract protected function getByLatLng($lat, $lng, $options = array());
+
+    /**
+     * @param string $env
+     */
+    public function setEnvironment($env = self::FRONTEND_ENVIRONMENT)
+    {
+        $this->env = $env === self::FRONTEND_ENVIRONMENT ? self::FRONTEND_ENVIRONMENT : self::BACKEND_ENVIRONMENT;
+    }
+
+    public function getEnvironment()
+    {
+        return $this->env;
+    }
 }

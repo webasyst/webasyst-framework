@@ -12,9 +12,18 @@ var ContentRouter = ( function($) {
         that.base_href = (options["base_href"] || null);
         that.api_enabled = !!(window.history && window.history.pushState);
 
+        // METHODS
+        that.onLoad = (typeof options["onLoad"] === "function" ? options["onLoad"] : function() {});
+
         // DYNAMIC VARS
         that.xhr = false;
         that.is_enabled = true;
+
+        // predicate that says ignore routing by this router - for example if we want turn of whole design redactor section be handled by this router
+        that.ignore = options.ignore;
+        if (typeof that.ignore !== "function") {
+            delete that.ignore
+        }
 
         // INIT
         that.initClass();
@@ -53,6 +62,12 @@ var ContentRouter = ( function($) {
         var full_app_url = window.location.origin + that.app_url;
 
         $(document).on("click", "a", function(event) {
+
+            // ignore routing
+            if (that.ignore && that.ignore()) {
+                return;
+            }
+
             var $link = $(this),
                 href = $link.attr("href");
 
@@ -77,12 +92,20 @@ var ContentRouter = ( function($) {
 
         // Click on header app icon
         $("#wa-header").on("click", "a", function(event) {
+            // ignore routing
+            if (that.ignore && that.ignore()) {
+                return;
+            }
             event.stopPropagation();
         });
 
         // Click on header app icon
         if (that.api_enabled) {
             window.onpopstate = function(event) {
+                // ignore routing
+                if (that.ignore && that.ignore()) {
+                    return;
+                }
                 event.stopPropagation();
                 that.onPopState(event);
             };
@@ -103,6 +126,7 @@ var ContentRouter = ( function($) {
 
         if (that.xhr) {
             that.xhr.abort();
+            $(document).trigger("wa_abort");
         }
 
         $(document).trigger('wa_before_load', {
@@ -115,8 +139,21 @@ var ContentRouter = ( function($) {
             url: content_uri,
             dataType: 'html',
             global: false,
-            cache: false
-        }).done(function(html) {
+            cache: false,
+            xhr: function () {
+                let xhr = new XMLHttpRequest();
+
+                xhr.addEventListener("progress", function (event) {
+                    $(document).trigger("wa_loading", event);
+                }, false);
+
+                xhr.addEventListener("abort", function (event) {
+                    console.log("abort", event);
+                }, false);
+
+                return xhr;
+            }
+        }).done(function (html) {
             if (that.api_enabled && !unset_state) {
                 history.pushState({
                     reload: true,               // force reload history state
@@ -124,12 +161,18 @@ var ContentRouter = ( function($) {
                 }, "", content_uri);
             }
 
-            that.setContent( html );
-            that.animate( false );
+            that.setContent(html);
+            that.animate(false);
             that.xhr = false;
-
-            $(document).trigger("wa_loaded");
-        }).fail(function(data) {
+            setTimeout(function() {
+                that.onLoad(that);
+                $(document).trigger("wa_loaded");
+            }, 0);
+        }).fail(function (data) {
+            console.log('Error loading data from ', content_uri, data);
+            setTimeout(function() {
+                $(document).trigger("wa_loaded");
+            }, 0);
             if (data.responseText) {
                 console.log(data.responseText);
             }

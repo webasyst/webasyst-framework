@@ -110,7 +110,7 @@ class blogImportPluginLjTransport extends blogImportPluginXmlrpcTransport
 
     private static function parse_lj_text($text)
     {
-        $text = preg_replace_callback('|<(/?[A-Z]+)|', create_function('$match', 'return "<" . strtolower( $match[1] );'), $text);
+        $text = preg_replace_callback('|<(/?[A-Z]+)|', wa_lambda('$match', 'return "<" . strtolower( $match[1] );'), $text);
 
         // XHTMLize some tags
         $text = str_replace('<br>', '<br />', $text);

@@ -37,6 +37,7 @@
     <meta name="description" content="{$wa->meta('description')|escape}" />
 
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
+    <link rel="icon" href="/favicon.ico"/>
     <link rel="shortcut icon" href="/favicon.ico"/>
     {if $wa->blog}
         <!-- rss -->
@@ -46,7 +47,6 @@
 
     <!-- css -->
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    {if $wa->shop && $wa->shop->currency() == 'RUB'}<link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
     {if $theme_settings.font_family|strstr:'_google_'}
         {if $theme_settings.font_family|strstr:'fira'}{$_real_font_name = 'Fira+Sans:400,500,700,400italic,500italic,700italic'}{/if}
@@ -180,7 +180,8 @@
 
                         <div class="column wa-flex-box middle">
                             {$_hide_cart = $wa->globals("hideCart")}
-                            {if $wa->shop && empty($_hide_cart)}
+                            {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
+                              && !empty($theme_settings.show_cart) && empty($_hide_cart)}
                                 <!-- cart -->
                                 {$cart_total = $wa->shop->cart->total()}
                                 <div id="cart" class="cart{if !$cart_total} empty{/if}">

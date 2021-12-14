@@ -8,7 +8,7 @@
     {assign var="depth" value=-1}
     {foreach $comments as $comment}
         {if $comment.depth > $depth}
-            <ul class="menu-v with-icons">
+            <ul class="menu-v with-icons menu">
         {else if $comment.depth < $depth}
             {assign var="loop" value=$depth-$comment.depth}
             {section name="end-comment" loop=$loop}
@@ -20,24 +20,124 @@
         {assign var="depth" value=$comment.depth}
         <li id="comment-{$comment.id}">{include file='./Comment.html' inline}
     {foreachelse}
-        <ul class="menu-v with-icons" style="display:none;"><li>
+        <ul class="menu-v with-icons menu" style="display:none;"><li>
     {/foreach}
     {section name="end-comment" loop=$depth}
         </li></ul>
     {/section}
     </li></ul>
 
-    <h4><a href="javascript:void(0);" class="inline-link p-comment-reply"><b><i>[`Add comment`]</i></b></a></h4>
-    <ul class="menu-v with-icons">
+    <h4><a href="javascript:void(0);" class="p-comment-reply">[`Add comment`]</a></h4>
+    <ul class="menu-v with-icons menu">
         <li id="add-comment-form-acceptor">
             {include file='./AddCommentForm.html' photo_id=$photo_id inline}
         </li>
     </ul>
 </div>
 <script type="text/javascript">
-try{
-    $.photos.comments_plugin.updateSidebarCounter({$comments_count}, {$comments_count_new});
-}catch(e){
-    ;
-}
+    $(function() {
+        var STATUS_DELETED = '{photosCommentModel::STATUS_DELETED}',
+            STATUS_PUBLISHED = '{photosCommentModel::STATUS_PUBLISHED}';
+
+        // list of all comments
+        $.photos.commentsAction = function () {
+            $.photos.initClearance();
+            var url = '?plugin=comments&module=backend&action=list';
+            $.photos.load(url, function() {
+                var offset = null;
+                $(window).lazyLoad({
+                    container: '#comment-list',
+                    load: function() {
+                        offset = offset || $('#comment-list li').length;
+                        $(window).lazyLoad('sleep');
+                        $.post(url, { offset : offset },
+                            function (html) {
+                                var div = $('<div><'+'/div>').append(html),
+                                    comment_list = div.find('#comment-list li');
+
+                                if (!comment_list.length) {
+                                    $(window).lazyLoad('stop');
+                                    return;
+                                }
+                                $('#comment-list').append(comment_list);
+                                offset += comment_list.length;
+                                $(window).lazyLoad('wake');
+                                div.remove();
+                            },
+                            'html'
+                        );
+                    }
+                });
+            });
+        }
+
+        // reply or add new comment
+        $('.p-comment-reply, .p-comment-delete, .p-comment-restore')
+            .on('click',
+                function() {
+                    var form = $('#add-comment-form'),
+                        self = $(this),
+                        li = self.parents('li:first'),
+                        comment_id = (li.attr('id') || '').replace('comment-', '') || 0;
+
+                    if (self.hasClass('p-comment-reply')) {
+                        $.photos.comments_plugin.prepareAddingForm.call(self, form, comment_id);
+                    } else if (self.hasClass('p-comment-delete')) {
+                        deleteComment(comment_id);
+                    } else if (self.hasClass('p-comment-restore')) {
+                        restoreComment(comment_id);
+                    }
+                }
+            );
+
+        function deleteComment(comment_id)
+        {
+            $.post('?plugin=comments&module=backend&action=changeStatus&id=' + comment_id, { status: STATUS_DELETED },
+                function(r) {
+                    if (r.status == 'ok') {
+                        var comment_li = $('#comment-' + comment_id),
+                            comment_div = comment_li.find('div:first');
+                        comment_div.addClass('p-delete');
+                        comment_div.find('.p-comment-delete').hide();
+                        comment_div.find('.p-comment-restore').show();
+                    }
+                },
+                'json');
+        }
+
+        function restoreComment(comment_id)
+        {
+            $.post('?plugin=comments&module=backend&action=changeStatus&id=' + comment_id, { status: STATUS_PUBLISHED },
+                function(r) {
+                    if (r.status == 'ok') {
+                        var comment_li = $('#comment-' + comment_id),
+                            comment_div = comment_li.find('div:first');
+                        comment_div.removeClass('p-delete');
+                        comment_div.find('.p-comment-delete').show();
+                        comment_div.find('.p-comment-restore').hide();
+                    }
+                },
+                'json');
+        }
+
+        // add comment action
+        $('#comments-block').on('click', '#add-comment-button', function() {
+            $.photos.comments_plugin.addComment();
+            return false;
+        });
+        $.photos.comments_plugin.addHotkeyHandler(
+            $('#comment-text'),
+            'ctrl+enter',
+            function() {
+                $.photos.comments_plugin.addComment();
+                return false;
+            }
+        );
+    });
+
+    try{
+        $.photos.comments_plugin.updateSidebarCounter({$comments_count}, {$comments_count_new});
+    }catch(e){
+        console.error(e);
+    }
 </script>

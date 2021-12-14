@@ -268,12 +268,13 @@ class waContactRightsModel extends waModel {
     }
 
     /**
-     * Return array ids of users who have access right to given application
+     * Return array ids of users (wa_contact.is_user >= 0) who have access right to given application
      *
      * @param string $app_id
      * @param string $name
      * @param int $value minimal user rights
      * @return array
+     * @throws waDbException
      */
     public function getUsers($app_id, $name = 'backend', $value = 1)
     {
@@ -290,11 +291,20 @@ class waContactRightsModel extends waModel {
                     LEFT JOIN wa_user_groups g ON r.group_id = g.group_id
                 WHERE (r.group_id < 0 OR g.contact_id IS NOT NULL)
                     AND (".join(' OR ', $conditions).")";
-        return $this->query($sql, array(
+
+        $contact_ids = $this->query($sql, array(
             'app_id' => $app_id,
             'name' => $name,
             'value' => $value,
         ))->fetchAll(null, true);
+
+        if (!$contact_ids) {
+            return [];
+        }
+
+        $sql = "SELECT id FROM `wa_contact` WHERE id IN(:ids) AND is_user >= 0";
+        return $this->query($sql, ['ids' => $contact_ids])->fetchAll(null, true);
+
     }
 
     /**

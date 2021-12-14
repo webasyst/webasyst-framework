@@ -1,0 +1,521 @@
+.t-profile-page
+    background #fff
+
+    .shadowed
+        border-width 1px 1px 0
+        background #fff
+
+    .t-profile
+        background: #cec;
+
+        .t-userpic
+            border: 3px solid #fff;
+            width: 144px
+            height: 144px
+
+        .t-profile-actions
+            padding 5px 0
+
+            .menu-h
+                & > li
+                    margin-left 10px
+                    margin-right 0
+
+                    &:first-child
+                        margin-left 0
+
+        .profile.image144px
+            min-height 170px
+
+            .image
+                &:hover
+                    .wa-contact-photo-buttons
+                        .photo-change-link
+                            visibility: visible
+
+                .wa-contact-photo-buttons
+                    position: relative
+                    margin 5px 0 0
+                    text-align: center
+
+                    a
+                        color: #888
+
+                        &:hover
+                            color: #dd3f1a
+
+                    .photo-change-link
+                        font-size: 0.8em
+                        visibility: hidden
+
+            .details
+                margin-left: 166px;
+
+                h1
+                    margin 0
+
+                p
+                .line
+                    margin .5em 0
+
+                    &:first-child
+                        margin-top 0
+
+                    &:last-child
+                        margin-bottom 0
+
+                .t-event-wrapper
+                    .t-event-block
+                        display: inline-block;
+                        width: auto;
+                        padding 0 $pad
+
+                .menu-v
+                    & > li
+                        margin-top .5em
+
+                        &:first-child
+                            margin-top 0
+
+.waid-login
+    display inline-flex
+    align-items center
+    margin .5em 0
+
+    .waid-auth-link
+        display: inline-flex
+        justify-content: center
+        align-items: center
+        font-weight: 600
+        font-size: 16px
+        color: #000
+        user-select: none
+        background-color: #fff
+        border: .0625em solid rgba(136, 136, 136, 0.5)
+        padding: .5em
+        margin-top 22px
+        line-height: 1
+        border-radius: .25em
+        outline: 0 none
+        cursor: pointer
+        box-sizing: border-box
+        min-height: 2.5em
+        &:hover
+            color: #000!important
+        & > .icon
+            width: 1.125em
+            height: 1.125em
+            background-image: url(/wa-content/img/webasyst-wand-bold.svg);
+            background-size: 100%
+            margin-right: 0.5em
+        & + a
+            margin-left 8px
+
+.t-calendar-place
+        $actions_h = 48px
+
+        position relative
+        overflow hidden
+        padding 0 0 $actions_h
+
+        &.is-short
+            height ( $week_h * 2 ) + 26
+
+            .t-actions-wrapper
+                .t-action
+                    &.t-calendar-toggle
+                        .icon16.down
+                            transform rotate(0deg)
+
+        .t-calendar-wrapper
+            .t-labels-wrapper
+                background #cec
+
+                table
+                    .t-column
+                        color #aaa
+
+        .t-actions-wrapper
+            position absolute
+            bottom 0
+            left 0
+            width 100%
+            height $actions_h
+            background #fff
+            background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,1) 100%);
+
+            text-align center
+            font-size (13/$rem)em
+            line-height $actions_h
+            cursor pointer
+
+            .t-layout
+                table-layout fixed
+                .t-column
+                    &.right
+                        padding-right 1em
+
+            .t-action
+                display inline-block
+                vertical-align middle
+                line-height 16px
+
+                .icon16
+                    vertical-align top
+                    margin 0 4px 0 0
+
+                &.t-calendar-toggle
+                    position relative
+                    color #888
+
+                    .icon16.down
+                        position absolute
+                        top 0
+                        left -20px
+                        margin 0
+                        background transparent url("../img/icons/arrow-down.png") 50% no-repeat
+                        transform rotate(180deg)
+
+    .t-profile-tabs
+        border 1px solid #ddd
+        box-shadow: 0 2px 9px rgba(0, 0, 0, 0.2);
+
+        // hide contacts-pro tabs that don't make sense
+        [data-tab-id="events"], [data-tab-id="notes"], [data-tab-id="pro-plugin"]
+            display: none;
+
+.t-activity-wrapper
+    .t-no-activity
+        padding 1em
+
+    .t-activity-list
+        margin 0
+        padding 0 0 0 12px
+        $icon_w = 16px
+        $icon_top = 13px
+        $pane_w = 2px
+        $pane_c = #ccc
+
+        & > li
+            list-style none
+
+        .t-space-wrapper
+            position relative
+            border-left $pane_w dashed $pane_c
+            padding 10px 0 10px 20px
+            margin 0 0 0 10px
+            height 36px
+
+        .t-month-wrapper
+            margin 20px 0 4px
+
+            & + .t-activity-item
+                &:before
+                    display block
+                    background #fff;
+
+        .t-activity-item
+            position relative
+            border-left $pane_w solid $pane_c
+            padding 10px 0 10px 20px
+            margin 0 0 0 10px
+
+            &:before
+                display none
+                content ""
+                position absolute
+                top 0
+                left (-($pane_w))
+                width $pane_w
+                height ( $icon_top + ($icon_w/2))
+
+            &.is-first
+                &:before
+                    display block
+                    background #fff;
+
+            &.is-last
+                border-color transparent
+                &:before
+                    display block
+                    background $pane_c;
+
+            &:last-child
+                border-color transparent
+                &:before
+                    display block
+                    background $pane_c;
+
+            &.is-last.is-first
+                border-color transparent
+                &:before
+                    display none
+
+            &:first-child
+                $_lift = 16px
+                padding-top (10 + $_lift)
+
+                &.is-last
+                    &:before
+                        height ( $icon_top + ($icon_w/2) ) + $_lift
+
+                .t-activity-point
+                    top (13 + $_lift)
+
+            .t-activity-point
+                position absolute
+                top $icon_top
+                left (($icon_w + $pane_w)/-2)
+                width $icon_w
+                height $icon_w
+                border-radius 50%
+                background #f8f8f8
+                border 1px solid rgba(0,0,0,.05)
+                box-sizing border-box
+
+            .t-activity-block
+                .t-datetime
+                    margin: 4px 0 0
+
+                .t-app
+                .t-username
+                .t-action
+                .activity-target
+                    display inline
+                    vertical-align baseline
+                    box-sizing border-box
+                    margin 0 4px 0 0
+
+                .t-app
+                    display inline-block
+                    padding: 3px 6px
+                    border-radius 2px
+                    border: 1px solid rgba(0,0,0,.05)
+                    color: #fff
+
+                .activity-body
+                    margin 4px 0 0
+                    p
+                        margin: .5em 0 0
+
+                        &:first-child
+                            margin-top 0
+
+                .activity-target
+                    font-weight: bold
+
+                .activity-photo-wrapper
+                    margin: 6px 0 0
+                    padding 0
+                    list-style none
+
+                    .activity-photo-list
+                        .photo-item
+                            display inline-block
+                            vertical-align top
+                            width: 96px
+                            margin: 2px 4px 2px 0
+                            padding 0
+                            text-align center
+
+                            img
+                                display inline-block
+                                vertical-align middle
+                                max-width 100%
+                                max-height 96px
+                                box-sizing border-box
+                                border-radius 2px
+
+    .t-paging-wrapper
+        margin 0
+        padding 1em
+        background #fff
+        color #888
+
+        .icon16
+            position relative
+            top -1px
+            margin 0 4px 0 0
+
+.c-checkbox-menu-container
+    display: inline-block
+    overflow: hidden
+    min-width: 200px
+    width: 65%
+    height: 8.3em
+    background: #fafafa
+    border-color: #aaa #eee #eee #aaa
+    border-style: solid
+    border-width: 1px
+
+    div
+        overflow: auto;
+        overflow-x: hidden;
+        height: 100%;
+
+    ul.menu-v
+        margin:8px;
+
+.c-checkbox-menu li
+    padding-left 23px !important
+    position relative
+
+    input
+        position absolute
+        left 6px
+        top 4px
+
+    label
+        padding 0 .25em
+
+.t-external-calendar-page
+    line-height 1.4em
+
+    h1
+        margin 0 0 32px
+
+    .line
+        margin .5em 0 0
+
+        &:first-child
+            margin-top 0
+
+    .t-actions
+        margin 2em 0 0
+
+    .profile
+        margin 2em 0 0
+        display table
+
+        &.image32px
+            .image
+                width 32px
+
+        .image
+        .details
+            float: none;
+            display table-cell
+            vertical-align: middle;
+            margin: 0;
+            min-height: auto;
+
+        .image
+            padding-right 1em
+            img
+                width 100%
+                height auto
+
+    span
+    a
+        .icon16
+            vertical-align top
+            margin 0 4px 0 0
+
+    .t-html
+        overflow hidden
+
+    .t-date
+        font-size: 12px;
+        color #aaa
+
+    .t-plugin-icon
+        vertical-align top
+        margin 0 4px 0 0
+
+    .t-calendar-name
+        display inline-block
+        padding 0 4px;
+        border-radius 2px
+
+.t-edit-external-calendar-page
+    form
+        overflow visible
+
+    h1
+        margin 0 0 32px
+
+    .fields
+        float none
+        margin 2em 0 0
+
+    .line
+        margin .5em 0 0
+
+        &:first-child
+            margin-top 0
+
+    .t-date
+        font-size: 12px;
+        color #aaa
+
+    .t-html
+        overflow hidden
+        line-height 1.5em
+
+    .t-buttons-block
+        margin 2em 0 0
+
+    .t-calendar-toggle
+        & > li
+            margin 0
+            padding 0
+            line-height 1.25em
+            display block
+
+            &:hover
+                background transparent
+
+        .t-selected-item
+            display inline-block
+            position relative
+            padding 0 28px 0 0
+            margin 0
+            max-width: 100%;
+            box-sizing border-box
+            white-space nowrap
+            text-overflow ellipsis
+            overflow: hidden
+            color $link_c
+
+            &:hover
+                color $link_c !important
+
+            .is-bold
+                font-weight bold
+
+            .icon16
+                position relative
+                top 3px
+                margin-right 5px
+                vertical-align baseline
+
+            &:after
+                $_icon_w = 8px
+                $_icon_h = 6px
+
+                content: "";
+                position: absolute;
+                top: 50%;
+                right: 15px;
+                width: 0;
+                height: 0;
+                margin (-($_icon_h/4)) (-($_icon_w/2)) 0 0
+                border solid transparent
+                border-width $_icon_h ($_icon_w/2)
+                border-top-color #7c878c
+
+        .menu-v
+            width: 250px
+            max-height 200px
+            overflow auto
+
+            li
+                a
+                    padding: 6px 8px 6px 24px;
+                    margin: -6px -8px -6px -24px;
+
+                    b
+                        font-weight normal
+
+                    i
+                        font-style normal

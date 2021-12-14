@@ -1,0 +1,135 @@
+{capture assign='installer_sidebar'}{include file="./BackendStoreSidebar.html" inline}{/capture}
+
+{if $sidebar_only}
+
+    {* Installer Sidebar *}
+    {$installer_sidebar}
+
+{else}
+
+<!DOCTYPE html>
+<html>
+<head>
+    {* META *}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{$title|default:$wa->appName()} — {$wa->accountName()}</title>
+
+    {* CSS *}
+    {$wa->css()}
+    <link href="{$wa_app_static_url}css/app.installer.css?v={$wa->version()}" rel="stylesheet">
+    <link href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.autocomplete.css" rel="stylesheet" type="text/css" />
+
+    {* JS *}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+    <script defer src="{$wa_app_static_url}fonts/fontawesome/fontawesome-all.min.js?v={$wa->version()}"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.contentrouter.js?v={$wa->version()}"></script>
+
+    {wa_js}
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+    {/wa_js}
+
+</head>
+<body>
+
+<div id="wa">
+
+    {* WA Header *}
+    {$wa->header()}
+
+    <div id="wa-app">
+
+        <section class="flexbox wrap-mobile vertical-mobile">
+            {* Installer Sidebar *}
+            <div
+                class="sidebar hide-scrollbar flexbox mobile-friendly width-19rem"
+                id="js-app-sidebar"
+            >
+                {$installer_sidebar}
+            </div>
+
+            {* Installer Content (Store iframe and native app pages) *}
+            <div class="content hide-scrollbar blank">
+
+                {if !empty($messages)}
+                    {foreach $messages as $message}
+                        <div class="box">
+                            <div class="alert {$message.result}{if $message.result == 'fail'} danger{/if}">
+                                {if $message.result == 'success'}
+                                <i class="fas fa-check-circle"></i>
+                                {elseif $message.result == 'fail'}
+                                <i class="fas fa-times-circle"></i>
+                                {/if}
+                                {$message.text|escape}
+                            </div>
+                        </div>
+                    {/foreach}
+                {/if}
+
+                <div class="js-installer-content">
+                    {$content}
+                </div>
+            </div>
+
+            <script>
+              ( function($) {
+                // $.wa.content = new ContentRouter({
+                //   $content: $('.js-installer-content'),
+                //   app_url: {"`$wa_backend_url`webasyst/installer/"|json_encode}
+                // });
+                // $('.js-router').on('click', function(e) {
+                //   e.preventDefault();
+                //
+                //   const href = $(this)[0].href;
+                //   const content = $.wa.content.load(href);
+                //
+                //   const waInstallerLoading = $.waLoading();
+                //   $(document)
+                //     .on("wa_before_load", function() {
+                //       console.log('1')
+                //       waInstallerLoading.show();
+                //     })
+                //     .on("wa_loading", function(event, xhr_event) {
+                //       $('.js-installer-content').html(content.responseText)
+                //       console.log('2')
+                //       if (xhr_event.lengthComputable) {
+                //         let percent = (xhr_event.loaded / xhr_event.total) * 100;
+                //         waInstallerLoading.set(percent);
+                //       }
+                //     })
+                //     .on("wa_abort", function() {
+                //       console.log('3')
+                //       waInstallerLoading.abort();
+                //     })
+                //     .on("wa_loaded", function() {
+                //       console.log('4')
+                //       waInstallerLoading.done();
+                //     });
+                //
+                //   $('.js-router').removeClass('selected');
+                //   $(this).addClass('selected');
+                // })
+
+                const $sidebar = $('#js-app-sidebar');
+                $sidebar.waShowSidebar({
+                  direction: "down"
+                });
+              })(jQuery);
+
+            </script>
+
+        </section>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
+{/if}

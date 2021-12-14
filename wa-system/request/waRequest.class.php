@@ -22,6 +22,16 @@ class waRequest
     const TYPE_ARRAY_INT = 'array_int';
     const TYPE_ARRAY = 'array';
 
+    const METHOD_GET = 'get';
+    const METHOD_HEAD = 'head';
+    const METHOD_POST = 'post';
+    const METHOD_PUT = 'put';
+    const METHOD_DELETE = 'delete';
+    const METHOD_CONNECT = 'connect';
+    const METHOD_OPTIONS = 'options';
+    const METHOD_TRACE = 'trace';
+    const METHOD_PATCH = 'patch';
+
     // overriden in unit tests
     protected static $env_vars = array();
 
@@ -230,7 +240,7 @@ class waRequest
      */
     public static function isMobile($check = true)
     {
-        if ($check) {
+        if ($check && wa()->whichUI() === '1.3') {
             if (self::get('nomobile') !== null) {
                 if (self::get('nomobile')) {
                     waSystem::getInstance()->getStorage()->write('nomobile', true);
@@ -313,7 +323,7 @@ class waRequest
     /**
      * Returns the type of user request.
      *
-     * @return string 'post' or 'get'
+     * @return string self::METHOD_* constant
      */
     public static function getMethod()
     {

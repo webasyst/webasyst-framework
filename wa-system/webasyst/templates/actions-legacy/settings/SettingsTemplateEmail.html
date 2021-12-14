@@ -1,0 +1,156 @@
+{$_cheat_sheet_name = "wa-settings-email-templates"}
+
+<div class="s-email-templates-page" id="s-email-templates-page">
+    <div class="s-layout">
+        {* SIDEBAR *}
+        <div class="s-column sidebar left250px">
+            {include file="./sidebar/SidebarEmail.html" inline}
+        </div>
+        {* CONTENT *}
+        <div class="s-column content bordered-left" id="s-email-template-wrapper">
+            {if $channel->getId()}
+            <form class="s-template-form" action="?module=settingsTemplateEmailSave&id={$channel->getId()|escape}">
+                {$_template = $channel->getParams('template')|default:[]}
+                <div class="s-email-templates">
+                    <div class="blank block double-padded">
+                        <h1 class="s-template-name">{$templates_list[$template_id]}</h1>
+                        <div class="field-group">
+                            <div class="field">
+                                <div class="name">[s`Sender`]</div>
+                                <div class="value">
+                                    {$channel->getAddress()|escape}
+                                    <div class="hint">{sprintf('[`<a class="%s" href="javascript:void(0);">Change sender address</a> <i class="icon10 settings"></i> for entire template group`]', 'js-inline-settings-link')}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            {* Subject *}
+                            <div class="field">
+                                <div class="name">[s`Letter subject`]</div>
+                                <div class="value">
+                                    <input class="js-subject" type="text" name="data[subject]" value="{$template.subject|escape}" />
+                                </div>
+                            </div>
+                            {* Text *}
+                            <div class="field">
+                                <div class="name">
+                                    [s`Text of the letter`]
+                                    <div class="hint">HTML + Smarty</div>
+                                </div>
+                                <div class="value">
+                                    <textarea class="js-template-text" name="data[text]">{$template.text|escape}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="data[template]" value="{$template_id|escape}" />
+                    </div>
+
+                    {* FIXED Buttons *}
+                    <div class="s-form-buttons blank">
+                        <div class="s-footer-actions block double-padded js-footer-actions">
+                            <div class="fixed">
+                                {* Save *}
+                                <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                                {* Cancel *}
+                                <span class="c-hidden">
+                                    <span style="margin: 0 4px;">[s`or`]</span>
+                                    <a href="{$wa_backend_url}webasyst/settings/email/template/{$channel->getId()|escape}/{$template_id}/" class="js-cancel">[s`cancel`]</a>
+                                </span>
+                                <i class="icon16 loading s-loading" style="display: none;"></i>
+                                {* Check sending *}
+                                <input class="button js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
+                                {* Cheat sheet *}
+                                <div class="s-cheat-sheet-wrapper js-cheat-sheet-wrapper"></div>
+                                {* Default template *}
+                                <div class="s-channel-actions">
+                                    <a href="javascript:void(0);" class="inline-link js-reset" title="[s`Restore default text`]">
+                                        <i class="icon16 broom"></i>
+                                        <b class="hide-on-small-screens"><i>[s`Reset`]</i></b>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {else}
+                <div class="s-no-templates">
+                    {if !empty($channels)}
+                        [s`Templates not found`]
+                    {else}
+                        [s`No templates`]
+                    {/if}
+                </div>
+            {/if}
+        </div>
+    </div>
+</div>
+
+{* Check email template dialog *}
+<div class="dialog s-email-check-template-dialog" id="s-email-check-template-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form action="?module=settingsTemplateCheckSending">
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h2>[s`Checking the sending of email messages`]</h2>
+                    <div class="field-group">
+                        {* Recipient *}
+                        <div class="field">
+                            <div class="name">[s`Recipient's email`]</div>
+                            <div class="value">
+                                <input type="email" name="data[recipient]" value="{$user->get('email', 'default')|escape}" placeholder="john@example.com" />
+                            </div>
+                        </div>
+                        <input type="hidden" name="data[channel_id]" value="{$channel->getId()|escape}" />
+                        <input type="hidden" name="data[template][{$template_id|escape}]" value="on" />
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button blue js-submit-button" value="[s`Send`]">
+                    &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="cancel">[s`cancel`]</a>
+                    <i class="icon16 loading s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{* Message about the requirement to save changes *}
+<div class="dialog" id="s-email-requirement-to-save-changes-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h2>[s`Save your template`]</h2>
+                <p>[s`To check whether you send email message, you must save the changes you made.`]</p>
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <a href="javascript:void(0);" class="button cancel">[s`Close`]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function ($) {
+        new WASettingsEmailTemplate({
+            $wrapper: $("#s-email-template-wrapper"),
+            $email_check_dialog: $("#s-email-check-template-dialog"),
+            $requirement_to_save: $("#s-email-requirement-to-save-changes-dialog"),
+            cheat_sheet_name: {$_cheat_sheet_name|json_encode},
+            template_id: {$template_id|json_encode},
+            channel_id: {$channel->getId()|json_encode},
+            default_template: {$default_template|json_encode}
+        });
+    })(jQuery);
+</script>

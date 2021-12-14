@@ -164,6 +164,18 @@ HTML
         'description'  => 'Укажите максимальный вес в килограммах',
         'control_type' => waHtmlControl::INPUT,
     ),
+    'max_volume'      => array(
+        'value'        => '120',
+        'title'        => 'Максимальный объем посылки',
+        'description'  => 'Укажите сумму длины, ширины и высоты в сантиметрах. Если общий размер будет превышен, то будет добавлена надбавка за негабарит',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+    'max_side_length'      => array(
+        'value'        => '60',
+        'title'        => 'Максимальная длина стороны посылки',
+        'description'  => 'Укажите максимальную длину стороны посылки в сантиметрах. Если любая из сторон посылки будет превышать указанное значение, то будет добавлена надбавка за негабарит',
+        'control_type' => waHtmlControl::INPUT,
+    ),
 
     'complex_calculation_weight'  => array(
         'value'        => '10',

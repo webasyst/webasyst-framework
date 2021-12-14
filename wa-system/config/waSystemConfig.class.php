@@ -24,7 +24,8 @@ class waSystemConfig
 
     protected static $system_options = array(
         'backend_url' => 'webasyst',
-        'mod_rewrite' => true
+        'mod_rewrite' => true,
+        'cache_versioning' => true,
     );
 
     public static $time = null;
@@ -33,6 +34,7 @@ class waSystemConfig
 
     protected static $helpers = false;
 
+    protected $cache = null;
 
     public function __construct($environment = null, $root_path = null)
     {
@@ -336,8 +338,9 @@ class waSystemConfig
     {
         $path = $this->getPath('config', $file);
         if (file_exists($path)) {
-            $result = include($path);
-            if ($result === 1) {
+            $config_cache = waConfigCache::getInstance();
+            $result = $config_cache->includeFile($path);
+            if (empty($result)) {
                 return $default;
             }
             return $result;
@@ -537,6 +540,36 @@ class waSystemConfig
         return waLocale::getAll($type);
     }
 
+    public function getCache($type = 'default')
+    {
+        if ($this->cache === null) {
+            $file_path = $this->getPath('config', 'cache');
+            if (file_exists($file_path)) {
+                $cache_config = include($file_path);
+                if (isset($cache_config[$type])) {
+                    $options = $cache_config[$type];
+                    $cache_type = $options['type'];
+                    $cache_class = 'wa'.ucfirst($cache_type).'CacheAdapter';
+
+                    try {
+                        $cache_adapter = new $cache_class($options);
+                        if ($this instanceof waAppConfig) {
+                            $this->cache = new waCache($cache_adapter, $this->application);
+                        } else {
+                            $this->cache = new waCache($cache_adapter, 'wa-system');
+                        }
+                    } catch (waException $e) {
+                        waLog::log($e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                    }
+                }
+            }
+            if (!$this->cache) {
+                $this->cache = false;
+            }
+        }
+        return $this->cache;
+    }
+
     public function clearCache()
     {
         $new_cache_dir = $old_cache_dir = waConfig::get('wa_path_cache');
@@ -600,5 +633,25 @@ class waSystemConfig
         @clearstatcache();
 
         return $clean;
+    }
+
+    /**
+     * Not documented method for only system use!
+     * In future could be deleted, so don't use it
+     * @deprecated
+     */
+    public static function whichBackendUI()
+    {
+        $default_system_ui = waSystemConfig::systemOption('ui');
+        if (!$default_system_ui) {
+            $default_system_ui = '1.3';
+        }
+        $default_system_ui = $default_system_ui === '2.0' ? '2.0' : '1.3';
+
+        $force_version = waRequest::cookie('force_set_wa_backend_ui_version');
+        if (!$force_version) {
+            $force_version = $default_system_ui;
+        }
+        return $force_version === '2.0' ? '2.0' : '1.3';
     }
 }

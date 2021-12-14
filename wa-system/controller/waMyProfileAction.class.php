@@ -12,16 +12,28 @@ abstract class waMyProfileAction extends waViewAction
     /** @var waContact */
     public $contact = null;
 
+    /**
+     * @var string waContactForm namesapce
+     */
+    protected $namespace = 'profile';
+
     public function execute()
     {
         $this->form = $this->getForm();
         $this->contact = $this->getContact();
 
+        if (waRequest::post()) {
+            $saved = $this->saveFromPost($this->form, $this->contact);
+            if ($saved) {
+                wa()->getStorage()->set('my/profile/updated', true);
+                $this->redirect(wa()->getConfig()->getRequestUrl(false, true));
+            }
+        }
+
+        // here is updated contact
         $this->form->setValue($this->contact);
 
-        $saved = waRequest::post() && $this->saveFromPost($this->form, $this->contact);
-
-        $this->view->assign('saved', $saved);
+        $this->view->assign('saved', boolval(wa()->getStorage()->getOnce('my/profile/updated')));
         $this->view->assign('contact', $this->contact);
         $this->view->assign('form', $this->form);
         $this->view->assign('user_info', $this->getFormFieldsHtml());
@@ -31,6 +43,7 @@ abstract class waMyProfileAction extends waViewAction
      * @param waContactForm $form
      * @param waContact $contact
      * @return bool
+     * @throws waException
      */
     protected function saveFromPost($form, $contact)
     {
@@ -54,29 +67,47 @@ abstract class waMyProfileAction extends waViewAction
                 }
                 waFiles::create($path);
 
-                $filename = $path.$rand.".original.jpg";
+                $filename = $path . $rand . ".original.jpg";
                 waFiles::create($filename);
                 waImage::factory($photo_file)->save($filename, 90);
 
-                $filename = $path.$rand.".jpg";
+                $filename = $path . $rand . ".jpg";
                 waFiles::create($filename);
                 waImage::factory($photo_file)->crop($square, $square)->save($filename, 90);
 
                 waContactFields::getStorage('waContactInfoStorage')->set($contact, array('photo' => $rand));
+
             } elseif (empty($data['photo'])) { // remove photo
                 $contact->set('photo', "");
             }
-            $this->form->values['photo'] = $data['photo'] = $contact->get('photo');
+
+            // just in case, may be some outer code user values array
+            $this->form->values['photo'] = $contact->get('photo');
+
+            // after saving page it is not reloaded, but waContactForm gets data from post property to render itself by html() method
+            $this->form->post['photo'] = $contact->get('photo');
         }
+
+        if (isset($data['phone'])) {
+            $this->preparePhonesBeforeSave($data['phone'], $contact->getId());
+        }
+
+        $post = $form->post;
+        $form->post = $data;
 
         // Validation
         if (!$form->isValid($contact)) {
             return false;
         }
 
+        $form->post = $post;
+
         // Password validation
         if (!empty($data['password']) && $data['password'] !== $data['password_confirm']) {
             $form->errors('password', _ws('Passwords do not match'));
+            return false;
+        } elseif (!empty($data['password']) && strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
+            $form->errors('password', _ws('Specified password is too long.'));
             return false;
         } elseif (empty($data['password']) || empty($data['password_confirm'])) {
             unset($data['password']);
@@ -84,8 +115,8 @@ abstract class waMyProfileAction extends waViewAction
         unset($data['password_confirm']);
 
         // get old data for logging
+        $old_data = [];
         if ($this->contact) {
-            $old_data = array();
             foreach ($data as $field_id => $field_value) {
                 $old_data[$field_id] = $this->contact->get($field_id);
             }
@@ -96,7 +127,10 @@ abstract class waMyProfileAction extends waViewAction
         }
 
         foreach ($data as $field => $value) {
-            $contact->set($field, $value);
+            // except photo, photo is already set
+            if ($field != 'photo') {
+                $contact->set($field, $value);
+            }
         }
         $errors = $contact->save();
 
@@ -104,7 +138,7 @@ abstract class waMyProfileAction extends waViewAction
         // show it to user. In theory it shouldn't but better be safe.
         if ($errors) {
             foreach ($errors as $field => $errs) {
-                foreach($errs as $e) {
+                foreach ($errs as $e) {
                     $form->errors($field, $e);
                 }
             }
@@ -114,14 +148,72 @@ abstract class waMyProfileAction extends waViewAction
         // get new data for logging
         $new_data = array();
         foreach ($data as $field_id => $field_value) {
-            if (!isset($errors[$field_id])) {
-                $new_data[$field_id] = $this->contact->get($field_id);
-            }
+            $new_data[$field_id] = $this->contact->get($field_id);
         }
-        
+
         $this->logProfileEdit($old_data, $new_data);
 
         return true;
+    }
+
+    /**
+     * Prepare phones before save, with take into account phone transformation and without reset existing statuses
+     * @param array $phones
+     * @param $contact_id
+     */
+    protected function preparePhonesBeforeSave(&$phones, $contact_id)
+    {
+        $phones = is_scalar($phones) ? (array)$phones : $phones;
+        if (!is_array($phones)) {
+            return;
+        }
+
+        $query = (new waContactDataModel())->select('value, status')
+            ->where("contact_id = :contact_id AND field = 'phone'", ['contact_id' => $contact_id])
+            ->order('sort')
+            ->query();
+
+        $map = [];
+        foreach ($query as $item) {
+            $result = $this->transformPhone($item['value']);
+            $phone = $result['phone'];
+            if (!isset($map[$phone])) {
+                $map[$phone] = $item['status'];
+            }
+        }
+
+        foreach ($phones as &$phone) {
+            if (is_array($phone)) {
+                $value = $phone['value'];
+                $ext = $phone['ext'];
+            } else {
+                $value = $phone;
+                $ext = '';
+            }
+
+            $result = $this->transformPhone($value);
+            $result['phone'] = waContactPhoneField::cleanPhoneNumber($result['phone']);
+
+            $status = waContactDataModel::STATUS_UNKNOWN;
+            if (isset($map[$result['phone']])) {
+                $status = $map[$result['phone']];
+            }
+
+            $phone = [
+                'value' => $result['phone'],
+                'status' => $status,
+                'ext' => $ext
+            ];
+        }
+        unset($phone);
+
+        foreach ($phones as $idx => $phone) {
+            if (!$phone['value']) {
+                unset($phones[$idx]);
+            }
+        }
+
+        $phones = array_values($phones);
     }
 
     protected function prepareAddressesBeforeSave(&$address_data)
@@ -156,6 +248,26 @@ abstract class waMyProfileAction extends waViewAction
             );
         }
         unset($address);
+    }
+
+    protected function transformPhone($phone)
+    {
+        if ($this->isValidPhoneNumber($phone)) {
+            // non-international phone try to convert to international
+            $is_international = substr($phone, 0, 1) === '+';
+            if (!$is_international) {
+                return waDomainAuthConfig::factory()->transformPhone($phone);
+            }
+        }
+        return [
+            'status' => false,
+            'phone' => $phone
+        ];
+    }
+
+    protected function isValidPhoneNumber($phone)
+    {
+        return (new waPhoneNumberValidator())->isValid($phone);
     }
 
     public function logProfileEdit($old_data, $new_data)
@@ -218,13 +330,14 @@ abstract class waMyProfileAction extends waViewAction
         }
 
         return waContactForm::loadConfig($enabled, array(
-            'namespace' => 'profile'
+            'namespace' => $this->namespace
         ));
     }
 
     /**
      * @description Get HTML with contact info (field name => field html)
      * @return array
+     * @throws waException
      */
     protected function getFormFieldsHtml()
     {
@@ -236,21 +349,38 @@ abstract class waMyProfileAction extends waViewAction
         }
         $user_info = array();
         foreach($this->form->fields as $id => $field) {
-            if (!in_array($id, array('password', 'password_confirm'))) {
-                if ($id === 'photo') {
-                    $user_info[$id] = array(
-                        'name' => _ws('Photo'),
-                        'value' => '<img src="'.$this->contact->getPhoto().'">',
-                    );
-                } else {
-                    $user_info[$id] = array(
-                        'name' => $this->form->fields[$id]->getName(null, true),
-                        'value' => $this->contact->get($id, 'html'),
-                    );
-                }
+            $result = $this->getFormFieldHtml($field);
+            if ($result) {
+                $user_info[$id] = $result;
             }
         }
         return $user_info;
+    }
+
+    /**
+     * @param waContactField $field
+     * @return array $result - if return EMPTY array that this field not passed in template as part of user info
+     *      string          $result['name'] - formatted field name
+     *      string|string[] $result['value'] - formatted field value(s)
+     * @throws waException
+     */
+    protected function getFormFieldHtml($field)
+    {
+        $id = $field->getId();
+        if (!in_array($id, array('password', 'password_confirm'))) {
+            if ($id === 'photo') {
+                return array(
+                    'name' => _ws('Photo'),
+                    'value' => '<img src="'.$this->contact->getPhoto().'">',
+                );
+            } else {
+                return array(
+                    'name' => $field->getName(null, true),
+                    'value' => $this->contact->get($id, 'html'),
+                );
+            }
+        }
+        return [];
     }
 
     public function display($clear_assign = true)

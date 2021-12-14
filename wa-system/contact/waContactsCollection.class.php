@@ -184,6 +184,7 @@ class waContactsCollection
 
         // Add required fields to select and delete fields for getting data after query
         foreach ($fields as $i => $f) {
+
             if (!$contact_model->fieldExists($f)) {
                 if ($f === 'email' || substr($f, 0, 6) === 'email.') {
                     if ($f === 'email') {
@@ -214,6 +215,8 @@ class waContactsCollection
             if (isset($required_fields[$f])) {
                 $fields[$i] = ($required_fields[$f] ? $required_fields[$f]."." : '').$f;
                 unset($required_fields[$f]);
+            } elseif ($contact_model->fieldExists($f)) {
+                $fields[$i] = 'c.' . $f;
             }
         }
 
@@ -316,6 +319,13 @@ class waContactsCollection
                                         ->where('contact_id IN (?)', array($ids))
                                         ->where('datetime_out IS NULL')
                                         ->fetchAll('contact_id');
+
+                                    $contacts_idle = (new waContactSettingsModel())->getByField([
+                                        'contact_id' => array_keys($contact_ids_map),
+                                        'app_id' => 'webasyst',
+                                        'name' => 'idle_since'
+                                    ], 'contact_id');
+
                                     foreach($data as &$v) {
                                         $v['_online_status'] = 'offline';
                                         // Ever logged in?
@@ -325,6 +335,14 @@ class waContactsCollection
                                                 // Make sure user didn't log out
                                                 if (isset($contact_ids_map[$v['id']])) {
                                                     $v['_online_status'] = 'online';
+
+                                                    // Mark as idle if idle_since record exists & is older than 60 sec
+                                                    if (isset($contacts_idle[$v['id']]) && 
+                                                        time() - strtotime($contacts_idle[$v['id']]['value']) > 60
+                                                    ) {
+                                                        $v['_online_status'] = 'idle';
+                                                    }
+
                                                 }
                                             }
                                         }
@@ -437,7 +455,7 @@ class waContactsCollection
 
                 }
 
-                $data_fields = $fields;
+                $data_fields = array_unique($fields);
 
                 foreach ($data_fields as $k => $field_id) {
                     $f = waContactFields::get($field_id);
@@ -1324,7 +1342,7 @@ class waContactsCollection
     public function getHash($params_only = false)
     {
         if ($params_only) {
-            return $this->hash[1];
+            return (isset($this->hash[1]) ? $this->hash[1] : '');
         } else {
             return $this->hash;
         }

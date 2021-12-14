@@ -1,16 +1,13 @@
 {strip}
 
-<div class="t-dialog-wrapper is-full-screen t-delete-event-popup" id="t-event-delete">
-    <div class="t-dialog-background"></div>
-    <div class="t-dialog-block">
-        <header class="t-dialog-header">
-            <h1>[`Delete this event?`]</h1>
-        </header>
-        <footer class="t-dialog-footer">
+<div class="dialog" id="t-event-delete">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <h3 class="dialog-header">[`Delete this event?`]</h3>
+        <footer class="dialog-footer">
             <div class="t-actions">
-                <input class="button red t-button js-delete-event" type="button" value="[`Delete`]">
-                <span style="margin: 0 4px;">[`or`]</span>
-                <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+                <input class="button red js-delete-event" type="button" value="[`Delete`]">
+                <a class="button light-gray js-close-dialog" href="javascript:void(0);">[`Cancel`]</a>
             </div>
         </footer>
     </div>

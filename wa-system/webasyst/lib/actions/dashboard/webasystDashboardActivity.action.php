@@ -16,15 +16,17 @@ class webasystDashboardActivityAction extends waViewAction
             unset($filters['save_filters']);
             wa()->getUser()->setSettings('webasyst', 'dashboard_activity', waRequest::post('app_id'));
         }
+
         $logs  = $this->getLogs($filters, $count);
         $this->view->assign('activity', $logs);
+        $this->view->assign('datetime_group', '');
         if ($logs && waRequest::isXMLHttpRequest()) {
             $row = reset($logs);
             $this->view->assign('datetime_group', $this->getDatetimeGroup($row['datetime']));
         }
-        if ($count == 50) {
-            $this->view->assign('activity_load_more', true);
-        }
+        $this->view->assign('activity_load_more', $count == 50);
+
+        $this->view->assign('today_users', (new webasystTodayUsers())->getGroups());
     }
 
     public function getLogs($filters = array(), &$count = null, $autoload_more = true)
@@ -77,7 +79,19 @@ class webasystDashboardActivityAction extends waViewAction
                     waLocale::loadByDomain($row['app_id']);
                 }
                 $logs = wa($row['app_id'])->getConfig()->getLogActions(true);
-                $row['action_name'] = ifset($logs[$row['action']]['name'], $row['action']);
+                if ($row['action'] == 'order_custom') {
+                    if (isset($logs[$row['action']]['name'])) {
+                        $row_params = json_decode($row['params']);
+                        $custom_action_name = isset($row_params->custom_action_name) ? $row_params->custom_action_name : $row_params;
+                        $action_name = sprintf($logs[$row['action']]['name'], $custom_action_name);
+                        $row['params'] = isset($row_params->id) ? $row_params->id : $row_params;
+                    } else {
+                        $action_name = $row['action'];
+                    }
+                    $row['action_name'] = $action_name;
+                } else {
+                    $row['action_name'] = ifset($logs[$row['action']]['name'], $row['action']);
+                }
                 if (strpos($row['action'], 'del')) {
                     $row['type'] = 4;
                 } elseif (strpos($row['action'], 'add')) {
@@ -134,14 +148,15 @@ class webasystDashboardActivityAction extends waViewAction
 
         $rows = array_slice($rows, 0, 50);
         $count = max($count, count($rows));
+
         return $rows;
     }
 
-    protected function getDatetimeGroup($datetime)
+    public function getDatetimeGroup($datetime)
     {
         $ts = strtotime($datetime);
         if (date('Y-m-d') == date('Y-m-d', $ts)) {
-            return '';
+            return _ws('Today');
         } elseif (date('Y-m-d', $ts) == date('Y-m-d', strtotime('-1 day'))) {
             return _ws('Yesterday');
         } elseif ($ts > time() - 7 * 86400) {

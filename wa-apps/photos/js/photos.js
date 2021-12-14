@@ -74,7 +74,16 @@
             } else {
                 this.dispatch();
             }
+
+            this.container = $('#content');
+            this.containerWidth = this.container.width();
+            this.containerHeight = this.container.height();
+
+            $(document).on('close', function (event) {
+                $(event.target).hide();
+            })
         },
+
         dispatch: function (hash) {
             if ($.photos.ignore_dispatch) {
                 $.photos.ignore_dispatch--;
@@ -140,6 +149,7 @@
         },
 
         ignore_dispatch: 0,
+
         forceHash: function(hash) {
             if (hash != window.location.hash) {
                 $.photos.ignore_dispatch = 1;
@@ -230,6 +240,7 @@
         beforeAnyAction: function() {},
 
         initClearance: function() {
+            $.photos.removeHeaderToolbar();
             $.photos.toggleFullScreen();
             $.photos.highlightSidebarItem();
             $.photos.hotkey_manager.unset();
@@ -280,6 +291,7 @@
         },
 
         appAction: function (app_id) {
+            console.log('unused method');
             $.photos.loadDispatch(arguments, function() {
                 $.photos.load("?module=photo&action=list&app_id=" + app_id, $.photos.onLoadPhotoList);
             });
@@ -295,10 +307,9 @@
                 waLoadPage(id);
             } else {
                 $.photos.initClearance();
-                $.photos.load('?module=pages', $.photos.onLoadPages, '<div class="content left'+$.photos_sidebar.width+'px"></div>');
+                $.photos.load('?module=pages', $.photos.onLoadPages, '');
             }
         },
-
 
         designAction: function(params) {
             $.photos.initClearance();
@@ -312,14 +323,14 @@
                         waDesignLoad(params);
                         $.photos.setTitle($_('Themes'));
                         $.photos.scrollTop();
-                    }, '<div class="content left'+$.photos_sidebar.width+'px"></div>');
+                    });
                 }
             } else {
                 $.photos.load('?module=design', function () {
                     waDesignLoad('');
                     $.photos.setTitle($_('Design'));
                     $.photos.scrollTop();
-                }, '<div class="content left'+$.photos_sidebar.width+'px"></div>');
+                });
             }
         },
 
@@ -334,14 +345,14 @@
                     waDesignLoad();
                     $.photos.setTitle($_('Themes'));
                     $.photos.scrollTop();
-                }, '<div class="content left'+$.photos_sidebar.width+'px"></div>');
+                }, '');
             }
         },
 
         pluginsAction: function(params) {
             $.photos.initClearance();
-            $('#p-sidebar li.selected').removeClass('selected');
-            $('#p-sidebar #sidebar-plugins').addClass('selected');
+            $('#js-app-sidebar li.selected').removeClass('selected');
+            $('#js-app-sidebar #sidebar-plugins').addClass('selected');
             if (!$('#wa-plugins-container').length) {
                 $.photos.load("?module=plugins");
             } else {
@@ -356,7 +367,7 @@
         loadDispatch: function(delegated_arguments, loadCollectionCallback) { // delegated_arguments is an instance of Arguments
             var args = Array.prototype.slice.call(delegated_arguments, 1);
             for (var i = 0; i < args.length; i++) {
-                if (args[i] == 'photo' && i < args.length - 1) {
+                if (args[i] === 'photo' && i < args.length - 1) {
                     this.loadPhoto(args[i + 1]);
                     return;
                 }
@@ -405,6 +416,14 @@
                 $.photos.setLazyLoad();
             }
         },
+
+        removeHeaderToolbar(){
+            const $toolbar =$('#p-toolbar.rendered');
+            if ($toolbar.length) {
+                $toolbar.closest('#wa-header').removeClass('has-toolbar').end().remove();
+            }
+        },
+
         renderPhotoListChunk: function(target, offset, options, callback) {
             var chunk  = $.photos.options.photo_list_render_chunk || 10;
             var length = $.photos.photo_stream_cache.length();
@@ -447,8 +466,6 @@
                 }
 
             }
-
-            $.Retina && $.photos.options.retina_2x_enabled && target.find('img').retina();
         },
 
         selectPhotoListView: function(view) {
@@ -463,25 +480,27 @@
                 }
             }
             //menu
-            $.photos.menu.enable('list','.'+view+'-view-menu');
-            $.photos.menu.disable('list',':not(.'+view+'-view-menu)');
+            $.photos.menu.enable('list','.' + view + '-view-menu');
+            $.photos.menu.disable('list',':not(.' + view + '-view-menu)');
             //$.photos.menu.disable('list',false,'select-photos');
             //list class
             var container = $('#photo-list');
             container.removeClass(container.attr('class'));
             switch(view) {
                 case 'thumbs':{
-                    container.addClass('thumbs li250px');
+                    container.addClass('thumbs li300px');
                     break;
                 }
                 case 'descriptions':{
                     container.addClass('p-descriptions');
                     break;
                 }
-            };
+            }
             //control
-            $('#p-block .p-content-control li.selected').removeClass('selected');
-            $('#p-block .p-content-control a[data-action="'+view+'-view"]').parents('li').addClass('selected');
+            $('#js-photos-view-toggle .selected').removeClass('selected');
+            $('#js-photos-view-toggle [data-action="'+view+'-view"]').addClass('selected');
+            $('.js-toolbar-dropdown').toggleClass('is-descriptions', view === 'descriptions')
+
         },
 
         onLoadPhotoList: function() {
@@ -493,15 +512,19 @@
                     view = 'thumbs';
                 }
                 var li = $('#album-list li[rel=' + album.id + ']');
-                li.find('.count:first').text(album.count);
+                let $count_first = li.find('.count:first');
+                $count_first.text(album.count);
+                if (album.status == 0) {
+                    $count_first.prepend('<span class="hint"><i class="fas fa-lock"></i></span>&nbsp;')
+                }
                 li.find('.count-new:first').text('');
                 $('#album-list-container').trigger('uncollapse_section', li);
 
                 // Album cover selection controller
                 if (album.edit_rights) {
-                    $('#photo-list').on('click', '.make-key-photo-link', function() {
+                    $('#photo-list, .js-photo-list').on('click', '.make-key-photo-link', function() {
                         $('#photo-list .key-photo').removeClass('key-photo');
-                        $li = $(this).closest('li').addClass('key-photo');
+                        let $li = $(this).closest('li').addClass('key-photo');
                         album.key_photo_id = $li.data('photo-id');
                         $.post('?module=album&action=keyPhoto', { album_id: album.id, photo_id: album.key_photo_id });
                     });
@@ -518,26 +541,26 @@
             $.photos.list_template = 'template-photo-'+view;
 
             $.photos.renderPhotoList();
-            $.photos.fixRightToolbar();
 
             $.photos.setTitle($('#photo-list-name').text());
             $.photos.menu.init('list');
             $.photos.selectPhotoListView(view);
 
-            $.Retina && $.photos.options.retina_2x_enabled && $('#album-thumbs-list img').retina();
+            const $toggle = $("#js-photos-view-toggle");
 
-            $('#p-block .p-content-control li a.album-view').click(function() {
-                var new_view = $(this).attr('data-action');
-                if(new_view != view) {
-                    view = new_view.replace(/-view$/,'');;
-                    $.photos.list_template = 'template-photo-'+view;
-                    $.photos.renderPhotoList();
-                    $.photos.selectPhotoListView(view);
+            $toggle.waToggle({
+                change: function(event, target, toggle) {
+                    let new_view = $(target).attr('data-action');
+                    if(new_view !== view) {
+                        view = new_view.replace(/-view$/,'');
+                        $.photos.list_template = 'template-photo-' + view;
+                        $.photos.renderPhotoList();
+                        $.photos.selectPhotoListView(view);
+                    }
                 }
-                return false;
             });
 
-            $('#photo-list .p-description div').live('click', function() {
+            $('#photo-list .js-description div, .js-description-editable').on('click', function() {
                 var self = $(this),
                     height = $(this).height(),
                     placeholder = $_('add description');
@@ -551,7 +574,7 @@
                     minSize: {
                         height: 40
                     },
-                    html: true,
+                    html: false,
                     allowEmpty: true,
                     beforeMakeEditable: function(input) {
                         var self = $(this),
@@ -559,7 +582,11 @@
                             size = self.css('font-size'),
                             line_height = self.css('line-height');
 
-                        input.css('font-size', size).css('line-height', line_height);
+                        input.css({
+                            'font-size': size,
+                            'line-height': line_height,
+                            'max-width': '100%'
+                        });
                         self.html(full_text);
 
                         var width = Math.max(self.parents('li:first').find('img').width(), self.width());
@@ -568,8 +595,8 @@
                         var button_id = this.id + '-button',
                             button = $('#' + button_id);
                         if (!button.length) {
-                            input.after('<br><input type="button" id="' + button_id + '" value="' + $_('Save') + '"> <em class="hint" id="' + this.id + '-hint">Ctrl+Enter</em>');
-                            $('#' + button_id).click(function() {
+                            input.after('<input class="button smallest" type="button" id="' + button_id + '" value="' + $_('Save') + '"> <em class="hint" id="' + this.id + '-hint">Ctrl+Enter</em>');
+                            $('#' + button_id).on('click', function() {
                                 self.trigger('readable');
                             });
                         }
@@ -581,18 +608,19 @@
                             button = $('#' + button_id),
                             self = $(this),
                             value = $(input).val(),
-                            href = self.parents('li:first').find('.p-image a').attr('href'),
+                            href = self.parents('li:first').find('.p-image').attr('data-href'),
                             match = /(\d+)[\/]*$/.exec(href),
                             id = null;
 
                         button.hide();
                         $('#'+this.id+'-hint').hide();
                         if (value) {
-                            self.text(value.truncate(255));
-                            self.parent().find('.full-description:first').html(value);
+                            // self.text(value.truncate(255));
+                            self.parent().find('.js-full-description:first').text(value).html();
                         } else {
-                            self.parent().find('.full-description:first').html('');
+                            self.parent().find('.js-full-description:first').html('');
                         }
+
                         if (match && data.changed) {
                             id = match[1];
                             $.photos.saveField({
@@ -663,10 +691,10 @@
                     placeholder: '(' + $_('subtitle') + ')',
                     placeholderClass: 'gray',
                     minSize: {
-                        width: 350
+                        width: 150
                     },
                     maxSize: {
-                        width: 600
+                        width: 250
                     },
                     size: {
                         height: 22
@@ -691,13 +719,15 @@
                     }
                 });
             }
-            $('#share-menu-block, #organize-menu-block').bind('recount', function() {
-                var cnt = $('#photo-list li.selected').length;
+            $('.js-toolbar-dropdown-button').on('recount', function() {
+                let cnt = $('#photo-list > li.selected').length,
+                    $count = $(this).find('.js-count');
+
                 if (cnt > 0) {
-                    $('.count:first', $(this)).text(cnt).show();
+                    $count.text(cnt).show();
                     //$.photos.menu.enable('list',false,'select-photos');
                 } else {
-                    $('.count:first', $(this)).hide();
+                    $count.hide();
                     //$.photos.menu.disable('list',false,'select-photos');
                 }
             });
@@ -707,52 +737,65 @@
                     album_id = album ? album.id : 0,
 
                     showDialog = function () {
-                        $("#album-settings-dialog").waDialog({
-                            onSubmit: function(d) {
-                                var f = $(this);
-                                d.trigger('change_loading_status', true);
-                                $.post(f.attr('action'), f.serializeArray(), function(r) {
-                                    if (r.status == 'ok') {
-                                        var total_count = r.data.total_count,
-                                            status = r.data.status,
-                                            groups = r.data.groups,
-                                            count = r.data.count,
-                                            offset = count;
+                        $.waDialog({
+                            html: $("#album-settings-dialog"),
+                            onOpen($dialog, dialog) {
+                                let $form = $dialog.find('form');
 
-                                        function process(data) {
-                                            $.post('?module=album&action=savePhotosAccess', data, function() {
-                                                data.offset += count;
-                                                if (data.offset <= total_count) {
-                                                    process(data);
-                                                } else {
-                                                    d.trigger('change_loading_status', false);
-                                                    location.reload();
+                                $form.find('.js-privacy-settings-link').on('click', function () {
+                                    $(window).resize()
+                                });
+
+                                $form.on('submit', function (e) {
+                                    e.preventDefault();
+                                    $dialog.trigger('change_loading_status', true);
+                                    $.post($form.attr('action'), $form.serializeArray(), function(r) {
+                                        if (r.status == 'ok') {
+                                            let total_count = r.data.total_count,
+                                                status = r.data.status,
+                                                groups = r.data.groups,
+                                                count = r.data.count,
+                                                offset = count;
+
+                                            function process(data) {
+                                                $.post('?module=album&action=savePhotosAccess', data, function() {
+                                                    data.offset += count;
+                                                    if (data.offset <= total_count) {
+                                                        process(data);
+                                                    } else {
+                                                        $dialog.trigger('change_loading_status', false);
+                                                        location.reload();
+                                                    }
+                                                });
+                                            }
+                                            if (count < total_count) {
+                                                process({
+                                                    id: album_id,
+                                                    status: status,
+                                                    groups: groups,
+                                                    count: count,
+                                                    offset: offset
+                                                });
+                                            } else {
+                                                $dialog.trigger('change_loading_status', false);
+                                                location.reload();
+                                            }
+                                        } else if (r.status == 'fail') {
+                                            $dialog.trigger('change_loading_status', false);
+                                            let errors = r.errors;
+                                            for (let name in errors) {
+                                                if (errors.hasOwnProperty(name)) {
+                                                    $dialog
+                                                        .find('input[name=' + name + ']')
+                                                        .addClass('error')
+                                                        .parent()
+                                                        .find('.errormsg')
+                                                        .text(errors[name]);
                                                 }
-                                            });
-                                        }
-                                        if (count < total_count) {
-                                            process({
-                                                id: album_id,
-                                                status: status,
-                                                groups: groups,
-                                                count: count,
-                                                offset: offset
-                                            });
-                                        } else {
-                                            d.trigger('change_loading_status', false);
-                                            location.reload();
-                                        }
-                                    } else if (r.status == 'fail') {
-                                        d.trigger('change_loading_status', false);
-                                        var errors = r.errors;
-                                        for (var name in errors) {
-                                            if (errors.hasOwnProperty(name)) {
-                                                d.find('input[name=' + name + ']').addClass('error').parent().find('.errormsg').text(errors[name]);
                                             }
                                         }
-                                    }
-                                }, 'json');
-                                return false;
+                                    }, 'json');
+                                });
                             }
                         });
                     };
@@ -767,37 +810,8 @@
                     return false;
             });
 
-            $('#p-album-delete').click(function() {
-                var album = $.photos.getAlbum(),
-                    album_id = album ? album.id : 0;
-
-                $.photos.confirmDialog({
-                    url: '?module=dialog&action=confirmDeleteAlbum&id=' + album_id,
-                    onSubmit: function(d) {
-                        var del_photos = parseInt($('input[name=delete-photos]:checked', d).val());
-                        var album_ids;
-                        var del_sub_album_ids = $('input[name=delete-offspring]:checked', d).val();
-                        if (del_sub_album_ids) {
-                            album_ids = del_sub_album_ids.split(',').reverse();
-                            album_ids.push(album_id);
-                        } else {
-                            album_ids = [album_id];
-                        }
-
-                        d.trigger('close');
-                        $.photos.setCover();
-                        $.photos.deleteAllAlbums(album_ids, del_photos, function() {
-                            $.photos.unsetCover();
-                        });
-                        return false;
-                    }
-                });
-
-                return false;
-            });
-
             // fix prevent browser-action
-            $('#photo-list').find('.p-description textarea, .p-photo-details textarea, .p-photo-details input').live('select', function() {
+            $('#photo-list').find('.p-description textarea, .p-photo-details textarea, .p-photo-details input').on('select', function() {
                 return false;
             });
 
@@ -813,27 +827,29 @@
         loadPhoto: function (id) {
             // check case when jumping from photo-page of one collection
             // to photo-page of another collection by passing the going to page of collection (photo-list)
-            if ($.photos.photo_stream_cache.hash != $.photos.hash) {
+            if ($.photos.photo_stream_cache.hash !== $.photos.hash) {
                 $.photos.loadNewPhoto(id);
-            } else {
-                var photo = $.photos.photo_stream_cache.getById(id);
-                if (!photo) {
-                    photo = $.photos.photo_stack_cache.getById(id);
-                    if (photo) {
-                        $.photos.setTitle(photo.name_not_escaped);
-                        $.photos.loadPhotoInStack(photo);
-                    } else {
-                        $.photos.loadNewPhoto(id);
-                    }
-                } else {
-                    $.photos.setTitle(photo.name_not_escaped);
-                    $.photos.loadPhotoCompletly(photo);
+                return;
+            }
+
+            const stream = $.photos.photo_stream_cache.getById(id);
+            if (!stream || stream.stack_count > 0) {
+                // navigation through stack
+                const stack = $.photos.photo_stack_cache.getById(id);
+                if (stack) {
+                    this.setTitle(stack.name);
+                    $.photos.loadPhotoInStack(stack);
+                    return;
                 }
+            }
+
+            if (stream) {
+                $.photos.setTitle(stream.name);
+                $.photos.loadPhotoCompletly(stream);
             }
         },
 
-        loadPhotoInStack: function f(photo)
-        {
+        loadPhotoInStack: function f(photo) {
             $.photos.abortPrevLoading();
             /**
              * @hook
@@ -841,63 +857,90 @@
             $.photos.hooks_manager.trigger('beforeLoadPhoto', photo);
             $.photos.photo_stack_cache.setCurrent(photo);
             var proper_thumb = $.photos._chooseProperThumb(photo);
-            if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                $('#photo').width(proper_thumb.size.width).height(proper_thumb.size.height);
+            let $photo = $('#photo');
+
+            $photo.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
+
+            $photo.proper_thumb = {
+                url: proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
+                url2x: proper_thumb.url2x + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '')
             }
+
             replaceImg(
-                $('#photo'),
-                photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
+                $photo,
+                proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                 null
             );
+
+            if ((photo.thumb_big.size.width < photo.width) || (photo.thumb_big.size.height < photo.height) ) {
+                $photo.addClass('contain');
+            } else {
+                $photo.removeClass('contain');
+            }
+
+            $photo.removeClass('fade-in').addClass('fade-in');
+            $photo.on('animationend', function() {
+                $photo.removeClass('fade-in');
+            });
+
             $.photos.setNextPhotoLink();
             var xhr = $.post('?module=photo&action=load', { id: photo.id, in_stack: 1 },
                 function(r) {
                     var data = r.data,
                         photo = data.photo;
+
+
                     photo = $.photos.photo_stack_cache.updateById(photo.id, photo);
                     data.photo = photo;
+
                     $.photos.updateViewChildPhoto(data);
-                    /**
-                     * @hook
-                     */
-                    $.photos.hooks_manager.trigger('afterLoadPhoto', photo);
+
+                    const isFirst = () => data.photo_stream.photos[0].id === photo.id
+                    const isLast = () => data.photo_stream.photos[data.photo_stream.photos.length - 1].id === photo.id
+                    $.photos.hooks_manager.trigger('afterLoadPhoto', { first: isFirst(), last: isLast() });
                     delete f.xhr;
                 },
                 'json'
             );
             f.xhr = xhr;
-            $('#photo-name').html(photo.name);
         },
 
-        updateViewChildPhoto: function(data)
-        {
+        updateViewChildPhoto: function(data) {
             var author = data.author,
                 albums = data.albums,
                 exif = data.exif,
                 photo = data.photo;
 
             $.photos.renderPhotoImg(photo);
+
             $('#photo-author').html(tmpl('template-photo-author', {
                 photo: photo,
                 author: author
             }));
+
             $.photos.updatePhotoOriginalBlock(photo);
-            $('#photo-exif').html(tmpl('template-photo-exif', {
-                exif: exif
-            }));
-            $.photos.renderMap(exif.GPSLatitude, exif.GPSLongitude, photo.name);
+
+            if(exif.length) {
+                $('#photo-exif').html(tmpl('template-photo-exif', {
+                    exif: exif
+                }));
+                $.photos.renderMap(exif.GPSLatitude, exif.GPSLongitude, photo.name);
+            }
+
             $('#photo-albums').html(tmpl('template-photo-albums', {
                 albums: albums
             }));
 
             $.photos.initPhotoContentControlWidget({
-                frontend_link_template: frontend_link_template,
+                frontend_link_template: data.frontend_link_template,
                 photo: photo
             });
+
+            $.photos.updatePhotoName(photo.name, photo.edit_rights);
+            $.photos.initPhotoStackWidgetActiveItem(photo.index);
         },
 
-        loadNewPhoto: function method(id)
-        {
+        loadNewPhoto: function method(id) {
             $.photos.initClearance();
             $.photos.widget.loupe.init();
 
@@ -913,27 +956,33 @@
 
                     var data = r.data,
                         photo = data.photo;
+
                     $.photos.renderViewPhoto(data);
 
                     // preloading next photo
-                    var next_photo = $.photos.photo_stream_cache.getNext();
+                    const next_photo = $.photos.photo_stream_cache.getNext(photo);
                     if (next_photo) {
                         $.photos.preloadPhoto(next_photo);
+                    }
+
+                    // preloading prev photo
+                    const prev_photo = $.photos.photo_stream_cache.getPrev(photo);
+                    if (prev_photo) {
+                        $.photos.preloadPhotoPrev(prev_photo);
                     }
 
                     if (data.album) {
                         $.photos.setAlbum(data.album);
                     }
-                    /**
-                     * @hook
-                     */
-                    $.photos.hooks_manager.trigger('afterLoadPhoto', photo);
+
+                    const isFirst = () => data.photo_stream.photos[0].id === id;
+                    const isLast = () => data.photo_stream.photos[data.photo_stream.photos.length - 1].id === id;
+                    $.photos.hooks_manager.trigger('afterLoadPhoto', { first: isFirst(), last: isLast() });
                 },
             'json');
         },
 
-        renderViewPhoto: function(data)
-        {
+        renderViewPhoto: function(data) {
             var photo = data.photo,
                 author = data.author,
                 exif = data.exif,
@@ -945,9 +994,13 @@
                 photo_stream = data.photo_stream,
                 in_collection = photo_stream.in_collection;
 
-            var not_in_dynamic_album = false;
+            // get alive next/prev action if comes from menu
+            $.photos.photo_stream_cache.set(photo_stream.photos);
+
+            let not_in_dynamic_album = false;
+
             if (album && !in_collection) {
-                if (album.type == Album.TYPE_STATIC) {
+                if (album.type == Album.TYPE_STATIC && !stack) {
                     $.photos.goToHash('album/' + album.id + '/');
                     return;
                 } else {
@@ -958,26 +1011,31 @@
             $.photos.setTitle(photo.name_not_escaped);
             $('#content').html(tmpl('template-p-block'));
 
-            $.photos.initPhotoToolbar({
-                photo: photo,
-                author: author,
-                exif: exif,
-                stack: stack
-            });
             $.photos.renderPhotoBlock({
-                photo: photo,
+                photo,
                 hash: $.photos.hash,
-                albums: albums,
-                hooks: hooks,
+                author,
+                exif,
+                albums,
+                hooks,
                 frontend_link_template: frontend_link_template
             });
-            $.photos.initPhotoWidgets({
-                photo: photo,
-                stack: stack,
-                exif: exif,
-                photo_stream: photo_stream,
+
+            $.photos.initPhotoToolbar({
+                photo,
+                stack,
                 hash: $.photos.hash
             });
+
+            setTimeout(() => {
+                $.photos.initPhotoWidgets({
+                    photo,
+                    stack,
+                    exif,
+                    photo_stream,
+                    hash: $.photos.hash
+                });
+            }, 0)
             if ($.photos.anchor) {
                 $.photos.goToAnchor($.photos.anchor);
                 $.photos.anchor = '';
@@ -995,8 +1053,7 @@
 
         },
 
-        loadPhotoCompletly: function(photo)
-        {
+        loadPhotoCompletly: function(photo) {
             $.photos.photo_stream_cache.setCurrent(photo);
             // make shift inside photo-stream
             $.photos.updatePhotoStreamWidget({
@@ -1007,8 +1064,7 @@
             });
         },
 
-        _loadPhotoCompletly: function f(photo)
-        {
+        _loadPhotoCompletly: function f(photo) {
             $.photos.abortPrevLoading();
             /**
              * @hook
@@ -1027,31 +1083,58 @@
             $('#stack-stream').hide();
             // clean prev hooks results
             $('#photo-hook-bottom').html('');
-
             var is_preloaded = $.photos.isPhotoPreloaded(photo);
-            if (is_preloaded) {
-                $.photos.renderPhotoImg(photo);
+            var is_prevPreloaded = $.photos.isPrevPhotoPreloaded(photo);
+
+            if (is_preloaded || is_prevPreloaded) {
+                $.photos.renderPhotoImg(photo, is_preloaded, is_prevPreloaded);
             } else {
-                var proper_thumb = $.photos._chooseProperThumb(photo);
-                if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                    $('#photo').width(proper_thumb.size.width).height(proper_thumb.size.height);
+                var proper_thumb = $.photos._chooseProperThumb(photo),
+                    $photo = $('#photo');
+
+                $photo.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
+
+                $photo.proper_thumb = {
+                    url: proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
+                    url2x: proper_thumb.url2x + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '')
                 }
+
                 replaceImg(
-                    $('#photo'),
-                    photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
-                    null
+                    $photo,
+                    proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
+                    function(){
+                        if ((photo.thumb_big.size.width < photo.width) || (photo.thumb_big.size.height < photo.height) ) {
+                            $photo.addClass('contain');
+                        } else {
+                            $photo.removeClass('contain');
+                        }
+
+                        const is_prevInStack = $.photos.photo_stack_cache.getPrev(photo);
+                        const is_nextInStack = $.photos.photo_stack_cache.getNext(photo);
+                        if (is_prevInStack || is_nextInStack) {
+                            $photo.removeClass('fade-in').addClass('fade-in');
+                            $photo.on('animationend', function() {
+                                $photo.removeClass('fade-in');
+                            });
+                        }
+                    }
                 );
             }
             $.photos.updatePhotoTags(photo.tags);
 
             // preload next photo
-            var next_photo = $.photos.photo_stream_cache.getNext();
+            const next_photo = $.photos.photo_stream_cache.getNext();
             if (next_photo) {
                 $.photos.preloadPhoto(next_photo);
             }
 
+            const prev_photo = $.photos.photo_stream_cache.getPrev();
+            if (prev_photo) {
+                $.photos.preloadPhotoPrev(prev_photo);
+            }
+
             // load addition info about photo
-            var xhr = $.post('?module=photo&action=load', { id: photo.id },
+            var xhr = $.post('?module=photo&action=load', { id: photo.id, hash: $.photos.hash },
                 function (r) {
                     if (r.status == 'ok') {
                         var data = r.data,
@@ -1080,10 +1163,13 @@
                         photo = $.photos.photo_stream_cache.updateById(photo.id, photo);
                         data.photo = photo;
                         $.photos.updateViewPhoto(data, is_preloaded);
+
                         /**
                          * @hook
                          */
-                        $.photos.hooks_manager.trigger('afterLoadPhoto', photo);
+                        const isFirst = () => data.photo_stream.photos[0].id === photo.id
+                        const isLast = () => data.photo_stream.photos[data.photo_stream.photos.length - 1].id === photo.id
+                        $.photos.hooks_manager.trigger('afterLoadPhoto', { first: isFirst(), last: isLast() });
                         delete f.xhr;
                     }
                 },
@@ -1092,8 +1178,7 @@
             f.xhr = xhr;
         },
 
-        updateViewPhoto: function(data, is_preloaded)
-        {
+        updateViewPhoto: function(data, is_preloaded) {
             var author = data.author,
                 albums = data.albums,
                 exif = data.exif,
@@ -1179,25 +1264,40 @@
             }
         },
 
-        renderPhotoImg: function(photo) {
-            var proper_thumb = $.photos._chooseProperThumb(photo);
+        renderPhotoImg: function(photo, preload, prevPreload) {
+            let proper_thumb = $.photos._chooseProperThumb(photo),
+                $photo = $('#photo');
+
+            $photo.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
+
+            $photo.proper_thumb = {
+                url: proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
+                url2x: proper_thumb.url2x + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '')
+            }
+
             replaceImg(
-                $('#photo'),
+                $photo,
                 proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                 function() {
-                    if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                        $(this).width(proper_thumb.size.width).height(proper_thumb.size.height);
+                    if ((photo.thumb_big.size.width < photo.width) || (photo.thumb_big.size.height < photo.height) ) {
+                        $photo.addClass('contain');
+                    } else {
+                        $photo.removeClass('contain');
                     }
-                    /**
-                     * @hook
-                     */
+
+                    if (preload || prevPreload) {
+                        $photo.removeClass('fade-in').addClass('fade-in');
+                        $photo.on('animationend', function() {
+                            $photo.removeClass('fade-in');
+                        });
+                    }
+
                     $.photos.hooks_manager.trigger('afterRenderImg', this, photo, proper_thumb);
                 }
             );
         },
 
-        updateViewPhotoMenu: function(stack, edit)
-        {
+        updateViewPhotoMenu: function(stack, edit) {
             // update toolbars menus
             if (stack) {
                 $.photos.menu.enable('photo','#photo-organize-menu','unstack');
@@ -1207,17 +1307,20 @@
             if (edit) {
                 $.photos.menu.enable('photo','#photo-organize-menu');
                 $.photos.menu.enable('photo','#edit-menu');
-                $('#photo-tags').parent().show();
+                // $('#photo-tags').parent().show();
             } else {
                 $.photos.menu.disable('photo','#photo-organize-menu');
                 $.photos.menu.disable('photo','#edit-menu');
-                $('#photo-tags').parent().hide();
+                // $('#photo-tags').parent().hide();
             }
         },
 
         preloadPhoto: function(photo) {
             var preload_photo_img = $('#preload-photo');
             preload_photo_img.attr('data-photo-id', '');
+
+            preload_photo_img.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
+
             replaceImg(
                 preload_photo_img,
                 photo.thumb_big.url,
@@ -1227,8 +1330,27 @@
             );
         },
 
+        preloadPhotoPrev: function(photo) {
+            var preload_photo_img = $('#preload-photo-prev');
+            preload_photo_img.attr('data-photo-id', '');
+
+            preload_photo_img.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
+
+            replaceImg(
+              preload_photo_img,
+              photo.thumb_big.url,
+              function() {
+                  preload_photo_img.attr('data-photo-id', photo.id);
+              }
+            );
+        },
+
         isPhotoPreloaded: function(photo) {
             return $('#preload-photo').attr('data-photo-id') == photo.id;
+        },
+
+        isPrevPhotoPreloaded: function(photo) {
+            return $('#preload-photo-prev').attr('data-photo-id') == photo.id;
         },
 
         abortPrevLoading: function() {
@@ -1251,44 +1373,62 @@
         },
 
         updateThumbRate: function(li, rate) {
-            var rate_item = li.find('.p-details .p-rate');
+            let rate_item = li.find('.p-details .p-rate');
             rate = Math.round(rate * 2) / 2;
             if (!rate) {
                 rate_item.hide();
             } else {
-                var stars = rate_item.find('i').filter(function() {
-                    return ~this.className.indexOf('star');
-                }).removeClass('star star-empty star-half').addClass('star-empty');
+
+                let stars = rate_item
+                    .find('svg')
+                    .removeClass('fa-star-half text-yellow')
+                    .addClass('text-light-gray');
+
                 stars.each(function(i) {
                     i += 1;
                     if (i > rate) {
                         if (i - rate == 0.5) {
-                            $(this).removeClass('star-empty').addClass('star-half');
+                            $(this).addClass('fa-star-half').removeClass('text-light-gray').addClass('text-yellow');
                         }
                     } else {
-                        $(this).removeClass('star-empty').addClass('star');
+                        $(this).removeClass('fa-star-half').removeClass('text-light-gray').addClass('text-yellow');
                     }
+                    $(this).attr('data-rate-value', i)
                 });
+
                 rate_item.show();
             }
         },
+
         showManageAccessDialog: function(params, onSubmit) {
-            var showDialog = function () {
-                $("#manage-access-dialog").waDialog({
-                    'onSubmit': onSubmit
+            const showDialog = function () {
+                $.waDialog({
+                    $wrapper: $("#manage-access-dialog"),
+                    onOpen($dialog, dialog) {
+                        let $form = $dialog.find('form')
+                        $form.find('.js-privacy-settings-link').on('click', function () {
+                            $(window).resize()
+                        });
+                        $form.on('submit', function (e) {
+                            e.preventDefault();
+                            onSubmit($dialog, dialog)
+                        });
+                    }
                 });
             };
             //manage-access-dialog
-            var d = $('#manage-access-dialog-acceptor'),
+            let d = $('#manage-access-dialog-acceptor'),
                 url = '?module=dialog&action=manageAccess';
+
             if (!d.length) {
                 d = $("<div id='manage-access-dialog-acceptor'></div>");
                 $("body").append(d);
             }
+
             if (params) {
                 if ($.isArray(params)) {
-                    for (var i = 0, n = params.length; i < n; ++i) {
-                        var param = params[i];
+                    for (let i = 0, n = params.length; i < n; ++i) {
+                        let param = params[i];
                         url += '&' + param.name + '=' + param.value;
                     }
                 } else {
@@ -1303,6 +1443,7 @@
             $('#photo-name').inlineEditable({
                 placeholder: $('#photo-name').text() ? null : $_('Edit title...'),
                 placeholderClass: 'gray',
+                html: false,
                 afterBackReadable: function(input, e) {
                     if (!e.changed) {
                         return;
@@ -1315,7 +1456,7 @@
                         id: $.photos.getPhotoId(),
                         type: 'photo',
                         name: 'name',
-                        value: value,
+                        value: value.replace(/&/g, '&amp;').replace(/\s/g,' ').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
                         fn: function(r) {
                             $('#photo-name').inlineEditable('setOption', {
                                 placeholder: null
@@ -1349,13 +1490,13 @@
                 placeholderClass: 'gray',
                 makeReadableBy: ['esc'],
                 updateBy: ['ctrl+enter'],
-                html: true,
+                html: false,
                 allowEmpty: true,
                 beforeMakeEditable: function(input) {
                     var button = $('#photo-description-save');
                     if (!button.length) {
                         var widget = $(this);
-                        input.after('<br><input type="button" id="photo-description-save" value="' + $_('Save') + '"> <em class="hint" id="' + this.id + '-hint">Ctrl+Enter</em>');
+                        input.after('<input type="button" id="photo-description-save" class="button smallest" value="' + $_('Save') + '"> <em class="hint" id="' + this.id + '-hint">Ctrl+Enter</em>');
                         button = $('#photo-description-save');
                         button.click(function() {
                             widget.trigger('readable');
@@ -1376,7 +1517,7 @@
                         id: $.photos.photo_stream_cache.getCurrent().id,
                         type: 'photo',
                         name: 'description',
-                        value: $(input).val(),
+                        value: $(input).val().replace(/&/g, '&amp;').replace(/\s/g,' ').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
                         fn: function() {}
                     });
                 },
@@ -1435,11 +1576,7 @@
                 items: 'li.dr',
                 opacity: 0.75,
                 tolerance: 'pointer',
-                start: function() {
-                    document.ondragstart = function() { return false; }
-                },
-                stop: function (event, ui) {
-                    document.ondragstart = null;
+                onEnd: function (ui) {
                     var li = $(ui.item);
                     var id = parseInt(li.attr('data-photo-id'));
                     var next = li.next(),
@@ -1453,38 +1590,34 @@
                             before_id: before_id
                         },
                         function (response) {
-                            if (response.status == 'ok') {
-                                if (response.data.stack) {
-                                    var stack = response.data.stack;
-                                    var prev_parent_id = $('#stack-stream').data('parent_id');
-                                    var new_parent = stack[0];
-                                    var new_parent_id = new_parent.id;
-                                    // if stack parent has changed than we need update photo-stream
-                                    // (but before it we need update photo_stream_cache)
-                                    if (prev_parent_id != new_parent_id) {
-                                        var prev_parent = $.photos.photo_stream_cache.getById(prev_parent_id);
-                                        new_parent.tags = prev_parent.tags;
-                                        $.photos.photo_stream_cache.replace(prev_parent, new_parent);
-                                        // Say stack-stream that we have new parent
-                                        $('#stack-stream').data('parent_id', new_parent_id);
-                                        // update photo-stream visually
-                                        $.photos.updatePhotoStreamWidget({
-                                            current_photo: new_parent
-                                        });
-                                    }
-                                }
+                            if (response.status !== 'ok') {
+                                return;
                             }
+
+                            if (!response.data.stack) {
+                                return;
+                            }
+
+                            const stack = response.data.stack;
+                            $.photos.photo_stack_cache.set(stack).setCurrent(response.data.stack[0]);
+
+                            const oldPhoto = $.photos.photo_stream_cache.getById(parent_id);
+                            const newPhoto = $.photos.photo_stack_cache.getAll()[0];
+
+                            $.photos.photo_stream_cache.replace(oldPhoto, newPhoto);
                         },
                     "json");
-            }});
+                }
+            });
             if ($('#stack-stream').data('inited')) {
                 return false;
             }
-            $('#stack-stream li.dr').live('click', function() {
-                $('#stack-stream li.dr.selected').removeClass('selected');
-                $(this).addClass('selected');
-            });
+
             $('#stack-stream').data('inited', true);
+        },
+
+        initPhotoStackWidgetActiveItem: function(id) {
+            $(document).find('#stack-stream li.dr').removeClass('selected').siblings(`li:nth-child(${id + 1})`).addClass('selected');
         },
 
         initPhotoTagsWidget: function(tags) {
@@ -1521,8 +1654,7 @@
             try {
                 tags_input.tagsInput({
                     autocomplete_url: '?module=tag&action=list',
-                    height: 120,
-                    width: 150,
+                    width: '100%',
                     defaultText: default_text,
                     onChange: function () {
                         // this event calls every time list of tags is changed, event by importTags, so don't use it for ajax!
@@ -1577,7 +1709,7 @@
                             self.text(text);
                             span.hide();
                             new_window.show();
-                            $(input).removeClass('error');
+                            $(input).removeClass('state-error');
                             $('#photo-content-control').find('.errormsg').text('').hide();
                         }
                         if (!data.changed) {
@@ -1586,12 +1718,13 @@
                         }
                         $.photos.saveField(photo_id, 'url', value, function(r) {
                             if (r.status == 'ok') {
-                                var http = $('#photo-frontend-link').text();
-                                $('#photo-frontend-link').attr('href', http);
                                 restoreReadableView();
                                 frontend_url.trigger('readable', true);
+                                let $photo_frontend_link = $('#photo-frontend-link'),
+                                    http = $photo_frontend_link.text().trim() + '/';
+                                $photo_frontend_link.attr('href', http);
                             } else if (r.status == 'fail') {
-                                $(input).addClass('error');
+                                $(input).addClass('state-error');
                                 $('#photo-content-control').find('.errormsg').text(r.errors.url).show();
                             }
                         });
@@ -1734,8 +1867,8 @@
                 is_start = false;
 
             $('#photo-stream ul.photostream:first').photoStreamSlider({
-                backwardLink: '#photo-stream .rewind',
-                forwardLink: '#photo-stream .ff',
+                backwardLink: '#photo-stream .p-rewind',
+                forwardLink: '#photo-stream .p-ff',
                 photoStream: photo_stream,
                 duration: duration,
                 onForward: function f() {
@@ -1836,7 +1969,6 @@
             // make shift in photo-stream
             if (data.shift) {
                 photo_stream.find('li.selected').removeClass('selected');
-                photo_stream.find('li[data-photo-id=' + data.shift + ']').addClass('selected');
                 var fn = data.fn || function() {};
                 photo_stream.trigger('home', [fn, !$.photos.shift_next]);
                 $.photos.shift_next = false;
@@ -1904,8 +2036,7 @@
             }
         },
 
-        updatePhotoTags: function(tags)
-        {
+        updatePhotoTags: function(tags) {
             var tags_input = $('#photo-tags');
             tags_input.data('current_value', tags_input.val());
             if (typeof tags !== 'undefined') {
@@ -1934,64 +2065,77 @@
             }));
         },
 
-        initPhotoToolbar: function(data)
-        {
-            $('#p-toolbar').html(
-                tmpl('template-photo-toolbar', data)
-            ).addClass('rendered');
-            $.photos.menu.init('photo');
+        initPhotoToolbar: function(data) {
+            setTimeout(() => {
+                let $toolbar = $('#p-toolbar');
+                if ($toolbar.length) {
+                    $toolbar.html(tmpl('template-photo-toolbar', data)).addClass('rendered').closest('#wa-header').addClass('has-toolbar');
+                    $('.js-toolbar-close').on('click', function() {
+                        $(this).closest('#wa-header').removeClass('has-toolbar').find('#p-toolbar').remove();
+                    })
+                    $(document).on('keyup', event => {
+                        const key = event.which || event.keyCode || 0;
+                        if (key === 27) {
+                            let $toolbar = $('#wa-header').find('#p-toolbar');
+                            const isDialogOpened = $('.dialog-opened').length;
+                            if ($toolbar.length && !isDialogOpened) {
+                                let $toolbar_close = $('.js-toolbar-close'),
+                                    hash = $toolbar_close.attr('href');
 
-            // init only once
-            var pop_tags = $('#photos-photo-popular-tags');
-            if (!pop_tags.data('inited')) {
-                pop_tags.off('click.photos', 'a').
-                        on('click.photos', 'a', function() {
-                            var name = $(this).text();
-                            var tags_input = $('#photo-tags')
-                            tags_input.removeTag(name);
-                            tags_input.addTag(name);
-                }).data('inited', true);
-            }
+                                $toolbar_close.trigger('click');
+                                $.wa.setHash(hash)
+                            }
+                        }
+                    })
+                }
+                $.photos.menu.init('photo');
 
-            $.photos.updateViewPhotoMenu(($.isArray(data.stack) && data.stack.length), data.photo.edit_rights);
+                $.photos.updateViewPhotoMenu(($.isArray(data.stack) && data.stack.length), data.photo.edit_rights);
+
+                $(".js-p-toolbar-dropdown").waDropdown({
+                    hover: true,
+                    update_title: false,
+                    items: ".menu > li > a",
+                });
+
+            }, 0)
         },
 
-        renderPhotoBlock: function(data)
-        {
+        renderPhotoBlock: function(data) {
             var photo = data.photo,
-                proper_thumb = $.photos._chooseProperThumb(photo),
-                size = photo.thumb.size;
+                proper_thumb = $.photos._chooseProperThumb(photo);
 
-            if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                // for gradual load image effect we first render image with thumb.url but with proper_thumb sizes
-                // and than load with proper_thumb.url
-                photo.thumb.size = {
-                    width: proper_thumb.size.width,
-                    height: proper_thumb.size.height
-                };
-            }
-            $("#p-block").html(tmpl('template-photo', data)).addClass('rendered');
+            const newData = data;
+            newData.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
 
-            if (typeof size === 'object' && size) {
-                // restore real sizes for this thumb
-                photo.thumb.size = {
-                    width: size.width,
-                    height: size.height
-                };
+            $("#p-block").html(tmpl('template-photo', newData)).addClass('rendered');
+            $("#p-info-area").html(tmpl('template-info-area', data)).addClass('rendered');
+
+            $('#p-toolbar').prependTo($('#wa-header-content-area'));
+            let $photo = $('#photo');
+            $photo.smallSize = newData.smallSize;
+
+            $photo.proper_thumb = {
+                url: proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
+                url2x: proper_thumb.url2x + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '')
             }
-            replaceImg($('#photo'),
+
+            // first time open photo from gallery
+            replaceImg($photo,
                 proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                 function() {
-                    /**
-                     * @hook
-                     */
+                    if ((photo.thumb_big.size.width < photo.width) || (photo.thumb_big.size.height < photo.height) ) {
+                        $photo.addClass('contain');
+                    } else {
+                        $photo.removeClass('contain');
+                    }
+
                     $.photos.hooks_manager.trigger('afterRenderImg', this, photo, proper_thumb);
                 }
             );
         },
 
-        initPhotoWidgets: function(data)
-        {
+        initPhotoWidgets: function(data) {
             var photo = data.photo,
                 exif = data.exif,
                 stack = data.stack,
@@ -2027,9 +2171,10 @@
             });
 
             // Go to prev or next photo when user clicks on an arrow over the photo
-            $('#p-block .p-one-photo > .p-image-nav').click(function() {
-                if ($(this).hasClass('p-rewind')) {
+            $('#p-block .p-one-photo > .p-image-nav .p-image-nav-item').on('click', function() {
+                if (this.classList.contains('p-rewind')) {
                     var prev = $.photos.photo_stream_cache.getPrev();
+
                     if (prev) {
                         $.photos.goToHash($.photos.getHashByPhotoId(prev.id), false);
                         $.photos.shift_next = true;
@@ -2044,37 +2189,8 @@
             });
         },
 
-        _chooseProperThumb: function(photo)
-        {
-            var thumb_big = photo.thumb_big,
-                thumb_middle = photo.thumb_middle,
-                proper_thumb,
-                block_width = $('#p-block').width();
-
-            proper_thumb = thumb_big;
-            if (typeof thumb_big.size === 'object' && thumb_big.size) {
-                if (parseInt(thumb_big.size.height, 10) > parseInt(thumb_middle.bound.height, 10) && // is vertical photo
-                        parseInt(thumb_big.size.height, 10) > $(window).height())
-                {
-                    proper_thumb = thumb_middle;
-                }
-                if (parseInt(proper_thumb.size.width, 10) > block_width) {
-                    proper_thumb.size.height = Math.round(block_width/parseInt(proper_thumb.size.width, 10)*parseInt(proper_thumb.size.height, 10));
-                    proper_thumb.size.width = block_width;
-                }
-            } else {
-                proper_thumb.size = {
-                    width: block_width,
-                    height: ''
-                };
-            }
-            if (typeof proper_thumb.size !== 'object' || !proper_thumb.size) {
-                proper_thumb.size = {
-                    widht: block_width,
-                    height: ''
-                };
-            }
-            return proper_thumb;
+        _chooseProperThumb: function(photo) {
+            return photo.thumb_big;
         },
 
         setNextPhotoLink: function(next) {
@@ -2097,6 +2213,7 @@
         },
 
         ignore_scrolltop: false,
+
         scrollTop: function() {
             if ($.photos.ignore_scrolltop) {
                 $.photos.ignore_scrolltop = false;
@@ -2105,11 +2222,13 @@
             }
         },
 
-        load: function (url, data, callback,wrapper) {
-            var target = $('#content');
+        load: function (url, data, callback, wrapper) {
+            let target = $('#content');
+
             if (typeof data == 'function') {
                 wrapper = callback||null;
             }
+
             if(wrapper) {
                 target.empty().append(wrapper);
                 target = target.find(':last-child');
@@ -2121,25 +2240,21 @@
                 target.load(url, data, callback);
             }
         },
-        setCover: function() {
-            $.photos.centralizeLoadingIcon();
-            $('#cover').show();
-        },
-        unsetCover: function() {
-            $('#cover').hide();
-        },
-        centralizeLoadingIcon: function() {
-            var cover = $('#cover'),
-                icon = $('#cover .loading');
 
-            var width = cover.width(), w = icon.width(),
-                height = cover.height(), h = icon.height();
+        setCover: function(is_full = false) {
+            if (is_full) {
+                $('#full-cover').show();
+            }else{
+                $('#cover').show();
+            }
+        },
 
-            $('.loading').css({
-                position: 'absolute',
-                left: parseInt((width - w) / 2) + 'px',
-                top:  parseInt((height - h) / 2) + 'px'
-            });
+        unsetCover: function(is_full = false) {
+            if (is_full) {
+                $('#full-cover').hide();
+            }else{
+                $('#cover').hide();
+            }
         },
 
         saveField: function(id, name, value, fn) {
@@ -2220,60 +2335,103 @@
             }
         },
 
-        restoreOriginal: function(id, fn) {
-            fn = fn || function() {};
-            $.post('?module=photo&action=restore', { id: id },
-                function(r) {
-                    if (r.status == 'ok') {
-                        var photo = r.data.photo;
-                        if (photo.parent_id == 0) {
-                            photo = $.photos.photo_stream_cache.updateById(id, photo);
-                        } else {
-                            photo = $.photos.photo_stack_cache.updateById(id, photo);
+        restoreOriginal: function (element) {
+            if (element.id === 'restore-original') {
+                if (confirm($_('This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?'))) {
+                    $.photos.setCover(true);
+                    let waLoading = $.waLoading(),
+                        $wrapper = $("body"),
+                        locked_class = "is-locked";
+
+                    waLoading.show();
+                    waLoading.animate(10000, 95, false);
+                    $wrapper.addClass(locked_class);
+                    $.post('?module=photo&action=restore', {id: $.photos.getPhotoId()}, function (r) {
+                        if (r.status == 'ok') {
+                            var photo = r.data.photo;
+                            if (photo.parent_id == 0) {
+                                photo = $.photos.photo_stream_cache.updateById(id, photo);
+                            } else {
+                                photo = $.photos.photo_stack_cache.updateById(id, photo);
+                            }
+                            $.photos.updatePhotoOriginalBlock(photo);
+                            $.photos.updatePhotoImgs(photo, function () {
+                                $.photos.unsetCover(true);
+                            });
+                            waLoading.done();
+                            $wrapper.removeClass(locked_class);
                         }
-                        $.photos.updatePhotoOriginalBlock(photo);
-                        $.photos.updatePhotoImgs(photo, fn);
-                    }
-                },
-            'json');
+                    },'json')
+                        .error(function(xhr) {
+                            $.photos.showServerError(xhr.responseText);
+                            waLoading.abort();
+                            $wrapper.removeClass(locked_class);
+                    });
+                }
+            }
         },
 
         rotate: function(id, direction, fn) {
             fn = fn || function() {};
+
+            var waLoading = $.waLoading();
+
+            var $wrapper = $("body"),
+                locked_class = "is-locked";
+
+            waLoading.show();
+            waLoading.animate(10000, 95, false);
+            $wrapper.addClass(locked_class);
+
             $.post('?module=photo&action=rotate', { id: id, direction: direction },
                 function(r) {
-                    if (r.status == 'ok') {
-                        var photo = r.data.photo;
-                        if (photo.parent_id == 0) {
-                            photo = $.photos.photo_stream_cache.updateById(id, photo);
-                        } else {
-                            photo = $.photos.photo_stack_cache.updateById(id, photo);
-                        }
-                        $.photos.updatePhotoOriginalBlock(photo);
-                        $.photos.updatePhotoImgs(photo, fn);
+                    if (r.status !== 'ok') {
+                        return;
                     }
+
+                    var photo = r.data.photo;
+                    if (photo.parent_id == 0) {
+                        photo = $.photos.photo_stream_cache.updateById(id, photo);
+                    } else {
+                        photo = $.photos.photo_stack_cache.updateById(id, photo);
+                    }
+                    $.photos.updatePhotoOriginalBlock(photo);
+                    $.photos.updatePhotoImgs(photo, fn);
+
+                    waLoading.done();
+                    $wrapper.removeClass(locked_class);
                 },
             'json').error(function(xhr) {
                 $.photos.showServerError(xhr.responseText);
                 if (typeof fn == 'function') {
                     fn();
                 }
+                waLoading.abort();
+                $wrapper.removeClass(locked_class);
             });
         },
 
         updatePhotoImgs: function(photo, fn) {
             var proper_thumb = $.photos._chooseProperThumb(photo),
-                salt = photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '';
+                salt = photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '',
+                $photo = $('#photo');
+
+            $photo.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
+
+            $photo.proper_thumb = {
+                url: proper_thumb.url + salt,
+                url2x: proper_thumb.url2x + salt
+            }
+
             replaceImg(
-                $('#photo'),
+                $photo,
                 proper_thumb.url + salt,
                 function() {
-                    $('#photo').width(proper_thumb.size.width).height(proper_thumb.size.height);
                     $('#photo-stream .selected img, #stack-stream .selected img').each(function() {
                         var self = $(this);
                         if (self.hasClass('thumb')) {
                             self.attr('src', photo.thumb.url + salt);
-                        } else {
+                        } else if(photo.thumb_crop !== undefined) {
                             self.attr('src', photo.thumb_crop.url + salt);
                         }
                     });
@@ -2361,7 +2519,7 @@
                                             return id;
                                         });
 
-                                        $('#photo-list li.selected').trigger('select', false);
+                                        $('#photo-list > li.selected').trigger('select', false);
 
                                         if (removed_photo_ids.length) {
                                             $.photos.makeDeleteAnimation(removed_photo_ids, function() {
@@ -2480,10 +2638,10 @@
         },
 
         saveAccess: function(options) {
-            var photo_id = options.photo_id || [],
+            let photo_id = options.photo_id || [],
                 data = options.data || [],
                 fn = options.fn,
-                original_photo_id = photo_id;
+                original_photo_id = photo_id,
                 onDeniedExist = options.onDeniedExist || function(msg) {
                     alert(msg);
                 },
@@ -2492,22 +2650,24 @@
             if (typeof data === 'object' && !$.isArray(data)) {
                 data = $.photos.serializeData(data);
             }
+
             data.push({
                 name: 'photos_length',
                 value: original_photo_id.length
             });
 
             function _saveAccess(photo_id) {
-                var post_data = [],
+                let post_data = [],
                     denied_photo_id = [],
                     allowed_photo_id = [];
 
                 // serializeArray
-                for (var i = 0, n = photo_id.length; i < n; ++i) {
+                for (let i = 0, n = photo_id.length; i < n; ++i) {
                     post_data.push({
                         name: 'photo_id[]', value: photo_id[i]
                     });
                 }
+
                 $.photos.massPost({
                     photo_id: post_data,
                     url: '?module=photo&action=manageAccessSave',
@@ -2516,13 +2676,13 @@
                     success: function(r, data) {
                         if (r.status == 'ok') {
                             denied_photo_id = denied_photo_id.concat(r.data.denied_photo_id);
-                            for (var i = 0, n = denied_photo_id.length; i < n; ++i) {
+                            for (let i = 0, n = denied_photo_id.length; i < n; ++i) {
                                 data.push({
                                     name: 'denied_photo_id[]', value: denied_photo_id[i]
                                 });
                             }
                             allowed_photo_id = r.data.allowed_photo_id;
-                            for (var i = 0, n = allowed_photo_id.length; i < n; ++i) {
+                            for (let i = 0, n = allowed_photo_id.length; i < n; ++i) {
                                 data.push({
                                     name: 'allowed_photo_id[]', value: allowed_photo_id[i]
                                 });
@@ -2539,6 +2699,7 @@
                     }
                 });
             }
+
             if (resolution) {
                 $.post('?module=photo&action=resolution', $.isArray(photo_id) ? photo_id : { photo_id: photo_id },
                     function(r) {
@@ -2589,6 +2750,7 @@
                 }
             }, 'json');
         },
+
         assignTags: function(options) {
             var photo_id = options.photo_id || [],
                 tags = options.tags || [],
@@ -2705,7 +2867,7 @@
                                     $.photos.photo_stream_cache.deleteById(original_photo_ids[i].value);
                                 }
                                 $.photos.photo_stream_cache.updateById(r.data.parent_id, r.data.photo);
-                                $('#photo-list li.selected').trigger('select', false);
+                                $('#photo-list > li.selected').trigger('select', false);
                                 $.photos.makeStackAnimation([parent_id].concat(original_photo_ids));
                                 //$.photos.goToHash($.photos.getHashByPhotoId(parent_id.value));
                             }
@@ -2788,16 +2950,24 @@
 
         highlightSidebarItem: function() {
             var href = decodeURIComponent($.photos.hash);
-            
-            $('#p-sidebar li.selected').removeClass('selected');
-            var link = $('#p-sidebar li a[href="#'+(href||'/')+'"]');
+
+            const $app_sidebar = $('#js-app-sidebar');
+
+            var link = $app_sidebar.find('a[href="#'+(href||'/')+'"]');
+
+            $app_sidebar.find('li.selected').removeClass('selected');
+
             if (!link.length) {
-                link = $('#p-sidebar li a[href^="#'+(href||'/')+'"]');
+                link = $app_sidebar.find('a[href="#'+(`${href}/`||'/')+'"]');
+            }
+            if (!link.length) {
+                link = $app_sidebar.find('a[href^="#'+(href||'/')+'"]');
             }
             if (link.length) {
                 link.parents('li:first').addClass('selected');
             }
         },
+
         toggleFullScreen: function() {
             if ($.storage.get('photos/maximize_photo')) {
                 $('#wa-app').addClass('p-full-screen');
@@ -2805,6 +2975,7 @@
                 $('#wa-app').removeClass('p-full-screen');
             }
         },
+
         hotkey_manager: (function() {
             function arrowsHandlerDown(e) {
                 var target_type = e.target.type,
@@ -2913,7 +3084,7 @@
                                 var allowed_photo_id = r.data.allowed_photo_id && !$.isArray(r.data.allowed_photo_id) ?
                                         r.data.allowed_photo_id :
                                         {};
-                                $('#photo-list li.selected').each(function() {
+                                $('#photo-list > li.selected').each(function() {
                                     var self = $(this);
                                     if (allowed_photo_id[self.attr('data-photo-id')]) {
                                         $.photos.updateThumbRate(self, rate);
@@ -2958,7 +3129,7 @@
             $(window).lazyLoad({
                 container: '#photo-list',
                 load: function() {
-                    offset = offset || $('#photo-list li').length;
+                    offset = offset || $('#photo-list > li').length;
                     $(window).lazyLoad('sleep');
                     $(".lazyloading-wrapper .lazyloading-progress").show();
                     $(".lazyloading-wrapper .lazyloading-link").hide();
@@ -2996,7 +3167,7 @@
                     );
                 }
             });
-            $('.lazyloading-wrapper a.lazyloading-link').die('click.lazyloading').live('click.lazyloading',function(){
+            $('.lazyloading-wrapper a.lazyloading-link').off('click.lazyloading').on('click.lazyloading',function(){
                 $(window).lazyLoad('force');
                 return false;
             });
@@ -3006,7 +3177,7 @@
             if ($(window).lazyLoad) {
                 $(window).lazyLoad('stop');
             }
-            $('.lazyloading-wrapper a.lazyloading-link').die('click.lazyloading')
+            $('.lazyloading-wrapper a.lazyloading-link').off('click.lazyloading')
         },
 
         getAlbum: function() {
@@ -3045,13 +3216,12 @@
         goToHash: function(hash, reload) {
             reload = typeof reload === 'undefined' ? true : reload;
             hash = hash.replace(/^\/*/, '').replace(/\/*\s*$/, '');
-
             var cur_hash = location.hash.replace(/^[^#]*#\/*/, '').replace(/\/*\s*$/, '');
             if (cur_hash == hash && reload) {
                 $.photos.ignore_scrolltop = true;
                 $.photos.dispatch();
             } else {
-                location.hash = hash ? '/'+hash+'/' : '/';
+                location.hash = hash ? '/'+hash+'/' : '#/';
             }
         },
 
@@ -3076,7 +3246,7 @@
                 if (!ul.length) {
                     album_list.find('.p-empty-album-list').hide();
                     ul = album_list.prepend(
-                            '<ul class="menu-v with-icons"><li class="drag-newposition"></li></ul>'
+                            '<ul class="menu"><li class="drag-newposition"></li></ul>'
                     ).find('ul:first');
                 }
                 album_list.find('ul:first').prepend(html);
@@ -3084,7 +3254,7 @@
                 var li = album_list.find('li[rel='+parent_id+']');
                 ul = li.find('ul:first');
                 if (!ul.length) {
-                    li.append('<ul class="menu-v with-icons"></ul>');
+                    li.append('<ul class="menu"></ul>');
                     ul = li.find('ul:first');
                     li.find('.count:first').after('<i class="icon16 darr overhanging collapse-handler" id="album-'+parent_id+'-handler"></i>');
                 }
@@ -3154,7 +3324,10 @@
             upload_form_select.find('option[value='+album_id+']').remove();
         },
 
-        // make right toolbar fixed for available even in scrolling
+        /**
+         * @deprecated
+         * @desc make right toolbar fixed for available even in scrolling
+         */
         fixRightToolbar: function() {
             $.photos.fixRightToolbar._handler = function handler() {
                 var toolbar = $('#p-toolbar');
@@ -3183,7 +3356,7 @@
         photo_stack_cache: new PhotoStream(),
 
         isSelectedAnyPhoto: function() {
-            return !!$('#photo-list li.selected:first').length;
+            return !!$('#photo-list > li.selected:first').length;
         },
 
         getRatingHtml: function(rating, size, show_when_zero) {
@@ -3194,59 +3367,75 @@
             }
             var html = '';
             for (var i = 1; i <= 5; i += 1) {
-                html += '<i class="icon' + size + ' star';
+                html += `<i class="fas fa-star`;
                 if (i > rating) {
                     if (i - rating == 0.5) {
                         html += '-half';
                     } else {
-                        html += '-empty';
+                        html += ' text-light-gray';
                     }
+                }else{
+                    html += ' text-yellow';
                 }
-                html += '"></i>';
+                html += `" data-rate-value="${i}"></i>`;
             }
             return html;
         },
 
         uploadDialog: function() {
-            $("#p-uploader").waDialog({
-                'onLoad':$.photos.onUploadDialog,
-                'onClose': $.photos.dialogClearSteps,
-                'onSubmit': function () {
-                    $('#p-start-upload-button').click();
-                    return false;
-                }
+            $.get('?module=upload').done(function (response) {
+                $.waDialog({
+                    html: response,
+                    onOpen($_dialog, dialog_instance) {
+                        $.photos.onUploadDialog($_dialog, dialog_instance)
+                    }
+                });
             });
         },
 
         dialogClearSteps: function() {
-            $('#p-upload-step2').hide();
-            $('#p-upload-step2-buttons').hide();
-            $('#p-upload-step3').hide();
-            $('#p-upload-step3-buttons').hide();
-            $('#p-upload-step1').show();
-            $('#p-upload-step1-buttons').show();
+            const that = $(this);
+            that.find('#p-upload-step2').hide();
+            that.find('#p-upload-step2-buttons').hide();
+            that.find('#p-upload-step3').hide();
+            that.find('#p-upload-step3-buttons').hide();
+            that.find('#p-upload-step1').show();
+            that.find('#p-upload-step1-buttons').show();
         },
 
-        onUploadDialog: function () {
-            var d = $(this);
-            $(this).find('.files').empty();
-            var hash = $.storage.get('photos/hash'),
-                select = $('#p-upload-step2 select[name=album_id]');
+        onUploadDialog: function ($dialog, dialog_instance) {
+            $dialog.find('.files').empty();
+
+            let hash = $.storage.get('photos/hash'),
+                select = $dialog.find('#p-upload-step2 select[name=album_id]');
+
             if (!hash || !~hash.indexOf('album')) {
                 select.find('option:first').attr('selected', true);
             } else {
-                var album_id = parseInt(hash.replace(/\/?album\//, ''));
-                var option = select.find('optgroup option[value='+album_id+']');
+                let album_id = parseInt(hash.replace(/\/?album\//, '')),
+                    option = select.find('optgroup option[value='+album_id+']');
+
                 if(option.length) {
                     option.attr('selected', true);
                 } else {
                     select.find('option:first').attr('selected', true);
                 }
             }
+
+            let $form = $dialog.find('form');
+            $form.on('submit', function (e) {
+                e.preventDefault();
+                $(this).find('#p-start-upload-button').click();
+            });
+
+            /* Update upload dialog position */
+            $(document).on('fileuploadsend fileuploaddone', function () {
+                dialog_instance.resize();
+            })
         },
 
         massPost: function(params) {
-            var chunk_count = params.chunk_count || 25,
+            let chunk_count = params.chunk_count || 25,
                 chunk_photo_ids,
                 data = [];
 
@@ -3254,7 +3443,7 @@
             if ($.isArray(params.data)) {
                 data = data.concat(params.data);
             } else if (typeof params.data == 'object') {
-                for (var k in params.data) {
+                for (let k in params.data) {
                     data.push({
                         name: k,
                         value: params.data[k]
@@ -3263,7 +3452,7 @@
             }
             params.type = 'post';
 
-            var count = parseInt(params.count) || 0,
+            let count = parseInt(params.count) || 0,
                 photo_id = params.photo_id;
             if (params.photo_id) {
                 photo_id = params.photo_id;
@@ -3283,7 +3472,7 @@
                 count = photo_id.length;
             }
             if (typeof params.success == 'function') {
-                var fn = params.success;
+                let fn = params.success;
                 params.success = function(r) {
                     fn(r, data);
                     process(r);
@@ -3313,28 +3502,47 @@
         },
 
         confirmDialog: function(options) {
-            var d = $('#confirm-dialog');
+            let d = $('#confirm-dialog');
             if (!d.length) {
                 d = $('<div id="confirm-dialog"></div>');
                 $("body").append(d);
             }
             if (options.url) {
                 d.load(options.url, function() {
-                    var opt = $.extend({}, options);
+                    let opt = $.extend({}, options);
                     delete opt.url;
-                    var self = $(this),
-                        onLoad = opt.onLoad;
+                    let self = $(this),
+                        onOpen = opt.onOpen,
+                        onSubmit = opt.onSubmit,
+                        attr = opt.attr || null;
 
-                    opt.onLoad = function() {
-                        d.find('input[type=submit]').focus();
-                        if (typeof onLoad === 'function') {
-                            onLoad();
+                    opt.onOpen = function($dialog, dialog) {
+                        if (attr) {
+                            for (let key in attr) {
+                                if (attr.hasOwnProperty(key)) {
+                                    $dialog.attr(key, attr[key]);
+                                }
+                            }
+                        }
+                        $dialog.find('input[type=submit]').focus();
+                        if (typeof onOpen === 'function') {
+                            onOpen($dialog, dialog);
+                        }
+                        if (typeof onSubmit === 'function') {
+                            let $form = $dialog.find('form');
+                            $form.on('submit', function (e) {
+                                e.preventDefault();
+                                onSubmit($dialog, dialog);
+                            });
                         }
                     };
-                    self.find('div:first').waDialog(opt);
+                    delete opt.onSubmit;
+                    opt.$wrapper = self.find('div:first');
+                    $.waDialog(opt);
                 });
             }
         },
+
         showServerError: function(text) {
             if (text) {
                 if (console) {
@@ -3350,16 +3558,63 @@
         // or root albums in Albums page
         initAlbumThumbsDragAndDrop: function($ul, parent_id) {
             $ul.sortable({
-                handle: 'img',
-                distance: 5,
-                tolerance: 'pointer',
-                stop: function(event, ui) {
+                delay: 200,
+                delayOnTouchOnly: true,
+                animation: 150,
+                forceFallback: true,
+                ghostClass:'album-list-ghost',
+                chosenClass:'album-list-chosen',
+                dragClass:'album-list-drag',
+                onEnd: function(event) {
+                    let $item = $(event.item);
+                    /* хак для предотвращения срабатывания клика по элементу после его перетаскивания*/
+                    let $link = $item.find('[onclick]'),
+                        href = $link.attr('onclick');
+                    $link.attr('onclick', 'javascript:void(0);');
+                    setTimeout(() => $link.attr('onclick', href),500)
+
                     $.post("?module=album&action=move", {
-                        id: ui.item.data('album-id'),
-                        before_id: ui.item.next().data('album-id') || 0,
+                        id: $item.data('album-id'),
+                        before_id: $item.next().data('album-id') || 0,
                         parent_id: parent_id
                     });
                 }
+            });
+        },
+
+        initPhotoThumbsDragAndDrop: function($ul, album_id) {
+
+            $ul.sortable({
+                delay: 200,
+                delayOnTouchOnly: true,
+                animation: 150,
+                forceFallback: true,
+                ghostClass:'photo-list-ghost',
+                chosenClass:'photo-list-chosen',
+                dragClass:'photo-list-drag',
+                onEnd(event) {
+                    let $item = $(event.item),
+                        photo_id = [],
+                        before_id = $item.next().data('photo-id') || 0;
+
+                    /* хак для предотвращения срабатывания клика по элементу после его перетаскивания*/
+                    let $link = $item.find('[onclick]'),
+                        href = $link.attr('onclick');
+                    $link.attr('onclick', 'javascript:void(0);');
+                    setTimeout(() => $link.attr('onclick', href),500)
+
+                    photo_id.push($item.data('photo-id'));
+
+                    $.post('?module=album&action=photoMove', {
+                        photo_id,
+                        album_id,
+                        before_id
+                    }, function(r) {
+                        if (r.status == 'ok') {
+                            $.photos.photo_stream_cache.move(photo_id, before_id);
+                        }
+                    }, 'json');
+                },
             });
         },
 
@@ -3434,19 +3689,16 @@
         }
     };
 })(jQuery);
+
 $(function () {
 
-    $('.p-one-photo .next').live('click', function () {
-        $.photos.shift_next = true;
-    });
-
-    $('.dialog').die().live('change_loading_status', function(e, status) {
+    $('.dialog').off().on('change_loading_status', function(e, status) {
         var status = status || false,
             self = $(this),
             submit_input = self.find('input[type=submit]');
 
         if (status) {
-            submit_input.attr('disabled', true).after('<i style="vertical-align: middle" class="icon16 loading"></i>');
+            submit_input.attr('disabled', true).after('<i class="fas fa-spin fa-spinner loading"></i>');
         } else {
             submit_input.attr('disabled', false).next('i').remove();
         }
@@ -3474,11 +3726,11 @@ $(function () {
     })();
 
     // handler of triggerable 'select' event
-    $("#photo-list li").live('select', function(e, selected, need_count) {
+    $(document).on('select', '#photo-list > li', function(e, selected, need_count) {
         selected = selected !== undefined ? selected : true;
         need_count = need_count !== undefined ? need_count : true;
         if (selected) {
-            $(this).addClass('selected').find('input:first').attr('checked', true);
+            $(this).addClass('selected').find('input:first').attr('checked', true).prop('checked', true);
         } else {
             var select_all_photos = $('#selector-menu').find('[data-action="select-photos"]');
             if (select_all_photos.data('checked')) {
@@ -3486,10 +3738,10 @@ $(function () {
                         find('.unchecked').show().end().
                         find('.checked').hide();
             }
-            $(this).removeClass('selected').find('input:first').attr('checked', false);
+            $(this).removeClass('selected').find('input:first').attr('checked', false).prop('checked', false);
         }
         if (need_count) {
-            $('#share-menu-block, #organize-menu-block').trigger('recount');
+            $('.js-toolbar-dropdown-button').trigger('recount');
         }
     });
 
@@ -3498,7 +3750,7 @@ $(function () {
     (function() {
         var $last_li_checked = null;
         var $last_li_unchecked = null;
-        $('#content').on('click', '#photo-list li .p-details input:checkbox, #photo-list li .p-details label', function(e) {
+        $('#content').on('click', '#photo-list > li .p-details input:checkbox, #photo-list > li .p-details label, #photo-list > li .p-details .wa-checkbox', function(e) {
             var $li = $(this).closest('li');
             var $checkbox = $li.find('.p-details input:checkbox');
             var new_status;
@@ -3522,6 +3774,19 @@ $(function () {
                 $last_li_checked = null;
                 $last_li_unchecked = $li;
             }
+            // Active Dropdown toolbar
+            const $toolbar_dropdown = $('.js-toolbar-dropdown'),
+                $counter = $('.js-toolbar-dropdown-button').find('.js-count'),
+                $album_control = $toolbar_dropdown.parent(),
+                selected_images_count = $('#photo-list :checkbox[name="photo_id[]"]:checked').length;
+
+            $album_control.toggleClass('is-fixed', !!selected_images_count);
+            if(selected_images_count) {
+                $counter.text(selected_images_count).show()
+            }else{
+                $counter.empty().hide()
+            }
+
         });
         function setCheckedBetween($from, $to, status) {
             if (!$from || !$to || !$from[0] || !$to[0] || $from.is($to[0])) {
@@ -3558,21 +3823,21 @@ $(function () {
                 } else {
                     $(this).closest('li').removeClass('selected');
                 }
-                $('#share-menu-block, #organize-menu-block').trigger('recount');
+                $('.js-toolbar-dropdown-button').trigger('recount');
             }
         );
 
     // Hide arrows over the photo if there are nowhere to go in its direction
-    $.photos.hooks_manager.bind('afterLoadPhoto', function() {
-        if ($.photos.photo_stream_cache.getPrev()) {
-            $('#p-block .p-one-photo > .p-image-nav.p-rewind').show();
-        } else {
-            $('#p-block .p-one-photo > .p-image-nav.p-rewind').hide();
+    $.photos.hooks_manager.bind('afterLoadPhoto', function(status) {
+        $('#p-block .p-one-photo > .p-image-nav .p-rewind').show();
+        $('#p-block .p-one-photo > .p-image-nav .p-ff').show();
+
+        if (status.first) {
+            $('#p-block .p-one-photo > .p-image-nav .p-rewind').hide();
         }
-        if ($.photos.photo_stream_cache.getNext()) {
-            $('#p-block .p-one-photo > .p-image-nav.p-ff').show();
-        } else {
-            $('#p-block .p-one-photo > .p-image-nav.p-ff').hide();
+
+        if (status.last) {
+            $('#p-block .p-one-photo > .p-image-nav .p-ff').hide();
         }
     });
 
@@ -3599,7 +3864,7 @@ function ToolbarMenu(selector, options)
         },
         enable: function(items) {
             if (!items) {
-                ul.parents('div:first').show();
+                ul.parents('section:first').show();
                 ul.activeMenu('fire');
             } else {
                 ul.activeMenu('enable', items);
@@ -3608,7 +3873,7 @@ function ToolbarMenu(selector, options)
         },
         disable: function(items) {
             if (!items) {
-                ul.parents('div:first').hide();
+                ul.parents('section:first').hide();
             } else {
                 ul.activeMenu('disable', items);
             }

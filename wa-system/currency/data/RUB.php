@@ -4,7 +4,7 @@ return array(
     'code' => 'RUB',
     'sign' => 'руб.',
 	'iso4217' => '643',
-    'sign_html' => '<span class="ruble">Р</span>',
+    'sign_html' => '<span class="ruble">₽</span>',
     'title' => 'Russian Rouble',
     'name' => array(
         array('rouble', 'roubles'),

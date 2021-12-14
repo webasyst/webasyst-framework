@@ -1,69 +1,75 @@
 {$_title = "[s`Captcha settings`] — {$wa->accountName(false)}"}
-<div class="s-captcha-settings-page blank block double-padded" id="s-captcha-settings-page">
-    <h1 class="s-page-header">[s`Captcha settings`]</h1>
-    <div class="s-description">[s`Select a type of captcha to be used on your websites.`]</div>
+<div class="article s-captcha-settings-page" id="s-captcha-settings-page">
+  <div class="article-body">
+    <h1 class="s-page-title">[s`Captcha settings`]</h1>
+    <p class="s-description">[s`Select a type of captcha to be used on your websites.`]</p>
     <div class="s-captcha-settings-fields-block">
-        <form action="?module=settingsCaptchaSave">
-            <div class="field-group">
+        <form action="?module=settingsCaptchaSave" class="fields">
+            <div class="fields-group">
                 <div class="field">
-                    <div class="name">[s`Captcha type`]</div>
-                    <div class="value no-shift">
-                        <label>
-                            <input type="radio" name="captcha" {if ifset($captcha) == 'waPHPCaptcha' || empty($captcha)}checked{/if} value="waPHPCaptcha"> [s`Webasyst Captcha`]
-                        </label>
+                    <div class="name for-checkbox">[s`Captcha type`]</div>
+                    <div class="value">
+                        <ul>
+                            <li>
+                                <label>
+                            <span class="wa-radio">
+                                <input type="radio" name="captcha" {if ifset($captcha) == 'waPHPCaptcha' || empty($captcha)}checked{/if} value="waPHPCaptcha">
+                            <span></span>
+                            </span>
+                                    [s`Webasyst Captcha`]
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <span class="wa-radio">
+                                        <input type="radio" name="captcha" {if ifset($captcha) == 'waReCaptcha'}checked{/if} value="waReCaptcha">
+                                    <span></span>
+                                    </span>
+                                    [s`Google reCAPTCHA`]
+                                    <div{if ifset($captcha) != 'waReCaptcha'} style="display: none"{/if} class="js-captcha-adapter-settings fields-group">
+                                    <div class="field">
+                                        <div class="name">[s`Site Key`]</div>
+                                        <div class="value">
+                                            <input type="text" name="captcha_options[sitekey]" value="{$captcha_options.sitekey|default:''|escape}">
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name">[s`Secret`]</div>
+                                        <div class="value">
+                                            <input type="text" name="captcha_options[secret]" value="{$captcha_options.secret|default:''|escape}"><br>
+                                            <p class="hint"><a href="https://www.google.com/recaptcha" target="_blank">[s`Get site key and secret for your website`]</a> <i class="fas fa-external-link-alt"></i></p>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name">
+                                            <label for="invisible">[s`Invisible mode`]</label>
+                                        </div>
+                                        <div class="value">
+                                            <span class="switch" id="invisible">
+                                                <input id="invisible" type="checkbox" name="captcha_options[invisible]" value="true"{if ifset($captcha_options.invisible)} checked{/if}>
+                                            </span>
+                                        </div>
+                                    </div>
                     </div>
-                    <div class="value no-shift">
-                        <label>
-                            <input type="radio" name="captcha" {if ifset($captcha) == 'waReCaptcha'}checked{/if} value="waReCaptcha"> [s`Google reCAPTCHA`]
-                            <br><br>
-                            <div{if ifset($captcha) != 'waReCaptcha'} style="display: none"{/if} class="js-captcha-adapter-settings">
-                                <div class="field">
-                                    <div class="name">[s`Site Key`]</div>
-                                    <div class="value">
-                                        <input type="text" name="captcha_options[sitekey]" value="{$captcha_options.sitekey|default:''|escape}">
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <div class="name">[s`Secret`]</div>
-                                    <div class="value">
-                                        <input type="text" name="captcha_options[secret]" value="{$captcha_options.secret|default:''|escape}"><br>
-                                        <span class="hint"><a href="https://www.google.com/recaptcha" target="_blank">[s`Get site key and secret for your website`]</a> <i class="icon16 new-window"></i></span>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <div class="name">
-                                        <label for="invisible">[s`Invisible mode`]</label>
-                                    </div>
-                                    <div class="value no-shift">
-                                        <label>
-                                            <input id="invisible" type="checkbox" name="captcha_options[invisible]" value="true"{if ifset($captcha_options.invisible)} checked{/if}>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </label>
+                    </label>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
-            <div class="s-form-buttons">
-                <div class="s-footer-actions js-footer-actions">
-                    <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
-                    <span class="s-hidden">
-                        <span style="margin: 0 4px;">[s`or`]</span>
-                        <a href="{$wa_backend_url}webasyst/settings/captcha/" class="js-cancel">[s`cancel`]</a>
-                    </span>
-                    <i class="icon16 loading s-loading" style="display: none;"></i>
-                </div>
-            </div>
+            {include file="./SettingsSaveBtn.inc.html" settings_page="captcha" inline}
         </form>
     </div>
+  </div>
 </div>
 <script>
     (function($) {
+        $("#invisible").waSwitch();
         new WASettingsCaptcha({
-            $wrapper: $("#s-captcha-settings-page")
+            $wrapper: $("#s-captcha-settings-page"),
+            wa2: true
         });
-        $.wa.setTitle({$_title|json_encode});
+        $.wa.title.set({$_title|json_encode});
     })(jQuery);
 </script>

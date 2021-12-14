@@ -79,7 +79,7 @@
                     return false;
                 }
                 if ($("#p-uploader").is(":hidden")) {
-                    $.photos.uploadDialog();
+                    $("#p-upload-link").trigger('click');
                 }
                 var that = $(this).data('fileupload'),
                     files = data.files;
@@ -96,8 +96,8 @@
                         data.isValidated) {
                     data.submit();
                 }
-                var cnt = that._files.children('li').length;
-                $('#p-upload-step2 h1').html($_('Upload photos (%d)').replace('%d', cnt) + ' <span class="hint">' + '</span>');
+                var cnt = that._files.children().length;
+                $('#p-upload-step2 h3').html($_('Upload photos (%d)').replace('%d', cnt) + ' <span class="hint">' + '</span>');
                 $('#p-upload-step1').hide();
                 $('#p-upload-step1-buttons').hide();
                 $('#upload-album-name-field').hide();
@@ -114,14 +114,14 @@
                     if (!that._validate(data.files)) {
                         return false;
                     }
-                };
+                }
                 //data.context.find('.p-upload-onephoto-progress').addClass('current');
                 if (data.context && data.dataType &&
                         data.dataType.substr(0, 6) === 'iframe') {
                     // Iframe Transport does not support progress events.
                     // In lack of an indeterminate progress bar, we set
                     // the progress to 100%, showing the full animated bar:
-                    data.context.find('.p-upload-onephoto-progress').css(
+                    data.context.find('.progressbar-inner').css(
                         'width',
                         parseInt(100, 10) + '%'
                     );
@@ -178,6 +178,9 @@
                         }, 5000);
                     }
                 }
+                if (n == that.filesCount) {
+                    $('#p-uploader').find('.js-close-dialog').trigger('click');
+                }
             },
             // Callback for failed (abort or error) uploads:
             fail: function (e, data) {
@@ -228,7 +231,7 @@
             progress: function (e, data) {
                 if (data.context) {
 
-                    data.context.find('.p-upload-onephoto-progress').css(
+                    data.context.find('.progressbar-inner').css(
                         'width',
                         parseInt(data.loaded / data.total * 90, 10) + '%'
                     );
@@ -268,7 +271,7 @@
             },
             // Callback for uploads stop, equivalent to the global ajaxStop event:
             stop: function (e) {
-                var self = $(this);
+                const self = $(this);
                 $("#p-upload-filescount").html('100%');
                 self.find('.fileupload-progressbar').animate({
                     'width': '100%'
@@ -283,11 +286,12 @@
                 var files_count = that.filesCount;
 
                 if (files_count) {
-                    var waiting = 2;
-                    var data = null;
-                    var showMessage = function() {
+                    let waiting = 2,
+                        data = null;
+
+                    const showMessage = function() {
                         var $place_for_messages = $('#place-for-messages').hide();
-                        $place_for_messages.html('<p><span class="highlighted"><i class="icon10 yes"></i> <em></em></span></p>').slideDown();
+                        $place_for_messages.html('<p><span class="highlighted"><i class="fas fa-check fa-xs"></i> <em></em></span></p>').slideDown();
                         $place_for_messages.find('.highlighted em').text(data);
                         setTimeout(function() {
                             $place_for_messages.slideUp(function() {
@@ -295,10 +299,12 @@
                             });
                         }, 5000);
                     };
+
                     $('#content').one('photos_list_load', function() {
                         waiting--;
                         !waiting && showMessage();
                     });
+
                     // log action and get localized message at the same time
                     $.get('?module=backend&action=log&action_to_log=photos_upload&count='+files_count, {'ids': that.filesIds}, function(r) {
                         data = r.data;
@@ -328,7 +334,6 @@
                             }
                         }
                     }
-                    $('#p-uploader').trigger('close');
                 }
                 self.data('is_error', false);
                 self.data('is_aborted', false);
@@ -576,7 +581,7 @@
         },
 
         _initButtonBarEventHandlers: function () {
-            var fileUploadButtonBar = this.element.find('.dialog-buttons'),
+            var fileUploadButtonBar = this.element.find('.dialog-footer'),
                 filesList = this._files,
                 ns = this.options.namespace,
                 that = this;

@@ -71,7 +71,8 @@ class webasystBackendCheatSheetActions extends waActions
             'data'             => ifset($options, array())
         );
 
-        return $this->display($assign, $this->getConfig()->getRootPath().'/wa-system/page/templates/Button.html');
+        $this->setTemplate('Button.html', true);
+        return $this->display($assign);
     }
 
     public function cheatSheetAction()
@@ -82,7 +83,7 @@ class webasystBackendCheatSheetActions extends waActions
         $only_plugin = waRequest::request('only_plugin', 0, waRequest::TYPE_INT);
         $custom_template = waRequest::request('custom_template', null, waRequest::TYPE_STRING);
 
-        $template = $this->getConfig()->getRootPath().'/wa-system/page/templates/Help.html';
+        $template = null;
 
         if (empty($only_plugin) || (int)$only_plugin === 0) {
             $assign = array(
@@ -112,6 +113,11 @@ class webasystBackendCheatSheetActions extends waActions
                 throw new waException('Plugin template not found');
             }
             $template = $custom_template_path;
+        }
+
+        // set default template for this action, otherwise will be used custom template ($custom_template_path)
+        if (!$template) {
+            $this->setTemplate('Help.html', true);
         }
 
         return $this->display($assign, $template);
@@ -417,5 +423,37 @@ class webasystBackendCheatSheetActions extends waActions
             '{if}...{else}...{/if}'                                 => _ws('Similar to PHP if statements'),
             '{foreach $a as $k => $v}...{foreachelse}...{/foreach}' => _ws('{foreach} is for looping over arrays of data'),
         );
+    }
+
+    /**
+     * Default path of legacy templates for this action
+     * @inheritDoc
+     */
+    protected function getLegacyTemplateDir()
+    {
+        return $this->getConfig()->getRootPath().'/wa-system/page/templates-legacy/';
+    }
+
+    /**
+     * Default path of templates for this action
+     * @inheritDoc
+     */
+    protected function getTemplateDir()
+    {
+        return $this->getConfig()->getRootPath().'/wa-system/page/templates/';
+    }
+
+    protected function whichUI($app_id = null)
+    {
+        $ui = $this->getRequest()->get('ui');
+
+        // control UI version of cheat sheet UI block
+        // it is all temporary
+        if (!$ui) {
+            return parent::whichUI($app_id);
+        }
+
+        $ui = $ui === '2.0' ? '2.0' : '1.3';
+        return $ui;
     }
 }

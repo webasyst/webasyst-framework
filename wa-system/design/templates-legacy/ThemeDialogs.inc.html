@@ -1,0 +1,324 @@
+{* DIALOGS *}
+{* Theme update *}
+<div class="width650px height400px" id="wa-theme-update-dialog"></div>
+{* Theme reset *}
+<div class="dialog width500px height200px" id="wa-theme-reset-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Revert to original`]</h1>
+                    <p><i class="icon10 exclamation"></i> [s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?`]</p>
+
+                    {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
+                        <label>
+                            <input type="checkbox" name="parent" value="1"> {sprintf("[s`Drop all customizations and revert parent theme <strong>%s</strong> to the original version too`]", $theme.parent_theme_id)}
+                        </label>
+                    {/if}
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="hidden" name="theme" value="{$theme.id}">
+                    <input type="submit" class="button red" value="[s`Revert to original`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{* Theme Start using *}
+<div class="dialog width600px height300px" id="wa-theme-start-using-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>{$theme.name}</h1>
+                    <p>{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
+
+                    <div class="fields width100px form">
+                        <div class="field">
+                            <div class="name">[s`Existing route`]</div>
+                            {foreach $routes as $r}
+                                <div class="value no-shift">
+                                    <label>
+                                        <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
+                                        {waIdna::dec($r._domain)}/{$r.url}
+                                        <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
+                                    </label>
+                                </div>
+                                {foreachelse}
+                                <div class="value gray">
+                                    {sprintf('[s`There are no routes for %s app on this site yet.`]', $app.name)}
+                                </div>
+                            {/foreach}
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`New route`]</div>
+                            <div class="value">
+                                <input name="route" id="create-new-route-choice" value="new" type="radio"{if !count($routes)} checked{/if}>
+
+                                {if count($domains) == 1}
+                                    <input name="domain" type="hidden" value="{current($domains)}">
+                                    {current($domains)}/{else}
+                                    <select name="domain" class="create-new-route-control">
+                                        {foreach $domains as $d}
+                                            <option value="{$d}">{str_replace('www.','',$d)|truncate:23:'...':false:true}</option>
+                                        {/foreach}
+                                    </select>/
+                                {/if}
+                                <input type="text" name="url" value="" placeholder="*" class="short create-new-route-control">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="value">
+                                <label>
+                                    <input type="checkbox" name="mobile_only" value="1" {if $theme.id == 'mobile'}checked{/if}>
+                                    [s`Apply this theme for mobile devices only`]
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="hidden" name="theme" value="{$theme.id}">
+                    <input type="submit" class="button green" value="{sprintf("[s`Start using %s theme`]", $theme.name)}">
+                    [s`or`] <a href="#" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{* Theme rename *}
+<div class="dialog height250px" id="wa-theme-name-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Rename theme`]</h1>
+                    <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
+                    <div class="fields form">
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme name`]
+                            </div>
+                            <div class="value">
+                                <input type="text" id="wa-theme-rename-name" name="name" value="{$theme.name|escape}" >
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme ID`]
+                            </div>
+                            <div class="value">
+                                {$path}/<input type="text" id="wa-theme-rename-id" name="id" value="{$theme.id}"  class="bold">
+                            </div>
+                            <div class="value">
+                                <p class="small"><i class="icon10 exclamation"></i> [s`IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error.`]</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Save`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{* Theme copy *}
+<div class="dialog height200px" id="wa-theme-copy-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Clone theme`]</h1>
+                    <div class="fields form">
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme name`]
+                            </div>
+                            <div class="value">
+                                <input type="text" id="wa-theme-copy-name" name="name" value="{$theme.name|escape} 1" >
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme ID`]
+                            </div>
+                            <div class="value">
+                                <input type="text" id="wa-theme-copy-id" name="id" value="{$theme.id}1"  class="bold">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                [s`Themes to clone`]
+                            </div>
+                            <div class="value no-shift">
+                                <label><strong><input name="related" type="radio" value="1" checked="checked">&nbsp;{'[`All %s themes (recommended)`]'|sprintf:$theme.name|escape}</strong></label>
+                            </div>
+                            <div class="value no-shift">
+                                <label><input name="related" type="radio" value="0">&nbsp;{'[`Only %s theme for this app (%s)`]'|sprintf:$theme.name:ifempty($apps[$theme.app]['name'],$theme.app)|escape}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Clone theme`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{* Theme download *}
+<div class="dialog height300px" id="wa-theme-download-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>{$theme.name|escape}</h1>
+                    <ul class="menu-v with-icons">
+                        {foreach $theme.related_themes as $related_theme_id => $related_theme}
+                            <li{if ($theme.app_id==$related_theme.app_id)||($theme.parent_theme_id==$related_theme_id)} class="bold"{/if}><a href="?module=design&amp;action=themeDownload&amp;theme={$related_theme.id}&amp;app_id={$related_theme.app_id}"><i class="icon16 download"></i>{sprintf('[s`%s theme (version %s) for %s app`]',$related_theme.name,$related_theme.version,ifempty($apps[$related_theme.app_id]['name'],$related_theme.app))|escape} <span class="hint nowrap">.tar.gz</span></a></li>
+                        {/foreach}
+
+                    </ul>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <a href="#/design/themes/" class="cancel button">[s`Close`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{* Theme parent *}
+<div class="dialog width650px height250px" id="wa-theme-parent-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Parent theme`]</h1>
+                    <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
+                    <div class="fields form">
+                        <div class="field">
+                            <div class="name">
+                                [s`Change parent theme`]
+                            </div>
+                            <div class="value">
+                                <input type="hidden" name="id" value="{$theme.id}">
+                                <select name="parent_theme_id">
+                                    <option value=""{if !$theme.parent_theme_id} selected="selected"{/if}>[s`Not set`]</option>
+                                    {foreach $parent_themes as $app_id => $info}
+                                        <optgroup label="{$info.name|escape}" title="{$app_id}">
+                                            {foreach $info.themes as $parent_theme_id => $theme_name}
+                                                {$parent_theme_id = "`$app_id`:`$parent_theme_id`"}
+                                                <option value="{$parent_theme_id}" title="{$parent_theme_id}"{if $parent_theme_id eq $theme.parent_theme_id} selected="selected"{else if ($parent_theme_id eq "`$theme.app_id`:`$theme.id`") || ($parent_theme_id eq $theme.id)} disabled="disabled"{/if}>{$theme_name|escape} ({$parent_theme_id})</option>
+                                            {/foreach}
+                                        </optgroup>
+                                    {/foreach}
+                                </select>
+                            </div>
+                            <div class="value">
+                                <p class="small"><i class="icon10 exclamation"></i>[s`IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme.`]</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Save`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{* Import theme settings *}
+<div class="dialog width600px height200px" id="wa-theme-import-settings-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <div class="block double-padded wa-theme-settings-import-message">[s`Current design settings will be lost during import. Export current settings before import to restore them later, if necessary.`]</div>
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Import theme settings`]</h1>
+                    <div class="fields form">
+                        <div class="field">
+                            <div class="name">
+                                [s`Select archive`]
+                            </div>
+                            <div class="value">
+                                <div class="js-input-wrapper">
+                                    <input type="file" name="theme_settings" accept=".tar.gz">
+                                    <div class="hint">[s`Select a TAR.GZ archive file`]</div>
+                                </div>
+                                <div class="wa-archive-name js-archive-name"></div>
+                            </div>
+                        </div>
+                        <div class="wa-theme-settings-import-dialog-error js-error-place"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Import`]" disabled="disabled">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                    <i class="icon16 loading" style="vertical-align: middle; margin-left: 6px; display: none;"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{* Blocking the removal of the design theme *}
+<div class="dialog width600px height200px" id="wa-theme-blocking-removal-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <div class="dialog-content block double-padded">
+            <h1>[s`Unable to delete design theme`]</h1>
+            <p>
+                [s`This design theme is still in use on your website.`]
+                [s`To delete this theme, first select another theme in the following settlements’ settings:`]
+            </p>
+            <ul>
+                {foreach $theme_routes as $_r}
+                    <li>
+                        <a target="_blank" href="{$_r._url}" class="no-underline">{$_r._domain_decoded}/{$_r.url} <i class="icon10 new-window"></i></a>
+                    </li>
+                {/foreach}
+            </ul>
+            <div class="clear"></div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <input type="submit" class="cancel button" value="[s`Close`]">
+            </div>
+        </div>
+    </div>
+</div>

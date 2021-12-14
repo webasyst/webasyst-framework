@@ -1,0 +1,58 @@
+{$_title = ".paging"}
+{$wa->title($_title)}
+
+{function name="_render"}
+<ul class="paging">
+    <li><a href="javascript:void(0);">←</a></li>
+    <li><a href="javascript:void(0);">1</a></li>
+    <li><a href="javascript:void(0);">2</a></li>
+    <li><a href="javascript:void(0);">3</a></li>
+    <li class="selected"><a href="javascript:void(0);">4</a></li>
+    <li><a href="javascript:void(0);">5</a></li>
+    <li><span>...</span></li>
+    <li><a href="javascript:void(0);">21</a></li>
+    <li><a href="javascript:void(0);">→</a></li>
+</ul>
+{/function}
+
+{function name="_renderMobile"}
+<ul class="paging">
+    <li><a href="javascript:void(0);">←</a></li>
+    <li><a href="javascript:void(0);">1</a></li>
+    <li class="selected"><a href="javascript:void(0);">2</a></li>
+    <li><a href="javascript:void(0);">3</a></li>
+    <li><span>...</span></li>
+    <li><a href="javascript:void(0);">21</a></li>
+    <li><a href="javascript:void(0);">→</a></li>
+</ul>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>В общем случае в интерфейсах приложений Webasyst рекомендуется использовать автоматическую подгрузку контента (lazy loading). Но если необходимо ручное управление, то оформить его следует (желательно, внизу страницы) примерно так:</p>
+
+    <div class="line desktop-and-tablet-only">
+        {_render}
+    </div>
+
+    <div class="line mobile-only">
+        {_renderMobile}
+    </div>
+
+    <div class="line desktop-and-tablet-only">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <div class="line mobile-only">
+        <pre class="prettyprint">{_renderMobile|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

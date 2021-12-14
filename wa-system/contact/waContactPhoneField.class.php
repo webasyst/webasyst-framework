@@ -110,16 +110,23 @@ class waContactPhoneField extends waContactStringField
     public function validate($data, $contact_id=null)
     {
         $errors = parent::validate($data, $contact_id);
-        if ($errors) {
-            return $errors;
+        if (!$errors) {
+            $errors = $this->validateUniquenessAmongAuthorizedContacts($data, $contact_id);
         }
+        return $errors;
+    }
 
+    protected function validateUniquenessAmongAuthorizedContacts($data, $contact_id)
+    {
+        $errors = null;
         if ($this->isMulti()) {
             if (!empty($data[0])  && $contact_id) {
                 $value = $this->format($data[0], 'value');
                 $phone_exists = $this->phoneExistsAmongAuthorizedContacts($value, $contact_id);
                 if ($phone_exists) {
-                    $errors[0] = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
+                    $errors = [
+                        sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'))
+                    ];
                 }
             }
         } else {
@@ -137,7 +144,7 @@ class waContactPhoneField extends waContactStringField
      * Checks that suggested phone value for current contact ALREADY exists among all default phones of authorized contacts
      * Authorize contact is contact with password != 0
      * @param string $suggested_phone_value
-     * @param id|null $contact_id
+     * @param int|null $contact_id
      * @return bool
      */
     protected function phoneExistsAmongAuthorizedContacts($suggested_phone_value, $contact_id = null)

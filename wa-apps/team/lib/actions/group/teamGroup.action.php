@@ -14,7 +14,11 @@ class teamGroupAction extends teamUsersAction
         $gm = new teamWaGroupModel();
         $group = $gm->getGroup($group_id);
         if (!$group) {
-            $this->setTemplate('templates/actions/404.html');
+            if(wa()->whichUI() === '1.3') {
+                $this->setTemplate('templates/actions-legacy/404.html');
+            }else{
+                $this->setTemplate('templates/actions/404.html');
+            }
             $this->view->assign('error', _w('Group not found'));
         } else {
             $sort = $this->getSort();
@@ -29,7 +33,10 @@ class teamGroupAction extends teamUsersAction
                 'additional_fields' => array(
                     'update_datetime' => 'cg.datetime',
                 ),
+                'fields' => teamUser::getFields('default').',_online_status',
             ));
+
+            $users_state = $this->usersState($contacts);
 
             $this->view->assign(array(
                 'group'            => $group,
@@ -37,6 +44,9 @@ class teamGroupAction extends teamUsersAction
                 'can_manage_group' => teamHelper::hasRights('manage_group.' . $group_id),
                 'sort'             => $sort,
                 'map_adapter'     => $map_adapter,
+                'geocoding' => $tasm->getGeocodingOptions(),
+                'online' => $users_state['online'],
+                'offline' => $users_state['offline'],
             ));
         }
     }

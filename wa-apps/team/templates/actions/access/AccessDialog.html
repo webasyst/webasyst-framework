@@ -1,62 +1,63 @@
 {strip}
 
 {$_active_type = ""}
+{$_inherited_group_text = '[`Access inherited from user groups`] <i class="fas fa-users"></i>'}
+{$_not_inherited_group_text = '[`Access granted for the user individually`] <i class="fas fa-user"></i>'}
 
-<div class="t-dialog-wrapper is-full-screen t-access-dialog" id="t-access-dialog">
-    <div class="t-dialog-background"></div>
-    <div class="t-dialog-block">
-        <header class="t-dialog-header">
-            <div class="t-text">
-                <span class="t-user">
+<div class="dialog t-access-dialog" id="t-access-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body" style="width: 800px;">
+        <header class="dialog-header flexbox vertical middle">
+            <div class="t-text flexbox middle wrap align-center custom-mb-16">
+                <h3 class="t-user custom-m-0 custom-mr-auto custom-ml-auto">
                     {if $user}
-                        {$_userpic = $user->getPhoto(16)}
+                        {$_userpic = $user->getPhoto(32)}
                         {if !empty($_userpic)}
-                            <i class="icon16 kill-wa-style t-userpic" style="background-image: url('{$_userpic}')"></i>
+                            <i class="t-userpic icon userpic size-30" style="background-image: url('{$_userpic}')"></i>
                         {/if}
-                        {$user.name|escape}
+                        <span class="custom-mx-8">{$user.name|escape}</span>
                     {else}
                         {if !empty($group.icon)}
-                            <i class="icon16 t-group-icon {$group.icon}"></i>
+                            <i class="t-group-icon {$group.icon}"></i>
                         {/if}
-                        {$group.name|escape}
+                        <span class="custom-mx-8">{$group.name|escape}</span>
                     {/if}
-                </span>
-
+                    <span>→</span>
+                </h3>
+                <h3 class="custom-my-0 custom-mx-auto">
                 {if !empty($app)}
                     <span class="t-app">
-                        {if !empty($app.icon) && !empty($app.icon["16"])}
-                            <i class="icon16 kill-wa-style t-icon" style="background-image: url('{$wa_url}{$app.icon["16"]}')"></i>
+                        {if !empty($app.icon) && !empty($app.icon["48"])}
+                            <img src="{$wa_url}{$app.icon["48"]}" class="t-app-icon" alt="{$app.name}">
                         {/if}
-                        {$app.name}
+                        <span class="custom-ml-8">{$app.name}</span>
                     </span>
                 {/if}
+                </h3>
             </div>
-        </header>
 
-        <div class="t-dialog-content">
-
-            {* Three buttons to switch access levels *}
-            <div class="t-access-list">
+            <div class="t-access-list toggle small">
                 {foreach $access_levels as $type}
                     {if !empty($type.is_active)}
                         {$_active_type = $type.id}
                     {/if}
 
-                    <div class="t-access-item type-{$type.id} {if !empty($type.is_active)}is-active{/if} {if !empty($type.is_disabled)}is-disabled{/if}"
-                        data-access-id="{$type.id}"
-                        {if !empty($type.is_disabled)}data-reason-disabled="{$type.is_disabled|escape}"{/if}
+                    <span class="t-access-item type-{$type.id} {if !empty($type.is_active)}selected{/if} {if !empty($type.is_disabled)}disabled{/if}"
+                         data-access-id="{$type.id}"
+                         {if !empty($type.is_disabled)}data-reason-disabled="{$type.is_disabled|escape}"{/if}
                     >
-                        <div class="t-access-name">
-                            {$type.name|escape}
-                        </div>
-                    </div>
+                        {$type.name|escape}
+                    </span>
 
                 {/foreach}
             </div>
+        </header>
+
+        <div class="dialog-content small">
 
             {* Limited access customization form *}
             {if empty($access_levels.limited.is_disabled)}
-                <div class="t-limited-access-form"{if empty($access_levels.limited.is_active)} style="display:none;"{/if}>
+                <div class="t-limited-access-form{if empty($access_levels.limited.is_active)} hidden{/if}">
                     <form action="{$wa_app_url}?module=accessSave&action=rights&id={$contact_id}">
                         <div class="c-access-app-limited">
                             <input type="hidden" name="app_id" value="{$app.id}">
@@ -66,23 +67,35 @@
                 </div>
             {/if}
 
-            <p class="align-center italic t-hint js-access-no" style="{if $_active_type != "no"}display: none;{/if}">[`The app icon will not be shown in the app menu.`]</p>
-            <p class="align-center italic t-hint js-access-full" style="{if $_active_type != "full"}display: none;{/if}">[`Full admin access to the app and its data.`]</p>
+            <p class="align-center italic custom-m-0 js-access no{if $_active_type != "no"} hidden{/if}">
+                [`The app icon will not be shown in the app menu.`]
+            </p>
+            <p class="align-center italic custom-m-0 js-access full{if $_active_type != "full"} hidden{/if}">
+                [`Full admin access to the app and its data.`]
+                {if $user}
+                    <span class="gray custom-mt-8" style="display: block; font-style: normal">
+                        {if $access_levels['full']['is_group_inherited']}
+                            {$_inherited_group_text}
+                        {else}
+                            {$_not_inherited_group_text}
+                        {/if}
+                    </span>
+                {/if}
+            </p>
+
         </div>
 
-        <footer class="t-dialog-footer">
-            <div class="t-actions">
-                <input type="submit" class="button green t-button" value="[`Save`]">
-                <span style="margin: 0 4px;">[`or`]</span>
-                <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+        <footer class="dialog-footer">
+                <input type="submit" class="button" value="[`Save`]">
 
-                <span class="t-notice t-loading">
-                    <i class="icon16 loading"></i> [`Saving`]
+                <a class="button light-gray js-close-dialog" href="javascript:void(0);">[`Cancel`]</a>
+
+                <span class="t-notice t-loading hidden">
+                    <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000 loading"></i> [`Saving`]
                 </span>
-                <span class="t-notice t-success">
-                    <i class="icon16 yes"></i> [`Saved`]
+                <span class="t-notice t-success hidden">
+                    <i class="fas fa-check-circle text-green"></i> [`Saved`]
                 </span>
-            </div>
         </footer>
     </div>
 </div>
@@ -90,12 +103,15 @@
 {/strip}
 
 <script>(function($) { "use strict";
-
+    const $wrapper = $("#t-access-dialog");
     new AccessDialog({
-        $wrapper: $("#t-access-dialog"),
+        $wrapper,
         wa_app_url: {$wa_app_url|json_encode},
         app_id: {$app.id|json_encode},
         contact_id: {$contact_id|json_encode}
+    });
+    $wrapper.find('[data-wa-tooltip-content]').waTooltip({
+        maxWidth: 240
     });
 
 })(jQuery);</script>

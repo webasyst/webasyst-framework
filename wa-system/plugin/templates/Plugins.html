@@ -1,4 +1,3 @@
-{if !empty($shadowed)}<div class="shadowed">{/if}
 <link href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css" type="text/css" rel="stylesheet"/>
 
 <script type="text/javascript" src="{$wa_url}wa-content/js/codemirror/lib/codemirror.js"></script>
@@ -9,65 +8,67 @@
 <script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js?{$wa->version(true)}"></script>
 
 {$plugin_names = array()}
-
-<style>
-    .wa-inner-sidebar { padding-top: 18px; }
-    .wa-inner-sidebar ul.menu-v li.selected a { background: #e7e7e7; }
-    .wa-plugins form { overflow: visible; }
-    #wa-plugin-list h6 { margin-left: 5px; }
-</style>
-
-{if !empty($container_before_html)}{$container_before_html}{/if}
-
-<div id="wa-plugins-container"{if !empty($container_class)} class="{$container_class}"{/if}>
-
-    <div class="sidebar left200px">
-        <div class="wa-inner-sidebar">
-            <ul class="menu-v with-icons stack" id="wa-plugin-list">
-                {if !empty($installer)}
-                <li id="wa-plugins-list" class="selected bottom-padded" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}">
-                    <a href="{$plugins_hash}/"><i class="icon16 star"></i>[s`Popular plugins`]</a>
-                </li>
-                {if !empty($plugins)}<h6 class="heading">[s`Installed`]</h6>{/if}
+<div id="wa-plugins-container" class="content flexbox{if !empty($container_class)} {$container_class}{/if}">
+    <div class="sidebar hide-scrollbar flexbox width-21rem bordered-right bordered-left">
+            <div class="sidebar-body hide-scrollbar{if empty($installer)} custom-pt-16{/if}">
+                <ul class="menu js-plugin-list" id="wa-plugin-list">
+                    {*if !empty($installer)}
+                    <li id="wa-plugins-list" class="selected js-plugins-list" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}">
+                        <a href="{$plugins_hash}/">
+                            <span class="icon"><i class="fas fa-star"></i></span>
+                            <span>[s`Popular plugins`]</span>
+                        </a>
+                    </li>
+                    {/if*}
+                    {foreach $plugins as $plugin}
+                        {$plugin_names[$plugin.id] = $plugin.name|escape}
+                        <li id="plugin-{$plugin.id}"{if !empty($plugin.custom_settings_url)} data-url="{$plugin.custom_settings_url}"{elseif !empty($plugin.custom_settings)} data-settings="1"{/if}>
+                            <a href="{$plugins_hash}/{$plugin.id}/">
+                                {if !isset($plugin.img)}
+                                    <i class="fas fa-plug"></i>
+                                {else}
+                                    <span class="icon">
+                                        <img src="{wa_url()}{$plugin.img}" alt="" class="size-20" />
+                                    </span>
+                                {/if}
+                                <span>{$plugin.name|escape}
+                                    {if !empty($plugin.description)}
+                                        <p class="hint">{$plugin.description|escape}</p>
+                                    {/if}
+                                </span>
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+                {if empty($plugins)}
+                    <div class="align-center gray box custom-mt-16">
+                        [s`No plugins are installed.`]
+                    </div>
                 {/if}
-                {foreach $plugins as $plugin}
-                {$plugin_names[$plugin.id] = $plugin.name|escape}
-                <li id="plugin-{$plugin.id}" {if !empty($plugin.custom_settings_url)}data-url="{$plugin.custom_settings_url}"{elseif !empty($plugin.custom_settings)}data-settings="1"{/if}>
-                <a href="{$plugins_hash}/{$plugin.id}/">
-                    <i class="icon16{if !isset($plugin.img)} plugins{else}" style="background-image: url('{wa_url()}{$plugin.img}'); background-size: 16px 16px;{/if}"></i>{$plugin.name|escape}
-                    {if !empty($plugin.description)}
-                    <span class="hint">{$plugin.description|escape}</span>
-                    {/if}
-                </a>
-                </li>
-                {/foreach}
-            </ul>
-            {if empty($plugins)}
-            {* nothing was displayed in foreach above *}
-            <div class="align-center hint hr block double-padded">
-                <p>
-                    [s`No plugins are installed.`]
-                </p>
+
+                {if $wa->user()->getRights('installer')}
+                    <div class="box custom-mt-0">
+                        {*<a href="{$wa_backend_url}installer/store/app/{$wa->app()}/plugins/" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>*}
+                        <a href="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>
+                    </div>
+                {/if}
+
             </div>
-            {/if}
         </div>
-    </div>
-    <div class="content left200px blank bordered-left">
-        <div id="wa-plugins-content">
-            <span>{if !empty($plugins)||!empty($installer)}[s`Loading...`]<i class="icon16 loading"></i>{/if}</span>
+    <div class="article content">
+        <div id="wa-plugins-content" class="article-body">
+            {if !empty($plugins)||!empty($installer)}[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>{/if}
         </div>
-        <div class="clear-both"></div>
     </div>
 </div>
 
 <script type="text/javascript">
 (function ($) {
-
     var plugins_title = {_w('Plugins')|json_encode};
 
     $.plugins = {
         options: {
-            loading: '<i class="icon16 loading"></i>',
+            loading: '<i class="fas fa-spinner fa-spin loading"></i>',
             path: '{$plugins_hash}/',
             useIframeTransport: false
         },
@@ -79,9 +80,9 @@
             }
         },
         icon: {
-            submit: '<i style="vertical-align:middle" class="icon16 loading"></i>',
-            success: '<i style="vertical-align:middle" class="icon16 yes"></i>',
-            error: '<i style="vertical-align:middle" class="icon16 no"></i>'
+            submit: '<i class="fas fa-spinner fa-spin loading"></i>',
+            success: '<i class="fas fa-check-circle"></i>',
+            error: '<i class="fas fa-times-circle"></i>'
         },
 
         ready: false,
@@ -96,7 +97,7 @@
             this.options = $.extend(this.options, options || { });
             if (!this.ready) {
                 this.ready = true;
-                this.$menu = $('#wa-plugin-list');
+                this.$menu = $('.js-plugin-list');
 
                 // Set up AJAX to never use cache
                 $.ajaxSetup({
@@ -120,12 +121,12 @@
 
                 this.dispatch(location.hash, true);
 
-                if (this.$menu.find('> li:not(#wa-plugins-list) > a').length) {
+                if (this.$menu.find('> li:not(.js-plugins-list) > a').length) {
                     this.helper.loadJqUI(function() {
                         $.plugins.$menu.sortable({
                             containment: 'parent',
                             distance: 5,
-                            items: '> li:not(#wa-plugins-list)',
+                            items: '> li:not(.js-plugins-list)',
                             tolerance: 'pointer',
                             update: $.plugins.sortHandler
                         });
@@ -194,13 +195,18 @@
             var $content = $('#wa-plugins-content');
             this.path.tail = null;
 
-            $plugin = $(path.plugin ? ("#plugin-" + path.plugin) : '#wa-plugins-list');
+            $plugin = $(path.plugin ? ("#plugin-" + path.plugin) : '.js-plugins-list');
             if (!$plugin.length) {
+                let hash = $('.js-plugin-list').find('> li:first-child > a').attr('href');
+                if (hash) {
+                    $.wa.setHash(hash)
+                }
                 return;
             }
+
             var url = this.helper.getContentUrl($plugin, path);
             if (!url) {
-                return;
+              return;
             }
 
             this.path.plugin = path.plugin;
@@ -209,44 +215,50 @@
                 this.xhr.abort();
             }
 
+            $plugin.on('click', function(e) {
+                e.preventDefault();
+
+                getContent();
+            });
+
             $content.html(this.options.loading);
             var self = this;
-            this.xhr = $.ajax({
+
+            getContent();
+
+            function getContent() {
+              this.xhr = $.ajax({
                 url: url,
                 success: function (data) {
-                    self.xhr = null;
-                    if (self.path.plugin == path.plugin) {
+                  self.xhr = null;
+                  if (self.path.plugin == path.plugin) {
 
-                        // If this is not a list of plugins, add paddings
-                        if (!$plugin.is('#wa-plugins-list')) {
-                            data = $('<div/>').html('<div class="block double-padded">'+ data +'</div>').html();
-                        }
-
-                        $content.html(data);
-                        // update title
-                        if (self.path.plugin) {
-                            document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
-                        } else {
-                            document.title = plugins_title + self.options.title_suffix;
-                        }
-
-                        self.$menu.find('li.selected').removeClass('selected');
-                        var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
-                        self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
-
-                        if (!self.options.useIframeTransport) {
-                            $('#plugins-settings-form').submit(function () {
-                                self.saveHandlerAjax(this);
-                                return false;
-                            });
-                        } else {
-                            $('#plugins-settings-form').submit(function () {
-                                self.saveHandlerIframe(this);
-                            });
-                        }
+                    $content.html(data);
+                    // update title
+                    if (self.path.plugin) {
+                      document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
+                    } else {
+                      document.title = plugins_title + self.options.title_suffix;
                     }
+
+                    self.$menu.find('li.selected').removeClass('selected');
+                    var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
+                    self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
+
+                    if (!self.options.useIframeTransport) {
+                      $('#plugins-settings-form').submit(function () {
+                        self.saveHandlerAjax(this);
+                        return false;
+                      });
+                    } else {
+                      $('#plugins-settings-form').submit(function () {
+                        self.saveHandlerIframe(this);
+                      });
+                    }
+                  }
                 }
-            });
+              });
+            }
         },
 
         saveHandlerIframe: function (form) {
@@ -426,14 +438,14 @@
 
 
     $.plugins.init({
-        'wa_url': {json_encode($wa_url)},
-        'loading': '{"<div class=\"block double-padded\">[`Loading...`] <i class=\"icon16 loading\"></i></div>"|escape:'javascript'}',
+        'wa_url': {$wa_url|json_encode},
+        'loading': {'<div class="box">[`Loading...`] <i class="fas fa-spinner fa-spin loading"></i></div>'|json_encode},
         'title_suffix': ' — {$wa->accountName(false)|escape:'javascript'}',
-        'plugin_names': {json_encode($plugin_names)}
+        'plugin_names': {$plugin_names|json_encode}
     });
 
     {if empty($is_ajax)}
-        $('#wa-plugin-list a').click(function  () {
+        $('.js-plugin-list a').on('click', function  () {
             $.plugins.dispatch($(this).attr('href'), true);
             return false;
         });
@@ -441,4 +453,3 @@
 
 })(jQuery);
 </script>
-{if !empty($shadowed)}</div>{/if}

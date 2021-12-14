@@ -1,0 +1,515 @@
+{$_title = ".waDialog()"}
+{$wa->title($_title)}
+
+{function name="_dialog_html" id=""}
+<div class="dialog" id="{$id|default:""}">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        <header class="dialog-header"><h1>Header</h1></header>
+        <div class="dialog-content">Content</div>
+        <footer class="dialog-footer">
+            <button class="js-close-dialog button light-gray">Close</button>
+        </footer>
+    </div>
+</div>
+{/function}
+
+{function name="_render_dialog"}
+<button class="js-show-dialog button purple">Показать простой диалог</button>
+<script>
+    ( function($) {
+        var dialog_html = {_dialog_html|strip|json_encode};
+
+        $(".js-show-dialog").on("click", function() {
+            var dialog = $.waDialog({
+                html: dialog_html
+            });
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_dialog_2"}
+<button class="js-show-dialog-2 button purple">Показать диалог 2</button>
+<script>
+    ( function($) {
+        var $wrapper = $({_dialog_html|strip|json_encode});
+
+        $(".js-show-dialog-2").on("click", function() {
+            var dialog = $.waDialog({
+                $wrapper: $wrapper
+            });
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_dialog_3"}
+<button class="js-show-dialog-3 button purple">Показать диалог 3</button>
+<button class="js-show-dialog-4 button purple">Показать диалог 4</button>
+<button class="js-show-dialog-5 button purple">Показать диалог 5</button>
+<script>
+    ( function($) {
+        $(".js-show-dialog-3").on("click", function() {
+            var dialog = $.waDialog({
+                header: $("<h2 />").text("Я крутой заголовок"),
+                content: $("<div />").text("Я превосходный текст"),
+                footer: $("<div />").text("Я стойкий подвал")
+            });
+        });
+
+        $(".js-show-dialog-4").on("click", function() {
+            var dialog = $.waDialog({
+                content: "Текст"
+            });
+        });
+
+        var $header = $("<h2 />");
+        var $content = $("<div><form><input type='text' name='name'> Название</form></div>");
+        var $footer = $("<div><input class='button js-submit-form' type='submit' value='Сохранить'><button class='js-close-dialog'>Закрыть</button></div>");
+        var $form = $content.find("form");
+        var index = 1;
+
+        $form.on("submit", function(event) {
+            event.preventDefault();
+            console.log( $(this).serializeArray() );
+        });
+
+        $footer.find(".js-submit-form").on("click", function() {
+            $form.trigger("submit");
+        });
+
+        var dialog = false;
+
+        $(".js-show-dialog-5").on("click", function() {
+            if (dialog) {
+                dialog.show();
+            } else {
+                dialog = $.waDialog({
+                    header: $header,
+                    content: $content,
+                    footer: $footer,
+                    onClose: function(dialog) {
+                        dialog.hide();
+                        return false;
+                    }
+                });
+            }
+
+            index += 1;
+            $header.text(index);
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_example_1"}
+<div class="example-list-item">
+    <span class="js-example-name">Название элемента</span>
+    <button class="js-edit-element" type="button">Изменить</button>
+</div>
+
+<div class="dialog" id="my-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <div class="dialog-header">Редактирование элемента</div>
+        <div class="dialog-content">
+            Название элемента: <input class="js-element-name" type="text">
+        </div>
+        <div class="dialog-footer">
+            <button class="button blue js-edit" type="button">Изменить</button>
+            <button class="button red js-delete" type="button">Удалить</button>
+            <button class="button gray js-cancel" type="button">Отмена</button>
+        </div>
+    </div>
+    <script>
+        ( function($) {
+            var $dialog = $("#my-dialog"),
+                $field = $dialog.find(".js-element-name"),
+                dialog_instance = $dialog.data("dialog");
+
+            // клик по кнопке закрыть
+            $dialog.on("click", ".js-cancel", function(event) {
+                event.preventDefault();
+                // закрываем диалог
+                dialog_instance.close();
+            });
+
+            // клик по кнопке удалить
+            $dialog.on("click", ".js-delete", function(event) {
+                event.preventDefault();
+                // вызываем метод onDelete из внешнего окружения
+                dialog_instance.options.onDelete();
+                // закрываем диалог
+                dialog_instance.close();
+            });
+
+            $dialog.on("click", ".js-edit", function(event) {
+                event.preventDefault();
+                // вызываем метод onEdit из внешнего окружения
+                dialog_instance.options.onEdit( $field.val() );
+                // закрываем диалог
+                dialog_instance.close();
+            });
+        })(jQuery);
+    </script>
+</div>
+
+<script>
+( function($) {
+    $(".example-list-item .js-edit-element").on("click", showDialog);
+    function showDialog() {
+        var $button = $(this),
+            $item = $button.closest(".example-list-item"),
+            $name = $item.find(".js-example-name");
+
+        $.waDialog({
+            html: "dialog_html",
+            options: {
+                onEdit: function(name) {
+                    $name.text(name);
+                },
+                onDelete: function() {
+                    $item.remove();
+                }
+            }
+        });
+    }
+})(jQuery);
+</script>
+{/function}
+
+{function name="_render_example_2"}
+<div class="example-list-item">
+    <span class="js-example-name">Название элемента</span>
+    <button class="js-edit-element" type="button">Изменить</button>
+</div>
+
+<div class="dialog" id="my-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <div class="dialog-header">Редактирование элемента</div>
+        <div class="dialog-content">
+            Название элемента: <input class="js-element-name" type="text">
+        </div>
+        <div class="dialog-footer">
+            <button class="button blue js-edit" type="button">Изменить</button>
+            <button class="button red js-delete" type="button">Удалить</button>
+            <button class="button gray js-cancel" type="button">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<script>
+( function($) {
+    $(".example-list-item .js-edit-element").on("click", showDialog);
+    function showDialog() {
+        var $button = $(this),
+            $item = $button.closest(".example-list-item"),
+            $name = $item.find(".js-example-name");
+
+        $.waDialog({
+            html: "dialog_html",
+            onOpen: function($dialog, dialog_instance) {
+                var $field = $dialog.find(".js-element-name");
+
+                // клик по кнопке закрыть
+                $dialog.on("click", ".js-cancel", function(event) {
+                    event.preventDefault();
+                    // закрываем диалог
+                    dialog_instance.close();
+                });
+
+                // клик по кнопке удалить
+                $dialog.on("click", ".js-delete", function(event) {
+                    event.preventDefault();
+                    // вызываем метод onDelete из внешнего окружения
+                    $item.remove();
+                    // закрываем диалог
+                    dialog_instance.close();
+                });
+
+                $dialog.on("click", ".js-edit", function(event) {
+                    event.preventDefault();
+                    // вызываем метод onEdit из внешнего окружения
+                    $name.text( $field.val() );
+                    // закрываем диалог
+                    dialog_instance.close();
+                });
+            }
+        });
+    }
+})(jQuery);
+</script>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <h2><code>.dialog</code></h2>
+
+    <blockquote class="small">Для работы <code>.waDialog()</code> требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2. Подключать <code>wa-content/js/dialog/wa.dialog.js</code> для диалога более не нужно — это устаревший код, который будет удален.</blockquote>
+
+    <p>Классический вариант модального диалога, забирающего на себя все внимание пользователя. Временно блокирует весь интерфейс и занимает центральное место на экране.</p>
+    <p>Рекомендуется использовать для выполнения какого-то достаточно важного и относительно короткого действия, не допускающего отвлечения пользователя. Например, для подтверждения какой-то ответственной операции.</p>
+
+    <p>Содержимое диалога (HTML):</p>
+    <div class="line">
+        <pre class="prettyprint">{_dialog_html|escape}</pre>
+    </div>
+
+    <p>Упаковка этого HTML и открытие шторки при клике по кнопке:</p>
+    <div class="line">
+        {_render_dialog}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_dialog|escape}</pre>
+    </div>
+
+    <h3>.dialog &gt; <code>.dialog-close</code></h3>
+    <p>
+        В зависимости от требуемой функциональности возможность закрытия диалога рекомендуется реализовать либо в виде кнопки «Закрыть» или «Отмена», либо в виде крестика с помощью элемента <code>&lt;a class="dialog-close"&gt;</code> с иконкой-крестиком <code>&lt;i class="fas fa-times"&gt;&lt;/i&gt;</code> в правом верхнем углу.
+    </p>
+
+    <hr>
+
+    <div class="line">
+        <h4>Сложный диалог</h4>
+        {_render_dialog_2}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_dialog_2|escape}</pre>
+    </div>
+
+    <div class="line">
+        <h4>Сложный диалог</h4>
+        {_render_dialog_3}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_dialog_3|escape}</pre>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.dialog <code>параметры</code></h3>
+        <p>Опции формирования контента диалога:</p>
+        <ul>
+            <li><span class="bold">html</span> (string/html) — HTML-код всего диалога.
+                <div class="hint">Рекомендуемый вариант.</div>
+                <br>
+            </li>
+            <li><span class="bold">$wrapper</span> (jQuery Node) — объект <code>$(html)</code> всего диалога.
+                <br>
+            </li>
+            <li><span class="bold">header</span> (string/html) — HTML-код блока с заголовком диалога.
+                <br>
+            </li>
+            <li><span class="bold">content</span> (string/html) — HTML-код основной контентной части.
+                <br>
+            </li>
+            <li><span class="bold">footer</span> (string/html) — HTML-код блока с нижней частью диалога.
+                <br>
+            </li>
+        </ul>
+        <p>Разное:</p>
+        <ul>
+            <li><span class="bold">esc</span> (boolean, по умолчанию true) — закрытие диалога при нажатии на Esc.
+                <br>
+            </li>
+            <li><span class="bold">lock_body_scroll</span> (boolean, по умолчанию true) — при открытии диалог скрывает общую полосу прокрутки страницы и блокирует возможность прокручивать страницу.
+                <br>
+            </li>
+            <li><span class="bold">animate</span> (boolean, по умолчанию true) — включает анимацию появления диалога.
+                <br>
+            </li>
+            <li><span class="bold">options</span> (object, по умолчанию пустой object) — объект с данными используется для передачи их из внешнего окружения во внутренний контент.
+                <div class="hint">Детали применения описаны ниже в разделе «Взаимодействие».</div>
+                <br>
+            </li>
+        </ul>
+        <p>Функции:</p>
+        <ul>
+            <li><span class="bold">onOpen</span> (function) — событие при открытии диалога.
+                <div class="hint"><code>function($dialog, dialog_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">onClose</span> (function) — событие при закрытии диалога.
+                <div class="hint"><code>function(dialog_instance) { ... }</code></div>
+                <div class="hint">Если ваша функция вернёт в ответе <code>return false</code> — диалог не закроется. Используйте это в ситуациях, когда нужно заблокировать закрытие диалога.</div>
+                <br>
+            </li>
+            <li><span class="bold">onResize</span> (function) — событие при изменении размеров диалога.
+                <div class="hint"><code>function($dialog, dialog_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">onBgClick</span> (function) — событие при клике по фону диалога.
+                <div class="hint"><code>function(event, $dialog, dialog_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">position</span> (function) — функция управления позицией диалога при открытии.
+                <div class="hint"><code>function(dialog_width, dialog_height) { ... }</code>
+                    <br>ваша функция-callback должна вернуть массив вида <code>{ left: 111, top: 222 }</code>.</div>
+                <div class="hint">По умолчанию диалог отображается в центре окна браузера, поэтому использование этого метода актуально, только если нужно показать диалог в позиции, отличной от центра окна.</div>
+                <br>
+            </li>
+        </ul>
+        <p>Прочее:</p>
+        <ul>
+            <li>Клик по элементу с классом <span class="bold">.js-close-dialog</span> запустит обработчик закрытия диалога <code>dialog.close()</code>.</li>
+            <li>Как получить экземпляр класса диалога:<br><code>var dialog_instance = $(".dialog").data("dialog");</code>.</li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.dialog <code>методы</code></h3>
+        <ul>
+            <li><span class="bold">close</span> (function) — закрытие диалога (удаление).
+                <br>
+            </li>
+            <li><span class="bold">resize</span> (function) — обновление позиции контент-блока диалога.
+                <br>
+            </li>
+            <li><span class="bold">hide</span> (function) — скрытие диалога, (переносит диалог из DOM в Virtual DOM) с возможностью возврата через метод <code>.show</code>.
+                <br>
+            </li>
+            <li><span class="bold">show</span> (function) — показывает диалог, если он ранее был скрыт.
+                <br>
+            </li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.dialog <code>взаимодействие</code></h3>
+        <p>Типовая ситуация:</p>
+        <ul>
+            <li>У вас на странице есть список каких-то элементов.</li>
+            <li>Каждый элемент можно отредактрировать/удалить в диалоге.</li>
+            <li>Вы написали обработчик клика по элементу, который показывает диалог.</li>
+            <li>В диалоге есть 3 кнопки: «изменить», «удалить» и «отмена».</li>
+        </ul>
+        <p>Наша задача — реализовать взаимодействие внешнего и внутреннего окружения диалога, а именно:</p>
+        <ul>
+            <li>при изменении — закрыть диалог и изменить элемент в списке;</li>
+            <li>при удалении — закрыть диалог и удалить элемент из списка;</li>
+            <li>при отмене — закрыть диалог.</li>
+        </ul>
+
+        <p>Вариант попроще:</p>
+        <pre class="prettyprint">{_render_example_2|escape}</pre>
+
+        <p>Вариант посложнее:</p>
+        <pre class="prettyprint">{_render_example_1|escape}</pre>
+    </div>
+
+    <div class="u-example-section">
+        <h2><code>.alert()</code> &amp; <code>.confirm()</code></h2>
+        <p>Вместо нативных <code>alert()</code> и <code>confirm()</code> можно использовать <code>$.waDialog.<strong>alert()</strong></code> и <code>$.waDialog.<strong>confirm()</strong></code> — стилизованные упрощенные версии диалога, выполняющие роль одноименных стандартных функций JavaScript.</p>
+
+        <div class="line">
+            <button class="js-show-alert button">.alert()</button>
+            <button class="js-show-confirm button">.confirm()</button>
+            <script>
+                ( function($) {
+                    $(".js-show-alert").on("click", function() {
+                        $.waDialog.alert({
+                            title: "Alert title",
+                            text: "Custom alert text (HTML is allowed)",
+                            button_title: 'Ok, thanks',
+                            button_class: 'warning',
+                        });
+                    });
+
+                    $(".js-show-confirm").on("click", function() {
+                        $.waDialog.confirm({
+                            title: "<i class=\"fas fa-exclamation-triangle smaller state-error\"></i> Confirm title",
+                            text: "Custom confirm text (HTML is allowed)",
+                            success_button_title: 'Ok, delete',
+                            success_button_class: 'danger',
+                            cancel_button_title: 'No thanks',
+                            cancel_button_class: 'light-gray',
+                        });
+                    });
+                })(jQuery);
+            </script>
+
+        </div>
+
+        <p>Параметры <code>$.waDialog.<strong>alert()</strong></code>:</p>
+        <ul>
+            <li><span class="bold">title</span> (string/html) — заголовок диалога,
+                <br>
+            </li>
+            <li><span class="bold">text</span> (string/html) — текст в диалоге,
+                <br>
+            </li>
+            <li><span class="bold">button_title</span> (string) — текст на кнопке,
+                <br>
+            </li>
+            <li>
+                <span class="bold">button_class</span> (string) — класс цвета кнопки,
+                <br>
+            </li>
+            <li><span class="bold">onClose</span> (function) — событие при закрытии.
+            </li>
+        </ul>
+        <p>Параметры <code>$.waDialog.<strong>confirm()</strong></code>:</p>
+        <ul>
+            <li><span class="bold">title</span> (string/html) — заголовок диалога,
+                <br>
+            </li>
+            <li><span class="bold">text</span> (string/html) — текст в диалоге,
+                <br>
+            </li>
+            <li><span class="bold">success_button_title</span> (string) — текст в кнопке подтверждения,
+                <br>
+            </li>
+            <li>
+                <span class="bold">success_button_class</span> (string) — класс цвета кнопки подтверждения,
+                <br>
+            </li>
+            <li><span class="bold">cancel_button_title</span> (string) — текст в кнопке отказа,
+                <br>
+            </li>
+            <li>
+                <span class="bold">cancel_button_class</span> (string) — класс цвета кнопки отказа,
+                <br>
+            </li>
+            <li><span class="bold">onSuccess</span> (function) — событие при подтверждении,
+            </li>
+            <li><span class="bold">onCancel</span> (function) — событие при отказе.
+            </li>
+        </ul>
+    </div>
+    {function extra}
+<script>
+    ( function($) {
+        $.waDialog.alert({
+            title: "Alert title",
+            text: "Custom alert text (HTML is allowed)",
+            button_title: 'Ok, thanks',
+            button_class: 'warning',
+        });
+
+        $.waDialog.confirm({
+            title: "<i class=\"fas fa-exclamation-triangle smaller state-error\"></i> Confirm title",
+            text: "Custom confirm text (HTML is allowed)",
+            success_button_title: 'Ok, delete',
+            success_button_class: 'danger',
+            cancel_button_title: 'No thanks',
+            cancel_button_class: 'light-gray',
+        });
+    })(jQuery);
+</script>
+    {/function}
+    <pre class="prettyprint">{extra|escape}</pre>
+
+    <script>
+
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

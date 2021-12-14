@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
 
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
+    <link rel="icon" href="/favicon.ico"/>
     <link rel="shortcut icon" href="/favicon.ico"/>
     {if $wa->blog}
         <!-- rss -->
@@ -17,7 +18,6 @@
 
     <!-- css -->
     <link href="{$wa_theme_url}nifty.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
 
     <!-- js -->
@@ -60,7 +60,9 @@
             {elseif $theme_settings.color_scheme == 'black'}
                 {$_color = '#666666'}
             {/if}
-            #niftybox { background-color: {$_color}; }
+            {if !empty($_color)}
+                #niftybox { background-color: {$_color}; }
+            {/if}
         {/if}
     </style>
 
@@ -102,16 +104,16 @@
 
 
                 <!-- subscription links -->
-            	<div class="float-right subscribe">
+                <div class="float-right subscribe">
                     {if $wa->blog}
                         {$rss = $wa->blog->rssUrl()}
                         {if $rss}
-                    		<a href="{$rss}" title="[s`Subscribe`]" class="bold"><i class="icon16 rss"></i></a>
+                            <a href="{$rss}" title="[s`Subscribe`]" class="bold"><i class="icon16 rss"></i></a>
                         {/if}
                     {/if}
-            		<a href="{$theme_settings.facebook_url}" title="Facebook"><i class="icon16 facebook"></i></a>
-            		<a href="{$theme_settings.twitter_url}" title="Twitter"><i class="icon16 twitter"></i></a>
-            	</div>
+                    <a href="{$theme_settings.facebook_url}" title="Facebook"><i class="icon16 facebook"></i></a>
+                    <a href="{$theme_settings.twitter_url}" title="Twitter"><i class="icon16 twitter"></i></a>
+                </div>
 
                 {if $wa->shop}
                     {if !empty($theme_settings.use_shop_schedule) && method_exists($wa->shop, 'schedule')}

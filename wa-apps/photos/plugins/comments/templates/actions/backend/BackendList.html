@@ -1,8 +1,8 @@
 <script type="text/javascript" src="{$wa_app_static_url}js/lazy.load.js?v={$wa->version()}"></script>
 <div class="content left{$sidebar_width}px p-comments" id="p-content">
-    <div class="block double-padded">
+    <div class="{if $wa->whichUi() == '1.3'}block double-padded{else}box contentbox{/if}">
         <h1>[`Comments`]</h1>
-        <ul class="menu-v with-icons" id="comment-list">
+        <ul class="menu-v with-icons menu" id="comment-list">
         {foreach $comments as $id => $comment}
             {include file="./../../Comment.html" inline wrap_li=true reply_to=$comment.reply_to}
         {/foreach}

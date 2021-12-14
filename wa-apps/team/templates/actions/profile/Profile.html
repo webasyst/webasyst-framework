@@ -1,182 +1,706 @@
-{strip}
-
 {$_user_id = $wa->user("id")}
 {$_is_admin = $wa->user()->isAdmin($wa->app())}
-{$_is_my_profile= ( !empty($user.id) && $user.id == $_user_id )}
-{$_can_edit = ($_is_admin || $_is_my_profile)}
+{$_is_system_admin = $wa->user()->isAdmin()}
+{$_is_my_profile = ( !empty($user.id) && $user.id == $_user_id )}
+{$_group_id = (preg_match('!^group\/\d+$!i', $context)) ? substr($context, 6) : '' }
+{$_context_type = (!empty($_group_id)) ? 'group' : ((substr($context, 0, 7) === 'search/') ? 'search' : $context)}
 
-<div class="t-profile-page">
+{$cover_thumbnails = $cover_thumbnails|default:[]}
 
-    <div class="shadowed">
-        {* HEADER *}
-        <div class="t-profile block double-padded">
-            <div class="t-profile-actions float-right">
-                <ul class="menu-h profile-header-links">
-                    {foreach $backend_profile as $_}{ifset($_.header_links_li)}{/foreach}
-                    {if $can_edit}
-                        <li><a href="javascript:void(0);" class="edit-link"><i class="icon16 edit"></i>[`Edit user`]</a></li>
-                    {/if}
-                    {if teamUser::canDelete($user)}
-                        <li><a href="javascript:void(0);" class="delete-link"><i class="icon16 delete"></i>[`Delete`]</a></li>
-                    {/if}
+{$cover_thumbnails_limit = 8}
+
+<div class="content hide-scrollbar">
+<div class="t-profile-page" id="t_profile_page">
+    {include file="./ProfileSidebar.inc.html"}
+    <div class="t-profile flexbox vertical{if !$wa->isMobile()} bordered-right bordered-left{/if}">
+
+        {if !empty($contacts)}
+            <div class="t-profile-users{if $wa->isMobile()} bordered-top{/if} custom-px-48">
+                <div class="t-profile-users-nav left">
+                    <i class="fas fa-angle-left"></i>
+                </div>
+                <ul class="custom-m-0 custom-p-0 swiper-wrapper">
+                    {foreach $contacts as $c}
+                        <li class="swiper-slide t-profile-users-item{if $user.id == $c.id} selected{/if}">
+                            {if $c.login && $c.is_user > 0}
+                                {$_login = urlencode($c.login|escape)}
+                                {$_url = "`$wa_app_url`u/`$_login`/"}
+                            {else}
+                                {$_url = "`$wa_app_url`id/`$c.id|escape`/"}
+                            {/if}
+                            {if !empty($context)}
+                                {$_url = "`$_url`?list=`$context|escape`"}
+                            {/if}
+                            <a class="userpic userpic32 wa-tooltip{if $user.id == $c.id} js-userpic-team-head{/if}" data-wa-tooltip-content="{$c.firstname|escape}{if $c.lastname} {$c.lastname|escape}{/if}" data-wa-tooltip-placement="bottom" style="background-image: url('{$c.photo_url_32}');" href="{$_url}">
+                                {if $c._online_status === 'online'}<span class="userstatus"></span>{/if}
+                            </a>
+                        </li>
+                    {/foreach}
                 </ul>
+                <div class="t-profile-users-nav right">
+                    <i class="fas fa-angle-right"></i>
+                </div>
             </div>
+        {/if}
 
-            <div class="profile image144px">
-                <div class="image">
-                    <img src="{$user->getPhoto2x(96)}" class="userpic t-userpic">
+        <div class="t-profile-user-slider js-profile-user-slider bg-light-gray cursor-pointer">
+            <div class="swiper-wrapper">
+                {if $cover_thumbnails}
+                    {foreach $cover_thumbnails|array_reverse|array_slice:0:$cover_thumbnails_limit as $cover_thumbnail}
+                        <div class="t-profile-user-slide" style="background-image:url({$cover_thumbnail.urls['1408x440']}">
+                            {if $can_edit}
+                                <span class="camera-overlay">
+                                    <a class="button circle black opacity-50 smallest js-change-slider-photo">
+                                        <i class="fas fa-camera"></i>
+                                    </a>
+                                </span>
+                            {/if}
+                        </div>
+                    {/foreach}
+                {else}
+                {assign var=unique_id value=1|mt_rand:10}
+                <div class="t-profile-user-slide width-100" style="background-image:url({$wa_app_static_url}img/covers/team-cover-{$unique_id}.jpg);">
                     {if $can_edit}
-                        <div class="wa-contact-photo-buttons">
-                            <div class="photo-change-link">
-                                <a href="javascript:void(0)">[`Change photo`]</a>
-                            </div>
-                        </div>
+                        <span class="camera-overlay">
+                            <a class="button circle black opacity-50 smallest js-change-slider-photo">
+                                <i class="fas fa-camera"></i>
+                            </a>
+                        </span>
                     {/if}
-                    <!-- plugin hook: 'backend_profile.photo' -->
-                    {* @event backend_customer.%plugin_id%.photo *}
-                    {foreach $backend_profile as $_}{ifset($_.photo)}{/foreach}
                 </div>
-                <div class="details">
-                    <!-- plugin hook: 'backend_profile.before_header' -->
-                    {* @event backend_customer.%plugin_id%.before_header *}
-                    {foreach $backend_profile as $_}{ifset($_.before_header)}{/foreach}
+                {/if}
+            </div>
+            {if count($cover_thumbnails) > 1}
+            <div class="nav-arrows left">
+                <i class="fas fa-angle-left large"></i>
+            </div>
+            <div class="nav-arrows right">
+                <i class="fas fa-angle-right large"></i>
+            </div>
+            <div class="nav-bullets"></div>
+            {/if}
+        </div>
 
-                    <h1>
-                        {if !empty($user.title)}
-                            <span class="title" style="margin: 0 4px 0 0;">{$user.title|escape}</span>
-                        {/if}
-
-                        <span class="contact-name">{$user_name_formatted|escape}</span>
-
-                        {if !empty($user.login)}
-                            <span class="hint" style="margin: 0 0 0 4px;">@{$user.login|escape}</span>
-                        {/if}
-
-                        <!-- plugin hook: 'backend_profile.header' -->
-                        {* @event backend_customer.%plugin_id%.header *}
-                        {foreach $backend_profile as $_}{ifset($_.header)}{/foreach}
-
-                    </h1>
-
-                    <!-- plugin hook: 'backend_profile.after_header' -->
-                    {* @event backend_customer.%plugin_id%.after_header *}
-                    {foreach $backend_profile as $_}{ifset($_.after_header)}{/foreach}
-
-                    {if !$user.is_company}
-                        <p class="jobtitle-company">
-                            {if $user.jobtitle}
-                                <span class="title {if $_can_edit}editable js-jobtitle-editable{/if}">{$user.jobtitle|escape}</span>
+        <div class="t-profile-user-info article width-100 custom-pt-12 custom-px-0">
+            <div class="article-body custom-pt-0">
+                <div class="t-profile-user-info-bar flexbox">
+                    <div class="t-profile-userpic">
+                        <span class="userpic userpic144 blank js-userpic">
+                            <img src="{$user->getPhoto2x(144)}" alt="">
+                            {if !empty($user._online_status) && ($user._online_status === 'online' || $user._online_status === 'idle')}
+                            <span class="userstatus{if $user._online_status === 'idle'} idle{/if}"></span>
                             {/if}
-                            {if $user.jobtitle && $user.company}
-                                <span class="at"> [`@`] </span>
+                            {if $can_edit}
+                                <span class="camera-overlay js-change-photo">
+                                    <i class="fas fa-camera"></i>
+                                </span>
                             {/if}
-                            {if $user.company}
-                                <span class="company">{$user.company|escape}</span>
+                            <!-- plugin hook: 'backend_profile.photo' -->
+                            {* @event backend_customer.%plugin_id%.photo *}
+                            {foreach $backend_profile as $_}{ifset($_.photo)}{/foreach}
+                        </span>
+                    </div>
+
+                    <div class="t-profile-user-data break-word">
+                        <!-- plugin hook: 'backend_profile.before_header' -->
+                        {* @event backend_customer.%plugin_id%.before_header *}
+                        {foreach $backend_profile as $_}{ifset($_.before_header)}{/foreach}
+                        <h3 class="js-username custom-mb-8">
+                            {if !empty($fieldValues.title)}{$fieldValues.title}{/if}&#32;
+                            {$user_name_formatted|escape}
+
+                            {if !empty($user.login)}
+                            &#32;<span class="h5 text-gray break-all t-profile-username login custom-my-0">@{$user.login|escape}</span>
                             {/if}
-                        </p>
-                    {/if}
-
-                    {if $user.is_user > 0}
-                        <p>
-                        {if $groups}
-                            {$_g = []}
-                            {foreach $groups as $_id=>$_name}
-                                {$_g[] = "<a href=\"`$wa_app_url`group/`$_id`/\">`$_name|escape`</a>"}
-                            {/foreach}
-                            {join(', ', $_g)}
-                        {else}
-                            [`This user does not belong to any group.`]
-                            {if $wa->user()->isAdmin()}
-                                <a href="javascript:void(0)" class="inline-link small" id="header-customize-groups-link">&nbsp;<b>[`Edit groups`]</b></a>
+                        </h3>
+                        {if !empty($user_events)}
+                        {foreach $user_events as $event}
+                            {$_badge_status_styles = ''}
+                            {if !empty($event.status_bg_color)}
+                            {$_badge_status_styles = "color: `$event.status_font_color`; background: `$event.status_bg_color`;"}
+                            {else}
+                            {$_badge_status_styles = "color: `$event.font_color`; background: `$event.bg_color`;"}
                             {/if}
-                        {/if}
-                        </p>
-                    {else if $user.is_user < 0}
-                        <p class="grey">[`Access is switched off`]</p>
-                    {else if $invite}
-                        <p><em>[`User invitation has been sent`]</em></p>
-                    {/if}
-
-                    <!-- plugin hook: 'backend_profile.before_top' -->
-                    {* @event backend_customer.%plugin_id%.before_top *}
-                    {foreach $backend_profile as $_}{ifset($_.before_top)}{/foreach}
-
-                    <ul class="menu-v compact" id="contact-info-top">
-                        {foreach $top as $top_field}
-                            <li class="top-field-{$top_field.id}">{if $top_field.id != 'im'}{if $top_field.icon}<i class="icon16 {$top_field.id}"></i>{/if}{/if}{$top_field.value}</li>
-                        {/foreach}
-                    </ul>
-
-                    {if $user_event}
-                        <div class="line">
-                            <div class="t-event-wrapper">
-                                <div class="t-event-block" style="background:{$user_event.bg_color};color:{$user_event.font_color};">
-                                    {$user_event.summary|escape}
-                                    {if $user_event.calendar_id == 'birthday'}
-                                        &nbsp;&mdash; {waDateTime::format('shortdate', date('Y')|cat:"-`$user.birth_month`-`$user.birth_day`")}
+                            <span class="badge user small custom-mr-8{if $event.calendar_id === 'birthday'} birthday{/if}"{if $event.calendar_id !== 'birthday'} style="{$_badge_status_styles}"{/if}>
+                                {$_event_icon = ''}
+                                {if $event.calendar_id === 'birthday'}
+                                    {$_event_icon = "fas fa-birthday-cake"}
+                                {else}
+                                    {if !empty($event.icon)}
+                                    {$_event_icon = "`$event.icon|escape`"}
+                                    {else}
+                                    {$_event_icon = "fas fa-calendar-alt"}
                                     {/if}
-                                </div>
+                                {/if}
+                                <i class="{$_event_icon}"></i>
+                                {$event.summary|escape}
+                            </span>
+                        {/foreach}
+                        {/if}
+
+                        {if !$user.is_company && !empty($user.jobtitle)}
+                            <p class="custom-mt-8 custom-mb-0">
+                                {*<span class="custom-mr-0{if $can_edit} custom-p-0 editable js-jobtitle-editable{/if}">{$user.jobtitle|escape}</span>*}
+                                <span class="custom-mr-0 small">{$user.jobtitle|escape}</span>
+
+                                {if !empty($user.company)}
+                                    <span class="at custom-mr-0 small"> [`@`] </span>
+                                    <span class="company custom-mr-0 small">{$user.company|escape}</span>
+                                {/if}
+                            </p>
+                        {/if}
+
+                        {* Used for trigger event in ProfileAccess.html *}
+                        <span class="js-webasyst-id-unbind-auth hidden"></span>
+
+                        {if $user.is_user > 0}
+                            {if $groups}
+                            <div class="custom-mt-8 small">
+                                {foreach $groups as $group}
+                                <span>
+                                    <a href="{$wa_app_url}group/{$group@key}/"{if !$group@last} class="custom-mr-8"{/if}>{$group|escape}</a>{if !$group@last}<span class="t-profile-group-item-bullet custom-mr-8">&bull;</span>{/if}
+                                </span>
+                                {/foreach}
                             </div>
-                        </div>
-                    {/if}
+                            {else}
+                            <div class="small custom-my-8">
+                                <span class="text-gray custom-mr-8">[`This user does not belong to any group.`]</span>
 
-                    <!-- plugin hook: 'backend_profile.after_top' -->
-                    {* @event backend_customer.%plugin_id%.after_top *}
-                    {foreach $backend_profile as $_}{ifset($_.after_top)}{/foreach}
+                                {if $wa->user()->isAdmin()}
+                                <a href="javascript:void(0)" class="semibold nowrap js-edit-groups"><i class="fas fa-pen"></i>&nbsp;[`Edit groups`]</a>
+                                {/if}
+                            </div>
+                            {/if}
+                        {/if}
 
+                        {if $user.is_user < 0}
+                            <p class="grey custom-mt-4">[`Access is switched off`]</p>
+                        {elseif $invite}
+                            <p class="italic small custom-my-0">[`User invitation was sent.`]</p>
+                            {if teamHelper::hasRights('add_users')}
+                                {if !empty($user.email)}
+                                    <a href="javascript:void(0)" class="js-invite small nowrap custom-mr-16" data-type="email" data-email="{$user.email[0].value|escape}">
+                                        <i class="fas fa-envelope"></i> [`Send again`]
+                                    </a>
+                                    <a href="javascript:void(0)" class="js-invite small nowrap" data-type="link">
+                                        <i class="fas fa-link text-gray"></i> [`Link to invitation`]
+                                    </a>
+                                {else}
+                                    <a href="javascript:void(0)" class="js-invite small nowrap" data-type="link">
+                                        <i class="fas fa-link text-gray"></i> [`Link to invitation`]
+                                    </a>
+                                {/if}
+                            {/if}
+                        {/if}
+                    </div>
+
+                    <div class="t-profile-actions-btn flexbox wrap-mobile custom-pl-16" style="justify-content: flex-end;">
+                        {foreach $backend_profile as $_}{ifset($_.header_links_li)}{/foreach}
+                        {if $can_edit}
+                            <button type="button"
+                                    class="button light-gray circle edit-link custom-mr-0 mobile-only"
+                                    title="[`Edit user`]">
+                                <i class="fas fa-pen text-blue"></i>
+                            </button>
+                            <button type="button"
+                                    class="button light-gray rounded edit-link custom-mr-0 nowrap desktop-and-tablet-only"
+                                    title="[`Contacts`]">
+                                <i class="fas fa-pen text-blue"></i> [`Contacts`]
+                            </button>
+                            {if $_is_my_profile || $_is_system_admin}
+                                <button type="button"
+                                        class="button light-gray circle access-link custom-mr-0 custom-ml-8 mobile-only"
+                                        title="[`Edit user`]"
+                                        data-url="{$wa_app_url}?module=profile&action=access&id={$user.id}"
+                                        data-dialog-header="[`Access`]"
+                                        data-dialog-width="1000px"
+                                        data-section-id="access">
+                                    <i class="fas fa-key text-green"></i>
+                                </button>
+                                <button type="button"
+                                        class="button light-gray rounded access-link custom-mr-0 custom-ml-8 nowrap desktop-and-tablet-only"
+                                        title="[`Access`]"
+                                        data-url="{$wa_app_url}?module=profile&action=access&id={$user.id}"
+                                        data-dialog-header="[`Access`]"
+                                        data-dialog-width="1000px"
+                                        data-section-id="access">
+                                    <i class="fas fa-key text-green"></i> [`Access`]
+                                </button>
+                            {/if}
+                        {/if}
+
+                        {if teamUser::canDelete($user)}
+                            <button type="button"
+                                    class="button light-gray circle custom-mr-0 custom-ml-8 delete-link"
+                                    title="[`Delete`]">
+                                <i class="fas fa-trash-alt text-red"></i>
+                                <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000 hidden"></i>
+                            </button>
+                        {/if}
+                        <button type="button"
+                                class="button circle blue custom-mr-0 custom-ml-8 mobile-only tablet-only js-show-drawer">
+                            <i class="fas fa-list-ul text-white"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        {* CALENDAR *}
-        <div class="t-calendar-place is-short">
-
-        {include file='../schedule/Schedule.inc.html' context='profile' inline}
-
-        {$_show_text = sprintf_wp("show %s weeks", 5)}
-        <div class="t-actions-wrapper js-calendar-toggle" data-show-text="{$_show_text}" data-hide-text="[`hide`]">
-            <div class="t-layout">
-                <div class="t-column left"></div>
-                <div class="t-column">
-
-                    <a class="t-action inline-link t-calendar-toggle" href="javascript:void(0);">
-                        <i class="icon16 down"></i>
-                        <b><i><span class="text">{$_show_text}</span></i></b>
-                    </a>
-
-                </div>
-                <div class="t-column right">
-                    {if $can_view_external_calendars_info}
-                        <a class="t-action inline-link js-show-outer-calendar-manager" href="javascript:void(0);">
-                            <i class="icon16 settings"></i>
-                            <b><i>[`Personal calendar settings`]</i></b>
+                <div class="t-profile-blocks">
+                    {if !empty($user.email)}
+                    {foreach $user.email as $email}
+                    <div class="t-profile-block">
+                        <a href="mailto:{$email.value}" class="t-profile-block__icon">
+                            <i class="fas fa-envelope text-blue"></i>
                         </a>
+
+                        <div class="t-profile-block__value">
+                            <a href="mailto:{$email.value}" title="{$email.value}" class="t-profile-block__value-link">{$email.value|escape}</a>
+                        </div>
+
+                        <div class="t-profile-block__type">
+                            {if $email.ext}{$email.ext|escape} {/if}[`email`]
+                        </div>
+                    </div>
+                    {/foreach}
+                    {else}
+                    <div class="t-profile-block">
+                        <div class="t-profile-block__icon">
+                            <i class="fas fa-envelope text-light-gray"></i>
+                        </div>
+
+                        <div class="t-profile-block__value text-gray">
+                            [`no data`]
+                        </div>
+
+                        <div class="t-profile-block__type">
+                            [`email`]
+                        </div>
+                    </div>
                     {/if}
 
+                    {if !empty($user.phone)}
+                    {foreach $user.phone as $phone}
+                    <div class="t-profile-block">
+                        <a href="tel:{$phone.value}" class="t-profile-block__icon">
+                            <i class="fas fa-phone-alt text-green"></i>
+                        </a>
+
+                        <div class="t-profile-block__value">
+                            <a href="tel:{$phone.value}" title="{$phone.value}" class="t-profile-block__value-link">{$phone.value|escape}</a>
+                        </div>
+
+                        <div class="t-profile-block__type">
+                            {if $phone.ext}{$phone.ext|escape} {/if}[`phone`]
+                        </div>
+                    </div>
+                    {/foreach}
+                    {else}
+                    <div class="t-profile-block">
+                        <div class="t-profile-block__icon">
+                            <i class="fas fa-phone-alt text-light-gray"></i>
+                        </div>
+
+                        <div class="t-profile-block__value text-gray">
+                            [`no data`]
+                        </div>
+
+                        <div class="t-profile-block__type">
+                            [`phone`]
+                        </div>
+                    </div>
+                    {/if}
+
+                    {if !empty($profile_editor.data.fieldValues.im)}
+                    {foreach $profile_editor.data.fieldValues.im as $im}
+                    <div class="t-profile-block">
+                        {$_href = ''}
+                        {if $im.ext == 'whatsapp'}
+                        {$_href = "https://wa.me/`$im.data`"}
+                        {elseif $im.ext == 'telegram'}
+                        {$_href = "https://telegram.im/@`$im.data|replace:'@':''`"}
+                        {elseif $im.ext == 'skype'}
+                        {$_href = "skype:`$im.data`?chat"}
+                        {elseif $im.ext == 'viber'}
+                        {$_href = "viber://chat?number=`$im.data`"}
+                        {elseif $im.ext == 'facebook'}
+                        {$_href = "https://m.me/`$im.data`"}
+                        {/if}
+
+                        {if !empty($_href)}
+                        <a href="{$_href}" class="t-profile-block__icon">
+                            {$im.icon}
+                        </a>
+                        {else}
+                        <div class="t-profile-block__icon">
+                            {$im.icon}
+                        </div>
+                        {/if}
+
+                        <div class="t-profile-block__value">
+                            {if !empty($_href)}
+                            <a href="{$_href}" title="{$im.data}" class="t-profile-block__value-link">{$im.data|escape}</a>
+                            {else}
+                            {$im.data|escape}
+                            {/if}
+                        </div>
+
+                        <div class="t-profile-block__type">
+                            {$im.ext|escape|default:"[`other`]"}
+                        </div>
+                    </div>
+                    {/foreach}
+                    {/if}
+
+                    <!-- plugin hook: 'backend_profile.header' -->
+                    {* @event backend_customer.%plugin_id%.header *}
+                    {foreach $backend_profile as $_}{ifset($_.header)}{/foreach}
+
+                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && !empty($geocoding.key)}
+                    <div class="t-profile-block t-profile-block_map">
+                        <div class="t-profile-block__map">
+                            <style>
+                                .ymaps-2-1-79-gototaxi__container,
+                                .ymaps-2-1-79-gototech {
+                                    display: none !important;
+                                }
+                            </style>
+
+                            <div id="map"></div>
+
+                            <script>
+                                {if $geocoding.type == 'yandex'}
+                                ymaps.ready(init);
+                                {else}
+                                init();
+                                {/if}
+
+                                function init() {
+                                    const $map = $('#map');
+                                    const map = new TeamMap($map, '{$geocoding.type}');
+
+                                    map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
+
+                                    function renderMap(lat, lng) {
+                                        map.render(lat, lng);
+                                    }
+                                }
+                            </script>
+                        </div>
+                    </div>
+                    {/if}
+
+                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && !empty($geocoding.type) && empty($geocoding.key)}
+                    <div class="t-profile-block t-profile-block_map">
+                        <i class="fas fa-map-marker-alt text-light-gray t-profile-block__icon"></i>
+
+                        <div class="t-profile-block__value text-gray">
+                            [`карта недоступна`]
+                        </div>
+
+                        <div class="hint">
+                            {sprintf('[`укажите API-ключ в <a href="%s" class="link">настройках</a>.`]', "`$wa_backend_url`webasyst/settings/")}
+                        </div>
+                    </div>
+                    {/if}
+                </div>
+
+                <div class="t-profile-user-info-block fields custom-mt-20 custom-pb-40" id="tc-contact">
+                    <div class="align-center">
+                        <a class="js-toggle-user-info bold" href="javascript:void(0);">[`More details`] <i class="fas fa-caret-down"></i></a>
+                    </div>
+
+                    <div class="fields-group js-user-info custom-mt-16 hidden">
+                        <div id="contact-info-block">
+                            {* Contents generated by JS later *}
+                        </div>
+                        {if $_is_admin}
+                            <ul class="unstyled hint t-create-method-info custom-mt-16">
+                                <li>[`ID`]: {$user.id}</li>
+                                <li>[`Added`]: {if !empty($author)}{$author.name|escape} {/if}{$contact_create_time}</li>
+                                <li>[`Method`]: {if $user.create_method}{$user.create_method} ({$user.create_app_id}){else}{$user.create_app_id}{/if}</li>
+                            </ul>
+                        {/if}
+                    </div>
+                </div>
+                <div class="t-profile-user-info-activity bordered-top custom-pt-40">
+                    <div class="activity-header flexbox wrap-mobile middle">
+                        {*<div class="toggle custom-ml-auto custom-mx-auto-mobile custom-mt-8-mobile" id="activity-toggle">
+                            <span class="selected">[`All apps`]</span>
+                            <span>[`CRM`]</span>
+                        </div>*}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-
-    {* TABS *}
-    {$wa->contactProfileTabs($user.id, [
-        'selected_tab' => waRequest::param('tab', 'activity', 'string')
-    ])}
-
-    {* JS INIT *}
-    <script>
-        (function ($) {
-            $.team.setTitle({$user_name_formatted|json_encode});
-            new Profile({
-                $wrapper: $('#contact-info-top').closest('.t-profile-page'),
-                photo_dialog_url: "{$wa_backend_url}?module=profile&action=photo&id={$user.id}",
-                user: {
-                    id: {$user.id|json_encode}
-                }
-            });
-        })(jQuery);
-    </script>
+</div>
 </div>
 
-{/strip}
+{if !empty($user)}
+    <div class="drawer js-profile-sidebar-drawer" style="display:block;z-index:-1;opacity:0">
+        <div class="drawer-background"></div>
+        <div class="drawer-body">
+            <a href="javascript:void(0);" class="drawer-close js-close-drawer"><i class="fas fa-times"></i></a>
+            <div class="drawer-block t-profile-drawer" style="background-color:var(--background-color)">
+                <div class="drawer-content">
+                    {include file="./sidebarWidgets/Access.html" inline}
+                    {include file="./sidebarWidgets/Stats.html" is_drawer=true assign=stats_html}
+                    {$wa->contactProfileSidebar($user.id, [
+                        'is_profile_sidebar' => true,
+                        'is_profile_drawer' => true,
+                        'html' => [
+                            'stats' => $stats_html
+                        ]
+                    ])}
+
+                    {$wa->contactProfileTabs($user.id, [
+                        'is_profile_sidebar' => true
+                    ])}
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+
+<script>
+
+    {$_profile_object_options = [
+        'photo_dialog_url'          => "`$wa_backend_url`?module=profile&action=photo&id=`$user.id`",
+        'upload_cover_dialog_url'   => "`$wa_app_url`?module=profile&action=coverUploadDialog&id=`$user.id`",
+        'wa_backend_url'            => $wa_backend_url,
+        'is_own_profile'            => $is_own_profile,
+        'wa_app_url'                => $wa_app_url,
+        'webasyst_id_auth_url'      => $webasyst_id_auth_url,
+        'user'                      => ['id' => $user.id],
+        'wa_url'                    => $wa_url,
+        'wa_version'                => $wa->version(),
+        'can_edit'                  => $can_edit,
+        'editor'                    => $profile_editor|default:[]
+    ]}
+
+    (function ($) {
+        $.team.setTitle({$user_name_formatted|json_encode});
+
+        $.wa.locale = $.extend($.wa.locale, {
+            "map": "[`map`]",
+            "other": "[`other`]",
+            "which?": "[`which?`]",
+            "delete": "[`delete`]",
+            "Add another": "[`Add another`]",
+            "required": "[`required`]",
+            "year": "[`year`]",
+            "Incorrect email address format.": "[`Incorrect email address format.`]",
+            "Incorrect URL format.": "[`Incorrect URL format.`]",
+            "Must be a number.": "[`Must be a number.`]",
+            "&lt;no name&gt;": "[`&lt;no name&gt;`]",  // empty name of a checklist option
+            "&lt;none&gt;": "[`&lt;none&gt;`]",   // no checklist options, e.g. no categories or groups
+            "no name": "[`no name`]",        // contact name
+
+            "January": "[`January`]",
+            "February": "[`February`]",
+            "March": "[`March`]",
+            "April": "[`April`]",
+            "May": "[`May`]",
+            "June": "[`June`]",
+            "July": "[`July`]",
+            "August": "[`August`]",
+            "September": "[`September`]",
+            "October": "[`October`]",
+            "November": "[`November`]",
+            "December": "[`December`]",
+            "This field is required.": "[`This is a required field.`]",
+            "At least one of these fields must be filled": "[`At least one of these fields must be completed.`]",
+            "Save": "[`Save`]",
+            "Cancel": "[`Cancel`]",
+            "Close": "[`Close`]",
+            "Auto": "[`Auto`]",
+            "Contact info": "[`Contact info`]",
+        });
+
+        $.team.profile = new Profile($.extend({$_profile_object_options|json_encode}, {
+            $wrapper: $('#t_profile_page'),
+        }));
+
+        {*$("#activity-toggle").waToggle({
+            change: function(event, target, toggle) {
+                console.log( $(target).text() );
+            }
+        });*}
+
+
+        $('.js-change-slider-photo').on('click', function(e) {
+            e.preventDefault();
+            $.get('{$_profile_object_options.upload_cover_dialog_url}', function(html) {
+                $.waDialog({
+                  html,
+                  onOpen($dialog) {
+                    const limitCoverStyle = $('<style>.upload-cover__item:nth-child(1n+{$cover_thumbnails_limit+1}) img {literal}{opacity: .3;}{/literal}</style>');
+                    $dialog.prepend(limitCoverStyle);
+                  }
+                })
+            })
+        });
+
+        $('.js-invite').on('click', function(e) {
+            e.preventDefault();
+
+            if(!!this.dataset.isLocked) {
+                return;
+            }
+
+            this.dataset.isLocked = 'true';
+
+            const $link = this,
+                type = $link.dataset.type;
+            let href, post_data;
+
+            if(type === 'email'){
+                href = '?module=users&action=invite';
+                post_data = { email: this.dataset.email ?? '' };
+                $link.innerHTML = '<i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i> [`Sending`]';
+            }else if(type === 'link') {
+                href = '?module=users&action=createInvitation';
+                post_data = { contact_id: $.team.profile.user.id ?? 0 };
+            }
+
+            $.post(href, post_data, function(response) {
+                if(response.status === 'ok') {
+                    if(type === 'email'){
+                        $link.classList.add('text-green')
+                        $link.innerHTML = '<i class="fas fa-check"></i> [`Sent`]';
+                    }else if(type === 'link'){
+                        $link.insertAdjacentHTML('afterend', `<input type="text" style="position:absolute;opacity:0" class="js-invite-link" value="${ response.data.invitation_link }">`);
+                        let $invite_link = document.querySelector('.js-invite-link')
+                        $invite_link.select();
+                        $invite_link.setSelectionRange(0, 99999);
+                        document.execCommand("copy");
+                        $invite_link.remove();
+                        $link.classList.add('text-green')
+                        $link.innerHTML = '<i class="fas fa-check"></i> [`Copied`]';
+                    }
+                }
+            }).always( function() {
+                setTimeout(()=>{
+                    $link.classList.remove('text-green');
+                    if(type === 'email'){
+                        $link.innerHTML = '<i class="fas fa-envelope"></i> [`Send again`]';
+                    }else if(type === 'link'){
+                        $link.innerHTML = '<i class="fas fa-link"></i> [`Link to invitation`]';
+                    }
+                    $link.dataset.isLocked = '';
+                }, 1500);
+            });
+        });
+
+        $.get('{$wa_app_url|json_encode}?module=profile&action=activity&user_id={$user.id|json_encode}', function(response) {
+            $('.t-profile-user-info-activity').append(response)
+        });
+
+        const $tooltip_wrapper = document.querySelector('.t-profile');
+        $(".wa-tooltip").waTooltip({
+            appendTo: $tooltip_wrapper,
+            touch: 'hold',
+        });
+
+    })(jQuery);
+
+    {if !empty($contacts)}
+    new SwiperSlider({
+        selector: '.t-profile-users',
+        calculateGroupSize: false,
+        watchNav: true,
+        params: {
+            slidesPerView: 'auto',
+            freeMode: true,
+            roundLengths: true,
+            centeredSlides: true,
+            centeredSlidesBounds: true,
+            centerInsufficientSlides: true,
+            watchOverflow: true,
+            resizeObserver: true,
+            navigation: {
+                nextEl: ".t-profile-users-nav.right",
+                prevEl: ".t-profile-users-nav.left",
+            },
+            on: {
+                afterInit(swiper) {
+                    if (swiper.virtualSize === swiper.width) {
+                        swiper.navigation.nextEl.style.display = 'none';
+                        swiper.navigation.prevEl.style.display = 'none';
+                        swiper.enabled = false;
+                    }
+                }
+            }
+        },
+        events: {
+            click(swiper, event) {
+                const is_next_click = event.target === swiper.navigation.nextEl,
+                    is_prev_click = event.target === swiper.navigation.prevEl,
+                    slide_width = swiper.wrapperEl.querySelector(`.${ swiper.params.slideClass }`).clientWidth;
+
+                if (is_next_click) {
+                    swiper.slideTo((Math.round(swiper.width / slide_width) - 2) + (swiper.activeIndex + 1))
+                }
+
+                if (is_prev_click) {
+                    swiper.slideTo((swiper.activeIndex + 1) - (Math.round(swiper.width / slide_width) - 2))
+                }
+            },
+            resize(swiper) {
+                if (swiper.virtualSize === swiper.width) {
+                    swiper.navigation.nextEl.style.display = 'none';
+                    swiper.navigation.prevEl.style.display = 'none';
+                    swiper.enabled = false;
+                }else{
+                    swiper.navigation.nextEl.style.display = 'grid';
+                    swiper.navigation.prevEl.style.display = 'grid';
+                    swiper.enabled = true;
+                }
+            }
+        }
+    });
+    {/if}
+
+    {if $cover_thumbnails}
+    new SwiperSlider({
+        selector: '.t-profile-user-slider ',
+        setContainerWidth: [760],
+        params: {
+            roundLengths: true,
+            slidesPerView: 1,
+            slideClass: 't-profile-user-slide',
+            initialSlide: parseInt(localStorage.getItem( 'team/profile_slider' )) || 0,
+            navigation: {
+                nextEl: ".nav-arrows.right",
+                prevEl: ".nav-arrows.left",
+                disabledClass: 'is-disabled'
+            },
+            pagination: {
+                el: ".nav-bullets",
+                bulletClass: 'nav-bullet',
+                bulletActiveClass: 'is-active',
+                clickable: false,
+                renderBullet: function (index, className) {
+                    return `<span class="${ className }"></span>`;
+                },
+            }
+        },
+        events: {
+            slideChange(swiper) {
+                localStorage.setItem( 'team/profile_slider', swiper.realIndex );
+            }
+        }
+    });
+    {/if}
+
+</script>
+
+{if $_context_type}
+<script>
+    (function ($) {
+        $.team.sidebar.setSelected({
+            type: '{$_context_type}',
+            groupId: {$_group_id|default:'null'},
+        });
+    })(jQuery);
+</script>
+{/if}

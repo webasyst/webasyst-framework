@@ -20,6 +20,8 @@ class waAuth implements waiAuth
     const LOGIN_FIELD_PHONE = 'phone';
     const LOGIN_FIELD_LOGIN = 'login';
 
+    const PASSWORD_MAX_LENGTH = 255;
+
     protected $options = array(
         'cookie_expire' => 2592000,
     );
@@ -62,7 +64,13 @@ class waAuth implements waiAuth
             $this->options['is_user'] = $this->env == 'backend';
         }
 
-        $this->auth_config = waAuthConfig::factory($this->env);
+        if (isset($this->options['env'])) {
+            $this->env = $this->options['env'];
+        }
+
+        $this->auth_config = waAuthConfig::factory([
+            'env' => $this->env
+        ]);
 
         $this->initLoginFieldIds();
 
@@ -132,7 +140,7 @@ class waAuth implements waiAuth
             $where[] = "c.is_user = 1";
         }
         $where[] = "c.password != ''";
-        $where[] = "e.email LIKE s:email";
+        $where[] = "e.email LIKE 'l:email'";
         $where[] = "e.sort = 0";
 
         $where = join(' AND ', $where);
@@ -160,7 +168,7 @@ class waAuth implements waiAuth
      *          - by suitable for $login login type or
      *          - by any login type (ordered by priority as in waAuthConfig)
      *
-     * @return array|null
+     * @return array|null - wa_contact record or NULL if contact not found
      * @throws waAuthException
      * @throws waException
      */
@@ -263,7 +271,10 @@ class waAuth implements waiAuth
 
         // phone is changed (transformation has been applied), so try find by this new phone
         if ($result['status']) {
-            return $this->findByPhone($result['phone']);
+            $contact = $this->findByPhone($result['phone']);
+            if ($contact) {
+                return $contact;
+            }
         }
 
         return null;
@@ -272,7 +283,8 @@ class waAuth implements waiAuth
     /**
      * Find registered contact by phone without taking into account transformation settings of auth config
      * @param $phone
-     * @return array|null
+     * @return array|null, wa_contact record + key 'phone' with wa_contact_data record
+     * @throws waDbException|waException
      */
     protected function findByPhone($phone)
     {
@@ -294,11 +306,34 @@ class waAuth implements waiAuth
 
         $where = join(' AND ', $where);
 
-        $sql = "SELECT c.* FROM wa_contact c
+        $select = ['c.*'];
+        foreach ((new waContactDataModel())->getMetadata() as $field => $_) {
+            $select[] = "d.{$field} AS d_{$field}";
+        }
+        $select = join(', ', $select);
+
+        $sql = "SELECT {$select} FROM wa_contact c
                 JOIN wa_contact_data d ON c.id = d.contact_id AND d.field = 'phone'
                 WHERE {$where}
                 ORDER BY c.id LIMIT 1";
-        return $model->query($sql, array('phone' => $phone))->fetchAssoc();
+
+        $contact = $model->query($sql, array('phone' => $phone))->fetchAssoc();
+        if (!$contact) {
+            return null;
+        }
+
+        $phone = [];
+        foreach ($contact as $field => $value) {
+            if (substr($field, 0, 2) === 'd_') {
+                unset($contact[$field]);
+                $field = substr($field, 2);
+                $phone[$field] = $value;
+            }
+        }
+
+        $contact['phone'] = $phone;
+
+        return $contact;
     }
 
     /**
@@ -359,12 +394,12 @@ class waAuth implements waiAuth
     }
 
     /**
-     * @param array $data - contact/user info
-     * @throws waAuthException
+     * @param array|ArrayAccess $data - contact/user info
+     * @throws waAuthException|waException
      */
     protected function checkBan($data)
     {
-        if ($data['is_user'] == -1) {
+        if ($this->isArrayAccess($data) && $data['is_user'] == -1) {
             throw new waAuthException(_ws('Access denied.'));
         }
     }
@@ -430,8 +465,17 @@ class waAuth implements waiAuth
             $contact_model = new waContactModel();
             $user_info = $contact_model->getById($params['id']);
             if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user'])) {
-                waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1);
-                return $this->getAuthData($user_info);
+
+                $response = waSystem::getInstance()->getResponse();
+
+                $cookie_domain = ifset($this->options['cookie_domain'], '');
+                $remember_enabled = $this->auth_config->getRememberMe();
+
+                if (empty($params['remember']) || !$remember_enabled) {
+                    $response->setCookie('auth_token', null, -1, null, $cookie_domain);
+                }
+
+                return $this->_afterAuth($user_info, $params);
             }
             return false;
         }
@@ -637,6 +681,7 @@ class waAuth implements waiAuth
 
         // if remember
         $remember_enabled = $this->auth_config->getRememberMe();
+
         if ($remember && $remember_enabled) {
             $cookie_domain = ifset($this->options['cookie_domain'], '');
             $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, $cookie_domain, false, true);
@@ -819,8 +864,11 @@ class waAuth implements waiAuth
      */
     public function getToken($user_info)
     {
+        if (!$this->isArrayAccess($user_info)) {
+            return '';
+        }
         $hash = md5($user_info['create_datetime'] . $user_info['login'] . $user_info['password']);
-        return substr($hash, 0, 15).$user_info['id'].substr($hash, -15);
+        return substr($hash, 0, 15) . $user_info['id'] . substr($hash, -15);
     }
 
     /**
@@ -830,7 +878,24 @@ class waAuth implements waiAuth
      */
     public function clearAuth()
     {
+        // collect of session keys, that no need to be destroyed
+        $persistent = [
+            waReCaptcha::SESSION_KEY => null
+        ];
+
+        foreach ($persistent as $key => $_) {
+            $persistent[$key] = waSystem::getInstance()->getStorage()->get($key);
+        }
+
         waSystem::getInstance()->getStorage()->destroy();
+
+        // restore persistent session keys
+        foreach ($persistent as $key => $value) {
+            if ($value !== null) {
+                waSystem::getInstance()->getStorage()->set($key, $value);
+            }
+        }
+
         if (waRequest::cookie('auth_token')) {
             $cookie_domain = ifset($this->options['cookie_domain'], '');
             waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1, null, $cookie_domain);
@@ -871,7 +936,10 @@ class waAuth implements waiAuth
         wa()->getStorage()->set('auth_user', $this->getAuthData($data));
         if (waRequest::cookie('auth_token')) {
             $cookie_domain = ifset($this->options['cookie_domain'], '');
-            wa()->getResponse()->setCookie('auth_token', $this->getToken($data), time() + 2592000, null, $cookie_domain, false, true);
+            $token = $this->getToken($data);
+            if ($token) {
+                wa()->getResponse()->setCookie('auth_token', $token, time() + 2592000, null, $cookie_domain, false, true);
+            }
         }
     }
 
@@ -940,6 +1008,11 @@ class waAuth implements waiAuth
         }
         $this->options['login_field_ids'] = $login_field_ids;
         return;*/
+    }
+
+    private function isArrayAccess($info)
+    {
+        return is_array($info) || $info instanceof ArrayAccess;
     }
 }
 

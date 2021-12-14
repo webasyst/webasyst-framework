@@ -12,11 +12,11 @@ return array(
     'api_url'           => array(
         'value' => 'https://api.boxberry.ru/json.php'
     ),
-    'country'           => array(
-        'value' => 'rus',
-    ),
-    'region'            => array(
+    'countries'         => array(
         'value' => '',
+    ),
+    'regions'           => array(
+        'value' => '{"blr":"","kaz":"","rus":""}',
     ),
     'cities'            => array(
         'value' => '',

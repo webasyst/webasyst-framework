@@ -1,0 +1,138 @@
+{$_title = "Анимации"}
+{$wa->title($_title)}
+
+{function name="_swing" class=""}
+<button class="wa-animation-swing js-animation-restart" data-animation="wa-animation-swing">Button</button>
+{/function}
+
+{function name="_swingCode" class=""}
+<button class="wa-animation-swing">Button</button>
+{/function}
+
+{function name="_spinner" class=""}
+<i class="fas fa-spinner wa-animation-spin"></i>
+{/function}
+
+{function name="_spinnerRotate90" class=""}
+<i class="fas fa-spinner wa-animation-spin rotate90"></i>
+{/function}
+
+{function name="_spinnerRotate180" class=""}
+<i class="fas fa-spinner wa-animation-spin rotate180"></i>
+{/function}
+
+{function name="_spinnerInfinite1000" class=""}
+<i class="fas fa-spinner wa-animation-spin speed-1000"></i>
+{/function}
+
+{function name="_spinnerInfinite1500" class=""}
+<i class="fas fa-spinner wa-animation-spin speed-1500"></i>
+{/function}
+
+{function name="_spinnerInfinite2000" class=""}
+<i class="fas fa-spinner wa-animation-spin speed-2000"></i>
+{/function}
+
+<div class="u-component-page">
+    <h1>{$_title}</h1>
+
+    <p>Интерфейс любого приложения в Webasyst 2 должен быть отзывчивым и быстрым: реакция на действия пользователя должна быть по возможности моментальной, в связи с чем любые анимации элементов интерфейса рекомендуется выполнять <strong class="black">от 100 до 200 мс, но не более</strong>.</p>
+
+    <p>Webasyst 2 — это не демоконцепт, а инструмент для удобной работы каждый день. Поэтому следует использовать анимацию только там, где она действительно помогает пользователю взаимодействовать с инструментом и подчеркивают структуру (иерархию) элементов интерфейса.</p>
+
+    <p>Рекомендуется:</p>
+    <ul class="separated">
+        <li>Анимацию разворачивания и сворачивания контента делать с помощью вызова jQuery-методов <code>.slideDown(200)</code>, <code>.slideUp()</code>, <code>.slideToggle()</code>, подразумевающих разворачивание элемента по вертикальной оси. Использование анимаций с помощью <code>.show()</code> и <code>.hide()</code> не рекомендуется.</li>
+        <li>Вместо миниатюрных индикаторов загрузки типа <code>.icon16.loading</code> в предыдущем поколении интерфейса (wa-1.3.css) рекомендуется использовать <a href="{$wa_app_url}component/spinner/">.spinner</a> или, если это уместно, <a href="{$wa_app_url}component/skeleton/">.skeleton</a>.</li>
+        <li>Анимацию появления блоков с абсолютным позицинированием (диалогов, уведомлений, подсказок и советов) рекомендуется оформлять с анимацией прозрачности и движения блока вверх. См. <a href="{$wa_app_url}component/dialog/">waDialog</a> или .alert-fixed-box &gt; <a href="{$wa_app_url}component/alert/">.alert</a> в качестве примера.</li>
+    </ul>
+
+    <p>Не рекомендуется:</p>
+    <ul class="separated">
+        <li>добавлять анимацию при событии <code>:hover</code> — такая подсветка должна работать мгновенно;</li>
+        <li>пытаться удивить пользователя «красивой» анимацией.</li>
+    </ul>
+
+    <h3>Доступные классы анимаций:</h3>
+
+    <table>
+        <tr>
+            <td><code>.wa-animation-swing</code></td>
+            <td>{_swing}</td>
+            <td><pre class="prettyprint">{_swingCode|escape}</pre></td>
+        </tr>
+
+        <tr>
+            <td><code>.wa-animation-spin</code></td>
+            <td>{_spinner}</td>
+            <td><pre class="prettyprint">{_spinner|escape}</pre></td>
+        </tr>
+    </table>
+
+    <p>Для анимации <code>.wa-animation-spin</code> доступны также классы модификаторы:</p>
+    <table>
+        <tr>
+            <td>
+                <code>.rotate90</code>
+                <div>Единожды анимирует объект на 90 градусов по часовой стрелке</div>
+            </td>
+            <td>{_spinnerRotate90}</td>
+            <td><pre class="prettyprint">{_spinnerRotate90|escape}</pre></td>
+        </tr>
+
+        <tr>
+            <td>
+                <code>.rotate180</code>
+                <div>Единожды анимирует объект на 180 градусов по часовой стрелке</div>
+            </td>
+            <td>{_spinnerRotate180}</td>
+            <td><pre class="prettyprint">{_spinnerRotate180|escape}</pre></td>
+        </tr>
+
+        <tr>
+            <td>
+                <code>.speed-1000</code>
+                <div>Меняет время прохождения цикла анимации на значение в 1000мс</div>
+            </td>
+            <td>{_spinnerInfinite1000}</td>
+            <td><pre class="prettyprint">{_spinnerInfinite1000|escape}</pre></td>
+        </tr>
+
+        <tr>
+            <td>
+                <code>.speed-1500</code>
+                <div>Меняет время прохождения цикла анимации на значение в 1500мс</div>
+            </td>
+            <td>{_spinnerInfinite1500}</td>
+            <td><pre class="prettyprint">{_spinnerInfinite1500|escape}</pre></td>
+        </tr>
+
+        <tr>
+            <td>
+                <code>.speed-2000</code>
+                <div>Меняет время прохождения цикла анимации на значение в 2000мс</div>
+            </td>
+            <td>{_spinnerInfinite2000}</td>
+            <td><pre class="prettyprint">{_spinnerInfinite2000|escape}</pre></td>
+        </tr>
+    </table>
+
+</div>
+<script>
+    $.wa_ui.title.set({$_title|json_encode});
+    if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+        prettyPrint();
+    }
+
+    ( function($) {
+      $('.js-animation-restart').on('click', function(e) {
+        e.preventDefault();
+
+        const animation = $(this).data('animation');
+
+        $(this).removeClass(animation);
+        void $(this)[0].offsetWidth;
+        $(this).addClass(animation);
+      })
+    })(jQuery);
+</script>

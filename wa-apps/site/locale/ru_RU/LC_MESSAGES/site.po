@@ -604,8 +604,8 @@ msgstr "Требовать ввод капчи (captcha) в форме реги�
 msgid "Enter the URL of your new website. You should own the domain and map it into your Webasyst installation (the URL should be the effective URL to access this Webasyst installation). Contact your hosting provider on how to map your domain name."
 msgstr "Введите URL нового сайта. Вы должны быть владельцем доменного имени и предварительно настроить домен так, чтобы он указывал на данную установку Webasyst. Для настройки доменного имени обратитесь за помощью к вашему хостинг-провайдеру."
 
-msgid "Optional set of custom <em>key=value</em> parameters which can be used within design templates and pages of this settlement as <em>&#123;$wa->globals(\"key\")&#125;</em>. Each key=value pair should be on a separate line."
-msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться шаблонах дизайна и страницах этого поселения как <em>&#123;$wa->globals(\"key\")&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
+msgid "Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param(\"key\")&#125;</em>. Each key=value pair must be specified on a separate line."
+msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться шаблонах дизайна и страницах этого поселения как <em>&#123;$wa->param(\"key\")&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
 
 msgid "Select route to manage its settings"
 msgstr "Выберите правило маршрутизации для редактирования его настроек"
@@ -1572,3 +1572,9 @@ msgid_plural "%d “Redirect” rules are incorrect."
 msgstr[0] "Правило «Перенаправление» настроено неправильно."
 msgstr[1] "%d правила «Перенаправление» настроены неправильно."
 msgstr[2] "%d правил «Перенаправление» настроены неправильно."
+
+msgid "Homepage"
+msgstr "Главная страница"
+
+msgid "Invalid value: %s."
+msgstr "Недопустимое значение: %s."

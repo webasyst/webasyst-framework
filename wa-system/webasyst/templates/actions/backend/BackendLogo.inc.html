@@ -1,0 +1,36 @@
+{strip}
+    {if $logo.mode === 'gradient' || empty($logo.image.thumbs)}
+        {$two_lines = $logo.two_lines}
+        {$text_value = $logo.text.value|trim|escape}
+{if $position === 'header'}
+<div id="wa-account" style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color: {$logo.text.color|default:$logo.text.default_color}">
+    <a href="{$backend_url}">
+{/if}
+        <h3{if $two_lines} class="two-lines"{/if} title="{$company_name}" style="{if $position === 'sidebar'}background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color: {$logo.text.color|default:$logo.text.default_color}{else}color: {$logo.text.color|default:$logo.text.default_color}{/if}">
+            {if $text_value}
+                {if $two_lines}
+                    {$logo.text.formatted_value|default:$logo.text.value|trim|escape|nl2br}
+                {else}
+                    {$text_value}
+                {/if}
+            {else}
+                <i class="fas fa-home"></i>
+            {/if}
+        </h3>
+{if $position === 'header'}
+    </a>
+</div>
+{/if}
+    {elseif $logo.mode === 'image' && !empty($logo.image.thumbs)}
+        {$logo_url_1x = $logo.image.thumbs['64x64'].url|cat:$wa->version(true)}
+        {$logo_url_2x = $logo.image.thumbs['128x128'].url|cat:$wa->version(true)}
+        {$logo_url_3x = $logo.image.thumbs['192x192'].url|cat:$wa->version(true)}
+        {$logo_url_sidebar = $logo.image.thumbs['512x512'].url|cat:$wa->version(true)}
+
+        <div id="wa-account"{if $position === 'sidebar'} class="wa-sidebar-logo"{/if}>
+            <a href="{$backend_url}">
+                <img{if $position === 'sidebar'} src="{$logo_url_sidebar}"{else} src="{$logo_url_1x}" srcset="{$logo_url_1x} 1x, {$logo_url_2x} 2x, {$logo_url_3x} 3x"{/if} class="wa-header-logo" alt="{$company_name|truncate:2:''}">
+            </a>
+        </div>
+    {/if}
+{/strip}

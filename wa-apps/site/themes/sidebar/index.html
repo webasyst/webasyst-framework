@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
 
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
+    <link rel="icon" href="/favicon.ico"/>
     <link rel="shortcut icon" href="/favicon.ico"/>
     {if $wa->blog}
         <!-- rss -->
@@ -20,7 +21,6 @@
 
     <!-- css -->
     <link href="{$wa_theme_url}sidebar.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_static_url}wa-content/font/ruble/georgia/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
 
     <!-- js -->

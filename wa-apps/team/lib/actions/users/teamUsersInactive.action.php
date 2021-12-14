@@ -4,6 +4,10 @@ class teamUsersInactiveAction extends teamContentViewAction
 {
     public function execute()
     {
+        if (!teamHelper::hasRights()) {
+            throw new waRightsException(_w('Access denied'));
+        }
+
         $contacts = array();
         $cm = new waContactModel();
         $ids = $cm->select('id')->where('is_user=-1 AND login IS NOT NULL')->fetchAll('id', true);

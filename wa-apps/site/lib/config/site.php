@@ -29,18 +29,25 @@ return array(
             'description' => _w('Email feedback form'),
             'content' => '
 <style>
-  .wa-form { float: left; margin: 10px 0; overflow: visible; }
-  .wa-form .wa-field { clear: left; margin: 0; padding-top: 3px; }
-  .wa-form .wa-field .wa-name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; font-size: 0.95em; }
-  .wa-form .wa-field .wa-value { margin-left: 180px; margin-bottom: 5px; position: relative; }
-  .wa-form .wa-field .wa-value.wa-submit { margin-top: 0px; }
-  .wa-form .wa-field .wa-value input[type="text"], .wa-form .wa-field .wa-value input[type="email"], .wa-form .wa-field .wa-value input[type="password"] { width: 30%; min-width: 200px; margin: 0; }
-  .wa-form .wa-field .wa-value textarea { min-width: 300px; height: 70px; }
-  input, textarea { font-size: 1em; color: black; font-family: "Georgia", Times, serif; }
-  .wa-form .wa-captcha { padding: 7px 0 10px; }
-  .wa-form .wa-captcha p { clear: left; margin: 0; }
-  .wa-captcha img { float: left; margin-right: 5px; margin-top: -8px; }
-  .wa-captcha .wa-captcha-refresh { color: #AAAAAA; font-size: 0.8em; text-decoration: underline; }
+    .wa-form { float: left; margin: 10px 0; overflow: visible; }
+    .wa-form .wa-field { clear: left; margin: 0; padding-top: 3px; }
+    .wa-form .wa-field .wa-name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; font-size: 0.95em; }
+    .wa-form .wa-field .wa-value { margin-left: 180px; margin-bottom: 5px; position: relative; }
+    .wa-form .wa-field .wa-value.wa-submit { margin-top: 0; }
+    .wa-form .wa-field .wa-value input[type="text"], .wa-form .wa-field .wa-value input[type="email"], .wa-form .wa-field .wa-value input[type="password"] { width: 30%; min-width: 200px; margin: 0; }
+    .wa-form .wa-field .wa-value textarea { min-width: 300px; height: 70px; }
+    input, textarea { font-size: 1em; color: black; font-family: "Georgia", Times, serif; }
+    .wa-form .wa-captcha { padding: 7px 0 10px; }
+    .wa-form .wa-captcha p { clear: left; margin: 0; }
+    .wa-captcha img { float: left; margin-right: 5px; margin-top: -8px; }
+    .wa-captcha .wa-captcha-refresh { color: #AAAAAA; font-size: 0.8em; text-decoration: underline; }
+
+    @media (max-width: 760px) {
+        .wa-form .wa-field:not(:first-child) { padding: 0; }
+        .wa-form .wa-field:not(:first-child) { margin-top: 1rem; }
+        .wa-form .wa-field .wa-name { float: none; width: auto; margin: 0; padding: 0; }
+        .wa-form .wa-field .wa-value { float: none; width: auto; margin: .5rem 0 0; padding: 0; }
+    }
 </style>
 {$errors = array()}
 {if $wa->post("send") and $wa->sendEmail("", $errors)}

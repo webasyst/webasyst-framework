@@ -53,16 +53,24 @@ class waContactEmailField extends waContactStringField
     public function validate($data, $contact_id=null)
     {
         $errors = parent::validate($data, $contact_id);
-        if ($errors) {
-            return $errors;
+        if (!$errors) {
+            $errors = $this->validateUniquenessAmongAuthorizedContacts($data, $contact_id);
         }
+        return $errors;
+    }
+
+    protected function validateUniquenessAmongAuthorizedContacts($data, $contact_id)
+    {
+        $errors = null;
 
         if ($this->isMulti()) {
             if (!empty($data[0]) && $contact_id) {
                 $value = $this->format($data[0], 'value');
                 $email_exists = $this->emailExistsAmongAuthorizedContacts($value, $contact_id);
                 if ($email_exists) {
-                    $errors[0] = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Email'));
+                    $errors = [
+                        sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Email'))
+                    ];
                 }
             }
         } else {
@@ -81,7 +89,7 @@ class waContactEmailField extends waContactStringField
      * Checks that suggested email value for current contact ALREADY exists among all default emails of authorized contacts
      * Authorize contact is contact with password != 0
      * @param string $suggested_email_value
-     * @param id|null $contact_id
+     * @param int|null $contact_id
      * @return bool
      */
     protected function emailExistsAmongAuthorizedContacts($suggested_email_value, $contact_id = null)

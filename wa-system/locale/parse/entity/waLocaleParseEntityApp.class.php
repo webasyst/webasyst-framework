@@ -45,6 +45,14 @@ class waLocaleParseEntityApp extends waLocaleParseEntity
     }
 
     /**
+     * @return string
+     */
+    public function getDomainFunctionPattern()
+    {
+        return self::WEBASYST_DOMAIN_PATTERN;
+    }
+
+    /**
      * @return array
      * @throws waException
      */
@@ -52,7 +60,6 @@ class waLocaleParseEntityApp extends waLocaleParseEntity
     {
         $result = [
             $this->generatePath('templates'),
-            $this->generatePath('js'),
             $this->generatePath('lib'),
         ];
 

@@ -1,0 +1,579 @@
+<script type="text/javascript">
+    document.title = {if $app}{json_encode($app.name)} + ' [`settings`]'{elseif $app_id eq ':text'}'[`Custom text`]'{else}'[`Redirect`]'{/if} + ' — ' + {json_encode($domain)};
+</script>
+{if !$wa->get('details')}
+<div class="s-editor s-white s-app-settings article box contentbox">
+    <form id="s-settings-form" method="post" action="{$wa_backend_url}site/?module=routing&action=save&domain_id={$domain_id}&route={$route_id}">
+    {if $wa->get('reload_on_change')}<input type="hidden" name="correct_url" value="1">{/if}
+    <div class="float-left s-route">
+        <div class="block s-route-core">
+
+            <a href="#" class="cancel back s-route-block">&larr; [`Back`]</a>
+
+            {if strlen($route_id)}
+
+                <!-- existing route -->
+                {if empty($route.redirect)}
+                    <div class="s-route-block" id="s-route-what">
+                        {if $app}
+                            <img src="{$wa_url}{$app.icon.24}" />
+                            <h3>{$app.name}</h3>
+                        {elseif $route.app ===':text'}
+                            [`Custom text`]
+                        {else}
+                            {$route.app|escape}
+                        {/if}
+                    </div>
+                {/if}
+
+                <div class="s-route-block" id="s-route-where">
+                    <span class="gray">
+                        {$domain_decoded}/
+                    </span><input type="text" name="params[url]" value="{$route.url|escape}" class="js-url bold large" />
+                </div>
+
+                {if empty($route.redirect) && !isset($route.static_content) && !$app}
+                <div class="block half-padded float-right">
+                    <ul class="menu-h">
+                        <li><a href="#" class="s-route-action s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i>[`Delete rule`]</a></li>
+                    </ul>
+                </div>
+                {/if}
+
+            {else}
+
+                <!-- new route -->
+                <div class="s-route-block" id="s-route-where">
+                    <span class="gray">
+                        {$domain_decoded}/
+                    </span><input type="text" name="params[url]" value="*" class="js-url bold large" />
+                </div>
+
+                {if empty($route.redirect)}
+                    <div class="s-route-block" id="s-route-what">
+                        <span class="gray">&rarr;</span>
+                        <img src="{$wa_url}{$app.icon.24}" />
+                        <select class="s-select-app" name="params[app]">
+                            {foreach $apps as $app}
+                            <option value="{$app.id}" data-img="{$app.icon.24}">{$app.name}</option>
+                            {/foreach}
+                            <option value=":text" data-img="wa-apps/site/img/script-code.png?v=1">[`Custom text`]</option>
+                            <option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>
+                        </select>
+                    </div>
+                {/if}
+
+            {/if}
+
+            <div class="s-route-block" style="margin-left: -5px;{if empty($route.redirect)} display: none;{/if}" id="s-route-to">
+                &rarr;
+                <input type="text" name="params[redirect]" {if !isset($route.redirect)}disabled{/if} value="{if !empty($route.redirect)}{$route.redirect|escape}{/if}" class="bold large" placeholder="http://" />
+            </div>
+
+        </div>
+{/if}
+        <div class="block padded s-redirect-details" style="{if empty($route.redirect)}display: none;{/if}">
+            {* FIELDS FOR REDIRECT *}
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[`Temporary redirecting`]</div>
+                    <div class="value">
+                        <label>
+                            <input type="checkbox" name="params[code]" value="302"{if !empty($route.code) && $route.code == 302} checked{/if} />
+                            [`Use server response code 302`]
+                        </label>
+                    </div>
+                    <div class="value">
+                        <div class="hint">[`Enable for <strong>temproray</strong> redirecting only, which you are planning to cancel in the future.`]</div>
+                        <div class="hint">[`Disable for <strong>permanent</strong> redirecting with server response code 301, which is used to inform search engines that the new URL should be indexed instead of the old one.`]</div>
+                    </div>
+                </div>
+
+                <div id="s-route-comment" class="field" style="{if empty($route.redirect)}display: none;{/if}">
+                    <div class="name">[`Comment`]</div>
+                    <div class="value">
+                        <textarea name="params[comment]" class="s-comment" {if !isset($route.redirect)}disabled{/if}>{$route.comment|default:null|escape}</textarea>
+                    </div>
+                </div>
+
+                <div id="s-redirect-disabled" class="field" style="{if empty($route.redirect)}display: none;{/if}">
+                    <div class="value s-ibutton-checkbox no-shift">
+                        <ul class="menu-h">
+                            <li>
+                                <span {if empty($route.disabled) && ifempty($route.disabled) <= 0} class="gray"{/if} id="s-toggle-redirect-disabled-label">
+                                    <label for="js-ibutton-disabled">
+                                        [`Redirect disabled`]
+                                    </label>
+                                </span>
+                            </li>
+                            <li>
+                                {* Inverse setting *}
+                                <input type="hidden" name="params[disabled]" value="1"{if !isset($route.redirect)} disabled{/if}/>
+                                <input type="checkbox" id="js-ibutton-disabled" name="params[disabled]" value="0"{if !isset($route.redirect)} disabled{/if}{if empty($route.disabled) && ifempty($route.disabled) <= 0} checked{/if}>
+                            </li>
+                            <li>
+                                <span id="s-toggle-redirect-enabled-label" {if !empty($route.disabled)} class="gray"{/if}>
+                                    <label for="js-ibutton-disabled">
+                                        [`Redirect enabled`]
+                                    </label>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="block padded s-route-details">
+
+            <div class="fields form">
+
+                {$themes=siteHelper::getThemes($app_id, true)}
+                {if $app}
+                <div class="field-group">
+                    <div class="field">
+                        <div class="name">[`Settlement name`]</div>
+                        <div class="value">
+                            <input type="text" name="params[_name]" value="{$route_name|escape}" class="bold" /><br />
+                            <span class="hint">[`Name is used in the <em>$wa->apps</em> navigation menu of this website`]</span>
+                        </div>
+                    </div>
+                    {if $themes}
+                    <div class="field">
+                        <div class="name">[`Design theme`]</div>
+                        <div class="value">
+                            <div class="wa-select">
+                                {html_options name="params[theme]" options=$themes selected=ifempty($route['theme'], 'default')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Mobile design theme`]</div>
+                        <div class="value">
+                            <div class="wa-select">
+                                {html_options name="params[theme_mobile]" options=$themes selected=ifempty($route.theme_mobile, 'default')}
+                            </div>
+                            <br />
+                            <span class="hint">[`Design theme for mobile multi-touch devices such as iPhone and Android`]</span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Language`]</div>
+                        <div class="value">
+                            {if !strlen($route_id)}{$_l=$wa->locale()}{else}{$_l=ifset($route.locale, '')}{/if}
+                            <div class="wa-select">
+                            {html_options name="params[locale]" options=$locales selected=$_l}</div><br>
+                            <span class="hint">[`Select a language to translate text strings in website frontend.`]<br>
+                            [`If “Auto” option is selected, website language will be determined by user browser settings.`]</span>
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="field">
+                        <div class="name">[`Privacy`]</div>
+                        <div class="value">
+                            <label>
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" value="1" name="params[private]"{if !empty($route.private)} checked{/if}>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </span>
+                                </span>
+                                [`Private settlement`]<br />
+                            <span class="hint">[`When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines.`]</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Security`]</div>
+                        <div class="value">
+                            <label>
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" value="1" id="ssl_all" name="params[ssl_all]" {if !empty($route.ssl_all)} checked{/if} {if empty($is_https)}disabled{/if}>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </span>
+                                </span>
+                                [`Redirect to HTTPS`]<br>
+                                <span class="hint ssl_server_https bold" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]<br></span>
+                                <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></span>
+                                <span class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this settlement.`]
+                                <br>
+                                [`This option will work only if an SSL certificate is installed for your domain name.`]
+                                <br>
+                                {sprintf(_w('To enable redirect to HTTPS for <em>all</em> website settlements, change this option in <a href="%s#/settings/">common site settings</a>.'), $site_url)}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {if !empty($params)}
+                    {foreach $params as $p}
+                    {if is_array($p)}
+                        {if $p.type == 'hidden'}
+                            {$p.value}
+                        {else}
+                            <div class="field">
+                                <div class="name">{$p.name|escape}</div>
+                                <div class="value">{$p.value}</div>
+                            </div>
+                        {/if}
+                    {else}
+                        <h5 class="heading clear-both"><br>{$p}<br><br></h5>
+                    {/if}
+                    {/foreach}
+                {/if}
+                <div class="field">
+                    <div class="name">[`Custom parameters`]</div>
+                    <div class="value">
+                        <textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
+
+{/if}{/foreach}</textarea>
+                        <br />
+                        <span class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param("key")&#125;</em>. Each key=value pair must be specified on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/design/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
+                    </div>
+                </div>
+                {elseif $app_id === ':text'}
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">[`Custom text`]</div>
+                            <div class="value"><textarea name="params[static_content]" placeholder="[`Text to be returned at specified URL`]">{$route.static_content|default:''|escape}</textarea></div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[`Content type`]</div>
+                            <div class="value">
+                                <select name="params[static_content_type]">
+                                    <option value=""{if empty($route.static_content_type)} selected{/if}>[`file`]</option>
+                                    <option value="text/plain" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/plain')} selected{/if}>[`text (text/plain)`]</option>
+                                    <option value="text/html" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/html')} selected{/if}>[`HTML code (text/html)`]</option>
+                                </select>
+                                <br>
+                                <span class="hint">[`If content type “file” is selected, downloading of a file will start automatically if there is no extension in its name.`]</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[`Privacy`]</div>
+                            <div class="value">
+                                <label>
+                                    <input type="checkbox" value="1" name="params[private]"{if !empty($route.private) || !strlen($route_id)} checked{/if}> [`Private settlement`]<br />
+                                    <span class="hint">[`When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines.`]</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                {elseif $app === false}
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name"></div>
+                            <div class="value red"><i class="icon16 exclamation"></i> {$app_id|escape|string_format:"[`App [%s] deleted or disabled.`]"}</div>
+                        </div>
+                    </div>
+                {/if}
+
+                {if !empty($route.redirect) || isset($route.static_content) || $app}
+                <div class="field">
+                    <div class="{if !$wa->get('reload_on_change')}value{else}wa-design-save-panel block bordered-top{/if}">
+                        {if strlen($route_id)}
+                        <div class="block half-padded float-right">
+                            <ul class="menu-h">
+                                <li><a href="#" class="s-route-action s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i>[`Delete rule`]</a></li>
+                            </ul>
+                        </div>
+                        {/if}
+
+                        <input type="submit" name="save" class="button green" value="[`Save`]" />
+                        <span id="s-settings-form-status"></span>
+                    </div>
+                </div>
+                {/if}
+            </div>
+        </div>
+{if !$wa->get('details')}
+    </div>
+    </form>
+<div class="clear"></div>
+</div>
+
+{* DIALOGS *}
+<div class="dialog width550px height200px" id="remove-last-route">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1>[`Delete route`]</h1>
+                <p>{sprintf('[`You are about to delete the only routing rule set up for <b>%s</b> app.`]', ifempty($app.name))}</p><p>[`This will limit its functionality. Delete the rule?`]</p>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <input type="submit" class="button red" value="[s`Delete`]"> [s`or`] <a href="javascript:void(0);" class="cancel">[s`cancel`]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+
+    var $disabled_toggle = $("#js-ibutton-disabled");
+    var is_new_route = {if strlen($route_id)}false{else}true{/if};
+
+    function updateRoutingErrors(routing_errors)
+    {
+        // Page could be loaded by other apps, so $.wa.site not loaded, but updateRoutingErrors is not very important method, so we just skip call
+        if ($.wa.site) {
+            $.wa.site.updateRoutingErrors(routing_errors);
+        } else if (routing_errors) {
+            console.log(routing_errors);
+        }
+    }
+
+    // Rule address contains unsupported character, regexp for define it
+    var invalid_url_regexp = /(\&|\$|\+|\,|\:|\;|\=|\?|\@|\#|\<|\>|\[|\]|\}|\||\^|\%)/;
+
+    {if isset($route.redirect)}
+        $disabled_toggle.iButton({
+            labelOn: "",
+            labelOff: "",
+            classContainer: "c-ibutton ibutton-container mini"
+        }).change(function() {
+            if (this.checked) {
+                $('#s-toggle-redirect-disabled-label').addClass('gray');
+                $('#s-toggle-redirect-enabled-label').removeClass('gray');
+            } else {
+                $('#s-toggle-redirect-disabled-label').removeClass('gray');
+                $('#s-toggle-redirect-enabled-label').addClass('gray');
+            }
+        });
+    {/if}
+
+    function checkUrlInput() {
+        var $form = $("#s-settings-form"),
+            $url_input = $form.find('.js-url'),
+            url = $url_input.val(),
+            res = url.match(invalid_url_regexp),
+            is_valid = !res;
+        if (url.length && !is_valid) {
+            $url_input.attr('disabled', true);
+            $url_input.append($('<input type="hidden" name="params[url]">').val(url));
+        }
+    }
+
+    if (!is_new_route) {
+        checkUrlInput();
+    }
+
+    function checkSSLProtocol() {
+        //Disabled ssl checkbox
+        if (window.location.protocol.replace(':', '') != 'https') {
+            $('#ssl_all').attr('disabled', true);
+            $('.ssl_server_https').hide();
+            $('.ssl_all_hide').show();
+            $('.ssl_all_hide a').attr('href', window.location.href.replace('http', 'https'));
+        }
+    }
+    checkSSLProtocol();
+
+    $("select.s-select-app").on('change', function () {
+        if ($(this).val()) {
+            $('.s-route-details').html('<i class="icon16 loading"></i>').load('?module=routing&action=edit', 'domain_id={$domain_id}&app=' + $(this).val() + '&details=1', function () {
+                checkSSLProtocol();
+            });
+            if ($(this).next('.redirect').length) {
+                $(this).next('.redirect').remove();
+            }
+            $('#s-route-what').show();
+            $('#s-route-to').hide().find('input').attr('disabled', 'disabled');
+            $('#s-route-comment').hide().find('textarea').attr('disabled', 'disabled');
+            $('#s-redirect-disabled').hide().find('input').attr('disabled', 'disabled');
+        } else {
+            $('.s-route-details').find('div.field,div.field-group').not('div.field:last').remove();
+            $('.s-redirect-details').show();
+            if ($(this).next('.redirect').length) {
+                $(this).next().find('input').val('');
+            } else {
+                $('<span class="redirect"> <input name="params[redirect]" class="long" type="text" /></span>').insertAfter(this);
+                $(this).hide();
+            }
+            $('#s-route-where input').focus();
+            $('#s-route-what').hide();
+            $('#s-route-to').show().find('input').removeAttr('disabled');
+            $('#s-route-comment').show().find('textarea').removeAttr('disabled');
+            $('#s-redirect-disabled').show().find('input').removeAttr('disabled');
+            $disabled_toggle.iButton({
+                labelOn: "",
+                labelOff: "",
+                classContainer: "c-ibutton ibutton-container mini"
+            });
+        }
+
+        var $select = $(this),
+            $option = $select.find(':selected'),
+            $img = $select.prev();
+
+        var src = "{$wa_url}" + $option.attr('data-img');
+
+        $img.attr('src', src).show();
+
+        // if ($select.val() == ":text") {
+        //     $img.attr('style', 'width: 16px; height: 16px;');
+        // } else {
+        //     $img.removeAttr('style');
+        // }
+    });
+
+    // Delete route
+    $("a.s-route-delete").on('click', function () {
+        var last_app_route = {$last_app_route|json_encode},
+            content = '[`This will delete the rule from website structure. Are you sure?`]';
+
+        if (last_app_route) {
+            content = '{sprintf('[`You are about to delete the only routing rule set up for <b>%s</b> app.`]', ifempty($app.name))}</p><p>[`This will limit its functionality. Delete the rule?`]';
+        }
+
+        $().waDialog({
+            'title': '[`Delete route`]',
+            'content': '<p>'+ content +'</p>',
+            'height': '190px',
+            'width': '400px',
+            'buttons': '<input type="submit" class="button red" value="[s`Delete`]"> [s`or`] <a href="javascript:void(0);" class="cancel">[s`cancel`]</a>',
+            onSubmit: function (d) {
+                deleteRoute();
+                d.trigger('close');
+                return false;
+            }
+        });
+
+        function deleteRoute() {
+            $.post("?module=routing&action=delete&domain_id={$domain_id}", { "route": "{$route_id}" }, function (response) {
+                if (response.status == 'ok') {
+                    $("#route-{$route_id}").remove();
+                    $("#s-route-params").html('<div class="block double-padded align-center hint"><br />' +
+                        '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select route to manage its settings`]' +
+                        '<div class="clear"></div></div>'
+                    ).animate({ 'margin-left': '75%' }, 'slow');
+                    $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');
+                    $("#s-rules").removeClass('s-routing-minimized');
+                    $("#s-rules .s-domain-url").show();
+
+                    updateRoutingErrors(response.data.routing_errors);
+
+                } else {
+                    alert(response.errors);
+                }
+            }, "json");
+        }
+
+        return false;
+    });
+
+    $("#s-settings-form").on('submit', function () {
+        var $form = $(this),
+            $url_input = $form.find('.js-url').last();
+
+        $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
+        var callback = function (response) {
+            if (response.status === 'ok') {
+                {if strlen($route_id)}
+                    {if $wa->get('reload_on_change')}
+                        if (response.data.change) {
+                            location.reload();
+                        }
+                    {/if}
+                    if (response.data.delete) {
+                        $('#route-{$route_id}').insertAfter($('#route-' + response.data.delete));
+                        $('#route-' + response.data.delete).remove();
+                    }
+                    $('#route-{$route_id} .s-editable-url').text(response.data.url);
+                    if (response.data.redirect) {
+                        $('#route-{$route_id} .redirect').text(response.data.redirect);
+                        if (response.data.disabled) {
+                            $('#route-{$route_id} .s-app').addClass('gray');
+                        } else {
+                            $('#route-{$route_id} .s-app').removeClass('gray');
+                        }
+                    } else if (response.data.static_content) {
+                        $('#route-{$route_id} .text').text(response.data.static_content.substr(0, 32)+(response.static_content.length>32?'...':''));
+                    } else {
+                        if (response.data.private) {
+                            $('#route-{$route_id} .s-app').addClass('gray');
+                        } else {
+                            $('#route-{$route_id} .s-app').removeClass('gray');
+                        }
+                    }
+                    if ($('#ssl_all').prop('checked')) {
+                        $('#route-{$route_id} .lock').removeClass('hidden');
+                    } else {
+                        $('#route-{$route_id} .lock').addClass('hidden');
+                    }
+                {/if}
+                    if (response.data.add) {
+                        if (response.data.add === 'top') {
+                            $('#s-rules').prepend(response.data.html);
+                        } else {
+                            $('#s-rules').append(response.data.html);
+                        }
+                    }
+                    $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow', function () {
+                        site_routing_full();
+                    });
+                $form.find('input.button:submit').removeClass('red').addClass('green');
+            } else if (response.status === 'fail') {
+                $("#s-settings-form-status").html('<span class="small" style="color: #f00;">' + response.errors + '</span>');
+                $form.find('input.button:submit').removeClass('green').addClass('red');
+            }
+        };
+
+        // Validating unsupported characters in url
+        if (!$url_input.attr('disabled') && $url_input.length) {
+            var url = $url_input.val(),
+                res = url.match(invalid_url_regexp);
+
+            if (res) {
+
+                $("#s-settings-form-status").html('');
+
+                var title = '[`Rule cannot be saved`]',
+                    content = '[`Rule address contains unsupported character <strong class="highlighted">%s</strong>.`]';
+
+                content = content.replace(/\%s/, res[0]);
+
+                $().waDialog({
+                    'title': title,
+                    'content': '<p>'+ content +'</p>',
+                    'height': '140px',
+                    'width': '400px',
+                    'buttons': '<a class="button red cancel">[s`Close`]</a>'
+                });
+
+                return false;
+            }
+        }
+
+        $.post($form.attr('action'), $form.serialize(), function (response) {
+            if (response.status === 'ok' && response.data.confirm) {
+                if (confirm(response.data.confirm)) {
+                    $.post($form.attr('action') + '&replace=' + response.data.replace, $form.serialize(), callback, 'json')
+                } else {
+                    $("#s-settings-form-status").empty();
+                }
+            } else {
+                callback(response);
+            }
+            if (response.hasOwnProperty('data') && response.data.hasOwnProperty('routing_errors')) {
+                updateRoutingErrors(response.data.routing_errors);
+            }
+
+        }, "json");
+        return false;
+    });
+    $("#s-settings-form .cancel").click(function () {
+        site_routing_full();
+        return false;
+    });
+ });
+</script>
+{/if}

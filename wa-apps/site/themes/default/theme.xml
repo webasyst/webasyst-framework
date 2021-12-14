@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.21">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.25">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -86,16 +86,18 @@
         </setting>
         <setting var="pagination" control_type="select">
             <value>lazyloading</value>
-            <name locale="en_US">Long lists display</name>
-            <name locale="ru_RU">Длинные списки</name>
+            <name locale="en_US">Displaying of long product lists</name>
+            <name locale="ru_RU">Отображение длинных списков товаров</name>
+            <description locale="ru_RU">Применяется к спискам товаров в категориях и результатах поиска.</description>
+            <description locale="en_US">For category-listing pages and search results.</description>
             <options>
                 <option value="lazyloading">
-                    <name locale="ru_RU">Lazy loading: автоматическая подгрузка при скролле</name>
-                    <name locale="en_US">Lazy loading: auto load on scroll</name>
+                    <name locale="ru_RU">Автоматически загружать содержимое при прокручивании страницы</name>
+                    <name locale="en_US">Automatically load content on page scrolling</name>
                 </option>
                 <option value="paging">
-                    <name locale="ru_RU">1 2 3 4: Постраничная навигация</name>
-                    <name locale="en_US">1 2 3 4: Paginated lists</name>
+                    <name locale="ru_RU">Постраничная навигация (1 2 3 4)</name>
+                    <name locale="en_US">Paginated lists (1 2 3 4)</name>
                 </option>
             </options>
         </setting>
@@ -354,6 +356,13 @@
             <name locale="en_US">Brief working schedule</name>
             <description locale="ru_RU">Например: Пн—Сб 08:00–18:00</description>
             <description locale="en_US">Example: Mo—Sa 08:00–18:00</description>
+        </setting>
+        <setting var="show_cart" control_type="checkbox">
+            <value>1</value>
+            <name locale="ru_RU">Показывать корзину покупок</name>
+            <name locale="en_US">Show shopping cart</name>
+            <description locale="ru_RU">Корзина будет показана, если на сайте настроена хотя бы одна витрина интернет-магазина Shop-Script.</description>
+            <description locale="en_US">The shopping cart will be shown if at least one Shop-Script storefront is set up on the website.</description>
         </setting>
 
 

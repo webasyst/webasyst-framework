@@ -1,0 +1,161 @@
+{$_title = ".alert"}
+{$wa->title($_title)}
+
+{function name="_render" class=""}
+<span class="alert{if !empty($class)} {$class}{/if}">.alert</span>
+<span class="alert success{if !empty($class)} {$class}{/if}"><i class="fas fa-check-circle"></i> .alert.success</span>
+<span class="alert danger{if !empty($class)} {$class}{/if}"><span class="icon"><i class="fas fa-skull"></i></span> .alert.danger</span>
+<span class="alert warning{if !empty($class)} {$class}{/if}">
+    <i class="fas fa-exclamation-triangle"></i>
+    .alert.warning
+    <a href="#" class="alert-close"><i class="fas fa-times"></i></a>
+</span>
+<span class="alert info{if !empty($class)} {$class}{/if}">.alert.info</span>
+<span class="alert outlined{if !empty($class)} {$class}{/if}">.alert.outlined</span>
+{/function}
+
+{function name="_render_complex" class=""}
+<div class="alert info">
+    <div class="flexbox space-16 full-width">
+        <div class="wide small">
+            <strong>PHP на вашем сервере устарел &mdash; пора обновиться!</strong>
+Версия PHP 5.6, которая используется на вашем сервере, уже устарела. Начиная с декабря 2018 года для нее больше не выпускаются исправления ошибок, в том числе влияющих на безопасность вашего сайта. Обновите PHP до минимальной поддерживаемой сегодня версии — <strong>PHP 7.2 или выше</strong>.
+        </div>
+        <div class="middle">
+            <span class="icon size-96" style="width: 1.25em; margin-left: 0.125em;"><i class="fab fa-php"></i></span>
+        </div>
+        <div>
+            <a href="#" class="alert-close"><i class="fas fa-times"></i></a>
+        </div>
+    </div>
+</div>
+
+<div class="alert outlined">
+    <div class="flexbox space-16 full-width middle">
+        <div>
+            <span class="icon userpic largest">
+                <i style="background-image: url('{$wa_url}wa-content/img/userpic32@2x.jpg');"></i>
+            </span>
+        </div>
+        <div class="wide">
+
+            Юзернейм сегодня празднует <b><i class="fas fa-birthday-cake"></i> день рождения</b>
+
+        </div>
+        <div>
+            <button class="pink">Поздравить</button>
+        </div>
+        <div>
+            <a href="#" class="alert-close"><i class="fas fa-times"></i></a>
+        </div>
+    </div>
+</div>
+{/function}
+
+{function name="_render_row" class=""}
+<div class="tablebox fixed space-16">
+    <div style="width: 50%;">
+        <div class="alert success">
+            <div class="flexbox middle full-width">
+                <strong>Saved!</strong>
+                <i class="fas fa-check"></i>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="alert info">
+            See details
+            <span class="alert-close"><i class="fas fa-globe"></i></span>
+        </div>
+    </div>
+</div>
+{/function}
+
+{function name="_render_fixed" class=""}
+<div class="alert-fixed-box" id="alert-fixed-box-demo">
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Компонент для вывода короткого информационного сообщения — уведомления, напоминания, сообщения о совершенном действии, предупреждения — требующего явного внимания пользователя.</p>
+    <p>Геометрия компонента схожа с универсальным контейнером <a href="{$wa_app_url}component/box/">.box</a>. Но удобство использование <code>.alert</code> — во множестве готовых вариантов визуального оформления для наиболее типичных ситуаций.</p>
+
+    <div class="line">
+        {_render}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <h3>.alert<code>.outlined</code></h3>
+    <p>
+        Добавление класса <code>.outlined</code> делает фон уведомления прозрачным и полностью убирает тень. Класс можно совмещать со всеми статусами — <code>.success</code>, <code>.danger</code>, <code>.warning</code>, <code>.info</code>.
+    </p>
+
+    <h3>.alert &gt; <code>.alert-close</code></h3>
+    <p>
+        Если для уведомления необходимо добавить возможность закрытия, рекомендуется делать это с помощью элемента <code>&lt;a class="alert-close"&gt;</code> с иконкой-крестиком <code>&lt;i class="fas fa-times"&gt;&lt;/i&gt;</code> внутри.
+    </p>
+
+    <hr>
+
+    <p>Верстка сложно оформленных уведомлений отдается на откуп разработчику приложения. В большинстве случаев оформление можно сделать на основе <code>.flexbox</code>, <code>.tablebox</code> или <code>.inlinebox</code>.</p>
+    <div class="line">
+        {_render_complex}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_complex|escape}</pre>
+    </div>
+
+    <p><code>.alert</code> всегда выводится на всю ширину (display: block;). Вариант оформления display: inline-block не предусмотрен в связи тем, что несколько уведомлений на одной странице рекомендуется использовать с особой осторожностью. Если же нужно разместить несколько уведомлений в ряд, это всегда легко сделать с помощью обертки в <code>.flexbox</code>, <code>.tablebox</code> или <code>.inlinebox</code>.</p>
+    <div class="line">
+        {_render_row}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_row|escape}</pre>
+    </div>
+
+    <h3>Размер уведомления</h3>
+    <p><code>.alert</code> позволяет регулировать свой размер с помощью классов <code>.small</code>, <code>.smaller</code>, <code>.smallest</code> и <code>.large</code>, <code>.larger</code>, <code>.largest</code>.</p>
+    <div class="line">
+        {_render class="small"}
+    </div>
+    <div class="line">
+        {_render class="largest"}
+    </div>
+
+    <h3><code>.alert-fixed-box</code> &gt; .alert</h3>
+    <p>
+        Чтобы вывести одно или несколько уведомлений в виде одного общего блока, используйте обертку <code>.alert-fixed-box</code> и разместите внутри нужное количество уведомлений — все они будут размещены друг над другом в виде стека.
+    </p>
+    <p>Возможные варианты размещения — <code>.alert-fixed-box</code> в правом верхнем углу (по умолчанию) и <code>.alert-fixed-box<strong>.bottom</strong></code> в правом нижнем.</p>
+    <p>Если требуется размер больше стандартного — используйте дополнительный класс <code>.alert-fixed-box<strong>.large</strong></code>.</p>
+    <button id="alert-fixed-box-toggle" class="button purple">Добавить уведомление</button>
+
+    <p>Уведомления в фиксированном блоке сами собой не пропадают. Реализация этого поведения остается на усмотрение разработчика.</p>
+
+    {_render_fixed}
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+
+        var _demo_alerts = [
+            '<span class="alert success"><a href="#" class="alert-close"><i class="fas fa-times"></i></a> <i class="fas fa-check-circle"></i> Upload complete</span>',
+            '<span class="alert info"><a href="#" class="alert-close"><i class="fas fa-times"></i></a> <i class="fas fa-envelope"></i> 1 new message</span>',
+            '<span class="alert warning"><a href="#" class="alert-close"><i class="fas fa-times"></i></a> <i class="fas fa-exclamation-triangle"></i> Your free trial will expire in 3 days. Please upgrade to continue using the service.</span>',
+            '<span class="alert danger"><a href="#" class="alert-close"><i class="fas fa-times"></i></a> <i class="fas fa-lock"></i> Access denied</span>'
+        ];
+
+        $('#alert-fixed-box-toggle').click(function(){
+            $('#alert-fixed-box-demo').append( _demo_alerts[ Math.floor( Math.random() * _demo_alerts.length ) ] );
+            return false;
+        });
+
+    </script>
+</div>

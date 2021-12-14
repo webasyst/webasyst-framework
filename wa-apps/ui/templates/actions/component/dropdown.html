@@ -1,0 +1,238 @@
+{$_title = ".waDropdown()"}
+{$wa->title($_title)}
+
+{function name="_render_dropdown"}
+<div class="dropdown" id="dropdown-1">
+    <button class="dropdown-toggle button outlined" type="button">.dropdown</button>
+    <div class="dropdown-body">
+
+        <div class="box align-center">
+            <em>Hello World!</em>
+        </div>
+
+    </div>
+    <script>
+        ( function($) {
+            $("#dropdown-1").waDropdown();
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+{function name="_render_dropdown_menu_v"}
+<div class="dropdown" id="dropdown-2">
+    <button class="dropdown-toggle button outlined yellow" type="button">.dropdown &gt; .menu</button>
+    <div class="dropdown-body">
+
+        <ul class="menu">
+            <li>
+                <a href="https://www.webasyst.ru/"><i class="fas fa-globe"></i><span>www.webasyst.ru</span></a>
+            </li>
+            <li>
+                <a href="https://www.shop-script.ru/"><i class="fas fa-globe"></i><span>www.shop-script.ru</span></a>
+            </li>
+        </ul>
+
+    </div>
+    <script>
+        ( function($) {
+            $("#dropdown-2").waDropdown();
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+{function name="_render_dropdown_select"}
+<div class="dropdown" id="select">
+    <button class="dropdown-toggle button outlined green" type="button">.dropdown ~ select</button>
+    <div class="dropdown-body">
+        <ul class="menu">
+            <li>
+                <a href="javascript:void(0);" data-id="1">
+                    <i class="fas fa-globe"></i>
+                    <span>Choice #1</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-id="2">
+                    <i class="fas fa-star"></i>
+                    <span>Choice #2</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-id="3">
+                    <i class="fas fa-church"></i>
+                    <span>Choice #3</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-id="4">
+                    <i class="fas fa-tree"></i>
+                    <span>Choice #4</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <input id="input" name="dropdown_select" type="hidden" value="">
+
+    <script>
+        ( function($) {
+            $("#select").waDropdown({
+                hover: false,
+                items: ".menu > li > a",
+                change: function(event, target, dropdown) {
+                    $("#input").val( $(target).data("id") );
+                }
+            });
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+{function name="_render_dropdown_custom"}
+<div class="dropdown" id="custom">
+    <a href="javascript:void(0);" class="dropdown-toggle" type="button">.dropdown custom content</a>
+    <div class="dropdown-body">
+
+        <div class="box">
+            <form action="">
+                <ul class="menu">
+                    <li>
+                        <label>
+                            <input type="checkbox" name="">
+                            <i class="color" style="background-color: #abc;"></i>
+                            Пункт #1
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="checkbox" name="">
+                            <i class="color" style="background-color: #bca;"></i>
+                            Пункт #2
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="checkbox" name="">
+                            <i class="color" style="background-color: #acb;"></i>
+                            Пункт #3
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="checkbox" name="">
+                            <i class="color" style="background-color: #bac;"></i>
+                            Пункт #4
+                        </label>
+                    </li>
+                </ul>
+                <div>
+                    <input type="submit" value="Применить">
+                    <input type="reset" value="Очистить">
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        ( function($) {
+            $("#custom").waDropdown();
+
+            $("#custom").on("submit", function(event) {
+                event.preventDefault();
+                alert("Menu hide after this");
+                $(this).data("dropdown").hide();
+            });
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <h2><code>.dropdown</code></h2>
+
+    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2.</blockquote>
+
+    <p>Выпадающий блок навигации с произвольным содержимым: колоночным меню, выбором из списка, абзацем с произвольным контентом или просто картинкой.</p>
+
+    <div class="line">
+        {_render_dropdown}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_dropdown|escape}</pre>
+    </div>
+
+    <div class="line">
+        <h4>Выпадающее меню со списком <code>.menu</code></h4>
+        {_render_dropdown_menu_v}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_dropdown_menu_v|escape}</pre>
+    </div>
+
+    <div class="line">
+        <h4>Выпадающее меню — имитация поведения <code>select</code></h4>
+        {_render_dropdown_select}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_dropdown_select|escape}</pre>
+    </div>
+
+    <div class="line">
+        <h4>Выпадающее меню со сложным контентом</h4>
+        {_render_dropdown_custom}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_dropdown_custom|escape}</pre>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.dropdown <code>options</code></h3>
+        <ul>
+            <li><span class="bold">hover</span> (boolean, по умолчанию true) — открытие меню при наведении курсора.
+                <br><br>
+            </li>
+            <li><span class="bold">hide</span> (boolean, по умолчанию true) — закрывает меню при клике.
+                <br><br>
+            </li>
+            <li><span class="bold">items</span> (string) — CSS-селектор для кликабельных элементов (например, <code>.menu > li</code>).
+                <br><br>
+            </li>
+            <li><span class="bold">active_class</span> (string, по умолчанию "selected") — CSS-класс для подсветки активного элемента.
+                <br><br>
+            </li>
+            <li><span class="bold">update_title</span> (boolean, по умолчанию true) — подставляет текст активного элемента в видимую область (<code>.dropdown-toggle</code>).
+                <br><br>
+            </li>
+            <li><span class="bold">ready</span> (function) — событие готовности компонента.
+                <div class="hint"><code>function(dropdown_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">change</span> (function) — выбор одного из элементов списка.
+                <div class="hint"><code>function(dropdown_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">open</span> (function) — открытие списка.
+                <div class="hint"><code>function(dropdown_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">close</span> (function) — закрытие списка.
+                <div class="hint"><code>function(event, active_item, dropdown_instance) { ... }</code></div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

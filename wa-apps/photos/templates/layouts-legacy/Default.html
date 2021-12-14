@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
+    {$wa->css()}
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/legacy/photos.css?v{$wa->version()}">
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="{$wa_app_static_url}css/legacy/photos.ie.css">
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.css">
+    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.css">
+
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+
+    {wa_js file="js/legacy/photos-jquery.min.js"}
+        {$wa_url}wa-content/js/jquery-wa/wa.core.js
+        {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.history.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.json.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.min.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.min.js
+        {$wa_app_static_url}js/legacy/sidebar.js
+        {$wa_app_static_url}js/legacy/dragndrop.js
+        {$wa_app_static_url}js/legacy/tmpl.min.js
+        {$wa_app_static_url}js/legacy/inline.editable.widget.js
+        {$wa_app_static_url}js/legacy/active.menu.js
+        {$wa_app_static_url}js/legacy/rate.widget.js
+        {$wa_app_static_url}js/legacy/common.js
+        {$wa_app_static_url}js/legacy/photo.stream.slider.js
+        {$wa_app_static_url}js/legacy/photos.js
+        {$wa_app_static_url}js/legacy/list.menu.js
+        {$wa_app_static_url}js/legacy/photo.menu.js
+        {$wa_app_static_url}js/legacy/loupe.widget.js
+        {$wa_app_static_url}js/legacy/jquery-fieldselection.min.js
+    {/wa_js}
+
+    <script type="text/javascript" src="?action=loc&amp;v={$wa->version()}"></script>
+
+    {$wa->js(false)}
+    {* @event backend_assets.%plugin_id% *}
+    {foreach $backend_assets as $item}
+        {$item}
+    {/foreach}
+</head>
+<body>
+
+<script type="text/javascript">
+    var wa_url = "{$wa_url}";
+</script>
+
+{capture name="template-photo"}{literal}
+        {% var  p = o.photo,
+                stack = o.stack,
+                albums = o.albums,
+                frontend_link_template = o.frontend_link_template,
+                hooks = o.hooks;
+        %}
+        <h1>
+            <a href="#{%#o.hash%}/" class="p-back-to-list">{%#$_('← Back')%}</a>
+            <span class="editable title" id="photo-name">{%=p.name%}</span>
+            <input type="text" id="photo-name-input" class="p-photo-h1-edit" style="display:none;">
+            <span class="p-rate">
+                <a href="javascript: void(0);" title="[`Rate photo`]" id="photo-rate" class="p-rate-photo" data-rate="{%#p.rate%}">
+                    {%#$.photos.getRatingHtml(p.rate, 16, true)%}
+                </a>
+                <!-- plugin hook: "backend_photo.after_rate" -->
+                {% if (hooks.backend_photo) { %}
+                    {% for (var plugin in hooks.backend_photo) { %}
+                        {%# hooks.backend_photo[plugin].after_rate %}
+                    {% } %}
+                {% } %}
+                <!-- end plugin hook: "backend_photo.after_rate" -->
+            </span>
+        </h1>
+        <div id="p-warning-not-in-album" style="display: none;">
+            <span title="[`This photo is no longer in current dynamic album`]">
+                <i class="icon16 exclamation"></i> [`Photo is not in album`]
+            </span>
+        </div>
+        <div class="block half-padded float-right hint" id="photo-albums">
+            {% include('template-photo-albums', { albums: albums }); %}
+        </div>
+        <ul class="menu-h p-content-control" id="photo-content-control">
+            {% include('template-photo-content-control', { frontend_link_template: frontend_link_template, url: p.url, status: p.status, photo: p }); %}
+        </ul>
+        <div class="align-center">
+        <div class="p-image p-one-photo">
+            <div class="p-image-corner top left">
+                <!-- plugin hook: backend-photo-image-corner-top-left -->
+            </div>
+            <div class="p-image-corner top right">
+                {% if(p.edit_rights) { %}
+                    <a href="#" id="photo-loupe-link" style="display:none;">{/literal}
+                        <img class="maximize" src="{$wa_app_static_url}img/mode-maximize.png" alt="[`Full size`]">
+                        <img class="minimize" src="{$wa_app_static_url}img/mode-minimize.png" alt="[`Normal size`]" style="display:none;">
+                    </a>{literal}
+                {% } %}
+                <!-- plugin hook: backend-photo-image-corner-top-right -->
+            </div>
+            <i class="p-image-nav p-rewind" title="[`← Previous`]"></i>
+            <i class="p-image-nav p-ff" title="[`Next →`]"></i>
+            <a href="#" class="next" title="[`Next →`]"><img src="{%#p.thumb.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" id="photo" {% if (typeof p.thumb.size === 'object' && p.thumb.size) { %}style="{% if (p.thumb.size.width) { %}width: {%#p.thumb.size.width %}px; {% } %} {% if (p.thumb.size.height) { %}height: {%#p.thumb.size.height%}px;{% } %}"{% } %}
+            /></a>
+        </div>
+        </div>
+        <!-- stacks only -->
+        <ul class="thumbs p-mini-stream" id="stack-stream">
+        </ul><br>
+        <div class="p-description">
+            <span class="editable" id="photo-description">{%=p.description%}</span>
+            <a href="javascript:void(0);" class="hint inline-link" id="photo-description-edit-link"><i class="icon10 edit"></i><b><i>[`edit`]</i></b></a>
+        </div>
+        <div id="photo-hook-bottom">
+        <!-- plugin hook: "backend_photo.bottom" -->
+        {% if (hooks.backend_photo) { %}
+            {% for (var plugin in hooks.backend_photo) { %}
+                {%# hooks.backend_photo[plugin].bottom %}
+            {% } %}
+        {% } %}
+        <!-- end plugin hook: "backend_photo.bottom" -->
+        </div>
+        <img id="preload-photo" src="" data-photo-id="" style="display:none;">
+{/literal}{/capture}
+
+{capture name="template-photo-content-control"}{literal}
+    {% var photo = o.photo, frontend_link_template = o.frontend_link_template; %}
+    <li class="p-inline-mixed-string">
+        {% if (o.frontend_link_template) { %}
+            {% if (photo.status <= 0 && photo.hash) { %}
+                <i class="icon10 lock-bw"></i>
+                <span class="hink">[`Private link`]: <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.private_url)%}" class="gray">{%#frontend_link_template.replace('%url%', photo.private_url)%}</a></span>
+            {% } else if (photo.status > 0) { %}
+                [`Public link`]:
+                <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">{%#frontend_link_template.replace('%url%/', '<span id="photo-frontend-url">%url%</span>').replace('%url%', photo.url+'/')%}</a><input type="text" id="photo-frontend-url-input" style="display:none;"><span class="slash" style="display:none;">/<em class="errormsg" style="display:none;"></em></span>
+                <i class="icon10 new-window"></i>
+                <a href="javascript:void(0);" class="gray inline-link" id="photo-frontend-url-edit-link">
+                    <i class="icon10 edit"></i><b><i>edit</i></b>
+                </a>
+            {% } %}
+        {% } %}
+    </li>
+{/literal}{/capture}
+
+{capture name="template-photo-stack"}{literal}
+    {% for (var i = 0, s = o.stack[0], n = o.stack.length; i < n; s = o.stack[++i]) { %}
+        <li class='dr{%#(s.id == o.photo_id) ? ' selected' : ''%}' data-photo-id={%#s.id%}><a href="#{%#o.hash%}/photo/{%#s.id%}/"><img src="{%#s.thumb_crop.url%}{% if (s.edit_datetime) { %}?{%#Date.parseISO(s.edit_datetime)%}{% } %}"></a><img src="{%#s.thumb.url%}{% if (s.edit_datetime) { %}?{%#Date.parseISO(s.edit_datetime)%}{% } %}" style="display:none;" class="thumb"></li>
+    {% } %}
+{/literal}{/capture}
+
+{capture name="template-photo-albums"}{literal}
+    {% if (o.albums.length) { %}
+    [`Albums`]:
+    {% for (var i = 0, a = o.albums[0], n = o.albums.length; i < n; a = o.albums[++i]) { %}{% if (i > 0) { %}, {% } %}<a href="#/album/{%#a.id%}/">{%=a.name%}</a>{% } %}
+    {% } %}
+{/literal}{/capture}
+
+{capture name="template-p-block"}
+<div class="sidebar right200px" id="p-toolbar"></div>
+<div class="content left{$sidebar_width}px right200px" id="p-content">
+    <div class="block double-padded" id="p-block"></div>
+    <div id="changable-area"></div>
+    <div id="cover" class="dialog-background" style="display:none;">
+        <i class="icon16 loading"></i>
+    </div>
+</div>
+{/capture}
+
+{capture name="template-photo-toolbar"}
+{literal}
+    {% var photo = o.photo, author = o.author, exif = o.exif; %}
+{/literal}
+    <div class="block" id="photo-stream"></div>
+
+    <!-- begin plugin hook: "backend_photo_toolbar.top" -->
+    {foreach $backend_photo_toolbar as $plugin_id => $item}
+        {if !empty($item.top)}{$item.top}{/if}
+    {/foreach}
+    <!-- end plugin hook: "backend_photo_toolbar.top" -->
+
+    <div class="block">
+        <h6 class="heading">[`Share`]</h6>
+        <ul class="menu-v with-icons compact" id="share-menu">
+            <li data-action='embed'><a href="#"><i class="icon16 link"></i>[`Link / Embed`]</a></li>
+            {if $wa->blog && ($wa->blog->rights(false) >= blogRightConfig::RIGHT_READ_WRITE)}
+            <li data-action='blog-post'>
+              <script type="text/javascript">
+              var blog_smarty_enabled = {json_encode($wa->blog->option('can_use_smarty'))};
+              var obligatory_size = {json_encode($big_size)};
+              </script>
+              <a href="#"><i class="icon16" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png');"></i>[`Blog post`]</a>
+              <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
+            </li>
+            {/if}
+
+            {foreach $backend_photo_toolbar as $plugin_id => $item}
+                {if !empty($item.share_menu)}
+                    {if is_array($item.share_menu)}
+                        {foreach $item.share_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.share_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photo_toolbar_share -->
+        </ul>
+    </div>
+
+    <div class="block">
+        <h6 class="heading">[`Edit`]</h6>
+        <ul class="menu-v with-icons compact" id="edit-menu">
+            <li data-action='rotate-left'><a href="javascript:void(0);"><i class="icon16 rotate-left"></i>[`Left`]</a></li>
+            <li data-action='rotate-right'><a href="javascript:void(0);"><i class="icon16 rotate-right"></i>[`Right`]</a></li>
+            <!-- plugin hook: backend_photo_toolbar_edit -->
+            <!-- plugin hook: "backend_photo_toolbar.edit_menu" -->
+            {foreach $backend_photo_toolbar as $plugin_id => $item}
+                {if !empty($item.edit_menu)}
+                    {if is_array($item.edit_menu)}
+                        {foreach $item.edit_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.edit_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- end plugin hook: "backend_photo_toolbar.edit_menu" -->
+        </ul>
+    </div>
+    <div class="block">
+        <h6 class="heading">[`Organize`]</h6>
+        <ul class="menu-v with-icons compact" id="photo-organize-menu">
+            <li data-action='unstack'><a href="#"><i class="icon16 stack"></i>[`Unstack`]</a></li>
+            <li data-action='add-to-album'><a href="#"><i class="icon16 pictures"></i>[`Add to album`]</a></li>
+            <li data-action='manage-access'><a href="#"><i class="icon16 lock"></i>[`Manage access`]</a></li>
+            <li data-action="delete-photo"><a href="#"><i class="icon16 delete"></i>[`Delete photo`]</a></li>
+        </ul>
+    </div>
+
+    <!-- begin plugin hook: "backend_photo_toolbar.bottom" -->
+    {foreach $backend_photo_toolbar as $plugin_id => $item}
+        {if !empty($item.bottom)}{$item.bottom}{/if}
+    {/foreach}
+    <!-- end plugin hook: "backend_photo_toolbar.bottom" -->
+
+{literal}
+    <div class="block">
+        <h6 class="heading">[`Tags`]</h6>
+        <input id="photo-tags" value="">
+        <span class="hint">[`Separate tags with comma (,)`]</span><br>
+        <div id="photos-photo-popular-tags" class="tags">
+            {/literal}
+            {if $popular_tags}
+                [`Popular tags`]:
+                {foreach $popular_tags as $tag}
+                    <span><a data-tag-id="{$tag.id}" href="javascript:void(0);" class="inline-link"><b><i>{$tag.name|escape}</i></b></a></span>
+                {/foreach}
+                <br>
+            {/if}
+            {literal}
+        </div>
+        <span id="photo-save-tags-status" style="display:none;">
+        </span>
+    </div>
+    <div class="hr"></div>
+    <div class="block profile image32px" id="photo-author">
+          {% if (author && photo) { %}
+              {% include('template-photo-author', { author: author, photo: photo }); %}
+          {% } %}
+    </div>
+    <div class="block p-exif" id="photo-exif">
+        {% if (exif) { %}
+            {% include('template-photo-exif', { exif: exif}); %}
+        {% } %}
+    </div>
+    <div class="block p-original" id="photo-original">
+        {% if (photo) { %}
+            {% include('template-photo-original', { photo: photo}); %}
+        {% } %}
+    </div>
+{/literal}
+{/capture}
+
+{capture name="template-photo-stream"}{literal}
+    <ul class="thumbs p-mini-stream photostream">
+    <li class="stream-nav rewind"><a href="javascript:void(0);"><i></i></a></li>
+    <li class="stream-nav ff"><a href="javascript:void(0);"><i></i></a></li>
+    <li class="stream-wrapper">
+        <ul>
+            {% include('template-photo-stream-list', { photos: o.photos, current_photo: o.current_photo || null, hash: o.hash }); %}
+        </ul>
+    </li>
+    </ul>
+{/literal}{/capture}
+
+{capture name="template-photo-stream-list"}{literal}
+{% var wa_static_url = {/literal}'{$wa_app_static_url}'{literal},
+       photos = o.photos,
+       current_photo_id = o.current_photo ? o.current_photo.id : null,
+       hash = o.hash;
+%}
+{% if (current_photo_id) { %}
+    {% for (var i = 0, n = photos.length, photo = photos[i]; i < n; photo = photos[++i]) { %}
+        {% if (!photo) { photos[i] = photo = { id: null }; } %}
+        {% if (current_photo_id == photo.id) { %}
+            {%
+               if (typeof photos[i-1] == 'object') {
+                   if (!photos[i-1]) {
+                       photos[i-1] = { id: null };
+                   }
+                   photos[i-1].visible = true;
+               }
+               photo.visible = true;
+               if (typeof photos[i+1] == 'object') {
+                   if (!photos[i+1]) {
+                       photos[i+1] = { id: null };
+                   }
+                   photos[i+1].visible = true;
+               }
+            %}
+        {% } %}
+    {% } %}
+{% } %}
+{% for (var i = 0, n = photos.length, photo = photos[i]; i < n; photo = photos[++i]) { %}
+    {% if (photo && photo.id) { %}
+        <li class="{% if (photo.visible) { delete photo.visible; %}visible{% } %} {% if (current_photo_id == photo.id) { %}selected{% } %}" data-photo-id="{%#photo.id%}">
+            <a href="{% if (hash) { %}#{%#hash%}{% }else{ %}#{% } %}/photo/{%#photo.id%}/"><img src="{%#photo.thumb_crop.url%}{% if (photo.edit_datetime) { %}?{%#Date.parseISO(photo.edit_datetime)%}{% } %}"><img src="{%#photo.thumb.url%}{% if (photo.edit_datetime) { %}?{%#Date.parseISO(photo.edit_datetime)%}{% } %}" style="display:none;" class="thumb"></a>
+        </li>
+    {% } else { %}
+        <li class="dummy {% if (photo && photo.visible) { %}visible{% } %}"><img src="{%#wa_static_url%}img/image-not-found.png"></li>
+    {% } %}
+{% } %}
+{/literal}{/capture}
+
+{capture name="template-photo-author"}{literal}
+    {% if (o.author.id) { %}
+        <div class="image">
+            <a href="{%#o.author.backend_url%}" title="{%#$_('Photo downloaded by') + ' ' + o.author.name + ' ' + o.photo.upload_datetime_formatted %}"><img src="{%#o.author.photo_url%}" class="userpic"></a>
+        </div>
+        <div class="details">
+            <a href="{/literal}{$wa_backend_url}contacts/#/contact/{literal}{%#o.author.id%}">{%#o.author.name%}</a><br>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}
+        </div>
+    {% } else { %}
+        <p>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}</p>
+    {% } %}
+{/literal}
+{/capture}
+{capture name="template-photo-original"}
+{literal}
+{% var photo = o.photo; %}
+{% if (photo.edit_rights) { %}[`Full size`]:
+<a href="?module=photo&action=download&photo_id={%# photo.id %}"><strong id="photo-name-original">{%# photo.name + '.' + photo.ext %}</strong></a><br>
+{% } %}
+[`Dimensions`]: <strong>{%# photo.width %}x{%# photo.height %}</strong><br>
+[`Size`]: <strong>{%# $.wa.util.formatFileSize(photo.size) %}</strong><br>
+{% if (photo.original_exists && photo.edit_rights ) { %}
+<br>
+<ul class="menu-h original-info">
+    <li>[`Original image`]: </li>
+    <li><i class="icon10 lock-bw"></i><a href="?module=photo&action=download&photo_id={%# photo.id %}&original=1">{%# photo.name + '.' + photo.ext %}</a><br><a href="javascript:void(0);" id="restore-original" class="hint">[`Revert to original`]</a></li>
+</ul>
+{% } %}
+{/literal}{/capture}
+
+{capture name="template-photo-exif"}{literal}
+{% var exif = o.exif; %}
+{% if (exif.Model) { %}
+    [`Camera`]: <strong>{%# exif.Model %}</strong><br>
+{% } %}
+{% if (exif.ISOSpeedRatings) { %}
+    [`ISO`]: <strong>{%# exif.ISOSpeedRatings %}</strong><br>
+{% } %}
+{% if (exif.ExposureTime) { %}
+    [`Shutter`]: <strong>{%# exif.ExposureTime %}</strong><br>
+{% } %}
+{% if (exif.FNumber) { %}
+    [`Aperture`]: <strong>{%# exif.FNumber %}</strong><br>
+{% } %}
+{% if (exif.FocalLength) { %}
+    [`Focal length`]: <strong>{%# exif.FocalLength %}</strong><br>
+{% } %}
+{% if (exif.DateTimeOriginal) { %}
+    [`Taken`]: <strong>{%# exif.DateTimeOriginal %}</strong><br>
+{% } %}
+<div id="photo-map" style="display:none;"></div>
+{/literal}{/capture}
+
+{* js templates block*}
+{foreach $smarty.capture as $template => $template_content}
+{if $template_content && (strpos($template, 'template-')===0)}
+<script id="{$template}" type="text/html">
+{$template_content|replace:'</':'<\/'}
+</script>{capture name=$template}{/capture}
+{/if}
+{/foreach}
+
+
+<div id="wa">
+    {$wa->header()}
+    <div id="wa-app">
+        {include "templates/layouts-legacy/Sidebar.html"}
+        <div id="content">{if isset($content)}{$content}{/if}</div>
+    </div>
+</div>
+<script type="text/javascript">
+    $.photos.init({
+        last_login_datetime: Date.parseISO('{$last_login_datetime}'),
+        last_login_time: {json_encode(strtotime($last_login_datetime))},
+        title_suffix: " — {$wa->accountName()}",
+        retina_2x_enabled: {if $wa->photos->config('enable_2x')}1{else}0{/if},
+        photo_list_render_chunk: 25,
+        map_options: {$map_options|json_encode}
+    });
+    var Album = {
+        TYPE_STATIC: '{photosAlbumModel::TYPE_STATIC}',
+        TYPE_DYNAMIC: '{photosAlbumModel::TYPE_DYNAMIC}'
+    };
+</script>
+{if $rights.upload}{$upload_dialog}{/if}
+<div id="photo-list-tags-dialog" class="dialog width400px height300px">
+    <div class="dialog-background"></div>
+    <div class="dialog-window">
+        <form action="">
+            <div class="dialog-content">
+               <div class="dialog-content-indent">
+                    <h1>[`Assign tags`] <span class="gray js-selected-counter">(N)</span></h1>
+                    <textarea id="photos-list-tags" cols="30" rows="5"></textarea>
+                    <span id="photos-popular-tags" class="tags small">
+                        {if $popular_tags}
+                            [`Popular tags`]:
+                            {foreach $popular_tags as $tag}
+                                <span><a data-tag-id="{$tag.id}" href="javascript:void(0);" class="inline-link"><b><i>{$tag.name|escape}</i></b></a></span>
+                            {/foreach}
+                        {/if}
+                    </span>
+                    <div id="photo-tags-remove" style="display: none">
+                        <br>
+                        <h3>[`Remove tags`]</h3>
+                        <div id="photos-tags-remove-list">
+                        </div>
+                    </div>
+               </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input class="button green" type="submit" value="[`Save`]"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div id="photo-blog-dialog" class="dialog width400px height200px">
+    <div class="dialog-background"></div>
+    <div class="dialog-window">
+        <form action="">
+            <div class="dialog-content">
+               <div class="dialog-content-indent">
+                  <h1>[`Private photos selected`] <i class="icon16 exclamation"></i></h1>
+                  <p>[`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]</p>
+               </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input class="button yellow" type="submit" value="[`Embed anyway`]"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

@@ -270,13 +270,14 @@ class waUser extends waContact
         }
     }
 
-    public static function getNameAndStatus($user)
+    public static function getNameAndStatus($user, $only_data = false)
     {
         if (!$user) {
             return null;
         }
         $formatted_user_name = self::formatName($user);
-        $view = wa()->getView();
+        $wa = wa();
+        $view = $wa->getView();
 
         $user_birthday_str = '';
         if ($user['birth_day'] && $user['birth_month']) {
@@ -284,11 +285,28 @@ class waUser extends waContact
             $time = strtotime($date);
             $user_birthday_str = waDateTime::format('shortdate', $time, waDateTime::getDefaultTimeZone());
         }
-        $view->assign(array(
+
+        $data = [
             'user'                => $user,
             'formatted_user_name' => $formatted_user_name,
             'user_birthday_str'   => $user_birthday_str,
-        ));
-        return $view->fetch('file:'.dirname(__FILE__).'/templates/NameAndStatus.html');
+        ];
+
+        if ($only_data) {
+            return $data;
+        }
+
+        $view->assign($data);
+
+        $templates_dir = 'templates';
+        if ($wa->whichUI($wa::getApp()) == '1.3') {
+            $templates_dir = 'templates-legacy';
+        }
+        return $view->fetch('file:'.dirname(__FILE__).'/'.$templates_dir.'/NameAndStatus.html');
+    }
+
+    public function isAuth()
+    {
+        return false;
     }
 }

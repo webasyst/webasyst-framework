@@ -576,7 +576,7 @@ class waHtmlControl
 </style>
 <script type="text/javascript">
     if(typeof(CodeMirror) == 'function') {
-        var textarea = document.getElementById('{$params['id']}'), 
+        var textarea = document.getElementById('{$params['id']}'),
             onchange = {
                 'onChange':function(cm) {
                     textarea.value = cm.getValue();
@@ -770,7 +770,7 @@ HTML;
             if (!empty($option['data']) && is_array($option['data'])) {
                 $checkbox_params['data'] = $option['data'];
             }
-            
+
             $control .= self::getControl(self::CHECKBOX, $option['value'], $checkbox_params);
             if (++$id < count($options)) {
                 $control .= $params['control_separator'];
@@ -1000,6 +1000,9 @@ HTML;
                 $date_params['description'] = _ws('Date');
             }
 
+            if (isset($params['params']['autocomplete'])) {
+                $date_params['autocomplete'] = $params['params']['autocomplete'] ? 'on' : 'off';
+            }
 
             $date_params['value'] = ifset($params, 'value', 'date_str', '');
 
@@ -1042,10 +1045,9 @@ HTML;
                         ifset($interval['to_m'], 0)
                     );
                     $interval_params['options'][$value] = array(
-                        'value'       => $value,
-                        'title'       => empty($value) ? _ws('Time') : $value,
-                        'description' => $start_date ? $start_date : $value,
-                        'data'        => compact('days', 'value', 'start_date', 'start_timestamp'),
+                        'value' => $value,
+                        'title' => empty($value) ? _ws('Time') : $value,
+                        'data'  => compact('days', 'value', 'start_date', 'start_timestamp'),
                     );
                     $available_days = array_merge($days, $available_days);
                 } else {
@@ -1060,6 +1062,7 @@ HTML;
                     $available_days = array_merge(array_keys($interval), $available_days);
                 }
             }
+            unset($start_date);
 
             $available_days = array_values(array_unique($available_days));
         }
@@ -1105,7 +1108,13 @@ HTML;
             $root_url = wa()->getRootUrl();
             $multiple = empty($params['multiple']) ? 'false' : 'new Array()';
             $selected_class = ifset($params, 'params', 'selected', 'ui-state-active');
-            $start_date = ifset($start_date, '');
+
+            $start_date = date('Y-m-d');
+            $min_date   = $offset;
+            if (isset($params['delivery_date'])) {
+                $start_date = date('Y-m-d', $params['delivery_date']);
+                $min_date   = date('d.m.Y', $params['delivery_date']);
+            }
             $html .= <<<HTML
 <script>
     ( function() {
@@ -1121,31 +1130,38 @@ HTML;
         if (multiple_dates !== false){
             multiple_dates = input_date.val().split(';');
         }
-        
+
         if (multiple_dates_formatted !== false) {
             multiple_dates_formatted = input_date_formatted.val().split(';');
         }
-        
+
         // remove bad date from hidden input
         input_date.on('change', function() {
             if (this.value === '') {
-                input_date_formatted.val('')
+                input_date_formatted.val('');
             }
         });
-        
+
         input_date.data('available_days', {$available_days});
         input_date.data('start_date', '{$start_date}');
-        
+
         var intervalAllowed = function(option, timestamp, day, day_type) {
-            
             var days = option.data('days');
             if ((typeof(days)) === 'undefined') {
                days = input_date.data('available_days');
             }
             var allowed = null;
+            var start_timestamp = new Date(option.data('start_date')).getTime();
+            var calendar = new Date(timestamp);
             
-            var start_timestamp = option.data('start_timestamp');
-            if (timestamp && start_timestamp && (timestamp<start_timestamp*1000)) {
+            if (typeof option.data('value') !== 'undefined') {
+                var interval_left = /(\d{1,2}):(\d{1,2})-\d{1,2}:\d{1,2}/.exec(option.data('value'));
+                
+                /** выбранная дата в календаре с началом интервала */
+                calendar.setHours(Number(interval_left[1]), Number(interval_left[2]));
+            }
+
+            if (timestamp && start_timestamp && calendar.getTime() < start_timestamp) {
                 allowed = false;
             } else if (day_type==='holiday') {
                 allowed = (days.indexOf(day_type) >= 0);
@@ -1154,14 +1170,13 @@ HTML;
             } else {
                 allowed = (days.indexOf(day) >= 0);
             }
-            
-            
+
             return allowed;
         };
-        
+
         var dayType = function(date) {
             var day_type = null;
-            var date_formatted = $.datepicker.formatDate('yy-mm-dd', date); 
+            var date_formatted = $.datepicker.formatDate('yy-mm-dd', date);
             if (holidays.indexOf(date_formatted)>=0) {
                 day_type = 'holiday';
             } else if (workdays.indexOf(date_formatted)>=0) {
@@ -1169,14 +1184,14 @@ HTML;
             }
             return day_type;
         };
-        
+
         var initDatePicker = function () {
-            var container = $('#{$calendar_id}'); 
+            var container = $('#{$calendar_id}');
             container.datepicker({
                 "altField": (multiple_dates === false?('#{$date_formatted_params['id']}'):null),
                 "altFormat": 'yy-mm-dd',
                 "dateFormat": '{$js_date_format}',
-                "minDate": {$offset},
+                "minDate": '{$min_date}',
                 "numberOfMonths": (multiple_dates === false ? 1 : [2,3]),
                 "onSelect": function (dateText) {
                     var date = container.datepicker('getDate');
@@ -1188,7 +1203,7 @@ HTML;
                             multiple_dates.push(dateText);
                         }
                         input_date.val(multiple_dates.join(';'));
-                        
+
                         var date_formatted = $.datepicker.formatDate('yy-mm-dd', date);
                         index = $.inArray(date_formatted, multiple_dates_formatted);
                         if (index >= 0) {
@@ -1211,7 +1226,7 @@ HTML;
                             interval.find('option').each(function () {
                                 /** @this HTMLOptionElement */
                                 var option = $(this);
-                                
+
                                 var disabled = !this.value || intervalAllowed(option, timestamp, day, day_type) ? null: 'disabled';
                                 option.attr('disabled', disabled);
                                 if (disabled) {
@@ -1229,7 +1244,7 @@ HTML;
                                     }
                                 }
                             });
-    
+
                             if (value) {
                                 interval.removeClass('error');
                             } else if (matched) {
@@ -1259,7 +1274,7 @@ HTML;
                                 tooltip.push(this.value);
                             }
                         });
-                        
+
                     } else if (multiple_dates_formatted !== false) {
                         var index = $.inArray(date_formatted, multiple_dates_formatted);
                         if (index >= 0) {
@@ -1268,7 +1283,7 @@ HTML;
                     } else {
                         available = intervalAllowed(input_date, null, day, day_type);
                     }
-                    
+
                     return [available, css_class.length?css_class.join(' '):'', tooltip.length?tooltip.join('\\n'):null]
                 }
             });
@@ -1279,7 +1294,7 @@ HTML;
             if (multiple_dates === false) {
                  container.find(".ui-datepicker").each( function() {
                     $(this).hide();
-                }); 
+                });
             }
         };
 
@@ -1313,20 +1328,20 @@ HTML;
                 });
             }
         });
-        
+
         function load(sources) {
                 var deferred = $.Deferred();
-        
+
                 loader(sources).then( function() {
                     deferred.resolve();
                 });
-        
+
                 return deferred.promise();
-        
+
                 function loader(sources) {
                     var deferred = $.Deferred(),
                         counter = sources.length;
-        
+
                     $.each(sources, function(i, source) {
                         switch (source.type) {
                             case "css":
@@ -1337,68 +1352,68 @@ HTML;
                                 break;
                         }
                     });
-        
+
                     return deferred.promise();
-        
+
                     function loadCSS(source) {
                         var link = $("#" + source.id);
                         if (link.length) {
                             link.data("promise").then(onLoad);
-        
+
                         } else {
                             var deferred = $.Deferred(),
                                 promise = deferred.promise();
-        
+
                             link = $("<link />", {
                                 id: source.id,
                                 rel: "stylesheet"
                             }).appendTo("head")
                                 .data("promise", promise);
-        
+
                             link.on("load", function() {
                                 onLoad();
                                 deferred.resolve();
                             });
-        
+
                             link.attr("href", source.uri);
                         }
-        
+
                         function onLoad() {
                             counter -= 1;
                             watcher();
                         }
                     }
-        
+
                     function loadJS(source) {
                         var script = $("#" + source.id);
                         if (script.length) {
                             script.data("promise").then(onLoad);
-        
+
                         } else {
                             var deferred = $.Deferred(),
                                 promise = deferred.promise(),
                                 script = document.createElement("script");
-                                
+
                             document.getElementsByTagName("head")[0].appendChild(script);
-        
+
                             script = $(script)
                                 .attr("id", source.id)
                                 .data("promise", promise);
-        
+
                             script.on("load", function () {
                                 onLoad();
                                 deferred.resolve();
                             });
-        
+
                             script.attr("src", source.uri);
                         }
-        
+
                         function onLoad() {
                             counter -= 1;
                             watcher();
                         }
                     }
-        
+
                     function watcher() {
                         if (counter === 0) {
                             deferred.resolve();

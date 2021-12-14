@@ -10,6 +10,8 @@ class waAppViewHelper
     protected $app_id = null;
     protected $cdn = '';
 
+    protected static $p_helpers = array();
+
     public function __construct($system)
     {
         $this->wa = $system;
@@ -117,6 +119,17 @@ class waAppViewHelper
                     unset($pages[$page_id]);
                 }
             }
+
+            /**
+             * Event for {$wa->app_id->pages()}
+             * @since 1.14.0
+             * @param array $pages
+             *
+             * @event view_pages
+             */
+
+            $this->wa()->event('view_pages', $pages);
+
             return $pages;
         } catch (Exception $e) {
             return array();
@@ -131,6 +144,15 @@ class waAppViewHelper
 
         $page_params_model = $page_model->getParamsModel();
         $page += $page_params_model->getById($id);
+
+        /**
+         * Event for {$wa->app_id->page()}
+         * @since 1.14.0
+         * @param array $page
+         *
+         * @event view_page
+         */
+        $this->wa()->event('view_page', $page);
 
         return $page;
     }
@@ -153,5 +175,94 @@ class waAppViewHelper
     protected function wa()
     {
         return wa($this->app_id);
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     * @throws waException
+     */
+    public function __get($name)
+    {
+        $result = null;
+        preg_match('#^(?<plugin_id>\S*)Plugin$#s', $name, $matches);
+        if (!empty($matches['plugin_id'])) {
+            // When property name ends with `Plugin`, get that plugin's view helper
+            $wa           = wa($this->app_id);
+            $plugin_id    = $matches['plugin_id'];
+            $plugin_class = $this->app_id.ucfirst($plugin_id).'Plugin';
+
+            if (isset(self::$p_helpers[$name])) {
+                $result = self::$p_helpers[$name];
+            } elseif (class_exists($plugin_class)) {
+                // Plugin is installed
+
+                if (!empty($wa->getConfig()->getPluginInfo($plugin_id))) {
+                    // Plugin is enabled
+                    $class_helper = $this->app_id.ucfirst($plugin_id).'PluginViewHelper';
+                    $class_helper = (class_exists($class_helper) ? $class_helper : 'waPluginViewHelper');
+                    self::$p_helpers[$name] = new $class_helper($wa->getPlugin($plugin_id), $plugin_id);
+                    $result = self::$p_helpers[$name];
+                } else {
+                    // Plugin is installed but disabled
+                    self::$p_helpers[$name] = new waPluginViewHelper(null, $plugin_id);
+                    $result = self::$p_helpers[$name];
+                    if (SystemConfig::isDebug() === true) {
+                        waLog::log(sprintf(_ws('The called plugin “%s” is disabled.'), $plugin_id));
+                    }
+                }
+            }
+            else {
+                // Plugin is not installed
+                self::$p_helpers[$name] = new waPluginViewHelper(null, $plugin_id);
+                $result = self::$p_helpers[$name];
+                if (SystemConfig::isDebug() === true) {
+                    waLog::log(sprintf(_ws('The called plugin “%s” is not installed.'), $plugin_id));
+                }
+            }
+        }
+        else {
+            // Property name does not end with `Plugin`
+            /**
+             * @event view_helper_read
+             * @param array $params
+             * @param array [sting]string $params['name'] name of the property
+             * @return mixed
+             * @since 1.14.11
+             */
+            $res = $this->wa()->event('view_helper_read', ref(['name' => $name]));
+
+            if (!empty($res)) {
+                // First plugin to return a result wins
+                $result = reset($res);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+        /**
+         * @event view_helper_call
+         * @param array $params
+         * @param array [sting]string $params['name'] name of the method that has been called
+         * @param array [string]array $params['arguments'] arguments of the call
+         * @return mixed
+         * @since 1.14.11
+         */
+        $result = $this->wa()->event('view_helper_call', ref(['name' => $name, 'arguments' => $arguments]));
+
+        if (!empty($result)) {
+            // First plugin to return a result wins
+            return reset($result);
+        }
+
+        return null;
     }
 }

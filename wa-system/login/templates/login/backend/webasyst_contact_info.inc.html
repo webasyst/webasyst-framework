@@ -1,0 +1,9 @@
+{if $webasyst_contact_info}
+{capture name='webasyst_contact_info'}
+&nbsp; <i class="icon16 userpic20" style="background-image: url({$webasyst_contact_info.userpic|default:''|escape})"></i><span class="bold">{$webasyst_contact_info.name|default:''|escape}</span>{if $webasyst_contact_info.email|default:[]} <span class="small">({$webasyst_contact_info.email[0].value|escape})</span>{/if}
+{/capture}
+<p class="align-center">{sprintf('[s`Webasyst ID account %s is not connected to any backend user.`]', $smarty.capture.webasyst_contact_info)}</p>
+<p class="align-center">[s`Sign in with a login name or email address to connect the account:`]</p>
+{else}
+<p class="errormsg align-center">[`Failed to get Webasyst ID account data from the Webasyst resource server.`]</p>
+{/if}

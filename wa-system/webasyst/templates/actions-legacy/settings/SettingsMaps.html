@@ -1,0 +1,99 @@
+{$_title = "[s`Maps settings`] — {$wa->accountName(false)}"}
+<div class="s-maps-settings-page blank block double-padded" id="s-maps-settings-page">
+    <h1 class="s-page-header">[s`Maps settings`]</h1>
+    <div class="s-description">[s`Select an online map service to display maps.`]</div>
+    <div class="s-maps-settings-fields-block">
+        <form action="?module=settingsMapsSave">
+
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[s`Site`]</div>
+
+                    <div class="value no-shift">
+                        <label>
+                            <input type="radio" name="map_adapter" {if $is_map_disabled}checked{/if} value="disabled" class="js-map-adapter-field"> [`Do not use`]
+                        </label>
+                    </div>
+
+                    {if !empty($map_adapters)}
+                        {foreach $map_adapters as $_adapter}
+                            {$_adapter_id = $_adapter->getId()}
+                            {$_adapter_name = $_adapter->getName()}
+                            {$_adapter->setEnvironment(waMapAdapter::FRONTEND_ENVIRONMENT)}
+                            {$_adapter_settings = $_adapter->getSettingsHtml(['namespace'=>'map_settings'])}
+                            <div class="value no-shift">
+                                <label>
+                                    <input type="radio" name="map_adapter" {if $_adapter_id == $selected_map_adapter}checked{/if} value="{$_adapter_id}" class="js-map-adapter-field"> {$_adapter_name|escape}
+                                </label>
+                                {if !empty($_adapter_settings)}
+                                    <div class="js-map-adapter-settings" data-adapter-id="{$_adapter_id}" style="display: none;">
+                                        {$_adapter_settings}
+                                    </div>
+                                {/if}
+                            </div>
+                        {/foreach}
+                    {else}
+                        <div class="value no-shift">
+                            [s`No map services available`]
+                        </div>
+                    {/if}
+                </div>
+            </div>
+
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[s`Backend`]</div>
+
+                    <div class="value no-shift">
+                        <label>
+                            <input type="radio" name="backend_map_adapter" {if $is_backend_map_disabled}checked{/if} value="disabled" class="js-map-adapter-field"> [`Do not use`]
+                        </label>
+                    </div>
+
+                    {if !empty($map_adapters)}
+                        {foreach $map_adapters as $_adapter}
+                            {$_adapter_id = $_adapter->getId()}
+                            {$_adapter_name = $_adapter->getName()}
+                            {$_adapter->setEnvironment(waMapAdapter::BACKEND_ENVIRONMENT)}
+                            {$_adapter_settings = $_adapter->getSettingsHtml(['namespace'=>'backend_map_settings'])}
+                            <div class="value no-shift">
+                                <label>
+                                    <input type="radio" name="backend_map_adapter" {if $_adapter_id == $backend_selected_map_adapter}checked{/if} value="{$_adapter_id}" class="js-map-adapter-field"> {$_adapter_name|escape}
+                                </label>
+                                {if !empty($_adapter_settings)}
+                                    <div class="js-map-adapter-settings" data-adapter-id="{$_adapter_id}" style="display: none;">
+                                        {$_adapter_settings}
+                                    </div>
+                                {/if}
+                            </div>
+                        {/foreach}
+                    {else}
+                        <div class="value no-shift">
+                            [s`No map services available`]
+                        </div>
+                    {/if}
+                </div>
+            </div>
+
+            <div class="s-form-buttons">
+                <div class="s-footer-actions js-footer-actions">
+                    <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                    <span class="s-hidden">
+                        <span style="margin: 0 4px;">[s`or`]</span>
+                        <a href="{$wa_backend_url}webasyst/settings/maps/" class="js-cancel">[s`cancel`]</a>
+                    </span>
+                    <i class="icon16 loading s-loading" style="display: none;"></i>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    (function($) {
+        new WASettingsMaps({
+            $wrapper: $("#s-maps-settings-page")
+        });
+        $.wa.setTitle({$_title|json_encode});
+    })(jQuery);
+</script>

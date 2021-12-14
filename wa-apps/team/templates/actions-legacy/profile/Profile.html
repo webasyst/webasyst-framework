@@ -1,0 +1,210 @@
+{strip}
+
+{$_user_id = $wa->user("id")}
+{$_is_admin = $wa->user()->isAdmin($wa->app())}
+{$_is_my_profile= ( !empty($user.id) && $user.id == $_user_id )}
+{$_can_edit = ($_is_admin || $_is_my_profile)}
+
+<div class="t-profile-page">
+
+    <div class="shadowed">
+        {* HEADER *}
+        <div class="t-profile block double-padded">
+            <div class="t-profile-actions float-right">
+                <ul class="menu-h profile-header-links">
+                    {foreach $backend_profile as $_}{ifset($_.header_links_li)}{/foreach}
+                    {if $can_edit}
+                        <li><a href="javascript:void(0);" class="edit-link"><i class="icon16 edit"></i>[`Edit user`]</a></li>
+                    {/if}
+                    {if teamUser::canDelete($user)}
+                        <li><a href="javascript:void(0);" class="delete-link"><i class="icon16 delete"></i>[`Delete`]</a></li>
+                    {/if}
+                </ul>
+            </div>
+
+            <div class="profile image144px">
+                <div class="image">
+                    <img src="{$user->getPhoto2x(96)}" class="userpic t-userpic">
+                    {if $can_edit}
+                        <div class="wa-contact-photo-buttons">
+                            <div class="photo-change-link">
+                                <a href="javascript:void(0)">[`Change photo`]</a>
+                            </div>
+                        </div>
+                    {/if}
+                    <!-- plugin hook: 'backend_profile.photo' -->
+                    {* @event backend_customer.%plugin_id%.photo *}
+                    {foreach $backend_profile as $_}{ifset($_.photo)}{/foreach}
+                </div>
+                <div class="details">
+                    <!-- plugin hook: 'backend_profile.before_header' -->
+                    {* @event backend_customer.%plugin_id%.before_header *}
+                    {foreach $backend_profile as $_}{ifset($_.before_header)}{/foreach}
+
+                    <h1>
+                        {if !empty($user.title)}
+                            <span class="title" style="margin: 0 4px 0 0;">{$user.title|escape}</span>
+                        {/if}
+
+                        <span class="contact-name">{$user_name_formatted|escape}</span>
+
+                        {if !empty($user.login)}
+                            <span class="hint" style="margin: 0 0 0 4px;">@{$user.login|escape}</span>
+                        {/if}
+
+                        <!-- plugin hook: 'backend_profile.header' -->
+                        {* @event backend_customer.%plugin_id%.header *}
+                        {foreach $backend_profile as $_}{ifset($_.header)}{/foreach}
+
+                    </h1>
+
+                    <!-- plugin hook: 'backend_profile.after_header' -->
+                    {* @event backend_customer.%plugin_id%.after_header *}
+                    {foreach $backend_profile as $_}{ifset($_.after_header)}{/foreach}
+
+                    {if !$user.is_company}
+                        <p class="jobtitle-company">
+                            {if $user.jobtitle}
+                                <span class="title {if $_can_edit}editable js-jobtitle-editable{/if}">{$user.jobtitle|escape}</span>
+                            {/if}
+                            {if $user.jobtitle && $user.company}
+                                <span class="at"> [`@`] </span>
+                            {/if}
+                            {if $user.company}
+                                <span class="company">{$user.company|escape}</span>
+                            {/if}
+                        </p>
+                    {/if}
+
+                    {if $user.is_user > 0}
+                        <p>
+                        {if $groups}
+                            {$_g = []}
+                            {foreach $groups as $_id=>$_name}
+                                {$_g[] = "<a href=\"`$wa_app_url`group/`$_id`/\">`$_name|escape`</a>"}
+                            {/foreach}
+                            {join(', ', $_g)}
+                        {else}
+                            [`This user does not belong to any group.`]
+                            {if $wa->user()->isAdmin()}
+                                <a href="javascript:void(0)" class="inline-link small" id="header-customize-groups-link">&nbsp;<b>[`Edit groups`]</b></a>
+                            {/if}
+                        {/if}
+                        </p>
+                    {else if $user.is_user < 0}
+                        <p class="grey">[`Access is switched off`]</p>
+                    {else if $invite}
+                        <p><em>[`User invitation was sent.`]</em></p>
+                    {/if}
+
+                    {* Used for trigger event in ProfileAccess.html *}
+                    <span class="js-webasyst-id-unbind-auth hidden"></span>
+
+                    <!-- plugin hook: 'backend_profile.before_top' -->
+                    {* @event backend_customer.%plugin_id%.before_top *}
+                    {foreach $backend_profile as $_}{ifset($_.before_top)}{/foreach}
+
+                    <ul class="menu-v compact" id="contact-info-top">
+                        {foreach $top as $top_field}
+                            <li class="top-field-{$top_field.id}">{if $top_field.id != 'im'}{if $top_field.icon}<i class="icon16 {$top_field.id}"></i>{/if}{/if}{$top_field.value}</li>
+                        {/foreach}
+                    </ul>
+
+                    {if $user_events}
+                        <div class="line">
+                            <div class="t-event-wrapper">
+                                <div class="t-event-block" style="background:{$user_events[0].bg_color};color:{$user_events[0].font_color};">
+                                    {$user_events[0].summary|escape}
+                                    {if $user_events[0].calendar_id == 'birthday'}
+                                        &nbsp;&mdash; {waDateTime::format('shortdate', date('Y')|cat:"-`$user.birth_month`-`$user.birth_day`")}
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                    {/if}
+
+                    {if !empty($is_own_profile)}
+                        {if $webasyst_id_auth_url}
+                            <div class="waid-login">
+                                <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)"><span class="icon"></span>&nbsp;{sprintf(_w('Enable sign-in with %s'), 'Webasyst ID')}</a>
+                                <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[`What is Webasyst ID?`]</a>
+                            </div>
+                        {elseif $customer_center_auth_url}
+                            {* Auth into customer center *}
+                            <div class="" style="margin-top: 2em;">
+                                <div class="js-customer-center-auth-link-wrapper waid-login">
+                                    <a class="waid-auth-link js-customer-center-auth" href="{$customer_center_auth_url}">
+                                        <i class="icon16" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 16px 16px; background-position: 0 0;"></i>
+                                        [`Go to the Webasyst Customer Center`]
+                                    </a>
+                                </div>
+                            </div>
+                        {/if}
+                    {/if}
+
+                    <!-- plugin hook: 'backend_profile.after_top' -->
+                    {* @event backend_customer.%plugin_id%.after_top *}
+                    {foreach $backend_profile as $_}{ifset($_.after_top)}{/foreach}
+
+                </div>
+            </div>
+        </div>
+
+        {* CALENDAR *}
+        <div class="t-calendar-place is-short">
+
+        {include file='../schedule/Schedule.inc.html' context='profile' inline}
+
+        {$_show_text = sprintf_wp("show %s weeks", 5)}
+        <div class="t-actions-wrapper js-calendar-toggle" data-show-text="{$_show_text}" data-hide-text="[`hide`]">
+            <div class="t-layout">
+                <div class="t-column left"></div>
+                <div class="t-column">
+
+                    <a class="t-action inline-link t-calendar-toggle" href="javascript:void(0);">
+                        <i class="icon16 down"></i>
+                        <b><i><span class="text">{$_show_text}</span></i></b>
+                    </a>
+
+                </div>
+                <div class="t-column right">
+                    {if $can_view_external_calendars_info}
+                        <a class="t-action inline-link js-show-outer-calendar-manager" href="javascript:void(0);">
+                            <i class="icon16 settings"></i>
+                            <b><i>[`Personal calendar settings`]</i></b>
+                        </a>
+                    {/if}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {* TABS *}
+    {$wa->contactProfileTabs($user.id, [
+        'selected_tab' => waRequest::param('tab', 'activity', 'string')
+    ])}
+
+    <script>
+        (function ($) {
+            $.team.setTitle({$user_name_formatted|json_encode});
+            new Profile({
+                $wrapper: $('#contact-info-top').closest('.t-profile-page'),
+                photo_dialog_url: "{$wa_backend_url}?module=profile&action=photo&id={$user.id}",
+                backend_url: {$wa_backend_url|json_encode},
+                is_own_profile: {$is_own_profile|json_encode},
+                wa_app_url: {$wa_app_url|json_encode},
+                webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode},
+                user: {
+                    id: {$user.id|json_encode}
+                },
+                wa_url: {$wa_url|json_encode},
+                wa_version: {$wa->version()|json_encode}
+            });
+        })(jQuery);
+    </script>
+    {* JS INIT *}
+</div>
+
+{/strip}

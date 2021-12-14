@@ -2,7 +2,7 @@
 
 return array(
 	'app.installer' => array(
-		'version' => '>=1.8.2',
+		'version' => '>=1.14.3',
 		'strict' => true
 	),
 );

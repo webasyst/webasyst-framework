@@ -268,6 +268,7 @@ class waFiles
             case 'gif':
             case 'bmp':
             case 'tiff':
+            case 'webp':
                 return 'image/'.strtolower($type);
             case 'ico':
                 return 'image/x-icon';
@@ -438,7 +439,6 @@ class waFiles
                 CURLOPT_RETURNTRANSFER    => 1,
                 CURLOPT_TIMEOUT           => 10,
                 CURLOPT_CONNECTTIMEOUT    => 10,
-                CURLE_OPERATION_TIMEOUTED => 10,
                 CURLOPT_DNS_CACHE_TIMEOUT => 3600,
                 CURLOPT_BINARYTRANSFER    => true,
                 CURLOPT_WRITEFUNCTION     => array(__CLASS__, 'curlWriteHandler'),
@@ -792,6 +792,7 @@ class waFiles
                     if (!$response->getHeader("Last-Modified")) {
                         $response->addHeader("Last-Modified", filemtime($file));
                     }
+                    wa()->getResponse()->handleIfModifiedSince();
 
                     $response->addHeader("Accept-Ranges", "bytes");
                     $response->addHeader("Connection", "close");
@@ -846,6 +847,7 @@ class waFiles
                 $response->addHeader("Content-type", $file_type);
                 $response->addHeader("Content-Length", $file_size);
                 $response->addHeader("Last-Modified", filemtime($file));
+                wa()->getResponse()->handleIfModifiedSince();
                 if ($md5) {
                     $response->addHeader("Content-MD5", $md5);
                 }

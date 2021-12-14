@@ -1,0 +1,68 @@
+{$_title = "Иконки приложений"}
+{$wa->title($_title)}
+
+{function name="_render" class=""}
+
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <div class="flexbox wrap space-12">
+    	<span class="icon size-48">
+    		<img src="{$wa_url}wa-apps/ui/img/settings.svg?v=2.0.0" alt="">
+    	</span>
+    	<span class="icon size-48">
+    		<img src="{$wa_url}wa-apps/ui/img/blog.svg?v=1.4.8" alt="">
+    	</span>
+    	<span class="icon size-48">
+    		<img src="{$wa_url}wa-apps/ui/img/shop96.png?v=8.15.0" alt="">
+    	</span>
+    	<span class="icon size-48">
+    		<img src="{$wa_url}wa-apps/ui/img/site512.png?v=2.5.20" alt="">
+    	</span>
+    	<span class="icon size-48">
+    		<img src="{$wa_url}wa-apps/ui/img/photos.svg?v=1.2.10" alt="">
+    	</span>
+    	<span class="icon size-48">
+    		<img src="{$wa_url}wa-apps/ui/img/files512.png?v=1.1.4" alt="">
+    	</span>
+    	<span class="icon size-48">
+    		<img src="{$wa_url}wa-apps/ui/img/team.svg?v=1.1.5" alt="">
+    	</span>
+    	<span class="icon size-48">
+    		<img src="{$wa_url}wa-apps/ui/img/ui.svg?v=1.0.0" alt="">
+    	</span>
+    </div>
+    <p>Формат иконок приложений Webasyst 2 соответствует миру идеальной аппликации — плоская основа, слои, градиенты.</p>
+
+    <ul>
+        <li>Любая форма (никакой обязательной обводки или жесткого форм-фактора).</li>
+        <li>Тени допустимы, но, как и во всем интерфейсе, для обозначения иерархии уровней.</li>
+        <li>Не используем обводку (outline), выраженный 3D объем или перспективу.</li>
+        <li>Яркие насыщенные градиенты — хорошо, заливка одним цветом — плохо.</li>
+        <li>У ключевых элементов иконки должны быть скругленные края (минимальный радиус скругления = 1/16 oт размера иконки).</li>
+        <li>PNG или SVG — как вам угодно.</li>
+        <li>PNG (512x512px) или SVG (48×48px) — как вам угодно. Масштабирование под нужный размер в интерфейсе сделает браузер. Иконку png желательно оптимизировать, например, через сервис https://squoosh.app/.</li>
+    </ul>
+
+    <blockquote>Если вы не дизайнер, попробуйте воспользоваться <a href="https://www.figma.com/file/L3z720Px1wl0wtdiHhBnBX/Webasyst-2-App-Icons-Guid?node-id=10%3A0"><strong>конструктором иконок в Figma</strong></a>. Результат будет «средний», но иконка будет более-менее правильного размера и с градиентами в стиле Webasyst 2.</blockquote>
+
+
+    <h3>Размер иконки внутри холста</h3>
+
+    <p>Холст (сетка) строится из понимания того, что большинство пользователей будут видеть иконку в размере 48×48px. Оригинал иконки может быть сколь угодно большим (читай: векторным), но необходимо понимать, что пользователь увидит результат в разных размерах, и 48x48 будет среди них самым частым.</p>
+    <p>Чтобы иконка выглядела элегантно и согласовано вместе с другими соседними иконками Webasyst, рекомендуется дизайнить иконку по <em>сетке</em>. Наложите свою иконку на сетку и скорректируйте ее размер так, чтобы общие очертания более менее вписывались в один из вариантов сетки:</p>
+
+    <p>
+        <img src="{$wa_url}wa-apps/ui/img/wa2ui-app-layout-1.svg" style="width: 256px; margin-right: 1rem;" />
+        <img src="{$wa_url}wa-apps/ui/img/wa2ui-app-layout-2.svg" style="width: 256px;" />
+    </p>
+
+    <p><a href="https://www.figma.com/file/L3z720Px1wl0wtdiHhBnBX/Webasyst-2-App-Icons-Guid?node-id=0%3A1">Открыть сетку в Figma</a></p>
+
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+    </script>
+</div>

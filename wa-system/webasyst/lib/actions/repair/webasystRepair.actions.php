@@ -87,6 +87,16 @@ class webasystRepairActions extends waActions
         return $m;
     }
 
+    private function getDatabaseName()
+    {
+        static $database_name;
+        if (!isset($database_name)) {
+            $config = waSystem::getInstance()->getConfig()->getDatabase();
+            $database_name = $config['default']['database'];
+        }
+        return $database_name;
+    }
+
     private function workupDefaultTableSchema(&$schema)
     {
         unset($schema[':keys']);
@@ -137,9 +147,7 @@ class webasystRepairActions extends waActions
 
     private function getCurrentTableSchema($table)
     {
-        $config = waSystem::getInstance()->getConfig()->getDatabase();
-
-        $database = $config['default']['database'];
+        $database = $this->getDatabaseName();
 
         $sql = <<<SQL
 SELECT
@@ -321,6 +329,193 @@ SQL;
         }
         if ($w) {
             echo "\t".$w.' widgets(s) has been fixed.'.PHP_EOL;
+        }
+    }
+
+    private $result = array();
+    private $path = '';
+    private $restore_mode = '';
+    /**
+     * Database repair indices
+     */
+    public function indicesAction()
+    {
+        $this->restore_mode = waRequest::post('restore_mode');
+        foreach (wa()->getApps(true) as $app_id => $app_info) {
+            $config = wa($app_id)->getConfig();
+            $this->path = $config->getAppConfigPath('db');
+            if (file_exists($this->path)) {
+                if (in_array($this->restore_mode, array('soft-selective', 'soft-all', 'hard-all'))) {
+                    $this->restoreTableIndices();
+                } else {
+                    $this->actionAutoincrement(true, false);
+                    $this->indexComparison(false);
+                }
+            }
+        }
+        if (!empty($this->restore_mode)) {
+            $this->redirect(wa()->getConfig()->getCurrentUrl());
+        }
+        $this->display($this->result);
+    }
+
+    private function escapeField($string)
+    {
+        return "`" . $string . "`";
+    }
+
+    private function getDefaultTableIndices()
+    {
+        $app_tables = include($this->path);
+        $tables_keys = array();
+        foreach ($app_tables as $table_name => $table_fields) {
+            if (isset($table_fields[':keys'])) {
+                $tables_keys[$table_name] = $table_fields[':keys'];
+            }
+        }
+        return $tables_keys;
+    }
+
+    private function actionAutoincrement($restore = false, $run = true)
+    {
+        $m = $this->databaseGetModel();
+        $default_tables = $this->getDefaultTablesSchema($this->path);
+        $database = $this->getDatabaseName();
+        $autoincrement = $restore ? 'AUTO_INCREMENT' : '';
+        if ($run == false) {
+            $current_autoincrement_fields = $m->query("
+                SELECT `COLUMN_NAME` 'column_name', `TABLE_NAME` 'table_name'
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE `EXTRA` = 'auto_increment' AND `TABLE_SCHEMA` = ?", [$database])->fetchAll('table_name');
+        }
+
+        foreach ($default_tables as $table_name => $fields) {
+            $autoincrement_query = array();
+            foreach ($fields as $field_id => $field_params) {
+                if ($field_params['autoincrement']) {
+                    if ($run == false
+                        && isset($current_autoincrement_fields[$table_name])
+                        && $current_autoincrement_fields[$table_name]['column_name'] == $field_id
+                    ) {
+                        continue;
+                    }
+                    $not_null = isset($field_params['null']) && $field_params['null'] == 0 ? 'NOT NULL' : '';
+                    $unsigned = isset($field_params['unsigned']) && $field_params['unsigned'] == 1? 'UNSIGNED' : '';
+                    $type = $field_params['type'];
+                    $params = $field_params['params'];
+                    $autoincrement_query[] = "MODIFY `{$field_id}` {$type}({$params}) {$unsigned} {$not_null} {$autoincrement}";
+                }
+            }
+            $autoincrement_query_total = implode(',', $autoincrement_query);
+            if ($autoincrement_query_total) {
+                $this->completeRecovery($m, $table_name, $autoincrement_query_total, $run);
+            }
+        }
+    }
+
+    private function dropTableIndices()
+    {
+        $m = $this->databaseGetModel();
+        $default_tables = $this->getDefaultTablesSchema($this->path);
+        $default_table_indices = $this->getDefaultTableIndices();
+
+        foreach ($default_tables as $table_name => $fields) {
+            $table_indices = $m->query("SHOW INDEXES IN `{$table_name}`")->fetchAll('Key_name');
+            $indices = array_keys($table_indices);
+            $default_indices = array_keys($default_table_indices[$table_name]);
+            $system_indices = array_intersect($indices, $default_indices);
+            foreach ($system_indices as $key => &$index) {
+                if ($index === 'PRIMARY') {
+                    $index = 'DROP PRIMARY KEY';
+                } else {
+                    $index = 'DROP KEY `' . $index . '`';
+                }
+            }
+            unset($index);
+
+            $query = implode(',', $system_indices);
+            if ($query) {
+                $m->exec("ALTER TABLE `{$table_name}` {$query}");
+            }
+        }
+    }
+
+    private function restoreTableIndices()
+    {
+        $this->actionAutoincrement(false);
+        if ($this->restore_mode == 'hard-all') {
+            $this->dropTableIndices();
+        }
+
+        $this->indexComparison();
+
+        $this->actionAutoincrement(true);
+    }
+
+    private function indexComparison($run = true)
+    {
+        $m = $this->databaseGetModel();
+        $default_indices = $this->getDefaultTableIndices();
+        $selective_tables = waRequest::post('tables');
+        foreach ($default_indices as $table_name => $index) {
+            if ($this->restore_mode == 'soft-selective' && !empty($selective_tables) && !in_array($table_name, $selective_tables)) {
+                continue;
+            }
+            $insert_query = array();
+            $current_table_indices = $m->query("SHOW INDEXES IN `{$table_name}`")->fetchAll('Key_name');
+            foreach ($index as $key => $value) {
+                if ($this->restore_mode != 'hard-all' && isset($current_table_indices[$key])) {
+                    continue;
+                }
+                if ($key == 'PRIMARY') {
+                    $primary_value = is_array($value) ? implode("`,`", $value) : $value;
+                    $insert_query[] = "ADD PRIMARY KEY ({$this->escapeField($primary_value)})";
+                } else {
+                    if (isset($value['unique']) || isset($value['fulltext'])) {
+                        $key_name = isset($value['unique']) ? 'unique' : 'fulltext';
+                        unset($value[$key_name]);
+                        $key_value = is_array($value) ? implode("`,`", $value) : $value;
+                        $insert_query[] = "ADD {$key_name} KEY `{$key}` ({$this->escapeField($key_value)})";
+                    } else {
+                        $value_with_length = array();
+                        if (is_array($value)) {
+                            foreach ($value as $num => $item) {
+                                if (is_array($item) && count($item) == 2) {
+                                    $value_with_length[] = '`' . $item[0] . '`(' . $item[1] . ')';
+                                    unset($value[$num]);
+                                }
+                            }
+                        }
+
+                        $key_value = is_array($value) ? implode("`,`", $value) : $value;
+                        $key_value = $this->escapeField($key_value);
+                        if ($value_with_length) {
+                            $implode_value_with_length = implode(',', $value_with_length);
+                            if ($key_value) {
+                                $key_value = $key_value . ',' . $implode_value_with_length;
+                            } else {
+                                $key_value = $implode_value_with_length;
+                            }
+                        }
+                        $insert_query[] = "ADD KEY `{$key}` ({$key_value})";
+                    }
+                }
+            }
+            $insert_query = implode(', ', $insert_query);
+            if ($insert_query) {
+                $this->completeRecovery($m, $table_name, $insert_query, $run);
+            }
+        }
+    }
+
+    private function completeRecovery($model, $table_name, $query, $run)
+    {
+        $alter_sql = "ALTER TABLE `{$table_name}` {$query}";
+        if ($run) {
+            $model->exec($alter_sql);
+        } else {
+            $this->result['comparison'][$table_name] = $alter_sql;
+            $this->result['table_definitions'][$table_name] = $model->query("SHOW CREATE TABLE `{$table_name}`")->fetchField(1);
         }
     }
 }

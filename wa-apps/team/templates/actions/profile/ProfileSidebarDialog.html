@@ -1,0 +1,6 @@
+{if empty($options.sectionId) || empty($options.userId)}
+    <p class="text-red">[`Required parameter is missing.`]</p>
+{elseif $options.sectionId !== 'calendar'}
+    {$wa->contactProfileSidebar($options.userId, ['active_section' => $options.sectionId])}
+{/if}
+

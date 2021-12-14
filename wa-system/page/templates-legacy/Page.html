@@ -1,0 +1,615 @@
+{if $ibutton}
+<link href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css?v{$wa->version(true)}" rel="stylesheet" type="text/css" >
+<script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js?v{$wa->version(true)}"></script>
+{/if}
+
+{if $options.js.storage}
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.json.js?v{$wa->version(true)}"></script>
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?v{$wa->version(true)}"></script>
+    <script>
+    if (!$.storage) {
+        $.storage = new $.store();
+    }
+    </script>
+{/if}
+
+<script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js"></script>
+<script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js"></script>
+
+{if $options.js.ace || !$options.is_ajax}
+    <script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
+{/if}
+
+<script>(function() { "use strict";
+
+    var lang = {$lang|json_encode};
+    var wa_url = {$wa_url|json_encode};
+    var framework_version = {$wa->version(true)|json_encode};
+
+    // This promise is resolved when all WYSIWYG files are loaded
+    // and $.fn.waEditor() function is ready.
+    $.wa_editor_ready = (function() {
+        // Load $.wa.loadFiles() if not loaded already
+        if (!$.wa || !$.wa.loadFiles) {
+            return $.ajax({
+                url: wa_url+"wa-content/js/jquery-wa/wa.core.js?v"+framework_version,
+                dataType: "script",
+                cache: true
+            });
+        } else {
+            return $.Deferred().resolve().promise();
+        }
+    }()).then(function() {
+        var to_load = [];
+        var load_locale = false;
+
+        // Load Redactor II unless already loaded by application
+        if (!$.Redactor) {
+            to_load.push(wa_url+"wa-content/js/redactor/2/redactor.css?v"+framework_version);
+            to_load.push(wa_url+"wa-content/js/redactor/2/redactor.min.js?v"+framework_version);
+            load_locale = lang !== 'en';
+        }
+
+        if(!$.fileupload) {
+            to_load.push(wa_url+"wa-content/js/jquery-plugins/fileupload/jquery.fileupload.js?v"+framework_version);
+        }
+
+        return $.wa.loadFiles(to_load).then(function() {
+            if (load_locale) {
+                // Load Redactor II locale when its ready
+                return $.wa.loadFiles(wa_url+"wa-content/js/redactor/2/"+lang+".js?v"+framework_version);
+            } else {
+                return true;
+            }
+        }).then(function() {
+            if ($.Redactor.VERSION.substr(0, 3) == '10.') {
+                // Old RedactorI used by legacy application
+                return $.wa.loadFiles(wa_url+"wa-content/js/jquery-wa/editor.js?v"+framework_version).then(function() {
+                    return 'waEditor';
+                });
+            } else {
+                // New RedactorII
+                return $.wa.loadFiles(wa_url+"wa-content/js/jquery-wa/editor2.js?v"+framework_version).then(function() {
+                    return 'waEditor2';
+                });
+            }
+        });
+    });
+
+})();</script>
+
+<style type="text/css">
+    .wa-pages { margin-bottom: 80px; }
+    .wa-pages h4.heading { word-wrap: break-word; word-break: break-all; position: relative; margin-right: 15px; }
+    .wa-pages h4.heading span.count { position: absolute; right: -15px; }
+
+    .wa-page-gray { color: #AAA;}
+    .wa-page-draft { background: #CCC; color: white; font-weight: bold; font-size: 0.8em; padding: 0 2px; }
+    .wa-page-wysiwyg-html-toggle { margin-right: 17px; margin-top: -20px; float: right; margin-bottom: 0; }
+    .wa-page-wysiwyg-html-toggle li { list-style: none;float: left;}
+    .wa-page-wysiwyg-html-toggle li.selected a { background: white;}
+    .wa-page-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
+
+    .wa-page-urls a i { margin: 0}
+
+    .block-pages h4.heading { margin-bottom: 10px; margin-top: 5px; margin-left: -2px; }
+    .block-pages ul.menu-v.with-icons li a { word-break: break-all; }
+
+    a.wa-page-link .count i.icon10 { display: none; }
+    a.wa-page-link:hover .count i.icon10 { display: block; }
+    .wa-page-gray-toolbar { background: #EEE; padding-left: 15px; padding-bottom: 17px; padding-top: 13px; }
+    .wa-page-gray-toolbar h2 { font-size: 1.5em; margin-bottom: 10px; }
+    .wa-page-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 470px; z-index: 1053; }
+
+    .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
+    .wa-editor-core-wrapper { background: white;}
+    .wa-ibutton-checkbox ul.menu-h li { padding: 1px 0 10px; vertical-align: middle;}
+
+    #wa-editor-status i.icon16 { margin-top: 6px; }
+
+    .wa-dropdown { float: right; margin: 2px 20px 0 0; }
+    .wa-dropdown .wa-dropdown-content { padding: 20px;  width: auto; width: 760px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
+    .wa-dropdown .wa-dropdown-content .field .name .inline-link b i { font-weight: bold; }
+    .wa-dropdown .wa-dropdown-content .field .name { width: 330px; }
+    .wa-dropdown .wa-dropdown-content .field .value { margin-left: 350px; }
+    .wa-dropdown .wa-dropdown-content .field.subfield .name { margin-left: 20px; }
+    .wa-dropdown .wa-dropdown-content .field.subfield .name .inline-link b i { font-weight: normal; font-size: 0.9em; }
+    .wa-dropdown .wa-drop-link { position: relative; padding: 6px 0 0 ; display: block;}
+    .wa-dropdown .wa-dropdown-block { display: none; position: absolute; bottom:1.4em; right:0; background: #F3F3F3; border: 2px solid #AAAAAA; box-shadow: 0 2px 10px #777; -webkit-box-shadow: 0 2px 10px #777; -moz-box-shadow: 0 2px 10px #777; -o-box-shadow: 0 2px 10px #777; z-index: 1054; }
+    .wa-dropdown ul.tabs { height: 45px; padding-top: 6px; }
+    .wa-dropdown ul.tabs li.selected a { background: #fff;}
+    .wa-dropdown ul.tabs li.no-tab { min-width: 70px;}
+    .wa-dropdown ul.tabs li a { position: relative; padding:5px 15px 8px; height: 30px;}
+    .wa-dropdown ul.tabs li.no-tab { padding:4px 0.8em 0 40px;}
+    .wa-dropdown ul.tabs li.no-tab .hint { font-weight: bold;}
+    .wa-dropdown ul.tabs li.no-tab p { margin: 0 ; line-height: 16px; white-space: nowrap;}
+    .wa-dropdown ul.tabs li.no-tab img { float: left; vertical-align: top; margin:2px 0 0 -32px; width: 24px; height: 24px; }
+    .wa-dropdown .field .name { word-wrap: break-word; }
+
+    #wa-page-advanced-params-link { margin-left: 180px; }
+
+    .expander { cursor:pointer; float:left;}
+    .notebook { float:left;}
+</style>
+
+{if $sidebar}
+{if $options.container}
+<div class="shadowed wa-pages">
+{/if}
+    <div class="sidebar left250px" style="min-height: 300px;">
+        {foreach $routes as $r => $route}
+            {if (count($routes) > 1) && !$r && is_array($route.pages) && $route.pages}
+                {$unsettled_pages_count = count($route.pages)}
+            {else}
+                {$unsettled_pages_count = 0}
+            {/if}
+            <div class="block block-pages">
+                <h4 class="heading">
+                    <span class="count"><span style="display: none;"></span><i {if !$r}style="display:none" {/if}class="icon16 add wa-page-add no-parent"></i></span>
+                    <i class="icon16 darr"></i> {if $r}{str_replace('www.','',$route['url_decoded'])|escape|truncate:23:'...':false:true}{else}[s`Unpublished`]{/if}
+                    {if $unsettled_pages_count}
+                        <a id="wa-page-settle" style="margin-left: 10px;" href="#"><i class="icon16 exclamation"></i></a>
+                    {/if}
+                </h4>
+                <ul class="menu-v collapsible with-icons" data-domain="{if !$r && isset($domain)}{$domain}{else}{$route.domain}{/if}" data-route="{$route.route}">
+                    <li class="drag-newposition"></li>
+                    {if !empty($route.pages)}
+                        {foreach $route.pages as $p}
+                            <li class="dr" id="page-{$p.id}">
+                                {if !empty($p.childs)}<i class="icon16 darr expander overhanging"></i>{/if}
+                                <i class="icon16 notebook"></i>
+                                <a class="wa-page-link" href="{$page_url}{$p.id}">
+                                    <span class="count"><i class="icon10 add wa-page-add"></i></span>
+                                    {$p.name|escape}
+                                    <span class="hint">/{$p.full_url|escape}</span>
+                                    {if !$p.status} <span class="wa-page-draft">[s`draft`]</span>{/if}
+                                </a>
+                                {if !empty($p.childs)}
+                                    {waPageActions::printPagesTree($p, $p.childs, $page_url)}
+                                {/if}
+                            </li>
+                            <li class="drag-newposition"></li>
+                        {/foreach}
+                    {/if}
+                </ul>
+            </div>
+        {/foreach}
+
+        {if $unsettled_pages_count}
+            <div id="wa-page-settle-dialog" style="display: none;">
+                <form method="post" action="?module=pages&action=settle">
+                    <div class="dialog-content">
+                        <p>[`These pages are not connected to any of the site’s structure rules and are therefore not displayed on your site. To publish these pages now, select a site structure rule for them:`]</p>
+                        <select>
+                            <option value=""></option>
+                            {foreach $routes as $r => $route}
+                                {if $r}
+                                    <option data-domain="{$route.domain}" data-route="{$route.route}" value="{$r}">{$r}</option>
+                                {/if}
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="dialog-buttons">
+                        <input class="button green" type="submit" value="[s`Save`]"> [s`or`] <a class="cancel" href="#">[s`cancel`]</a>
+                    </div>
+                </form>
+            </div>
+            <script type="text/javascript">
+            $("#wa-page-settle").click(function () {
+                $("#wa-page-settle-dialog").waDialog({
+                    title: '[s`Unpublished pages`]',
+                    className: 'small',
+                    onLoad: function () {
+                        var n = $("#wa-page-settle").closest('div.block-pages').find('ul li.dr').length;
+                        $(this).find('.dialog-content p span').html(n);
+                    },
+                    onSubmit: function (d) {
+                        var o = $(this).find('select option:selected');
+                        if (o.data('domain')) {
+                            $.post($(this).attr('action'), {
+                                domain:o.data('domain'), route:o.data('route')
+                            }, function (response) {
+                                location.reload();
+                            }, "json");
+                        }
+                        return false;
+                    }
+                });
+                return false;
+            });
+            </script>
+        {/if}
+
+        <!-- plugin hook: 'backend_pages_sidebar' -->
+        {* @event backend_pages_sidebar.%plugin_id% *}
+        {foreach $backend_pages_sidebar as $_}{$_}{/foreach}
+
+    </div>
+{/if}
+<div id="wa-page-container" class="content bordered-left blank{if $sidebar} left250px{/if}">
+    <div  class="block double-padded">
+        [s`Loading`]... <i class="icon16 loading"></i>
+    </div>
+    <div class="clear"></div>
+</div>
+<script type="text/javascript">
+    var wa_url = "{$wa_url}";
+    var wa_app = "{$wa->app()}";
+
+    function waExpand(page_id) {
+        var t = $('#page-'+page_id);
+        var c = t.children('ul');
+        if(c) {
+            t.children('i.expander').removeClass('rarr').addClass('darr');
+            c.show();
+        }
+        var parent_id = t.parent().data('parent-id');
+        if(parent_id) waExpand(parent_id);
+        var i = t.closest('.block-pages').find("h4.heading i.icon16");
+        if (i.hasClass('rarr')) {
+            i.trigger('click', true);
+        }
+    }
+
+    function waLoadPage(params) {
+        $(".block-pages ul li.selected").removeClass('selected');
+        if (params % 1 === 0) {
+            $("#page-" + params).addClass('selected');
+            waExpand(params);
+        }
+        $("#wa-page-container").html('<div class="block double-padded">' +
+            '[s`Loading`]... <i class="icon16 loading"></i>' +
+            '</div><div class="clear"></div>');
+        $("#wa-page-container").load("?module=pages&action=edit&id=" + params);
+    }
+
+    if (!jQuery.fn.liveDraggable) {
+        jQuery.fn.liveDraggable = function (opts) {
+            this.each(function(i,el) {
+                var self = $(this);
+                if (self.data('init_draggable')) {
+                    self.die("mouseover", self.data('init_draggable'));
+                }
+            });
+            this.live("mouseover", function() {
+                var self = $(this);
+                if (!self.data("init_draggable")) {
+                    self.data("init_draggable", arguments.callee).draggable(opts);
+                }
+            });
+        };
+    }
+
+    if (!jQuery.fn.liveDroppable) {
+        jQuery.fn.liveDroppable = function (opts) {
+            this.each(function(i,el) {
+                var self = $(this);
+                if (self.data('init_droppable')) {
+                    self.die("mouseover", self.data('init_droppable'));
+                }
+            });
+
+            var init = function() {
+                var self = $(this);
+                if (!self.data("init_droppable")) {
+                    self.data("init_droppable", arguments.callee).droppable(opts);
+                    self.mouseover();
+                }
+            };
+            init.call(this);
+            this.die("mouseover", init).live("mouseover", init);
+        };
+    }
+
+
+    $(function () {
+        function waClose(page_id) {
+            var t = $('#page-'+page_id);
+            var c = t.children('ul');
+            if(c) {
+                t.children('i.expander').removeClass('darr').addClass('rarr');
+                c.hide();
+            } else {
+                t.children('i.expander').removeClass('rarr').removeClass('darr').addClass('notebook');
+            }
+        }
+
+        $('.expander').click(function() {
+            var page_id = $(this).parent().attr('id').replace(/page-/g, '');
+            var k = wa_app+'/pages/page-' + page_id;
+            if($(this).hasClass('rarr')) {
+                waExpand(page_id);
+                $.storage.del(k);
+             } else {
+                waClose(page_id);
+                $.storage.set(k, 1);
+            }
+        });
+
+        $('.expander').each(function() {
+            var page_id = $(this).parent().attr('id').replace(/page-/g, '');
+            var k = wa_app+'/pages/page-' + page_id;
+            if ($.storage.get(k)) {
+                waClose(page_id);
+            }
+        });
+
+        $(".block-pages").on('click', 'i.wa-page-add', function () {
+            var li = $('<li><a class="wa-page-link" href="#"><i class="icon16 notebook"></i>[s`New page`]</a></li>');
+            if ($(this).hasClass('no-parent')) {
+                $(this).closest('h4').next('ul').append(li);
+            } else {
+                var p = $(this).closest("li");
+                if (!p.children('ul').length) {
+                    p.append('<ul class="menu-v with-icons" data-parent-id="' + p.attr('id').replace(/page-/, '') + '"></ul>');
+                }
+                p.children('ul').append(li);
+            }
+            li.children('a').click();
+            return false;
+        });
+        $(".block-pages ul").on('click', 'li a.wa-page-link', function (e) {
+            if ($(e.target).hasClass('wa-page-add')) return true;
+            var p = $(this).parent();
+            if (p.attr('id')) {
+                var id = $(this).parent().attr('id').replace(/page-/, '');
+                {if $options.is_ajax}
+                    var new_hash = {$page_url|json_encode} + id;
+                    if (new_hash == location.hash) {
+                        $.wa.site.dispatch();
+                    } else {
+                        $.wa.setHash(new_hash);
+                    }
+                    return false;
+                {else}
+                    waLoadPage(id);
+                {/if}
+            } else {
+                var ul = p.closest('ul');
+                if (ul.data('parent-id')) {
+                    waLoadPage('&parent_id=' + ul.data('parent-id'));
+                } else {
+                    waLoadPage('&domain=' + ul.data('domain') + '&route=' + ul.data('route'));
+                }
+                $(this).parent().addClass('selected');
+            }
+            return {if $options.is_ajax}false{else}true{/if};
+        });
+
+        var page_id = location.hash.replace(/.*?\/(\d+)\/?/, '$1');
+        if (page_id && page_id % 1 === 0 && $("#page-" + page_id).length > 0) {
+            waLoadPage(page_id);
+        } else {
+            if ($(".block-pages ul li a.wa-page-link").length) {
+                $(".block-pages ul li a.wa-page-link:first").click();
+            } else {
+                $(".block-pages .wa-page-add:first").click();
+            }
+        }
+
+        $(".block-pages h4.heading").click(function (e, not_save) {
+            if ($(e.target).hasClass('wa-page-add')) return true;
+            var h = $(this);
+            var ul = h.next('ul');
+            var k = wa_app+'/pages/domain-' + ul.data('domain') + '/' + ul.data('route');
+            var is_save = !(not_save || false)
+            if (is_save) {
+                if (!$.storage.get(k)) {
+                    $.storage.set(k, 1);
+                } else {
+                    $.storage.del(k);
+                }
+            }
+            var c = h.children('span.count');
+            if (h.children('i').hasClass('darr')) {
+                h.children('i').removeClass('darr').addClass('rarr');
+                c.children('i').hide();
+                c.children('span').html(ul.find('a.wa-page-link').length).show();
+                ul.hide();
+            } else {
+                h.children('i').removeClass('rarr').addClass('darr');
+                c.children('span').hide();
+                c.children('i').show();
+                ul.show();
+            }
+        });
+        $(".block-pages h4.heading").each(function () {
+            var ul = $(this).next('ul');
+            var k = wa_app+'/pages/domain-' + ul.data('domain') + '/' + ul.data('route');
+            if ($.storage.get(k)) {
+                $(this).trigger('click', true);
+            }
+        });
+
+        {literal}
+        $("li.dr", $('.block-pages ul')).liveDraggable({
+            refreshPositions: true,
+            revert: "invalid",
+            helper: function() {
+                var self = $(this);
+                var parent = self.parents('.block-pages:first').find('>ul');
+                return self.clone().addClass('ui-draggable helper').css({
+                    position: 'absolute'
+                }).appendTo(parent);
+            },
+            cursor: "move",
+            opacity: 0.75,
+            zIndex: 9999,
+            distance: 5,
+            cursorAt: { left: 5 }
+        });
+
+        $("li.drag-newposition", $('.block-pages ul')).liveDroppable({
+            accept: 'li.dr',
+            tolerance: 'pointer',
+            greedy: true,
+            hoverClass: 'active',
+            over: function() {
+                $(this).parent().parent().addClass('drag-active');
+            },
+            out: function() {
+                $(this).parent().parent().removeClass('drag-active');
+            },
+            deactivate: function(event, ui) {
+                var self = $(this);
+                if (self.is(':animated') || self.hasClass('dragging')) {
+                    self.stop().animate({height: '2px'}, 300, null, function() {self.removeClass('dragging');});
+                }
+                self.parent().parent().removeClass('drag-active');
+            },
+            drop: function(event, ui) {
+                var self = $(this);
+                var dr = ui.draggable;
+                var id = dr.attr('id').replace(/page-/, '');
+                var ul = self.parent();
+
+                var before_id = 0;
+                var before = self.next('li.dr');
+                if (before.length && !before.hasClass('helper')) {
+                    before_id = before.attr('id').replace(/page-/, '');
+                }
+
+                var sep = dr.next();
+                // means that actually nothing will be changed
+                if (sep.get(0) == self.get(0) || id == before_id) {
+                    return false;
+                }
+                var data = {
+                    id: id,
+                    route: ul.attr('data-route') || '',
+                    domain: ul.attr('data-domain') || '',
+                    parent_id: ul.attr('data-parent-id') || 0,
+                    before_id: before_id
+                };
+
+                var home = dr.prev();
+
+                sep.insertAfter(self);
+                dr.insertAfter(self);
+
+                waPageMove(data, function() {}, function() {
+                        // restore
+                        home.after(dr.next()).after(dr);
+                });
+            }
+        });
+
+        $("li.dr a", $('.block-pages ul')).liveDroppable({
+            accept: 'li.dr',
+            tolerance: 'pointer',
+            greedy: true,
+            out: function() {
+                $(this).parent().removeClass('drag-newparent');
+            },
+            over: function(event, ui) {
+                var self = $(this).parent(); // li
+                self.addClass('drag-newparent');
+
+                var dr = ui.draggable;
+                var drSelector = '.dr[id!="'+dr.attr('id')+'"]';
+                var nearby = $();
+
+                // helper to widen all spaces below the current li and above next li (which may be on another tree level, but not inside current)
+                var addBelow = function(nearby, current) {
+                    if (!current.length) {
+                        return nearby;
+                    }
+                    nearby = nearby.add(current.nextUntil(drSelector).filter('li.drag-newposition'));
+                    if (current.nextAll(drSelector).length > 0) {
+                        return nearby;
+                    }
+                    return arguments.callee(nearby, current.parent().closest('li'));
+                }
+
+                // widen all spaces above the current li and below the prev li (which may be on another tree level)
+                var above = self.prevAll(drSelector+':first');
+                if(above.length > 0) {
+                    var d = above.find(drSelector);
+                    if (d.length > 0) {
+                        nearby = addBelow(nearby, d.last());
+                    } else {
+                        nearby = addBelow(nearby, above);
+                    }
+                } else {
+                    nearby = nearby.add(self.prevUntil(drSelector).filter('li.drag-newposition'));
+                }
+
+                // widen all spaces below the current li and above the next li (which may be on another tree level)
+                if (self.children('ul').children(drSelector).length > 0) {
+                    nearby = nearby.add(self.children('ul').children('li.drag-newposition:first'));
+                } else {
+                    nearby = addBelow(nearby, self);
+                }
+
+                var old = $('.drag-newposition:animated, .drag-newposition.dragging').not(nearby);
+
+                old.stop().animate({height: '2px'}, 300, null, function(){old.removeClass('dragging');});
+                nearby.stop().animate({height: '10px'}, 300, null, function(){nearby.addClass('dragging');});
+            },
+            drop: function(event, ui) {
+                var self = $(this).parent().removeClass('drag-newparent'); // li
+                var parent_id = self.attr('id').replace(/page-/, '');
+                var dr = ui.draggable;
+
+                var id = dr.attr('id').replace(/page-/, '');
+                if (id == parent_id) {
+                    return false;
+                }
+
+                var ul;
+                var sep  = dr.next();
+                var home = dr.prev();
+                if (self.children('ul').length) {
+                    ul =  self.children('ul');
+                } else {
+                    ul = $('<ul class="menu-v with-icons unapproved" data-parent-id="' + parent_id + '"><li class="drag-newposition"></li></ul>').appendTo(self);
+                    ul.find('.drag-newposition').mouseover(); // init droppable
+                }
+                ul.append(dr).append(sep);
+
+                waPageMove({id: id, parent_id: parent_id, before_id: 0}, function() {
+                        ul.removeClass('unapproved');
+                    },function() {
+                        // restore
+                        home.after(dr).after(sep);
+                        if (ul.hasClass('unapproved')) {
+                            ul.remove();
+                        }
+                });
+            }
+        });
+        {/literal}
+
+        function waPageMove(data, success, error) {
+            $.post("?module=pages&action=move", data, function (response) {
+                if (response.status == 'ok') {
+                    var id = response.data.id;
+                    var full_url = response.data.full_url;
+                    if (full_url) {
+                        $("#page-" + id + ' > a span.hint').html('/' + full_url);
+                        if (response.data.old_full_url) {
+                            var old_full_url = response.data.old_full_url;
+                            $("#page-" + id + ' ul li span.hint').each(function () {
+                                $(this).text('/' + full_url + (full_url.length > 0 && full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(old_full_url.length + 1));
+                            });
+                        }
+                        // if moved page is current active
+                        if ($("#page-" + id).hasClass('selected')) {
+                            waLoadPage(id);
+                        }
+                    }
+                    success();
+                } else {
+                    error();
+                }
+            }, "json");
+        }
+
+    });
+
+</script>
+{if $sidebar}
+{if $options.container}
+</div>
+{/if}
+{/if}

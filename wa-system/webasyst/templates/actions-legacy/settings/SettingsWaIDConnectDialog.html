@@ -1,0 +1,180 @@
+{$dialog_class = 'w-waid-connect-dialog'}
+{$dialog_id = uniqid($dialog_class)}
+<div class="wa-dialog {$dialog_class} js-waid-connect-dialog" id="{$dialog_id}">
+    <div class="wa-dialog-background"></div>
+    <div class="wa-dialog-body">
+        <header class="wa-dialog-header">
+            <h1 class="js-title">[s`Enable sign-in with Webasyst ID`]</h1>
+        </header>
+        <div class="wa-dialog-content">
+            <div class="js-process-block">
+                <p>[s`Connecting to the Webasyst ID authentication server...`] <i class="icon16 loading js-loading"></i></p>
+            </div>
+            <div class="js-success-block" style="display: none">
+                <p>[s`Sign-in with Webasyst ID has been enabled.`] <i class="icon16 yes"></i></p>
+            </div>
+            <div class="js-fail-block" style="display: none">
+                <p class="errormsg">[s`Failed to connect to Webasyst ID authentication server.`] <i class="icon16 cross"></i></p>
+            </div>
+
+        </div>
+        <footer class="wa-dialog-footer">
+            <input type="button" class="button gray js-close-dialog" value="[s`Close`]" disabled="disabled">
+        </footer>
+    </div>
+
+    {$_is_from_banner = $wa->get('from_banner')}
+
+    {* Resources in case when show this dialog from banner, not inside Webasyst Settings App *}
+    {if $_is_from_banner}
+        {$_prefix = 'wa-id-connect-dialog-'}
+        {$_resources = [
+            [
+                'id'   => "`$_prefix`wa-id-connect-dialog-js",
+                'type' => "js",
+                'uri'  => "`$wa_url`wa-content/js/jquery-wa/wa-settings/settings.waIDConnectDialog.js?v=`$wa->version(true)`"
+            ],
+            [
+                'id'   => "`$_prefix`wa-dialog-css",
+                'type' => "css",
+                'uri'  => "`$wa_url`wa-content/js/dialog/dialog.css?v=`$wa->version(true)`"
+            ],
+            [
+                'id'   => "`$_prefix`wa-dialog-js",
+                'type' => "js",
+                'uri'  => "`$wa_url`wa-content/js/dialog/dialog.js?v=`$wa->version(true)`"
+            ]
+        ]}
+    {/if}
+
+    <script>
+        $(function () {
+
+            {if $_is_from_banner}
+                load({$_resources|json_encode}).then(init);
+                function load(sources) {
+                    var deferred = $.Deferred();
+
+                    loader(sources).then( function() {
+                        deferred.resolve();
+                    }, function(bad_sources) {
+                        if (console && console.error) {
+                            console.error("Error loading resource", bad_sources);
+                        }
+                        deferred.reject(bad_sources);
+                    });
+
+                    return deferred.promise();
+
+                    function loader(sources) {
+                        var deferred = $.Deferred(),
+                            counter = sources.length;
+
+                        var bad_sources = [];
+
+                        $.each(sources, function(i, source) {
+                            switch (source.type) {
+                                case "css":
+                                    loadCSS(source).then(onLoad, onError);
+                                    break;
+                                case "js":
+                                    loadJS(source).then(onLoad, onError);
+                                    break;
+                            }
+                        });
+
+                        return deferred.promise();
+
+                        function loadCSS(source) {
+                            var deferred = $.Deferred(),
+                                promise = deferred.promise();
+
+                            var $link = $("#" + source.id);
+                            if ($link.length) {
+                                promise = $link.data("promise");
+
+                            } else {
+                                $link = $("<link />", {
+                                    id: source.id,
+                                    rel: "stylesheet"
+                                }).appendTo("head")
+                                    .data("promise", promise);
+
+                                $link
+                                    .on("load", function() {
+                                        deferred.resolve(source);
+                                    }).on("error", function() {
+                                    deferred.reject(source);
+                                });
+
+                                $link.attr("href", source.uri);
+                            }
+
+                            return promise;
+                        }
+
+                        function loadJS(source) {
+                            var deferred = $.Deferred(),
+                                promise = deferred.promise();
+
+                            var $script = $("#" + source.id);
+                            if ($script.length) {
+                                promise = $script.data("promise");
+
+                            } else {
+                                var script = document.createElement("script");
+                                document.getElementsByTagName("head")[0].appendChild(script);
+
+                                $script = $(script)
+                                    .attr("id", source.id)
+                                    .data("promise", promise);
+
+                                $script
+                                    .on("load", function() {
+                                        deferred.resolve(source);
+                                    }).on("error", function() {
+                                    deferred.reject(source);
+                                });
+
+                                $script.attr("src", source.uri);
+                            }
+
+                            return promise;
+                        }
+
+                        function onLoad(source) {
+                            counter -= 1;
+                            watcher();
+                        }
+
+                        function onError(source) {
+                            bad_sources.push(source);
+                            counter -= 1;
+                            watcher();
+                        }
+
+                        function watcher() {
+                            if (counter === 0) {
+                                if (!bad_sources.length) {
+                                    deferred.resolve();
+                                } else {
+                                    deferred.reject(bad_sources);
+                                }
+                            }
+                        }
+                    }
+                }
+            {else}
+                init();
+            {/if}
+
+            function init() {
+                new WASettingsWaIDConnectDialog({
+                    $dialog: $('#{$dialog_id}'),
+                    connect_url: {$connect_url|default:''|json_encode},
+                    wa_url: {$wa_url|json_encode}
+                });
+            }
+        })
+    </script>
+</div>

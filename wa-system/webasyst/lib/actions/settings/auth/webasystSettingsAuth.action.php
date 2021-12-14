@@ -17,10 +17,10 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
         // Backgrounds
         $backgrounds_path = wa()->getConfig()->getPath('content').'/img/backgrounds/thumbs';
         $backgrounds = $this->getImages($backgrounds_path);
+
         // Custom backgrounds
-        $images_path = wa()->getDataPath(null, true, 'webasyst');
-        $images = $this->getImages($images_path);
-        $images_url = wa()->getDataUrl(null, true, 'webasyst');
+        list($images_path, $images, $images_url) = $this->getCustomBackgroundImages();
+
         // Custom used background image
         $name = preg_replace('/\?.*$/', '', $settings['auth_form_background']);
         $path = wa()->getDataPath($name, true, 'webasyst');
@@ -79,15 +79,44 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
             'images_path'                => $images_path,
             'custom_image'               => $custom_image,
             'demo_captcha'               => wa()->getCaptcha(),
+            'is_waid_connected'          => $this->isWaidConnected(),
+            'is_backend_auth_forced'     => $this->isWaidForced(),
+            'is_user_bound_to_webasyst_id' => (bool)wa()->getUser()->getWebasystContactId(),
+            'waid_settings_link' => wa()->getAppUrl('webasyst') . 'webasyst/settings/waid/'
         ));
     }
 
-    private function getImages($path)
+    private function isWaidConnected()
+    {
+        $cm = new waWebasystIDClientManager();
+        return $cm->isConnected();
+    }
+
+    private function isWaidForced()
+    {
+        $cm = new waWebasystIDClientManager();
+        return $cm->isBackendAuthForced();
+    }
+
+    private function getCustomBackgroundImages()
+    {
+        $images_path = wa()->getDataPath(null, true, 'webasyst');
+        $images = $this->getImages($images_path, function($_, $file) {
+            return !webasystLogoSettings::isLogoFileName($file);
+        });
+        $images_url = wa()->getDataUrl(null, true, 'webasyst');
+        return [$images_path, $images, $images_url];
+    }
+
+    private function getImages($path, $filter = null)
     {
         $files = waFiles::listdir($path);
-        foreach ($files as $id => $file) {
+        foreach ($files as $idx => $file) {
             if (!is_file($path.'/'.$file) || !preg_match('@\.(jpe?g|png|gif|bmp)$@', $file)) {
-                unset($files[$id]);
+                unset($files[$idx]);
+            }
+            if (is_callable($filter) && $filter($idx, $file) === false) {
+                unset($files[$idx]);
             }
         }
         return array_values($files);

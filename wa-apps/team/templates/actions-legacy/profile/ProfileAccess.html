@@ -1,0 +1,553 @@
+<style>
+    .t-app-icon {
+        width: 32px;
+        line-height: 0;
+        padding: 0 8px 0 0;
+    }
+    .t-app-icon img {
+        width: 100%;
+        height: auto;
+    }
+    .t-app-name {
+        padding: 0 8px 0 0;
+    }
+    .fields {
+        float: none;
+    }
+    .c-access-rights > table {
+        margin: 12px 0 0;
+    }
+    .c-access-rights table .t-access-status {
+        width: auto;
+    }
+    .field .value i.icon16 {
+        vertical-align: baseline;
+    }
+</style>
+
+{capture assign="password_block"}
+    <div id="c-password-block" style="display:none;">
+        <form id="c-password-form" method="post" action="{$url_change_password}">
+            <div class="c-one-tab">
+                <div class="field">
+                    <div class="name">[`Password`]</div>
+                    <div class="value">
+                        <a href="javascript:void(0)" class="small inline-link c-tab-toggle"><b><i>[`change password`]</i></b></a><br>
+                        <span class="hint">[`The same password is used to access personal account and backend.`]</span>
+                    </div>
+                </div>
+            </div>
+            <div class="c-two-tab" style="display:none;">
+                <div class="field ">
+                    <div class="name">[`New password`]</div>
+                    <div class="value">
+                        <input name="password" type="password" class="c-password-input" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`Confirm password`]</div>
+                    <div class="value">
+                        <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="value">
+                        <input type="submit" class="button green" value="[`Save`]"> [`or`]
+                        <a class="inline-link cancel c-tab-toggle" href="javascript:void(0)"><b><i>[`cancel`]</i></b></a>
+                        <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{/capture}
+
+{capture assign="waid_block"}
+    {if $is_connected_to_webasyst_id && ($contact['is_user'] == '1' || $is_bound_with_webasyst_contact)}
+        <div class="c-waid">
+            <div class="field">
+                <div class="name">[`Sign-in with Webasyst ID`]</div>
+                <div class="value">
+
+                    {if $is_bound_with_webasyst_contact}
+
+                        {* own or other uses's profile is connected to webasyst ID *}
+
+                        <i class="icon10 yes"></i>
+
+                        {if $webasyst_id_email}
+                            {sprintf(_w('Webasyst ID account <span class="bold">%s</span> is connected.'), $webasyst_id_email)}
+                        {else}
+                            {sprintf(_w('%sSign-in with Webasyst ID%s is connected.'), '<span class="bold">', '</span>')}
+                        {/if}
+
+                        {* authorize into customer center - available only for own profile *}
+                        {if $customer_center_auth_url}
+                            <a class="bold underline js-customer-center-auth" href="{$customer_center_auth_url}"><i class="icon10" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 14px 14px; background-position: 0 0;width: 14px;height: 14px; margin: 0 5px;"></i>[`Go to the Webasyst Customer Center`]</a>
+                        {/if}
+
+                        {if !$is_webasyst_id_forced}
+                            <a href="#" class="hint js-webasyst-id-unbind-auth">[`Disconnect`]</a>
+                        {/if}
+
+                    {elseif $is_own_profile}
+
+                        {* own profile is not connected to webasyst ID *}
+
+                        <div>[`Connect your Webasyst ID account and sign into the backend securely with no extra passwords.`] <a href="javascript:void(0);" class="underline js-webasyst-id-help-link">[`How does it work?`]</a></div>
+                        <div class="waid-login">
+                            <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)"><span class="icon"></span>&nbsp;{sprintf(_w('Enable sign-in with %s'), 'Webasyst ID')}</a>
+                            <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[`What is Webasyst ID?`]</a>
+                        </div>
+
+                    {else}
+
+                        {* other user's profile (not own) is connected to webasyst ID *}
+
+                        <i class="icon10 no"></i> {sprintf(_w('%sSign-in with Webasyst ID%s is not connected.'), '<span class="bold">', '</span>')}</span>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    {/if}
+{/capture}
+
+<div class="block double-padded" id="profile-access-wrapper">
+
+{if !$is_superadmin}
+
+<div class="block not-padded">
+    <div class="fields basic-user-fields" style="width:100%;">
+        <div class="field-group">
+            {if !$is_webasyst_id_forced}
+                <div class="field" style="margin-bottom: 10px;">
+                    <div class="name">[`Login`]</div>
+                    <div class="value">
+                        <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
+                    </div>
+                </div>
+                {$password_block}
+            {/if}
+            {$waid_block}
+        </div>
+    </div>
+</div>
+
+{elseif $is_superadmin}
+
+<div class="block not-padded c-shown-on-enabled" style="width: 100%; float:left; {if $contact.is_user === '-1'}display:none;{/if}" id="c-available-resourses">
+    <div class="fields"><div class="field-group">
+        <div class="field">
+            <div class="name">[`Backend`]</div>
+            <div class="value" style="min-height:19px;">
+                {if $gFullAccess}
+                    <strong class="large">[`Administrator`]</strong>
+                    <span style="margin-left:1em">[`This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user.`]</span>
+                {elseif $fullAccess && !empty($own_profile)}
+                    <strong class="large">[`Administrator`]</strong>
+                    <br><span class="hint">[`You cannot revoke administrative access level for yourself. Only another Administrator can do this.`]</span>
+                {else}
+
+                    {$_has_credentials = $contact.login && $contact.password}
+
+                    {*
+                        Selector not avaiable if contact without credentials and webasyst ID forced mode on
+                        Only option for contact became backend user send invitation link
+                    *}
+                    {$_selector_avaiable = !$is_webasyst_id_forced || $_has_credentials}
+
+                    {if $_selector_avaiable}
+                        <select id="c-access-rights-toggle">
+                            <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
+                            <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
+                            <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
+                        </select>
+
+                        <span id="access-rights-toggle-confirm" style="display:none;">
+                            <a href="javascript:void(0)" class="button yellow">[`Confirm access change`]</a>
+                            [`or`]
+                            <a href="javascript:void(0)" class="cancel">[`cancel`]</a>
+                        </span>
+
+                        {if !$gNoAccess}
+                            <span id="c-access-rights-hint-warning" class="c-access-not-allowed-hint" style="display:none;color:red"><span>[`Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user.`]</span></span>
+                        {/if}
+
+                        <i class="icon16 loading" style="margin-left:16px;display:none;white-space:normal"></i>
+                        <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="icon10 yes"></i> [`Saved`]</span>
+                    {else}
+                        <span>[`No access`]</span>
+                    {/if}
+                {/if}
+            </div>
+
+            {* Invite tokens *}
+            {foreach $invite_tokens as $_token}
+                <div class="value">
+                    <strong>[`Invitation sent`]</strong>
+                    <span class="hint">[`expires`] {$_token.expire_datetime|wa_date:humandatetime}</span>
+                    {if $_token.data}
+                        {$a = json_decode($_token.data, true)}
+                        {if !empty($_token.groups)}
+                            {strip}
+                            <br>
+                            {foreach $_token.groups as $g_id}
+                                {if isset($all_groups[$g_id])}
+                                    {$all_groups[$g_id]|escape}
+                                    {if !$g_id@last}
+                                        ,{/strip} {strip}
+                                    {/if}
+                                {/if}
+                            {/foreach}
+                        {/strip}
+                        {/if}
+                    {/if}
+                </div>
+            {/foreach}
+
+        </div>
+
+        {if !$is_webasyst_id_forced}
+            <div id="c-credentials-block" style="display:none;">
+                <form id="c-credentials-form" method="post" action="{$wa_app_url}?module=accessSave&action=grant&id={$contact.id}">
+                    <div class="field">
+                        <div class="name">[`Login`]</div>
+                        <div class="value">
+                            <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
+                            <span class="hint">
+                                [`Login name is required to access your account backend.`]<br>
+                                [`E.g., john, agent07, etc.`]
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field ">
+                        <div class="name">[`New password`]</div>
+                        <div class="value">
+                            <input name="password" type="password" class="c-password-input" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Confirm password`]</div>
+                        <div class="value">
+                            <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" /><br>
+                            <span class="hint">[`The same password is used to access personal account and backend.`]</span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name"></div>
+                        <div class="value">
+                            <input type="submit" class="button green" value="[`Save`]"> [`or`]
+                            <a class="inline-link cancel" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="c-login-block" style="display:none;">
+                <form id="c-login-form" method="post" action="{$wa_app_url}?module=accessSave&action=login&id={$contact.id}">
+                    <div class="field">
+                        <div class="name">[`Login`]</div>
+                        <div class="value">
+                            <div class="c-one-tab">
+                                <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
+                                <a href="javascript:void(0)" class="small inline-link c-tab-toggle" style=""><b><i>[`change login`]</i></b></a>
+                            </div>
+                            <div class="c-two-tab" style="display:none;">
+                                <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
+                                <span class="hint">
+                                    [`Login name is required to access your account backend.`]<br>
+                                    [`E.g., john, agent07, etc.`]
+                                </span><br><br>
+                                <input type="submit" class="button green" value="[`Save`]"> [`or`]
+                                <a class="inline-link cancel c-tab-toggle" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
+                                <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            {$password_block}
+        {/if}
+
+        {$waid_block}
+
+        <div class="c-shown-on-access">
+            <div class="field">
+                <div class="name">[`Belongs to groups`]</div>
+                <div class="value">
+                    {if $groups}
+                        {foreach $groups as $id => $name}
+                            <a href="{$wa_app_url}group/{$id}/">{if strlen($name) > 0}{$name|escape}{else}[`&lt;no name&gt;`]{/if}</a>{if !$name@last},{/if}
+                        {/foreach}
+                    {else}
+                        [`&lt;none&gt;`]
+                    {/if}
+                    {if $all_groups}
+                        <a href="javascript:void(0)" style="margin-left: 1.2em" class="small inline-link" id="open-customize-groups"><b><i>[`customize groups`]</i></b></a>
+                    {/if}
+                </div>
+            </div>
+            {if $all_groups}
+                <form id="form-customize-groups" style="display:none;clear:left" method="post" action="{$wa_app_url}?module=accessSave&action=savegroups&id={$contact.id}">
+                    <div class="field">
+                        <div class="value">
+                            <div class="c-checkbox-menu-container"><div>
+                                <ul class="menu-v compact with-icons c-checkbox-menu">
+                                    {foreach $all_groups as $id => $name}
+                                        <li><label><input type="checkbox" name="groups[]" value="{$id}"{if isset($groups[$id])} checked="checked"{/if} />{if strlen($name) > 0}{$name|escape}{else}[`&lt;no name&gt;`]{/if}</label></li>
+                                    {/foreach}
+                                </ul>
+                            </div></div>
+                        </div>
+                        <div class="value">
+                            <input type="hidden" name="set" value="1">
+                            <input type="submit" class="button green" value="[`Save`]">
+                            [`or`] <a class="inline-link" href="javascript:void(0)" id="cancel-customize-groups"><b><i>[`cancel`]</i></b></a>
+                            <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                        </div>
+                    </div>
+                </form>
+            {/if}
+            <div class="field c-access-rights" id="c-access-rights-by-app">
+                <div class="name">[`Access rights`]</div>
+                <div class="value c-access-rights" id="c-access-rights-wrapper">
+                    [`Backend access rights are customized for every app separately and result from a combination of personal and group access rights.`]
+                    <table>
+                        <tbody>
+                        {foreach $apps as $app_id => $app}
+                            <tr>
+                                <td class="t-app-icon">
+                                    <img src="{$wa_url}{$app.img}">&nbsp;
+                                </td>
+                                <td class="t-app-name">
+                                    {$app.name|escape}
+                                </td>
+                                <td class="t-app-access">
+                                    {$_rights = max($app.gaccess, $app.access)}
+                                    {if $_rights > 1}
+                                        {$_access = $access_types.full}
+                                    {elseif $_rights}
+                                        {$_access = $access_types.limited}
+                                    {else}
+                                        {$_access = $access_types.no}
+                                    {/if}
+                                    <div class="t-access-status type-{$_access.id}"
+                                        data-app-id="{$app_id}"
+                                        title="[`Edit access`]"
+                                    >
+                                        {* Output all possible names to be able to change them via JS *}
+                                        {foreach $access_types as $at}
+                                            <span class="t-access-name type-{$at.id}">{$at.name|default:""|escape}</span>
+                                        {/foreach}
+                                    </div>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div></div>
+</div>
+
+{/if}{* if $is_superadmin *}
+
+<div class="clear-left"></div>
+<div class="block not-padded">
+    <div class="fields basic-user-fields" style="width:100%;">
+        <div class="field-group">
+
+            {* Access *}
+            <div class="field">
+                <div class="name">[`Access`]</div>
+                <div class="value">
+                    <div class="left">
+                        {* Toggle to ban user or contact. Can not ban self. *}
+                        {if empty($own_profile)}{strip}
+                            <a href="javascript:void(0)"
+                                id="c-access-link-block"
+                                class="inline-link c-shown-on-enabled"
+                                {if $contact.is_user == '-1'} style="display:none"{/if}
+                                data-alert="[`Disable this contact?`]"
+                            >
+                                <i class="icon16 no"></i><b>[`Block contact`]</b>
+                            </a>
+                            <a href="javascript:void(0)"
+                                id="c-access-link-unblock"
+                                class="inline-link c-shown-on-disabled"
+                                {if $contact.is_user != '-1'} style="display:none"{/if}
+                                data-alert="[`Enable this contact?`]"
+                            >
+                                <b>[`Unblock contact`]</b>
+                            </a>
+
+                            <form class="js-block-user-reason-form" style="display: none">
+                                <br>
+                                <textarea class="js-block-user-reason" placeholder="[`Optional comment about the reason for blocking`]"></textarea><br><br>
+                                <div>
+                                    <input class="button red" type="submit" value="[`Block`]"> [`or`] <a href="javascript:void(0)" class="js-block-user-cancel">[`cancel`]</a>
+                                </div><br>
+                            </form>
+
+                        {/strip}{else}
+                            {if $contact.is_user == '-1'}[`Disabled`]{else}[`Enabled`]{/if}
+                        {/if}
+                        <i class="icon16 loading" style="display:none;"></i>
+                    </div>
+                    <div class="right">
+
+                        <div class="field c-shown-on-enabled" id="tc-user-status-field" style="{if $contact.is_user === '-1'}display:none;{/if}">
+                            <div class="name" style="width: 100%;">[`Status`]:
+                                {$status = $contact->getStatus()}
+                                {if $status == 'online'}
+                                    <span class="bold">
+                                        <i class="icon10 online"></i> <span class="c-user-status-online">[`Online`]</span>
+                                    </span>
+                                {else}
+                                    <span class="bold">
+                                        <i class="icon10 status-yellow"></i>
+                                        <span class="c-user-status-offline">
+                                            [`Offline`]
+                                            {if !$contact.last_datetime}
+                                                <span class="small no-bold">([`never logged in`])</span>
+                                            {else}
+                                                <span class="small no-bold">([`last login:`] {$contact.last_datetime|wa_date:"datetime"})</span>
+                                            {/if}
+                                        </span>
+                                    </span>
+                                {/if}
+                            </div>
+                        </div>
+                        <div id="tc-user-access-disabled" class="c-shown-on-disabled" style="{if $contact.is_user != '-1'}display:none;{/if}">
+                            {if $contact.is_user == '-1'}{$access_disable_msg}{/if}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {* Api tokens *}
+            {if $is_superadmin && !empty($api_tokens)}
+                <div class="field c-shown-on-enabled" id="tc-api-tokens-filed">
+                    <div class="name">[`API tokens`]</div>
+                    <div class="value">
+                        <table class="zebra js-api-tokens-list" style="max-width: 750px;">
+                            <thead style="font-size: 11px; color: #777; text-transform: uppercase; font-weight: bold;">
+                                <tr class="white">
+                                    <td class="tc-column"></td>
+                                    <td class="tc-column-date">[`Create date`]</td>
+                                    <td class="tc-column-client-id">[`Client id`]</td>
+                                    <td class="tc-column-scope">[`Scope`]</td>
+                                    <td class="tc-column-last-use-datetime">[`Last use date`]</td>
+                                    <td class="tc-column-expires">[`Expires`]</td>
+                                    <td class="tc-column-remove"></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach $api_tokens as $_token}
+                                    <tr class="js-token-item" data-token="{$_token.token|escape}">
+                                        <td class="tc-column"></td>
+                                        <td class="tc-column-date">{$_token.create_datetime|wa_date:humandatetime}</td>
+                                        <td class="tc-column-client-id">{$_token.client_id|escape}</td>
+                                        <td class="tc-column-scope">
+                                            {foreach $_token.installed_apps as $_app}
+                                                <img src="/{$_app.img}" title="{$_app.name|escape}" style="width: 16px; height: 16px;" />
+                                            {/foreach}
+                                            {foreach $_token.not_installed_apps as $_app}
+                                                <span style="color: #999;">{$_app|escape}{if !$_app@last},{/if}</span>
+                                            {/foreach}
+                                        </td>
+                                        <td class="tc-column-last-use-datetime">{if !empty($_token.last_use_datetime)}{$_token.last_use_datetime|wa_date:humandatetime}{else}<span style="color: #999;">—</span>{/if}</td>
+                                        <td class="tc-column-expires">{if !empty($_token.expires)}{$_token.expires|wa_date:humandatetime}}{else}<span style="color: #999;">—</span>{/if}</td>
+                                        <td class="tc-column-remove"><a href="#" title="[`Remove token`]" class="js-remove-api-token" style="display: inline-block;"><i class="icon16 no"></i></a></td>
+                                    </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {/if}
+
+            {* Customer portal *}
+            <div class="field c-shown-on-enabled" id="tc-customer-portal-filed" style="{if $contact.is_user === '-1'}display:none;{/if}">
+                <div class="name">[`Customer portal`]</div>
+                <div class="value">
+                    {if $personal_portal_available}
+                        [`Available`]
+                    {else}
+                        [`Not available`]
+                    {/if}<br>
+                    <span class="hint">
+                        [`Customer portal is a part of your site available for registered clients and containing their personal data. To access their customer portals, your clients must log in with an email address and a password.`]
+                        {if $is_superadmin}
+                            {sprintf('[`Manage <a href="%s" class="no-underline">personal portal settings</a> in Site app.`]', "`$wa_backend_url`site/#/personal/settings")}
+                        {/if}
+                    </span>
+                </div>
+            </div>
+
+            <div class="field c-shown-on-enabled" id="tc-email-change-log" style="{if $contact.is_user === '-1' || !$email_change_log}display:none;{/if}">
+                <div class="name">[`Email address changes history`]</div>
+                <div class="value">
+                    <ul class="menu-v">
+                        {foreach $email_change_log as $log_item}
+                            <li data-id="{$log_item.id}">
+                                <div>
+                                    {$log_item.datetime|wa_date:'humandatetime'}
+                                </div>
+                                <div>
+                                    {$log_item.emails|join:', '|escape}
+                                </div>
+                            </li>
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="clear-left"></div>
+
+</div> {* .block.double-padded *}
+
+<div id="tc-api-dialog"></div>
+
+<link href="{$wa_app_static_url}css-legacy/team.css?{$wa->version()}" rel="stylesheet"/>
+<script>
+    $.wa.loadFiles({
+        "{$wa_app_static_url}js-legacy/team.js?{$wa->version()}": typeof window.TeamDialog !== 'function',
+        "{$wa_app_static_url}js-legacy/access.js?{$wa->version()}": typeof window.AccessDialog !== 'function'
+    }).then(function() {
+        $.team.app_url = {$wa_app_url|json_encode};
+        $(function() {
+            new ProfileAccessTab({
+                contact_id: {$contact.id|json_encode},
+                login: {if $contact.login}{$contact.login|json_encode}{else}null{/if},
+                password: {json_encode((bool) $contact.password)},
+
+                wa_url: {$wa_url|json_encode},
+                wa_app_url: {$wa_app_url|json_encode},
+                is_own_profile: {(int)ifempty($own_profile)},
+                wa_framework_version: {$wa->version(true)|json_encode},
+
+                // true if user / all groups do not have any rights set up
+                contact_no_access: {(int)(boolean)$noAccess},
+                contact_groups_no_access: {(int)(boolean)$gNoAccess},
+
+                url_change_api_token: {json_encode($url_change_api_token)},
+
+                loc: {
+                    "Passwords do not match.": "[`Passwords do not match.`]",
+                    "Login is required.": "[`Login is required.`]",
+                    "cancel": "[`cancel`]",
+                    "Save": "[`Save`]",
+                    "remove_ask": "[`The user will not be able to send API requests using this token.`]"
+                }
+            });
+        });
+    });
+</script>

@@ -1,114 +1,124 @@
 {strip}
 
 <!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>{$wa->accountName()} &mdash; {$wa->appName()}</title>
+<html lang="{if $wa->locale()}{$wa->locale()|substr:0:2}{else}ru{/if}">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>{$wa->accountName()} &mdash; {$wa->appName()}</title>
 
-    {* CSS *}
-    <link rel="stylesheet" href="{$wa_app_static_url}js/plugins/timepicker/jquery.timepicker.css?{$wa->version()}">
-    <link rel="stylesheet" href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.all.css?{$wa->version(true)}">
-    <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css?{$wa->version(true)}">
-    {$wa->css()}
-    <link rel="stylesheet" href="{$wa_app_static_url}css/team.css?{$wa->version()}">
+        {* CSS *}
+        <link rel="stylesheet" href="{$wa_app_static_url}js/plugins/timepicker/jquery.timepicker.css?{$wa->version()}">
+        <link rel="stylesheet" href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.all.css?{$wa->version(true)}">
+        <link rel="stylesheet" href="{$wa_url}wa-content/js/pickr/themes/classic.min.css?{$wa->version(true)}">
+        <link rel="stylesheet" href="{$wa_url}wa-content/js/carousel/swiper.css?{$wa->version(true)}">
+        {$wa->css()}
+        <link rel="stylesheet" href="{$wa_app_static_url}css/team.css?{$wa->version()}">
 
-    {* JS *}
-    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js?{$wa->version(true)}"></script>
-    {/strip}{wa_js file="js/compiled/team-external.min.js" uibundle=''}
-        {$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js
-        {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
-        {$wa_url}wa-content/js/jquery-wa/wa.core.js
-        {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
-        {$wa_url}wa-content/js/farbtastic/farbtastic.js
-    {/wa_js}{wa_js file="js/compiled/team.min.js"}
-        {$wa_app_static_url}js/plugins/timepicker/jquery.timepicker.min.js
-        {$wa_app_static_url}js/team.js
-        {$wa_app_static_url}js/sidebar.js
-        {$wa_app_static_url}js/calendar.js
-        {$wa_app_static_url}js/profile.js
-        {$wa_app_static_url}js/access.js
-        {$wa_app_static_url}js/group.js
-        {$wa_app_static_url}js/settings.js
-        {$wa_app_static_url}js/api-token.js
-        {$wa_app_static_url}js/users.js
-        {$wa_app_static_url}js/welcome.js
-        {$wa_app_static_url}js/long.action.process.js
-        {$wa_app_static_url}js/map.js
-    {/wa_js}{strip}
+        {* JS *}
+        <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
 
-    {if $wa->locale() != 'en_US'}
-        <script src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
-    {/if}
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
+        {/strip}
+        {wa_js file="js/compiled/team-external.min.js" uibundle=''}
+            {$wa_url}wa-content/js/jquery/jquery-migrate-3.3.2.min.js
+            {$wa_url}wa-content/js/sortable/sortable.min.js
+            {$wa_url}wa-content/js/sortable/jquery-sortable.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.touch-punch.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
+            {$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js
+            {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+            {$wa_url}wa-content/js/pickr/pickr.min.js
+            {$wa_url}wa-content/js/jquery-wa/profileWebasystID.js
+            {$wa_url}wa-content/js/carousel/swiper-bundle.min.js
+        {/wa_js}
+        {wa_js file="js/compiled/team.min.js"}
+            {$wa_app_static_url}js/plugins/timepicker/jquery.timepicker.min.js
+            {$wa_app_static_url}js/team.js
+            {$wa_app_static_url}js/sidebar.js
+            {$wa_app_static_url}js/calendar.js
+            {$wa_app_static_url}js/profile.js
+            {$wa_app_static_url}js/profile.info.js
+            {$wa_app_static_url}js/access.js
+            {$wa_app_static_url}js/group.js
+            {$wa_app_static_url}js/settings.js
+            {$wa_app_static_url}js/api-token.js
+            {$wa_app_static_url}js/users.js
+            {$wa_app_static_url}js/welcome.js
+            {$wa_app_static_url}js/long.action.process.js
+            {$wa_app_static_url}js/map.js
+            {$wa_app_static_url}js/swiper.js
+        {/wa_js}{strip}
 
-    {if $map_info.adapter === 'google'}
-        {$_key = $map_info.settings.key|default:''}
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&key={$_key}&lang={$wa->locale()}"></script>
-    {elseif $map_info.adapter === 'yandex'}
-        {$_apikey = $map_info.settings.apikey|default:''}
-        <script src="https://api-maps.yandex.ru/2.1/?lang={$wa->locale()}&apikey={$_apikey}" type="text/javascript"></script>
-    {/if}
-
-
-    {* @event backend_assets.%plugin_id% *}
-    {foreach $backend_assets as $item}
-        {$item}
-    {/foreach}
-
-    <script>
-        ( function($) {
-            $.team.title_pattern = "%s — {$wa->accountName()}";
-        })(jQuery);
-    </script>
-</head>
-<body>
-
-<div id="wa">
-    {* HEADER *}
-    {$wa->header()}
-
-    {* APP *}
-    <div class="t-app-wrapper" id="wa-app">
-        {* SIDEBAR *}
-        {if !empty($sidebar)}
-            <div class="t-sidebar-wrapper sidebar left200px" id="t-sidebar-wrapper">
-                {$sidebar|default:''}
-            </div>
+        {if $wa->locale() != 'en_US'}
+            <script src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
         {/if}
 
-        {* CONTENT *}
-        <div class="t-content-wrapper">
-            <div class="t-content-block" id="t-content">
+        {if $geocoding.type === 'google'}
+            {$_key = $geocoding.key|default:''}
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$_key}&lang={$wa->locale()}"></script>
+        {elseif $geocoding.type === 'yandex'}
+            {$_apikey = $geocoding.key|default:''}
+            <script src="https://api-maps.yandex.ru/2.1/?lang={$wa->locale()}&apikey={$_apikey}" type="text/javascript"></script>
+        {/if}
+
+
+        {* @event backend_assets.%plugin_id% *}
+        {foreach $backend_assets as $item}
+            {$item}
+        {/foreach}
+
+        <script>
+            ( function($) {
+                $.team.title_pattern = "%s — {$wa->accountName()}";
+            })(jQuery);
+        </script>
+    </head>
+    <body>
+
+    <div id="wa">
+        {* HEADER *}
+        {$wa->header()}
+
+        {* APP *}
+        <div class="t-app-wrapper flexbox wrap-mobile" id="wa-app">
+            {* SIDEBAR *}
+            {if !empty($sidebar)}
+                <div class="t-sidebar-wrapper sidebar flexbox overflow-visible width-adaptive-wider mobile-friendly js-app-sidebar" id="t-sidebar-wrapper">
+                    {$sidebar|default:''}
+                </div>
+            {/if}
+
+            {* CONTENT *}
+            <div class="content hide-scrollbar blank" id="t-content">
                 {block name='content'}{$content}{/block}
             </div>
         </div>
     </div>
-</div>
 
-<script>
-(function($) {
-    $.team.init({
-        is_debug: {$is_debug},
-        app_url: {$wa_app_url|json_encode},
-        locales: {
-            map_check_your_key: '[`Check your key first of all <a href="{$wa_app_url}settings/">here</a>`]',
-            map_error_title: '[`Error`]',
-            map_error_message: '[`Google map has error, maybe key is invalid`]'
-        }
-    });
-})(jQuery);
-</script>
+    <script>
+    (function($) {
+        {if !empty($sidebar)}
+            $('.js-app-sidebar').waShowSidebar();
+        {/if}
+        $.team.init({
+            is_debug: {$is_debug},
+            app_url: {$wa_app_url|json_encode},
+            locales: {
+                map_check_your_key: '[`Check your key first of all <a href="{$wa_app_url}settings/">here</a>`]',
+                map_error_title: '[`Error`]',
+                map_error_message: '[`Google map error, probably key in settings is invalid.`]'
+            }
+        });
+    })(jQuery);
+    </script>
 
-</body>
+    </body>
 </html>
 
 {/strip}

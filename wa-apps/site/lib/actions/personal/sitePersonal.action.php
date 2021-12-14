@@ -87,6 +87,11 @@ class sitePersonalAction extends waViewAction
         $this->template = wa()->getAppPath($this->getTemplate(), 'site');
     }
 
+    protected function getLegacyTemplateDir()
+    {
+        return 'templates/actions/';
+    }
+
     protected function getItems($app_id, &$link = null)
     {
         if (!wa()->appExists($app_id)) {

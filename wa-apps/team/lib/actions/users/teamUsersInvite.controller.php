@@ -7,67 +7,35 @@ class teamUsersInviteController extends teamUsersNewUserController
 {
     public function execute()
     {
-        $email = $this->getEmail();
-        $error = $this->validateError($email);
-        if ($error) {
-            $this->errors[] = $error;
-            return;
-        }
-
-        $groups = $this->getGroups();
-
-        $contact_info = $this->findUserByEmail($email);
-        $error = $this->validateContact($contact_info);
-        if ($error) {
-            $this->errors[] = $error;
-            return;
-        }
-
-        $this->invite($email, $groups, $contact_info);
+        $this->invite($this->getEmail(), $this->getGroups());
     }
 
-    public function invite($email, $groups, $contact_info)
+    public function invite($email, $groups)
     {
-        $data = array('full_access' => false);
-        if ($groups) {
-            $data_groups = array();
-            foreach ($groups as $id) {
-                if (teamHelper::hasRights('manage_group.'.$id)) {
-                    $data_groups[] = $id;
-                }
-            }
-            $data['groups'] = $data_groups;
-        }
-        if ($contact_info) {
-            $token = teamUser::createContactToken($contact_info['id'], $data);
+        $result = (new teamUserInvitingByEmail($email, ['groups' => $groups]))->invite();
+
+        if (!$result['status']) {
+            $this->onFailedInviting($result);
         } else {
-            $token = teamUser::createContactByEmail($email, $data);
+            $this->onSuccessInviting($result);
         }
-        if (!$token) {
+    }
+
+    protected function onFailedInviting(array $result)
+    {
+        if ($result['details']['error'] === 'token_not_created') {
             throw new waException('Something not found');
         }
-        try {
-            $hours = ceil((strtotime($token['expire_datetime']) - time()) / 3600);
-            $locale = !empty($contact_info['locale']) ? $contact_info['locale'] : wa()->getLocale();
-            teamHelper::sendEmailSimpleTemplate(
-                $email,
-                'welcome_invite',
-                array(
-                    '{LOCALE}'       => $locale,
-                    '{CONTACT_NAME}' => htmlentities(wa()->getUser()->getName(),ENT_QUOTES,'utf-8'),
-                    '{CONTACT_ID}'   => $token['contact_id'],
-                    '{COMPANY}'      => htmlentities(wa()->accountName(),ENT_QUOTES,'utf-8'),
-                    '{LINK}'         => waAppTokensModel::getLink($token),
-                    '{HOURS_LEFT}'   => $hours.' '._ws('hour', 'hours', $hours),
-                ) // , wa()->getUser()->get('email', 'default')
-            );
-        } catch (waException $e) {
-        }
-        $this->logAction('user_invite', null, $token['contact_id']);
 
+        $this->errors[] = $result['details']['error'];
+    }
+
+    protected function onSuccessInviting(array $result)
+    {
+        $this->logAction('user_invite', null, $result['details']['contact_id']);
         $this->response = array(
-            'contact_id'  => $token['contact_id'],
-            'contact_url' => wa()->getUrl().'id/'.$token['contact_id'].'/',
+            'contact_id'  => $result['details']['contact_id'],
+            'contact_url' => wa()->getUrl().'id/'.$result['details']['contact_id'].'/',
         );
     }
 }

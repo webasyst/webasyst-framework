@@ -9,6 +9,7 @@ class siteLoginAction extends waLoginAction
         $this->setThemeTemplate('login.html');
         try {
             parent::execute();
+            $this->saveReferer();
         } catch (waException $e) {
             if ($e->getCode() == 404) {
                 $this->view->assign('error_code', $e->getCode());
@@ -22,7 +23,7 @@ class siteLoginAction extends waLoginAction
 
     protected function redirectAfterAuth()
     {
-        if (waRequest::get('return')) {
+        if (waRequest::get('return') || $this->isJsonMode()) {
             $url = $this->getStorage()->get('auth_referer');
             if ($url) {
                 $this->getStorage()->del('auth_referer');

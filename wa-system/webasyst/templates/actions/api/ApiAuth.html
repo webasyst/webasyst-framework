@@ -13,15 +13,15 @@
         <ul class="thumbs align-center">
             {foreach $scope as $app}
             <li>
-                <img src="{$wa_url}{$app.icon.48}" /><br>
+                <img src="{$wa_url}{$app.icon.48}" style="max-width: 48px; max-height: 48px;" /><br>
                 {$app.name}
             </li>
             {/foreach}
-        </ul> 
+        </ul>
         <form method="post" action="">
                 {$wa->csrf()}
                 <div class="large align-center">
-                    <input type="submit" name="approve" value="[s`Allow`]" class="button green wa-login-submit" id="wa-login-submit">
+                    <input type="submit" name="approve" value="[s`Allow`]" class="button wa-login-submit" id="wa-login-submit">
                     &nbsp;[s`or`]&nbsp;
                     <a href="#" id="deny" name="deny">[s`deny`]</a>
                 </div>

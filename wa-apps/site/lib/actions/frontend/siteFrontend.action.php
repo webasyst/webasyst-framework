@@ -6,6 +6,8 @@ class siteFrontendAction extends waPageAction
     {
         $page = $this->params;
         if ($page && is_array($page)) {
+            $this->setLastModified($page);
+
             $params = waRequest::param();
             foreach ($params as $k => $v) {
                 if (in_array($k, array('url', 'module', 'action'))) {
@@ -19,7 +21,7 @@ class siteFrontendAction extends waPageAction
             $this->view->assign('page', $page);
 
             // set response
-            if (!$this->getResponse()->getTitle()) {
+            if (!$this->getResponse()->getTitle() && isset($page['title'])) {
                 $this->getResponse()->setTitle($page['title']);
             }
             $this->getResponse()->setMeta(array(
@@ -30,11 +32,14 @@ class siteFrontendAction extends waPageAction
             $this->view->assign('breadcrumbs', $this->getBreadcrumbs($page));
             $this->setThemeTemplate('page.html');
         } else {
+
+            $error_message = '';
+
             // show exception
             if ($this->params instanceof Exception) {
                 $e = $this->params;
                 $code = $e->getCode();
-                $this->view->assign('error_message', $e->getMessage());
+                $error_message = $e->getMessage();
             } else {
                 $code = 404;
             }
@@ -42,13 +47,20 @@ class siteFrontendAction extends waPageAction
             if ($code < 600 && $code >= 400) {
                 $this->getResponse()->setStatus($code);
                 if ($code == 404) {
-                    $this->getResponse()->setTitle('404. '._ws("Page not found"));
-                    $this->view->assign('error_message', _ws("Page not found"));
+                    if ($this->getConfig()->getCurrentUrl() == wa()->getAppUrl(null, true)
+                        && (empty($page['id']) && empty($page['content']))
+                    ) {
+                        $this->getResponse()->setTitle(_w("Homepage"));
+                    } else {
+                        $this->getResponse()->setTitle('404. ' . _ws("Page not found"));
+                        $error_message = _ws("Page not found");
+                    }
                 }
             } else {
                 $this->getResponse()->setStatus(500);
             }
 
+            $this->view->assign('error_message', $error_message);
             $this->view->assign('error_code', $code);
             $this->setThemeTemplate('error.html');
             $this->view->assign('page', array());
@@ -60,14 +72,16 @@ class siteFrontendAction extends waPageAction
         $page_model = new sitePageModel();
         $breadcrumbs = array();
         $root_url = wa()->getAppUrl(null, true);
-        $root_page_id = $page['id'];
-        while ($page['parent_id']) {
-            $page = $page_model->getById($page['parent_id']);
-            $breadcrumbs[] = array(
-                'url' => $root_url.$page['full_url'],
-                'name' => $page['name'] ? $page['name'] : $page['title']
-            );
-            $root_page_id = $page['id'];
+        $root_page_id = ifset($page, 'id', null);
+        if (isset($page['parent_id'])) {
+            while ($page['parent_id']) {
+                $page = $page_model->getById($page['parent_id']);
+                $breadcrumbs[] = array(
+                    'url' => $root_url . $page['full_url'],
+                    'name' => $page['name'] ? $page['name'] : $page['title']
+                );
+                $root_page_id = $page['id'];
+            }
         }
         $this->view->assign('root_page_id', $root_page_id);
         return array_reverse($breadcrumbs);

@@ -10,7 +10,7 @@ class webasystSettingsTemplateSMSSidebarAction extends webasystSettingsTemplateA
             $this->channel = new waVerificationChannelNull();
         }
 
-        $this->setTemplate('templates/actions/settings/sidebar/SidebarSMS.html');
+        $this->setTemplate('settings/sidebar/SidebarSMS.html', true);
 
         $this->view->assign(array(
             'channel'  => $this->channel,

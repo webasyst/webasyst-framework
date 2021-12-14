@@ -53,6 +53,7 @@
     <meta name="keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="description" content="{$wa->meta('description')|escape}" />
 
+    <link rel="icon" href="/favicon.ico"/>
     <link rel="shortcut icon" href="/favicon.ico"/>
     {if $wa->blog}
         <!-- rss -->
@@ -62,27 +63,32 @@
 
     <!-- css -->
     <link href="{$wa_theme_url}vk.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
 
     <!-- js -->
     <script src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+
     <!-- vk iframe apps js -->
+    <script src="{$wa_theme_url}vk.bridge.js?v{$wa_theme_version}"></script>
+
     <!-- internal shop-script js for vk iframe app integration -->
     <script>
-        ( function($) {
+        // Sends event to client
+        vkBridge.send('VKWebAppInit');
+
+        (function ($) {
             window.waTheme = {
                 getFrameSources: getFrameSources
             };
 
             function getFrameSources() {
-                var deferred = $.Deferred(),
-                    is_frame = isFrame();
+                var deferred = $.Deferred();
+                var is_frame = isFrame();
 
                 if (is_frame) {
-                    $.getScript("//vk.com/js/api/xd_connection.js?2", function() {
+                    $.getScript("//vk.com/js/api/xd_connection.js?2", function () {
                         if (window.VK) {
-                            $.getScript("{$wa_theme_url}vk.js?v{$wa_theme_version}", function() {
+                            $.getScript("{$wa_theme_url}vk.js?v{$wa_theme_version}", function () {
                                 deferred.resolve(window.VK);
                             });
                         }

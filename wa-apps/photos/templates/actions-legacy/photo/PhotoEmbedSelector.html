@@ -1,0 +1,178 @@
+<style>
+#photo-embedded-selector .content.left200px { overflow-y: auto; max-height: 600px; }
+#photo-embedded-selector .thumbs.li100px li { overflow: hidden; width: 104px; padding-left: 4px; }
+#photo-embedded-selector .thumbs.li100px li img { width: 96px; height: 96px; }
+#photo-embedded-selector .thumbs.li100px li .p-image { text-align: center; padding: 4px; margin-let: -4px; overflow: visible; }
+#photo-embedded-selector .thumbs.li100px li .p-details label { margin-top: -3px !important; }
+#photo-embedded-selector .thumbs.li100px li.selected .p-details label strong { background: #fdda3b; }
+#photo-embedded-selector .album-list a .count { display: none; }
+#photo-embedded-selector .empty-album { margin-top: 50px; color: #aaa; text-align: center; }
+#photo-embedded-selector img.p-app16x16icon-menu-v { width: 16px; height: 16px; position: absolute; left: 2px; }
+</style>
+<div id="photo-embedded-selector">
+    <div class="sidebar left200px">
+        <div class="block">
+            {if $app_albums}
+                <div class="hierarchical">
+                <ul class="menu-v with-icons">
+                    {foreach $app_albums as $item}
+                        <li>
+                            <span class="count">{$item.count}</span>
+                            <a href="#/app/{$item.id}/">
+                                <img class="p-app16x16icon-menu-v" src="{$item.icon}">
+                                {$item.name}
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+                </div>
+            {/if}
+        </div>
+        <div class="block">
+            <div class="hierarchical album-list">
+                {$albums_tree_html}
+            </div>
+        </div>
+    </div>
+    <div class="content left200px">
+        <div class="block">
+        <ul class="thumbs li100px">
+        {foreach $photos as $p}
+            <li data-photo-id="{$p.id}">
+                <div class="photo-wrapper">
+                    <div class="p-image">
+                        <img src="{$p.thumb_crop.url}">
+                    </div>
+                    <div class="p-details">
+                        <label>
+                            <input type="checkbox" name="photo_id[]" value="{$p.id}" data-photo-url="{$p.thumb_big.url}">
+                            <strong>{$p.name|escape}</strong>
+                        </label>
+                    </div>
+                    {if $p.description}
+                        <div class="p-description small">{$p.description|escape|truncate:100}</div>
+                    {/if}
+                </div>
+            </li>
+        {foreachelse}
+            <p class="empty-album">[`There are no photos in this album.`]</p>
+        {/foreach}
+        </div>
+    </div>
+</div>
+
+<script>(function() { "use strict";
+
+    var app_url = '{$wa_app_url|escape:js}';
+    var $wrapper = $('#photo-embedded-selector');
+    var $photos_selector_wrapper = $('#photo-embedded-selector').parent();
+    var $sidebar = $wrapper.find('.sidebar:first');
+    var $content = $sidebar.siblings('.content');
+    var $ul = $wrapper.find('ul.thumbs');
+
+    // Load another album when user clicks on a link in sidebar
+    $sidebar.on('click', 'a', function() {
+        return loadSelector($(this));
+    });
+
+    // Highlight active album in sidebar
+    $sidebar.find('a[href="{$hash|escape:js}"]').closest('li').addClass('selected');
+
+    // Highlight selected rows when user clicks on them
+    $ul.on('change', 'input:checkbox', function() {
+        if (this.checked) {
+            $(this).closest('li').addClass('selected');
+        } else {
+            $(this).closest('li').removeClass('selected');
+        }
+    });
+
+    var sidebar_height = $sidebar.height();
+    if (sidebar_height > ($content.css('max-height') || '0').replace('px', '')) {
+        $content.css('max-height', ''+sidebar_height+'px');
+    }
+
+    // Shift+click on an image selects all between this one and previous one clicked
+    var $last_li_checked = null;
+    var $last_li_unchecked = null;
+    $ul.on('click', 'li', function(e) {
+        var $li = $(this);
+        var $checkbox = $li.find('input:checkbox');
+        var new_status;
+        if ($checkbox.is(e.target)) {
+            new_status = $checkbox.prop('checked');
+        } else {
+            new_status = !$checkbox.prop('checked');
+            $checkbox.prop('checked', new_status).change();
+        }
+
+        if (new_status) {
+            if (e.shiftKey && $last_li_checked) {
+                setCheckedBetween($last_li_checked, $li, true);
+            }
+            $last_li_checked = $li;
+            $last_li_unchecked = null;
+        } else {
+            if (e.shiftKey && $last_li_unchecked) {
+                setCheckedBetween($last_li_unchecked, $li, false);
+            }
+            $last_li_checked = null;
+            $last_li_unchecked = $li;
+        }
+    });
+    function setCheckedBetween($from, $to, status) {
+        if (!$from || !$to || !$from[0] || !$to[0] || $from.is($to[0])) {
+            return;
+        }
+
+        var is_between = false;
+        $to.parent().children().each(function(i, el) {
+            if (!is_between) {
+                if ($from.is(el) || $to.is(el)) {
+                    is_between = true;
+                }
+            } else {
+                if ($from.is(el) || $to.is(el)) {
+                    return false;
+                }
+                var $checkbox = $(el).find('input:checkbox');
+                if ($checkbox.prop('checked') != status) {
+                    $checkbox.prop('checked', status).change();
+                }
+            }
+        });
+    }
+
+    // Helper to load another album when user clicks on a link in sidebar
+    function loadSelector($a)
+    {
+        var hash = $a.attr('href');
+        if (!hash || typeof hash != 'string') {
+            return;
+        }
+
+        var get_params = {
+            module: 'photo',
+            action: 'embedSelector'
+        };
+        if (hash.substr(0, 6) == '#/app/') {
+            get_params.app_id = hash.substr(6).split('/')[0];
+        } else if (hash.substr(0, 8) == '#/album/') {
+            get_params.album_id = hash.substr(8).split('/')[0];
+        } else {
+            return;
+        }
+
+        $sidebar.find('.selected').removeClass('selected');
+        $a.append('<i class="icon16 loading no-overhanging"></i>').closest('li').addClass('selected');
+        $.get(app_url, get_params, function(r) {
+            $photos_selector_wrapper.html(r).trigger($.Event('reloaded', {
+                hash: hash,
+                app_id: get_params.app_id,
+                album_id: get_params.album_id
+            }));
+        });
+        return false;
+    }
+
+})();</script>

@@ -6,6 +6,6 @@ class photosFrontendLogoutController extends waController
 	{
         wa()->getAuth()->clearAuth();
 		wa()->getStorage()->remove('auth_user_data');
-		$this->redirect(waRequest::server('HTTP_REFERER'));
+        throw new waException(_w('Page not found'), 404);
 	}
 }

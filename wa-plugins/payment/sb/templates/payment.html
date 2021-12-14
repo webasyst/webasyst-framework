@@ -4,9 +4,22 @@
         <em>Перенаправление на сайт «Сбербанка» для оплаты...</em>
         <br /><br />
         <script type="text/javascript">
-            setTimeout(function () {
-                document.getElementById('payment-form').submit();
+            var sb_form = document.getElementById('payment-form');
+            var timer = setTimeout(function () {
+                sb_form.submit();
+                sb_form.querySelector('input[type="submit"]').setAttribute('disabled', 'disabled');
             }, 5000);
+            sb_form.addEventListener('submit', function() {
+                clearTimeout(timer);
+                sb_form.querySelector('input[type="submit"]').setAttribute('disabled', 'disabled');
+            });
+        </script>
+    {else}
+        <script>
+            var sb_form = document.getElementById('payment-form');
+            sb_form.addEventListener('submit', function() {
+                sb_form.querySelector('input[type="submit"]').setAttribute('disabled', 'disabled');
+            });
         </script>
     {/if}
 

@@ -792,7 +792,7 @@ $(function() {
 
         // click to photo in photo-stream
         var photo_stream = $('#photo-stream');
-        photo_stream.find('ul.photostream li').live('click', function() {
+        photo_stream.find('ul.photostream li').on('click', function() {
             var self = $(this);
             if (self.hasClass('dummy')) {
                 return false;
@@ -816,7 +816,7 @@ $(function() {
 
         // click to arrows in stack-navigation parenl
         var stack_nav = $('#stack-nav');
-        stack_nav.find('.rewind,.ff').live('click', function(e) {
+        stack_nav.find('.rewind,.ff').on('click', function(e) {
             var self = $(this);
             if (self.hasClass('ff')) {
                 var next_photo = $.photos.photo_stack_cache.getNext();

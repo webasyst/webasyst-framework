@@ -1,0 +1,27 @@
+{*
+Requirements list
+@todo adjust requirements level
+*}
+{if !empty($item.requirements)}
+    {$_warning_meets = false}
+
+    {capture assign='_warning'}
+        {if !isset($class)}{$class = "state-error-hint"}{/if}
+        {if !isset($icon)}{$icon = false}{/if}
+        <ul class="list custom-mt-4">
+            {foreach $item.requirements as $subject => $requirement}
+                {if ($requirement.warning && !$requirement.passed)}
+                    {$_warning_meets = true}
+                    <li>
+                        <p class="{if strstr($subject,'app.') == $subject}state-error-hint{else}{$class}{/if}" title="{$requirement.name|escape}">
+                            {$requirement.warning|default:$requirement.note|regex_replace:"/<[^>]+>/":" "|escape}
+                        </p>
+                    </li>
+                {/if}
+            {/foreach}
+        </ul>
+    {/capture}
+    {if $_warning_meets && $_warning}
+        {$_warning}
+    {/if}
+{/if}

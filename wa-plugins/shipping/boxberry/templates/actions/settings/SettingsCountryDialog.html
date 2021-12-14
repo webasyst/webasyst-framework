@@ -1,0 +1,137 @@
+<div class="wa-dialog s-plugin-boxberry-country-edit-dialog" id="js-country-edit-dialog">
+    <div class="wa-dialog-background"></div>
+    <div class="wa-dialog-body">
+        <form>
+            <div class="wa-dialog-header">
+                <h2 class="s-title">{$obj->_w('Countries')}</h2>
+            </div>
+            <div class="wa-dialog-content">
+
+                <ul class="s-fields-list menu-v">
+                    <li class="s-radio-wrapper is-active">
+                        <label class="s-radio-label">
+                            <input class="s-radio js-type-group-field" type="radio" name="all_countries" value="1" {if empty($selected_countries)}checked{/if}>
+                            <span class="s-text bold">{$obj->_w('All countries')}</span>
+                        </label>
+                    </li>
+                    <li class="s-radio-wrapper">
+                        <label class="s-radio-label">
+                            <input class="s-radio js-type-group-field" type="radio" name="all_countries" value="0" {if !empty($selected_countries)}checked{/if}>
+                            <span class="s-text">{$obj->_w('Selected countries only')}</span>
+                        </label>
+
+                        <ul class="s-checkbox-list menu-v" style="margin-left: 18px; {if !$selected_countries}display: none;{/if}">
+                            <li class="s-checkbox-wrapper">
+                                <label>
+                                    <input class="s-checkbox js-type-field" type="checkbox" name="selected_countries_all">
+                                    <span class="s-text bold">{$obj->_w('Choose all')}</span>
+                                </label>
+                            </li>
+                            {foreach $countries as $country}
+                                <li class="s-checkbox-wrapper">
+                                    <label>
+                                        <input class="s-checkbox js-type-field" type="checkbox" name="selected_countries[]" value="{$country.iso3letter}"
+                                               {if isset($selected_countries[$country.iso3letter])}checked{/if}
+                                        >
+                                        <i class="icon16 globe"></i>
+                                        <span class="s-text">{$country.name|escape}</span>
+                                    </label>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
+        </form>
+
+        <div class="wa-dialog-footer">
+            <button class="s-button button green js-submit-button" type="submit">[`Save`]</button>
+            <span class="s-divider">[`or`]</span>
+            <a href="javascript:void(0);" class="js-close-dialog">[`cancel`]</a>
+        </div>
+    </div>
+
+    <script>
+        var $country_dialog = $("#js-country-edit-dialog"),
+            $checkbox_list = $country_dialog.find('.s-checkbox-list'),
+            $form = $country_dialog.find("form:first");
+
+        var dialog = $country_dialog.data("dialog");
+
+        var submit_locked = false;
+
+        $country_dialog.on("change", ".js-type-group-field", function() {
+            var that = this;
+
+            // DOM
+            var $field = $(this).closest(".s-radio-wrapper"),
+                $list = $field.find('.s-checkbox-list');
+
+            // CONST
+            var active_class = "is-active";
+
+            if ($list.length) {
+                $checkbox_list.show();
+            } else {
+                $checkbox_list.hide();
+            }
+
+            $country_dialog.find('.s-radio-wrapper').each( function(i, _field) {
+                var $_field = $(_field);
+                if (_field[0] === $field[0]) {
+                    $_field.addClass(active_class);
+                } else {
+                    $_field.removeClass(active_class);
+                }
+            });
+
+            $(window).resize();
+        });
+
+        $country_dialog.on("click", ".js-submit-button", function(event) {
+            event.preventDefault();
+
+            if (!submit_locked) {
+                submit_locked = true;
+                submit()
+                    .always( function() {
+                        submit_locked = false;
+                    })
+                    .done( function(response) {
+                        if (response.status === "ok") {
+                            dialog.options.onSuccess(response);
+                            dialog.close();
+                        }
+                    });
+            }
+        });
+
+        $checkbox_list.on('change', '[name="selected_countries[]"]', function () {
+            var $selected_countries_all = $checkbox_list.find('[name="selected_countries_all"]'),
+                $selected_countries = $checkbox_list.find('[name="selected_countries[]"]');
+
+            if ($checkbox_list.find('[name="selected_countries[]"]:checked').length === $selected_countries.length) {
+                $selected_countries_all.prop('checked', true);
+            } else {
+                $selected_countries_all.prop('checked', false);
+            }
+        });
+
+        $checkbox_list.on('change', '[name="selected_countries_all"]', function () {
+           var $selected_countries = $checkbox_list.find('[name="selected_countries[]"]');
+           if ($(this).prop('checked')) {
+               $selected_countries.prop('checked', true);
+           } else {
+               $selected_countries.prop('checked', false);
+           }
+        });
+
+        function submit() {
+            var href = "{$wa_backend_url}webasyst/shipping/boxberry/settings/countriesValidate/",
+                data = $form.serializeArray();
+
+            return $.post(href, data, "json")
+        }
+    </script>
+</div>

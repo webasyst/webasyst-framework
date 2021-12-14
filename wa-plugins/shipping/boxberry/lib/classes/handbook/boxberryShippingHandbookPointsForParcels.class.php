@@ -10,7 +10,7 @@ class boxberryShippingHandbookPointsForParcels extends boxberryShippingHandbookM
      */
     protected function getCacheKey()
     {
-        return 'points_for_parcels';
+        return $this->bxb->getAddress('country') . '_points_for_parcels';
     }
 
     /**

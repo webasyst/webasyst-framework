@@ -36,14 +36,21 @@ abstract class boxberryShippingHandbookManager
     protected $data = [];
 
     /**
+     * @var boxberryShipping
+     */
+    protected $bxb = null;
+
+    /**
      * boxberryShippingHandbookManager constructor.
      * @param boxberryShippingApiManager $api_manager
      * @param array $data
+     * @param boxberryShipping $bxb
      */
-    public function __construct(boxberryShippingApiManager $api_manager, $data = [])
+    public function __construct(boxberryShippingApiManager $api_manager, $data = [], boxberryShipping $bxb = null)
     {
         $this->api_manager = $api_manager;
         $this->data = $data;
+        $this->bxb = $bxb;
     }
 
     /**

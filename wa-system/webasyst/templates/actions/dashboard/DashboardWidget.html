@@ -15,28 +15,28 @@
     <div class="widget-outer-container">
         <div class="widget-inner-container">
 
-            <div class="widget-drop-ornament"></div>
-
             <div class="widget-settings-wrapper"></div>
 
             <div class="widget-block" id="widget-{$w.id}">
                 <div class="loading-wrapper">
-                    <i class="icon16 loading"></i>
+                    <i class="fas fa-spinner fa-spin"></i>
                 </div>
             </div>
 
             <div class="widget-controls-wrapper">
 
                 <div class="delete-control-wrapper">
-                    <a class="control-item delete-widget-link" href="javascript:void(0);" title="[`Delete Widget`]" draggable="false"></a>
+                    <a class="control-item delete-widget-link" href="javascript:void(0);" title="[`Delete Widget`]" draggable="false">
+                        <i class="fas fa-times"></i>
+                    </a>
                 </div>
 
                 <div class="size-controls-wrapper">
                     {if $has_small_size}
-                        <a class="control-item set-small-size {if $is_small}is-active{/if}" href="javascript:void(0);" title="[`Set small size`]" draggable="false"></a>
+                        <a class="control-item set-small-size {if $is_small}is-active{/if}" href="javascript:void(0);" title="[`Set small size`]" draggable="false"><span></span><span></span><span></span><span></span></a>
                     {/if}
                     {if $has_medium_size}
-                        <a class="control-item set-medium-size {if $is_medium}is-active{/if}" href="javascript:void(0);" title="[`Set medium size`]" draggable="false"></a>
+                        <a class="control-item set-medium-size {if $is_medium}is-active{/if}" href="javascript:void(0);" title="[`Set medium size`]" draggable="false"><span></span><span></span><span></span></a>
                     {/if}
                     {if $has_big_size}
                         <a class="control-item set-big-size {if $is_big}is-active{/if}" href="javascript:void(0);" title="[`Set big size`]" draggable="false"></a>
@@ -45,14 +45,10 @@
 
                 {if $has_settings}
                     <div class="settings-control-wrapper">
-                        <a class="control-item show-settings-link inline-link" href="javascript:void(0);" title="[`Show settings`]" draggable="false"><b><i>[`Settings`]</i></b></a>
+                        <a class="control-item show-settings-link bold" href="javascript:void(0);" title="[`Show settings`]" draggable="false"><i class="fas fa-cog" style="display: none"></i><span>[`Settings`]</span></a>
                     </div>
                 {/if}
 
-            </div>
-
-            <div class="widget-draggable-block" draggable="true">
-                <div class="widget-draggable-ornament" style="background-color: {$widget_color};"></div>
             </div>
         </div>
     </div>

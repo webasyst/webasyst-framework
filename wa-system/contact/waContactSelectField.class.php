@@ -77,7 +77,7 @@ class waContactSelectField extends waContactField
         $value = isset($params['value']) ? $params['value'] : '';
         $html = '<select '.$attrs.' name="'.$this->getHTMLName($params).'"><option value=""></option>';
         foreach ($this->getOptions() as $k => $v) {
-            $html .= '<option'.($k == $value ? ' selected="selected"' : '').' value="'.$k.'">'.htmlspecialchars($v).'</option>';
+            $html .= '<option'.(strlen($value) > 0 && $k == $value ? ' selected="selected"' : '').' value="'.$k.'">'.htmlspecialchars($v).'</option>';
         }
         $html .= '</select>';
         return $html;

@@ -5,7 +5,7 @@ return array(
         ),
     ),
     'currency' => array(
-        'value' => 'USD',
+        'value' => '',
     ),
     'prompt_address' =>array(
         'value'        => false,

@@ -1,0 +1,79 @@
+.t-welcome-page
+
+    .t-content-body
+        box-sizing border-box
+        width 80%
+
+        .t-invite-wrapper
+            .t-invite-list
+                margin 0
+                padding 0
+
+                & > li
+                    margin .5em 0 0
+                    padding 0
+                    list-style none
+
+                    &:first-child
+                        margin-top 0
+
+                .t-invite-item
+                    position relative
+                    padding 0 0 20px 0;
+
+                    &:hover
+                        .t-remove
+                            visibility visible
+
+                    .t-field
+                        width 250px
+                        margin 0 4px 0 0
+                        font-size 16px
+
+                    .t-error
+                        position absolute
+                        bottom 0
+                        left 0
+                        display inline-block
+
+                    .t-ibutton
+                        position relative
+                        top 3px;
+                        display inline-block
+                        margin 0 4px 0 8px
+
+                    .t-notice
+                        display inline-block
+                        margin 0 0 0 4px
+                        color #aaa
+
+                    .t-remove
+                        visibility hidden
+                        display inline-block
+                        margin 0 0 0 1em
+                        font-size (12/$rem)em
+                        color red
+                        cursor pointer
+
+                        .icon16
+                            position relative
+                            top 3px
+                            margin 0 4px 0 0
+                            vertical-align baseline
+
+            .t-actions
+                margin .5em 0 0
+
+                .t-add-invite
+                    .icon16
+                        position relative
+                        top 3px
+                        margin 0 4px 0 0
+                        vertical-align baseline
+
+    .t-footer-wrapper
+        margin 2em 0 0
+        width 70%
+
+        p
+            margin-top 1.5em

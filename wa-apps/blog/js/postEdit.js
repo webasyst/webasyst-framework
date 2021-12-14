@@ -1031,6 +1031,11 @@
                         }
                     }
 
+                    if (any_url) {
+                        any_url += any_url.indexOf('?') >= 0 ? '&' : '?';
+                        any_url += 'parent_url='+encodeURIComponent(location.origin);
+                    }
+
                     return any_url;
                 }
 

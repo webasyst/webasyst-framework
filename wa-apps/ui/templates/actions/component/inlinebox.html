@@ -1,0 +1,102 @@
+{$_title = ".inlinebox"}
+{$wa->title($_title)}
+
+
+{function name="_render_list" class=""}
+<div class="inlinebox {$class|default:""}">
+    <div>Элемент 1</div>
+    <div>
+        <a href="javascript:void(0);">Элемент 2</a>
+    </div>
+    <div>Элемент 3</div>
+    <div>
+        <a href="javascript:void(0);">Элемент 4</a>
+    </div>
+</div>
+{/function}
+
+{function name="_render_list_inline"}
+<ul class="inlinebox baseline space-20">
+    <li>Элемент 1</li>
+    <li>
+        <a href="javascript:void(0);">Элемент 2</a>
+    </li>
+    <li>
+        <div class="dropdown" id="dropdown-1">
+            <button class="dropdown-toggle button orange" type="button">.dropdown</button>
+            <div class="dropdown-body">
+                <a class="dropdown-item" href="https://www.webasyst.ru/" target="_blank">www.webasyst.ru</a>
+                <a class="dropdown-item" href="http://www.shop-script.ru/" target="_blank">www.shop-script.ru</a>
+            </div>
+            <script>
+                ( function($) {
+                    $("#dropdown-1").waDropdown();
+                })(jQuery);
+            </script>
+        </div>
+    </li>
+    <li>
+        <a href="javascript:void(0);">Элемент 4</a>
+    </li>
+</ul>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Компонент общего назначения <code>.inlinebox</code> предусматривает вывод элементов в виде inline-block списка. Рекомендуется к использованию в простых ситуациях, когда нет нужды реализовывать сложные конструкции через <a href="{$wa_app_url}component/flexbox/">.flexbox</a> или <a href="{$wa_app_url}component/tablebox/">.tablebox</a>.</p>
+    <p>Все элементы выстраиваются в горизонтальный ряд, прижимаясь по-вертикали к верхней границе блока (vertical-align: top).</p>
+    <p>
+        Для управления вертикальной позицией элементов относительно друг друга используйте доп.классы:
+        <code>.inlinebox<strong>.baseline</strong></code>
+        <code>.inlinebox<strong>.middle</strong></code>
+    </p>
+
+    <hr>
+
+    <p>Никакого специфического для бекенда Webasyst оформления этот класс не навязывает, но будет полезен в качестве структурного контейнера, содержащего разные интерфейсные компоненты внутри: заголовки, меню, кнопки, инпуты, блоки с произвольным контентом .box.</p>
+
+    <div class="u-example-section">
+        <h3><code>.inlinebox</code></h3>
+        <div class="u-example">{_render_list|strip}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render_list|escape}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.inlinebox<code>.space-16</code></h3>
+        <p>С помощью дополнительных классов <code>.inlinebox<strong>.space-XX</strong></code> добавляются внутренние отступы для дочерних элементов, где XX — значение в пикселях с шагом 4 — <code>0</code>, <code>4</code>, <code>8</code>, <code>12</code>, <code>16</code>, <code>20</code>, <code>24</code>, <strike>28</strike>, <code>32</code>, <strike>36</strike>, <code>40</code>, <strike>44</strike>, <code>48</code>. Шаг в 4 пикселя выбран исходя из соображений сохранения визуальной сетки интерфейса и практической полезности. Пиксели будут <a href="{$wa_app_url}component/typography/">пересчитаны в rem</a>.</p>
+
+        <div class="u-example">{_render_list class="space-20"|strip}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render_list|escape class="space-20"}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>ul<code>.inlinebox</code></h3>
+        <p>Класс .inlinebox использовать вместе с &lt;ul&gt;.</p>
+        <div class="u-example">{_render_list_inline}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render_list_inline|escape}</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

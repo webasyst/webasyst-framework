@@ -32,7 +32,7 @@ class webasystApiAuthAction extends waViewAction
         }
 
         if (!wa()->getUser()->get('is_user')) {
-            return $this->showError('access_denied', 'access to api is not allowed');
+            return $this->showError('access_denied', 'Access to API is denied');
         }
 
         $this->contact_id = $this->getUser()->getId();
@@ -64,6 +64,11 @@ class webasystApiAuthAction extends waViewAction
                 $apps[$app_id] = wa()->getAppInfo($app_id);
             }
         }
+
+        if (isset($apps['webasyst'])) {
+            $apps['webasyst']['icon'] = $apps['webasyst']['header_items']['settings']['icon'];
+        }
+
         if (!$apps) {
             return $this->showError('invalid_request', 'invalid scope');
         }
@@ -134,7 +139,7 @@ class webasystApiAuthAction extends waViewAction
             if ($url) {
                 $this->redirect($url.(strpos($url, '?') === false ? '?' : '&').'error=access_denied');
             } else {
-                return $this->showError('access_denied', "You've denied access to <b>".htmlspecialchars(waRequest::get('client_name')).'</b>');
+                return $this->showError('access_denied', "You've revoked API access for <b>".htmlspecialchars(waRequest::get('client_name')).'</b>');
             }
         }
     }

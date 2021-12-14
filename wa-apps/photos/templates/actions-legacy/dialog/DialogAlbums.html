@@ -1,0 +1,34 @@
+<div class="dialog width600px height400px" id="choose-albums">
+    <div class="dialog-background"></div>
+    <form method="post" action="">
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1>{if $photo}{$photo.name|escape}{else}[`Add to album`] <span class="gray">(0)</span>{/if}</h1>
+                {if !empty($albums)}
+                    {function choose_albums_menu parent=0}
+                    <ul class="menu-v with-icons">
+                        {foreach $albums as $album}
+                            {if $album.parent_id == $parent}
+                              <li>
+                                <label><i class="icon16 {if $album.type eq photosAlbumModel::TYPE_STATIC}pictures{else}funnel{/if}"></i>
+                                    <input name="album_id[]" type="checkbox" value="{$album.id}" {if isset($photo_albums[$album.id])}checked="checked"{/if} id="choose-albums-checkbox-{$album.id}" {if $album.type neq photosAlbumModel::TYPE_STATIC} disabled="disabled"{/if}> {$album.name|escape}
+                                </label>
+                                {call choose_albums_menu parent=$album.id}
+                              </li>
+                            {/if}
+                        {/foreach}
+                    </ul>
+                    {/function}
+                    {call choose_albums_menu}
+                {else}
+                    [`No one album exists`]
+                {/if}
+            </div>
+        </div>
+        <div class="dialog-buttons">
+            <input class="button green" type="submit" value="[`Save`]"> [`or`] <a class="cancel" href="#">[`cancel`]</a>
+        </div>
+    </div>
+    </form>
+</div>

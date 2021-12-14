@@ -1,0 +1,177 @@
+<section class="box contentbox">
+
+        <h1>[`Updates`]</h1>
+
+        {if $error}
+        <h2 class="state-error flexbox middle">
+            <span class="icon"><i class="fas fa-times"></i></span>
+            {$error}
+        </h2>
+        {/if}
+
+        {if !empty($messages)}
+            {foreach $messages as $message}
+                <h2 class="state-{$message.result} flexbox middle">
+                    {if $message.result == 'success'}
+                    <span class="icon"><i class="fas fa-check-circle"></i></span>
+                    {elseif $message.result == 'fail'}
+                    <span class="icon"><i class="fas fa-times-circle"></i></span>
+                    {/if}
+                    {$message.text|escape}
+                </h2>
+            {/foreach}
+        {/if}
+
+        {foreach $items as $app_id => $app}
+            {if !empty($app.update_notice)}
+                <div class="box custom-p-8 bordered-top bordered-right bordered-bottom bordered-left">
+                    {$app.update_notice}
+                </div>
+            {/if}
+        {/foreach}
+
+        <form action="?module=update&amp;action=manager" method="post" class="js-update-form">
+            {$wa->csrf()}
+            <input type="hidden" name="additional_updates" value="{if $update_counter_payware || ($update_counter_applicable<$update_counter) }1{else}0{/if}">
+
+            {if $update_counter_applicable}
+            <div class="box align-right">
+                <button type="submit" id="update_all" class="button rounded large flexbox middle nowrap">
+                    <span class="icon i-assets-spinner js-installer-assets-spinner"><i class="fas fa-spinner"></i></span>
+                    <span class="icon js-installer-assets-icon"><i class="fas fa-arrow-circle-down"></i></span>
+                    [`Install all updates`] ({$update_counter_applicable})
+                </button>
+            </div>
+            {/if}
+
+            <table class="installer-update__table">
+
+                <tbody>
+
+                {if !$update_counter }
+                    <tr>
+                        <td colspan="4" class="align-center" style="border-bottom: none; background: var(--background-color-blank) !important;">
+                            <div class="box">
+                                <p class="bold custom-mb-8">
+                                    <i class="fas fa-thumbs-up text-blue custom-mr-4"></i>
+                                    [`All apps are up to date.`]
+                                </p>
+                                <p class="hint">
+                                    {$version|string_format:"[`Webasyst Framework version <strong>%s</strong>`]"}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                {else}
+
+                    <!-- list of available updates -->
+                    {foreach $items as $app_id => $app}
+
+                        {if isset($app.applicable) ||  !empty($app.plugins) || !empty($app.themes) || !empty($app.widgets)}
+                            {include file="../update/Update.row.html" item=$app item_id=$app_id item_type='app' inline}
+                        {/if}
+
+                        {if !empty($app.plugins)}
+                            {foreach $app.plugins as $item_id => $plugin}
+                                {include file="../update/Update.row.html" item=$plugin item_id=$item_id item_type='plugin' inline}
+                            {/foreach}
+                        {/if}
+
+                        {if !empty($app.themes)}
+                            {foreach $app.themes as $item_id => $theme}
+                                {include file="../update/Update.row.html" item=$theme item_id=$item_id item_type='theme' inline}
+                            {/foreach}
+                        {/if}
+
+                        {if !empty($app.widgets)}
+                            {foreach $app.widgets as $item_id => $widget}
+                                {include file="../update/Update.row.html" item=$widget item_id=$item_id item_type='widget' app=$app inline}
+                            {/foreach}
+                        {/if}
+
+                    {/foreach}
+
+                {/if}
+                </tbody>
+            </table>
+        </form>
+
+</section>
+
+<script>
+    document.title = {$title|json_encode};
+
+    {literal}
+    $(document).ready(function () {
+        $('input:hidden[name^=app_id]').each(function () {
+            $(this).attr('disabled', true);
+        });
+
+        $(':submit[id^=update_]').click(function (e) {
+            e.preventDefault();
+
+            const $this = $(this);
+
+            if ($this.hasClass('js-update-confirm')) {
+                $.waDialog.confirm({
+                    title: '<i class=\"fas fa-exclamation-triangle smaller state-error\"></i> [`Do you confirm the installation?`]',
+                    text: '[`Beta test confirm`]',
+                    success_button_title: '[`Install update`]',
+                    success_button_class: 'danger',
+                    cancel_button_title: '[`Close`]',
+                    cancel_button_class: 'light-gray',
+                    onSuccess: function() {
+                        updateApp();
+                        $this.closest('.js-update-form').submit();
+                    }
+                });
+            } else {
+                updateApp();
+                $this.closest('.js-update-form').submit();
+            }
+
+            function updateApp() {
+                var item_id = $this.attr('id').match(/^update_([\w_\-\/]+)$/);
+                    if (item_id && item_id[1]) {
+                        if (item_id[1] == 'all') {
+                        $('input:hidden:disabled[name^=app_id]').removeAttr('disabled');
+                        $('input:hidden[name="additional_updates"]').removeAttr('disabled');
+                    } else {
+                        $('input:hidden[name^=app_id][data-app="' + item_id[1].replace(/(\/)/g, '\\/') + '"]').removeAttr('disabled');
+                        $('#checkbox_' + item_id[1].replace(/(\/)/g, '\\/')).removeAttr('disabled');
+                        $('input:hidden[name="additional_updates"]').attr('disabled', 'disabled');
+                    }
+                }
+            }
+        });
+
+        {/literal}
+        //auto_submit:
+        {if !empty($smarty.request.auto_submit)}
+        {literal}
+        if ($(':submit[id^=update_]').length) {
+            var $submit= $(':submit[id="update_all"]');
+            $submit.find('.js-installer-assets-icon').hide();
+            $submit.find('.js-installer-assets-spinner').addClass('-active');
+            $submit.after('<i class="icon16 loading"></i>');
+            setTimeout(function () {
+                $submit.click()
+            }, 5000);
+        }
+        {/literal}
+        {/if}
+        {literal}
+
+        $('.js-changelog-more').on('click', function (e) {
+            e.preventDefault();
+
+            $(this).closest('.js-changelog-container').find('.js-changelog').removeClass('hidden');
+            $(this).hide();
+        });
+
+        $('.js-update-tooltip').waTooltip({
+            template: '#update-beta-notice'
+        });
+    });
+    {/literal}
+</script>

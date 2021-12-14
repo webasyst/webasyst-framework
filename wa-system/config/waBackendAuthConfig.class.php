@@ -105,7 +105,7 @@ class waBackendAuthConfig extends waAuthConfig
                 'verification_channel_ids',
                 'used_auth_methods',
                 'rememberme',
-                'phone_transform_prefix'
+                'phone_transform_prefix',
             );
             $methods = array();
             foreach ($keys as $k) {

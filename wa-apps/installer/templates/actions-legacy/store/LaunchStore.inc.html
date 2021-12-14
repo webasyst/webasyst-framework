@@ -1,0 +1,21 @@
+{strip}
+<style>
+    .i-store-wrapper {
+        position: relative;
+        min-height: 50vh;
+    }
+    .i-loading-wrapper {
+        width: 100px;
+        height: 100px;
+        background: url("{$wa_app_static_url}img/icons/spinner.gif") no-repeat;
+        background-size: 100px 100px !important;
+        cursor: default;
+        opacity: 0.5;
+        position: absolute;
+        top: calc(50% - 50px);
+        left: calc(50% - 50px);
+    }
+</style>
+
+<div class="i-loading-wrapper js-loading-wrapper"></div>
+{/strip}

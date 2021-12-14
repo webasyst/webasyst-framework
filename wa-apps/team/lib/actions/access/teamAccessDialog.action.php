@@ -72,6 +72,18 @@ class teamAccessDialogAction extends waViewAction
             $result['limited']['is_active'] = true;
         }
 
+        // Which access level is inherited from group?
+        foreach ($result as $res) {
+            $result[$res['id']]['is_group_inherited'] = false;
+        }
+        if (empty($group_rights['backend'])) {
+            $result['no']['is_group_inherited'] = true;
+        } elseif ($group_rights['backend'] > 1) {
+            $result['full']['is_group_inherited'] = true;
+        } else {
+            $result['limited']['is_group_inherited'] = true;
+        }
+
         // Some access levels can be disabled if inherited from groups
         if (!empty($group_rights['backend'])) {
             $result['no']['is_disabled'] = _w('This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user.');
@@ -79,6 +91,9 @@ class teamAccessDialogAction extends waViewAction
                 $result['limited']['is_disabled'] = _w('This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user.');
             }
         }
+
+        // Get UI before switch to app
+        $ui = wa()->whichUI();
 
         // Respect app's custom rights config
         $class_name = wa($app['id'])->getConfig()->getPrefix()."RightConfig";
@@ -101,7 +116,9 @@ class teamAccessDialogAction extends waViewAction
             }
 
             // Prepare the result
-            $result['limited']['custom_html_form'] = $right_config->getHTML($rights, $group_rights);
+            $result['limited']['custom_html_form'] = ($ui == '2.0') ? 
+                $right_config->getUI20HTML($rights, $group_rights) : 
+                $right_config->getHTML($rights, $group_rights);
 
             // Return active app back
             wa('team', 1);

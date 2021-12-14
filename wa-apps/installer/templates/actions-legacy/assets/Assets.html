@@ -1,0 +1,105 @@
+<section class="i-assets js-assets">
+    <div class="shadowed">
+
+        {if !empty($messages)}
+            {foreach $messages as $message}
+                <div class="block double-padded i-message-{$message.result}">
+                    {if $message.result == 'success'}
+                        <i class="fas fa-check-circle"></i>
+                    {elseif $message.result == 'fail'}
+                        <i class="fas fa-times-circle"></i>
+                    {/if}
+                    {$message.text|escape}
+                </div>
+            {/foreach}
+        {/if}
+
+        <table class="zebra i-updates" id="i-assets-list">
+            <thead>
+            <tr>
+                <th class="min-width"></th>
+                <th>[`Application`]</th>
+                <th>[`Version`]</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <!-- list of available updates -->
+            {foreach $items as $app_id => $app}
+
+                {if empty($app.virtual) || !empty($app.plugins)}
+                    {include file="./Assets.row.html" item=$app item_id=$app_id item_type='app' inline}
+                {/if}
+
+                {if !empty($app.plugins)}
+                    {foreach $app.plugins as $item_id => $plugin}
+                        {include file="./Assets.row.html" item=$plugin item_id=$item_id item_type='plugin' inline}
+                    {/foreach}
+                {/if}
+
+                {if !empty($app.themes)}
+                    {foreach $app.themes as $item_id => $theme}
+                        {if $item_id !='default'}
+                            {include file="./Assets.row.html" item=$theme item_id=$item_id item_type='theme' inline}
+                        {/if}
+                    {/foreach}
+                {/if}
+
+                {if !empty($app.widgets)}
+                    {foreach $app.widgets as $item_id => $widget}
+                        {include file="./Assets.row.html" item=$widget item_id=$item_id item_type='widget' app=$app inline}
+                    {/foreach}
+                {/if}
+
+            {/foreach}
+
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script type="text/javascript">
+    document.title = {$title|json_encode};
+
+    $('#i-assets-list a.js-remove-item').click(function () {
+        var $link = $(this);
+        if (confirm($link.data('confirm'))) {
+            $link.parent('li').find('form:first').submit();
+        }
+        return false;
+    });
+    $('#i-assets-list a.js-switch-item').click(function () {
+        var $link = $(this);
+        var url = $link.data('url');
+        var data = $link.data('data');
+        $link.data('url', null);
+        $link.find('.icon16').removeClass('pause play').addClass('loading');
+        if (url) {
+            $.post(url, data, function (data, textStatus) {
+                if (data.status == 'ok') {
+                    $link.find('.icon16').removeClass('pause play loading').addClass('yes');
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1000);
+
+                } else {
+                    var message = '';
+                    if (data.errors) {
+                        for (var i = 0; i < data.errors.length; i++) {
+                            message = (message ? (message + ' ') : '') + data.errors[i][0];
+                        }
+                    } else {
+                        message = textStatus;
+                    }
+                    $link.parent().text(message)
+                }
+
+            });
+        }
+        return false;
+    });
+
+
+    //-->
+</script>

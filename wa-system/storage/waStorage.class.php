@@ -55,4 +55,16 @@ abstract class waStorage
     {
         $this->write($key, $data);
     }
+
+    /**
+     * Get value and delete it right away
+     * @param $key
+     * @return mixed
+     */
+    public function getOnce($key)
+    {
+        $value = $this->get($key);
+        $this->del($key);
+        return $value;
+    }
 }

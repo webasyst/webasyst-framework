@@ -1,0 +1,302 @@
+{*
+ * Default template for $wa->contactProfileSidebar() helper.
+ *
+ * Can be copied for customization to
+ * wa-config/apps/webasyst/ProfileSidebar.html
+ *}
+{if $is_profile_sidebar}
+    {$widget_path = "`$app_path`/templates/actions/profile/sidebarWidgets/Calendar.html"}
+    {$schedule_path = "`$app_path`/templates/actions/schedule/Schedule.inc.html"}
+    <section class="t-profile-sidebar-section js-sidebar-calendar custom-mb-16" data-section="calendar">
+        <div class="t-profile-sidebar-title flexbox middle">
+            <a href="javascript:void(0);"
+               class="large bold js-sidebar-profile-dialog"
+               data-dialog-header="[`Calendar`]"
+               data-dialog-width="1000px"
+               data-section-id="calendar">
+                [`Calendar`]
+            </a>
+            <a href="javascript:void(0);" class="text-light-gray custom-ml-auto js-show-outer-calendar-manager"><i class="fas fa-cog"></i></a>
+        </div>
+        {if file_exists($widget_path)}
+            {include file=$widget_path inline}
+        {/if}
+        {if file_exists($schedule_path) && !$is_profile_drawer}
+            <div class="js-calendar-html" style="display: none">
+                {include file=$schedule_path context='profile' inline}
+            </div>
+        {/if}
+    </section>
+    {foreach $sections as $section_id => $section}
+        {if $section_id !== 'stats'}{continue}{/if}
+        <section class="t-profile-sidebar-section js-sidebar-{$section_id|escape}{if !empty($section.html)} custom-mb-16{/if}" data-section="{$section_id|escape}">
+            <a href="javascript:void(0);"
+               class="t-profile-sidebar-title large bold js-sidebar-profile-dialog"
+               data-url="{$section.url|default:''}"
+               data-dialog-header="{$section.title|escape}"
+               data-dialog-width="1000px"
+               data-section-id="{$section_id|escape}">
+                {$section.title}
+                {if !empty($section.count)}
+                    <span class="count small text-light-gray">{$section.count}</span>
+                {/if}
+            </a>
+            {if !empty($section.html)}
+                {$section.html}
+            {/if}
+            </section>
+    {/foreach}
+    {foreach $sections as $section_id => $section}
+        {if $section_id === 'stats' || $section_id === 'access'}{continue}{/if}
+        <section class="t-profile-sidebar-section js-sidebar-{$section_id|escape}{if !empty($section.html)} custom-mb-16{/if}" data-section="{$section_id|escape}">
+            <a href="javascript:void(0);"
+               class="t-profile-sidebar-title large bold js-sidebar-profile-dialog"
+               data-url="{$section.url|default:''}"
+               data-dialog-header="{$section.title|escape}"
+               data-dialog-width="1000px"
+               data-section-id="{$section_id|escape}">
+                {$section.title}
+                {if !empty($section.count)}
+                    <span class="count small text-light-gray">{$section.count}</span>
+                {/if}
+            </a>
+            {if !empty($section.html)}
+                {$section.html}
+            {/if}
+        </section>
+    {/foreach}
+{else}
+    {$section_id = $options.sectionId|default:''}
+    {if $section_id && isset($sections[$section_id])}
+        {$section = $sections[$section_id]}
+        {$section_url = $section.url|default:''}
+
+        <div id="t-profile-section-iframe-{$uniqid}" class="t-profile-section-iframe height-100"></div>
+        <div class="hidden" id="t-profile-section-layout-html-{$uniqid}">
+            {include file=$profile_content_layout_template assign=layout_html}
+            {$layout_html|escape}
+        </div>
+        {strip} {* strip need for js *}
+            <div class="hidden" id="t-profile-section-html-{$uniqid}">
+                {if !empty($sections[$section_id].html) && empty($section.url)}
+                    {$section.html|escape}
+                {/if}
+            </div>
+        {/strip}
+
+        <script>
+            new class ProfileSidebarSection {
+                constructor() {
+                    const that = this;
+
+                    that.$iframe_wrapper = $('#t-profile-section-iframe-{$uniqid}') || null;
+                    that.$layout_html = $('#t-profile-section-layout-html-{$uniqid}') || null;
+                    that.$section_html = $('#t-profile-section-html-{$uniqid}') || null;
+
+                    that.dialog = { };
+                    that.section_id = '{$section_id|escape}';
+
+                    that.section_url = '{$section_url}';
+                    that.$iframe_wrapper.data('section_controller', {
+                        showSectionHtml: that.showSectionHtml,
+                        updateIframeHeight: that.updateIframeHeight,
+                        iframeLoadingState: that.iframeLoadingState
+                    });
+
+                    that.error_msg = "[`Error getting section contents.`]";
+
+                    that.init();
+                }
+
+                init() {
+                    const that = this;
+                    that.$iframe_wrapper.append('<div class="box align-center js-spinner"><div class="spinner custom-p-16"></div></div>');
+
+                    if (that.$section_html.is(':not(:empty)')) {
+                        that.showSectionHtml(that.$section_html.text());
+                        return true;
+                    }
+
+                    if (that.section_url) {
+                        $.ajax({
+                            url: that.section_url,
+                            success: result => that.showSectionHtml(result),
+                            error: function() {
+                                console.warn(that.error_msg);
+                                console.error.apply(console, arguments);
+                                that.showSectionHtml(`<p><i class="fas fa-times-circle text-red"></i> ${ that.error_msg }</p>`);
+                                return false;
+                            },
+                            dataType: 'html'
+                        });
+                    }else{
+                        // Nowhere to get contents from :(
+                        that.showSectionHtml('<p><i class="fas fa-times-circle text-red"></i> ${ that.error_msg }</p>');
+                        throw new Error(that.error_msg);
+                    }
+
+                    that
+                        .iframeLoadingState($iframe => $iframe[0].contentWindow.document.readyState === 'complete')
+                        .then($iframe => that.iframeManipulations($iframe));
+                }
+
+                reload() {
+                    const that = this;
+                    that.$iframe_wrapper.find('iframe').remove()
+                    that.$section_html.empty();
+                    that.init();
+                }
+
+                iframeManipulations($iframe) {
+                    const that = this,
+                        $iframe_node = $iframe[0],
+                        $iframe_body = $iframe_node.contentWindow.document.body;
+
+                    if(!$iframe_body) {
+                        that.init();
+                    }
+
+                    that.$iframe_wrapper.trigger('section_content_loaded');
+                    that.dialog = that.$iframe_wrapper.data('dialog');
+                    that.$iframe_wrapper.find('.js-spinner').remove();
+                    $iframe.removeClass('hidden');
+                     that.updateIframeHeight($iframe_node);
+
+                    $iframe.contents().find('html').css('background-color', 'var(--background-color-blank)');
+                    $iframe.contents().find('body').css('overflow', 'hidden');
+                    that.dialog?.resize();
+
+                    $iframe.animate({ opacity: 1 }, 400);
+
+                    // register any dom manipulation for calculate correct height of iframe
+                    new MutationObserver(mutations => {
+                        that.updateIframeHeight($iframe_node);
+                        that.dialog?.resize();
+
+                        for(const mutation of mutations) {
+                            if(mutation.attributeName === 'data-reload') {
+                                that.reload();
+                                break;
+                            }
+
+                            if(mutation.type === 'childList') {
+                                // if dialog opened into iframe
+                                const $_dialog = Array.from(mutation.addedNodes).find(node => node.classList?.contains('dialog'))
+                                if($_dialog) {
+                                    // detach dialog from iframe and append to parent window body
+                                    const $detached_dialog = $_dialog.parentElement.removeChild($_dialog);
+                                    // $detached_dialog.style.cssText = 'display:grid;place-items:center';
+                                    // $detached_dialog.querySelector('.dialog-body').style.position = 'unset';
+                                    that.dialog?.$body.append($detached_dialog)
+                                }
+                            }
+
+                            // trigger any events in iframe on parent window
+                            if(mutation.attributeName === 'data-trigger') {
+                                let trigger_data;
+                                if(mutation.target.dataset[mutation.target.dataset.trigger]) {
+                                    trigger_data = mutation.target.dataset[mutation.target.dataset.trigger]
+                                }
+                                $(document).trigger(mutation.target.dataset.trigger, trigger_data ? JSON.parse(trigger_data) : '');
+                            }
+                        }
+                    }).observe($iframe_body, { attributes: true, childList: true, subtree: true, characterData: true });
+                }
+
+                showSectionHtml(html) {
+                    const that = this;
+                    that.$iframe_wrapper.find('iframe').remove();
+
+                    // Create new iframe for the section
+                    const iframe = document.createElement('iframe');
+                    $(iframe)
+                        .addClass('height-100 width-100 hidden fuck')
+                        .css({
+                            opacity: 0,
+                            border: 0
+                        })
+                        .appendTo(that.$iframe_wrapper);
+
+                    delayWrite();
+
+                    return iframe;
+
+                    /**
+                     *  @desc Write section contents into iframe. Delaying because iframe might not be ready yet.
+                     *  Also prevents JS errors from breaking something outside the iframe,
+                     *  while still showing them in console natively.
+                     * @param times
+                     */
+                    function delayWrite(times = 0) {
+                        setTimeout(() => {
+                            if (!iframe.contentWindow.document) {
+                                if (times <= 5) delayWrite(times + 1);
+                                return;
+                            }
+
+                            iframe.contentWindow.document.open();
+                            iframe.contentWindow.document.write(
+                                that.$layout_html.text().replace(/<!--\s*%content_start%\s*-->[\s\S]*<!--\s*%content_end%\s*-->/, html)
+                        )
+                            iframe.contentWindow.document.close();
+                            that.updateIframeHeight(iframe);
+                            that.$iframe_wrapper.trigger('section_content_updated');
+                        }, times*150);
+                    }
+
+                }
+
+                /**
+                 * @desc Helper for application code to manipulate section when content is ready
+                 * @param testCallback
+                 * @returns { * }
+                 */
+                iframeLoadingState(testCallback) {
+                    const that = this;
+                    testCallback = testCallback || function() { return true; };
+                    const deferred = $.Deferred();
+                    that.$iframe_wrapper.on('section_content_updated', tryCallback);
+                    let interval = setInterval(tryCallback, 500);
+                    setTimeout(tryCallback);
+                    return deferred.promise();
+
+                    function tryCallback() {
+                        const $iframe = that.$iframe_wrapper.find('iframe');
+                        try {
+                            if (!$iframe[0].contentWindow.document || !testCallback($iframe)) {
+                                return;
+                            }
+                            that.$iframe_wrapper.off('section_content_updated', tryCallback);
+                            if (interval) {
+                                clearInterval(interval);
+                                interval = null;
+                            }
+                            setTimeout(() => deferred.resolve($iframe));
+                        } catch (e) {
+                        }
+                    }
+                }
+
+                updateIframeHeight(iframe) {
+                    try {
+                        iframe.style.height = 'auto'
+                        let body = iframe.contentWindow.document.body,
+                            html = iframe.contentWindow.document.documentElement;
+
+                        iframe.style.height = Math.max(
+                            body.scrollHeight,
+                            body.offsetHeight,
+                            html.clientHeight,
+                            html.scrollHeight,
+                            html.offsetHeight
+                        ) + 'px';
+                    } catch (e) {
+                    }
+                }
+            }
+
+            window.isProfileSidebarSection = true;
+        </script>
+    {/if}
+{/if}
+

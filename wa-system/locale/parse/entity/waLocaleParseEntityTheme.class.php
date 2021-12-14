@@ -50,7 +50,6 @@ class waLocaleParseEntityTheme extends waLocaleParseEntity
     public function getWebasystFunctionPatterns()
     {
         return [
-            self::WEBASYST_DEFAULT_PATTERN,
             self::WEBASYST_PLUGIN_PATTERN,
         ];
     }

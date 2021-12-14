@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-02-21 12:02+0300\n"
+"PO-Revision-Date: 2021-11-16 12:51+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: en\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -375,8 +375,8 @@ msgstr ""
 msgid "Please enter a filename"
 msgstr ""
 
-msgid "Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) are allowed."
-msgstr "Only Latin characters (a—z, A—Z), numbers (0—9), and the underline character (_) are allowed."
+msgid "Only Latin letters (a—z, A—Z), numbers (0—9) and underline character (_) are allowed."
+msgstr "Only Latin letters (a—z, A—Z), numbers (0—9), and the underline character (_) are allowed."
 
 msgid "File should have one of the allowed extensions:"
 msgstr "File name should have one of the allowed extensions:"
@@ -432,8 +432,8 @@ msgstr "Unknown field “%s”"
 msgid "Not an image or invalid image: "
 msgstr ""
 
-msgid "Not %s image adapter"
-msgstr "Not a %s image adapter"
+msgid "%s is not an image adapter."
+msgstr ""
 
 msgid "File must be writable: "
 msgstr ""
@@ -1417,7 +1417,7 @@ msgstr ""
 msgid "Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
 msgstr ""
 
-msgid "Ok, thanks"
+msgid "OK, thanks"
 msgstr ""
 
 msgid "Live stream collects all events from installed apps and presents them in a chronological order."
@@ -1558,6 +1558,9 @@ msgstr ""
 msgid "%s is now online"
 msgstr ""
 
+msgid "%s is now away"
+msgstr ""
+
 msgid "%s's birthday — %s"
 msgstr ""
 
@@ -1681,7 +1684,7 @@ msgstr ""
 msgid "Unknown field"
 msgstr ""
 
-msgid "To learn more details about this error, enable the debug mode in Settings app and reload this page."
+msgid "To learn more details about this error, enable the debug mode in Settings app, or change '<code>debug</code>' parameter to <code>true</code> in <em style=\"white-space: nowrap\">wa-config/config.php</em> file, and reload this page."
 msgstr ""
 
 msgid "Please contact server administrator."
@@ -1819,7 +1822,7 @@ msgstr ""
 msgid "Sender IDs"
 msgstr ""
 
-msgid "Enter sender IDs to use with this SMS gateway. A sender ID is either your phone number or up-to-11-characters text label. Enter * to use the default sender ID issued for your account by the gateway."
+msgid "Enter sender IDs, each on a separate line, to use with this SMS gateway. A sender ID is either your phone number or an up to 11 characters long text label. Enter * (asterisk) to use a default sender ID issued by the gateway for your account."
 msgstr ""
 
 msgid "password"
@@ -1943,7 +1946,7 @@ msgstr ""
 msgid "Enter an email address in “Sender” field to use DKIM."
 msgstr ""
 
-msgid "You need to install openssl php extention to use DKIM"
+msgid "You need to install PHP extension openssl to use DKIM."
 msgstr ""
 
 msgid "You need PHP version 5.3 or higher to use DKIM. Your current version is:"
@@ -1979,9 +1982,6 @@ msgstr ""
 msgid "Select how email messages must be sent by default from your Webasyst."
 msgstr ""
 
-msgid "If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section."
-msgstr ""
-
 msgid "Add email sending rule"
 msgstr ""
 
@@ -1989,6 +1989,9 @@ msgid "Sender"
 msgstr ""
 
 msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"icon10 settings\"></i> for entire template group"
+msgstr ""
+
+msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"fas fa-cog\"></i> for entire template group"
 msgstr ""
 
 msgid "Letter subject"
@@ -2012,7 +2015,7 @@ msgstr ""
 msgid "No templates"
 msgstr ""
 
-msgid "Checking the sending of Email message"
+msgid "Checking the sending of email messages"
 msgstr ""
 
 msgid "Recipient's email"
@@ -2117,10 +2120,10 @@ msgstr ""
 msgid "Delete template group?"
 msgstr ""
 
-msgid "Preview SMS-message \"<span class=\"js-template-name\"></span>\""
+msgid "Preview SMS message \"<span class=\"js-template-name\"></span>\""
 msgstr ""
 
-msgid "Checking the sending of SMS-messages"
+msgid "Checking the sending of SMS messages"
 msgstr ""
 
 msgid "Recipient's phone number"
@@ -2132,7 +2135,7 @@ msgstr ""
 msgid "Save your templates"
 msgstr ""
 
-msgid "To check the sending of SMS-messages, you must save the changes you made."
+msgid "To check the sending of SMS messages, you must save the changes you made."
 msgstr ""
 
 msgid "person"
@@ -2273,10 +2276,10 @@ msgstr ""
 msgid "A special server for sending email messages. You can send email via any SMTP server for which you have connection credentials: host, port, user name, and password. It may belong either to your web-hosting company or to a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
 msgstr ""
 
-msgid "php mail() function"
+msgid "PHP mail() function"
 msgstr ""
 
-msgid "Some web-hosting companies allow sending email message by means of this transport only. If it is required to specify additional parameters for the mail() function you can enter them in the provided text field. The default parameters are -f%s."
+msgid "Some web-hosting companies allow sending email messages by means of this transport only. If it is required to specify additional parameters for the mail() function enter them below. The default parameters are -f%s."
 msgstr ""
 
 msgid "Sendmail"
@@ -2695,7 +2698,7 @@ msgstr ""
 msgid "You have been requesting code too frequently. Try again in <strong>%s:%s</strong>."
 msgstr ""
 
-msgid "System template"
+msgid "System templates"
 msgstr ""
 
 msgid "New channel %s"
@@ -2788,7 +2791,7 @@ msgstr ""
 msgid "API key"
 msgstr ""
 
-msgid "Obtain an API key on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “JavaScript API, Geocoding API” option."
+msgid "Obtain an API key on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “<strong>JavaScript API, Geocoding API</strong>” option."
 msgstr ""
 
 msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section."
@@ -2801,7 +2804,7 @@ msgid "Design theme user manual"
 msgstr ""
 
 msgid "User support"
-msgstr ""
+msgstr "Support"
 
 msgid "Minimum 3 characters"
 msgstr ""
@@ -2875,7 +2878,7 @@ msgstr ""
 msgid "Please check in “<a href=\"%s\">%s</a>” section that email notifications based on “%s“ template are correctly sent."
 msgstr ""
 
-msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending mignt not work occasionally; e.g., due to low SMS balance."
+msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending might not work occasionally; e.g., due to low SMS balance."
 msgstr ""
 
 msgid "I'm aware"
@@ -3202,4 +3205,774 @@ msgid "Data update was never run for this plugin."
 msgstr ""
 
 msgid "Recommended data updating interval (%s) was disrupted."
+msgstr ""
+
+msgid "Sign in and connect Webasyst ID"
+msgstr ""
+
+msgid "Sign in without Webasyst ID"
+msgstr ""
+
+msgid "Sign in with"
+msgstr ""
+
+msgid "What is it?"
+msgstr ""
+
+msgid "Webasyst ID account %s is not connected to any backend user."
+msgstr ""
+
+msgid "Sign in with a login name or email address to connect the account:"
+msgstr ""
+
+msgid "Failed to get Webasyst ID account data from the Webasyst resource server."
+msgstr ""
+
+msgid "Specified password is too long."
+msgstr ""
+
+msgid "Sorry, we cannot recover a password for these contact data. Please refer to your system administrator."
+msgstr ""
+
+msgid "%s offers you to sign into %s via Webasyst ID"
+msgstr ""
+
+msgid "Unknown error from Webasyst ID server."
+msgstr ""
+
+msgid "Already bound"
+msgstr ""
+
+msgid "Invitation token is invalid."
+msgstr ""
+
+msgid "Invited contact doesn't exist."
+msgstr ""
+
+msgid "Client ID"
+msgstr ""
+
+msgid "Client secret"
+msgstr ""
+
+msgid "Anti-CSRF protection."
+msgstr ""
+
+msgid "This may be caused by a server error, or by a limitation on the allowed number of POST variables or their values size. Try to increase the values of “max_input_vars” and “post_max_size” parameters in PHP configuration or other similar parameters in you web server configuration."
+msgstr ""
+
+msgid "Specified URL already exists."
+msgstr ""
+
+msgid "Connect Webasyst ID"
+msgstr ""
+
+msgid "What is Webasyst ID?"
+msgstr ""
+
+msgid "It is your personal account in Webasyst Customer Center, via which you can quickly access Webasyst apps either in the Cloud or on your own server."
+msgstr ""
+
+msgid "With Webasyst ID, it is convenient to access your apps and data, communicate with software developers, contact Webasyst support team, and manage your Webasyst client assets such as software licenses, Cloud accounts, or domain names. It is a universal login option to use all Webasyst apps and services."
+msgstr ""
+
+msgid "How to use it?"
+msgstr ""
+
+msgid "Simply click the Webasyst login button, which will appear on your website’s backend authorization page. You won’t even need to enter a password if you recently signed into your Customer Center account."
+msgstr ""
+
+msgid "Will I be able to use again the ordinary login option, without Webasyst ID?"
+msgstr ""
+
+msgid "Yes, just enter your login name and password as usual."
+msgstr ""
+
+msgid "%s offers you to connect the Webasyst ID login option to %s. You will be able to quickly sign into your website’s backend and use Webasyst apps and services only with one secure password."
+msgstr ""
+
+msgid "for login as %s%s"
+msgstr ""
+
+msgid "<strong>Enable sign-in with Webasyst ID</strong>, a universal authorization option that unites Webasyst Customer Center and backend sign-in on your custom domains. Webasyst ID allows you to use all Webasyst apps, sites, and services, and to avoid the use of different passwords on various domains."
+msgstr ""
+
+msgid "Enable&nbsp;Webasyst&nbsp;ID on %s — it’s free and secure!"
+msgstr ""
+
+msgid "How does it work?"
+msgstr ""
+
+msgid "<strong>Upgrade your user account (%s) to Webasyst ID</strong>, a unified authorization across all Webasyst apps, sites, and services. It’s free, secure, and takes just a minute."
+msgstr ""
+
+msgid "Enable&nbsp;Webasyst&nbsp;ID for %s now!"
+msgstr ""
+
+msgid "What is Webasyst ID"
+msgstr ""
+
+msgid "1. Customer Center &rarr; Webasyst ID"
+msgstr ""
+
+msgid "Based on a Webasyst Customer Center account, Webasyst ID is a unified secure authorization option, <strong>a single password</strong> for all Webasyst apps, sites, and backends — including those that work on your own domains."
+msgstr ""
+
+msgid "2. Start using Webasyst ID"
+msgstr ""
+
+msgid "To enable Webasyst ID, simply sign in with your Webasyst Customer Center account <strong>just once</strong>. The system will connect everything automatically and will then allow you to quickly sign into your backend using your single Webasyst ID password. If you do not remember your Customer Center account details, simply <a href=\"https://www.webasyst.com/my/forgotpassword/\">recover the password</a> or <a href=\"https://www.webasyst.com/my/signup/\">create an account for free</a>."
+msgstr ""
+
+msgid "3. Personal Webasyst ID for each user"
+msgstr ""
+
+msgid "If you are working together with your team then each of your teammates will be able to use their own Webasyst ID. All access rights remain unchanged while users get an option to log in with a new single password."
+msgstr ""
+
+msgid "4. Why this is useful"
+msgstr ""
+
+msgid "With Webasyst ID, it is much more convenient to use the entire Webasyst <strong>ecosystem of apps and plugins</strong>, communicate with developers and get support, manage your Webasyst customer assets such as software licenses, cloud accounts, domain names, and purchases. A single account for everything."
+msgstr ""
+
+msgid "5. Will I retain the usual login option?"
+msgstr ""
+
+msgid "Yes, you will be able to use it as before. Simply enter your user name and password as usual, without selecting the Webasyst ID login option."
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Connect"
+msgstr ""
+
+msgid "Finish"
+msgstr ""
+
+msgid "Sign-in with Webasyst ID"
+msgstr ""
+
+msgid "has been successfully connected to account"
+msgstr ""
+
+msgid "Got it"
+msgstr ""
+
+msgid "Will close in"
+msgstr ""
+
+msgid "sec"
+msgstr ""
+
+msgid "Change connection to a new user?"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Leave as it is"
+msgstr ""
+
+msgid "Sorry, login failed"
+msgstr ""
+
+msgid "Enable authorization by phone number"
+msgstr ""
+
+msgid "No SMS notifications template group is selected."
+msgstr ""
+
+msgid "National direct-dialing code (NDD)"
+msgstr ""
+
+msgid "Enter the NDD code which is used for making calls within your country."
+msgstr ""
+
+msgid "The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers."
+msgstr ""
+
+msgid "Country code"
+msgstr ""
+
+msgid "Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD."
+msgstr ""
+
+msgid "Enable sign-in with Webasyst ID"
+msgstr ""
+
+msgid "Connecting to the Webasyst ID authentication server..."
+msgstr ""
+
+msgid "Sign-in with Webasyst ID has been enabled."
+msgstr ""
+
+msgid "Failed to connect to Webasyst ID authentication server."
+msgstr ""
+
+msgid "Disable sign-in with Webasyst ID"
+msgstr ""
+
+msgid "If you disable sign-in with Webasyst ID, all configured user associations with Webasyst ID accounts will be deleted. Users will not be able to sign into the backend with Webasyst ID."
+msgstr ""
+
+msgid "Sign-in with Webasyst ID has been disabled."
+msgstr ""
+
+msgid "Failed to disable sign-in with Webasyst ID."
+msgstr ""
+
+msgid "Disable Webasyst ID for everyone"
+msgstr ""
+
+msgid "Image processing library"
+msgstr ""
+
+msgid "not installed"
+msgstr ""
+
+msgid "Disable Webasyst ID sign-in for all users"
+msgstr ""
+
+msgid "<strong>Sign-in with Webasyst ID</strong> is a universal authorization option that unites Webasyst Customer Center and sign-in to Webasyst backends on your own domains."
+msgstr ""
+
+msgid "Webasyst ID allows you to use all Webasyst apps, sites, and services, and to avoid the use of different passwords on various domains."
+msgstr ""
+
+msgid "Pending upgrade to Webasyst ID"
+msgstr ""
+
+msgid "Sending invitations. Please don’t leave this page until the process is completed."
+msgstr ""
+
+msgid "Awaiting the user to confirm"
+msgstr ""
+
+msgid "Enable Webasyst ID for my account now"
+msgstr ""
+
+msgid "Email upgrade instructions"
+msgstr ""
+
+msgid "Email again"
+msgstr ""
+
+msgid "An invitation has been sent"
+msgstr ""
+
+msgid "User email is unknown."
+msgstr ""
+
+msgid "Successfully upgraded to Webasyst ID:"
+msgstr ""
+
+msgid "all users!"
+msgstr ""
+
+msgid "Webasyst ID"
+msgstr ""
+
+msgid "Last sign-in with Webasyst ID"
+msgstr ""
+
+msgid "Allow users to use their Webasyst ID accounts to sign into the backend:"
+msgstr ""
+
+msgid "Enable Webasyst ID"
+msgstr ""
+
+msgid "and email invitations to users for fast upgrade"
+msgstr ""
+
+msgid "Should the sending of email invitations fail, users will still see a notification with an upgrade link in the backend. Users will also have the option to enable or disable the sign-in with Webasyst ID in their profiles."
+msgstr ""
+
+msgid "%sRead more%s."
+msgstr ""
+
+msgid "%d user"
+msgid_plural "%d users"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Disconnect Webasyst ID account"
+msgstr ""
+
+msgid "Association with Webasyst ID account will be deleted. The user will not be able to sign into the backend with Webasyst ID."
+msgstr ""
+
+msgid "The user will be able to connect a Webasyst ID account again at any time."
+msgstr ""
+
+msgid "Disconnect"
+msgstr ""
+
+msgid "Enable sign in with"
+msgstr ""
+
+msgid "Go to the Webasyst Customer Center"
+msgstr ""
+
+msgid "User revoked permission to log into the Webasyst Customer Center"
+msgstr ""
+
+msgid "Failed to log into the Webasyst Customer Center"
+msgstr ""
+
+msgid "Please refer to your system administrator."
+msgstr ""
+
+msgid "Database indices and AUTO_INCREMENT repair tool"
+msgstr ""
+
+msgid "Restoring of missing database indices and AUTO_INCREMENT values"
+msgstr ""
+
+msgid "Table name"
+msgstr ""
+
+msgid "Query"
+msgstr ""
+
+msgid "Fix selected tables"
+msgstr ""
+
+msgid "Indices and AUTO_INCREMENT values will be restored <strong>only for selected tables</strong>."
+msgstr ""
+
+msgid "Fix all listed tables"
+msgstr ""
+
+msgid "Indices and AUTO_INCREMENT values will be restored for <strong>all tables listed on this page</strong>."
+msgstr ""
+
+msgid "Update all database tables"
+msgstr ""
+
+msgid "Indices and AUTO_INCREMENT values will be <strong>removed and restored for all tables in the database</strong>."
+msgstr ""
+
+msgid "No errors found."
+msgstr ""
+
+msgid "User not found."
+msgstr ""
+
+msgid "The system sender email address is not configured. Save it in “<a href=\"%s\">Email settings</a>” section."
+msgstr ""
+
+msgid "Sending failure."
+msgstr ""
+
+msgid "%d invitation email has been sent."
+msgid_plural "%d invitation emails have been sent."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Saving error"
+msgstr ""
+
+msgid "Enter digits only"
+msgstr ""
+
+msgid "Unknown error"
+msgstr ""
+
+msgid "This is a custom file and it will not be affected by the update."
+msgstr ""
+
+msgid "%d more non-modified file"
+msgid_plural "%d more non-modified files"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%s and %d more unmodified file"
+msgid_plural "%s and %d more unmodified files"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "The design theme preview will not work on your domain name <strong id=\"wa-preview-domain\"></strong> if it is not available via HTTPS protocol. If so then please either install an SSL certificate for your domain name or log into your Webasyst backend on that domain to preview a design theme."
+msgstr ""
+
+msgid "This design theme does not have its own settings. Try to export the parent theme’s settings."
+msgstr ""
+
+msgid "A password cannot be empty."
+msgstr ""
+
+msgid "Unknown authorization error. Sign in with a login and a password."
+msgstr ""
+
+msgid "Webasyst ID account <i class=\"icon16 userpic20\" style=\"background-image: url(%s);\"></i> <strong>%s</strong> is already connected to user <i class=\"icon16 userpic20\" style=\"background-image: url(%s);\"></i> <strong>%s</strong>"
+msgstr ""
+
+msgid "If you need to change the connection of your Webasyst ID account to user <strong>%s</strong>, press “Confirm”."
+msgstr ""
+
+msgid "All-new Webasyst 2 UI"
+msgstr ""
+
+msgid "beta"
+msgstr ""
+
+msgid "This app supports the brand new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can go back to the classic UI any time."
+msgstr ""
+
+msgid "Turn on the new UI"
+msgstr ""
+
+msgid "http://2.webasyst.com"
+msgstr ""
+
+msgid "learn more about Webasyst 2"
+msgstr ""
+
+msgid "Thank you for checking out the newest Webasyst 2 user interface (beta)!"
+msgstr ""
+
+msgid "This is a fully functional version of this app in the new style. We encourage you to use the new UI in full and <a href=\"%s\" target=\"_blank\">share your feedback %s</a> with us in case of any issues."
+msgstr ""
+
+msgid "https://support.webasyst.com"
+msgstr ""
+
+msgid "Back to the classic UI"
+msgstr ""
+
+msgid "Try it in both light and dark modes:"
+msgstr ""
+
+msgid "You’ve enabled the new Webasyst 2 UI, but this app does not currently support it. Please contact the app developer to encourage upgrading the UI to the new style."
+msgstr ""
+
+msgid "New UI is not yet supported"
+msgstr ""
+
+msgid "Edit Widgets"
+msgstr ""
+
+msgid "Teams"
+msgstr ""
+
+msgid "Use the Team app to set up your team and customize access rights."
+msgstr ""
+
+msgid "No new notifications"
+msgstr ""
+
+msgid "Company logo"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Larger font, two lines"
+msgstr ""
+
+msgid "Custom colors"
+msgstr ""
+
+msgid "Color A"
+msgstr ""
+
+msgid "Color B"
+msgstr ""
+
+msgid "Gradient angle (&deg;)"
+msgstr ""
+
+msgid "Text color"
+msgstr ""
+
+msgid "%s symbols"
+msgstr ""
+
+msgid "Upload new image"
+msgstr ""
+
+msgid "My Apps"
+msgstr ""
+
+msgid "Everyone"
+msgstr ""
+
+msgid "Activity"
+msgstr ""
+
+msgid "Dashboards"
+msgstr ""
+
+msgid "No activity today yet."
+msgstr ""
+
+msgid "Filter by app"
+msgstr ""
+
+msgid "TV Link"
+msgstr ""
+
+msgid "Open in new window"
+msgstr ""
+
+msgid "Copied"
+msgstr ""
+
+msgid "This dashboard can be opened in both browser and TV with the support for basic access to browsing websites. Get the private TV link and open it using an internal browser on your TV."
+msgstr ""
+
+msgid "Show navigation"
+msgstr ""
+
+msgid "Your dashboard is empty. Add widgets by clicking \"Edit Widgets\" button on the top."
+msgstr ""
+
+msgid "[Action Required] %s invites you to upgrade to Webasyst ID on %s"
+msgstr ""
+
+msgid "This page will not be published because there is no settlement, or routing rule, for this app in the site structure settings. Set up a settlement in Site app’s “Structure” section to publish this page."
+msgstr ""
+
+msgid "This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Set up a settlement in Site app’s “Structure” section to publish this page."
+msgstr ""
+
+msgid "Please refer to <a href=\"http://ogp.me\" rel=\"noopener\" target=\"_blank\">Open Graph</a> protocol site for more information on social sharing meta tags and available values."
+msgstr ""
+
+msgid "This page has sub-pages with empty addresses."
+msgstr ""
+
+msgid "The page will not be published because there is no settlement, or routing rule, of the app in the website structure settings. Add a new entry to Site apps’s “Structure” section in order to publish this page."
+msgstr ""
+
+msgid "The page is not published because it is not connected to any of your website’s structure entries, or routing rules. Add a new entry to Site apps’s “Structure” section in order to publish this page."
+msgstr ""
+
+msgid "Obtain an API key for the <strong>free or paid version</strong> on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “<strong>JavaScript API, Geocoding API</strong>” option."
+msgstr ""
+
+msgid "Obtain an API key for the <strong>paid version</strong> on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “<strong>JavaScript API, Geocoding API</strong>” option."
+msgstr ""
+
+msgid "If the free version’s API key is specified, only a link to the map will be displayed."
+msgstr ""
+
+msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> to get a map displayed."
+msgstr ""
+
+msgid "%s: call of unknown method %s->%s() with arguments %s"
+msgstr ""
+
+msgid "%s: attempt to read unknown property %s->%s"
+msgstr ""
+
+msgid "Plugin “%s” not found."
+msgstr ""
+
+msgid "The called plugin “%s” is disabled."
+msgstr ""
+
+msgid "The called plugin “%s” is not installed."
+msgstr ""
+
+msgid "Upgrade to Webasyst ID"
+msgstr ""
+
+msgid "%s prompts you to upgrade your account on %s with the Webasyst ID secure login option — a single sign in system across all Webasyst apps, sites, and services. Confirm the upgrade for %s by linking it with your existing Webasyst ID account or by creating a new one. It’s free and secure!"
+msgstr ""
+
+msgid "Edit widgets"
+msgstr ""
+
+msgid "Notifications"
+msgstr ""
+
+msgid "New Webasyst 2 UI"
+msgstr ""
+
+msgid "Light mode"
+msgstr ""
+
+msgid "Dark mode"
+msgstr ""
+
+msgid "Auto (based on device settings)"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "My profile"
+msgstr ""
+
+msgid "Select UI mode"
+msgstr "UI mode (debug)"
+
+msgid "This app supports the brand-new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can return to the classic UI any time."
+msgstr ""
+
+msgid "Your dashboard is empty. Add widgets by clicking “Edit widgets” button at the top."
+msgstr ""
+
+msgid "Sorry, the login has failed."
+msgstr ""
+
+msgid "Try with another Webasyst ID"
+msgstr ""
+
+msgid "You cannot sign in because Webasyst ID <strong>%s</strong> is connected to the backend at <strong>%s</strong>."
+msgstr ""
+
+msgid "Or <a class=\"link\" href=\"%s\">sign into your backend in the usual way</a> and connect it to your Webasyst ID."
+msgstr ""
+
+msgid "Use another Webasyst ID"
+msgstr ""
+
+msgid "Preview SMS message “<span class=\"js-template-name\"></span>”"
+msgstr ""
+
+msgid "%s characters"
+msgstr ""
+
+msgid "Disable"
+msgstr ""
+
+msgid "Connect Webasyst ID for my account"
+msgstr ""
+
+msgid "Successfully upgraded to Webasyst ID"
+msgstr ""
+
+msgid "Backend"
+msgstr ""
+
+msgid "Sign-in with Webasyst ID is enabled by default, a disconnection is not allowed."
+msgstr ""
+
+msgid "Installed widgets"
+msgstr ""
+
+msgid "All widgets"
+msgstr ""
+
+msgid "Add widget"
+msgstr ""
+
+msgid "Birthday"
+msgstr ""
+
+msgid "TV link"
+msgstr ""
+
+msgid "Open in a new window"
+msgstr ""
+
+msgid "This dashboard can be viewed both in a browser and on a TV with the support for basic website browsing. Get a private TV link and open it using an internal browser on your TV."
+msgstr ""
+
+msgid "No new notifications."
+msgstr ""
+
+msgid "My apps"
+msgstr ""
+
+msgid "Use only sign-in option with Webasyst ID — <span class=\"s-green\">recommended</span>"
+msgstr ""
+
+msgid "When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation in section “<a href=\"%s\">Sign-in with Webasyst ID</a>”. Newly added users will get connected to Webasyst ID right away."
+msgstr ""
+
+msgid "You need to connect Webasyst ID to your account."
+msgstr ""
+
+msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending mignt not work occasionally; e.g., due to low SMS balance."
+msgstr ""
+
+msgid "PHP extension “openssl” must be installed on your server to make the DKIM option available."
+msgstr ""
+
+msgid "To check the sending of SMS messages, please first save the changes you have made."
+msgstr ""
+
+msgid "When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation. Newly added users will get connected to Webasyst ID right away."
+msgstr ""
+
+msgid "Route settings"
+msgstr "Настройки маршрутизации"
+
+msgid "Browse all themes"
+msgstr ""
+
+msgid "Theme"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Configure %s"
+msgstr ""
+
+msgid "Browse plugins"
+msgstr ""
+
+msgid "Publish"
+msgstr ""
+
+msgid "Menu"
+msgstr ""
+
+msgid "Calendar"
+msgstr ""
+
+msgid "Error getting section contents."
+msgstr ""
+
+msgid "Access rights inherited from groups (%s) can be expanded on an individual user level (%s). To reduce access inherited from a group, exclude the user from the group or shrink the group basis access rights setup."
+msgstr ""
+
+msgid "Access granted for the user individually."
+msgstr ""
+
+msgid "Access inherited from user groups."
+msgstr ""
+
+msgid "It is your personal account in <a %s>Webasyst Customer Center</a>, via which you can quickly access Webasyst apps either in the Cloud or on your own server."
+msgstr ""
+
+msgid "Default sending parameters"
+msgstr ""
+
+msgid "Additional sending parameters"
+msgstr ""
+
+msgid "The email sending parameters specified below are used by default for all outgoing email messages. If you need to use other parameters for all or certain sender addresses or domains then add extra rules using the “<strong>%s</strong>” button."
+msgstr ""
+
+msgid "Try again"
+msgstr ""
+
+msgid "Or <a class=\"link\" href=\"%s\">sign into your backend in the usual way</a>."
+msgstr ""
+
+msgid "Drag & drop a file here or upload it manually (JPG, GIF or PNG)"
+msgstr ""
+
+msgid "Choose file"
+msgstr ""
+
+msgid "The time for authorization has expired. Please go back using the button below and try again."
+msgstr ""
+
+msgid "Access granted for the user individually"
+msgstr ""
+
+msgid "Access inherited from user groups"
 msgstr ""

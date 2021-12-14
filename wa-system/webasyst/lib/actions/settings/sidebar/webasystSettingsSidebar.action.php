@@ -7,6 +7,6 @@ class webasystSettingsSidebarAction extends webasystSettingsViewAction
         $this->view->assign(array(
             'items' => webasystHelper::getSettingsSidebarItems(),
         ));
-        $this->setTemplate('templates/actions/settings/sidebar/Sidebar.html');
+        $this->setTemplate('settings/sidebar/Sidebar.html', true);
     }
 }

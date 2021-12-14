@@ -1,0 +1,37 @@
+{$_title = ".waAutocomplete()"}
+{$wa->title($_title)}
+
+{function name="_render" class="" id=""}
+    <input id="autocomplete-1" type="text" value="" class="long">
+    <script>
+        ( function($) {
+            $("#autocomplete-1").waAutocomplete({
+                source: ["aaaaa", "aaaaaaaa", "aaabbbbbb", "aaacccccc", "bbbbbb", "cccccc"]
+            });
+        })(jQuery);
+    </script>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2.</blockquote>
+
+    <p>В основе компонента лежит jQuery UI Autocomplete.</p>
+
+    <div class="line">
+        {_render class="" id="2"}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="" id="2"}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

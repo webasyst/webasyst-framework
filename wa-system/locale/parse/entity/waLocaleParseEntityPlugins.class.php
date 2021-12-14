@@ -50,9 +50,16 @@ class waLocaleParseEntityPlugins extends waLocaleParseEntity
     public function getWebasystFunctionPatterns()
     {
         return [
-            self::WEBASYST_DEFAULT_PATTERN,
             self::WEBASYST_PLUGIN_PATTERN,
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getDomainFunctionPattern()
+    {
+        return self::WEBASYST_DOMAIN_PATTERN;
     }
 
     /**

@@ -1,0 +1,158 @@
+<div class="wa-dialog s-plugin-boxberry-region-edit-dialog" id="js-region-edit-dialog">
+    <div class="wa-dialog-background"></div>
+    <div class="wa-dialog-body">
+        <form>
+            <div class="wa-dialog-header">
+                <h2 class="s-title">{$obj->_w('Regions')}</h2>
+            </div>
+            <div class="wa-dialog-content">
+
+                <ul class="s-fields-list menu-v">
+                    <li class="s-radio-wrapper is-active">
+                        <label class="s-radio-label">
+                            <input class="s-radio js-type-group-field" type="radio" name="all_regions" value="1" {if empty($selected_regions)}checked{/if}>
+                            <span class="s-text bold">{$obj->_w('All regions')}</span>
+                        </label>
+                    </li>
+                    <li class="s-radio-wrapper">
+                        <label class="s-radio-label">
+                            <input class="s-radio js-type-group-field" type="radio" name="all_regions" value="0" {if !empty($selected_regions)}checked{/if}>
+                            <span class="s-text">{$obj->_w('Selected regions only')}</span>
+                        </label>
+
+                        <ul class="s-checkbox-list menu-v" style="margin-left: 18px; {if !$selected_regions}display: none;{/if}">
+                            {if !empty($regions)}
+                                {if count($regions) > 10}
+                                    <label for="search-regions">{$obj->_w('Search')}</label>
+                                    <input id="search-regions" type="text" name="search-regions">
+                                {/if}
+                                <li class="s-checkbox-wrapper">
+                                    <label>
+                                        <input class="s-checkbox js-type-field" type="checkbox" name="selected_regions_all">
+                                        <span class="s-text bold">{$obj->_w('Choose all')}</span>
+                                    </label>
+                                </li>
+                                {foreach $regions as $region}
+                                    <li class="s-checkbox-wrapper">
+                                        <label>
+                                            <input class="s-checkbox js-type-field" type="checkbox" name="selected_regions[]" value="{$region.code}"
+                                                   {if isset($selected_regions[$region.code])}checked{/if}
+                                            >
+                                            <i class="icon16 globe-small"></i>
+                                            <span class="s-text">{$region.name|escape}</span>
+                                        </label>
+                                    </li>
+                                {/foreach}
+                            {else}
+                                <span>{$obj->_w('No region selected in country settings')}</span>
+                            {/if}
+                        </ul>
+                    </li>
+                </ul>
+
+                <input type="hidden" name="country_code" value="{$country_code}">
+                <input type="hidden" name="saved_region_codes" value='{$saved_region_codes}'>
+            </div>
+        </form>
+
+        <div class="wa-dialog-footer">
+            {if !empty($regions)}
+                <button class="s-button button green js-submit-button" type="submit">[`Save`]</button>
+                <span class="s-divider">[`or`]</span>
+            {/if}
+            <a href="javascript:void(0);" class="js-close-dialog">[`cancel`]</a>
+        </div>
+    </div>
+
+    <script>
+        var $region_dialog = $("#js-region-edit-dialog"),
+            $checkbox_list = $region_dialog.find('.s-checkbox-list'),
+            $form = $region_dialog.find("form:first");
+
+        var dialog = $region_dialog.data("dialog");
+
+        var submit_locked = false;
+
+        $region_dialog.on("change", ".js-type-group-field", function() {
+            var that = this;
+
+            // DOM
+            var $field = $(this).closest(".s-radio-wrapper"),
+                $list = $field.find('.s-checkbox-list');
+
+            // CONST
+            var active_class = "is-active";
+
+            if ($list.length) {
+                $checkbox_list.show();
+            } else {
+                $checkbox_list.hide();
+            }
+
+            $region_dialog.find('.s-radio-wrapper').each( function(i, _field) {
+                var $_field = $(_field);
+                if (_field[0] === $field[0]) {
+                    $_field.addClass(active_class);
+                } else {
+                    $_field.removeClass(active_class);
+                }
+            });
+
+            $(window).resize();
+        });
+
+        $region_dialog.on('keyup', '#search-regions', function () {
+            var text = $(this).val().toLowerCase();
+
+            $region_dialog.find('.s-checkbox-wrapper').hide();
+            $region_dialog.find(".s-checkbox-wrapper").filter(function() {
+                return $(this).find('.s-text').text().toLowerCase().indexOf(text) > -1;
+            }).show();
+        });
+
+        $region_dialog.on("click", ".js-submit-button", function(event) {
+            event.preventDefault();
+
+            if (!submit_locked) {
+                submit_locked = true;
+                submit()
+                    .always( function() {
+                        submit_locked = false;
+                    })
+                    .done( function(response) {
+                        if (response.status === "ok") {
+                            dialog.options.onSuccess(response);
+                            dialog.close();
+                        }
+                    });
+            }
+        });
+
+        $checkbox_list.on('change', '[name="selected_regions[]"]', function () {
+            var $selected_regions_all = $checkbox_list.find('[name="selected_regions_all"]'),
+                $selected_regions = $checkbox_list.find('[name="selected_regions[]"]');
+
+            if ($checkbox_list.find('[name="selected_regions[]"]:checked').length === $selected_regions.length) {
+                $selected_regions_all.prop('checked', true);
+            } else {
+                $selected_regions_all.prop('checked', false);
+            }
+        });
+
+        $checkbox_list.on('change', '[name="selected_regions_all"]', function () {
+            var $selected_regions = $checkbox_list.find('[name="selected_regions[]"]');
+            if ($(this).prop('checked')) {
+                $selected_regions.prop('checked', true);
+            } else {
+                $selected_regions.prop('checked', false);
+            }
+        });
+
+        function submit() {
+            var href = "{$wa_backend_url}webasyst/shipping/boxberry/settings/regionsValidate/",
+                data = $form.serializeArray();
+
+            return $.post(href, data, "json")
+        }
+    </script>
+</div>

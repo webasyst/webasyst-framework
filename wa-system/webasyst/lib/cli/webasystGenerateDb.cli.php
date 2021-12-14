@@ -429,7 +429,16 @@ HELP;
                         $result .= "            '".$k."' => ";
                         if ($key == ':keys') {
                             if (count($v) == 1 && count($v['fields']) == 1) {
-                                $result .= var_export($v['fields'][0], true);
+                                $res = var_export($v['fields'][0], true);
+
+                                // if value is itself an array then it could be, for example, index with limitation of length => need to wrap to array
+                                // otherwise parsing will recognize it as multi-column index
+                                // see #51.6526
+                                if (is_array($v['fields'][0])) {
+                                    $res = "array({$res})";
+                                }
+
+                                $result .= $res;
                             } else {
                                 $result .= 'array('.$this->arrayToString($v['fields'], true);
                                 foreach ($v as $tk => $tv) {
@@ -544,11 +553,13 @@ HELP;
                     $r[$type] = implode('; ', $r[$type]);
                 }
             }
+            return compact('changes', 's', 'c', 'r');
         } else {
-            $s = '=';
-            $c = 'SAME';
+            return array(
+                's' => '=',
+                'c' => 'SAME',
+            );
         }
-        return compact('changes', 's', 'c', 'r');
     }
 
     private function cleanupSchema($schema, $exclude_patterns)

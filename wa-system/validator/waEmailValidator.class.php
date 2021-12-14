@@ -34,10 +34,22 @@ class waEmailValidator extends waRegexValidator
     public function isValid($value)
     {
         $value = is_scalar($value) ? (string)$value : '';
+
+        if ($this->hasMalwareSubstrings($value)) {
+            $this->setError($this->getMessage('not_match', array('value' => $value)));
+            return false;
+        }
+
         if (strlen($value) > 0 && !preg_match("/^[a-z0-9~@+:\[\]\.-]+$/i", $value)) {
             $idna = new waIdna();
             $value = $idna->encode($value);
         }
         return parent::isValid($value);
+    }
+
+    private function hasMalwareSubstrings($value)
+    {
+        $value = mb_strtolower($value);
+        return strpos($value, '<script') !== false;
     }
 }

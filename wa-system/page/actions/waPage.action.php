@@ -25,6 +25,7 @@ class waPageAction extends waViewAction
 
             $this->setThemeTemplate('error.html');
         } else {
+            $this->setLastModified($page);
 
             $breadcrumbs = array();
             $parents = array();
@@ -57,6 +58,9 @@ class waPageAction extends waViewAction
                 'description' => isset($page['description']) ? $page['description'] : ''
             ));
 
+            $storefront_url = wa()->getRouteUrl('/frontend/', true);
+            $canonical_url = $storefront_url . $page['full_url'];
+
             // Open Graph
             $og = false;
             foreach (array('title', 'image', 'video', 'description', 'type') as $k) {
@@ -65,6 +69,7 @@ class waPageAction extends waViewAction
                     $this->getResponse()->setOGMeta('og:'.$k, $page['og_'.$k]);
                 }
             }
+            $this->getResponse()->setOGMeta('og:url', $canonical_url);
             if (!$og) {
                 $this->getResponse()->setOGMeta('og:title', $page['title']);
                 if (!empty($page['description'])) {
@@ -81,6 +86,28 @@ class waPageAction extends waViewAction
             }
             $this->view->assign('page', $page);
             $this->setThemeTemplate('page.html');
+
+            $this->getResponse()->setCanonical($canonical_url);
+        }
+    }
+
+    /**
+     * @since 1.14.7
+     */
+    protected function setLastModified($page)
+    {
+        if (empty($page['update_datetime'])) {
+            return;
+        }
+
+        $has_dynamic_content = false;
+        if (empty($page['last_modified_ignore_dynamic_content'])) {
+            $has_dynamic_content = preg_match('/\{\S/', $page['content']);
+        }
+        if ($has_dynamic_content) {
+            $this->getResponse()->setLastModified(date("Y-m-d H:i:s"));
+        } else {
+            $this->getResponse()->setLastModified($page['update_datetime']);
         }
     }
 

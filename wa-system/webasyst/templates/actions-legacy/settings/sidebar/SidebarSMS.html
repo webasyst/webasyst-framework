@@ -1,0 +1,33 @@
+{$class = "s-sms-template-sidebar-wrapper"}
+{$id = uniqid($class)}
+<aside class="{$class}" id="{$id}">
+    <a class="s-new-templates bold js-new-templates"><i class="icon16 add"></i>[s`New template group`]</a>
+    <ul class="menu-v stack with-icons">
+        {foreach $channels as $_id => $_channel}
+            {$_channel_url = "`$wa_backend_url`webasyst/settings/sms/template/`$_id|escape`/"}
+            <li{if $_id == $channel->getId()} class="selected bold"{/if}>
+                <a href="{$_channel_url}">
+                    <i class="icon16 mobile"></i>
+                    {$_channel.name|escape}
+                </a>
+            </li>
+        {/foreach}
+    </ul>
+</aside>
+
+<script>
+    (function ($) {
+
+        // instance of dialog that create new sms templates
+        var dialog = new WaSettingsSMSNewTemplateDialog("wa-sms-new-template-dialog", {
+            path_to_template: "{"`$wa_backend_url`webasyst/settings/sms/template/"}"
+        });
+
+        // sidebar js
+        new WASettingsSMSTemplateSidebar({
+            $wrapper: $("#{$id}"),
+            dialog: dialog
+        });
+
+    })(jQuery);
+</script>

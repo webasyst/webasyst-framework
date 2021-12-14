@@ -14,7 +14,7 @@ class photosSearchPhotosAction extends waViewAction
             $collection->orderBy('p.rate DESC, p.id');
         }
 
-        $this->template = 'templates/actions/photo/PhotoList.html';
+        $this->setTemplate('photo/PhotoList.html', true);
 
         $count = $this->getConfig()->getOption('photos_per_page');
         $photos = $collection->getPhotos("*,thumb,thumb_crop,thumb_middle,thumb_big,tags,edit_rights", 0, $count);

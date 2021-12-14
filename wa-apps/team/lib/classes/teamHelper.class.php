@@ -231,8 +231,11 @@ class teamHelper
             $vars['{LOCALE}'] = 'en_US';
         }
         $locale = $vars['{LOCALE}'];
-
-        $template_file = wa()->getAppPath().'/templates/messages/'.$template_id.'.'.$locale.'.html';
+        if(wa()->whichUI() === '1.3') {
+            $template_file = wa()->getAppPath() . '/templates/messages-legacy/' . $template_id . '.' . $locale . '.html';
+        }else{
+            $template_file = wa()->getAppPath() . '/templates/messages/' . $template_id . '.' . $locale . '.html';
+        }
 
         // Look for template in appropriate locale
         if (!is_readable($template_file)) {

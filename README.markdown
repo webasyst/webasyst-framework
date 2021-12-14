@@ -1,58 +1,61 @@
 # Webasyst #
 
-Webasyst is an open source PHP Framework for developing web apps with backend and frontend.
+Webasyst is an open-source PHP framework for fast development of web apps with a password-protected user backend and a publicly available website frontend.
 Distributed under the terms of LGPL license.
-http://www.webasyst.com/
+
+Website: http://www.webasyst.com
 
 ## System Requirements ##
 
-	* Web Server
-		* e.g. Apache or IIS
+	* Web server
+		* e.g., Apache, nginx, or IIS
 		
-	* PHP 5.2+
-		* spl extension
+	* PHP 5.6+
+ 
+	* PHP extensions
+		* spl
 		* mbstring
 		* iconv
 		* json
-		* gd or ImageMagick extension
+		* gd or ImageMagick
 
 	* MySQL 4.1+
 
 
-## Installing Webasyst Framework ##
+## How to install Webasyst framework ##
 
-1. Get the code into your web server's folder %PATH% (e.g. public_html/webasyst):
+1. Copy the source code to your web server's `%PATH%` directory (e.g., *public_html/webasyst*).
 
-	via GIT:
+	git:
+	```
+	cd %PATH%
+	git clone git://github.com/webasyst/webasyst-framework.git
+	```
 
-		cd %PATH%
-		git clone git://github.com/webasyst/webasyst-framework.git
+	SVN:
+	```
+	cd %PATH%
+	svn checkout http://svn.github.com/webasyst/webasyst-framework.git
+	```
 
-	via SVN:
+2. Enable the framework installation directory (`%PATH%`) for writing.
+	```
+	cd ..
+	chmod %PATH% 0775
 	
-		cd %PATH%
-		svn checkout http://svn.github.com/webasyst/webasyst-framework.git
+	(or 0777 depending on your server configuration)
+	```
 
-2. Set up Webasyst config files (located within %PATH%/wa-config folder).
+3. Create a new MySQL database for Webasyst.
 
-		cd wa-config
-		cp apps.php.example apps.php
-		cp config.php.example config.php
-		cp SystemConfig.class.php.example SystemConfig.class.php
+4. Open the URL of the installation directory in a browser; e.g., *http://localhost/webasyst/*. This will start a web-based installation wizard.
 
-2. Enable framework installation folder (PATH) for writing
+5. Complete all steps of the installation wizard.
+    * On the database setup step, enter the credentials of the MySQL database created for Webasyst.
+    * On the first user setup step, enter any user name, password, and email address for your main Webasyst user (administrator).
+    * Sign into the user backend to complete the installation.
 
-		cd ..
-		chmod %PATH% 0775
-		
-		(or 0777 depending on server configuration)
+## How to update Webasyst framework ##
 
-3. MySQL Database:
-
-	Create a new database for Webasyst Framework and its apps.
-
-4. Run Webasyst Framework in a web browser (e.g. http://localhost/webasyst/).
-
-## Updating Webasyst Framework ##
-
-Staying with the latest version of Webasyst Framework is easy: simply update your files from the repository and login into Webasyst, and all required meta updates will be applied to Webasyst and its apps automatically.
+1. Update framework files from a repository.
+2. Sign into your Webasyst user backend. This will automatically apply any required meta updates to the new framework version.

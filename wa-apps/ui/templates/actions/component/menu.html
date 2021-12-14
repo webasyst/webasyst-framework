@@ -1,0 +1,159 @@
+{$_title = ".menu"}
+{$wa->title($_title|json_encode)}
+
+{$_menu = [
+    [
+        "name" => "Создать",
+        "url" => "javascript:void(0);",
+        "icon_class" => "fas fa-plus",
+        "bottom_padded" => 1
+    ],
+    [
+        "name" => "Главная",
+        "url" => "javascript:void(0);",
+        "icon_class" => "fas fa-home"
+    ],
+    [
+        "name" => "Блог",
+        "url" => "javascript:void(0);",
+        "icon_url" => "{$wa_url}wa-apps/blog/img/blog.png",
+        "selected" => true,
+        "count" => 5,
+        "subitems" => true
+    ],
+    [
+        "name" => "Сайт",
+        "url" => "javascript:void(0);",
+        "icon_url" => "{$wa_url}wa-apps/site/img/site.png",
+        "icon_size20" => true,
+        "count" => 23
+    ],
+    [
+        "name" => ".tag",
+        "url" => "javascript:void(0);",
+        "icon_class" => "fas fa-hashtag",
+        "count" => 2,
+        "tag" => true
+    ],
+    [
+        "name" => "Василий",
+        "url" => "javascript:void(0);",
+        "icon_url" => "{$wa_url}wa-content/img/userpic.svg",
+        "icon_userpic" => true,
+        "hint" => "<i class=\"fas fa-thumbs-up\"></i>"
+    ],
+    [
+        "name" => "Компания",
+        "url" => "javascript:void(0);",
+        "icon_url" => "{$wa_url}wa-content/img/company.svg",
+        "icon_userpic" => true,
+        "hint" => "Текстовая подсказка или даже подсказка с иконкой Font Awesome оставляется, как всегда, внутри .hint",
+        "count" => 5,
+        "badge" => true
+    ]
+]}
+
+{function name="_render"}
+<div style="width: 300px;">
+    <ul class="menu">
+{foreach $_menu as $_item}
+            <li {if !empty($_item.selected)}class="selected rounded"{elseif !empty($_item.bottom_padded)}class="bottom-padded"{elseif !empty($_item.tag)}class="tag"{/if}>
+                <a href="{$_item.url|escape}">
+                    {if !empty($_item.count)}<span class="count">{if !empty($_item.badge)}<span class="badge">{$_item.count}</span>
+                    {else}{$_item.count}{/if}</span>
+{else}{/if}
+{if !empty($_item.icon_class) && !empty($_item.icon_uri)}<i class="{$_item.icon_class}" style="background-image: url('{$_item.icon_uri}')"></i>
+{elseif !empty($_item.icon_class)}<i class="{$_item.icon_class}"></i>
+{elseif !empty($_item.icon_url)}<span class="icon"><img src="{$_item.icon_url}" alt="{$_item.name|escape}"{if !empty($_item.icon_userpic)} class="userpic"{/if}{if !empty($_item.icon_size20)} class="size-20"{/if}></span>{/if}
+                    <span>{$_item.name}{if !empty($_item.hint)} <span class="hint">{$_item.hint}</span>{else}{/if}</span>
+                </a>
+                {if !empty($_item.subitems)}
+<ul class="menu">
+                        <li><a href="#"><i class="fas fa-crown" style="color: gold;"></i><span>Hello</span></a></li>
+                        <li><a href="#"><span class="icon"><i style="background: orangered;"></i></span><span>Custom icon</span></a></li>
+                        <li><a href="#"><span class="icon"><i class="rounded" style="background: orangered;"></i></span><span>Custom icon rounded</span></a></li>
+                        <li>
+                            <a href="#"><i class="fas fa-globe"></i><span>World</span></a>
+                            <ul class="menu">
+                                <li><a href="#"><i class="fas fa-folder"></i><span class="count action"><i class="fas fa-plus-circle"></i></span><span>Moscow</span></a></li>
+                                <li><a href="#"><i class="fas fa-tree"></i><span>Sochi</span></a></li>
+                                <li><a href="#"><i class="fas fa-church"></i><span class="count">13</span><span>Saint-Petersburg <span class="hint"><i class="fas fa-crown"></i></span></span></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                {/if}
+</li>
+        {/foreach}
+    </ul>
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <blockquote>
+        <strong class="black">TLDR</strong> wa-1.3 -> wa-2.0: <strong class="black">замена для <code>.menu-v</code>.</strong> Основная семантика и структура меню в wa-2.0.css такая же, как и в wa-1.3.css (все так же работает на основе списка <code>ul &gt; li</code>). Но теперь класс переименован из <code>.menu-v</code> в <code>.menu</code> и переделан для использования <code>display: flex;</code>. Больше никаких <em>float: left / float: right</em>. Если что-то «поползет» в верстке меню, то, скорее всего, достаточно будет просто обернуть основное название пункта меню в <code>&lt;span&gt;...&lt;/span&gt;</code>.
+    </blockquote>
+
+    <p>Меню навигации, оптимизированное для размещения в сайдбаре (боковой колонке навигации) или выпадающем меню. С иконками или без. Линейное или древовидное.</p>
+
+    <div class="line">
+        {_render}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint" style="min-height: 500px;">{_render|escape}</pre>
+    </div>
+
+    <h3>Модификаторы для <code>.menu</code></h3>
+
+    <p><code>.menu<strong>.ellipsis</strong></code> — названия пунктов меню будут расположены максимум в одну строку, а все, что не помещается, будет обрезаться многоточием.</p>
+
+    <p><code>.menu<strong>.break-words</strong></code> — длинные названия пунктов меню, если не помещаются, будут разбиваться посередине слова.</p>
+
+    <h5>Размер меню — постоянный</h5>
+    <p><b class="black"><code>.small</code>, <code>.large</code> и другие модификаторы размера для <code>.menu</code> не поддерживаются</b>, так как измененные размеры в рамках интерфейса бекенда не подразумеваются. Все меню <code>.menu</code>, где бы они ни использовались, преполагается отображать одинакового размера.</p>
+
+    <h3>Модификаторы для <code>.menu &gt; li</code></h3>
+    <p><code>li<strong>.selected</strong></code> — для выбранных пунктов.</p>
+    <p><code>li<strong>.rounded</strong></code> — если нужно немного скруглить края пункта меню. Рекомендуется, если меню располагается вне сайдбара в контентной области без видимых границ.</p>
+    <p><code>li<strong>.top-padded</strong></code> и <code>li<strong>.bottom-padded</strong></code> — добавляют к выбранному пункту меню дополнительный отступ сверху или снизу.</p>
+
+    <h3>Пункт меню <code>.menu &gt; li</code></h3>
+    <p>Основной элемент меню внутри <code>li</code> — ссылка <code>&lt;a href=""&gt;</code> (<code>li &gt; <strong>a</strong></code>) или любой тег с классом <code>.item</code> (<code>li &gt; <strong>.item</strong></code>).</p>
+
+    <h5>Название пункта</h5>
+    <p>Текст (название) пункта меню внутри этой ссылки рекомендуется обернуть в <code>li &gt; a &gt; <strong>span</strong></code> для целостности отображения flexbox. Никаких классов вроде <code>.name</code> добавлять не нужно.</p>
+
+    <p>Внутри основного <code>span</code> небольшие подсказки следует оформлять, как и везде, с помощью <code>&lt;span class="<b>hint</b>"&gt;...&lt;/span&gt;</code> (<code>li &gt; a &gt; span &gt; <strong>span.hint</strong></code>). Подсказка может быть и текстовой, и просто иконкой Font Awesome. Размеры иконки и отступы зафиксированы для визуального соответствия основному пункту меню.</p>
+
+    <h5>Счетчик справа</h5>
+    <p>Элементы справа (счетчики или иконки-кнопки действий) оформляются внутри ссылки <em>рядом</em> с основным <code>span</code> виде элемента <code>&lt;span class="<b>count</b>"&gt;...&lt;/span&gt;</code> (<code>li &gt; a &gt; <strong>span.hint</strong></code>).</p>
+    <p>Если в счетчике не текст, а иконка действия, то рекомендуется выделить ее цветом с помощью назначения дополнительного <code>.count<strong>.action</strong></code>.</p>
+
+    <h5>Иконки</h5>
+    <p>Основная иконка слева от названия также оформляется внутри основной ссылки пункта меню (<code>li &gt; a &gt; <strong>i или span</strong></code>) <em>рядом</em> с основным <code>span</code> — в виде отдельного <code>&lt;i class="fas ..."&gt;</code> библиотеки Font Awesome или же в обертке <code>&lt;span class="icon"&gt;...&lt;/span&gt;</code> в случае создания индивидуальной иконки. Font Awesome в <code>span.icon</code> оборачивать не надо в связи с разными свойствами геометрии иконок (Font Awesome имеет максимальную ширину 1.25rem, а индиивдуальная иконка всегда считается квадратной с размерами 1x1rem).</p>
+
+    <p>Юзерпики следует оформлять как индивидуальную иконку <code>li &gt; a &gt; <strong>span.icon &gt; .userpic</strong></code> в виде картинки или элемента с фоном background. Картинка в <code>.menu</code> в этом случае будет автоматически увеличена до 20х20px (1.25x1.25rem) для более явного и легко читаемого представления.</p>
+
+    <p>Произвольные кастомные картинки в виде иконок в меню также рекомендуется увеличивать до 20х20px (1.25x1.25rem) для лучшей различимости. Реализовать это можно с помощью верстки аналогично юзерпикам — <code>li &gt; a &gt; <strong>span.icon &gt; i.size-20</strong></code> или <code>li &gt; a &gt; <strong>span.icon &gt; img.size-20</strong></code>. Обратите внимание, что элемент <code>.size-20</code> должен нахоиться внутри <code>.icon</code>.</p>
+
+    <h3>Мобильные устройства</h3>
+
+    <p>На мобильных устройствах <code>.menu</code> по умолчанию не отличается от обычного вида. Однако если добавить к <code>.menu<strong>.mobile-friendly</strong></code>, то меню на мобильных устройствах станет крупнее и удобнее для навигации с помощью прикосновения. Рекомендуется использовать вместе с <code>.sidebar.mobile-friendly</code>.</p>
+
+    <hr>
+
+    <h5>1.3-deprecated</h5>
+    <p>Совмещенный вариант <code>.menu.dropdown</code> в wa-2.0.css более не поддерживается. Используйте отдельный триггер <a href="{$wa_app_url}component/dropdown/">.dropdown</a>.</p>
+    <p>Дополнительные классы <code>.menu.with-icons</code>, <code>.menu.collapsible</code> и <code>.menu.hierarchical</code> (использовались в wa-1.3) тоже больше не поддерживаются. В новом интерфейсе можете эти классы смело убирать.</p>
+
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

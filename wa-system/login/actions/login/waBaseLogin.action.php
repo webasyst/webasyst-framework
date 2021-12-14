@@ -54,7 +54,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
             $this->saveReferer();
         }
 
-        if (wa()->getAuth()->isAuth()) {
+        if ($this->getAuthProvider()->isAuth()) {
             $this->afterAuth();
         }
 
@@ -95,6 +95,8 @@ abstract class waBaseLoginAction extends waLoginModuleController
         $password = is_scalar($password) ? (string)$password : '';
         if (strlen($password) <= 0) {
             return _ws('Password is required');
+        } elseif (strlen($password) > waAuth::PASSWORD_MAX_LENGTH) {
+            return _ws('Specified password is too long.');
         } else {
             return null;
         }
@@ -110,7 +112,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
         if (!$this->auth_config->needLoginCaptcha()) {
             return null;
         }
-        if (!wa()->getCaptcha()->isValid()) {
+        $captcha_options = [];
+        if ($this->auth_config instanceof waDomainAuthConfig) {
+            $captcha_options['app_id'] = $this->auth_config->getApp();
+        }
+        if (!wa()->getCaptcha($captcha_options)->isValid()) {
             return _ws('Invalid captcha');
         } else {
             return null;
@@ -250,7 +256,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
 
         // auth provider
-        $auth = wa()->getAuth();
+        $auth = $this->getAuthProvider();
 
         // Confirmation code posted and in validation step already validated, so update phone status
         if (isset($data['confirmation_code'])) {
@@ -258,20 +264,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
             if ($contact_info) {
 
-                // non-international phone try to convert to international
-                $phone = $data['login'];
-                $is_international = substr($phone, 0, 1) === '+';
-                if (!$is_international) {
-                    $result = $this->auth_config->transformPhone($phone);
-                    $phone = $result['phone'];
-                }
+                // phone as it is in DB
+                $phone = isset($contact_info['phone']) && isset($contact_info['phone']['value']) ? $contact_info['phone']['value'] : $data['login'];
 
                 $dm = new waContactDataModel();
-                $status_updated = $dm->updateContactPhoneStatus($contact_info['id'], $phone, waContactDataModel::STATUS_CONFIRMED);
-                if (!$status_updated) {
-                    // rollback to phone before transformation
-                    $dm->updateContactPhoneStatus($contact_info['id'], $data['login'], waContactDataModel::STATUS_CONFIRMED);
-                }
+                $dm->updateContactPhoneStatus($contact_info['id'], $phone, waContactDataModel::STATUS_CONFIRMED);
 
             }
         }
@@ -289,7 +286,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
             }
 
             // actual auth in system through auth provider
-            if ($auth->auth($data)) {
+            if ($this->auth($data)) {
                 $this->logAction('login', $this->env);
                 $this->afterAuth();
             } else {
@@ -336,10 +333,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
             // check timeout first
             if (!$this->isSentCodeTimeoutPassed()) {
+                $timeout = $this->getSentCodeTimeoutLeft();
                 $errors['confirmation_code'] = array(
                     'timeout' => array(
-                        'message' => $this->auth_config->getConfirmationCodeTimeoutErrorMessage(),
-                        'timeout' => $this->auth_config->getConfirmationCodeTimeout()
+                        'message' => $this->auth_config->getConfirmationCodeTimeoutErrorMessage($timeout),
+                        'timeout' => $timeout
                     )
                 );
             } else {
@@ -384,6 +382,8 @@ abstract class waBaseLoginAction extends waLoginModuleController
                     $msg = _ws('An SMS message has been sent to phone number <strong>%s</strong> for you to confirm signup.');
                     $msg = sprintf($msg, $phone_formatted);
 
+                    $this->rememberSendCodeTime();
+
                     $this->assign(array(
                         'code_sent' => true,
                         'code_sent_message' => $msg,
@@ -402,6 +402,20 @@ abstract class waBaseLoginAction extends waLoginModuleController
             }
         } catch (waAuthRunOutOfTriesException $e) {
             $errors['password'][waVerificationChannel::VERIFY_ERROR_OUT_OF_TRIES] = $e->getMessage();
+        } catch (waAuthException $e) {
+
+            // custom handling of waAuthException
+            $handling_result = $this->handleAuthException($e);
+
+            if ($handling_result['status']) {
+                // handled
+                if (isset($handling_result['details']['errors'])) {
+                    $errors = array_merge($errors, $handling_result['details']['errors']);
+                }
+            } else {
+                // not handled
+                $errors['auth'] = $e->getMessage();
+            }
         } catch (waException $e) {
             $errors['auth'] = $e->getMessage();
         }
@@ -431,6 +445,34 @@ abstract class waBaseLoginAction extends waLoginModuleController
     }
 
     /**
+     * @param waAuthException $exception
+     * @return array $result
+     *      bool $result['status'] - handled or not
+     *      $result['details']['errors'] - key-value errors that will be sent to template
+     */
+    protected function handleAuthException(waAuthException $exception)
+    {
+        return [
+            'status' => false
+        ];
+    }
+
+    /**
+     * Actual auth in system through auth provider
+     * @param $data
+     * @return array|bool
+     * @throws waAuthConfirmEmailException
+     * @throws waAuthConfirmPhoneException
+     * @throws waAuthException
+     * @throws waAuthInvalidCredentialsException
+     * @throws waException
+     */
+    protected function auth($data)
+    {
+        return $this->getAuthProvider()->auth($data);
+    }
+
+    /**
      * Timeout checker for confirmation code
      * Need to prevent to ofter request of confirmation code
      * See usage of method for details
@@ -439,16 +481,37 @@ abstract class waBaseLoginAction extends waLoginModuleController
      */
     protected function isSentCodeTimeoutPassed()
     {
+        return $this->getSentCodeTimeoutPassed() > $this->auth_config->getConfirmationCodeTimeout();
+    }
+
+    protected function rememberSendCodeTime()
+    {
+        $key = 'wa/login/sent_code/last_time/';
+        wa()->getStorage()->set($key, time());
+    }
+
+    /**
+     * @return int
+     * @throws waException
+     */
+    protected function getSentCodeTimeoutPassed()
+    {
         $key = 'wa/login/sent_code/last_time/';
         $last_time = wa()->getStorage()->get($key);
         if (!wa_is_int($last_time) || $last_time <= 0) {
             $last_time = 0;
         }
         $now_time = time();
-        $timeout = $this->auth_config->getConfirmationCodeTimeout();
-        $result = $now_time - $last_time > $timeout;
-        wa()->getStorage()->set($key, $now_time);
-        return $result;
+        return $now_time - $last_time;
+    }
+
+    /**
+     * @return int
+     * @throws waException
+     */
+    protected function getSentCodeTimeoutLeft()
+    {
+        return $this->auth_config->getConfirmationCodeTimeout() - $this->getSentCodeTimeoutPassed();
     }
 
     /**
@@ -480,7 +543,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
     protected function afterExecute()
     {
         parent::afterExecute();
-        $auth = wa()->getAuth();
+        $auth = $this->getAuthProvider();
         if (!$this->isJsonMode()) {
             $this->view->assign('options', $auth->getOptions());
         }
@@ -490,8 +553,8 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * Prepare input post data - typecast field values, filter off excess fields to prevent malicious, and etc
      *
      * IMPORTANT: This method MUST return ready and secure (cleaned) data, because
-     * this data will be pass straight to wa()->getAuth()->auth()
-     *
+     * this data will be pass straight to $this->getAuthProvider()->auth()
+     * 
      * @param $data
      * @return array
      */
@@ -564,7 +627,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
         // try find contact by login
         $contact = null;
-        $user_info = wa()->getAuth()->getByLogin($data['login']);
+        $user_info = $this->getAuthProvider()->getByLogin($data['login']);
         if ($user_info) {
             $contact = new waContact($user_info['id']);
         }
@@ -791,5 +854,17 @@ abstract class waBaseLoginAction extends waLoginModuleController
     protected function getLoginUrl()
     {
         return $this->auth_config->getLoginUrl();
+    }
+
+    /**
+     * Return response waiAuth provider for auth into system
+     * By default returns wa()->getAuth()
+     * Application can redefine what provider will use for authorizing
+     * @return waiAuth
+     * @throws waException
+     */
+    protected function getAuthProvider()
+    {
+        return wa()->getAuth();
     }
 }

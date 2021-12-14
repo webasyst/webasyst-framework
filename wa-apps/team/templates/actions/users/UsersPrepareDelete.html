@@ -1,15 +1,13 @@
 {$wrapper_id = uniqid('t-confirm-deletion-dialog')}
 
-<div class="t-dialog-wrapper is-full-screen t-confirm-deletion-dialog" id="{$wrapper_id}">
-    <div class="t-dialog-background"></div>
-    <div class="t-dialog-block">
-        <header class="t-dialog-header">
-            <h1>[`Delete contacts`] <span style="color: #aaa;">({$total_count_requested})</span></h1>
-        </header>
-        <div class="t-dialog-content">
+<div class="dialog t-confirm-deletion-dialog" id="{$wrapper_id}">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <h3 class="dialog-header">[`Delete contacts`] <span style="color: #aaa;">({$total_count_requested})</span></h3>
+        <div class="dialog-content">
             <p>[`Contact deletion cannot be undone.`]</p>
             {if $contacts}
-                <p><strong style="color:red;">[`IMPORTANT NOTE:`]</strong>
+                <p class="alert danger"><span class="bold">[`IMPORTANT NOTE:`]</span>
                     {if $total_count_requested == count($contacts)}
                         [`All selected contacts have links to other applications.`]
                     {else}
@@ -22,16 +20,16 @@
                         [`After deletion of these contacts, other applications will refer to non-existent contacts.`]
                     {/if}
                 </p>
-                <table class="zebra full-width">
+                <table class="table small">
                     {foreach $contacts as $id => $c}
                         {$name = $c.name}
                         <tr>
-                            <td class="min-width"><img src="{wa_backend_url()}?action=photo&id={$id}&size=20" width="20" height="20"></td>
+                            <td class="min-width"><img class="userpic userpic20" src="{wa_backend_url()}?action=photo&id={$id}&size=20" width="20" height="20"></td>
                             <td colspan="2">{strip}
                                 {$c.name|escape}
                                 {if $c.not_allowed_reason}
                                     :&nbsp;
-                                    <em class="errormsg">{$c.not_allowed_reason|escape}</em>
+                                    <span class="text-red">{$c.not_allowed_reason|escape}</span>
                                 {/if}
                             {/strip}</td>
                         </tr>
@@ -50,42 +48,27 @@
                 </table>
             {/if}
         </div>
-        <footer class="t-dialog-footer">
-            <div class="t-actions">
-                {if $allowed_ids}
-                    <input type="submit" class="button red t-button delete-button" value="{if !$contacts}
+        <footer class="dialog-footer">
+            {if $allowed_ids}
+                {strip}
+                    <button type="button" class="button red js-delete-button">{if !$contacts}
                             [`Delete contacts`]
                         {elseif $is_superadmin}
                             [`Delete anyway`]
                         {else}
                             {sprintf(_w('Delete %d of %d selected'), count($ids), $all)}
-                        {/if}">
-                    [`or`]
-                    <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
-                {else}
-                    <input type="submit" class="button t-button js-close-dialog" value="[`Close`]">
-                    {*<a href="javascript:void(0)" class="button js-close-dialog">[`Close`]</a>*}
-                {/if}
-            </div>
+                        {/if}</button>
+                {/strip}
+                <a class="js-close-dialog button light-gray" href="javascript:void(0);">[`Cancel`]</a>
+            {else}
+                <input type="submit" class="button light-gray js-close-dialog" value="[`Close`]">
+                {*<a href="javascript:void(0)" class="button js-close-dialog">[`Close`]</a>*}
+            {/if}
         </footer>
     </div>
+    <script>
+        (function() {
+           $('#{$wrapper_id}').data('allowed-ids', {$allowed_ids|json_encode});
+        })();
+    </script>
 </div>
-
-<script>(function() { "use strict";
-
-    var $wrapper = $('#{$wrapper_id}');
-
-    // string with comma-separated contact_ids
-    var allowed_ids = {$allowed_ids|json_encode};
-    if (!allowed_ids) {
-        return;
-    }
-
-    $wrapper.find('.t-actions .delete-button').click(function() {
-        $(this).parent().append('<i class="icon16 loading"></i>');
-        $.post('?module=users&action=delete', { id: allowed_ids }, function(){
-            $wrapper.trigger('contacts_deleted', [allowed_ids.split(',')]).trigger('close');
-        });
-    });
-
-})();</script>

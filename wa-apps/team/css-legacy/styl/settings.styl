@@ -1,0 +1,128 @@
+.t-settings-page
+    background #fff
+
+    $_size = 16px;
+    $_pad_l = 2px
+
+    .t-content-body
+        margin 1em 0 0
+
+        .t-notice
+            margin 0 0 0 8px
+
+            .icon16
+                position relative
+                top 3px
+                margin 0 4px 0 0
+                vertical-align top
+
+        .t-form-wrapper
+            margin 1em 0 0
+            padding 1em 0
+            border-top 1px solid #e7e7e7
+
+            .field
+                margin 1em 0 0
+
+                &:first-child
+                    margin-top 0
+
+            .t-map-toggle
+                label
+                    cursor pointer
+
+                .t-input
+                    position relative
+                    top 1px
+                    display inline-block
+                    vertical-align top
+                    margin 0 4px 0 0
+
+                .t-hidden-content
+                    margin 4px 0 1em
+
+                    .hint
+                        margin 4px 0 0
+
+                    a
+                        display inline
+                        margin 0
+                        padding 0
+
+        .t-calendar-settings
+            position: relative;
+            left: -5px;
+
+            .t-calendar-list
+                position relative
+                margin -4px 0 0
+                padding 0
+
+                .t-calendar-item
+                    $_line_h = 22px
+                    position relative
+                    margin 0 0 4px
+                    padding 0 0 0 ( $_size + $_pad_l * 2 )
+                    list-style none
+                    line-height $_line_h
+                    user-select none
+
+                    a
+                        display inline-block
+                        vertical-align top
+                        padding 0
+                        margin 0
+
+                    &:last-child
+                        margin-bottom 0
+
+                    .t-toggle
+                        position absolute
+                        top ( ($_line_h - $_size)/2 )
+                        left $_pad_l
+                        width $_size
+                        height $_size
+                        cursor move
+
+                        .icon16
+                            margin 0
+                            vertical-align top
+
+                    .t-userpic
+                        position relative
+                        top -1px
+                        margin 0 4px 0 0
+
+                    .t-name
+                        padding 0
+                        cursor pointer
+
+                    .t-lock
+                        position relative
+                        top -1px
+                        margin 0 0 0 4px
+
+            .t-actions
+                margin 4px 0 0
+                padding 0 0 0 ( $_size + $_pad_l * 2 )
+                line-height 22px
+
+                .t-add-calendar-link
+                    .icon16
+                        position: relative;
+                        top: -1px;
+                        margin: 0 4px 0 0;
+
+        .t-names-toggle
+            margin -1px 0 0
+
+            .t-item-wrapper
+                label
+                    cursor pointer
+
+                .t-input
+                    position relative
+                    top 1px
+                    display inline-block
+                    vertical-align top
+                    margin 0 4px 0 0

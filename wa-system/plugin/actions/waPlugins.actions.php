@@ -24,7 +24,11 @@ class waPluginsActions extends waActions
 
     protected function getTemplatePath($action = null)
     {
-        $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates/';
+        if (wa()->whichUI($this->getAppId()) == '2.0') {
+            $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates/';
+        } else {
+            $path = $this->getConfig()->getRootPath() . '/wa-system/plugin/templates-legacy/';
+        }
         if ($action == 'settings') {
             return $path.'Settings.html';
         } else {
@@ -63,6 +67,8 @@ class waPluginsActions extends waActions
         }
         $template = $this->getTemplatePath('settings');
         $vars['plugins_count'] = $plugins_count;
+        $vars['app_id'] = $this->getAppId();
+        $vars['need_show_review_widget'] = wa()->appExists('installer');
         $this->display($vars, $template);
 
     }

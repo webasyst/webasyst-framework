@@ -40,7 +40,7 @@ $.photos.comments_plugin = {
     addHotkeyHandler: function(item, hotkey, handler) {
         var self = this,
             hotkey = self.hotkeys[hotkey];
-        item.live('keydown', function(e) {
+        item.on('keydown', function(e) {
             if (e.keyCode == hotkey.key &&
                 e.altKey == hotkey.alt &&
                 e.ctrlKey == hotkey.ctrl &&
@@ -77,8 +77,8 @@ $.photos.comments_plugin = {
                 for (var i = 0, n = r.errors.length, errors = r.errors[i]; i < n; errors = r.errors[++i]) {
                     for (var name in errors) {
                         var elem = $('#add-comment-form').find('[name='+name+']'),
-                            error = $('<em class="errormsg"></em>').text(errors[name]);
-                        elem.after(error).addClass('error');
+                            error = $('<em class="errormsg state-error"></em>').text(errors[name]);
+                        elem.after(error).addClass('error state-error');
                     }
                 }
                 $.photos.comments_plugin.refreshCaptcha();
@@ -101,7 +101,7 @@ $.photos.comments_plugin = {
                 $('.comments-header', comments_block).show();
             }
             if (!ul.length) {
-                ul = $('<ul class="menu-v with-icon"></ul>');
+                ul = $('<ul class="menu-v with-icon menu"></ul>');
                 parent_li.append(ul);
             }
             ul.append(html);
@@ -133,7 +133,7 @@ $.photos.comments_plugin = {
     clearFormErrors: function() {
         var form = $('#add-comment-form');
         form.find('.errormsg').remove();
-        form.find('.error').removeClass('error');
+        form.find('.error').removeClass('error state-error');
     },
     clearFormInputs: function() {
         var form = $('#add-comment-form');

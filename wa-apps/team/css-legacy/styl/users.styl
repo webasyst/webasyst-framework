@@ -1,0 +1,287 @@
+.t-users-page
+.t-group-page
+    .t-content-header
+        & > .t-layout
+            & > .t-column.right
+                vertical-align top
+                padding 0 0 0 1em
+                line-height 30px
+                white-space nowrap
+
+        .icon16
+            position relative
+            top 3px
+            vertical-align baseline
+            margin 0 4px 0 0;
+
+    .t-content-body
+        margin 1em 0 0
+
+    .t-users-list
+        .t-user-wrapper
+            list-style none
+            text-align center
+            box-sizing border-box
+
+            &.is-clone
+                width 40px
+                padding 0
+                margin 0
+
+                .t-user-block
+                    & > *:not(.t-userpic-wrapper)
+                        display none
+
+            .t-user-block
+                line-height 18px
+
+
+                .t-userpic-wrapper
+                    font-size 0
+                    line-height 0
+                    max-width 144px
+                    margin: 0 auto 2px
+
+                    .t-userpic
+                        width 100%
+                        height auto
+                        border-radius 50%
+
+                .t-name
+                    word-wrap: break-word
+                    margin 0 0 6px
+
+                    .user-badge
+                        margin 6px 2px 0
+
+                .t-job
+                    margin 6px 0 0;
+                    font-size: 90%
+                    line-height: 1.3em
+
+                .t-login
+                    color #bebfc5
+                    margin 6px 0 0;
+
+    &.is-online-page
+        .t-offline-list
+            .t-user-wrapper
+                $_userpic_w = 48px
+
+                &:first-child
+                    margin-top 0
+
+                &:last-child
+                    margin-bottom 0
+
+                .t-user-block
+                    position relative
+                    display: inline-block;
+                    vertical-align: top;
+                    max-width 100%
+                    box-sizing border-box
+
+                    .t-layout
+                        width auto
+                        table-layout fixed
+
+                        .t-column
+                            vertical-align middle
+
+                            &.left
+                                padding-right $pad
+                                width $_userpic_w
+
+                            &.right
+                                padding-left $pad
+                                width 20%
+
+                    .t-userpic-wrapper
+                        display block
+                        width $_userpic_w
+                        line-height 0
+
+                        img
+                            width 100%
+                            height auto
+
+                    .t-name
+                        margin 0
+
+                    .t-online-date
+                        font-size (12/$rem)em
+                        color #aaa
+
+                    .t-link
+                        display block
+                        position absolute
+                        top 0
+                        left 0
+                        width 100%
+                        height 100%
+                        cursor pointer
+
+.t-group-page
+    .t-content-header
+        h1
+            a
+                position relative
+                top -3px
+                display: inline-block;
+                vertical-align: baseline;
+                margin: 0 0 0 1em;
+                font-size: ($rem)px;
+                font-weight: normal;
+
+    .t-content-body
+        .t-description
+
+            .t-map-link
+                margin 0 0 0 4px
+
+                .icon16
+                    position relative
+                    top: 3px
+                    vertical-align baseline
+                    margin 0
+
+        .t-map-wrapper
+            display none
+            position relative
+            width 100%
+            height 400px
+            margin 1.5em 0
+
+            &.before-render
+                position absolute
+                visibility hidden
+
+            .t-location-map
+                position absolute
+                top 0
+                left 0
+                width 100%
+                height 100%
+
+.t-group-access-page
+.t-group-manage-page
+    .t-content-header
+        & > .t-layout
+            & > .t-column.right
+                vertical-align middle
+
+
+        .t-actions
+            margin 14px 0 24px
+
+    .t-content-body
+        margin 1em 0 0
+
+        .t-autocomplete-wrapper
+            margin 1em 0 2em
+
+            .t-hint
+                margin 0 0 0 4px
+                line-height 22px
+
+                .icon16
+                    position relative
+                    top 3px
+                    margin 0 4px 0 0
+                    vertical-align baseline
+
+        .t-users-wrapper
+            margin 2em 0 0
+
+            .is-hidden
+                display none
+
+            .t-users-list
+                margin 1em 0 0
+
+                &.is-used-list
+                    .t-add-text
+                        display none
+
+                &.is-unused-list
+                    .t-user-wrapper
+                        .t-userpic-wrapper
+                        .t-name
+                        .t-login
+                        .t-actions
+                            opacity .5
+
+                        &:hover
+                            .t-userpic-wrapper
+                            .t-name
+                            .t-login
+                            .t-actions
+                                opacity 1
+
+                    .t-remove-text
+                        display none
+
+                .t-user-wrapper
+                    max-width 700px
+                    box-sizing border-box
+                    background #fff
+                    border-radius 2px
+
+                    &:first-child
+                        margin-top 0
+
+                    &:last-child
+                        margin-bottom 0
+
+                    .t-user-block
+                        .t-layout
+                            word-wrap: break-word;
+
+                            & > .t-column
+                                vertical-align middle
+
+                                &.left
+                                    width 48px
+                                    padding 0 1em 0 0
+
+                                &.right
+                                    padding 0 0 0 1em
+                                    text-align right
+
+                        .t-userpic-wrapper
+                            line-height 0
+
+                            .t-userpic
+                                width 100%
+                                height auto
+
+                        .t-actions
+                            white-space nowrap
+
+                        .t-name
+                            margin 0
+                            line-height (18/$rem)em
+
+                        .t-login
+                            font-size (12/$rem)em
+                            color #aaa
+
+                        a
+                            display inline-block
+
+    .c-access-rights-wrapper
+        .t-app-icon
+            padding 0 8px 0 0
+
+            img
+                max-width 32px
+                height auto
+
+        .t-app-name
+            padding 0 8px 0 0
+
+.t-group-access-page
+    .t-content-body
+        .c-access-rights-wrapper
+            .t-access-status
+                width auto

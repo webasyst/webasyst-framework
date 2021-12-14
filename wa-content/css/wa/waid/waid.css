@@ -1,0 +1,129 @@
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body {
+  width: 500px;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .wa-dialog-content {
+  padding-bottom: 20px;
+  min-height: 440px;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .help-step {
+  display: flex;
+  flex-direction: column;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .help-step img {
+  margin-bottom: 25px;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .help-step h3 {
+  font-size: 1.15em;
+  color: #444;
+  margin-bottom: 10px;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .help-step p {
+  color: #777;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .btn {
+  border-radius: 4px;
+  border: 0 none;
+  font-size: 16px;
+  font-weight: bold;
+  outline: 0 none;
+  padding: 8px 18px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .btn:hover {
+  cursor: pointer;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .btn.blue {
+  background: #07f;
+  color: #fff;
+  margin-left: 16px;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .btn.blue:hover {
+  background: #006be6;
+  color: #fff !important;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .btn.green {
+  background: #4bd216;
+  color: #fff;
+  margin-left: 16px;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .btn.green:hover {
+  background: #44bd14;
+  color: #fff !important;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .btn.gray {
+  background: #ededed;
+  color: #444;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .btn.gray:hover {
+  background: #e1e1e1;
+  color: #444 !important;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .action-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .action-buttons .dots {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .action-buttons .dots li {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ddd;
+  margin-right: 4px;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .action-buttons .dots li.active {
+  background: #4af;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-dialog-footer a {
+  font-size: 16px;
+  color: #07f;
+}
+.wa-dialog.w-webasyst-id-help-dialog .wa-close-icon {
+  width: 12px;
+}
+.waid-auth-link {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: #000;
+  user-select: none;
+  background-color: #fff;
+  border: 0.0625em solid rgba(136,136,136,0.5);
+  padding: 0.5em;
+  line-height: 1;
+  border-radius: 0.25em;
+  outline: 0 none;
+  cursor: pointer;
+  box-sizing: border-box;
+  min-height: 2.5em;
+}
+.waid-auth-link:hover {
+  color: #000 !important;
+}
+.waid-auth-link > .icon {
+  width: 1.125em;
+  height: 1.125em;
+  background-image: url("/wa-content/img/webasyst-wand-bold.svg");
+  background-size: 100%;
+  margin-right: 0.5em;
+}

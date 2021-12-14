@@ -55,20 +55,48 @@ class waMail extends Swift_Mailer
             }
         }
 
+        /**
+         * Run before send notification
+         * @param Swift_Mime_Message $message
+         *
+         * @event mail_send.before
+         */
+
+        $params = [
+            'message' => $message,
+        ];
+
+        wa('webasyst')->event('mail_send.before', $params);
+
+        $result = false;
         try {
-            return parent::send($message, $failedRecipients);
+            $result = parent::send($message, $failedRecipients);
+            $params['result'] = $result;
         } catch (Exception $e) {
-            $log = array();
+            $log = [];
             $log[] = sprintf('Error sending email from "%s" to "%s" with subject "%s"',
-                join('", "', array_keys($message->getFrom())),
-                join('", "', array_keys($message->getTo())),
-                $message->getSubject()
+                     implode('", "', array_keys($message->getFrom())),
+                     implode('", "', array_keys($message->getTo())),
+                     $message->getSubject()
             );
             $log[] = $e->getMessage();
             $log[] = $e->getTraceAsString();
-            waLog::log(join("\n", $log), 'mail.log');
-            return false;
+            waLog::log(implode("\n", $log), 'mail.log');
+            $params['exception'] = $e->getMessage();
         }
+
+        /**
+         * Run after send notification
+         *
+         * @param Swift_Mime_Message message
+         * @param int|bool result
+         * @param exception exception
+         * @event mail_send.after
+         */
+
+        wa('webasyst')->event('mail_send.after', $params);
+
+        return $result;
     }
 
     /**

@@ -1,0 +1,17 @@
+{* Sytem error while in process of webasyst ID auth *}
+<img class="circle-check" src="{$wa_url}wa-content/img/wa-id/wrong.svg" alt="ERROR">
+<p class="text-center">
+    [`Sorry, the login has failed.`]
+</p>
+<p>
+    {$_system_error_msg}
+</p>
+
+{if $_auth_type === 'backend' && $_is_backend_auth_forced}
+    <button onclick="onClickRedirect()">[`Try again`]</button>
+    <p>
+        {sprintf(_ws('Or <a class="link" href="%s">sign into your backend in the usual way</a>.'), $forced_login_url)}
+    </p>
+{else}
+    <button onclick="onClickRedirect()">[`Back`]</button>
+{/if}

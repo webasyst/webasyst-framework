@@ -1,0 +1,115 @@
+{strip}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{$wa->accountName()} &mdash; {$wa->appName()}</title>
+
+    {* CSS *}
+    <link rel="stylesheet" href="{$wa_app_static_url}js-legacy/plugins/timepicker/jquery.timepicker.css?{$wa->version()}">
+    <link rel="stylesheet" href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.all.css?{$wa->version(true)}">
+    <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css?{$wa->version(true)}">
+    {$wa->css()}
+    <link rel="stylesheet" href="{$wa_app_static_url}css-legacy/team.css?{$wa->version()}">
+
+    {* JS *}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js?{$wa->version(true)}"></script>
+    {/strip}{wa_js file="js-legacy/compiled/team-external.min.js" uibundle=''}
+        {$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+        {$wa_url}wa-content/js/jquery-wa/wa.core.js
+        {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+        {$wa_url}wa-content/js/farbtastic/farbtastic.js
+        {$wa_url}wa-content/js/jquery-wa/profileWebasystID.js
+    {/wa_js}{wa_js file="js-legacy/compiled/team.min.js"}
+        {$wa_app_static_url}js-legacy/plugins/timepicker/jquery.timepicker.min.js
+        {$wa_app_static_url}js-legacy/team.js
+        {$wa_app_static_url}js-legacy/sidebar.js
+        {$wa_app_static_url}js-legacy/calendar.js
+        {$wa_app_static_url}js-legacy/profile.js
+        {$wa_app_static_url}js-legacy/access.js
+        {$wa_app_static_url}js-legacy/group.js
+        {$wa_app_static_url}js-legacy/settings.js
+        {$wa_app_static_url}js-legacy/api-token.js
+        {$wa_app_static_url}js-legacy/users.js
+        {$wa_app_static_url}js-legacy/welcome.js
+        {$wa_app_static_url}js-legacy/long.action.process.js
+        {$wa_app_static_url}js-legacy/map.js
+    {/wa_js}{strip}
+
+    {if $wa->locale() != 'en_US'}
+        <script src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
+    {/if}
+
+    {if $map_info.adapter === 'google'}
+        {$_key = $map_info.settings.key|default:''}
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&key={$_key}&lang={$wa->locale()}"></script>
+    {elseif $map_info.adapter === 'yandex'}
+        {$_apikey = $map_info.settings.apikey|default:''}
+        <script src="https://api-maps.yandex.ru/2.1/?lang={$wa->locale()}&apikey={$_apikey}" type="text/javascript"></script>
+    {/if}
+
+
+    {* @event backend_assets.%plugin_id% *}
+    {foreach $backend_assets as $item}
+        {$item}
+    {/foreach}
+
+    <script>
+        ( function($) {
+            $.team.title_pattern = "%s — {$wa->accountName()}";
+        })(jQuery);
+    </script>
+</head>
+<body>
+
+<div id="wa">
+    {* HEADER *}
+    {$wa->header()}
+
+    {* APP *}
+    <div class="t-app-wrapper" id="wa-app">
+        {* SIDEBAR *}
+        {if !empty($sidebar)}
+            <div class="t-sidebar-wrapper sidebar left200px" id="t-sidebar-wrapper">
+                {$sidebar|default:''}
+            </div>
+        {/if}
+
+        {* CONTENT *}
+        <div class="t-content-wrapper">
+            <div class="t-content-block" id="t-content">
+                {block name='content'}{$content}{/block}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function($) {
+    $.team.init({
+        is_debug: {$is_debug},
+        app_url: {$wa_app_url|json_encode},
+        locales: {
+            map_check_your_key: '[`Check your key first of all <a href="{$wa_app_url}settings/">here</a>`]',
+            map_error_title: '[`Error`]',
+            map_error_message: '[`Google map error, probably key in settings is invalid.`]'
+        }
+    });
+})(jQuery);
+</script>
+
+</body>
+</html>
+
+{/strip}

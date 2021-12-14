@@ -1,0 +1,66 @@
+{$_title = ".article"}
+{$wa->title($_title)}
+
+{function name="_render"}
+<div class="article">
+    <div class="article-body">
+
+        <h1>Hello world</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+    </div>
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Контейнер для контента, предполагающий отображение длинного текста для комфортного чтения. Геометрия <code>.article</code> добавляет поля (отступы) по бокам так, чтобы в каждой строке было в среднем не более 8—10 слов. Примерно как в журнальной и книжной верстке. Оптимально для лонгридов и любых других текстов с большим количеством букв.</p>
+
+    <p>Контент данной страницы отображается внутри <code>.article</code> 😊</p>
+
+    <p>Главная особенность <code>.article</code> — контейнер автоматически адаптирует ширину и высоту контента и его параметры для комфортного чтения: добавляет поля по бокам, убирает отступы у некоторых элементов (<code>.tabs</code>, <code>.chips</code> и т. д.) так, чтобы длина строки была оптимальной для чтения.</p>
+
+    <p>Структурно элемент состоит из общей обертки <code>.article</code> и внутренних блоков <code>.article-header</code> (навигация, дополнительная метаинформация, которую можно убрать из статьи без потери смысловой нагрузки), <code>.article-body</code> (основное содержимое статьи, в том числе заголовок <code>h1</code>), <code>.article-footer</code> (прочая обособленная полезная информация, например, копирайты, лайки и репосты).</p>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <p>Если статья состоит только из контента (как в случае с текстом, который вы сейчас читаете), то достаточно использовать только <code>.article + .article-body</code>. Если же над статьей где-то обособленно нужно разместить блок-заголовок с некоторой полезной информацией, например, элементами навигации, то следует использовать элемент <code>.article + .article-header</code> — вместе с основным содержимым или даже без него.</p>
+
+    <p><code>.article-header</code> и <code>.article-footer</code> можно использовать с дополнительным классом <code>.full-width</code>, который убирает поля слева и справа. Это может пригодиться для показа блоков навигации над статьей, выделенной тенью.</p>
+
+    <button class="button" id="article-header-toggle">Добавить .article-header и .article-footer</button>
+
+    <p>
+        <img src="https://demo1-ru.webasyst.com/wa-data/public/photos/87/01/187/187.970@2x.jpg" style="width: 2000px; height: 1000px;" />
+    </p>
+
+    <h3>.article<code>.shadowed</code></h3>
+    <p>
+        С помощью дополнительного класса <code>.article<strong>.shadowed</strong></code> можно выделить статью тенью и дополнительными отступами сверху и снизу. Данный вариант рекомендуется, только если на странице публикуется несколько статей друг за другом (например, блог-постов) и/или если общий фон страницы — не белый.
+    </p>
+    <p>
+        <button class="button gray" id="article-shadow-toggle">Добавить тень</button>
+    </p>
+
+    <h3>.article > <code>img</code></h3>
+
+    <p>У всех изображений <code>img</code> внутри <code>.article</code> есть свойство <code>max-width: 100%;  height: auto !important;</code>. Если для конкретного изображения вы явно задаете свойства ширины и высоты, то рекомендуется указывать их только с помощью <code>style="width: ...; height: ..."</code>, но не использовать <code>style="max-width: ..."</code>, иначе могут появиться ненужные полосы горизонтальной прокрутки, особенно на мобильных устройствах.
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+        $('#article-shadow-toggle').click(function(){
+            $('#wa-app-content').closest('.article').toggleClass('shadowed');
+        });
+
+        $('#article-header-toggle').click(function(){
+            $('#wa-app-content').before('<div class="article-header temp-element" style="background: #5080a4 url(\'https://demo1-ru.webasyst.com/wa-data/public/photos/50/01/150/150.970@2x.jpg\') center center; background-size: cover; min-height: 300px;"><h3 style="color: #fff;">Это .article-header</h3></div><div class="article-header full-width temp-element" style="background: #afd;">А это .article-header.full-width</div>');
+            $('#wa-app-content').after('<div class="article-footer temp-element" style="background: #eee;"><p class="small"><strong>А вот и .article-footer</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p></div>');
+        });
+    </script>
+</div>

@@ -30,7 +30,7 @@ class photosAlbumPhotosAction extends waViewAction
         $album_model->keyPhotos($child_albums);
 
         $hash = '/album/'.$id;
-        $frontend_link = photosCollection::getFrontendLink($hash);
+        $frontend_link = photosCollection::getFrontendLink($hash, ['type' => 'first']);
         $collection = new photosCollection($hash);
 
         $config = $this->getConfig();
@@ -58,7 +58,7 @@ class photosAlbumPhotosAction extends waViewAction
             }
         }
 
-        $this->template = 'templates/actions/photo/PhotoList.html';
+        $this->setTemplate('photo/PhotoList.html', true);
 
         /**
          * Extend photo list toolbar in photo-list-page

@@ -10,6 +10,15 @@ class waReCaptcha extends waAbstractCaptcha
 
     const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
+    // for invisible captcha only - save success result in session
+    // if user pass captcha test once in this session consider user is not a robot
+    // need to prevent problem where there is multiple captcha instances in page,
+    // or when user has multiple forms on multiple tabs open:
+    // after first form is sumbitted, second form will not have its captcha code valid anymore
+    // until next scheduled update.
+    // TODO: disabling captcha via session is generally a bad idea. Bots may exploit that :(
+    const SESSION_KEY = 'recaptcha_passed';
+
     public function getHtml()
     {
         $wrapper_class = ifempty($this->options, 'wrapper_class', 'wa-captcha');
@@ -18,8 +27,9 @@ class waReCaptcha extends waAbstractCaptcha
 
         $view = wa('webasyst')->getView();
         $view->assign(array(
-            'wrapper_class' => $wrapper_class,
-            'sitekey'       => $sitekey,
+            'wrapper_class'    => $wrapper_class,
+            'sitekey'          => $sitekey,
+            'recaptcha_passed' => $invisible && wa()->getStorage()->get(self::SESSION_KEY),
         ));
 
         $template = wa()->getConfig()->getRootPath() .'/wa-system/captcha/recaptcha/templates/recaptcha.html';
@@ -31,9 +41,29 @@ class waReCaptcha extends waAbstractCaptcha
 
     public function isValid($code = null, &$error = '')
     {
+        $invisible = ifset($this->options['invisible']);
+        if ($invisible && wa()->getStorage()->get(self::SESSION_KEY)) {
+            return true;
+        }
+
+        if (!$code) {
+            $code = waRequest::cookie('g-recaptcha-response');
+        }
+
+        $is_valid = $this->verify($code, $error);
+        if ($invisible && $is_valid) {
+            wa()->getStorage()->set(self::SESSION_KEY, true);
+        }
+
+        return $is_valid;
+    }
+
+    protected function verify($code = null, &$error = '')
+    {
         if ($code === null) {
             $code = waRequest::post('g-recaptcha-response');
         }
+
         $handle = curl_init(self::SITE_VERIFY_URL);
         $options = array(
             CURLOPT_POST => true,

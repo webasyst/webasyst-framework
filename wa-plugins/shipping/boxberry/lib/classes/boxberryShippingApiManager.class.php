@@ -11,6 +11,7 @@ class boxberryShippingApiManager
     const METHOD_LIST_ZIPS = 'ListZips';
     const METHOD_LIST_CITIES_FULL = 'ListCitiesFull';
     const METHOD_DELIVERY_COSTS = 'DeliveryCosts';
+    const METHOD_LIST_STATUSES_FULL = 'ListStatusesFull';
     const METHOD_CREATE_DRAFT = 'ParselCreate';
     const METHOD_REMOVE_DRAFT = 'ParselDel';
     const LOG_PATH_KEY = 'boxberry_log_path_key';
@@ -32,14 +33,21 @@ class boxberryShippingApiManager
     protected $errors = null;
 
     /**
+     * @var boxberryShipping $bxb
+     */
+    protected $bxb = null;
+
+    /**
      * boxberryShippingApiManager constructor.
      * @param string $token
      * @param string $url
+     * @param string $country
      */
-    public function __construct($token = '', $url = '')
+    public function __construct($token = '', $url = '', boxberryShipping $bxb = null)
     {
         $this->token = $token;
         $this->url = $url;
+        $this->bxb = $bxb;
     }
 
     /**
@@ -79,10 +87,31 @@ class boxberryShippingApiManager
     public function downloadListPoints($data)
     {
         $data['method'] = self::METHOD_LIST_POINT;
+        $data['CountryCode'] = $this->getCountryCode();
         $data['prepaid'] = 1;
 
         $result = $this->sendRequest($data);
         return $result;
+    }
+
+    private function getCountryCode()
+    {
+        $old_country_setting = $this->bxb->getSettings('country');
+        if (isset($old_country_setting) && !empty($old_country_setting)) {
+            return '643'; // code of Russia
+        }
+
+        $allowed_countries = $this->bxb->getSettings('countries');
+        $all_allowed_countries = boxberryShippingCountriesAdapter::getAllowedCountries();
+        if (empty($allowed_countries) || !is_array($allowed_countries)) {
+            $allowed_countries = $all_allowed_countries;
+        } else {
+            $allowed_countries = array_flip($allowed_countries);
+        }
+
+        $country_iso3_letter = $this->bxb->getAddress('country');
+
+        return isset($allowed_countries[$country_iso3_letter]) ? $all_allowed_countries[$country_iso3_letter] : '';
     }
 
     /**
@@ -128,6 +157,7 @@ class boxberryShippingApiManager
     public function downloadListCitiesFull($data)
     {
         $data['method'] = self::METHOD_LIST_CITIES_FULL;
+        $data['CountryCode'] = $this->getCountryCode();
 
         $result = $this->sendRequest($data);
         return $result;
@@ -145,6 +175,17 @@ class boxberryShippingApiManager
 
         $result = $this->sendRequest($data);
         return $result;
+    }
+
+    /**
+     * @param $data
+     * @return array
+     */
+    public function getListStatusesFull($data)
+    {
+        $data['method'] = self::METHOD_LIST_STATUSES_FULL;
+
+        return $this->sendRequest($data);
     }
 
     /**

@@ -99,9 +99,19 @@ class teamConfig extends waAppConfig
         }
     }
 
+    /**
+     * @param array $data - if here array of format ['token_info' => <array>, 'auth_result'] => <array>] it is response from webasyst ID auth
+     * @throws waException
+     */
     public function dispatchAppToken($data)
     {
         $app_tokens_model = new waAppTokensModel();
+
+        $webasyst_id_auth_result = null;
+        if (isset($data['token_info'])) {
+            $webasyst_id_auth_result = isset($data['auth_result']) ? $data['auth_result'] : null;
+            $data = $data['token_info'];
+        }
 
         // Unknown token type?
         if ($data['type'] != 'user_invite') {
@@ -133,7 +143,7 @@ class teamConfig extends waAppConfig
 
         wa('webasyst');
         $controller = wa()->getDefaultController();
-        $controller->setAction(new teamInviteFrontendAction($data));
+        $controller->setAction(new teamInviteFrontendAction($data, $webasyst_id_auth_result));
         $controller->run();
     }
 
@@ -227,12 +237,12 @@ class teamConfig extends waAppConfig
                 if ($actions[$l['action']]['format'] == 'event') {
                     if (!empty($l['params']) && empty($events[$l['params']])) {
                         $event = $cem->getById($l['params']);
-                        $events[$l['params']] = $event['summary'];
+                        $events[$l['params']] = $event ? $event['summary'] : '';
                     }
                 } elseif ($actions[$l['action']]['format'] == 'calendar') {
                     if (!empty($l['params']) && empty($calendars[$l['params']])) {
                         $calendar = $ccm->getById($l['params']);
-                        $calendars[$l['params']] = $calendar['name'];
+                        $calendars[$l['params']] = $calendar ? $calendar['name'] : '';
                     }
                 } else {
                     if (!empty($l['contact_id'])) {
@@ -253,7 +263,9 @@ class teamConfig extends waAppConfig
                     }
                     if (!empty($l['params']) && empty($groups[$l['params']])) {
                         $group = $gm->getById($l['params']);
-                        $groups[$l['params']] = $group['name'];
+                        if ($group) {
+                            $groups[$l['params']] = $group['name'];
+                        }
                     }
                 }
             }
@@ -435,7 +447,6 @@ class teamConfig extends waAppConfig
             $slice_of_contact_names = array_slice($contact_names, 0, $max_n);
             $log_item['params_html'] = sprintf(_w('%s and %s more'), join(', ', $slice_of_contact_names), $count - $max_n);
         }
-
     }
 
     /**
@@ -450,5 +461,16 @@ class teamConfig extends waAppConfig
             $names[$index] = waContactNameField::formatName($contact);
         }
         return $names;
+    }
+
+    /**
+     * @return string[] - key-value from alias (name) to size
+     */
+    public function getProfileCoverSizeAliases()
+    {
+        return [
+            '100x100' => 'preview',
+            '1408x440' => 'full'
+        ];
     }
 }

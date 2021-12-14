@@ -274,6 +274,7 @@ abstract class waLoginFormRenderer
         if (!$this->auth_config->needLoginCaptcha()) {
             return '';
         }
+
         $captcha = $this->getCaptcha();
         $assign = $this->prepareCaptcha($captcha);
         return $this->renderTemplate($this->getTemplate('captcha'), $assign);
@@ -514,15 +515,20 @@ abstract class waLoginFormRenderer
      */
     protected function getCaptchaOptions()
     {
-        return array(
+        $captcha_options = [
             'namespace'     => $this->namespace,
             'wrapper_class' => 'wa-captcha-section',
             'version'       => 2,
-        );
+        ];
+        if ($this->auth_config instanceof waDomainAuthConfig) {
+            $captcha_options['app_id'] = $this->auth_config->getApp();
+        }
+        return $captcha_options;
     }
 
     /**
      * @return waCaptcha
+     * @throws waException
      */
     protected function getCaptcha()
     {

@@ -91,37 +91,88 @@ class waResponse
     /**
      * Sets a cookie value.
      *
-     * @param   string  $name       Cookie name
-     * @param   mixed   $value      Cookie value
-     * @param   int     $expire     Expiration time
-     * @param   string  $path       Path to URL "subdirectory" within which cookie must be valid
-     * @param   string  $domain     Domain name for which cookie must be valid
-     * @param   bool    $secure     Flag making cookie value available only if passed over HTTPS
-     * @param   bool    $http_only  Flag making cookie value accessible only via HTTP and not accessible to client scripts (JavaScript)
+     * @param   string     $name       Cookie name
+     * @param   mixed      $value      Cookie value
+     * @param   array|int  $expires    Expiration time; an array here can be used to pass key-value options like setcookie() of PHP 7.3
+     * @param   string     $path       Path to URL "subdirectory" within which cookie must be valid
+     * @param   string     $domain     Domain name for which cookie must be valid
+     * @param   bool       $secure     Flag making cookie value available only if passed over HTTPS
+     * @param   bool       $httponly   Flag making cookie value accessible only via HTTP and not accessible to client scripts (JavaScript)
      * @return  waResponse  Instance of waResponse class
      */
     public function setCookie(
         $name,
         $value,
-        $expire = 0,
+        $expires = 0,
         $path = '',
         $domain = '',
         $secure = false,
-        $http_only = false
+        $httponly = false
     ) {
+        if (headers_sent()) {
+            return $this;
+        }
+
+        if (is_array($expires)) {
+            $options = $expires;
+            $expires = ifset($options, 'expires', 0);
+            $path = ifset($options, 'path', '');
+            $domain = ifset($options, 'domain', '');
+            $secure = ifset($options, 'secure', false);
+            $httponly = ifset($options, 'httponly', false);
+            $samesite = ifset($options, 'samesite', null);
+        }
         if (!$path) {
             $path = waSystem::getInstance()->getRootUrl();
         }
+        if (!in_array(ifset($samesite), ['Lax', 'Strict', 'None'])) {
+            $samesite = null;
+        }
+        if (!isset($samesite)) {
+            if (waRequest::isHttps()) {
+                //
+                // 'samesite=None; Secure' means:
+                // POST from different domain will contain all cookies.
+                // Non-HTTPS request from anywhere will contain no cookies.
+                //
+                // Since we need cross-domain POSTs for certain functions to work,
+                // this is the preferred option. And we have other built-in methods
+                // to protect against CSRF.
+                //
+                $samesite = 'None';
+            } else {
+                //
+                // 'samesite=Lax' means:
+                // Background POST from different domain will contain no cookies.
+                // Non-HTTPS request from anywhere will contain all cookies.
+                //
+                // No other option on HTTP, so we'll have to sacrifice cross-domain POSTs here.
+                //
+                $samesite = 'Lax';
+            }
+        }
+        if ($samesite == 'None') {
+            $secure = true; // required by specs
+        }
 
-        setcookie(
-            (string)$name,
-            (string)$value,
-            (int)$expire,
-            (string)$path,
-            (string)$domain,
-            (bool)$secure,
-            (bool)$http_only
-        );
+        // setCookie changed in 7.3
+        if (PHP_VERSION_ID < 70300) {
+            setcookie(
+                (string)$name,
+                (string)$value,
+                (int)$expires,
+                sprintf('%s; samesite=%s', $path, $samesite),
+                (string)$domain,
+                (bool)$secure,
+                (bool)$httponly
+            );
+        } else {
+            setcookie(
+                (string)$name,
+                (string)$value,
+                compact('expires', 'path', 'domain', 'secure', 'httponly', 'samesite')
+            );
+        }
 
         $_COOKIE[$name] = $value;
 
@@ -198,10 +249,18 @@ class waResponse
     /**
      * Sends all previously added headers.
      *
+     * Will immediately send 304 and exit if there are both
+     * an If-Modified-Since request header as well as Last-Modified response header
+     * and the former equals the latter. See `handleIfModifiedSince()`
+     *
      * @return  waResponse  Instance of waResponse class
      */
     public function sendHeaders()
     {
+        if ($this->status != 304 && $this->isNotModified304()) {
+            $this->setStatus(304);
+        }
+
         foreach ($this->headers as $name => $value) {
             if (is_array($value)) {
                 foreach ($value as $var) {
@@ -215,6 +274,10 @@ class waResponse
         // Added after all that was not erased
         if ($this->status !== null) {
             $this->header(waRequest::server('SERVER_PROTOCOL', 'HTTP/1.0').' '.$this->status.' '.self::$statuses[$this->status]);
+        }
+
+        if ($this->status == 304) {
+            exit;
         }
 
         return $this;
@@ -262,6 +325,121 @@ class waResponse
     public function setTitle($title)
     {
         return $this->setMeta('title', (string)$title);
+    }
+
+    /**
+     * Return current CANONICAL link.
+     *
+     * @return  string
+     * @since   1.14.2
+     */
+    public function getCanonical()
+    {
+        return $this->getMeta('canonical');
+    }
+
+    /**
+     * Sets the page CANONICAL link.
+     * This link is accessible in Smarty templates using {$wa->head()}.
+     *
+     * @param   string  $canonical_url  Page CANONICAL link (defaults to current page without GET params)
+     * @param   bool    $with_header_link Use link in header
+     * @since   1.14.2
+     */
+    public function setCanonical($canonical_url = null, $with_header_link = true)
+    {
+        if (!isset($canonical_url)) {
+            $canonical_url = wa()->getConfig()->getRootUrl(true) . wa()->getConfig()->getRequestUrl(true, true);
+        }
+        $actual_url = wa()->getConfig()->getRootUrl(true) . wa()->getConfig()->getRequestUrl();
+        if (empty($canonical_url)) {
+            unset($this->headers['Link']);
+            unset($this->metas['canonical']);
+        } elseif ($canonical_url != $actual_url) {
+            if ($with_header_link) {
+                $this->addHeader('Link', "<{$canonical_url}>; rel='canonical'");
+            }
+            $this->setMeta('canonical', (string)$canonical_url);
+        }
+    }
+
+    /**
+     * Sets the Last-Modified header.
+     * Can be called multiple times during page generation. Effective value of
+     * Last-Modified header is the most recent $last_modified_datetime between all calls.
+     *
+     * `SendHeaders()` will immediately send 304 and exit if there's
+     * an If-Modified-Since request header that equals effective $last_modified_datetime.
+     * See handleIfModifiedSince(): it can be used to send 304 immediately.
+     *
+     * @param   string  $last_modified_datetime  Page update datetime
+     * @since   1.14.3
+     */
+    public function setLastModified($last_modified_datetime)
+    {
+        $last_modified_timestamp = @strtotime($last_modified_datetime);
+        if (!$last_modified_timestamp || wa()->getUser()->getId()) {
+            return;
+        }
+
+        // Ignore new $last_modified_datetime if more recent datetime
+        // has been set via previous call to setLastModified()
+        $existing_last_modified = $this->getHeader('Last-Modified');
+        if ($existing_last_modified) {
+            $existing_last_modified_timestamp = strtotime($existing_last_modified);
+            if ($existing_last_modified_timestamp >= $last_modified_timestamp) {
+                return;
+            }
+        }
+
+        $last_modified = gmdate("D, d M Y H:i:s \G\M\T", $last_modified_timestamp);
+        $this->addHeader('Last-Modified', $last_modified);
+        if (!$this->getHeader('Cache-Control')) {
+            $this->addHeader('Cache-Control', 'max-age=0');
+        }
+    }
+
+    /**
+     * Check if request header If-Modified-Since equals response header Last-Modified.
+     * If it does, this sends 304 response immediately and exits.
+     *
+     * @since   1.14.7
+     */
+    public function handleIfModifiedSince()
+    {
+        if ($this->isNotModified304()) {
+            $this->setStatus(304);
+            $this->sendHeaders();
+            exit;
+        }
+    }
+
+    /**
+     * Compare request header If-Modified-Since and response header Last-Modified.
+     * Return true if 304 status should be sent. False if full response is required.
+     */
+    protected function isNotModified304()
+    {
+        // Handle behaviour of headers: If-Modified-Since / Last-Modified / 304 Not Modified status.
+        $last_modified = $this->getHeader('Last-Modified');
+        if ($last_modified) {
+            $if_modified_since = false;
+            $last_modified_timestamp = strtotime($last_modified);
+            if (getenv('HTTP_IF_MODIFIED_SINCE')) {
+                $if_modified_since = @strtotime(substr(getenv('HTTP_IF_MODIFIED_SINCE'), 5));
+            }
+            if (!$if_modified_since && waRequest::server('HTTP_IF_MODIFIED_SINCE')) {
+                $if_modified_since = @strtotime(substr(waRequest::server('HTTP_IF_MODIFIED_SINCE'), 5));
+            }
+            if ($if_modified_since && $if_modified_since == $last_modified_timestamp) {
+                // We check for equality (==) rather than (>=) deliberately because of the way
+                // some dynamic content (e.g. shop cart in frontend theme) behaves with last-modified.
+                // Equality check does not break anything but fixes corner cases
+                // and is more robust overall.
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

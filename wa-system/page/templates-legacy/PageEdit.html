@@ -1,0 +1,475 @@
+<div class="wa-page-editor">
+<form id="wa-page-form" method="post" action="?module=pages&action=save{if $page}&id={$page.id}{/if}">
+    {foreach $options.data as $k => $v}
+    <input type="hidden" name="{$k}" value="{$v|escape}">
+    {/foreach}
+    <div class="block wa-page-gray-toolbar">
+        {if $page}
+        <div class="float-right ie-menu-h-fix">
+            <ul class="menu-h">
+
+                <!-- plugin hook: 'backend_page_edit.action_button_li' -->
+                {* @event backend_page_edit.%plugin_id%.action_button_li *}
+                {foreach $backend_page_edit as $_}{ifset($_.action_button_li)}{/foreach}
+
+                {if !empty($page.update_datetime)}
+                    <li><h3 class="gray">{$page.update_datetime|wa_datetime:"humandatetime"}</h3></li>
+                {/if}
+                <li><a href="#" class="inline-link" id="wa-page-settings-toggle"><i class="icon16 edit"></i><b><i>[s`Page settings`]</i></b></a></li>
+                <li><a class="wa-page-delete" href="?module=pages&action=delete"><i class="icon16 delete"></i>[s`Delete`]</a></li>
+            </ul>
+        </div>
+        {/if}
+        <div>
+            <h2 class="wa-page-name">{if $page}{$page.name|escape}{if !$page.status} <span class="wa-page-draft">[s`draft`]</span>{/if}{else}[s`New page`]{/if}</h2>
+            <div class="wa-page-urls small">
+                {if $page}
+                    {if !empty($url)}
+                        <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" target="_blank">{$url_decoded|escape}{$page.url}</a>
+                        <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" target="_blank"><i class="icon10 new-window"></i></a>
+                    {elseif $page.domain and $page.route !== null}
+                        {$page_route=waRouting::clearUrl($page.route)}
+                        <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
+                        <a href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}"><i class="icon10 new-window"></i></a>
+                    {/if}
+                {/if}
+                <br />
+            </div>
+        </div>
+        <div id="wa-page-settings" style="{if $page}display: none;{/if}">
+            <div class="fields form">
+                <div class="field-group">
+                    <div class="field">
+                        <div class="name bold">[s`Page name`]</div>
+                        <div class="value">
+                            <input type="text" class="bold large long" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="value wa-ibutton-checkbox">
+                            <ul class="menu-h">
+                                <li><span id="wa-page-v-open-label" class="wa-page-gray">[s`Draft`]</span></li>
+                                <li><input type="checkbox" id="wa-page-v" name="info[status]" {if !$page || $page.status}checked="checked"{/if} /></li>
+                                <li><span id="wa-page-v-private-label">[s`Published`]</span></li>
+                            </ul>
+
+                        </div>
+                        {if !empty($page.id)}
+                        <div class="value gray">
+                            id: <strong>{$page.id}</strong>
+                        </div>
+                        {/if}
+                    </div>
+
+                    <div class="field wa-page-url">
+                        <div class="name bold">[s`Page URL`]</div>
+                        <div class="value wa-page-app-url no-shift">
+                            {if !empty($url)}{$url_decoded|escape}{/if}<input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
+                        </div>
+                        {if !empty($warnings)}
+                            <div class="value small wa-page-app-url no-shift">
+                                <span style="color: red;">
+                                    {if isset($warnings.no_site_storefront)}
+                                        [s`The page will not be published because there is no settlement, or routing rule, of the app in the website structure settings. Add a new entry to Site apps’s “Structure” section in order to publish this page.`]
+                                    {elseif isset($warnings.deleted_site_storefront)}
+                                        [s`The page is not published because it is not connected to any of your website’s structure entries, or routing rules. Add a new entry to Site apps’s “Structure” section in order to publish this page.`]
+                                    {elseif isset($warnings.several_site_storefront)}
+                                        [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
+                                    {/if}
+                                </span>
+                            </div>
+                        {/if}
+                    </div>
+
+                </div>
+
+                {if !$page || !$page.id}
+                    <a id="wa-page-advanced-params-link" href="#" class="hint inline-link"><b><i>[s`more`]</i></b><i class="icon10 darr"></i></a>
+                {/if}
+                <div id="wa-page-advanced-params"{if !$page || !$page.id} style="display:none"{/if}>
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
+                            <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold long" /></div>
+                        </div>
+                        {foreach $params as $n => $p}
+                        <div class="field">
+                            <div class="name">{$vars[$n]}</div>
+                            {if $n == 'description'}
+                            <div class="value"><textarea name="params[{$n}]">{$p|escape}</textarea></div>
+                            {else}
+                            <div class="value"><input type="text" name="params[{$n}]" value="{$p|escape}" /></div>
+                            {/if}
+                        </div>
+                        {/foreach}
+                        <div class="field">
+                            <div class="name">[s`Social sharing`]</div>
+                            <div class="value no-shift">
+                                <label><input class="og-checkbox" type="checkbox" {if empty($og_params)}checked{/if}> [s`Use these meta tags for social sharing too`]</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-group og-group" {if empty($og_params)}style="display: none;"{/if}>
+                        <div class="field">
+                            <div class="name">[s`Social sharing title`] <span class="hint">og:title</span></div>
+                            <div class="value">
+                                <input name="og[title]" class="long bold" value="{ifset($og_params.title, '')|escape}" {if empty($og_params)}disabled{/if}>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
+                            <div class="value">
+                                <input name="og[image]" class="long" value="{ifset($og_params.image, '')|escape}" {if empty($og_params)}disabled{/if}>
+                                <br>
+                                <span class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
+                            <div class="value">
+                                <input name="og[video]" class="long" value="{ifset($og_params.video, '')|escape}" {if empty($og_params)}disabled{/if}>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`Social sharing description`] <span class="hint">og:description</span></div>
+                            <div class="value">
+                                <textarea name="og[description]"{if empty($og_params)}disabled{/if}>{ifset($og_params.description, '')|escape}</textarea>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`Social sharing type`] <span class="hint">og:type</span></div>
+                            <div class="value">
+                                <input name="og[type]" placeholder="" value="{ifset($og_params.type, '')}" {if empty($og_params)}disabled{/if}>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="value">
+                                <span class="hint">[s`Please refer to <a href="http://ogp.me" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {if !empty($page_edit)}
+                        <div class="field-group">
+                            {foreach $page_edit as $_}{$_}{/foreach}
+                        </div>
+                    {/if}
+
+                    <div class="field">
+                        <div class="name">[s`Page custom parameters`]</div>
+                        <div class="value">
+                            <textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
+{/foreach}{/if}</textarea><br />
+                            <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br clear="left" />
+        </div>
+    </div>
+    <div class="wa-editor-core-wrapper">
+        <ul class="wa-editor-wysiwyg-html-toggle">
+            <li class="selected"><a class="wysiwyg" href="#">[s`WYSIWYG`]</a></li>
+            <li><a class="html" href="#">HTML</a></li>
+        </ul>
+        <div style="clear:both">
+            <div class="wa-editor-upload-img hidden" title="[s`Upload image`]">
+                <i class="icon16 image"></i>
+            </div>
+            <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
+            {$wa->csrf()}
+        </div>
+    </div>
+
+    {if $options.save_panel}
+    <div class="wa-page-save-panel block bordered-top">
+        {$wa->getCheatSheetButton(["app" => {$wa->app()}, 'page_id' => {$page.id|default:''}])}
+        <input id="wa-page-button" type="submit" class="button green" value="[s`Save`]" />
+        <em class="hint">Ctrl + S</em>
+        <span id="wa-editor-status" style="margin-left: 25px; display: none"></span>
+    </div>
+    {/if}
+{$wa->csrf()}
+</form>
+<div class="clear"></div>
+</div>
+
+<div class="dialog" id="s-upload-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window" style="height: 275px; min-height: 275px; width: 450px; min-width: 450px">
+        <form id="s-upload-form" method="post" action="?module=pages&action=uploadimage&r=2" enctype="multipart/form-data">
+            {$wa->csrf()}
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h2>[s`Upload image`]</h2>
+                    <div id="redactor-droparea" style="text-align: center;">
+                        <p class="hint">
+                            [s`Only image files can be uploaded`]
+                        </p>
+                        <input id="s-input-file" type="file" name="file" multiple>
+                        <input type="hidden" name="path" id="s-upload-path" value="" />
+                        <div class="loading" style="display:none; margin-top: 10px">
+                            <i class="icon16 loading"></i> [s`Uploading...`]
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Upload`]">
+                    [`or`] <a href="#" class="inline-link cancel"><b><i>[s`cancel`]</i></b></a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="dialog" id="s-switch-editor">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window" style="height: 140px; min-height: 140px; width: 530px; min-width: 530px">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    [s`<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?`]
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[`Switch`]" />
+                    [`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">$(function () { "use strict";
+
+    var wa_url = window.wa_url = {$wa_url|json_encode};
+    var wa_app = window.wa_app = {$wa->app()|json_encode};
+    var page_delete_confirm_msg = "[s`This will delete entire page. Are you sure?`]";
+
+    {if $options.is_ajax}
+        {if $page}
+            document.title = {$page.name|json_encode} + " — " + {$wa->appName(false)|json_encode};
+        {else}
+            document.title = "[s`New page`] — " + {$wa->appName(false)|json_encode};
+        {/if}
+    {/if}
+
+    {if !empty($page.id)}
+        // Link to delete the page
+        $(".wa-page-delete").click(function () {
+            if (confirm(page_delete_confirm_msg)) {
+                $.post($(this).attr('href'), { id:{$page.id}}, function () {
+
+                    var li = $("#page-{$page.id}");
+                    var prev = li.prevAll('.dr:first');
+                    if (prev.length > 0) {
+                        location.href = prev.addClass('selected').find('a').attr('href');
+                        li.remove();
+                    } else {
+                        var next = li.nextAll('.dr:first');
+                        if (next.length > 0) {
+                            location.href = next.addClass('selected').find('a').attr('href');
+                            li.remove();
+                        } else {
+                            location.reload(true);
+                        }
+                    }
+                }, "json");
+            }
+            return false;
+        });
+    {/if}
+
+    // Show/hide block of OG fields when user clicks the checkbox
+    $('.og-checkbox').change(function () {
+        if ($(this).is(':checked')) {
+            $('.og-group').hide().find('input,textarea').attr('disabled', 'disabled');
+        } else {
+            $('.og-group').show().find('input,textarea').removeAttr('disabled');
+        }
+    });
+
+    // Initialize editor when JS is loaded
+    $.wa_editor_ready.then(function(method) {
+        $('#wa-page-content')[method]({
+            lang: $.Redactor.opts.langs["{$lang}"] ? "{$lang}" : 'en',
+            smarty_wysiwyg_msg: {_ws('WYSIWYG editor is disabled because page source contains Smarty code tags.')|json_encode},
+            modification_wysiwyg_msg: $('#s-switch-editor'),
+            saveButton: '#wa-page-button',
+            upload_img_dialog: '#s-upload-dialog',
+            uploadFields: {
+                '_csrf': "{waRequest::cookie('_csrf', '')}"
+            },
+            locales: {
+                'close': "[`Close`]"
+            }
+        });
+    });
+
+    // i-button toggle between draft and published state
+    (function() {
+        // Initialize i-button when it becomes visible
+        var iButtonInit = function () {
+            $("#wa-page-v").iButton({
+                labelOn: "",
+                labelOff: "",
+                classContainer: 'ibutton-container mini'
+            });
+        };
+        if ($("#wa-page-settings").is(":visible")) {
+            setTimeout(iButtonInit, 200);
+        } else {
+            $("#wa-page-settings-toggle").one('click', function () {
+                setTimeout(iButtonInit, 100);
+            });
+        }
+
+        // Change color of lables when user clicks i-button
+        var status_check = function(item) {
+            if ($(item).is(':checked')) {
+                $('#wa-page-v-open-label').addClass('wa-page-gray');
+                $('#wa-page-v-private-label').removeClass('wa-page-gray');
+            } else {
+                $('#wa-page-v-open-label').removeClass('wa-page-gray');
+                $('#wa-page-v-private-label').addClass('wa-page-gray');
+            }
+        };
+        status_check($('#wa-page-v'));
+        $('#wa-page-v').change(function(){
+            $('#wa-page-button').removeClass('green').addClass('yellow');
+            status_check(this);
+        });
+    }());
+
+    // Show/hide page settings when user clicks on the link
+    $('#wa-page-settings-toggle').click(function(){
+        $('#wa-page-settings').toggle();
+        return false;
+    });
+
+    // Show advanced params when user clicks on the link
+    $("#wa-page-advanced-params-link").click(function () {
+        $("#wa-page-advanced-params").show();
+        $(this).remove();
+        return false;
+    });
+
+    {if (!$page || !$page.id) && empty($options.disable_auto_url) }
+        // Transliterate page title into URL while user types
+        (function() {
+            $.fn.onKeyFinish = function (defer, callback) {
+                return this.each(function () {
+                    var that = $(this);
+                    that.currentValue = that.val();
+                    that.interval = null;
+                    $(this).off('keyup.wapages');
+                    $(this).on('keyup.wapages', function (e) {
+                        clearInterval(that.interval);
+                        if (that.currentValue != that.val()) {
+                            that.interval = setInterval(function () {
+                                clearInterval(that.interval);
+                                callback.call(that);
+                                that.currentValue = that.val();
+                            }, defer);
+                        }
+                    });
+                });
+            };
+            $("#wa-page-settings input:first").focus();
+            $('#wa-page-settings input[name="info[name]"]').onKeyFinish(300, function () {
+                if (!$("#wa-page-form-translit").length) {
+                    $("#wa-page-form").append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+                }
+                var url = $('#wa-page-settings input[name="info[url]"]');
+                if ($(this).val() && (!url.val() || !url.data('changed'))) {
+                    $.post("?module=pages&action=translit", { str: $(this).val()}, function (response) {
+                        $("#wa-page-form-translit").remove();
+                        if (response.status == 'ok') {
+                            if (!url.val() || !url.data('changed')) {
+                                url.val(response.data.str);
+                            }
+                        }
+                    }, "json");
+                }
+            });
+            $('#wa-page-settings input[name="info[url]"]').on('keyup', function () {
+               $(this).data('changed', 1);
+            });
+        }());
+    {/if}
+
+    // Save the page via XHR when the form is submitted
+    $("#wa-page-form").submit(function (evt) {
+        var form = $(this);
+        evt.preventDefault();
+        $.wa_editor_ready.then(function(method) {
+            if ($('#wa-page-settings input[name="info[name]"]').is(":focus")) {
+                if (!$("#wa-page-form-translit").length) {
+                    $("#wa-page-form").append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+                }
+            }
+            $('#wa-page-content')[method]('sync');
+            var li = $(".block-pages ul li.selected");
+            $("#wa-editor-status").html("<i class='icon16 loading'></i> [s`Saving...`]").fadeIn("slow");
+            $.post(form.attr('action'), form.serialize(), function (response) {
+                if (response.status == 'ok') {
+                    $(".error").removeClass('error');
+                    $("#wa-editor-status").html('<i class="icon16 yes"></i> [s`Saved`]').fadeOut('slow');
+                    $('#wa-page-button').removeClass('yellow').removeClass('red').addClass('green');
+                    var p = response.data;
+                    if (!p.status) {
+                        p.name += ' <span class="wa-page-draft">[s`draft`]</span>';
+                    }
+                    var html = $('<li id="page-' + p.id + '" class="dr selected">' +
+                    '<a class="wa-page-link" href="{$page_url}' + p.id + '">' +
+                    '<span class="count"><i class="icon10 add wa-page-add"></i></span>' +
+                    '<i class="icon16 notebook"></i>' + p.name + ' <span class="hint">/' + p.full_url +'</span>' + '</a></li>');
+                    if (p.add) {
+                        li.replaceWith(html);
+                    } else {
+                        $("#page-" + p.id).children('a.wa-page-link').replaceWith($(html).find('a.wa-page-link'));
+                        $("#page-" + p.id + ' > ul li span.hint').each(function () {
+                            $(this).text('/' + p.full_url + (p.full_url.length > 0 && p.full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(p.old_full_url.length + 1));
+                        });
+                    }
+                    if (response.data.add) {
+                        waLoadPage(p.id);
+                    } else {
+                        $(".wa-page-editor h2.wa-page-name").html(p.name);
+                    }
+                    {if !empty($url)}
+                    var page_url = {waIdna::dec($url)|json_encode} + p.url;
+                    {elseif isset($page_route)}
+                    var page_url = 'http://{waIdna::dec($page.domain)}/{$page_route}' + p.full_url;
+                    {/if}
+
+                    if ($('#wa-page-v').is(':checked')) {
+                        var page_attr_url = page_url;
+                    } else {
+                        var page_attr_url = page_url + '?preview={$preview_hash}';
+                    }
+
+                    if ($(".wa-page-urls a").length) {
+                        $(".wa-page-urls a").attr('href', page_attr_url);
+                        $(".wa-page-urls a:first").html(page_url);
+                    }
+                } else if (response.status == 'fail') {
+                    if ($.isArray(response.errors)) {
+                        var e = response.errors[0];
+                        $(response.errors[1]).addClass('error');
+                    } else {
+                        var e = response.errors;
+                    }
+                    $("#wa-editor-status").html('<b style="color:red">' + (e ? e : $_('An error occurred while saving')) + '</b>');
+                    $('#wa-page-button').removeClass('yellow').removeClass('green').addClass('red');
+                }
+            }, "json");
+        });
+    });
+});</script>

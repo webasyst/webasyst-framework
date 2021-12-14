@@ -1,0 +1,133 @@
+{strip}
+
+{$_location_enabled = ( $group.type == teamWaGroupModel::WA_GROUP_TYPE_LOCATION && !empty($group.location.address) )}
+
+<div class="t-group-page" id="t-group-page">
+    {* HEADER *}
+    <header class="t-content-header">
+        <div class="t-layout">
+            <div class="t-column left">
+
+                <h1>
+                    <span class="{if $can_manage_group}editable js-name-editable{/if}">{$group.name|escape}</span>
+
+                    {* MANAGE GROUP *}
+                    {if $can_manage_group}
+                        <a class="js-edit-group" href="{$wa_app_url}group/{$group.id}/manage/"><i class="icon16 settings"></i>[`Manage group`]</a>
+                    {/if}
+                </h1>
+
+            </div>
+            <div class="t-column right">
+
+                {* SORTING *}
+                <ul class="menu-h dropdown right" style="display: inline-block;">
+                    {$_sort_list = [
+                        'last_seen' => '[`Last seen`]',
+                        'name'      => '[`Name `]',
+                        'signed_up' => '[`Signed up`]'
+                    ]}
+                    <li>
+                        <span style="margin: 0 4px 0 0;">[`Sort by`]:</span>
+                        <a class="t-selected-item inline-link" href="{$wa_app_url}?sort={$sort|escape}" style="display: inline-block;">
+                            <b><i>{if isset($_sort_list[$sort])}{$_sort_list[$sort]|escape}{else}&mdash;{/if}</i></b>
+                            &nbsp;<i class="icon10 darr"></i>
+                        </a>
+                        <ul class="menu-v with-icons">
+                            {foreach $_sort_list as $_id=>$_name}
+                                <li class="t-menu-item {if $sort == $_id}selected{/if}">
+                                    <a href="{teamHelper::getUrl('sort', $_id)}">{$_name|escape}</a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+        {if empty($contacts) && $can_manage_group}
+            <div class="t-info-notice-wrapper" style="display: none;">
+                <p>
+                    {if $wa->user()->isAdmin('team')}
+                        {sprintf_wp(
+                        'To add a user to %s, either use <a class="js-edit-group inline-link" href="%s"><b><i>Manage group</i></b></a> mode, or drag a user to this group in the sidebar.',
+                        $group.name|escape,
+                        "`$wa_app_url`group/`$group.id`/manage/"
+                        )}
+                    {else}
+                        {sprintf_wp(
+                        'To add a user to %s, use <a class="inline-link"><b><i><a class="js-edit-group" href="%s">Manage group</a></i></b></a> mode.',
+                        $group.name|escape,
+                        "`$wa_app_url`group/`$group.id`/manage/"
+                        )}
+                    {/if}
+                </p>
+                <span class="t-info-notice-toggle">&times;</span>
+            </div>
+        {/if}
+    </header>
+
+    {* CONTENT *}
+    <div class="t-content-body">
+
+        <p class="t-description">
+            {if $can_manage_group || !empty($group.description)}
+                <span class="{if $can_manage_group && !(!$group.description && $_location_enabled)}editable js-desc-editable {if !$group.description}is-empty{/if}{/if}">
+                    {if $group.description}
+                        {$group.description|escape|nl2br}
+                    {elseif !$_location_enabled}
+                        <span class="gray italic">[`Add group description`]</span>
+                    {/if}
+                </span>
+            {/if}
+
+            {if $_location_enabled}
+                {if $group.location.longitude && $group.location.latitude}
+                    <a href="javascript:void(0)" class="t-map-link inline-link js-open-map-link">
+                        <i class="icon16 marker"></i>
+                        <b><i>{$group.location.address|escape}</i></b>
+                    </a>
+                {else}
+                    <span class="t-map-link">
+                        {$group.location.address|escape}
+                    </span>
+                {/if}
+            {/if}
+        </p>
+
+        {if $_location_enabled && $group.location.longitude && $group.location.latitude}
+            <div class="t-map-wrapper">
+                <div class="t-location-map" id="t-location-map"></div>
+            </div>
+        {/if}
+
+        {if !empty($contacts)}
+            {include file="./../users/Users.inc.html" contacts=$contacts}
+        {else}
+            <p class="t-description">[`No users in this group.`]</p>
+        {/if}
+    </div>
+
+    <script>
+        ( function($) {
+            $.team.setTitle({json_encode($group.name)});
+
+            var options = {
+                $wrapper: $("#t-group-page"),
+                group_id: {if !empty($group.id)}{$group.id}{else}false{/if},
+                can_manage: {if $can_manage_group}true{else}false{/if}
+            };
+
+            {if $_location_enabled && $group.location.longitude && $group.location.latitude}
+                options.map_adapter = "{$map_adapter}";
+                options.latitude = "{$group.location.latitude}";
+                options.longitude = "{$group.location.longitude}";
+            {/if}
+
+            new GroupPage(options);
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

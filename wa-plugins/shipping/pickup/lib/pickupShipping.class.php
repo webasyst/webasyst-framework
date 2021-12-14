@@ -25,6 +25,16 @@ class pickupShipping extends waShipping
             $values = array_merge($values, $params['value']);
         }
 
+        if (empty($values['currency'])) {
+            $user_locale = wa()->getUser()->getLocale();
+            $default_currencies = array('ru_RU' => 'RUB', 'en_US' => 'USD');
+            foreach ($default_currencies as $locale => $currency) {
+                if ($user_locale == $locale) {
+                    $values['currency'] = $currency;
+                }
+            }
+        }
+
         $view = wa()->getView();
 
         $app_config = wa()->getConfig();

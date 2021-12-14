@@ -25,6 +25,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         'USD',
     );
 
+    const CHESTNYZNAK_PRODUCT_CODE = 'chestnyznak';
+
     public function getSettingsHTML($params = array())
     {
         $html = parent::getSettingsHTML($params);
@@ -117,6 +119,32 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         try {
+            // Если уже была попытка оплаты этого заказа, нужно узнать, что с ней произошло.
+            // Мы берём последнюю попытку оплаты. Если она отменена (например, протухла по таймауту),
+            // то создадим новую. Если нет, то продолжим работать с той, что есть.
+            $transaction_model = new waTransactionModel();
+            $fields = array(
+                'plugin' => $this->id,
+                'app_id' => $this->app_id,
+                'merchant_id' => $this->merchant_id,
+            );
+            $fields['order_id'] = filter_var($order_data['id'], FILTER_SANITIZE_NUMBER_INT);
+
+            $transactions = $transaction_model->getByFields($fields);
+            $actual_transaction_data = [];
+            $unique_native_ids = [];
+            if ($transactions) {
+                foreach ($transactions as $transaction) {
+                    if (!empty($transaction['native_id']) && !isset($unique_native_ids[$transaction['native_id']])) {
+                        $unique_native_ids[$transaction['native_id']] = $transaction['native_id'];
+                    }
+                }
+                if ($unique_native_ids) {
+                    $last_transaction_id = end($unique_native_ids);
+                    $actual_transaction_data = $this->getPaymentInfo($last_transaction_id);
+                }
+            }
+
             $order = waOrder::factory($order_data);
 
             $type = $this->payment_type;
@@ -130,8 +158,17 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 }
             }
 
-            $payment = $this->createPayment($order, $type);
-
+            $full_refund = !empty($actual_transaction_data['refunded_amount']['value'])
+                && $actual_transaction_data['amount']['value'] == $actual_transaction_data['refunded_amount']['value'];
+            $changed_total = !empty($actual_transaction_data) && $actual_transaction_data['amount']['value'] != $order->total;
+            if (empty($actual_transaction_data)
+                || ifset($actual_transaction_data, 'status', '') == 'canceled' || $full_refund || $changed_total
+            ) {
+                $attempt = $unique_native_ids ? count($unique_native_ids) : 0;
+                $payment = $this->createPayment($order, $type, $attempt);
+            } else {
+                $payment = $actual_transaction_data;
+            }
             switch ($payment['status']) {
                 case 'succeeded':
                 case 'canceled':
@@ -294,7 +331,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         );
 
         if (!empty($type)) {
-            $data['payment_method'] = array(
+            $data['payment_method_data'] = array(
                 'type' => $type,
             );
         }
@@ -482,14 +519,15 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     /**
      * @param waOrder $order
      * @param string  $type
+     * @param int     $attempt   порядковый номер попытки оплаты этого заказа (начиная с 0). Нужен, чтобы был разный ключ идемпотентности для API.
      * @return array
      * @throws waException
      */
-    protected function createPayment(waOrder $order, $type)
+    protected function createPayment(waOrder $order, $type, $attempt)
     {
         #Payment data
         $data = $this->formatPaymentData($order, $type);
-        $hash = md5(var_export($order, true).var_export($this->getSettings(), true));
+        $hash = md5(var_export($order, true) . var_export($this->getSettings(), true) . ($attempt ? var_export($attempt, true) : ''));
 
         return $this->apiQuery('create', $data, $hash);
     }
@@ -607,17 +645,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 break;
             case self::OPERATION_CANCEL:
-                $app_payment_method = self::CALLBACK_CANCEL;
                 $transaction_data['state'] = self::STATE_CANCELED;
+                $app_payment_method = self::CALLBACK_NOTIFY;
                 break;
             case self::OPERATION_REFUND:
-                if ($transaction_data['state'] == self::STATE_REFUNDED) {
-                    //XXX update parent state;
-                    $app_payment_method = self::CALLBACK_REFUND;
-                    $app_payment_method = self::CALLBACK_NOTIFY;
-                } else {
-                    $app_payment_method = self::CALLBACK_NOTIFY;
-                }
+                $app_payment_method = self::CALLBACK_NOTIFY;
                 break;
             case self::OPERATION_AUTH_ONLY:
                 $app_payment_method = self::CALLBACK_AUTH;
@@ -730,14 +762,40 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
      */
     protected function callbackHandlerRedirect($transaction_data, $request)
     {
+        $params = '';
         if ((ifset($request['action']) == 'PaymentFail') || (waRequest::get('result') == 'fail')) {
             $type = waAppPayment::URL_FAIL;
         } else {
+            if (isset($transaction_data['order_id']) && !empty($transaction_data['order_id'])) {
+                $fields = array(
+                    'plugin' => $this->id,
+                    'app_id' => $this->app_id,
+                    'merchant_id' => $this->merchant_id,
+                    'error' => null,
+                );
+                $fields['order_id'] = filter_var($transaction_data['order_id'], FILTER_SANITIZE_NUMBER_INT);
+                $transaction_model = new waTransactionModel();
+                $transaction = $transaction_model->getByFields($fields);
+                if (isset(end($transaction)['native_id']) && !empty(end($transaction)['native_id'])) {
+                    $native_id = end($transaction)['native_id'];
+                    $payment = $this->getPaymentInfo($native_id);
+                    if ($payment['status'] == 'pending' || $payment['status'] == 'canceled') {
+                        $transaction_data['error'] = _w('Вы отказались от совершения платежа. Повторите попытку позднее, пожалуйста.'); // max length 255 characters
+                        $transaction = $this->saveTransaction($transaction_data);
+                        $params = isset($transaction['id']) ? '&transaction_id=' .  $transaction['id'] : '';
+
+                        $type = waAppPayment::URL_DECLINE;
+                    }
+                }
+            }
+        }
+
+        if (!isset($type)) {
             $type = waAppPayment::URL_SUCCESS;
         }
 
         return array(
-            'redirect' => $this->getAdapter()->getBackUrl($type, $transaction_data),
+            'redirect' => $this->getAdapter()->getBackUrl($type, $transaction_data) . $params,
         );
     }
 
@@ -827,14 +885,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             $receipt['tax_system_code'] = $this->tax_system_code;
         }
 
-        foreach ($order->items as $item) {
-            if (ifset($item, 'quantity', 0) <= 0) {
-                continue;
-            }
-            $item['amount'] = round($item['price'], 2) - round(ifset($item['discount'], 0.0), 2);
-            $receipt['items'][] = $this->formatReceiptItem($item, $order->currency);
-            unset($item);
-        }
+        $receipt['items'] = $this->getReceiptItems($order);
 
         #shipping
         if (($order->shipping) || strlen($order->shipping_name)) {
@@ -857,6 +908,63 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         return $receipt;
     }
 
+    protected function getReceiptItems(waOrder $order)
+    {
+        $receipt_items = [];
+
+        foreach ($order->items as $item) {
+            $quantity = (int)ifset($item, 'quantity', 0);
+            if ($quantity <= 0) {
+                continue;
+            }
+            $item['amount'] = round($item['price'], 2) - round(ifset($item['discount'], 0.0), 2);
+
+            // possible splitting items into array of items
+            $items = [$item];
+
+            // "Честный знак" marking code for product item leads to splitting by 'quantity'
+            if ($item['type'] === 'product') {
+
+                // typecast workaround for old versions of framework where 'product_codes' key is missing
+                $product_codes = isset($item['product_codes']) && is_array($item['product_codes']) ? $item['product_codes'] : [];
+
+                $values = $this->getChestnyznakCodeValues($product_codes);
+                if ($values) {
+                    $items = $this->splitItem($item, $values);
+                }
+            }
+
+            foreach ($items as $it) {
+                $receipt_items[] = $this->formatReceiptItem($it, $order->currency);
+            }
+
+            unset($item);
+        }
+
+        return $receipt_items;
+    }
+
+    /**
+     * Split one product item to several items because chestnyznak marking code must be related for single product instance
+     * Extend each new item with 'chestnyznak' value from $values
+     * Invariant $item['quantity'] === count($values)
+     * @param array $item - order item
+     * @param array $values - chestnyznak values
+     * @return array[] - array of items. Each item has 'product_code'
+     */
+    protected function splitItem(array $item, array $values)
+    {
+        $quantity = (int)ifset($item, 'quantity', 0);
+        $items = [];
+        for ($i = 0; $i < $quantity; $i++) {
+            $value = isset($values[$i]) ? $values[$i] : '';
+            $item['chestnyznak'] = $value;
+            $item['quantity'] = 1;
+            $items[] = $item;
+        }
+        return $items;
+    }
+
     /**
      * @see https://kassa.yandex.ru/developers/api#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5_%D0%BF%D0%BB%D0%B0%D1%82%D0%B5%D0%B6%D0%B0_receipt_items
      * @param array  $item
@@ -869,7 +977,9 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         if (isset($item['tax_included']) && empty($item['tax_included']) && !empty($item['tax_rate'])) {
             $item['amount'] += round(floatval($item['tax_rate']) * $item['amount'] / 100.0, 2);
         }
-        switch (ifset($item['type'])) {
+
+        $type = ifset($item['type']);
+        switch ($type) {
             case 'shipping':
                 $item['payment_subject_type'] = $this->payment_subject_type_shipping;
                 break;
@@ -881,7 +991,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 $item['payment_subject_type'] = $this->payment_subject_type_product;
                 break;
         }
-        return array(
+
+        $result = [
             //Название товара (не более 128 символов).
             'description'     => mb_substr($item['name'], 0, 128),
             //Количество товара. Максимально возможное значение зависит от модели вашей онлайн-кассы.
@@ -895,7 +1006,31 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             'payment_subject' => $item['payment_subject_type'],
             //Признак способа расчета.
             'payment_mode'    => $this->payment_method_type,
-        );
+        ];
+
+        // Код товара — уникальный номер, который присваивается экземпляру товара при маркировке
+        // Тут идет конвертация из DataMatrix кода (Честный знак) в 1162 тег код для ККТ
+        if (isset($item['chestnyznak'])) {
+            $fiscal_code = $this->convertToFiscalCode($item['chestnyznak']);
+            if ($fiscal_code) {
+                $result['product_code'] = $fiscal_code;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Конвертация из DataMatrix кода (Честный знак) в 1162 тег код для ККТ
+     * @param $uid
+     * @return bool|string
+     */
+    protected function convertToFiscalCode($uid)
+    {
+        if (!class_exists('shopChestnyznakPluginCodeParser')) {
+            return false;
+        }
+        return shopChestnyznakPluginCodeParser::convertToFiscalCode($uid);
     }
 
     /**
@@ -1092,6 +1227,10 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 } else {
                     $refunded = null;
                 }
+
+                $canceled_by_user = isset($transaction_raw_data['cancellation_details']['party'])
+                    && $transaction_raw_data['cancellation_details']['party'] == 'merchant';
+                $payment_irretrievably_canceled = isset($transaction_raw_data['cancellation_details']['reason']);
                 if (!empty($refunded)) {
                     if (($transaction_raw_data['refunded_amount']['value'] == $transaction_raw_data['amount']['value'])
                         && empty($transaction_raw_data['refundable'])
@@ -1113,6 +1252,14 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                     );
                     $view[] = sprintf('Из общей суммы %s', $value);
 
+                } elseif ($canceled_by_user || $payment_irretrievably_canceled) {
+                    $data['state'] = self::STATE_CANCELED;
+                    $data['type'] = self::OPERATION_CANCEL;
+                    if ($transaction_raw_data['cancellation_details']['reason'] == 'expired_on_confirmation') {
+                        $view[] = 'Истек срок оплаты';
+                    } elseif ($transaction_raw_data['cancellation_details']['reason'] == 'permission_revoked') {
+                        $view[] = 'Нельзя провести безакцептное списание';
+                    }
                 } else {
                     $data['state'] = self::STATE_VERIFIED;
                     $data['type'] = self::OPERATION_CHECK;
@@ -1143,7 +1290,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             'country_forbidden'             => 'Нельзя заплатить банковской картой, выпущенной в этой стране. Клиенту следует использовать другое платёжное средство. Вы можете настроить ограничения на оплату иностранными банковскими картами.',
             'fraud_suspected'               => 'Платёж заблокирован из-за подозрения в мошенничестве. Клиенту следует использовать другое платёжное средство.',
             'general_decline'               => 'Причина не детализирована. Клиенту следует обратиться к инициатору отмены платежа за уточнением подробностей.',
-            'identification_required'       => 'Превышены ограничения на платежи для кошелька в «Яндекс.Деньгах». Клиенту следует идентифицировать кошелёк или выбрать другое платёжное средство.',
+            'identification_required'       => 'Превышены ограничения на платежи для кошелька в «ЮMoney». Клиенту следует идентифицировать кошелёк или выбрать другое платёжное средство.',
             'insufficient_funds'            => 'Недостаточно денег для оплаты. Клиенту следует пополнить баланс или использовать другое платёжное средство.',
             'invalid_card_number'           => 'Неправильно указан номер карты. Клиенту следует повторить платёж и ввести корректные данные.',
             'invalid_csc'                   => 'Неправильно указан код CVV2 (CVC2, CID). Клиенту следует повторить платёж и ввести корректные данные.',
@@ -1158,7 +1305,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 $view = 'Продавец товаров и услуг (вы)';
                 break;
             case 'yandex_checkout':
-                $view = 'Яндекс.Касса';
+                $view = 'ЮKassa';
                 break;
             case 'payment_network':
                 $view = '«Внешние» участники платёжного процесса';
@@ -1339,7 +1486,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             //Электронные деньги
             'yandex_money'   => array(
                 'value'     => 'yandex_money',
-                'title'     => 'Яндекс.Деньги',
+                'title'     => 'ЮMoney (Яндекс.Деньги)',
                 'ttl'       => '1 час',
                 'hold'      => '7 дней',
                 'code'      => 'PC',
@@ -1469,9 +1616,9 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
                 ''         => array(
                     'value' => '',
-                    'title' => 'На выбор покупателя после перехода на сайт «Яндекс.Кассы» (рекомендуется)',
+                    'title' => 'На выбор покупателя после перехода на сайт «ЮKassa» (рекомендуется)',
                 ),
-                'customer' => 'На выбор покупателя до перехода на сайт «Яндекс.Кассы»',
+                'customer' => 'На выбор покупателя до перехода на сайт «ЮKassa»',
             ) + self::settingsCustomerPaymentTypeOptions();
     }
 
@@ -1600,6 +1747,32 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         return $result;
     }
 
+    /**
+     * @param array<int, array> $item_product_codes - array of product code records indexed by id of record
+     *  id => [
+     *      int      'id'
+     *      string   'code'
+     *      string   'name' [optional]
+     *      string   'icon' [optional]
+     *      string   'logo' [optional]
+     *      string[] 'values' - promo code item value for each instance of product item
+     *  ]
+     * @return array - chestnyznak values
+     */
+    protected function getChestnyznakCodeValues(array $item_product_codes)
+    {
+        $values = [];
+        foreach ($item_product_codes as $product_code) {
+            if (isset($product_code['code']) && $product_code['code'] === self::CHESTNYZNAK_PRODUCT_CODE) {
+                if (isset($product_code['values'])) {
+                    $values = $product_code['values'];
+                    break;
+                }
+            }
+        }
+
+        return $values;
+    }
 
     public static function getCreditInfo($amount, $app_id = null, $id = null, $selector = null)
     {

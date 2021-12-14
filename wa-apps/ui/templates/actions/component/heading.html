@@ -1,0 +1,156 @@
+{$_title = ".heading"}
+{$wa->title($_title|json_encode)}
+
+{function name="_render11"}
+<div style="width: 300px;">
+    <h5 class="heading" style="border: 1px dashed gold;">
+        Cities
+    </h5>
+    <ul class="menu">
+        <li><a href="#"><i class="fas fa-folder"></i><span>Moscow</span></a></li>
+        <li><a href="#"><i class="fas fa-tree"></i><span>Sochi</span></a></li>
+        <li><a href="#"><i class="fas fa-church"></i><span>Saint-Petersburg</span></a></li>
+    </ul>
+</div>
+{/function}
+
+{function name="_render12"}
+<div style="width: 300px;">
+    <h5 class="heading black" style="border: 1px dashed gold;">
+        Vacations on Hawaii
+    </h5>
+    <ul class="menu">
+        <li><a href="#"><i class="fas fa-folder"></i><span class="count">3</span><span>Finance</span></a></li>
+        <li><a href="#"><i class="fas fa-folder"></i><span class="count">9</span><span>Bookings</span></a></li>
+        <li><a href="#"><i class="fas fa-folder"></i><span class="count">13</span><span>Documents</span></a></li>
+    </ul>
+</div>
+{/function}
+
+{function name="_render21"}
+<div style="width: 300px;">
+    <h5 class="heading" style="border: 1px dashed gold;">
+        <span>Lists</span>
+        <span class="count">3</span>
+    </h5>
+    <ul class="menu">
+        <li><a href="#"><i class="fas fa-list"></i><span>List #1</span></a></li>
+        <li><a href="#"><i class="fas fa-list"></i><span>List #2</span></a></li>
+        <li><a href="#"><i class="fas fa-list"></i><span>List #3</span></a></li>
+    </ul>
+</div>
+{/function}
+
+{function name="_render22"}
+<div style="width: 300px;">
+    <h5 class="heading" style="border: 1px dashed gold;">
+        <span>Lists</span>
+        <a href="#" class="count action"><i class="fas fa-plus-circle"></i></a>
+    </h5>
+    <ul class="menu">
+        <li><a href="#"><i class="fas fa-list"></i><span>List #1</span></a></li>
+        <li><a href="#"><i class="fas fa-list"></i><span>List #2</span></a></li>
+        <li><a href="#"><i class="fas fa-list"></i><span class="count">13</span><span>List #3</span></a></li>
+    </ul>
+</div>
+{/function}
+
+{function name="_render3"}
+<div style="width: 300px;">
+    <div class="heading" style="border: 1px dashed gold;">
+        <span>
+            <span class="caret" onClick="javascript:yourCustomShowHideLogicHere();"><i class="fas fa-caret-down"></i></span>
+            Заголовок меню с длинным-предлинным текстом, который на одну строку не влезет хоть ты тресни
+        </span>
+        <a href="#" class="count action" title="Settings"><i class="fas fa-cog"></i></a>
+        <a href="#" class="count action" title="Add"><i class="fas fa-plus-circle"></i></a>
+    </div>
+    <ul class="menu">
+        <li><a href="#"><i class="fas fa-folder"></i><span>Vini</span></a></li>
+        <li><a href="#"><i class="fas fa-folder"></i><span>Vidi</span></a></li>
+        <li><a href="#"><i class="fas fa-folder"></i><span>Vici</span></a></li>
+    </ul>
+</div>
+{/function}
+
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Небольшой заголовок над меню <code>.menu</code> или секцией внутри <code>.fields</code>.</p>
+
+    <p>Применение класса <code>.heading</code> к любому блочному элементу правильным образом устанавливает размер текста, верхний регистр, цвет, отступ сверху. Класс разработан для использования в паре с <code>.menu</code> или <code>.fields</code>, так как на практике эти два варианта оказались единственными, где такой заголовок был востребован.</p>
+
+    <p><strong class="black">Простейший вариант</strong> заголовка (выделение пунктиром с помощью <em>style=""</em> сделано для наглядности):</p>
+
+    <div class="line">
+        {_render11}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render11|escape}</pre>
+    </div>
+
+    <p>Для явного выделения заголовка цветом используйте <code>.heading<strong>.black</strong></code>. Выделение рекомендуется, если он несет бóльшую смысловую нагрузку, чем пункт меню ниже. Например, если это некоторое пользовательское название или контейнер для каких-то сущностей (например, название проекта).</p>
+
+    <div class="line">
+        {_render12}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render12|escape}</pre>
+    </div>
+
+    <p>В примере выше <code>.heading</code> применен к <code>h5</code> (в большинстве случаев на практике это семантически оптимально). Но будет работать с <code>div</code>, <code>h1</code> и какими угодно блочными элементами. Результат всегда будет выглядеть одинаково.</p>
+
+    <h3>Элемент справа — <code>.heading &gt; .count</code></h3>
+
+    <p>Популярный вариант — с иконкой действия справа.</p>
+    <p>Элементы справа (счетчики или иконки-кнопки действий) оформляются в виде элемента <code>&lt;span class="<b>count</b>"&gt;...&lt;/span&gt;</code>. Текст заголовка рекомендуется обернуть в <code>span</code> для целостности отображения flexbox.</p>
+
+    <div class="line">
+        {_render21}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render21|escape}</pre>
+    </div>
+
+    <h3>Иконка действия — .heading > <code>.action</code></h3>
+
+    <p>Если иконку действия нужно выделить более явно, чем другие элементы, то ипользуется <code>class="<b>action</b>"</code>, задающий иконке хорошо заметный цвет. В большинстве случаев <code>.action</code> используется вместе с <code>.count</code> на одном элементе.</p>
+
+    <div class="line">
+        {_render22}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render22|escape}</pre>
+    </div>
+
+    <h3>«Сворачивалка» слева — .heading > span > <code>a.caret</code></h3>
+
+    <p>Контрол для сворачивания/разворачивания нижестоящего блока оформляется в виде элемента <code>&lt;span class="<b>caret</b>"&gt;&lt;i class="fas fa-caret-down"&gt;&lt;/i&gt;&lt;/span&gt;</code>, обернутого вместе с заголовком в родительский <code>span</code>, необходимый для целостности отображения flexbox.</p>
+
+    <div class="line">
+        {_render3}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint break-word">{_render3|escape}</pre>
+    </div>
+
+    <p>JavaScript-обработчик нажатия на <code>.caret</code> — на усмотрение разработчика приложения. В задачи верстки его работа не входит.</p>
+
+    <p>* * *</p>
+
+    <p><code>.heading</code> — простой и часто применяемый в сайдбарах класс. Выжимать из него что-то сверхъестественное не нужно. В сложных случаях применяйте индивидуальную реализацию на основе <code>.flexbox</code> или <code>.tablebox</code>.</p>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

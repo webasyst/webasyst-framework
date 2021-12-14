@@ -107,15 +107,35 @@ jQuery.fn.waEditor2 = function () {
                         }
                     } else {
                         // Dialog
-                        options.modification_wysiwyg_msg.waDialog({
-                            onSubmit: function (d) {
-                                // Only show this dialog once per page
-                                options.modification_wysiwyg_msg = null;
-                                d.trigger('close');
-                                $wrapper.find('.wysiwyg').trigger('click');
-                                return false;
-                            }
-                        });
+                        if ($(this).hasClass('js-is-wa2')) {
+                            $.waDialog({
+                                $wrapper: options.modification_wysiwyg_msg,
+                                onOpen($dialog, dialog) {
+                                    const $form = $dialog.find('form');
+                                    $form.on('submit', function (e) {
+                                        e.preventDefault();
+                                        options.modification_wysiwyg_msg = null;
+                                        $wrapper.find('.wysiwyg').trigger('click');
+                                        dialog.close();
+                                    })
+                                },
+                                onSubmit: function (d) {
+                                    // Only show this dialog once per page
+
+                                    return false;
+                                }
+                            });
+                        }else{
+                            options.modification_wysiwyg_msg.waDialog({
+                                onSubmit: function (d) {
+                                    // Only show this dialog once per page
+                                    options.modification_wysiwyg_msg = null;
+                                    d.trigger('close');
+                                    $wrapper.find('.wysiwyg').trigger('click');
+                                    return false;
+                                }
+                            });
+                        }
                         return false;
                     }
                 }
@@ -329,7 +349,19 @@ jQuery.fn.waEditor2 = function () {
         var editor = ace.edit(div.get(0));
         editor.commands.removeCommand('find');
         ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
-        editor.setTheme("ace/theme/eclipse");
+
+        setEditorTheme();
+        document.documentElement.addEventListener('wa-theme-change', setEditorTheme);
+
+        function setEditorTheme() {
+            const theme = document.documentElement.dataset.theme;
+
+            if (theme === 'dark') {
+                editor.setTheme("ace/theme/monokai");
+            } else {
+                editor.setTheme("ace/theme/eclipse");
+            }
+        }
         var session = editor.getSession();
         session.setMode("ace/mode/css");
         session.setMode("ace/mode/javascript");
@@ -420,7 +452,16 @@ jQuery.fn.waEditor2 = function () {
                 return;
             }
 
-            $dialog_wrapper.waDialog();
+            var $uploader_button_inner = $uploader_button.find('svg').length,
+                is_wa2 = $uploader_button_inner ? 1 : 0;
+
+            if (is_wa2) {
+                $.waDialog({
+                    $wrapper: $dialog_wrapper
+                });
+            }else{
+                $dialog_wrapper.waDialog();
+            }
             return false;
         });
         $uploader_button.one('click', function () {

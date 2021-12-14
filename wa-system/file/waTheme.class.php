@@ -567,7 +567,9 @@ class waTheme implements ArrayAccess
     {
         $xml_options = LIBXML_NOCDATA | LIBXML_NOENT | LIBXML_NONET;
         libxml_use_internal_errors(true);
-        libxml_disable_entity_loader(false);
+        if (PHP_VERSION_ID < 80000) {
+            libxml_disable_entity_loader(false);
+        }
         libxml_clear_errors();
 
         if ($as_dom && !class_exists('DOMDocument')) {
@@ -1182,10 +1184,13 @@ XML;
 
         $files = $this->getFiles();
 
-        $modified = array();
+        $modified = $custom = array();
         foreach ($files as $f_id => $f) {
             if (!empty($f['modified'])) {
                 $modified[] = $f_id;
+            }
+            if (!empty($f['custom'])) {
+                $custom[$f_id] = $f;
             }
         }
 
@@ -1255,6 +1260,10 @@ XML;
                     $f['modified'] = true;
                     $this->setFiles(array($f_id => $f));
                 }
+            }
+
+            foreach ($custom as $f_id => $f) {
+                $this->setFiles(array($f_id => $f));
             }
 
             $old_settings = $this->info['settings'];
@@ -2436,6 +2445,7 @@ HTACCESS;
             'js',
             'map',
             'css',
+            'styl',
             'html',
             'txt',
             'png',
@@ -2453,6 +2463,10 @@ HTACCESS;
             'otf',
             'woff',
             'woff2',
+            'webp',
+            'po',
+            'mo',
+            'json',
             '',
         );
 

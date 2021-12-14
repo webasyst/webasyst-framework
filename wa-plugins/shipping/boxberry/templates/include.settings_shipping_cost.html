@@ -9,7 +9,7 @@
         <div class="name">{$obj->_w('Minimum order cost for free delivery')}</div>
         <div class="value">
             <input name="{$namespace}[free_price]" value="{$settings.free_price|default:''|escape}" type="number" min="0" step="any">
-            <span>RUB</span>
+            <span>₽</span>
             <p class="hint">{$obj->_w('Shipping rates provided by Boxberry service are ignored when free shipping is applied.')}</p>
         </div>
     </div>

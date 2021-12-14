@@ -1,0 +1,149 @@
+{function name="_render" class=""}
+<div class="flexbox {$class|default:""}" style="border: 1px dashed gold;">
+    <div style="line-height: 0;">
+        <img class="userpic" src="{$wa_url}wa-content/img/userpic20.jpg" />
+    </div>
+    <div>Элемент 2</div>
+    <div>
+        <a href="#">Username</a>
+    </div>
+    <div>
+        <a class="badge">VIP</a>
+    </div>
+    <div>
+        <div style="padding: 20px 5px; background: rgba(33,66,88,.2);">
+            Высокий элемент
+        </div>
+    </div>
+</div>
+{/function}
+
+{function name="_render_1"}
+<div class="flexbox space-16" style="border: 1px dashed gold;">
+    <div class="middle" style="line-height: 0;">
+        <img class="userpic" src="{$wa_url}wa-content/img/userpic20.jpg" />
+    </div>
+    <div>Элемент 2</div>
+    <div>
+        <a href="#">Username</a>
+    </div>
+    <div class="middle">
+        <a class="badge">VIP</a>
+    </div>
+    <div>
+        <div style="padding: 20px 5px; background: rgba(33,66,88,.2);">
+            Высокий элемент
+        </div>
+    </div>
+</div>
+{/function}
+
+{function name="_render_2"}
+<div class="flexbox full-width" style="border: 1px dashed gold;">
+    <div class="wide">
+        <h2>All topics</h2>
+    </div>
+    <div>
+        <input type="search" placeholder="Search">
+    </div>
+    <div>
+        <a href="#" class="button"><i class="fas fa-star"></i></a>
+        <a href="#" class="button rounded white"><i class="fas fa-star"></i></a>
+    </div>
+</div>
+{/function}
+
+{$_title = ".flexbox"}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Класс общего назначения <code><b>.flexbox</b></code> переводит элемент в режим отображения <code>display: flex;</code>.</p>
+    <hr>
+    <p>Никакого специфического для бекенда Webasyst оформления этот класс не навязывает, но будет полезен в качестве структурного контейнера, содержащего внутри себя разные интерфейсные компоненты: заголовки, меню, кнопки, текстовые поля, блок с произвольным контентом <code>.box</code>.</p>
+
+    <div class="u-example-section">
+        <h3><code>.flexbox</code></h3>
+        <div class="u-example">{_render}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.flexbox<code>.space-XX</code></h3>
+        <p>С помощью дополнительных классов <code>.flexbox<strong>.space-XX</strong></code> добавляются внутренние отступы для дочерних элементов, где XX — значение в пикселях с шагом 4 — <code>0</code>, <code>4</code>, <code>8</code>, <code>12</code>, <code>16</code>, <code>20</code>, <code>24</code>, <strike>28</strike>, <code>32</code>, <strike>36</strike>, <code>40</code>, <strike>44</strike>, <code>48</code>. Шаг в 4 пикселя выбран исходя из соображений сохранения визуальной сетки интерфейса и практической полезности. Пиксели будут <a href="{$wa_app_url}component/typography/">пересчитаны в rem</a>.</p>
+        <div class="u-example">{_render class="space-16"}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="space-16"}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.flexbox<code>.middle</code></h3>
+        <p>Дополнительный класс <code>.flexbox<strong>.middle</strong></code> центрирует каждый дочерний элемент.</p>
+        <div class="u-example">{_render class="middle space-16"}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="middle space-16"}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.flexbox > <code>.middle</code></h3>
+        <p>Класс <code>.middle</code> можно использовать и на отдельных дочерних элементах.</p>
+        <div class="u-example">{_render_1}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render_1|escape}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.flexbox<code>.full-width</code></h3>
+        <p>Дополнительный класс <code>.flexbox<strong>.full-width</strong></code> заставляет блок занять всю доступную ему ширину.</p>
+        <div class="u-example">{_render class="full-width"}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="full-width"}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.flexbox > <code>.wide</code></h3>
+        <p>Класс <code>.wide</code> на дочернем элементе заставляет занять его все доступное пространство.</p>
+        <div class="u-example">{_render_2 class="wide"}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render_2|escape class="wide"}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.flexbox<code>.fixed</code></h3>
+        <p>В этом режиме ячейки равномерно заполняют свободное пространство по аналогии с таблицей. В отличие от <span class="bold">.full-width</span>, пространство является шириной ячейки.</p>
+        <p>Если контент ячейки не влезает с рассчитанное пространство, ячейка будет растянута. Такова особенность <code>display: flex</code>. Если нужно жестко зафиксировать ячейку, используется <code>.tablebox</code> вместо <code>.flexbox</code>.</p>
+        <div class="u-example">{_render class="fixed"}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="fixed"}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.flexbox<code>.vertical</code></h3>
+        <p>Вертикальное расположение элементов flexbox. Полезно при заполнении «столбцов» и меню типа сайдбара, где отдельные элементы могут занимать всю доступную высоту экрана и иметь внутреннюю прокрутку. Или же при изменении режима отображения блока «на лету» с помощью JavaScript.</p>
+        <h3>.flexbox<code>.vertical-mobile</code></h3>
+        <p>Вертикальное расположение элементов flexbox будет включено только на мобильных устройствах (<=760px по ширине).</p>
+        <h3>.flexbox<code>.wrap</code></h3>
+        <p>Flexbox будет «разорван», если дочерние элементы не помещаются по ширине в одну строку (<code>flex-wrap: wrap;</code>).</p>
+        <h3>.flexbox<code>.wrap-mobile</code></h3>
+        <p>Аналогично, но только на мобильных устройствах (<=760px по ширине).</p>
+        <div class="u-example">{_render class="wrap-mobile"}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="vertical"}</pre>
+        </div>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

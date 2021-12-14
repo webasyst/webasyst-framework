@@ -24,15 +24,6 @@ class blogSlugValidator extends waStringValidator
         self::ERROR_INVALID => false
     );
 
-    protected function init()
-    {
-        parent::init();
-
-        $this->setMessage(self::ERROR_REQUIRED, _w('%subject% URL must not be empty'));
-        $this->setMessage(self::ERROR_URL_IN_USE, _w('%subject% URL is in use. Please enter another URL'));
-        $this->setMessage(self::ERROR_INVALID, _w('%subject% URL is invalid'));
-    }
-
     public function setSubject($subject)
     {
         $this->subject = $subject;
@@ -42,19 +33,32 @@ class blogSlugValidator extends waStringValidator
     {
         $this->clearErrors();
 
-        $variables = array('subject' => ucfirst($this->subject));
+        $errors = array(
+            self::ERROR_REQUIRED => array(
+                'blog' => _w('Blog address must not be empty.'),
+                'post' => _w('Post address must not be empty.'),
+            ),
+            self::ERROR_URL_IN_USE => array(
+                'blog' => _w('Blog URL is in use. Please enter another URL'),
+                'post' => _w('This post address is already in use. Please enter another address.'),
+            ),
+            self::ERROR_INVALID => array(
+                'blog' => _w('Blog address is invalid.'),
+                'post' => _w('Post address is invalid.'),
+            )
+        );
 
         if ($this->getOption(self::ERROR_REQUIRED, false) && $this->isEmpty($value)) {
-            $this->setError($this->getMessage(self::ERROR_REQUIRED, $variables));
+            $this->setError($errors[self::ERROR_REQUIRED][$this->subject]);
             $this->errors_map[self::ERROR_REQUIRED] = true;
         }
 
         if ($this->getOption(self::ERROR_URL_IN_USE, false) && $this->isInUse($value)) {
-            $this->setError($this->getMessage(self::ERROR_URL_IN_USE, $variables));
+            $this->setError($errors[self::ERROR_URL_IN_USE][$this->subject]);
             $this->errors_map[self::ERROR_URL_IN_USE] = true;
         }
         if (!preg_match('/^[a-zA-Z0-9_-]*$/', $value)) {
-            $this->setError($this->getMessage(self::ERROR_INVALID, $variables));
+            $this->setError($errors[self::ERROR_INVALID][$this->subject]);
             $this->errors_map[self::ERROR_INVALID] = true;
         }
 

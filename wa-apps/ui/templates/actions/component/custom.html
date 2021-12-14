@@ -1,0 +1,61 @@
+{$_title = "Отступы и интервалы — <code>.custom-*</code>"}
+{$wa->title($_title)}
+
+{function name="_render_1"}
+<span class="custom-mt-0"></span>
+<span class="custom-m-0-mobile"></span>
+<ul class="menu custom-pd-16">...</ul>
+<p class="custom-ml-24">...</p>
+<div class="box custom-pb-36 custom-pt-36">...</div>
+<input type="custom-my-24" />
+<input type="custom-my-24-mobile" />
+<img type="custom-mx-auto" />
+{/function}
+
+<div class="u-component-page">
+
+    <h1>Отступы и интервалы — <code>.custom-*</code></h1>
+    <p>Форсированная корректировка отступов и отбивок (<code>padding</code> и <code>margin</code>) для всевозможных элементов. Используйте, только если стандартная компоновка никак не позволяет достичь нужного результата, и вы точно знаете, что делаете.</p>
+
+    <p>Синтаксис довольно простой: <code>.custom-<b>WHAT</b>-<b>VALUE</b></code> или <code>.custom-<b>WHAT</b>-<b>VALUE</b>-mobile</code>.</p>
+
+    <p><code><b>WHAT</b></code>:</p>
+    <ul>
+        <li><code>m</code> = margin</li>
+        <li><code>mt</code> = margin-top</li>
+        <li><code>mb</code> = margin-bottom</li>
+        <li><code>ml</code> = margin-left</li>
+        <li><code>mr</code> = margin-right</li>
+        <li><code>mx</code> = margin-left && margin-right</li>
+        <li><code>my</code> = margin-top && margin-bottom<br><br></li>
+        <li><code>p</code> = padding</li>
+        <li><code>pt</code> = padding-top</li>
+        <li><code>pb</code> = padding-bottom</li>
+        <li><code>pl</code> = padding-left</li>
+        <li><code>pr</code> = padding-right</li>
+        <li><code>px</code> = padding-left && padding-right</li>
+        <li><code>py</code> = padding-top && padding-bottom</li>
+    </ul>
+
+    <p><code><b>VALUE</b></code> — значение в пикселях с шагом 4 — <code>0</code>, <code>4</code>, <code>8</code>, <code>12</code>, <code>16</code>, <code>20</code>, <code>24</code>, <strike>28</strike>, <code>32</code>, <strike>36</strike>, <code>40</code>, <strike>44</strike>, <code>48</code>. Шаг в 4 пикселя выбран исходя из соображений сохранения визуальной сетки интерфейса и практической полезности. Пиксели будут <a href="{$wa_app_url}component/typography/">пересчитаны в rem</a>.</p>
+
+    <p>Суффикс <code>-mobile</code> позволяет применить правило только на мобильных устройствах (ширина экрана <= 760px).</p>
+
+    <p>Например:</p>
+    <div class="line">
+        <pre class="prettyprint">{_render_1|escape}</pre>
+    </div>
+
+    <p>Применять можно к любому элементу (компоненту) интерфейса, так как все эти классы используют <code>!important</code>.</p>
+
+    <p>Классы можно совмещать друг с другом.</p>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+
+</div>

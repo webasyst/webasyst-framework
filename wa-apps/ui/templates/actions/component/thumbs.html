@@ -1,0 +1,153 @@
+{$_title = ".thumbs"}
+{$wa->title($_title|json_encode)}
+
+{$_thumbs = [
+    [
+        "name" => "IMG_0001",
+        "img" => "https://demo1-ru.webasyst.com/wa-data/public/photos/21/00/21/21.200x200.JPG"
+    ],
+    [
+        "name" => "IMG_0002 IMG_0003IMG_0003",
+        "img" => "https://demo1-ru.webasyst.com/wa-data/public/photos/19/00/19/19.200x200.JPG"
+    ],
+    [
+        "name" => "IMG_0003",
+        "img" => "https://demo1-ru.webasyst.com/wa-data/public/photos/78/01/178/178.200x200.jpg"
+    ],
+    [
+        "name" => "IMG_0004",
+        "img" => "https://demo1-ru.webasyst.com/wa-data/public/photos/20/00/20/20.200x200.JPG"
+    ],
+    [
+        "name" => "IMG_0005",
+        "img" => "https://demo1-ru.webasyst.com/wa-data/public/photos/87/01/187/187.200x200.jpg"
+    ],
+    [
+        "name" => "IMG_0006",
+        "img" => "https://demo1-ru.webasyst.com/wa-data/public/photos/15/00/15/15.200x200.JPG"
+    ]
+]}
+
+{function name="_render1"}
+<ul class="thumbs">
+{foreach $_thumbs as $_item}
+    <li>
+        <a href="#">
+            <img src="{$_item.img}" />
+        </a>
+    </li>
+{/foreach}
+</ul>
+{/function}
+
+{function name="_render2"}
+<ul class="thumbs">
+{foreach $_thumbs as $_item}
+    <li>
+        <a href="#">
+            <img src="{$_item.img}" />
+        </a>
+        <label class="bold black">
+            <input type="checkbox" />
+            {$_item.name}
+        </label>
+        <div class="hint">Yesterday 18:41</div>
+    </li>
+{/foreach}
+</ul>
+{/function}
+
+{function name="_render3"}
+<ul class="thumbs li150px">
+{foreach $_thumbs as $_item}
+    <li>
+        <a href="#">
+            <img src="{str_replace("200x200", "300x300", $_item.img)}" />
+        </a>
+        <label class="bold black">
+            <input type="checkbox" />
+            {$_item.name}
+        </label>
+        <div class="hint">Yesterday 18:41</div>
+    </li>
+{/foreach}
+</ul>
+{/function}
+
+{function name="_render4"}
+<ul class="thumbs li150px">
+    <li class="selected">
+        <a href="#">
+            <img src="https://demo1-ru.webasyst.com/wa-data/public/photos/13/01/113/113.150x150@2x.jpg" />
+        </a>
+        <label class="bold black">
+            <input type="checkbox" checked="checked" />
+            <span class="selected">.selected</span>
+        </label>
+    </li>
+    <li class="shadowed">
+        <a href="#">
+            <img src="https://demo1-ru.webasyst.com/wa-data/public/photos/19/01/119/119.150x150@2x.jpg" />
+        </a>
+        <strong class="black">
+            .shadowed
+        </strong>
+    </li>
+    <li class="highlighted">
+        <a href="#">
+            <img src="https://demo1-ru.webasyst.com/wa-data/public/photos/18/01/118/118.150x150@2x.jpg" />
+        </a>
+        <strong class="black">
+            .highlighted
+        </strong>
+    </li>
+</ul>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Компонент <code>ul.thumbs</code> предназначен для «плиточного» представления некоторого списка. Реализация основана на свойстве <code>display: inline-block;</code>.</p>
+
+    <p>Компонент используется, как правило, для показа изображений (фотографий). Изображения, обернутые в ссылку (<code>a img</code>), по умолчанию имеют скругленные края (<code>border-radius: 0.25rem</code>). Если в контексте вашего приложения это не оправданно, уберите скругление путем добавления класса <code>img.squared</code>.</p>
+
+    <div class="line">
+        {_render1}
+    </div>
+    <div class="line">
+        <pre class="prettyprint break-word">{_render1|escape}</pre>
+    </div>
+
+    <p>В базовом варианте <code>.thumbs</code> ширина блоков определяется исключительно их содержимым.</p>
+    <div class="line">
+        {_render2}
+    </div>
+    <div class="line">
+        <pre class="prettyprint break-word">{_render2|escape}</pre>
+    </div>
+
+    <h4>Фиксированные размеры блоков</h4>
+    <p>Чтобы явно зафиксировать ширину блоков, используйте один из дополнительных классов для <code>ul.thumbs</code>: <code>.li50px</code>, <code>.li100px</code>, <code>.li150px</code>, <code>.li200px</code>, <code>.li250px</code>, <code>.li300px</code>, <code>.li350px</code>. Контент не будет выступать за пределы заданной ширины (в примере ниже изображения с размерами 300х300 автоматически сжимаются до 150х150 пикселей).</p>
+    <div class="line">
+        {_render3}
+    </div>
+    <div class="line">
+        <pre class="prettyprint break-word">{_render3|escape}</pre>
+    </div>
+
+    <h4>li<code>.selected</code>, li<code>.shadowed</code> и li<code>.highlighted</code></h4>
+    <p>Предусмотрена поддержка стилистического выделения отдельных элементов списка <code>.thumbs</code> (а точнее, основной картинки <code>img</code>, которая находится внутри ссылки <code>li a</code>) с помощью классов <code>.selected</code>, <code>.shadowed</code> и <code>.highlighted</code>.</p>
+    <div class="line">
+        {_render4}
+    </div>
+    <div class="line">
+        <pre class="prettyprint break-word">{_render4|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

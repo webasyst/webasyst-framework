@@ -8,6 +8,8 @@ var systemShippingBoxberryPluginSettings = (function ($) {
         // VAR
         that.points_for_parcel = options["points_for_parcel"];
         that.saved_token = options["saved_token"];
+        that.max_dimensions_error = false;
+        that.default_dimensions_error = false;
 
         that.init();
     };
@@ -18,6 +20,7 @@ var systemShippingBoxberryPluginSettings = (function ($) {
         that.initPointsForParcelAutocomplete();
         that.initPreSaveEvent();
         that.initChangeToken();
+        that.initDimensions();
     };
 
     systemShippingBoxberryPluginSettings.prototype.initChangeToken = function () {
@@ -46,6 +49,61 @@ var systemShippingBoxberryPluginSettings = (function ($) {
         $token.trigger('change');
     };
 
+    systemShippingBoxberryPluginSettings.prototype.initDimensions = function () {
+        var that = this,
+            $max_length = that.$wrapper.find('input[name$="[max_length]"]'),
+            $max_width = that.$wrapper.find('input[name$="[max_width]"]'),
+            $max_height = that.$wrapper.find('input[name$="[max_height]"]'),
+            $max_weight = that.$wrapper.find('input[name$="[max_weight]"]'),
+            $default_length = that.$wrapper.find('input[name$="[default_length]"]'),
+            $default_width = that.$wrapper.find('input[name$="[default_width]"]'),
+            $default_height = that.$wrapper.find('input[name$="[default_height]"]'),
+            $default_weight = that.$wrapper.find('input[name$="[default_weight]"]');
+
+        $max_length.add($max_width).add($max_height).add($max_weight).blur(function () {
+            var $that = $(this),
+                value = Number($that.val()),
+                $error_field = $('.js-error-max-' + $that.data('dimension')),
+                minimal_value = $that.data('dimension') === 'weight' ? 4 : 0;
+
+            that.max_dimensions_error = false;
+            if (value <= minimal_value || value > Number($that.data('max')) || isNaN(value)) {
+                $that.addClass('error-dimension-input');
+                $error_field.show();
+                that.max_dimensions_error = true;
+            } else {
+                $that.removeClass('error-dimension-input');
+                $error_field.hide();
+            }
+            if ($that.data('dimension') !== 'weight') {
+                that.$wrapper.find('.max_sum_dimensions').html((Number($max_length.val()) + Number($max_width.val()) + Number($max_height.val())).toFixed(2));
+                $('input[name$="[default_' + $that.data('dimension') + ']"]').blur();
+            }
+        });
+
+        $default_length.add($default_width).add($default_height).add($default_weight).blur(function () {
+            var $that = $(this),
+                value = Number($that.val()),
+                $error_field = $('.js-error-default-' + $that.data('dimension')),
+                minimal_value = $that.data('dimension') === 'weight' ? 4 : 0;
+
+            that.default_dimensions_error = false;
+            if ($that.val().length && (value <= minimal_value || value > Number($('input[name$="[max_' + $that.data('dimension') + ']"]').val()) || isNaN(value))) {
+                $that.addClass('error-dimension-input');
+                $error_field.show();
+                that.default_dimensions_error = true;
+            } else {
+                $that.removeClass('error-dimension-input');
+                $error_field.hide();
+            }
+            if ($that.data('dimension') !== 'weight') {
+                that.$wrapper.find('.default_sum_dimensions').html((Number($default_length.val()) + Number($default_width.val()) + Number($default_height.val())).toFixed(2));
+            }
+        });
+        $max_length.add($max_width).add($max_height).add($max_weight).blur();
+        $default_length.add($default_width).add($default_height).add($default_weight).blur();
+    };
+
     systemShippingBoxberryPluginSettings.prototype.initPreSaveEvent = function () {
         var that = this,
             $form = that.$wrapper.closest('form'),
@@ -62,6 +120,10 @@ var systemShippingBoxberryPluginSettings = (function ($) {
                 result = false;
             } else {
                 $errormsg.hide();
+            }
+
+            if (that.max_dimensions_error || that.default_dimensions_error) {
+                result = false;
             }
 
             return result;

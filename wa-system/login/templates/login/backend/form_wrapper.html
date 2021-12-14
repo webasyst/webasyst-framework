@@ -33,7 +33,10 @@
                 messages: {$messages|json_encode},
                 onetime_password_url: {$onetime_password_url|json_encode},
                 locale: {$_locale|json_encode},
-                is_json_mode: {$is_json_mode|default:false|json_encode}
+                is_json_mode: {$is_json_mode|default:false|json_encode},
+                webasyst_id_auth_url: {$webasyst_id_auth_url|default:''|json_encode},
+                bind_with_webasyst_contact: {$bind_with_webasyst_contact|default:false|json_encode},
+                wa_app_url: {$wa_app_url|json_encode}
             });
         })(jQuery);
     </script>

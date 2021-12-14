@@ -1,6 +1,9 @@
 <?php
 /**
  * This action can possibly run for UNAUTHORIZED user. Beware!
+ *
+ * For historical reasons loading widget in custom dashboard work throughout this action even if there is not TV context
+ * Beware again!
  */
 class webasystDashboardTvAction extends waViewAction
 {
@@ -25,7 +28,9 @@ class webasystDashboardTvAction extends waViewAction
 
     public function showWidget($dashboard, $widget_id)
     {
-        $widget = wa()->getWidget($widget_id);
+        $widget = wa()->getWidget($widget_id, [
+            'ui' => $this->whichUI($this->getAppId())
+        ]);
         if ($dashboard['id'] != $widget->getInfo('dashboard_id')) {
             throw new waException('Not found', 404);
         }
@@ -80,9 +85,20 @@ class webasystDashboardTvAction extends waViewAction
         }
 
         $this->view->assign(array(
+            'ui' => $this->whichUI(),
             'dashboard_status' => $dashboard_status,
             'dashboard' => $dashboard,
             'widgets' => $widgets,
         ));
+    }
+
+    protected function whichUI($app_id = null)
+    {
+        $ui = $this->getRequest()->get('ui');
+        $ui = $ui === '2.0' ? '2.0' : '1.3';
+
+        // control UI layout of tv dashboard or UI style of loaded widget
+        // it is all temporary
+        return $ui;
     }
 }

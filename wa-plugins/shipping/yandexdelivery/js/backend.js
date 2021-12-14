@@ -41,7 +41,10 @@ function ShippingYandexdeliveryBackend(key, id) {
         }
     };
 
-    this.courier = function (courier) {
+    this.courier = function ($option) {
+
+        var courier = $option.data('courier'),
+            selected_interval = $option.data('desired-delivery-selected-interval');
 
         this.$field.find(':input').attr('disabled', null);
 
@@ -52,10 +55,15 @@ function ShippingYandexdeliveryBackend(key, id) {
         for (var interval in courier.intervals) {
             if (courier.intervals.hasOwnProperty(interval)) {
                 courier.available_days = courier.available_days.concat(courier.intervals[interval]);
-                this.$interval.append($("<option></option>")
-                    .attr("value", interval)
-                    .data('days', courier.intervals[interval])
-                    .text(interval));
+                $new_option = $("<option></option>")
+                                .attr("value", interval)
+                                .data('days', courier.intervals[interval])
+                                .text(interval);
+                if (interval == selected_interval) {
+                    $new_option.attr('selected', 'selected');
+                }
+
+                this.$interval.append($new_option);
             }
         }
 
@@ -93,7 +101,7 @@ function ShippingYandexdeliveryBackend(key, id) {
                 switch (type) {
                     case 'todoor':
                     case '"todoor"':
-                        this.courier($option.data('courier'));
+                        this.courier($option);
                         break;
                     default:
                         this.$field.find(':input').attr('disabled', true);

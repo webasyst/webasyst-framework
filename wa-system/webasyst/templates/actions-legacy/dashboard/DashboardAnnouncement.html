@@ -1,0 +1,20 @@
+<div class="d-notification-wrapper {if empty($show_tutorial)}is-shown{/if}" id="d-notification-wrapper">
+    {foreach $notifications as $n}
+    <div class="d-notification-block">
+
+        <a href="#" rel="{$n.app_id}" class="wa-announcement-close d-notification-close" title="[s`Close`]">&times;</a>
+        
+        <div class="description-wrapper">
+            {$n.text}
+            <span class="hint nowrap">{waDateTime::format('humandatetime', $n.datetime)}</span>
+        </div>
+
+        {*
+            <footer class="button-block">
+                <a class="button green" href="javascript:void(0);">Renew Now</a>
+            </footer>
+        *}
+
+    </div>
+    {/foreach}
+</div>

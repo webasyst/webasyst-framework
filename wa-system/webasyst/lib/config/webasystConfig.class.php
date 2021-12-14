@@ -34,6 +34,8 @@ class webasystConfig extends waAppConfig
             //'settings' => 1,
         );
 
+        (new waWebasystIDConfig())->keepEndpointsSynchronized();
+
         return $n;
     }
 
@@ -259,6 +261,47 @@ class webasystConfig extends waAppConfig
             'vars_tab_names' => $email_templates_help['vars_tab_names'] + $sms_templates_help['vars_tab_names'],
             'vars' => $email_templates_help['vars'] + $sms_templates_help['vars']
         );
+
+    }
+
+    /**
+     * Get identity hash (aka installation hash)
+     * @return string
+     */
+    public function getIdentityHash()
+    {
+        $value = $this->getSystemOption('identity_hash');
+        if (is_scalar($value)) {
+            return strval($value);
+        }
+        return '';
+    }
+
+    public function dispatchAppToken($data)
+    {
+        $app_tokens_model = new waAppTokensModel();
+
+        // Unknown token type?
+        if ($data['type'] != 'webasyst_id_invite') {
+            $app_tokens_model->deleteById($data['token']);
+            throw new waException("Page not found", 404);
+        }
+
+        // Make sure contact is still ok
+        $contact = new waContact($data['contact_id']);
+        if (!$contact->exists() || $contact['is_user'] < 0) {
+            $app_tokens_model->deleteById($data['token']);
+            throw new waException("Page not found", 404);
+        }
+
+        $auth = wa()->getAuth();
+        $auth->auth(['id' => $contact->getId()]);
+
+        $webasyst_id_auth = new waWebasystIDWAAuth();
+
+        // bind webasyst id
+        $url = $webasyst_id_auth->getUrl();
+        wa()->getResponse()->redirect($url);
 
     }
 }

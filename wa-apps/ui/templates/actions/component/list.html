@@ -1,0 +1,118 @@
+{$_title = ".list"}
+{$wa->title($_title|json_encode)}
+
+{$_list = [
+    [
+        "name" => "Order #100500",
+        "note" => "Lorem ipsum",
+        "userpic" => "{$wa_url}wa-content/img/userpic.svg",
+        "count" => "5"
+    ],
+    [
+        "name" => "Order #100499",
+        "note" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "userpic" => "{$wa_url}wa-content/img/company.svg",
+        "count" => "<span class='badge green'>2</span> 23"
+    ],
+    [
+        "name" => "Order #100498",
+        "userpic" => "{$wa_url}wa-content/img/company.svg"
+    ],
+    [
+        "name" => "Order #100497",
+        "note" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "userpic" => "{$wa_url}wa-content/img/company.svg",
+        "selected" => 1,
+        "count" => "<span class='badge red'>1</span>"
+    ],
+    [
+        "name" => "Order #100497",
+        "note" => "Lorem ipsum",
+        "userpic" => "{$wa_url}wa-content/img/company.svg"
+    ]
+]}
+
+{function name="_render_1"}
+<div style="width: 100%; max-width: 400px;">
+
+    <h5 class="heading large">Orders</h5>
+    <ul class="list">
+{foreach $_list as $_item}
+        <li class="item{if !empty($_item.selected)} selected{/if}">
+            <a href="#" class="image">
+                <i class="userpic userpic48" style="background-image: url('{$_item.userpic}')"></i>
+            </a>
+            <a href="#" class="details">
+                <div class="tablebox">
+                    <strong>{$_item.name}</strong>
+                    {if !empty($_item.count)}<span class="count align-right">{$_item.count}</span>{/if}
+                </div>
+                {if !empty($_item.note)}<p class="hint">{$_item.note}</p>{/if}
+            </a>
+</li>
+        {/foreach}
+    </ul>
+</div>
+{/function}
+
+{function name="_render_2"}
+<div style="width: 100%; max-width: 400px;">
+
+    <div class="list">
+{foreach $_list as $_item}
+        <div class="item{if !empty($_item.selected)} selected{/if}">
+            <a href="#" class="image">
+                <i class="userpic userpic32" style="background-image: url('{$_item.userpic}')"></i>
+            </a>
+            <a href="#" class="details">
+                {$_item.name}
+            </a>
+</div>
+        {/foreach}
+    </div>
+</div>
+{/function}
+
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Линейный список с картинками. Рекомендуемая ширина — 300–400 пикселей. Отлично вписывается в любой многоколоночный лейаут в качестве одного из сайдбаров.</p>
+
+    <p>Список может быть оформлен на основе <code>ul</code> или произвольных <code>div</code>. Обязательная внутренняя структура списка основана на классах <code>.list</code> (общий контейнер), <code>.item</code> (контейнер для каждого элемента списка), <code>.image</code> и <code>.details</code> (список подразумевает обязательное наличие и картинки, и текстовой информации):</p>
+
+    <pre class="prettyprint">.list
+    .item
+        .image
+        .details
+    .item
+        .image
+        .details</pre>
+
+    <div class="line">
+        {_render_2}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint" style="min-height: 500px;">{_render_2|escape}</pre>
+    </div>
+
+    <p>Вариант посложнее:</p>
+
+    <div class="line">
+        {_render_1}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint" style="min-height: 500px;">{_render_1|escape}</pre>
+    </div>
+
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

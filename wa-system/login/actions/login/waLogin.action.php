@@ -43,7 +43,7 @@ abstract class waLoginAction extends waBaseLoginAction
      */
     protected function sendConfirmation()
     {
-        $auth = wa()->getAuth();
+        $auth = $this->getAuthProvider();
         $login = $this->getData('login');
         $user_info = $auth->getByLogin($login);
         if (!$user_info) {

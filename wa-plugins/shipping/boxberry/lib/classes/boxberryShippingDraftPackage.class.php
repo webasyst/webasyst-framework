@@ -51,6 +51,8 @@ class boxberryShippingDraftPackage
             'sender_name'  => $this->bxb->notification_name
         ];
 
+        $data['weights'] += $this->getParcelVolume();
+
         // If the number is saved, then you need to update
         if (!empty($this->order->shipping_data['original_track_number'])) {
             $data['updateByTrack'] = $this->order->shipping_data['original_track_number'];
@@ -185,19 +187,52 @@ class boxberryShippingDraftPackage
 
         foreach ($items as $item) {
             $bxb_item = [
-                'id'       => $item['id'],
                 'name'     => $item['name'],
                 'price'    => round($item['price'] - $item['discount'], 2),
                 'quantity' => $item['quantity'],
                 'UnitName' => 'шт.'
             ];
 
+            if (!empty($item['sku'])) {
+                $bxb_item['id'] = $item['sku'];
+            }
+
             if (is_numeric($item['tax_rate'])) {
-                $bxb_item['nds'] = $item['tax_rate'];
+                $bxb_item['nds'] = (float) $item['tax_rate'];
             }
 
             $result[] = $bxb_item;
         }
+        return $result;
+    }
+
+    /**
+     * get package sizes
+     *
+     * @return array
+     */
+    protected function getParcelVolume()
+    {
+        $plugin_sizes = $this->bxb->getTotalSize();
+        $result = [];
+
+        $height = ifset($plugin_sizes, 'height', 0);
+        $width = ifset($plugin_sizes, 'width', 0);
+        $length = ifset($plugin_sizes, 'length', 0);
+
+        // If some size is not valid, then we take the standard sizes
+        if (empty($length) || empty($width) || empty($height)) {
+            $height = $this->bxb->default_height;
+            $width = $this->bxb->default_width;
+            $length = $this->bxb->default_length;
+        }
+
+        // convert to cm
+        // Centimeters are the requirements of boxberry
+        $result['x'] = ceil((float)$height * 100);
+        $result['y'] = ceil((float)$width * 100);
+        $result['z'] = ceil((float)$length * 100);
+
         return $result;
     }
 
@@ -213,7 +248,7 @@ class boxberryShippingDraftPackage
         $result = [];
 
         if (!$error) {
-            $api_manager = new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url);
+            $api_manager = new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url, $this->bxb);
 
             $sdata = array();
             foreach ($data as $key => $value) {
@@ -262,6 +297,7 @@ class boxberryShippingDraftPackage
 
         $label = ifset($request, 'label', false);
         if ($label) {
+            $label = preg_replace('/^https?:\/\//i', '//', $label);
             $template .= "<a href='{$label}' target='_blank'>Этикетка<i class='icon16 new-window'></i></a> ";
         }
         return $template;

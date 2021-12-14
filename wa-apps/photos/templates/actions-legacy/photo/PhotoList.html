@@ -1,0 +1,466 @@
+<script type="text/javascript" src="{$wa_app_static_url}js/legacy/lazy.load.js?v={$wa->version()}"></script>
+
+<div class="sidebar right200px" id="p-toolbar">
+
+    <!-- begin plugin hook: backend_photos_toolbar.top -->
+    {foreach $backend_photos_toolbar as $plugin_id => $item}
+        {if !empty($item.top)}{$item.top}{/if}
+    {/foreach}
+    <!-- end plugin hook: backend_photos_toolbar.top -->
+
+    <div class="block" id="share-menu-block">
+        <h6 class="heading">
+            <span class="count indicator" style="display:none"></span>
+            [`Share`]
+        </h6>
+        <ul class="menu-v with-icons compact p-no-photo-selected123 thumbs-view-menu" id="share-menu">
+            <li data-action="embed"><a href="#"><i class="icon16 link"></i>[`Link / Embed`]</a></li>
+            {if $wa->blog && ($wa->blog->rights(false) >= blogRightConfig::RIGHT_READ_WRITE)}
+            <li data-action='blog-post'>
+              <script type="text/javascript">
+              var blog_smarty_enabled = {json_encode($wa->blog->option('can_use_smarty'))};
+              var obligatory_size = {json_encode($big_size)};
+              </script>
+              <a href="#"><i class="icon16" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png'); background-size: 16px 16px;"></i>[`Blog post`]</a>
+              <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
+            </li>
+            {/if}
+
+            {foreach $backend_photos_toolbar as $plugin_id => $item}
+                {if !empty($item.share_menu)}
+                    {if is_array($item.share_menu)}
+                        {foreach $item.share_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.share_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photos_toolbar.share_menu -->
+
+        </ul>
+    </div>
+    <div class="block" id="organize-menu-block">
+        <h6 class="heading">
+            <span class="count indicator" style="display:none"></span>
+            [`Organize`]
+        </h6>
+        <ul class="menu-v with-icons compact p-no-photo-selected123 thumbs-view-menu" id="organize-menu">
+            <li data-action='make-stack'><a href="#"><i class="icon16 stack"></i>[`Stack`]</a></li>
+            <li data-action='set-rate'><a href="#;"><i class="icon16 star"></i>[`Rate`]</a></li>
+            <li data-action='add-to-album'><a href="#"><i class="icon16 pictures"></i>[`Add to album`]</a></li>
+            <li data-action='assign-tags'><a href="#"><i class="icon16 tags"></i>[`Assign tags`]</a></li>
+            {if !empty($album) && $album.type == photosAlbumModel::TYPE_STATIC}
+                <li data-action='delete-from-album'><a href="#"><i class="icon10 no-bw"></i>[`Remove from album`]</a></li>
+            {/if}
+            <!-- plugin hook: backend_toolbar_list_organize_selected_link -->
+            <li data-action='manage-access' class="top-padded"><a href="#"><i class="icon16 lock"></i>[`Manage access`]</a></li>
+            <li data-action='delete-photos'><a href="#"><i class="icon16 delete"></i>[`Delete photos`]</a></li>
+
+            {foreach $backend_photos_toolbar as $plugin_id => $item}
+                {if !empty($item.organize_menu)}
+                    {if is_array($item.organize_menu)}
+                        {foreach $item.organize_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.organize_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photos_toolbar.organize_menu -->
+
+        </ul>
+    </div>
+    <div class="block" id="save-menu-block" style="display: none;">
+        <h6 class="heading">
+            <span class="count indicator" style="display:none">0</span>
+            [`Descriptions`]
+        </h6>
+        <ul class="menu-v descriptions-view-menu" id="save-menu">
+            <li data-action='save-description'><input type="button" value="[`Save`]" class="button green"></li>
+            <li data-action='hide-name'>
+                <input id="save-menu-hide-name" type="checkbox" value="1">
+                <label for="save-menu-hide-name">[`Hide photos name`]</label>
+            </li>
+
+            {foreach $backend_photos_toolbar as $plugin_id => $item}
+                {if !empty($item.save_menu)}
+                    {if is_array($item.save_menu)}
+                        {foreach $item.save_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.save_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photos_toolbar.save_menu -->
+
+        </ul>
+    </div>
+    <div class="block" id="selector-menu-block" style="display: none;">
+        <ul class="menu-v thumbs-view-menu" id="selector-menu">
+            <li data-action='select-photos'>
+                <a href="#" class="inline-link small">
+                    <i class="icon16 checkboxes"></i><b><i><span class="unchecked">[`Select all photos`]</span>
+                        <span class="checked" style="display:none;">[`Unselect all photos`]</span>
+                    </i></b>
+                </a>
+            </li>
+
+            {foreach $backend_photos_toolbar as $plugin_id => $item}
+                {if !empty($item.selector_menu)}
+                    {if is_array($item.selector_menu)}
+                        {foreach $item.selector_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.selector_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photos_toolbar.selector_menu -->
+
+        </ul>
+    </div>
+    <div class="block" id="hint-menu-block" style="display:none;">
+        <p class="p-sort-order-error-disclaimer upload_datetime" style="display:none;">[`Photos in this list are sorted <strong>by upload time</strong>. Sort order cannot be set manually here.`]</p>
+        <p class="p-sort-order-error-disclaimer rate" style="display:none;">[`Photos in this list are sorted <strong>by rating</strong>. Sort order cannot be set manually here.`]</p>
+        <p class="p-sort-order-error-disclaimer sort" style="display:none;">[`You do not have sufficient access rights to alter photos sort order in this list.`]</p>
+
+        {foreach $backend_photos_toolbar as $plugin_id => $item}
+            {if !empty($item.hint_menu)}
+                {if is_array($item.hint_menu)}
+                    {foreach $item.hint_menu as $menu_item}
+                        {$menu_item}
+                    {/foreach}
+                {else}
+                    {$item.hint_menu}
+                {/if}
+            {/if}
+        {/foreach}
+        <!-- plugin hook: backend_photos_toolbar.hint_menu -->
+
+    </div>
+
+    <!-- begin plugin hook: backend_photos_toolbar.bottom -->
+    {foreach $backend_photos_toolbar as $plugin_id => $item}
+        {if !empty($item.bottom)}{$item.bottom}{/if}
+    {/foreach}
+    <!-- end plugin hook: backend_photos_toolbar.bottom -->
+
+</div>
+
+<div class="content left{$sidebar_width}px right200px" id="p-content">
+
+    {if empty($photos) && empty($album) && empty($hash)}
+        <div class="block double-padded p-welcome" id="welcome-block">
+            <style>
+                #p-toolbar { display: none; }
+                .p-welcome { margin-right: -150px; }
+            </style>
+            <h1>[`Welcome to your new photo gallery!`]</h1>
+            <p>[`Start uploading photos by clicking the link above or by dragging selected photos anywhere on this page.`]</p>
+            <img src="{$wa_url}wa-apps/photos/img/drag-photos-here.png" class="p-drag-photos-here" title="[`Drag some photos anywhere on this page to start upload`]" alt="[`Drag some photos anywhere on this page to start upload`]">
+        </div>
+    {else}
+        <div class="block double-padded" id="p-block">
+            <h1>
+                {if !empty($album)}
+                    <a href="{if $album.parent_id}#/album/{$album.parent_id}/{else}#/albums/{/if}" class="p-back-to-list">[`← Back`]</a>
+                {/if}
+                <span {if isset($album) && !empty($album.edit_rights)}class="editable"{/if} id="photo-list-name">{if isset($album) && empty($title)}[`(no name)`]{else}{$title|escape}{/if}</span>
+                <input type="text" id="photo-list-name-input" style="display: none;" class="p-photo-h1-edit">
+                {if isset($album)}
+                    <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note|escape}{/if}</span>
+                    <input type="text" id="photo-album-note-input" style="display: none;" class="p-photo-h1-edit hint">
+                {/if}
+                {if isset($album) && $album.type == photosAlbumModel::TYPE_DYNAMIC}
+                    <span class="p-smart-album-criteria">
+                        {if isset($album.conditions.status) && $album.conditions.status[0] == '<=' && $album.conditions.status[1] == '0'}<i class="icon10 lock-bw"></i>{/if}
+                        {if isset($album.conditions.rate)}
+                            {'★'|str_repeat:$album.conditions.rate[1]}{*'*}{if $album.conditions.rate[0] == '>='}+{else}-{/if}
+                        {/if}
+                        {if isset($album.conditions.tag)}
+                            <span class="tags small">{implode(', ', $album.conditions.tag[1])}</span>
+                        {/if}
+                    </span>
+                {/if}
+            </h1>
+            <ul class="menu-h p-content-control">
+                <li class="selected">
+                    <a href="#" class="album-view" data-action="thumbs-view"><!-- index.php?app=photos --><i class="icon16 view-thumbs"></i></a>
+                </li>
+                <li>
+                    <a href="#" class="album-view" data-action="descriptions-view"><!-- index.php?app=photos&descriptions --><i class="icon16 view-thumb-list"></i></a>
+                </li>
+                <!-- plugin hook: backend-list-view-toggle -->
+
+                <li class="p-inline-mixed-string">
+                    {if isset($album)}
+                        {if $frontend_link}
+                            {if $album.status <= 0}
+                                <i class="icon10 lock-bw"></i>
+                                [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="gray">{$frontend_link|escape}</a>
+                                <i class="icon10 new-window"></i>{/if}
+                            {else}
+                                [`Public album`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link|escape}</a>
+                                <i class="icon10 new-window"></i>
+                            {/if}
+                            &nbsp;&nbsp;
+                        {/if}
+                        {if $album.edit_rights}
+                            <i class="icon10 settings p-published-album-layout-icon"></i>
+                            <a href="#" id="p-album-settings" class="gray">[`Album settings`]</a>
+                            &nbsp;
+                            <i class="icon10 delete-bw"></i>
+                            <a href="#" id="p-album-delete" class="gray">[`Delete album`]</a>
+                        {/if}
+                    {else if (!empty($frontend_link))}
+                        [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link|escape}</a>
+                        <i class="icon10 new-window"></i>
+                    {/if}
+                </li>
+            </ul>
+
+            <div id="place-for-messages"></div>
+
+            {if !empty($album)}
+                {if !empty($album.description)}
+                    <p class="small">{$album.description|escape|strip_tags|truncate:512}</p>
+                {/if}
+                {if $child_albums}
+                    <ul class="thumbs li150px p-albums" id="album-thumbs-list">
+                        {foreach $child_albums as $a}
+                            <li data-album-id="{$a.id}">
+                                <div class="p-image">
+                                    <div class="p-image-corner top left"></div>
+                                    <div class="p-image-corner top right"></div>
+                                    <a href="#/album/{$a.id}/">
+                                        {if $a.key_photo}
+                                            <img src="{$a.key_photo.thumb_96x96.url}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if}" alt="{$a.name|escape}">
+                                        {else}
+                                            <img src="{$wa_app_static_url}img/album-dummy.png" alt="{$a.name|escape}" style="max-width:100px">
+                                        {/if}
+                                    </a>
+                                </div>
+                                <div class="p-details">
+                                    <strong{if $a.status <= 0} class="gray" title="[`Private album`]"{/if}>{$a.name|default:"[`(no name)`]"|escape}</strong>
+                                    <span class="p-count">{sprintf( _w('%d photo','%d photos',$a.count), $a.count)}</span>
+                                </div>
+                            </li>
+                        {/foreach}
+                    </ul>
+                    <h5 class="heading">[`In this album`]</h5>
+                {/if}
+            {/if}
+
+
+            <ul class="thumbs li250px" id="photo-list"></ul>
+            <div class="lazyloading-wrapper"></div>
+        </div>
+    {/if}
+    <div id="cover" class="dialog-background" style="display:none;">
+        <i class="icon16 loading"></i>
+    </div>
+</div>
+
+{capture name="template-photo-thumbs"}{literal}
+    {% var last_login_time = o.last_login_time; %}
+    {% for (var i=0, p=o.photos[0], n=o.photos.length; i<n; p=o.photos[++i]) { %}
+    <li class="{% if (p.stack_count > 0) { %} stacked{% } %}
+                {% if (i == n - 1) { %} last{% } %}
+                {% if (last_login_time < p.upload_timestamp) { %}highlighted{% } %}
+                {% if ($.photos.album && $.photos.album.key_photo_id == p.id) { %}key-photo{% } %}
+                {% if (o.selected) { %}selected{% } %}"
+                data-photo-id="{%#p.id%}"
+    >
+        <div class="p-image">{% if (p.stack_count > 0) { %}
+            <div class="p-stack layer1"></div>
+            <div class="p-stack layer2"></div>
+            <div class="p-stack layer3"></div>{% } %}
+                <div class="p-image-corner top left">
+                    {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
+                    {% for (var plugin in p.hooks.top_left) { %}
+                       {%# p.hooks.top_left[plugin] %}
+                    {% } %}
+                    {% if (p.status <= 0) { %}<i class="icon16 lock-bw p-private-photo" title="[`Private photo`]"></i>{% } %}
+                </div>
+                <div class="p-image-corner top right">
+                    {% if (p.stack_count > 0) { %}<span class="indicator">{%#p.stack_count%}</span>{% } %}
+                    {% if ($.photos.album) { %}<i class="icon16 medal key-photo-icon" title="[`This is a key photo for this album`]"></i>{% } %}
+
+                    {/literal}{* @event prepare_photos_backend[top_right][%plugin_id%]  *}{literal}
+                    {% for (var plugin in p.hooks.top_right) { %}
+                       {%# p.hooks.top_right[plugin] %}
+                    {% } %}
+                </div>
+            <a href="#{%#o.hash%}/photo/{%#p.id%}/">
+                <img src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" alt="" {% if ($.photos.album && $.photos.album.status == 1 && p.status <= 0) { %} style="opacity: 0.5" title="[`Private photos are not visible in public albums`]"{% } %} />
+            </a>
+        </div>
+        <div class="p-details">
+            <input type="checkbox" id="photos-checkbox-{%#p.id%}" name="photo_id[]" value="{%#p.id%}"
+                        {% if (o.selected) { %}checked="checked"{% } %}
+            >
+            <label>
+                <strong{% if (p.status <= 0) { %} class="gray" title="[`Private photo`]"{% } %}>{%#p.name%}</strong>
+            </label>
+            <span class="p-rate" {% if (p.rate == 0) { %}style="display: none;"{% } %}>
+                {%#$.photos.getRatingHtml(p.rate, 10, true)%}
+            </span>
+        </div>
+        <div class="p-description">
+            {% if (p.description) { %}
+                <div class="small {% if (p.edit_rights) { %}editable{% } %}">{%#p.description.truncate(255)%}</div>
+                <div class="full-description" style="display:none;">{%#p.description%}</div>
+            {% } else { %}
+                {% if (p.edit_rights) { %}
+                    <div class="small gray editable">[`add description`]</div>
+                {% } else { %}
+                    <div class="small gray"></div>
+                {% } %}
+                <div class="full-description" style="display:none;"></div>
+            {% } %}
+            {% if ($.photos.album && $.photos.album.edit_rights) { %}
+                <div class="small make-key-photo-link"><a href="javascript:void(0)" class="inline-link"><b><i>[`make key photo`]</i></b></a></div>
+            {% } %}
+        </div>
+        <p class="tags">
+            <span class="small">
+                {% include ('template-photo-list-photo-tags', {tags: p.tags}); %}
+            </span>
+        </p>
+        <div id="photo-list-hook-thumb-{%#p.id%}" class="photo-list-hook-thumb">
+
+        {/literal}{* @event prepare_photos_backend[thumb][%plugin_id%]  *}{literal}
+        {% for (var plugin in p.hooks.thumb) { %}
+           {%# p.hooks.thumb[plugin].replace(/\{%[#=]{1}\s*o.([\w_]+)%\s*\}/g,function(string,match){ return o[match];}) %}
+        {% } %}
+        </div>
+    </li>
+    {% } %}
+{/literal}{/capture}
+
+{capture name="template-photo-counter"}{literal}
+    {%=o.string.loaded%}&nbsp;{%=o.string.of%}
+    {% if (o.count < o.total_count) { %}
+      <br>
+      <br>
+      <a href="#next" class="lazyloading-link">[`Show more photos`]</a>
+      <span class="lazyloading-progress" style="display:none">
+           <i class="icon16 loading"></i>
+           [`Loading`]{% if (o.string.chunk) { %}&nbsp;{%=o.string.chunk%}{% } %}...
+      </span>
+    {% } %}
+{/literal}{/capture}
+
+{capture name="template-photo-descriptions"}{literal}
+    {% var height; %}
+    {% for (var i=0, p=o.photos[0], n=o.photos.length; i<n; p=o.photos[++i]) { %}
+    <li class="{% if (p.stack_count > 0) { %} stacked{% } %}
+                {% if (i == n - 1) { %} last{% } %}"
+                data-photo-id="{%#p.id%}"
+    >
+        <div class="p-image">{% if (p.stack_count > 0) { %}
+            <div class="p-stack layer1"></div>
+            <div class="p-stack layer2"></div>
+            <div class="p-stack layer3"></div>{% } %}
+            <a href="#{%#o.hash%}/photo/{%#p.id%}/">
+                <div class="p-image-corner top left">
+                    {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
+                    {% for (var plugin in p.hooks.top_left) { %}
+                        {%# p.hooks.top_left[plugin] %}
+                    {% } %}
+                    {% if (p.status <= 0) { %}
+                        <i class="icon16 lock-bw p-private-photo" title="[`Private photo`]"></i>
+                    {% } %}
+                </div>
+                <div class="p-image-corner top right">
+                    {/literal}{* @event prepare_photos_backend[top_right][%plugin_id%]  *}{literal}
+                    {% for (var plugin in p.hooks.top_right) { %}
+                        {%# p.hooks.top_right[plugin] %}
+                    {% } %}
+                    {% if (p.stack_count > 0) { %}
+                        <span class="indicator">{%#p.stack_count%}</span>
+                    {% } %}
+                </div>
+                <img src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" />
+            </a>
+        </div>
+
+        <div class="p-photo-details">
+            {% if (p.edit_rights) { %}
+                {%
+                   if (typeof p.thumb.size === 'object' && p.thumb.size && p.thumb.size) {
+                     height = p.thumb.size.height
+                   } else {
+                     height = p.thumb.bound.height || p.thumb.bound.width;
+                   }
+                %}
+                <input name="photo[{%#p.id%}][name]" value="{%#p.name%}" class="bold"{% if (o.options.hide_name) { %} style="display:none;"{% } %}>
+                <textarea name="photo[{%#p.id%}][description]" class="js-{%=o.options.hide_name?'big':'small'%}" style="height: {%=height-(o.options.hide_name?6:33)%}px;" >{%#p.description%}</textarea>
+            {% } else { %}
+                <span class="title p-name{% if (p.edit_rights) { %} editable{% } %}" id="p-name-{%#p.id%}">{%#p.name%}</span>
+                <div class="small p-description">{%#p.description%}</div>
+            {% } %}
+        </div>
+
+        {/literal}{* @event prepare_photos_backend[thumb][%plugin_id%]  *}{literal}
+        {% for (var plugin in p.hooks.thumb) { %}
+            {%# p.hooks.thumb[plugin].replace(/\{%[#=]{1}\s*o.([\w_]+)%\s*\}/g,function(string,match){ return o[match];}) %}
+        {% } %}
+
+    </li>
+    {% } %}
+{/literal}{/capture}
+{capture name="template-photo-list-photo-tags"}{literal}
+{% var tags = o.tags, i = 0; %}
+{% if (!tags || ($.isArray(tags) && !tags.length)) return ''; %}
+{% for (var tag_id in tags) { %}{% var t = tags[tag_id]; %}{% if (i++ > 0) { %},{% } %} <a href='#/tag/{%=encodeURIComponent(t)%}/'>{%=t%}</a>{% } %}
+{/literal}{/capture}
+
+
+
+{* js templates block*}
+{foreach $smarty.capture as $template => $template_content}
+{if $template_content && (strpos($template, 'template-')===0)}
+<script id="{$template}" type="text/html">
+{$template_content|replace:'</':'<\/'}
+</script>{capture name=$template}{/capture}
+{/if}
+{/foreach}
+{if empty($offset)}
+{$loaded = count($photos)}
+{else}
+{$loaded = count($photos) + $offset}
+{/if}
+{if isset($album)}{$total_count=$album.count}{/if}
+{$photos_per_page = $wa->photos->option("photos_per_page")}
+<script type="text/javascript">
+    {if !empty($string)}
+        $.photos.photo_list_string = {json_encode($string)};
+    {else}
+        $.photos.photo_list_string = {
+            'loaded':'{_w('%d photo','%d photos',$loaded)}',
+            'of':'{if !empty($total_count)}{$total_count|string_format:"[`of %d`]"}{else}{/if}',
+            'chunk':'{_w('%d photo','%d photos',min($total_count - $loaded,$photos_per_page))}'
+        };
+    {/if}
+
+    $.photos.setAlbum({if isset($album)}{json_encode($album)}{else}null{/if});
+    $.photos.photo_stream_cache.set({json_encode(array_values($photos))});
+    $.photos.total_count = {if !empty($total_count)}{$total_count}{else}null{/if};
+    $.photos.photos_per_page = {$photos_per_page};
+    $.photos.setOption('sort_method', '{$sort_method}');
+    {if !empty($album) && $child_albums}
+        $.photos.initAlbumThumbsDragAndDrop($('#album-thumbs-list'), {$album.id});
+    {/if}
+
+    //
+    // see js/photos.js -> $.photos.onLoadPhotoList()
+    // for additional JS that runs after this template is loaded.
+    //
+</script>

@@ -35,6 +35,29 @@ class boxberryShipping extends waShipping
 {
     const MAX_DECLARED_PRICE = 300000;
 
+    public function tracking($tracking_id = null)
+    {
+        if (!empty($tracking_id)) {
+            $data = array(
+                'ImId' => $tracking_id
+            );
+
+            $api_manger = new boxberryShippingApiManager($this->token, $this->api_url);
+            $status = $api_manger->getListStatusesFull($data);
+            $text = 'Отправление в стадии оформления.';
+            if (isset($status['statuses'])) {
+                $last_status = array_pop($status['statuses']);
+                if (isset($last_status['Name'])) {
+                    $text = sprintf('Статус отправления: «%s».', $last_status['Name']);
+                }
+            }
+
+            return $text;
+        }
+
+        return null;
+    }
+
     /**
      * @return array|string
      * @throws waException
@@ -123,15 +146,11 @@ class boxberryShipping extends waShipping
      */
     public function allowedAddress()
     {
-        $region = $this->getSettings('region');
+        $countries = $this->getSettings('countries');
 
         $address = [
-            'country' => 'rus',
+            'country' => $countries,
         ];
-
-        if ($region) {
-            $address['region'] = $region;
-        }
 
         return [
             $address
@@ -240,10 +259,10 @@ class boxberryShipping extends waShipping
      */
     public function getParcelWeight()
     {
-        $weight = (float)$this->getTotalWeight();
+        $weight = (int)ceil($this->getTotalWeight());
 
         if (!$weight) {
-            $weight = (float)$this->default_weight;
+            $weight = (int)ceil($this->default_weight);
         }
         return $weight;
     }
@@ -318,6 +337,11 @@ class boxberryShipping extends waShipping
 
     public function getAddress($field = null)
     {
-        return parent::getAddress($field);
+        $address = parent::getAddress($field);
+        if ($field == 'region' && $address >= 1 && $address <= 9) {
+            $address = '0' . (int)$address;
+        }
+
+        return $address;
     }
 }

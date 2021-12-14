@@ -118,7 +118,7 @@ class waContactEmailsModel extends waModel
         $exclude_ids = waUtils::dropNotPositive($exclude_ids);
 
         $where = array(
-            "e.email LIKE s:email",
+            "e.email LIKE 'l:email'",
             "e.sort = 0",
             "c.password != ''"
         );
@@ -156,7 +156,7 @@ class waContactEmailsModel extends waModel
         return  $contact_id;
     }
 
-    public function getMainContactMyEmail($email)
+    public function getMainContactByEmail($email)
     {
         // find oldest contact or with password
         $sql = "SELECT c.id FROM ".$this->table." e JOIN wa_contact c ON e.contact_id = c.id
@@ -164,6 +164,17 @@ class waContactEmailsModel extends waModel
                 ORDER BY c.password DESC, c.id
                 LIMIT 1";
         return $this->query($sql)->fetchField();
+    }
+
+    /**
+     * @deprecated
+     * @see getMainContactByEmail
+     * @param $email
+     * @return bool|mixed
+     */
+    public function getMainContactMyEmail($email)
+    {
+        return $this->getMainContactByEmail($email);
     }
 }
 

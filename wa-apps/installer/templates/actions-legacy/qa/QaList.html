@@ -1,0 +1,33 @@
+{extends file="./QaDefault.html"}
+{block name="content"}
+    {if !empty($items)}
+        <table class="zebra">
+            <thead>
+            <tr>
+                <th>##</th>
+                <th>Name</th>
+                <th>Version</th>
+                <th>Vendor</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {if $subject=='apps'}{$field = 'app_id'}{else}{$field='extras_id'}{/if}
+            {foreach $items as $item}
+                <tr>
+                    <td>{$item@iteration|string_format:'%02d'}</td>
+                    <td>{$item.installed.name|default:$item.slug|escape}</td>
+                    <td>{$item.installed.version|default:'—'|escape}</td>
+                    <td>{$item.installed.vendor|default:'—'|escape}</td>
+                    <td><form action="?module={$subject}&action=remove" method="post">
+                            {$wa->csrf()}
+                            <input type="hidden" name="{$field}[{$item.slug}]" value="{$item.installed.vendor|default:'webasyst'|escape}"/>
+                            <input type="submit" value="[`Delete`]" class="button2 red">
+                        </form>
+                    </td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    {/if}
+{/block}

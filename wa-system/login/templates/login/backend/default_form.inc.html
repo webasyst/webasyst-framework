@@ -1,4 +1,7 @@
 <div class="wa-login-default-form">
+    {if $bind_with_webasyst_contact}
+    {include file="./webasyst_contact_info.inc.html"}
+    {/if}
     <form action="" method="post">
 
         {foreach $fields|default:[] as $field_id => $params}
@@ -18,16 +21,26 @@
 
                 <input type="hidden" name="wa_auth_login" value="1">
 
-                <input type="submit" value="[s`Sign In`]" class="button wa-login-submit">
-                {if !empty($is_api_oauth)}
-                    [s`or`]
-                    <a href="javascript:void(0);" class="wa-login-cancel gray underline">[s`cancel`]</a>
-                {/if}
-                <i class="icon16 loading wa-loading" style="display: none;"></i>
+                {if $bind_with_webasyst_contact}
+                    <div class="wa-login-and-bind-with-webasyst-id-button-wrapper">
+                        <input type="submit" value="[s`Sign in and connect Webasyst ID`]" class="button blue wa-login-submit">
+                    </div>
+                    <div>
+                        <a href="javascript:void(0);" class="js-back-to-simple-login underline">[s`Sign in without Webasyst ID`]</a>
+                    </div>
+                {else}
+                    <input type="submit" value="[s`Sign In`]" class="button wa-login-submit">
+                    {if !empty($is_api_oauth)}
+                        [s`or`]
+                        <a href="javascript:void(0);" class="wa-login-cancel gray underline">[s`cancel`]</a>
+                    {/if}
+                    <i class="icon16 loading wa-loading" style="display: none;"></i>
 
-                {if $forgotpassword_url && empty($is_api_oauth)}
-                    <a href="{$forgotpassword_url}" class="wa-forgotpassword underline" data-type="forgotpassword">[s`Forgot password?`]</a>
+                    {if $forgotpassword_url && empty($is_api_oauth)}
+                        <a href="{$forgotpassword_url}{if $force_login_form}&force_login_form=1{/if}" class="wa-forgotpassword underline" data-type="forgotpassword">[s`Forgot password?`]</a>
+                    {/if}
                 {/if}
+
             </div>
         </div>
 

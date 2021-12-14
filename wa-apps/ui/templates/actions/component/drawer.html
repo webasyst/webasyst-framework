@@ -1,0 +1,177 @@
+{$_title = ".waDrawer()"}
+{$wa->title($_title)}
+
+{function name="_drawer_html" id=""}
+<div class="drawer" id="{$id|default:""}">
+    <div class="drawer-background"></div>
+    <div class="drawer-body">
+        <a href="#" class="drawer-close js-close-drawer"><i class="fas fa-times"></i></a>
+        <div class="drawer-block">
+            <header class="drawer-header"><h1>Header</h1></header>
+            <div class="drawer-content">Content</div>
+            <footer class="drawer-footer">
+                <button class="js-close-drawer button light-gray">Close</button>
+            </footer>
+        </div>
+    </div>
+</div>
+{/function}
+
+{function name="_render_drawer"}
+<button class="js-show-drawer button purple">Показать простой drawer</button>
+<script>
+    ( function($) {
+        var drawer_html = {_drawer_html|strip|json_encode};
+
+        $(".js-show-drawer").on("click", function() {
+            var drawer = $.waDrawer({
+                html: drawer_html,
+                direction: "right"
+            });
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_drawer_2"}
+<button class="js-show-drawer-2 button purple">Показать drawer 2</button>
+<script>
+    ( function($) {
+        var $wrapper = $({_drawer_html|strip|json_encode});
+
+        $(".js-show-drawer-2").on("click", function() {
+            var drawer = $.waDrawer({
+                wrapper: $wrapper,
+                direction: "left"
+            });
+        });
+    })(jQuery);
+</script>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <h2><code>.drawer</code></h2>
+
+    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2.</blockquote>
+
+    <p>«Шторка», выезжающая из-за границы экрана.</p>
+    <p>Компонент схож с диалогом, но в силу своей формы рекомендуется только для действий, предполагающих лишь отвлечение внимания с обязательным возвратом к текущему контексту. Например, для добавления короткого комментария, открытия чата, просмотра справочной информации, быстрого редактирования свойств некоторой сущности.</p>
+    <p>Что-то вроде «быстрого контекстного диалога», где что-то сделал и вернулся обратно. «Птичка улетела, но гнездышко не сгорело» — примерно так.</p>
+
+    <p>Содержимое шторки (HTML):</p>
+    <div class="line">
+        <pre class="prettyprint">{_drawer_html|escape}</pre>
+    </div>
+
+    <p>Упаковка этого HTML и открытие шторки при клике по кнопке:</p>
+
+    <div class="line">
+        {_render_drawer}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_drawer|escape}</pre>
+    </div>
+
+    <h3>.drawer &gt; <code>.drawer-close</code></h3>
+    <p>
+        В зависимости от требуемой функциональности возможность закрытия шторки рекомендуется реализовать либо в виде кнопки «Закрыть» или «Отмена», либо в виде крестика с помощью элемента <code>&lt;a class="drawer-close"&gt;</code> с иконкой-крестиком <code>&lt;i class="fas fa-times"&gt;&lt;/i&gt;</code> в правом верхнем углу.
+    </p>
+
+    <hr>
+
+    <div class="line">
+        <h4>Сложный drawer</h4>
+        {_render_drawer_2}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_drawer_2|escape}</pre>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.drawer <code>параметры</code></h3>
+        <p>Опции формирования контента компонента:</p>
+        <ul>
+            <li><span class="bold">html</span> (string/html) — HTML-код всего компонента.
+                <div class="hint">Рекомендуемый вариант.</div>
+                <br>
+            </li>
+            <li><span class="bold">$wrapper</span> (jQuery Node) — объект <code>$(html)</code> всего компонента.
+                <br>
+            </li>
+            <li><span class="bold">header</span> (string/html) — HTML-код блока с заголовком компонента.
+                <br>
+            </li>
+            <li><span class="bold">content</span> (string/html) — HTML-код основной контентной части.
+                <br>
+            </li>
+            <li><span class="bold">footer</span> (string/html) — HTML-код блока с нижней частью компонента.
+                <br>
+            </li>
+        </ul>
+        <p>Разное:</p>
+        <ul>
+            <li><span class="bold">esc</span> (boolean, по умолчанию true) — закрытие компонента при нажатии на Esc.
+                <br>
+            </li>
+            <li><span class="bold">lock_body_scroll</span> (boolean, по умолчанию true) — при открытии диалог скрывает общую полосу прокрутки страницы и блокирует возможность прокручивать страницу.
+                <br>
+            </li>
+            <li><span class="bold">direction</span> (string, по умолчанию "right") — положение: "left" или "right".
+                <br>
+            </li>
+            <li><span class="bold">options</span> (object, по умолчанию пустой object) — объект с данными используется для передачи их из внешнего окружения во внутренний контент.
+                <br>
+            </li>
+            <li><span class="bold">width</span> (string, по умолчанию "600px") — ширина компонента.
+                <br>
+            </li>
+        </ul>
+        <p>Функции:</p>
+        <ul>
+            <li><span class="bold">onOpen</span> (function) — событие при открытии компонента.
+                <div class="hint"><code>function($drawer, drawer_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">onClose</span> (function) — событие при закрытии компонента.
+                <div class="hint"><code>function(drawer_instance) { ... }</code></div>
+                <div class="hint">Если ваша функция-callback вернет в ответе <code>return false</code>, то компонент не закроется. Используйте это в ситуациях, когда нужно заблокировать возможность закрытия компонента.</div>
+                <br>
+            </li>
+            <li><span class="bold">onBgClick</span> (function) — событие при клике по фону компонента.
+                <div class="hint"><code>function(event, $drawer, drawer_instance) { ... }</code></div>
+                <br>
+            </li>
+        </ul>
+        <p>Прочее:</p>
+        <ul>
+            <li>Клик по элементу с классом <span class="bold">.js-close-drawer</span> запустит обработчик закрытия компонента <code>drawer.close()</code>.</li>
+            <li>Как получить экземпляр класса компонента:<br><code>var drawer_instance = $(".drawer").data("drawer");</code>.</li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.drawer <code>методы</code></h3>
+        <ul>
+            <li><span class="bold">close</span> (function) — закрытие компонента (удаление).
+                <br>
+            </li>
+            <li><span class="bold">hide</span> (function) — скрытие компонента (переносит компонент из DOM в Virtual DOM) с возможностью возврата через метод <code>.show</code>.
+                <br>
+            </li>
+            <li><span class="bold">show</span> (function) — показывает компонент, если он ранее был скрыт.
+                <br>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

@@ -26,10 +26,12 @@ var WASettingsSubfieldConditionalValues = (function ($) {
     WASettingsSubfieldConditionalValues.prototype.initValuesLink = function() {
         var that = this;
 
-        that.$wrapper.find(that.$dialog_link).on("click", function() {
+        const elem = that.$wrapper.find(that.$dialog_link);
+
+        elem.on("click", function() {
             $.get(that.dialog_url, function(html) {
                 // Init the values dialog
-                new WASettingsDialog({
+                $.waDialog({
                     html: html,
                     onOpen: function ($dialog_wrapper, dialog){
                         that.editValues($dialog_wrapper, dialog);
@@ -47,10 +49,14 @@ var WASettingsSubfieldConditionalValues = (function ($) {
             $form = $dialog_wrapper.find('form');
 
         // Link to add new rule
-        $dialog_wrapper.on('click', '.s-add-rule', function() {
+        $dialog_wrapper.on('click', '.s-add-rule', function(e) {
+            e.preventDefault();
+
             var item_tmpl = $dialog_wrapper.find('.s-new-rule');
+            var item_else = $dialog_wrapper.find('.js-settings-rule-else');
 
             if (item_tmpl.length) {
+                item_else.show();
                 var new_item = item_tmpl.clone();
                 new_item.removeClass('s-new-rule').removeAttr('style').insertBefore(item_tmpl);
                 new_item.find('input[name^="parent"]').attr('disabled', false);
@@ -62,14 +68,17 @@ var WASettingsSubfieldConditionalValues = (function ($) {
                 item_tmpl.find('input[name^="parent_value"]').attr('name', 'parent_value['+index+']');
                 item_tmpl.find('input[name^="value"]').attr('name', 'value['+index+'][0]');
                 dialog.resize();
+                $(this)[0].scrollIntoView({block: "end", inline: "nearest"})
             }
             return false;
         });
 
         // Link to add new value
-        $dialog_wrapper.on('click', '.s-add-value', function() {
+        $dialog_wrapper.on('click', '.s-add-value', function(e) {
+            e.preventDefault();
+
             var self = $(this),
-                parent = self.parents('table:first'),
+                parent = self.prev('table:first'),
                 item_tmpl = parent.find('.s-new-value');
 
             if (item_tmpl.length) {
@@ -101,6 +110,8 @@ var WASettingsSubfieldConditionalValues = (function ($) {
             }
             tr.remove();
             if (!table.find('tr.sortable:first').length) {
+                var item_else = $dialog_wrapper.find('.js-settings-rule-else');
+                item_else.hide();
                 table.parents('div.field:first').remove();
             }
             dialog.resize();
@@ -119,8 +130,8 @@ var WASettingsSubfieldConditionalValues = (function ($) {
         var that = this,
             $form = $dialog_wrapper.find('form'),
             $button = $dialog_wrapper.find('.js-save-values'),
-            $loading = $('<i class="icon16 loading" style="vertical-align: middle;margin-left: 10px;"></i>'),
-            $done = $('<i class="icon16 yes" style="vertical-align: middle;margin-left: 10px;"></i>');
+            $loading = $('<i class="fas fa-spinner loading" style="vertical-align: middle;margin-left: 10px;"></i>'),
+            $done = $('<i class="fas fa-check-circle" style="vertical-align: middle;margin-left: 10px;"></i>');
 
         $form.submit(function(e) {
             e.preventDefault();
@@ -136,18 +147,24 @@ var WASettingsSubfieldConditionalValues = (function ($) {
             $dialog_wrapper.find('[name^="parent_value["]:not(:disabled)').each(function() {
                 if (!this.value) {
                     validation_passed = false;
-                    $(this).addClass('error').after($('<em class="errormsg"></em>').text(that.locales["field_is_required"]));
+                    $(this).addClass('error').after($('<em class="state-error flexbox custom-mt-8"></em>').text(that.locales["field_is_required"]));
+                    dialog.resize();
                 }
             });
             $dialog_wrapper.find('[name^="value["]:not(:disabled)').each(function() {
                 if (!this.value) {
                     validation_passed = false;
-                    $(this).addClass('error').after($('<em class="errormsg"></em>').text(that.locales["field_is_required"]));
+                    $(this).addClass('error').after($('<em class="state-error flexbox custom-mt-8"></em>').text(that.locales["field_is_required"]));
+                    dialog.resize();
                 }
             });
             if (!validation_passed) {
-                $('#s-field-values').closest('.dialog').find('.dialog-buttons :submit').attr('disabled', false);
-                return false;
+                setTimeout(() => {
+                    $button.prop('disabled', false);
+                    console.log($loading)
+                    $('.loading').remove();
+                }, 1000)
+                return;
             }
 
             // Copy to main form the data that is to be saved to ContactField config

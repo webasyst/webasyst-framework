@@ -1,0 +1,97 @@
+<div class="dialog width600px height500px">
+    <div class="dialog-background"></div>
+    <form method="post" action="">
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <div class="block half-padded float-right">
+                    <ul class="menu-h small switcher">
+                        <li {if !$is_entire}class="selected" data-action="selected-photos"{else}style="display:none"{/if}><a href="#" class="inline-link"><b><i>[`selected photos`] ({$context['count']})</i></b></a></li>
+                        <li {if $is_entire}class="selected"{/if} data-action="all-list-photos">
+                        {if isset($entire_context['album'])}
+                            <a href="#" class="inline-link"><b><i>[`entire album`] ({$entire_context['album']['count']})</i></b></a>
+                        {else if isset($entire_context['tag'])}
+                            <a href="#" class="inline-link"><b><i>[`all tagged`] ({$entire_context['tag']['tag']})</i></b></a>
+                        {else if isset($entire_context['rate'])}
+                            <a href="#" class="inline-link"><b><i>[`all rated`] ({$entire_context['rate']['count']})</i></b></a>
+                        {else if isset($entire_context['all'])}
+                            <a href="#" class="inline-link"><b><i>[`all listed`] ({$entire_context['all']['count']})</i></b></a>
+                        {/if}
+                        </li>
+                    </ul>
+                </div>
+                <h1>[`Share photos`] <span class="gray">({$context['count']})</span><span style="display:none;"><i class="icon16 loading"></i></span></h1>
+                <div class="fields form p-dialog-form">
+                    <div class="field-group">
+                        {if $context['link']}
+                        <div class="field">
+                            <div class="name bold">
+                                <strong>[`Link`]</strong>
+                            </div>
+                            <div class="value">
+                                <input name="link" class="bold p-full-width-input" value="{$context['link']}">
+                                <a href="{$context['link']}" target="_blank" class="link"><i class="icon16 new-window"></i></a>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="field">
+                            <div class="name">
+                                <strong>[`HTML`]</strong><br><br>
+                                <span class="hint">
+                                    <input type="checkbox" name="description" value="1" checked id="embed-photo-list-description"><label for="embed-photo-list-description"> [`Descriptions`]</label>
+                                </span>
+                            </div>
+                            <div class="value">
+                                <textarea name="html" id="embed-photo-list-html-with-descriptions">{$context['html_with_descriptions']}</textarea>
+                                <textarea name="html" id="embed-photo-list-html" disabled style="display:none;">{$context['html']}</textarea>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                [`Smarty`]<br><br>
+                                <span class="hint">[`For embedding into other Webasyst apps content.`]</span>
+                            </div>
+                            <div class="value">
+                                <textarea name="smarty_code">{$context['smarty_code']}</textarea>
+
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[`Image URLs`]</div>
+                            <div class="value">
+                                <textarea name="urls">{$context['urls']}</textarea>
+                            </div>
+                        </div>
+                        <div class="field exclamation-message" {if $context.all_public}style="display:none;"{/if}>
+                            <div class="value small no-shift">
+                                <i class="icon10 exclamation"></i> [`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="block double-padded float-right">
+                <select name="size">
+                    {foreach $sizes as $sz}
+                        <option value="{$sz}" {if $sz == $size}selected{/if}>{$sz}px</option>
+                    {/foreach}
+                </select>
+            </div>
+            {if !empty($domains)}
+                <div class="block double-padded float-right">
+                    <select name="domain" data-original-domain="{$original_domain|escape}">
+                        {foreach $domains as $d}
+                            <option value="{$d.url|escape}" data-frontend-url="{$d.frontend_url|escape}">{$d.url|escape|truncate:42:'...':false:true}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            {/if}
+            <div class="dialog-buttons-gradient">
+                <input class="button cancel" type="submit" value="[`Close`]">
+            </div>
+        </div>
+    </div>
+    </form>
+</div>

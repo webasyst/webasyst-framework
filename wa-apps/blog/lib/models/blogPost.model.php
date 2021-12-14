@@ -656,6 +656,8 @@ SQL;
             }
         }
 
+        $data['update_datetime'] = date("Y-m-d H:i:s");
+
         if (!$id && (!isset($data['contact_id']) || !$data['contact_id'])) {
             $data['contact_id'] = wa()->getUser()->getId();
         }
@@ -942,7 +944,7 @@ SQL;
                 $url_validator = new blogSlugValidator();
             }
 
-            $url_validator->setSubject(_w('post','posts', 1));
+            $url_validator->setSubject(blogSlugValidator::SUBJECT_POST);
 
             if (!$url_validator->isValid($data['url'])) {
 

@@ -11,11 +11,10 @@ $.photos.widget.loupe = {
     },
     css : {
         'init' : {
-            'width' : null,
+            'width'     : null,
             'max-width' : null,
-            'margin-left' : 0,
-            'margin-top' : 0,
-            'height' : null
+            'height'    : null,
+            'transform' : 'translate3d(0, 0, 0)'
         }
     },
     drag : false,
@@ -27,19 +26,25 @@ $.photos.widget.loupe = {
     link : null,
     offset : {},
     status : 'thumb',
+    image_container_width: 0,
+    image_container_height: 0,
+
 
     init : function(options) {
+        const self = this;
         this.options = $.extend(this.options, options || {});
-        var self = this;
         self.trace('init');
+
         $.photos.hooks_manager.bind('afterRenderImg', function(img, photo, proper_thumb) {
             self.trace('afterRenderImg');
             self.prepare(img, photo, proper_thumb);
         });
+
         $.photos.hooks_manager.bind('beforeLoadPhoto', function() {
             self.trace('beforeLoadPhoto');
             self.stop();
         });
+
         $.photos.hooks_manager.bind('onAbortPrevLoading', function() {
             self.trace('onAbortPrevLoading');
             self.stop();
@@ -53,21 +58,26 @@ $.photos.widget.loupe = {
     },
 
     prepare : function(img, photo, proper_thumb) {
+        const self = this;
 
-        var self = this;
-        $('.p-one-photo a.next').die('click.loupe').live('click.loupe', function(e) {
+        $('.p-one-photo a.next').off('click.loupe').on('click.loupe', function(e) {
             return self.clickNextHandler.apply(self, [this, e]);
         });
+
         this.trace('prepare, status='+this.status);
         this.photo_data = photo;
         this.container = img;
         this.thumb_data = {
-                height : proper_thumb.size.height,
-                width : proper_thumb.size.width,
-                src : proper_thumb.url
+            height : proper_thumb.size.height,
+            width : proper_thumb.size.width,
+            src : proper_thumb.url
         };
 
-        if (this.status != 'thumb') {
+        const image_container = self.container.closest('.p-one-photo');
+        self.image_container_width = image_container.width();
+        self.image_container_height = image_container.height();
+
+        if (this.status !== 'thumb') {
             this.stop();
         }
 
@@ -76,32 +86,31 @@ $.photos.widget.loupe = {
     },
 
     reset : function() {
+        const self = this;
+
         this.trace('reset, status='+this.status);
         this.link = $('#photo-loupe-link');
         if ($('div.photo-loupe-wrapper').length) {
             this.container.css({
-                'width' : this.thumb_data.width + 'px',
                 'max-width' : '',
-                'height' : this.thumb_data.height + 'px',
-                'margin-left' : '',
-                'margin-top' : ''
+                'transform' : '',
             });
             this.container.unwrap();
         };
 
         this.status = 'thumb';
-        this.link.find('.minimize').hide();
-        if ((this.thumb_data.width && this.thumb_data.width < this.photo_data.width) || (this.thumb_data.height && this.thumb_data.height < this.photo_data.height) ) {
-            this.link.find('.maximize').show();
-            this.options.animate = (this.thumb_data.height && this.thumb_data.width) ? true : false;
+        this.link.addClass('hidden');
+
+        if ((this.thumb_data?.width < this.photo_data.width) || (this.thumb_data?.height < this.photo_data.height) ) {
+            this.link.removeClass('hidden');
+            this.options.animate = (this.thumb_data.height && this.thumb_data.width);
         } else {
-            this.link.find('.maximize').hide();
+            this.link.addClass('hidden');
         }
 
-        var self = this;
         this.link.unbind('.loupe').bind('click.loupe', function(e) {
             return self.clickHandler.apply(self, [this, e]);
-        }).show();
+        });
     },
 
     clickHandler : function() {
@@ -112,15 +121,31 @@ $.photos.widget.loupe = {
             }
             case 'maximized' : {
                 this.status = 'unloading';
+
                 this.link.find('.minimize').hide();
                 this.link.find('.maximize').show();
+
                 this.decrease();
                 break;
             }
             case 'thumb' : {
                 this.status = 'loading';
+
+                this.loader = $('<div class="spinner"></div>');
+                this.loader.css({
+                    'position': 'absolute',
+                    'top': '50%',
+                    'left': '50%',
+                    'width': '200px',
+                    'height': '200px',
+                    'transform': 'translate(-50%, -50%)'
+                });
+                this.loader.insertBefore(this.container);
+                $(this.container).hide();
+
                 this.link.find('.minimize').hide();
                 this.link.find('.maximize').hide();
+
                 this.enlarge();
                 break;
             }
@@ -129,10 +154,12 @@ $.photos.widget.loupe = {
     },
 
     clickNextHandler: function(element, e) {
-        var res = (this.status == 'thumb') ? true: false;
+        const res = (this.status == 'thumb') ? true: false;
+
         if(!res) {
             e.preventDefault();
         }
+
         this.trace('clickNextHandler '+res);
         return res;
     },
@@ -140,36 +167,45 @@ $.photos.widget.loupe = {
     interaction : function(element, e, node) {
         node = node.parents('body');
         switch (e.type) {
+            case 'touchend' :
             case 'mouseup' : {
                 if (this.drag) {
                     e.preventDefault();
                     this.drag = false;
-                    $('div.photo-loupe-wrapper').css('cursor', 'auto');
-                    $('body').css('cursor', '');
                     node.unbind(".loupe-move");
                 }
                 break;
             }
-            case 'mousedown' :
-            case 'click' : {
+            case 'touchstart' :
+            case 'mousedown' : {
                 this.clickNextHandler(element, e);
-                if (!this.drag) {
-                    $('div.photo-loupe-wrapper').css('cursor', 'move');
-                    this.drag = true;
+
+                if (this.drag) {
+                    return;
+                }
+
+                const self = this;
+
+                this.drag = true;
+
+                if (e.type === 'touchstart') {
+                    this.offset.mouseX = e.touches[0].pageX;
+                    this.offset.mouseY = e.touches[0].pageY;
+                } else {
                     this.offset.mouseX = e.pageX;
                     this.offset.mouseY = e.pageY;
-                    var self = this;
-
-                    node.bind("mouseover.loupe-move mousemove.loupe-move", function(e) {
-                        return self.watch.apply(self, [this, e]);
-                    });
                 }
+
+                node.bind("mouseover.loupe-move mousemove.loupe-move touchmove.loupe-move", function(e) {
+                    return self.watch.apply(self, [this, e]);
+                });
+
                 break;
             }
+            case 'touchleave' :
             case 'mouseleave' : {
                 if (this.drag) {
                     e.preventDefault();
-                    $('div.photo-loupe-wrapper').css('cursor', 'auto');
                     this.drag = false;
                     node.unbind(".loupe-move");
                 }
@@ -179,47 +215,39 @@ $.photos.widget.loupe = {
     },
 
     enlarge : function() {
-        this.drag = false;
-        var self = this;
-        this.trace('enlarge, status='+this.status);
-        $('#photo').removeClass("ui-draggable").closest('.p-image').addClass('p-image-maximized');
-        this.offset = this.container.offset();
-        this.offset.x = Math
-                .round((this.thumb_data.width - this.photo_data.width) / 2);
-        this.offset.y = Math
-                .round((this.thumb_data.height - this.photo_data.height) / 2);
-        this.container.wrap('<div class="photo-loupe-wrapper" style="height:'
-                + this.thumb_data.height + 'px;width:' + this.thumb_data.width
-                + 'px;position: relative;"/>');
-        this.container.removeAttr('width').removeAttr('height').css({
-            'width' : this.thumb_data.width + 'px',
-            'height' : this.thumb_data.height + 'px',
-            'margin-left' : 0,
-            'margin-top' : 0,
-            'max-width' : this.photo_data.width + 'px',
-            'display' : 'inline-block'
+        const self = this;
 
+        this.drag = false;
+        this.trace('enlarge, status='+this.status);
+        $('#photo').closest('.p-image').addClass('p-image-maximized');
+
+        this.offset = this.container.offset();
+        this.offset.x = (self.image_container_width > this.photo_data.width) ? '0' : Math.round((self.image_container_width - this.photo_data.width) / 2);
+        this.offset.y = (self.image_container_height > this.photo_data.height) ? '0' : Math.round((self.image_container_height - this.photo_data.height) / 2);
+
+        this.container.wrap('<div class="photo-loupe-wrapper"/>');
+        $('.photo-loupe-wrapper').css({ 'height': self.image_container_height, 'width': self.image_container_width });
+
+        this.container.css({
+            'max-width' : this.photo_data.width + 'px',
+            'transform' : 'translate3d(0, 0, 0)',
         });
+
         if (this.options.animate) {
             this.container.animate({
-                'width' : this.photo_data.width + 'px',
-                'height' : this.photo_data.height + 'px',
-                'margin-left' : this.offset.x + 'px',
-                'margin-top' : this.offset.y + 'px',
-                'max-width' : this.photo_data.width + 'px'
+                'max-width' : this.photo_data.width + 'px',
+                'transform' : `translate3d(${this.offset.x}px, ${this.offset.y}px, 0)`,
             }, function() {
                 return self.enlargeComplete.apply(self, [this]);
             });
         } else {
             this.container.css({
-                'width' : this.photo_data.width + 'px',
-                'height' : this.photo_data.height + 'px',
-                'margin-left' : this.offset.x + 'px',
-                'margin-top' : this.offset.y + 'px',
-                'max-width' : this.photo_data.width + 'px'
+                'max-width' : this.photo_data.width + 'px',
+                'transform' : `translate3d(${this.offset.x}px, ${this.offset.y}px, 0)`,
             });
             this.enlargeComplete();
         }
+
         this.link.find('.minimize').show();
 
         this.bind(this.container);
@@ -235,53 +263,71 @@ $.photos.widget.loupe = {
                 self.loaded = true;
             });
         }
-        var src = '?module=photo&action=download&photo_id='
-                + this.photo_data.id + '&attach='+(this.photo_data.edit_datetime||this.photo_data.upload_datetime);
-        this.helper.attr('src', src);
-    },
-    enlargeComplete : function() {
-        if (this.loaded) {
-            this.trace('enlargeComplete, status='+this.status);
-            this.helper.css({
-                'width' : this.photo_data.width + 'px',
-                'height' : this.photo_data.height + 'px',
-                'margin-left' : this.offset.x + 'px',
-                'margin-top' : this.offset.y + 'px',
-                'max-width' : this.photo_data.width + 'px'
-            }).show();
-            this.container.before(this.helper).hide();
-            this.container.unbind(".loupe .loupe-move");
-            this.bind(this.helper);
-            this.container.css({
-                'width' : this.thumb_data.width + 'px',
-                'max-width' : '',
-                'height' : this.thumb_data.height + 'px',
-                'margin-left' : '',
-                'margin-top' : ''
-            });
 
-            this.link.find('.minimize').show();
-            this.status = 'maximized';
-        } else {
-            var self = this;
+        const src = '?module=photo&action=download&photo_id='
+            + this.photo_data.id + '&attach='+(this.photo_data.edit_datetime||this.photo_data.upload_datetime);
+
+        const loadImage = (url) => new Promise((resolve, reject) => {
+            const img = new Image();
+            img.addEventListener('load', () => {
+                resolve(img);
+            });
+            img.addEventListener('error', reject);
+            img.src = url;
+        });
+
+        loadImage(src)
+          .then(img => {
+              $(this.helper).addClass('fade-in');
+              $(this.helper).on('animationend', function() {
+                  self.loader.remove();
+              });
+              this.helper.attr('src', img.src);
+          })
+          .catch(err => console.error(err));
+    },
+
+    enlargeComplete : function() {
+        if (!this.loaded) {
+            const self = this;
             setTimeout(function() {
                 return self.enlargeComplete.apply(self, [this]);
             }, 50);
+            return;
         }
+
+        this.trace('enlargeComplete, status='+this.status);
+        this.helper.css({
+            'max-width' : this.photo_data.width + 'px',
+            'transform' : `translate3d(${this.offset.x}px, ${this.offset.y}px, 0)`,
+        }).show();
+        this.container.before(this.helper).hide();
+        this.container.unbind(".loupe .loupe-move");
+        this.bind(this.helper);
+        this.container.css({
+            'max-width' : '',
+            'transform' : '',
+        });
+
+        this.link.find('.minimize').show();
+        this.status = 'maximized';
+
+        $('.p-image-nav').hide();
     },
 
     bind : function(node) {
         this.trace('bind, status='+this.status);
         var self = this;
-        node.bind("mousedown.loupe", function(e) {
+        node.bind("mousedown.loupe touchstart.loupe", function(e) {
             return self.interaction.apply(self, [this, e, node]);
         });
-        $(document).bind("mouseup.loupe", function(e) {
+        $(document).bind("mouseup.loupe touchend.loupe", function(e) {
             return self.interaction.apply(self, [this, e, node]);
         });
     },
 
     stop: function() {
+        const self = this;
         this.trace('stop at status='+this.status);
         var status = this.status;
         this.status = 'stop';
@@ -306,13 +352,14 @@ $.photos.widget.loupe = {
                 break;
             }
         }
+
         if(this.container) {
             this.container.find('*').unbind('.loupe .loupe-move');
         }
+
         $(document).unbind('.loupe .loupe-move');
         var wrapper = $('div.photo-loupe-wrapper');
         $('#photo-loupe-link img:visible').hide();
-        $('body').css('cursor', '');
         if (wrapper.length) {
             this.container.unwrap();
         };
@@ -328,15 +375,15 @@ $.photos.widget.loupe = {
     },
 
     decrease : function(fast) {
+        const self = this;
+
         this.trace('decrease, status='+this.status);
         this.loaded = false;
-        var self = this;
-        var size = {
-            'width' : this.thumb_data.width + 'px',
-            'height' : this.thumb_data.height + 'px',
-            'margin-left' : 0,
-            'margin-top' : 0
+
+        const size = {
+            'transform' : 'translate3d(0, 0, 0)',
         };
+
         if (fast || !this.options.animate) {
             this.helper.css(size);
             self.decreaseComplete();
@@ -350,33 +397,58 @@ $.photos.widget.loupe = {
 
     decreaseComplete : function(skip) {
         this.trace('decreaseComplete, status='+this.status);
-        $('#photo').addClass("ui-draggable").closest('.p-image').removeClass('p-image-maximized');
-        this.container.css(this.css.init).show();
+        $('#photo').closest('.p-image').removeClass('p-image-maximized');
+
+        this.link.find('.minimize').hide();
+        this.link.find('.maximize').show();
+
         this.helper.hide();
+
+        this.container.css(this.css.init).show();
+
+        this.loader.remove();
+
+        $('.p-image-nav').show();
+
         if(!skip) {
             this.reset();
         }
     },
 
     watch : function(element, e) {
-        if (this.drag) {
-            e.preventDefault();
+        if (!this.drag) {
+            return;
+        }
 
-            this.offset.x = Math.min(0, Math.max(this.thumb_data.width
-                    - this.photo_data.width, Math.round(this.offset.x
-                    - this.offset.mouseX + e.pageX)));
-            this.offset.y = Math.min(0, Math.max(this.thumb_data.height
-                    - this.photo_data.height, Math.round(this.offset.y
-                    - this.offset.mouseY + e.pageY)));
+        if (e.type === 'touchmove') {
+            this.offset.x = Math.min(0, Math.max(this.image_container_width
+              - this.photo_data.width, Math.round(this.offset.x
+              - this.offset.mouseX + e.touches[0].pageX)));
+            this.offset.y = Math.min(0, Math.max(this.image_container_height
+              - this.photo_data.height, Math.round(this.offset.y
+              - this.offset.mouseY + e.touches[0].pageY)));
+        } else {
+            this.offset.x = Math.min(0, Math.max(this.image_container_width
+              - this.photo_data.width, Math.round(this.offset.x
+              - this.offset.mouseX + e.pageX)));
+            this.offset.y = Math.min(0, Math.max(this.image_container_height
+              - this.photo_data.height, Math.round(this.offset.y
+              - this.offset.mouseY + e.pageY)));
+        }
+
+        if (e.type === 'touchmove') {
+            this.offset.mouseX = e.touches[0].pageX;
+            this.offset.mouseY = e.touches[0].pageY;
+        } else {
             this.offset.mouseX = e.pageX;
             this.offset.mouseY = e.pageY;
-            var item = (this.status == 'loading')
-                    ? this.container
-                    : this.helper;
-            item.css({
-                'margin-left' : this.offset.x + 'px',
-                'margin-top' : this.offset.y + 'px'
-            });
         }
+
+        var item = (this.status == 'loading')
+            ? this.container
+            : this.helper;
+        item.css({
+            'transform' : `translate3d(${this.offset.x}px, ${this.offset.y}px, 0)`,
+        });
     }
 };

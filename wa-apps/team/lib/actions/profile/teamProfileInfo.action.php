@@ -26,6 +26,7 @@ class teamProfileInfoAction extends waViewAction
     public function execute()
     {
         $can_edit = $this->canEdit();
+        $tasm = new teamWaAppSettingsModel();
         $this->getContactInfo($can_edit);
 
         $this->view->assign('can_edit', $can_edit);
@@ -35,7 +36,7 @@ class teamProfileInfoAction extends waViewAction
         $this->view->assign('is_admin', wa()->getUser()->isAdmin('team'));
         $this->view->assign('is_superadmin', wa()->getUser()->isAdmin());
 
-        $this->view->assign('geocoding', $this->getGeocodingOptions());
+        $this->view->assign('geocoding', $tasm->getGeocodingOptions());
 
         $this->view->assign('assets', $this->getAssets());
     }
@@ -145,32 +146,5 @@ class teamProfileInfoAction extends waViewAction
         $cm = new waContactCategoriesModel();
         $this->view->assign('contact_categories', array_values($cm->getContactCategories($this->id)));
 
-    }
-
-    protected function getGeocodingOptions()
-    {
-        $map_options = array(
-            'type' => '',
-            'key' => ''
-        );
-
-        try {
-            $map = wa()->getMap();
-            if ($map->getId() === 'google') {
-                $map_options = array(
-                    'type' => $map->getId(),
-                    'key' => $map->getSettings('key')
-                );
-            } elseif ($map->getId() === 'yandex') {
-                $map_options = array(
-                    'type' => $map->getId(),
-                    'key' => $map->getSettings('apikey')
-                );
-            }
-        } catch (waException $e) {
-
-        }
-
-        return $map_options;
     }
 }

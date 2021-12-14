@@ -22,7 +22,7 @@
         <div class="wa-uncaught-errors" style="display: none;"></div>
 
         <div class="wa-buttons-wrapper">
-            {$_button_caption = $auth_config.params.button_caption|default:_w('Sign Up')}
+            {$_button_caption = $auth_config.params.button_caption|default:_ws('Sign Up')}
             {$_button_caption = $_button_caption|escape}
             <input type="submit" value="{$_button_caption}">
             <i class="icon16 loading wa-loading" style="display: none;"></i>

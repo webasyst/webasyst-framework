@@ -24,7 +24,7 @@ class teamWelcomeSaveController extends waJsonController
                 if ($contact_info['is_user']) {
                     $this->errors[] = array(
                         'name' => "data[$i][email]",
-                        'text' => !teamHelper::isBanned($contact_info) ? _w('Already in our team!') : _w('This contact was banned'),
+                        'text' => !teamHelper::isBanned($contact_info) ? _w('Already in our team!') : _w('This contact was banned.'),
                     );
                 } else {
                     $create[] = array(
@@ -49,6 +49,7 @@ class teamWelcomeSaveController extends waJsonController
                 $token = teamUser::createContactByEmail($c['email'], array('full_access' => $c['access']));
             }
             if ($token) {
+                $app_info = wa()->getAppInfo();
                 try {
                     $hours = ceil((strtotime($token['expire_datetime']) - time()) / 3600);
                     teamHelper::sendEmailSimpleTemplate(
@@ -60,9 +61,11 @@ class teamWelcomeSaveController extends waJsonController
                             '{CONTACT_ID}'   => $token['contact_id'],
                             '{COMPANY}'      => htmlentities(wa()->accountName(),ENT_QUOTES,'utf-8'),
                             '{LINK}'         => waAppTokensModel::getLink($token),
-                            '{HOURS_LEFT}'   => $hours.' '._ws('hour', 'hours', $hours),
+                            '{HOURS_LEFT}'   => _w('%d hour', '%d hours', $hours),
                             '{DOMAIN}'       => waRequest::server('HTTP_HOST'),
                             '{EXPIRE_DATE}'  => waDateTime::format('date', strtotime('-1 day', $token['expire_datetime'])),
+                            '{WA_URL}'       => wa()->getRootUrl(true),
+                            '{WA_APP_NAME}'  => htmlentities($app_info['name'],ENT_QUOTES,'utf-8'),
                         ) // , wa()->getUser()->get('email', 'default')
                     );
                 } catch (waException $e) {

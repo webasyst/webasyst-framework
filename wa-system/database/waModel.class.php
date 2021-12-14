@@ -327,9 +327,10 @@ class waModel
      * methods of the class corresponding to the specific query type is necessary.
      *
      * @param string $sql SQL query to be executed, optionally containing placeholders as described for method exec()
-     * @see self::exec()
      * @param mixed $params
      * @return waDbResultDelete|waDbResultInsert|waDbResultReplace|waDbResultSelect|waDbResultUpdate
+     * @throws waDbException
+     * @see self::exec()
      */
     public function query($sql)
     {
@@ -520,6 +521,25 @@ class waModel
                     return (int) $value;
                 }
             case 'decimal':
+                if (is_float($value)) {
+                    // this fixes an interesting case of 99999999999.9999
+                    // if this float is converted to string any other way, it becomes '100000000000'
+                    // but var_export keeps it '99999999999.9999'
+                    $value = var_export($value, true);
+                }
+                if (is_string($value) && strpos($value, ',') !== false) {
+                    // paranoid mode: when PHP locale is set up to use commas in floats
+                    // very likely is not needed in modern PHP environments but keeps lingering in code and tests
+                    $value = str_replace(',', '.', $value);
+                }
+                if (is_numeric($value)) {
+                    // if looks like a decimal number, we're done
+                    return $value;
+                }
+                // otherwise, if does not look like a number, then apply brutal sanitation
+                // can't just apply to all strings because convertion to PHP double
+                // introduces rounding errors - unacceptable for decimal type.
+                // breakthrough
             case 'double':
             case 'float':
                 if (strpos($value, ',') !== false) {
@@ -1071,14 +1091,39 @@ class waModel
      * Set where and returns waDbQuery
      *
      * @param string $where
+     * @param mixed ...$bindings - variadic list of bindings
      * @return waDbQuery
+     * @throws waException
+     *
+     * @example
+     *      $model->where('a = ?', 'x')
+     *      $model->where('a IN(?)', ['x'])
+     *      $model->where('a IN(?)', ['x', 'y'])
+     *      $model->where('a = ? AND b = ?', 'x', 'y')
+     *      $model->where('a = :a AND b = :b', [
+     *          'a' => 'x',
+     *          'b' => 'y'
+     *      ])
      */
     public function where($where)
     {
         $params = func_get_args();
         $where = array_shift($params);
         $query = new waDbQuery($this);
+
+        // check for this type of calling
+        // $model->where('a = :a AND b = :b', [
+        //      'a' => 'x',
+        //      'b' => 'y'
+        // ])
+        $is_key_value_binding = count($params) == 1 && is_array($params[0]) && strpos($where, '?') === false;
+        if ($is_key_value_binding) {
+            return $query->where($where, $params[0]);
+        }
+
         return $query->where($where, $params);
+
+
     }
 
     /**

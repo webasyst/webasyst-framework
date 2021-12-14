@@ -1,0 +1,108 @@
+.yad-loading-section {
+  text-align: center;
+}
+.yad-loading-section + * {
+  margin-top: 1em;
+}
+.yad-map-section {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin: 1em 0;
+  font-size: 13px;
+}
+.yad-map-section .line {
+  margin-top: 8px;
+}
+.yad-map-section .line:first-child {
+  margin-top: 0;
+}
+.yad-map-section:first-child {
+  margin-top: 0;
+}
+.yad-map-section input[type="button"] {
+  font-size: 13px !important;
+}
+.yad-map-section .t-layout {
+  display: table;
+  width: 100%;
+}
+.yad-map-section .t-layout.inline {
+  width: auto;
+}
+.yad-map-section .t-layout.fixed {
+  table-layout: fixed;
+}
+.yad-map-section .t-layout > .t-column {
+  display: table-cell;
+  vertical-align: top;
+}
+.yad-map-section .t-layout > .t-column.middle {
+  vertical-align: middle;
+}
+.yad-map-section .t-layout > .t-column.center {
+  text-align: center;
+}
+.yad-map-section .t-layout > .t-column.right {
+  text-align: right;
+}
+.yad-map-section .yad-map-wrapper,
+.yad-map-section .yad-aside-wrapper {
+  display: table-cell;
+  vertical-align: top;
+}
+.yad-map-section .yad-aside-wrapper {
+  padding-left: 1em;
+  width: 200px;
+}
+.yad-map-section .yad-aside-wrapper > ul {
+  margin: 0;
+}
+.yad-map-section .yad-aside-wrapper .yad-aside {
+  overflow: auto;
+  max-height: 400px;
+}
+.yad-map-section .yad-aside-wrapper .yad-aside > ul > li {
+  margin: 0 0 20px 0;
+  font-size: 1em;
+  line-height: 1.25em;
+  padding: 0 4px 0 2px;
+}
+.yad-map-section .yad-aside-wrapper .yad-aside > ul > li:last-child {
+  margin-bottom: 0;
+}
+.yad-map-section .yad-aside-wrapper .yad-aside > ul > li input[type="radio"] {
+  position: relative;
+  top: 1px;
+  left: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.yad-map-section .yad-aside-wrapper .yad-aside > ul > li label {
+  display: inline !important;
+  cursor: pointer;
+}
+.yad-map-section .yad-aside-wrapper .yad-aside > ul > li .hint {
+  display: block !important;
+  margin: 2px 0 4px !important;
+}
+.yad-map-section .yad-map {
+  position: relative;
+  height: 400px;
+  background: #f0f0f0;
+}
+.yad-pickup-section {
+  font-size: 13px;
+}
+.yad-pickup-section .line {
+  margin-top: 8px;
+}
+.yad-pickup-section .line:first-child {
+  margin-top: 0;
+}
+.yad-pickup-section .yad-pickup-header {
+  font-size: 120%;
+}
+.yad-pickup-section a {
+  text-decoration: underline;
+}

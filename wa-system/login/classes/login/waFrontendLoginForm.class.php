@@ -69,6 +69,28 @@ class waFrontendLoginForm extends waLoginForm
         }
     }
 
+    /**
+     * @param array $options
+     * @return waFrontendLoginForm
+     * @throws waException
+     */
+    public static function factory($options = [])
+    {
+        $config = waDomainAuthConfig::factory();
+        $app_id = $config->getApp();
+        if ($app_id && wa()->appExists($app_id)) {
+            $class = $app_id . 'FrontendLoginForm';
+            if (class_exists($class)) {
+                $form = new $class($options);
+                if ($form instanceof waFrontendLoginForm) {
+                    return new $form($options);
+                }
+            }
+
+        }
+        return new waFrontendLoginForm($options);
+    }
+
 
     /**
      * Render 'remember me' control

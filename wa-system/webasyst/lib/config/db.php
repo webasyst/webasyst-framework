@@ -51,7 +51,7 @@ return array(
     'wa_app_settings' => array(
         'app_id' => array('varchar', 64, 'null' => 0),
         'name' => array('varchar', 64, 'null' => 0),
-        'value' => array('text', 'null' => 0),
+        'value' => array('mediumtext', 'null' => 0),
         ':keys' => array(
             'PRIMARY' => array('app_id', 'name'),
         ),
@@ -102,18 +102,22 @@ return array(
             'PRIMARY' => 'id',
             'login' => array('login', 'unique' => 1),
             'name' => 'name',
-            'id_name' => array('id', 'name'),
         ),
     ),
     'wa_contact_calendars' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'name' => array('varchar', 255, 'null' => 0),
-        'bg_color' => array('varchar', 7),
-        'font_color' => array('varchar', 7),
+        'bg_color' => array('varchar', 7),              // background color for events
+        'font_color' => array('varchar', 7),            // font color for events
+        'status_bg_color' => array('varchar', 7),       // background color for statuses
+        'status_font_color' => array('varchar', 7),     // font color for statuses
+        'icon' => array('varchar', 255),
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
         'is_limited' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
+        'default_status' => array('varchar', 255),
         ':keys' => array(
             'PRIMARY' => 'id',
+            'sort' => array('id', 'unique' => 1)
         ),
     ),
     'wa_contact_categories' => array(
@@ -208,6 +212,18 @@ return array(
             'calendar_id' => 'calendar_id',
         ),
     ),
+    'wa_contact_files' => array(
+        'id' => array('int', 11, 'null' => 0,  'autoincrement' => 1),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'purpose' => array('enum', "'cover','general'", 'null' => 0, 'default' => 'general'),
+        'name' => array('varchar', 255),
+        'sort' => array('int', 11, 'null' => 0, 'default' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'contact_id' => 'contact_id',
+            'purpose' => 'purpose'
+        ),
+    ),
     'wa_contact_field_values' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'parent_field' => array('varchar', 64, 'null' => 0),
@@ -233,11 +249,22 @@ return array(
     'wa_contact_settings' => array(
         'contact_id' => array('int', 11, 'null' => 0),
         'app_id' => array('varchar', 32, 'null' => 0, 'default' => ''),
-        'name' => array('varchar', 32, 'null' => 0),
+        'name' => array('varchar', 64, 'null' => 0),
         'value' => array('text', 'null' => 0),
         ':keys' => array(
             'PRIMARY' => array('contact_id', 'app_id', 'name'),
         ),
+    ),
+    'wa_contact_waid' => array(
+        'contact_id' => array('int', 11, 'null' => 0),
+        'token' => array('text', 'null' => 0),
+        'webasyst_contact_id' => array('int', 11, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'login_datetime' => array('datetime'),
+        ':keys' => array(
+            'PRIMARY' => array('contact_id'),
+            'webasyst_contact_id' => array('webasyst_contact_id', 'unique' => 1)
+        )
     ),
     'wa_country' => array(
         'name' => array('varchar', 255, 'null' => 0),
@@ -319,6 +346,7 @@ return array(
         'type' => array('varchar', 20, 'null' => 0),
         'parent_id' => array('int', 11),
         'order_id' => array('varchar', 50),
+        'part_number' => array('int', 11, 'null' => 0, 'default' => '0'),
         'customer_id' => array('varchar', 50),
         'result' => array('varchar', 20, 'null' => 0),
         'error' => array('varchar', 255),

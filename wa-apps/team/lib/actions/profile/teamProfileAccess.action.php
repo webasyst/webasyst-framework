@@ -1,9 +1,13 @@
 <?php
+
 /**
  * User access tab in profile.
  */
 class teamProfileAccessAction extends waViewAction
 {
+    /**
+     * @var waContact|waUser - user access tab of which this is all about
+     */
     protected $user;
 
     public function __construct($params = null)
@@ -26,7 +30,7 @@ class teamProfileAccessAction extends waViewAction
         }
 
         $auth = wa()->getAuthConfig();
-        $personal_portal_available = !empty($auth['app']);
+        $personal_portal_available = !empty($auth['app']) && !empty($user['password']);
 
         $user_groups_model = new waUserGroupsModel();
         $groups = $user_groups_model->getGroups($user->getId());
@@ -63,6 +67,11 @@ class teamProfileAccessAction extends waViewAction
             'contact_id' => $user['id'],
         ), true);
 
+        foreach ($invite_tokens as &$invite_token) {
+            $invite_token['expires_in'] = teamUsersInvitedAction::timeLeft($invite_token['expire_datetime']);
+        }
+        unset($invite_token);
+
         $group_model = new waGroupModel();
         $this->view->assign(array(
             'contact'                   => $user,
@@ -88,8 +97,57 @@ class teamProfileAccessAction extends waViewAction
             'api_tokens'           => $this->getApiTokens(),
             'url_change_api_token' => $url_change_api_token,
 
-            'email_change_log' => $this->getEmailChangeLog()
+            'email_change_log' => $this->getEmailChangeLog(),
+
+            'is_own_profile'                   => $this->isOwnProfile(),
+
+            // webasyst ID related vars
+            'is_connected_to_webasyst_id'    => $this->isConnectedToWebasystID(),
+            'is_bound_with_webasyst_contact' => $user->getWebasystContactId() > 0,
+            'customer_center_auth_url'       => $this->getCustomerCenterAuthUrl(),
+            'webasyst_id_email'              => $this->getWebasystIDEmail(),
+            'is_webasyst_id_forced'          => $this->isWebasystIDForced(),
         ));
+    }
+
+    protected function isOwnProfile()
+    {
+        return $this->user->getId() == wa()->getUser()->getId();
+    }
+
+    /**
+     * Email of webasyst ID contact bound with user, access tab of which this is all about
+     * @return mixed|string
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function getWebasystIDEmail()
+    {
+        $access_token = $this->getWebasystAuthAccessToken($this->user, 'profile');
+        if (!$access_token) {
+            return '';
+        }
+        $atm = new waWebasystIDAccessTokenManager();
+        $info = $atm->extractTokenInfo($access_token);
+        return $info['email'];
+    }
+
+    /**
+     * Link to authorize into customer center - available only for own profile
+     * @return bool
+     * @throws waException
+     */
+    protected function getCustomerCenterAuthUrl()
+    {
+        if (!$this->isOwnProfile()) {
+            return '';
+        }
+
+        $access_token = $this->getWebasystAuthAccessToken($this->getUser(), 'auth');
+        if (!$access_token) {
+            return '';
+        }
+        return wa()->getConfig()->getBackendUrl(true) . '?module=profile&action=customer';
     }
 
     protected static function hasAccess($user)
@@ -124,7 +182,8 @@ class teamProfileAccessAction extends waViewAction
         } catch (Exception $e) {
             $name = _w('deleted contact_id=').$log_item['contact_id'];
         }
-        return sprintf_wp(
+
+        $text = sprintf_wp(
             'Access disabled by %1$s, %2$s',
             sprintf(
                 '<a href="%s">%s</a>',
@@ -133,6 +192,21 @@ class teamProfileAccessAction extends waViewAction
             ),
             wa_date("humandatetime", $log_item['datetime'])
         );
+
+        $log_item_params = [];
+        if ($log_item['params']) {
+            $log_item_params = json_decode($log_item['params'], true);
+            if (!is_array($log_item_params)) {
+                $log_item_params = [];
+            }
+        }
+
+        if (isset($log_item_params['reason'])) {
+            $text .=
+                '<br><br>' . _w('Reason for blocking:') . ' <em>' . nl2br(htmlspecialchars($log_item_params['reason'])) . '</em>';
+        }
+
+        return $text;
     }
 
     protected function getEmailChangeLog()
@@ -200,6 +274,8 @@ class teamProfileAccessAction extends waViewAction
 
     /**
      * @return waLogModel
+     * @throws waDbException
+     * @throws waException
      */
     protected function getLogModel()
     {
@@ -211,5 +287,44 @@ class teamProfileAccessAction extends waViewAction
             wa('webasyst');
         }
         return $model = new waLogModel();
+    }
+
+    /**
+     * @return bool
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function isConnectedToWebasystID()
+    {
+        $m = new waWebasystIDClientManager();
+        return $m->isConnected();
+    }
+
+    protected function isWebasystIDForced()
+    {
+        $cm = new waWebasystIDClientManager();
+        return $cm->isBackendAuthForced();
+    }
+
+    /**
+     * Get access token if supports 'auth' scope
+     * @param waContact $contact
+     * @param string $scope_should_be_supported
+     * @return array|mixed
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function getWebasystAuthAccessToken(waContact $contact, $scope_should_be_supported)
+    {
+        $token_params = $contact->getWebasystTokenParams();
+        if ($token_params) {
+            $access_token = $token_params['access_token'];
+            $atm = new waWebasystIDAccessTokenManager();
+            $supports = $atm->isScopeSupported($scope_should_be_supported, $access_token);
+            if ($supports) {
+                return $access_token;
+            }
+        }
+        return [];
     }
 }

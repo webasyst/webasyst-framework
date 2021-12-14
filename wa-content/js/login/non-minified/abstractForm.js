@@ -90,7 +90,6 @@ var WaLoginAbstractForm = ( function($) {
         }, that.classes);
 
         that.errors = def(that.errors, options.errors, {});
-        that.is_errors = !$.isEmptyObject(that.errors);
 
         that.locale = def(that.locale, options.locale, {});
         that.js_validate = def(that.js_validate, options.js_validate, true);
@@ -335,24 +334,40 @@ var WaLoginAbstractForm = ( function($) {
         that.triggerEvent('wa_auth_form_change_view');
     };
 
-    Self.prototype.clearErrors = function () {
-        var that = this;
-        if (!that.is_errors) {
-            return;
+    Self.prototype.clearErrors = function (force_all) {
+        var that = this,
+            $wrapper = that.$wrapper,
+            $inputs = $wrapper.find('.' + that.classes.error_input),
+            had_errors = false;
+
+        $inputs.removeClass(that.classes.error_input);
+        had_errors = had_errors || $inputs.length > 0;
+
+        var $errors = $wrapper.find('.' + that.classes.error_msg);
+        if (!force_all) {
+            $errors = $errors.not('[data-not-clear=1]');
         }
 
-        var $wrapper = that.$wrapper;
+        had_errors = had_errors || $errors.length > 0;
 
-        $wrapper.find('.' + that.classes.error_input).removeClass(that.classes.error_input);
-        $wrapper.find('.' + that.classes.error_msg).not('[data-not-clear=1]').remove();
+        $errors.each(function () {
+            var $error = $(this),
+                name = $error.data('name');
+            if (name === 'timeout' && $error.data('timer')) {
+                $error.data('timer') && typeof $error.data('timer').finish === 'function' && $error.data('timer').finish();
+            }
+        });
+
+        $errors.remove();
 
         if ($wrapper.find('.' + that.classes.uncaught_errors).find('.' + that.classes.error_msg).length <= 0) {
             $wrapper.find('.' + that.classes.uncaught_errors).hide();
+            had_errors = true;
         }
 
-        that.is_errors = false;
-
-        that.triggerEvent('wa_auth_form_change_view');
+        if (had_errors) {
+            that.triggerEvent('wa_auth_form_change_view');
+        }
     };
 
     Self.prototype.getErrorTemplate = function (error_namespace, error, error_code) {
@@ -476,7 +491,6 @@ var WaLoginAbstractForm = ( function($) {
             }
         });
 
-        that.is_errors = true;
         that.afterShowErrors();
         that.triggerEvent('wa_auth_form_change_view');
 
@@ -583,7 +597,12 @@ var WaLoginAbstractForm = ( function($) {
                 return true;
             },
             redirect: function (url) {
-                window.location.href = url;
+                url = url || '';
+                if (url.indexOf('#') !== -1 && url === window.location.href) {
+                    window.location.reload();
+                } else {
+                    window.location.href = url;
+                }
                 return true;
             },
             messages: function (messages) {
@@ -637,7 +656,7 @@ var WaLoginAbstractForm = ( function($) {
 
         that.beforeSubmit();
 
-        that.clearErrors();
+        that.clearErrors(true);
 
         if (that.js_validate) {
             var errors = that.validate();
@@ -658,7 +677,6 @@ var WaLoginAbstractForm = ( function($) {
 
         return that.jsonPost(url, data)
             .done(function (r) {
-
                 if (!that.isRedirectResponse(r)) {
                     // On 'redirect' response
                     // DO NOT hide loading and enable button right away
@@ -827,7 +845,8 @@ var WaLoginAbstractForm = ( function($) {
         var that = this,
             ticks = options.timeout,
             msg = $.trim($message.html()),
-            onFinish = options.onFinish;
+            onFinish = options.onFinish,
+            timer_id = null;
 
         ticks = parseInt(ticks, 10);
         ticks = !isNaN(ticks) && ticks > 0 ? ticks : 60;
@@ -840,12 +859,16 @@ var WaLoginAbstractForm = ( function($) {
 
         that.triggerEvent('wa_auth_form_change_view');
 
-        var timer = setInterval(function () {
+        var finish = function () {
+            timer_id && clearInterval(timer_id);
+            $message.remove();
+            onFinish && onFinish();
+        }
+
+        timer_id = setInterval(function () {
             ticks -= 1;
             if (ticks <= 0) {
-                clearInterval(timer);
-                $message.remove();
-                onFinish && onFinish();
+                finish();
                 return;
             }
 
@@ -858,6 +881,14 @@ var WaLoginAbstractForm = ( function($) {
             $message.html(msg);
 
         }, 1000);
+
+        var timer = {
+            finish: finish
+        };
+
+        $message.data('timer', timer);
+
+        return timer;
     };
 
     return Self;

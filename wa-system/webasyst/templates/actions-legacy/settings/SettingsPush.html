@@ -1,0 +1,60 @@
+{$_title = "[s`Web push notifications settings`] — {$wa->accountName(false)}"}
+<div class="s-push-settings-page blank block double-padded" id="s-push-settings-page">
+    <h1 class="s-page-header">[s`Web push notifications`]</h1>
+    <div class="s-description">[s`Select and configure a service for sending web push notifications.`]</div>
+    <div class="s-push-settings-fields-block">
+        <form action="?module=settingsPushSave">
+
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[s`Web push notifications service`]</div>
+                    <div class="value no-shift">
+                        <label>
+                            <input type="radio" name="push_adapter" {if !$selected_push_adapter}checked{/if} value=""> [s`Do not use`]
+                        </label>
+                    </div>
+                    {if !empty($push_adapters)}
+                        {foreach $push_adapters as $_adapter}
+                            {$_adapter_id = $_adapter->getId()}
+                            {$_adapter_name = $_adapter->getName()}
+                            {$_adapter_settings = $_adapter->getSettingsHtml(['namespace'=>'push_settings'])}
+                            <div class="value no-shift">
+                                <label>
+                                    <input type="radio" name="push_adapter" {if $_adapter_id == $selected_push_adapter}checked{/if} value="{$_adapter_id}"> {$_adapter_name|escape}
+                                </label>
+                                {if !empty($_adapter_settings)}
+                                    <div class="js-push-adapter-settings" data-adapter-id="{$_adapter_id}" style="display: none;">
+                                        {$_adapter_settings}
+                                    </div>
+                                {/if}
+                            </div>
+                        {/foreach}
+                    {else}
+                        [s`No web push notifications services available`]
+                    {/if}
+                </div>
+            </div>
+
+            <div class="s-form-buttons">
+                <div class="s-footer-actions js-footer-actions">
+                    <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                    <span class="s-hidden">
+                        <span style="margin: 0 4px;">[s`or`]</span>
+                        <a href="{$wa_backend_url}webasyst/settings/push/" class="js-cancel">[s`cancel`]</a>
+                    </span>
+                    <i class="icon16 loading s-loading" style="display: none;"></i>
+                    <span class="js-errors" style="color: red; display: none;"></span>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    (function($) {
+        new WASettingsPush({
+            $wrapper: $("#s-push-settings-page")
+        });
+        $.wa.setTitle({$_title|json_encode});
+    })(jQuery);
+</script>

@@ -1,0 +1,213 @@
+{function renderName value=''}
+    {if !empty($info.original_name)}
+        {$value}
+    {else}
+        {$value|escape}
+    {/if}
+{/function}
+{if $info.type == 'hidden'}
+    <input type="hidden" name="params[{$info.id}]" value="{$value|escape}">
+
+{elseif $info.type == 'input'}
+    <input type="text" name="params[{$info.id}]" value="{$value|escape}">
+    {if !empty($info.description)}
+        <p class="hint">{$info.description}</p>
+    {/if}
+
+{elseif $info.type == 'textarea'}
+    <textarea name="params[{$info.id}]">{$value|escape}</textarea>
+    {if !empty($info.description)}
+        <p class="hint">{$info.description}</p>
+    {/if}
+
+{elseif $info.type == 'select'}
+    <select name="params[{$info.id}]">
+        {foreach $info.items as $_k => $_v}
+            {if !is_array($_v)}
+                {$_v = ['name' => $_v]}
+            {/if}
+            <option{if $_k == $value} selected="selected"{/if} value="{$_k}"{if isset($_v.description)} title="{$_v.description|escape}"{/if}>
+                {renderName value=$_v.name}
+            </option>
+        {/foreach}
+    </select>
+    {if !empty($info.description)}
+        <p class="hint">{$info.description}</p>
+    {/if}
+
+{elseif $info.type == 'radio'}
+    {foreach $info.items as $_k => $_v}
+        {if !is_array($_v)}
+            {$_v = ['name' => $_v]}
+        {/if}
+        <label class="s-label-with-check">
+            <input type="radio" name="params[{$info.id}]" value="{$_k}" />
+            {renderName value=$_v.name}
+            {if !empty($info.description)}
+                <span class="hint">{$info.description}</span>
+            {/if}
+        </label>
+    {/foreach}
+
+{elseif $info.type == 'checkbox'}
+    {if isset($info.items)}
+        {foreach $info.items as $_k => $_v}
+            {if !is_array($_v)}
+                {$_v = ['name' => $_v]}
+            {/if}
+            <label class="s-label-with-check">
+                <input type="checkbox" name="params[{$info.id}][]" value="{$_k}"{if is_array($value) && in_array($_k, $value)} checked{/if} />
+                {renderName value=$_v.name}
+                {if !empty($_v.description)}
+                    <span class="hint">{$_v.description}</span>
+                {/if}
+            </label>
+        {/foreach}
+    {else}
+        <label class="s-label-with-check">
+            <input type="checkbox" name="params[{$info.id}]"{if $value} checked{/if} value="1" />
+        </label>
+    {/if}
+    {if !empty($info.description)}
+        <span class="hint">{$info.description}</span>
+    {/if}
+
+{elseif $info.type == 'radio_select'}
+    <div id="s-radio-select-{$route_id}-{$id}">
+        {foreach $info.items as $_k => $_v}
+            {if !is_array($_v)}
+                {$_v = ['name' => $_v]}
+            {/if}
+            <label class="s-label-with-check">
+                <input type="radio"{if $value == $_k || isset($_v['items'][$value])} checked="checked"{/if} name="params[{$info.id}]" value="{$_k}" />
+                {renderName value=$_v.name}
+                {if !empty($_v.description)}
+                    <span class="hint">{$_v.description}</span>
+                {/if}
+            </label>
+            {if isset($_v.items)}
+                <select{if $value != $_k || !isset($_v['items'][$value])} disabled="disabled"{/if} name="params[{$info.id}]">
+                    {foreach $_v.items as $_k2 => $_v2}
+                        <option{if $_k2 == $value} selected="selected"{/if} value="{$_k2|escape}">{$_v2|escape}</option>
+                    {/foreach}
+                </select>
+            {/if}
+        {/foreach}
+    </div>
+    <script type="text/javascript">
+        // Must be in own scope
+        $(function() {
+            // current "radio_select" control block
+            var $control_block = $("#s-radio-select-{$route_id}-{$id}");
+
+            // helper that enables selector of current radio input
+            var enableSelector = function($radio_input) {
+                // disable all selectors
+                $control_block.find("select").prop('disabled', true);
+                // enable current selector
+                $radio_input.parent().next("select").prop('disabled', false);
+            };
+
+            // all radio inputs of current control
+            var $radio_inputs = $control_block.find("input[type=radio]");
+
+            // initial state - enable selector of current checked radio
+            enableSelector($radio_inputs.filter(":checked"));
+
+            // change handler
+            $radio_inputs.on('change', function () {
+                var $radio_input = $(this);
+                if ($radio_input.is(":checked")) {
+                    enableSelector($radio_input);
+                }
+            });
+        });
+    </script>
+
+{elseif $info.type == 'radio_checkbox'}
+    <div id="s-radio-checkbox-{$route_id}-{$id}">
+        {foreach $info.items as $_k => $_v}
+            {if !is_array($_v)}
+                {$_v = ['name' => $_v]}
+            {/if}
+            <label class="s-label-with-check">
+                <input type="radio"{if $value == $_k || (is_array($value) && isset($_v['items']))} checked="checked"{/if} name="params[{$info.id}]" value="{if !isset($_v['items'])}{$_k}{/if}" />
+                {renderName value=$_v.name}
+                {if !empty($_v.description)}
+                    <span class="hint">{$_v.description}</span>
+                {/if}
+            </label>
+            {if isset($_v['items'])}
+                {$_disabled = !is_array($value)}
+                <div class="block">
+                    <ul class="menu-v compact small">
+                        {foreach $_v.items as $_k2 => $_v2}
+                            {if !is_array($_v2)}
+                                {$_v2 = ['name' => $_v2]}
+                            {/if}
+                            <li>
+                                <label class="s-label-with-check">
+                                    <input {if !$_disabled && in_array($_k2, $value)} checked{/if}{if $_disabled} disabled="disabled"{/if} type="checkbox" name="params[{$info.id}][]" value="{$_k2}" />
+                                    {renderName value=$_v2.name}
+                                    {if !empty($_v2.description)}
+                                        <span class="hint">{$_v2.description}</span>
+                                    {/if}
+                                </label>
+                            </li>
+                        {/foreach}
+                    </ul>
+                </div>
+            {/if}
+        {/foreach}
+    </div>
+    <script type="text/javascript">
+        $("#s-radio-checkbox-{$route_id}-{$id} input[type=radio]").on('change', function () {
+            if ($(this).is(":checked")) {
+                $("#s-radio-checkbox-{$route_id}-{$id} input:checkbox").prop('disabled', true).prop('checked', false);
+                $(this).parent().next("div").find("input").prop('disabled', false);
+            }
+        });
+    </script>
+
+{elseif $info.type == 'radio_text'}
+    {$_counter = 0}
+    {$_selected = false}
+    <div id="s-radio-select-{$route_id}-{$id}">
+        {foreach $info.items as $_k => $_v}
+            {$_counter = $_counter + 1}
+            {if !is_array($_v)}
+                {$_v = ['name' => $_v]}
+            {/if}
+            {$_checked = (sprintf('%s', $_k) === $value)}
+            {$_last = ($_counter == $info.items|count)}
+            {if $_last}
+                {$_checked = !$_selected}
+            {elseif ($_checked)}
+                {$_selected = true}
+            {/if}
+            <label class="s-label-with-check">
+                <input type="radio"{if $_checked} checked{/if} name="params[{$info.id}]" value="{$_k}"{if $_last} class="last"{/if} />
+                {renderName value=$_v.name}
+                {if !empty($_v.description)}
+                    <span class="hint">{$_v.description}</span>
+                {/if}
+            </label>
+            {if $_last}
+                <input type="text"{if !$_checked} disabled="disabled"{/if} name="params[{$info.id}]"{if $_checked && ($value != $_k)} value="{$value|escape}"{/if} />
+            {/if}
+        {/foreach}
+    </div>
+    <script type="text/javascript">
+        $("#s-radio-select-{$route_id}-{$id} input[type=radio]").change(function () {
+            if ($(this).hasClass("last")) {
+                $("#s-radio-select-{$route_id}-{$id} input:text").prop('disabled', false).focus();
+            } else {
+                $("#s-radio-select-{$route_id}-{$id} input:text").prop('disabled', true);
+            }
+        });
+    </script>
+{elseif $info.type == 'help'}
+    {if isset($info.description)}
+        {$info.description}
+    {/if}
+{/if}

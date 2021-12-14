@@ -1,12 +1,12 @@
 {if isset($comment) && $comment}
     {if !empty($wrap_li)}<li id="comment-{$comment.id}">{/if}
-        <div class="p-comment {if $comment.status == photosCommentModel::STATUS_DELETED}p-delete{/if}">
-        
+        <div class="p-comment {if $comment.status == photosCommentModel::STATUS_DELETED}p-delete{/if} custom-mb-16">
+
             {capture name=author_name}{strip}
-                <i class="icon16 userpic20" style="background-image: url('{if isset($comment.author.photo) && $comment.author.photo}{$comment.author.photo}{else}/wa-content/img/userpic20.jpg{/if}');"></i>
+                <i class="icon16 userpic20 icon userpic size-20 middle custom-mr-8" style="background-image: url('{if isset($comment.author.photo) && $comment.author.photo}{$comment.author.photo}{else}/wa-content/img/userpic20.jpg{/if}');"></i>
                 {$comment.author.name|escape}
             {/strip}{/capture}
-            
+
             {if $contact_rights && !empty($comment.author.id)}
               <a href="{$wa_backend_url}contacts/#/contact/{$comment.author.id}" class="bold">{$smarty.capture.author_name}</a>
             {elseif !empty($comment.site)}
@@ -14,7 +14,7 @@
             {else}
               {$smarty.capture.author_name}
             {/if}
-            
+
             {if !$comment.author.id && $comment.email}
               <span class="hint">{$comment.email|escape}</span>
             {/if}
@@ -23,16 +23,16 @@
             <a href="javascript:void(0);" class="small p-comment-restore" {if $comment.status == photosCommentModel::STATUS_PUBLISHED}style="display:none"{/if}>[`restore`]</a>
 
             {if isset($comment.crop)}
-            <div class="profile image96px">
-                    <div class="image">
-                        <a href="#/photo/{$comment.photo_id}"><img src="{$comment.crop}"></a><br>
-                    </div>
-                <div class="details">
-                    <p>{$comment.text|escape|nl2br}</p>
+            <div class="flexbox space-12 profile image96px custom-mt-12">
+                <div class="image">
+                    <a href="#/photo/{$comment.photo_id}"><img src="{$comment.crop}"></a><br>
+                </div>
+                <div class="details wide">
+                    <p class="custom-mt-0">{$comment.text|escape|nl2br}</p>
                     {if !empty($reply_to)}
                         <span class="hint">[`in reply to`] <strong>{$reply_to|escape}</strong></span><br><br>
                     {/if}
-                    <a href="javascript:void(0);" class="small inline-link p-comment-reply"><b><i>[`reply`]</i></b></a>
+                    <a href="javascript:void(0);" class="small p-comment-reply">[`reply`]</a>
                 </div>
             </div>
             {else}
@@ -41,7 +41,7 @@
                     {if !empty($reply_to)}
                         <span class="hint">[`in reply to`] <strong>{$reply_to|escape}</strong></span><br><br>
                     {/if}
-                    <a href="javascript:void(0);" class="small inline-link p-comment-reply"><b><i>[`reply`]</i></b></a>
+                    <a href="javascript:void(0);" class="small p-comment-reply">[`reply`]</a>
                 </div>
             {/if}
         </div>

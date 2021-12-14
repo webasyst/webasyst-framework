@@ -2,7 +2,7 @@
     <div class="s-installed-themes-section is-extended" id="js-installed-themes-section">
         <div class="s-section-header">
             <span class="s-title js-toggle">
-                <i class="s-icon darr"></i> [`Installed themes`]
+                <i class="s-icon fas fa-caret-right"></i> [`Installed themes`]
             </span>
         </div>
         <div class="s-hidden">
@@ -41,41 +41,39 @@
 
         <script>
             ( function($) {
-                var $wrapper = $("#js-installed-themes-section"),
+                const $wrapper = $("#js-installed-themes-section"),
                     $toggle = $wrapper.find(".js-toggle");
 
-                var storage_name = "webasyst/backend/installed_themes_view",
+                let storage_name = "webasyst/backend/installed_themes_view",
                     active_class = "is-extended";
 
                 $toggle.on("click", function(event) {
                     event.preventDefault();
-                    var is_active = $wrapper.hasClass(active_class);
+                    let is_active = $wrapper.hasClass(active_class);
                     toggle(!is_active);
                 });
 
                 $wrapper.on("click", "a", function(event) {
-                    var $theme = $(this).closest(".s-theme-wrapper");
+                    let $theme = $(this).closest(".s-theme-wrapper");
                     $("#wa-design-container").load( $theme.data("load") );
                 });
 
                 showOnLoad();
 
                 function showOnLoad() {
-                    var storage = localStorage.getItem(storage_name);
+                    let storage = localStorage.getItem(storage_name);
                     toggle( (storage !== "inactive") );
                 }
 
                 function toggle(show) {
-                    var $icon = $toggle.find(".s-icon");
-
-                    var top_icon_class = "rarr",
-                        bottom_icon_class = "darr";
+                    const $icon = $toggle.find(".s-icon")[0],
+                        bottom_icon_class = "fa-rotate-90";
 
                     if (show) {
-                        $icon.removeClass(top_icon_class).addClass(bottom_icon_class);
+                        $icon.classList.add(bottom_icon_class);
                         $wrapper.addClass(active_class);
                     } else {
-                        $icon.removeClass(bottom_icon_class).addClass(top_icon_class);
+                        $icon.classList.remove(bottom_icon_class);
                         $wrapper.removeClass(active_class);
                     }
 

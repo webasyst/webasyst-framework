@@ -493,7 +493,7 @@ class waContactForm
         }
 
         foreach ($this->fields as $fid => $f) {
-            $errors = $f->validate($f->set($this->contact, $this->post($fid), array()), $this->contact->getId());
+            $errors = $this->validateField($f, $fid, $this->contact);
             if (!$errors) {
                 continue;
             }
@@ -509,6 +509,17 @@ class waContactForm
                 $this->errors[$fid] = array_merge($this->errors[$fid], $errors);
             }
         }
+    }
+
+    /**
+     * @param waContactField $field
+     * @param string $field_id
+     * @param waContact $contact
+     * @return mixed
+     */
+    protected function validateField($field, $field_id, $contact)
+    {
+        return $field->validate($field->set($contact, $this->post($field_id), array()), $contact->getId());
     }
 
     /**

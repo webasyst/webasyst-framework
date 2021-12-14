@@ -72,4 +72,27 @@ class waContactSettingsModel extends waModel
             'contact_id' => $contact_id, 'app_id' => $app_id, 'name' => $name
         ));
     }
+
+    /**
+     * Clear facts about closed webasyst ID announcement for all contacts
+     */
+    public function clearAllWebasystAnnouncementCloseFacts()
+    {
+        $this->deleteByField([
+            'app_id' => 'webasyst',
+            'name' => 'webasyst_id_announcement_close'
+        ]);
+    }
+
+    /**
+     * Clear facts about closed webasyst ID announcement for all contacts
+     */
+    public function clearWebasystAnnouncementCloseFacts(array $contact_ids)
+    {
+        $this->deleteByField([
+            'contact_id' => $contact_ids,
+            'app_id' => 'webasyst',
+            'name' => 'webasyst_id_announcement_close'
+        ]);
+    }
 }

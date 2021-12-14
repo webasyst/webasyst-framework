@@ -1,0 +1,205 @@
+{$_title = ".sidebar и .content"}
+{$wa->title($_title|json_encode)}
+{function name="_render" class=""}
+<div class="flexbox {$class|default:""}" style="border: 1px dashed gold;">
+    <div class="sidebar hide-scrollbar rail height-auto" style="background: rgba(128,128,127,0.1);">
+        <ul class="menu">
+            <li>
+                <a href="#">
+                    <i class="fas fa-star"></i>
+                    <span>Won't be visible anyway</span>
+                </a>
+            </li>
+            <li class="selected">
+                <a href="#"><i class="fas fa-folder"></i></a>
+            </li>
+            <li>
+                <a href="#"><span class="icon"><i style="background-image: url('{$wa_url}wa-apps/ui/img/ui.svg?v=1.0.0.1588850412');"></i></span></a>
+            </li>
+            <li>
+                <!-- 1.25rem-wide icon -->
+                <a href="#"><i class="fas fa-church"></i></a>
+            </li>
+            <li class="top-padded">
+                <a href="#"><span class="icon"><i class="userpic" style="background-image: url('{$wa_url}wa-content/img/userpic32@2x.jpg');"></i></span></a>
+            </li>
+        </ul>
+    </div>
+    <div class="content hide-scrollbar">
+        <div class="article">
+            <div class="article-body">
+                Looks decent, ha!
+            </div>
+        </div>
+    </div>
+</div>
+{/function}
+
+<h1>.sidebar и .content</h1>
+
+<blockquote>
+    <strong class="black">TLDR</strong> wa-1.3 -> wa-2.0: пара сайдбар-контент теперь работает <strong class="black">на основе flexbox</strong>, и поэтому необходимо обернуть их в общий контейнер со свойством <code>display: flex;</code>.
+</blockquote>
+
+<p><b>Holy grail layout.</b> Классический вариант навигации, используемый практически во всех приложениях, и в том числе в данном приложении UI, — левая колонка навигации (<code>.sidebar</code>) и основное содержимое страницы (<code>.content</code>).</p>
+
+<p>Внутри каждого <code>.sidebar</code> автоматически появляется внутренняя прокрутка, если контент не помещается в имеющееся пространство. <code>.content</code> внутренней прокрутки не имеет и в случае с длинным контентом прокручивается вместе с общим содержимым страницы.</p>
+
+<p>Реализация основана на <a href="https://www.w3schools.com/css/css3_flexbox.asp" target="_blank">CSS Flexbox</a> в комбинации с <code>position: sticky;</code>. Этот подход дает простое управление местоположением (порядком) сайдбаров на странице и согласует прокрутку внутри сайдбара с общей прокруткой страницы.</p>
+
+<p>Минимальный вариант работы <code>.sidebar</code> и <code>.content</code> выглядит следующим образом: единственным фактическим требованием является нахождение сайдбара и контента в контейнере со свойством <code>display: flex;</code>.</p>
+
+<pre class="prettyprint">
+&lt;div <em>любой контейнер со свойством style="display: flex;"</em>&gt;
+    &lt;div class="<b>sidebar</b> hide-scrollbar"&gt;
+        <em>app navigation</em>
+    &lt;/div&gt;
+    &lt;div class="<b>content</b> hide-scrollbar"&gt;
+        <em>app content</em>
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+<p>В сайдбаре в случае с длинным контентом автоматически появлятся внутренняя прокрутка, отдельная от прокрутки общего контента, хотя и связанная с ней благодаря использованию <code>position: sticky</code>.</p>
+
+<blockquote class="highlighted green">
+    <b>Класс <code>.hide-scrollbar</code> всегда рекомендуется добавлять и на сайдбар, и на контент.</b> С ним скроллбар будет становится невидимым, когда курсор находится вне текущей области.
+</blockquote>
+
+<p>Если внутри сайдбара необходимо выделить фиксированные блоки наверху и внизу («шапку» и «подвал»), то это реализуется с помощью применения ко всему сайдбару дополнительного класса <code>.flexbox</code> и выделения внутри трех HTML-блоков <code>.sidebar-header</code>, <code>.sidebar-body</code> и <code>.sidebar-footer</code> соответственно.</p>
+
+<pre class="prettyprint">
+&lt;div class="sidebar hide-scrollbar <b>flexbox</b>"&gt;
+    &lt;div class="<b>sidebar-header</b>"&gt;
+        <em>sidebar fixed header, e.g. action button</em>
+    &lt;/div&gt;
+    &lt;div class="<b>sidebar-body</b> hide-scrollbar"&gt;
+        <em>sidebar main scrollable content</em>
+    &lt;/div&gt;
+    &lt;div class="<b>sidebar-footer</b>"&gt;
+        <em>sidebar fixed footer</em>
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="content hide-scrollbar"&gt;
+    <em>app content</em>
+&lt;/div&gt;
+</pre>
+
+<p>Важно: по умолчанию у сайдбара есть свойство <code>overflow: auto;</code>, которое обрезает весь контент, который не помещается в пределах сайдбара. Это свойство включено для автоматического включения внутренней прокрутки в сайдбаре, что является рекомендованным поведением в Webasyst 2.</p>
+
+<h3>h = <code>100vh - 4rem</code></h3>
+
+<p>Дизайн меню приложений Webasyst предполагает жесткую <a href="{$wa_app_url}component/applist/">фиксированную высоту wa_header</a>, равную 4rem.</p>
+<p>Поэтому сайдбар и контент, занимающие в подавляющем большинстве случаев всю доступную высоту экрана, имеет высоту полного экрана за минусом высоты <code>#wa-nav</code>, то есть <code>height: 100vh - 4rem;</code>. Это расчет высоты сайдбара по умолчанию.</p>
+
+<p>Если одновременно с сайдбаром и контентом в приложении используется компонент <a href="{$wa_app_url}component/bottombar/">.bottombar</a> (его высота также равна 4rem), то дополнительным классом к основному <code>#wa-app<strong>.with-bottombar</strong></code> можно скорректировать высоту <code>.sidebar</code> и <code>.content</code> до <code>100vh - <strong>8rem</strong></code>.</p>
+
+<pre class="prettyprint">
+&lt;div id="wa-app" class="<b>with-bottombar</b>"&gt;
+    &lt;div class="sidebar hide-scrollbar"&gt;
+        <em>app content</em>
+    &lt;/div&gt;
+    &lt;div class="content hide-scrollbar"&gt;
+        <em>app content</em>
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+<h3>.sidebar<code>.overflow-visible</code></h3>
+
+<p>Когда нужно, чтобы содержимое сайдбара не обрезалось в случае выхода за его пределы (например, тултип с подсказкой или же какое-то выпадающее меню), достаточно добавить дополнительный класс <code>.overflow-visible</code>.</p>
+
+<pre class="prettyprint">
+&lt;div class="sidebar hide-scrollbar <b>overflow-visible</b>"&gt;
+    <em>tooltips & dropdowns will overflow properly</em>
+&lt;/div&gt;
+&lt;div class="content hide-scrollbar"&gt;
+    <em>app content</em>
+&lt;/div&gt;
+</pre>
+
+<p>Если контента в сайдбаре мало (например, 4–5 ссылок в меню), то этого варианта будет достаточно.</p>
+
+<p>Однако следует иметь ввиду, что свойство <code>overflow: visible;</code> логически конфликтует (отключает) внутреннюю прокрутку внутри сайдбара, а также приводит к выступанию части контента под сайдбаром, когда этого контента много и он физически не помещается в полную высоту сайдбара.</p>
+
+(img)
+
+<p>Исправить это можно двумя способами: либо использованием дополнительного класса (режима) <code>.scrolls-with-content</code> (см. ниже), который «склеивает» сайдбар и контент вместе, либо добавленим внутреннего блока <code>.sidebar-body</code> и <code>.flexbox</code> следующим образом:</p>
+
+<pre class="prettyprint">
+&lt;div class="sidebar hide-scrollbar <b>overflow-visible flexbox</b>"&gt;
+    &lt;div class="<b>sidebar-body</b> hide-scrollbar"&gt;
+        <em>sidebar main scrollable content with
+            overflowy tooltips made possible</em>
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="content hide-scrollbar"&gt;
+    <em>app content</em>
+&lt;/div&gt;
+</pre>
+
+<p>Этот подход рекомендуется использовать в большинстве ситуаций, когда нужно поддерживать выносные элементы (overflow-visible), сохраняя при этом внутреннюю прокрутку в сайдбаре.</p>
+
+<h3>.sidebar<code>.scrolls-with-content</code></h3>
+
+<p>Это не просто дополнительный класс, а целый режим работы сайдбара. У сайдбара в этом случае не будет своей внутренней прокрутки, и он будет занимать всю доступную ему по высоте область и прокручиваться вместе с контентом. Визуально в этом случае сайдбар и контент будут иметь одинаковую высоту и будут «склеены» друг с другом.</p>
+
+<h3>.sidebar<code>.right</code></h3>
+
+<p>Сайдбар будет расположен справа от контента.</p>
+
+<h3>.sidebar<code>.height-auto</code></h3>
+
+<p>Если хочется сделать маленький локальный сайдбар где-то посередине контента (например, внутри статьи), то достаточно просто использовать класс <code>.sidebar.height-auto</code>. В этом случае высота сайдбара будет определять только его внутренним содержимым, заменяя дефолтный расчет (100vh - 4rem).</p>
+
+<h3>.sidebar<code>.width-XXrem</code></h3>
+<p>Ширина сайдбара по умолчанию — 13rem (208 пикселей).</p>
+<p>Управлять шириной сайдбара можно, либо явно задавая <code>div class="sidebar" style="width: ...;"</code> для элемента <code>.sidebar</code>, либо с помощью дополнительных классов <code>.sidebar<strong>.width-XXrem</strong></code>, где XX указывает ширину в rem и принимает значения от от 10 до 26, например: <code>.sidebar.width-15rem</code>.</p>
+<p><code>.sidebar<strong>.width-auto</strong></code> сделает ширину рассчитываемой автоматически в зависимости от внутреннего контента.</p>
+<p>Назначение <code>.sidebar<strong>.width-adaptive</strong></code> (или <code>.sidebar<strong>.width-adaptive-wider</strong></code>) сделает ширину изменяемой в зависимости от типа устройства: по умолчанию 13rem (16rem), на планшетах 11rem (13rem), на широких десктоп-дисплеях — 16rem (19rem).</p>
+
+    <p><em><b class="highlighted green">TODO:</b> Сделать опциональный JavaScript-механизм для ресайза сайдбара драг-н-дропом <b>.width-resizable</b>, который будет запоминать его ширину в localStorage браузера для данного конкретного приложения. Только для десктопов.</em></p>
+
+<div class="u-example-section">
+
+    <h3>.sidebar<code>.rail</code></h3>
+
+    <p>Особый режим сайдбара, в котором он становится узкой колонкой шириной <code>4rem</code>, а внешнее меню <code>.menu</code> приобретает вид «только иконка». Никаких текстов, и все иконки — высотой по 2rem.</p>
+    <p>Такой вид полезен для простых навигационных сайдбаров из несколькими пунктами меню с иконками. Например, когда иконки однозначно говорят о своем предназначении и сайдбар сам по себе является ярким навигационным элементом, или же для навигации на планшетах.</p>
+    <p>Для сложных сайдбаров со множеством динамических элементов или элементов без иконок, со сложной и древовидной навигацией рекомендуется либо избегать использования вида <code>.rail</code>, либо самостоятельно продумать и релизовать группировку отдельных элементов и секций и привязать их работу к отдельным пунктам меню внутри <code>.rail</code>.</p>
+
+    <div class="u-example">{_render}</div>
+    <pre class="prettyprint">{_render|escape}</pre>
+
+    <p>Режим <code>.rail</code> реализован исключительно в рамках базового внешнего вида. Сложные элементы типа тултипов (подсказок), дропдаунов и выезжающих по клику дополнительных сайдбаров — на усмотрение разработчика и исключительно кастомно на уровне приложения.</p>
+    <p>Сайдбар в режиме <code>.rail</code> вполне естественно захотеть раскрасить в какой-то специфический цвет для выделения уникальности приложения. Тут все на усмотрение разработчика (не забывайте про темный режим!).</p>
+
+</div>
+
+<h3>Несколько .sidebar — это ок</h3>
+<p>Два и более сайдбара на странице — типичная навигация в приложении. Например, на экране просмотра заказов Shop-Script, при просмотре списков в проекте Pocket Lists, при просмотре сообщений во «Входящих» и т. д.</p>
+<p>Но в случае с двумя соседними сайдбарами рекомендуется внутренний (второй и далее) сайдбар визуально отделить от главного левого. Оптимально сделать это классом <code>.blank</code> (чистый цвет) и задав увеличенную ширину сайдбара классом группы <code>.width-XX</code>, например, <code>.width-19rem</code>.</p>
+
+<h2>Мобильные устройства</h2>
+
+<p>На мобильных устройствах <code>.sidebar</code> и <code>.content</code> располагаются по вертикали один за другим. Если необходимо автоматически скрыть сайдбар и сделать его открывающимся нажатием на некоторый элемент-триггер (например, «гамбургер»), то есть упрощенная возможность сделать это с помощью системного механизма <code>.sidebar<strong>.mobile-friendly</strong></code>:</p>
+<ol class="separated">
+
+    <li>К родительскому контейнеру <code>.flexbox</code>, объединяющего сайдбар и контент, необходимо добавить класс <code><strong>.wrap-mobile</strong></code>: <code>class="flexbox <strong>wrap-mobile</strong>"</code>.</li>
+
+    <li>К основному сайдбару необходимо добавить класс <code>class="sidebar <strong>mobile-friendly</strong>"</code> и <code><strong>id="MY-APP-CUSTOM-SIDEBAR-ID-123"</strong></code>. В режиме <code>.mobile-friendly</code> все внутренние блоки <code>.sidebar-header</code>, <code>.sidebar-body</code>, <code>.sidebar-footer</code> будут по умолчанию скрыты.</li>
+
+    <li>Внутри сайдбара <code>.sidebar</code> необходимо добавить элемент-контейнер <code>.sidebar &gt; <strong>.sidebar-mobile-toggle</strong></code>, внутри которого будет размещен триггер (ссылка, кнопка) для показа содержимого сайдбара. Элемент-контейнер <code>.sidebar-mobile-toggle</code> будет виден только на мобильных устройствах (ширина устройства &lt;= 760px) и скрыт на более широких экранах.</li>
+
+    <li>Триггер показа сайдбара внутри контейнера <code>.sidebar-mobile-toggle</code> оформите по собственному усмотрению. Например, в виде кнопки, ссылки или просто иконки. Единственное требование — вызывать по нажатию на триггер JavaScript-функцию с идентификатором сайдбара <code><strong>waShowSidebar('MY-APP-CUSTOM-SIDEBAR-ID-123');</strong></code>. Такой вызов реализует все поведение «открытия» сайдбара на мобильных устройствах.</li>
+</ol>
+
+<p>Пример реализации — сайдбар в данном приложении (UI). Попробуйте уменьшить размеры окна браузера.</p>
+
+<script>
+    $.wa_ui.title.set({$_title|json_encode});
+
+    if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+        prettyPrint();
+    }
+</script>

@@ -77,17 +77,30 @@ class blogFrontendPreviewTemplateAction extends blogViewAction
 
     public function getScripts()
     {
+        $parent_url = json_encode(waRequest::get('parent_url', '', 'string'));
         $app_static_url = wa()->getAppStaticUrl('blog', 1);
         $version = wa()->getVersion('blog');
         return <<<EOF
             <script src="{$app_static_url}js/postmessage.js?{$version}"></script>
             <script>$(function() {
                 // Make sure we're in an iframe
-                var parent_origin = window.top !== window && document.referrer && (function(a) {
-                    a.href = document.referrer;
-                    return a.origin || a.protocol + '//' + (document.referrer.indexOf(a.hostname+':') >= 0 ? a.host : a.hostname);
+                if (window.top === window) {
+                    return;
+                }
+
+                // Figure out parent window origin. It can be tricky because of same origin policy.
+                var parent_url = {$parent_url} || document.referrer;
+                try {
+                    parent_url = parent_url || window.parent.location.href;
+                } catch(e) {
+                    console.log(e);
+                }
+                var parent_origin = parent_url && (function(a) {
+                    a.href = parent_url;
+                    return a.origin || a.protocol + '//' + (parent_url.indexOf(a.hostname+':') >= 0 ? a.host : a.hostname);
                 })(document.createElement('a'));
                 if (!parent_origin) {
+                    console.log('Unable to initialize real-time preview: no parent URL.');
                     return;
                 }
 

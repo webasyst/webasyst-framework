@@ -1,0 +1,215 @@
+{$_title = "[s`Sign-in with Webasyst ID`] — {$wa->accountName(false)}"}
+
+<div class="article s-waid-settings-page" id="s-waid-settings-page">
+  <div class="article-body">
+    <div class="flexbox">
+        <div class="wide">
+            <h1 class="s-page-header">
+                [s`Sign-in with Webasyst ID`]
+            </h1>
+        </div>
+        {if $is_connected}
+            <div>
+                <a class="s-waid-disconnect js-disconnect-to-waid button gray outlined">
+                    <span>
+                        [s`Disable`]
+                    </span>
+                </a>
+            </div>
+        {/if}
+    </div>
+    <p class="s-description custom-mb-16">
+        [s`<strong>Sign-in with Webasyst ID</strong> is a universal authorization option that unites Webasyst Customer Center and sign-in to Webasyst backends on your own domains.`]
+        [s`Webasyst ID allows you to use all Webasyst apps, sites, and services, and to avoid the use of different passwords on various domains.`]
+        {sprintf(_ws('%sRead more%s.'), '<a href="javascript:void(0);" class="underline js-webasyst-id-help-link">', '</a>')}
+    </p>
+
+    {if $is_connected}
+        <div class="fields">
+        {if $not_connected_users}
+            <div class="fields-group s-waid-not-connected-users-block">
+                <h4>
+                    <em>
+                        [s`Pending upgrade to Webasyst ID`]
+                        <span class="small">({_ws("%d user", "%d users", $not_connected_users_count)})</span>
+                    </em>
+                </h4>
+                <div class="s-waid-description-block">
+
+                    <p class="s-description js-warning hidden">
+                        <em>[s`Sending invitations. Please don’t leave this page until the process is completed.`]</em>
+                    </p>
+
+                    <div class="s-waid-invite-progressbar-wrapper hidden js-waid-invite-progressbar-wrapper">
+                        <div class="progressbar blue s-waid-invite-progressbar js-invite-progressbar">
+                            <div class="progressbar-line-wrapper">
+                                <div class="progressbar-outer">
+                                    <div class="progressbar-inner js-invite-progressbar-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <i class="fas fa-spinner fa-spin s-waid-icon js-in-progress hidden"></i>
+                        <i class="fas fa-check-circle s-waid-icon js-done hidden"></i>
+                        <i class="fas fa-times-circle s-waid-icon js-fail hidden"></i>
+                        <em class="state-error js-error-msg"></em>
+                        <div class="s-waid-report"></div>
+                    </div>
+
+                </div>
+                {if $wa->isMobile()}
+                    <div style="display: block; width: calc(100vw - 2rem); overflow-x: auto; -webkit-overflow-scrolling: touch">
+                {/if}
+                <table class="s-not-connected-users full-width">
+
+                    <tbody>
+                    {foreach $not_connected_users as $user}
+                        <tr>
+                            <td class="min-width">
+                                <a href="{$user.link}">
+                                    <img src="{$user.photo_url_32}" class="userpic userpic32" style="max-width: none" alt="{$user.name|escape}">
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{$user.link}">{$user.name|escape}</a>
+                            </td>
+                            <td>
+                                <span class="js-await-user-confirmation">
+                                    <em>
+                                        <i class="fas fa-clock"></i> [`Awaiting the user to confirm`]
+                                    </em>
+                                </span>
+                            </td>
+                            <td>
+                                {$_email = $user.email.0|default:''}
+                                {if $_email}
+                                    <div>
+                                        {if $user.is_current_contact}
+                                            <a href="javascript:void(0)" class="js-connect-yourself bold" data-id="{$user.id}">
+                                                <img class="icon baseline" src="/wa-content/img/webasyst-wand-bold.svg" alt=""> [s`Connect Webasyst ID for my account`]
+                                            </a>
+                                        {else}
+                                            {if !$user.waid_invite_datetime}
+                                                {$_link_text = '[`Email upgrade instructions`]'}
+                                            {else}
+                                                {$_link_text = '[`Email again`]'}
+                                            {/if}
+                                            <a href="javascript:void(0)" class="js-send-email-invitation" data-id="{$user.id}">
+                                                <i class="fas fa-envelope"></i> <span class="js-text">{$_link_text}</span> <i class="fas fa-spinner fa-spin js-loading" style="display: none;"></i>
+                                                <span class="hint js-last-send-datetime">{if $user.waid_invite_datetime}{$user.waid_invite_datetime|wa_date:'humandatetime'}{/if}</span>
+                                            </a>
+                                            <span class="js-sent-email-ok hidden">
+                                                <i class="fas fa-envelope"></i> [s`An invitation has been sent`] <i class="fas fa-check-circle"></i>
+                                            </span>
+                                        {/if}
+                                        <em class="state-error js-error" style="display: none"></em>
+                                    </div>
+                                {else}
+                                    <span class="gray">[s`User email is unknown.`]</span>
+                                {/if}
+                            </td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+                {if $wa->isMobile()}
+                    </div>
+                {/if}
+            </div>
+        {/if}
+        {if $connected_users}
+            <div class="fields-group">
+                <h4>
+                    [s`Successfully upgraded to Webasyst ID`]
+                    {if $users_count == $connected_users_count}
+                    <span class="small">([s`all users!`])</span>
+                    {else}
+                    <span class="small">({_ws("%d user", "%d users", $connected_users_count)})</span>
+                    {/if}
+                </h4>
+                {if $wa->isMobile()}
+                <div style="display: block; width: calc(100vw - 2rem); overflow-x: auto; -webkit-overflow-scrolling: touch">
+                {/if}
+                <table class="s-connected-users single-lined">
+                    <thead>
+                    <tr>
+                        <th class="min-width"></th>
+                        <th>[s`Name`]</th>
+                        <th>[`Webasyst ID`]</th>
+                        <th>[s`Connected`]</th>
+                        <th>[s`Last sign-in with Webasyst ID`]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $connected_users as $user}
+                        <tr>
+                            <td class="min-width">
+                                <a href="{$user.link}">
+                                    <img src="{$user.photo_url_32}" class="userpic userpic32" style="max-width: none" alt="{$user.name|escape}">
+                                </a>
+                            </td>
+                            <td>
+                                <div><a href="{$user.link}">{$user.name|escape}</a><i class="shortener"></i>
+</div>
+                            </td>
+                            <td>
+                                <div><a href="{$user.link}" class="bold nowrap">
+                                    <img class="icon baseline" src="/wa-content/img/webasyst-wand-bold.svg" alt="">
+                                    {$user.webasyst_id|escape}</a><i class="shortener"></i>
+</div>
+                            </td>
+                            <td>{$user.waid_create_datetime|wa_date:'humandatetime'}</td>
+                            <td>{$user.waid_login_datetime|wa_date:'humandatetime'}</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+                {if $wa->isMobile()}
+                </div>
+                {/if}
+            </div>
+        {/if}
+        </div>
+
+    {else}
+        <div class="fields">
+            <!-- <h4>[s`Allow users to use their Webasyst ID accounts to sign into the backend:`]</h4> -->
+
+            <div class="fields-group">
+                <div class="field">
+                    <div class="value">
+                        <input type="button" class="button rounded larger green gradient custom-mt-8 js-connect-to-waid" value="[s`Enable Webasyst ID`]">
+                        {if $users_count > 1}
+                            <br><br>
+                            <label>
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" class="js-upgrade-all" id="upgrade-all" checked>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </span>
+                                </span>
+                                [s`and email invitations to users for fast upgrade`]
+                            </label>
+                            <p class="hint">[`Should the sending of email invitations fail, users will still see a notification with an upgrade link in the backend. Users will also have the option to enable or disable the sign-in with Webasyst ID in their profiles.`]</p>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+    {/if}
+
+    <script>
+        (function ($) {
+            $.wa.title.set({$_title|json_encode});
+            new WASettingsWaID({
+                $wrapper: $('#s-waid-settings-page'),
+                wa_backend_url: {$wa_backend_url|json_encode},
+                upgrade_all: {$upgrade_all|json_encode},
+                webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode}
+            });
+        })(jQuery);
+    </script>
+
+  </div>
+</div>

@@ -26,7 +26,6 @@ class waAppConfig extends SystemConfig
     protected $options = array();
     protected $routes = null;
     protected $loaded_locale = null;
-    protected $cache = null;
 
     public function __construct($environment, $root_path, $application = null, $locale = null)
     {
@@ -49,32 +48,6 @@ class waAppConfig extends SystemConfig
     public function getApplication()
     {
         return $this->application;
-    }
-
-    public function getCache($type = 'default')
-    {
-        if ($this->cache === null) {
-            $file_path = $this->getPath('config', 'cache');
-            if (file_exists($file_path)) {
-                $cache_config = include($file_path);
-                if (isset($cache_config[$type])) {
-                    $options = $cache_config[$type];
-                    $cache_type = $options['type'];
-                    $cache_class = 'wa'.ucfirst($cache_type).'CacheAdapter';
-
-                    try {
-                        $cache_adapter = new $cache_class($options);
-                        $this->cache = new waCache($cache_adapter, $this->application);
-                    } catch (waException $e) {
-                        waLog::log($e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                    }
-                }
-            }
-            if (!$this->cache) {
-                $this->cache = false;
-            }
-        }
-        return $this->cache;
     }
 
     public function getLogActions($full = false, $ignore_system = false)
@@ -369,12 +342,10 @@ class waAppConfig extends SystemConfig
                     waFiles::delete($cache_database_dir, true);
                     $app_settings_model->set($this->application, 'update_time', $t);
                 } catch (Exception $e) {
-                    if (self::isDebug()) {
-                        echo $e;
-                    }
-                    // log errors
                     waLog::log("Error running update of ".$this->application.": {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                    break;
+                    waConfig::get('disable_exception_log', false);
+                    waConfig::set('is_template', $is_from_template);
+                    throw new waException(sprintf(_ws('Error running update of application %s: %s'), $this->application, $file), 500, $e);
                 }
             }
             waConfig::get('disable_exception_log', false);
@@ -490,6 +461,9 @@ class waAppConfig extends SystemConfig
     public function setLocale($locale, $bind = true)
     {
         if ($this->loaded_locale != $locale) {
+            if (preg_match('~[^a-zA-Z0-9\-\_\.]~', $locale)) {
+                return;
+            }
             $this->loaded_locale = $locale;
             waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
         }
@@ -881,7 +855,10 @@ class waAppConfig extends SystemConfig
                     $this->plugins = array();
                     return $this->plugins;
                 }
+
                 $all_plugins = include($path);
+                $all_plugins = is_array($all_plugins) ? $all_plugins : [];
+
                 $this->plugins = array();
                 foreach ($all_plugins as $plugin_id => $enabled) {
                     if ($enabled) {

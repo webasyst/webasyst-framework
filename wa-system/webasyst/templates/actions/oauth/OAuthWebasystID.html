@@ -1,0 +1,291 @@
+{$_reload = true}
+
+{* Webasyst ID (WA) auth types: backend/invite/bind *}
+{$_auth_type = $result.type|default:''}
+
+{* Webasyst ID (WA) auth result *}
+{$_auth_result = $result.result|default:[]}
+{$_auth_result.status = $_auth_result.status|default:false}
+{$_auth_result.details = $_auth_result.details|default:[]}
+{$_auth_result.details.error_code = $_auth_result.details.error_code|default:''}
+
+{* Sytem error (exception) from WA adapter *}
+{$_system_error_msg = $result.error_msg|default:''} {* system error from webasyst ID auth adapter *}
+
+{* in process of primary binding (connetion) backend user with webasyst ID contact  *}
+{$_is_bind_with_webasyst_contact = $_auth_type === 'bind'}
+
+{* process of primary binding is finished ok *}
+{$_is_bind_ok = $_is_bind_with_webasyst_contact && $_auth_result.status}
+
+{* in process of primary binding (or inviting user over team) end up with already_bound error *}
+{$_is_already_bound = ($_auth_type === 'bind' || $_auth_type === 'invite') && !$_auth_result.status && $_auth_result.details.error_code === 'already_bound'}
+
+{* in process of primary binding end up with 'not_bound' error *}
+{$_is_bind_fail = $_is_bind_with_webasyst_contact && !$_auth_result.status && $_auth_result.details.error_code === 'not_bound'}
+
+{* in process of auth (login) backend user somehow backend user is not connected to webasyst ID contact *}
+{$_backend_contact_not_bound = $_auth_type === 'backend' && !$_auth_result.status && $_auth_result.details.error_code == 'not_bound'}
+
+{* force backend - there is no standard auth (login) into backend - only webasyst ID auth *}
+{$_is_backend_auth_forced = $is_backend_auth_forced|default:false}
+
+{* not bound case while backend auth force *}
+{$_is_force_login_not_bound = $_is_backend_auth_forced && $_backend_contact_not_bound}
+
+{* redirect: url *}
+{$_redirect_url = ''}
+{if !empty($redirect.url)}
+    {$_redirect_url = $redirect.url}
+{/if}
+
+{* redirect: application returns error *}
+{$_redirect_error_message = ''}
+{if !empty($redirect.error.message)}
+    {$_redirect_error_message = $redirect.error.message}
+{elseif !empty($redirect.error.code)}
+    {$_redirect_error_message = $redirect.error.code}
+{/if}
+
+{$_info_content_exists = false}
+{capture assign="_info_content"}
+    {if !$_system_error_msg}
+        {if $_is_bind_ok}
+            {include file="./bind_ok.html" inline}
+            {$_reload = false}
+            {$_info_content_exists = true}
+        {elseif $_is_force_login_not_bound}
+            {include file="./force_login_not_bound.html" inline}
+            {$_reload = false}
+            {$_info_content_exists = true}
+        {elseif $_is_already_bound}
+            {include file="./bind_already_bound.html" inline}
+            {$_reload = false}
+            {$_info_content_exists = true}
+        {elseif $_redirect_error_message}
+            {include file="./redirect_error.html" inline}
+            {$_reload = false}
+            {$_info_content_exists = true}
+        {/if}
+    {else}
+        {include file="./system_error.html" inline}
+        {$_reload = false}
+        {$_info_content_exists = true}
+    {/if}
+{/capture}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>[s`Sign-in with Webasyst ID`]</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-size: 16px;
+            font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif;
+        }
+        h1 {
+            font-size: 1.65em;
+            margin-top: 0;
+        }
+        h4 {
+            margin-top: 0;
+            font-size: 1em;
+        }
+        .oauth-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+            padding: 40px;
+        }
+        .oauth-wrapper strong {
+            color: #444;
+        }
+        .oauth-wrapper .wa-logo {
+            position: absolute;
+            height: 15px;
+            top: 40px;
+            left: 40px;
+        }
+        .oauth-wrapper .oauth-info {
+            align-self: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 520px
+        }
+        .oauth-wrapper .oauth-info .circle-check {
+            margin-bottom: 30px;
+        }
+        .oauth-wrapper .oauth-info p {
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.3;
+            letter-spacing: normal;
+            color: #777777;
+            margin: 0 0 20px 0;
+        }
+        .oauth-wrapper .oauth-info button {
+            border-radius: 4px;
+            border: 0 none;
+            font-weight: bold;
+            outline: 0 none;
+            padding: 8px 18px;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            user-select: none;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+            background: #07f;
+            color: #fff;
+            margin: 0 0 10px 0;
+        }
+        .oauth-wrapper .oauth-info button:hover {
+            cursor: pointer;
+            background: #006be6;
+        }
+        .oauth-wrapper .oauth-info span {
+            font-size: 14px;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.2;
+            letter-spacing: normal;
+            color: #aaaaaa;
+        }
+        .oauth-wrapper .oauth-info .alert {
+            border-radius: 5px;
+            padding: 10px 12px 10px 42px;
+            border: 1px solid transparent;
+            position: relative;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .oauth-wrapper .oauth-info .alert svg {
+            position: absolute;
+            width: 20px;
+            top: 10px;
+            left: 12px;
+        }
+        .oauth-wrapper .oauth-info .alert-warning {
+            border-color:     #ffaa00;
+            background-color: #fdfaf3;
+        }
+        .oauth-wrapper .oauth-info .alert-warning svg {
+            color: #ffaa00;
+        }
+        .oauth-wrapper .oauth-info .confirm {
+            padding: 15px 20px;
+            background-color: #5ad42b;
+            border-radius: 8px;
+            box-shadow: 0 20px 15px 0 rgba(0, 0, 0, 0.07), 0 3px 44px 0 rgba(0, 0, 0, 0.13);
+            font-size: 18px;
+        }
+        .oauth-wrapper .oauth-info .confirm:hover {
+            background-color: #51bf27;
+            box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.07), 0 3px 22px 0 rgba(0, 0, 0, 0.13);
+        }
+        .oauth-wrapper .oauth-info .link {
+            background-color: transparent;
+            font-size: 16px;
+            font-weight: normal;
+            color: #0099ff;
+        }
+        .oauth-wrapper .oauth-info .link:hover {
+            color: red;
+            text-decoration: underline;
+            background-color: transparent;
+        }
+        .oauth-wrapper .oauth-info .actions-buttons {
+            align-self: flex-start;
+        }
+        .text-center {
+            text-align: center;
+        }
+        i.icon16 {
+            background-repeat:no-repeat;
+            height:16px;
+            width:16px;
+            display:inline-block;
+            text-indent:-9999px;
+            text-decoration:none!important;
+        }
+        .icon16.userpic20 {
+            background-position: -2px -2px;
+            background-size: 20px 20px;
+            border-radius: 50%;
+            vertical-align: baseline;
+            position: relative;
+            top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+{if $_info_content_exists}
+    <main class="oauth-wrapper">
+        <img class="wa-logo" src="{$wa_url}wa-content/img/webasyst-logo.svg" alt="Webasyst">
+        <div class="oauth-info">
+            {$_info_content}
+        </div>
+    </main>
+{/if}
+
+<script type="text/javascript">
+
+    var onClickRedirect = function () { };
+
+    (function () {
+
+        if (window.opener) {
+            initModal();
+        } else {
+            initPage();
+        }
+
+        function initModal() {
+            {if $_reload}
+                window.opener.location.reload();
+                self.close();
+            {/if}
+        }
+
+        function initPage() {
+            var redirect = function() {
+                window.location.href = {$_redirect_url|json_encode};
+            };
+
+            {if $_is_bind_with_webasyst_contact && !$_system_error_msg && !$_is_bind_fail && !$_is_already_bound}
+                var counter = 2,
+                    $timeout = document.getElementsByClassName("js-timeout")[0].getElementsByTagName('span')[0],
+                    intervalId = setInterval(function() {
+                        $timeout.innerText = counter;
+                        counter -= 1;
+                        if (counter === 0) {
+                            clearInterval(intervalId);
+                            redirect();
+                        }
+                    }, 1000);
+            {elseif !$_system_error_msg && !$_is_force_login_not_bound && !$_redirect_error_message && !$_is_already_bound}
+                redirect();
+            {/if}
+
+            onClickRedirect = function () {
+                redirect();
+            };
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

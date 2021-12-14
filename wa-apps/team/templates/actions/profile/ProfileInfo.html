@@ -26,7 +26,6 @@
 {$assets = $assets|default:[]}
 
 <script type="text/javascript">
-
     $.wa.locale = $.extend($.wa.locale, {
         "map": "[`map`]",
         "other": "[`other`]",
@@ -42,53 +41,59 @@
         "&lt;none&gt;": "[`&lt;none&gt;`]",   // no checklist options, e.g. no categories or groups
         "no name": "[`no name`]",        // contact name
 
-        "January": "[s`January`]",
-        "February": "[s`February`]",
-        "March": "[s`March`]",
-        "April": "[s`April`]",
-        "May": "[s`May`]",
-        "June": "[s`June`]",
-        "July": "[s`July`]",
-        "August": "[s`August`]",
-        "September": "[s`September`]",
-        "October": "[s`October`]",
-        "November": "[s`November`]",
-        "December": "[s`December`]",
-        "This field is required.": "[s`This field is required.`]",
-        "At least one of these fields must be filled": "[s`At least one of these fields must be filled`]",
-        "Save": "[s`Save`]",
-        "or": "[s`or`]",
-        "cancel": "[s`cancel`]"
+        "January": "[`January`]",
+        "February": "[`February`]",
+        "March": "[`March`]",
+        "April": "[`April`]",
+        "May": "[`May`]",
+        "June": "[`June`]",
+        "July": "[`July`]",
+        "August": "[`August`]",
+        "September": "[`September`]",
+        "October": "[`October`]",
+        "November": "[`November`]",
+        "December": "[`December`]",
+        "This field is required.": "[`This is a required field.`]",
+        "At least one of these fields must be filled": "[`At least one of these fields must be completed.`]",
+        "Save": "[`Save`]",
+        "or": "[`or`]",
+        "cancel": "[`cancel`]"
     });
 
-    var files = {
-        "{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?{$wa->version(true)}": typeof $.store !== 'function',
-        "{$wa_app_static_url}js/profile.info.js?{$wa->version()}": typeof window.ProfileInfoTab !== 'function',
-        "{$wa_app_static_url}css/profile_info.css?{$wa->version()}": typeof window.ProfileInfoTab !== 'function'
-    };
+    $(function () { "use strict";
 
-    {foreach $assets as $asset}
-        files["{$asset}?{$wa->version()}"] = true;
-    {/foreach}
+        // Load first system assets, make more possible we would't fail from first try of loading all dependencies
+        var files = { };
+        {foreach $assets as $asset}
+            files["{$asset}?{$wa->version()}"] = true;
+        {/foreach}
 
-    $.wa.loadFiles(files).then(function() {
+        files["{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?{$wa->version(true)}"] = typeof $.store !== 'function';
+        if($('html').hasClass('is-wa2')) {
+            files["{$wa_app_static_url}js/profile.info.js?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+            files["{$wa_app_static_url}css/profile_info.css?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+        }else{
+            files["{$wa_app_static_url}js-legacy/profile.info.js?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+            files["{$wa_app_static_url}css-legacy/profile_info.css?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+        }
 
-        $.storage = new $.store();
+        var onAllLoad = function () {
+            $.storage = new $.store();
 
-        {if !empty($is_my_profile)}
-            $.wa.contactEditor.wa_app_url = {$wa_backend_url|json_encode};
-        {else}
-            $.wa.contactEditor.wa_app_url = {$wa_app_url|json_encode};
-        {/if}
-        $.wa.contactEditor.wa_backend_url = {$wa_backend_url|json_encode};
-        $.wa.contactEditor.saveUrl = {$save_url|json_encode};
-        $.wa.contactEditor.contact_id = {$contact.id|json_encode};
-        $.wa.contactEditor.current_user_id = {$wa->user('id')|json_encode};
-        $.wa.contactEditor.contactType = '{if $contact.is_company}company{else}person{/if}';
-        $.wa.contactEditor.justCreated = false;
-        $.wa.contactEditor.geocoding = {$geocoding|json_encode};
+            {if !empty($is_my_profile)}
+                $.wa.contactEditor.wa_app_url = {$wa_backend_url|json_encode};
+            {else}
+                $.wa.contactEditor.wa_app_url = {$wa_app_url|json_encode};
+            {/if}
 
-        $(function(){ "use strict";
+            $.wa.contactEditor.wa_backend_url = {$wa_backend_url|json_encode};
+            $.wa.contactEditor.saveUrl = {$save_url|json_encode};
+            $.wa.contactEditor.contact_id = {$contact.id|json_encode};
+            $.wa.contactEditor.current_user_id = {$wa->user('id')|json_encode};
+            $.wa.contactEditor.contactType = '{if $contact.is_company}company{else}person{/if}';
+            $.wa.contactEditor.justCreated = false;
+            $.wa.contactEditor.geocoding = {$geocoding|json_encode};
+
             $.wa.contactEditor.initFactories({json_encode($contactFields)}, {json_encode($contactFieldsOrder)});
             $.wa.contactEditor.resetFieldEditors();
             $.wa.contactEditor.initFieldEditors({json_encode($fieldValues)});
@@ -99,24 +104,42 @@
                 $.wa.contactEditor.switchMode('edit');
                 return false;
             });
-        });
 
-        $($.wa.contactEditor).on('top_fields_updated', function(evt, data) {
-            window.profileTab.trigger('top_fields_updated', [data.data]);
-        });
-        $($.wa.contactEditor).on('contact_saved', function(evt, data) {
-            window.profileTab.trigger('contact_saved', data);
-            if (data && data.timezone === '') {
-                // If user has just changed their timezone setting to 'Auto',
-                // determine timezone via JS.
-                $.wa.determineTimezone({$wa_url|json_encode});
-            }
-        });
-    });
+            $($.wa.contactEditor).on('top_fields_updated', function(evt, data) {
+                window.profileTab.trigger('top_fields_updated', [data.data]);
+            });
+            $($.wa.contactEditor).on('contact_saved', function(evt, data) {
+                window.profileTab.trigger('contact_saved', data);
+                if (data && data.timezone === '') {
+                    // If user has just changed their timezone setting to 'Auto',
+                    // determine timezone via JS.
+                    $.wa.determineTimezone({$wa_url|json_encode});
+                }
+            });
+        };
 
-    {if !empty($is_my_profile) && !$contact.timezone}
-        // If user timezone setting is 'Auto', use JS to set timezone.
-        $.wa.determineTimezone({$wa_url|json_encode});
-    {/if}
+        var loadAllFiles = function () {
+            return $.wa.loadFiles(files);
+        };
 
+        var load = function (tries) {
+            loadAllFiles().then(function() {
+                onAllLoad();
+            }).fail(function () {
+                if (tries > 0) {
+                    console.log('Not loaded, try again...')
+                    load(tries - 1);
+                } else {
+                    console.error("Couldn't load profile info tab");
+                }
+            });
+        };
+
+        load(3);
+
+        {if !empty($is_my_profile) && !$contact.timezone}
+            // If user timezone setting is 'Auto', use JS to set timezone.
+            $.wa.determineTimezone({$wa_url|json_encode});
+        {/if}
+    })
 </script>

@@ -184,7 +184,8 @@
                     locale: {$_locale|json_encode},
                     is_json_mode: {$is_json_mode|default:false|json_encode},
                     need_redirects: {$need_redirects|default:false|json_encode},
-                    is_need_confirm: {$is_need_confirm|default:false|json_encode}
+                    is_need_confirm: {$is_need_confirm|default:false|json_encode},
+                    oauth_adapter_sizes: {$oauth_adapter_sizes|default:[]|json_encode}
                 });
             }
 

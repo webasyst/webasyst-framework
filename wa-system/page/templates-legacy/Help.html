@@ -1,0 +1,181 @@
+<!-- cheat sheet -->
+{$show_body_flag = false}
+{$show_header_flag = false}
+
+<ul class="tabs">
+    {if !empty($app_id) && !empty($apps_info[$app_id])}
+        {$_icon_24 = $apps_info[$app_id]['icon'].24|default:''}
+        <li class="no-tab">
+            {if $_icon_24}
+                <img src="{$wa_url}{$apps_info[$app_id]['icon'].24}" alt="">
+            {/if}
+            <p class="bold">{$page|escape}</p>
+            <p>
+                <span class="hint">{$apps_info[$app_id]['name']|escape}</span>
+            </p>
+        </li>
+    {/if}
+    {if !empty($vars)}
+        {foreach $vars as $id => $app_vars}
+            {if !empty($apps_info[$id])}
+                <li id="wa-help-{$id}-vars-{$name}" {if $app_vars@first}class="selected"{/if}>
+                    {$_tab_name = $tab_names[$id]|default:''|escape}
+                    {if !$_tab_name}
+                        {$_tab_name = $apps_info[$id]['name']|escape}
+                    {/if}
+                    <a href="#">{$_tab_name}</a>
+                </li>
+            {/if}
+        {/foreach}
+        {$show_header_flag = true}
+    {/if}
+    {if !empty($wa_vars)}
+        <li id="wa-help-wa-{$name}" {if !$show_header_flag} class="selected"{/if}>
+            <a href="#">$wa</a>
+        </li>
+        {$show_header_flag = true}
+    {/if}
+    {if !empty($smarty_vars)}
+        <li id="wa-help-smarty-{$name}" {if !$show_header_flag} class="selected"{/if}>
+            <a href="#">Smarty</a>
+        </li>
+        {$show_header_flag = true}
+    {/if}
+    {if !empty($blocks)}
+        <li id="wa-helper-blocks-{$name}" {if !$show_header_flag} class="selected"{/if}>
+            <a href="#">[s`Blocks`]</a>
+        </li>
+        {$show_header_flag = true}
+    {/if}
+    {if !empty($plugins)}
+        <li id="wa-help-plugins-{$name}" {if !$show_header_flag} class="selected"{/if}>
+            <a href="#">[s`Plugins`]</a>
+        </li>
+        {$show_header_flag = true}
+    {/if}
+</ul>
+
+<!-- app specific vars -->
+{if !empty($vars)}
+    {foreach $vars as $id => $app_vars}
+        <div id="wa-help-{$id}-vars-{$name}-content" class="tab-content wa-cheatsheet-dropdown-content" style="{if !$app_vars@first}display:none;{/if}">
+            <div class="fields">
+                {foreach $app_vars as $v => $desc}
+                    <div class="field">
+                        <div class="name"><a href="#" class="inline-link"><b><i>&#123;{$v}&#125;</i></b></a></div>
+                        {if !is_array($desc)}
+                            <div class="value"><span class="hint">{$desc}</span></div>{/if}
+                    </div>
+                    {if is_array($desc)}
+                        {foreach $desc as $sub_v => $sub_desc}
+                            <div class="field subfield">
+                                <div class="name"><a href="#" class="inline-link"><b><i>&#123;{$sub_v}&#125;</i></b></a></div>
+                                <div class="value"><span class="hint">{$sub_desc}</span></div>
+                            </div>
+                        {/foreach}
+                    {/if}
+                {/foreach}
+            </div>
+        </div>
+    {/foreach}
+    {$show_body_flag = true}
+{/if}
+
+{if !empty($wa_vars)}
+    <!-- misc $wa vars -->
+    <div id="wa-help-wa-{$name}-content" class="tab-content wa-cheatsheet-dropdown-content" {if $show_body_flag}style="display:none"{/if}>
+        <div class="fields">
+            {foreach from=$wa_vars item=desc key=v}
+                <div class="field">
+                    <div class="name"><a href="#" class="inline-link"><b><i>&#123;{$v}&#125;</i></b></a></div>
+                    <div class="value"><span class="hint">{$desc}</span></div>
+                </div>
+            {/foreach}
+        </div>
+    </div>
+    {$show_body_flag = true}
+{/if}
+
+{if !empty($smarty_vars)}
+    <!-- misc Smarty vars -->
+    <div id="wa-help-smarty-{$name}-content" class="tab-content wa-cheatsheet-dropdown-content" {if $show_body_flag}style="display:none"{/if}>
+        <div class="fields">
+            {foreach from=$smarty_vars item=desc key=v}
+                <div class="field">
+                    <div class="name"><a href="#" class="inline-link"><b><i>{$v|escape}</i></b></a></div>
+                    <div class="value"><span class="hint">{$desc}</span></div>
+                </div>
+            {/foreach}
+        </div>
+    </div>
+    {$show_body_flag = true}
+{/if}
+
+{if !empty($blocks)}
+    <div id="wa-helper-blocks-{$name}-content" class="tab-content wa-cheatsheet-dropdown-content" {if $show_body_flag}style="display:none"{/if}>
+        <div class="fields">
+            <div class="field">
+                <div class="name"><a href="#" class="inline-link"><b><i>{literal}{{/literal}$wa->block(<em>'id', $params=[]'</em>){literal}}{/literal}</i></b></a></div>
+                <div class="value"><span class="hint">[`<strong>id</strong>: block ID.<br><strong>$params</strong>: associative array of additional parameters passed to a block (example: <code>['myparam' => 100]</code>). A parameter is available by its name as a Smarty variable within a block (example: <code>$myparam</code>).`]</span></div>
+            </div>
+            {foreach $blocks as $block_id => $b}
+                <div class="field">
+                    <div class="name"><a href="#" class="inline-link"><b><i>{literal}{$wa->block('{/literal}{$block_id|escape}{literal}')}{/literal}</i></b></a></div>
+                    <div class="value"><span class="hint">{$b.description}</span></div>
+                </div>
+            {/foreach}
+        </div>
+    </div>
+    {$show_body_flag = true}
+{/if}
+
+{if !empty($plugins)}
+    <div id="wa-help-plugins-{$name}-content" class="tab-content wa-cheatsheet-dropdown-content" {if $show_body_flag}style="display:none"{/if}>
+        <div class="fields">
+            {foreach $plugins as $id => $data}
+                <div class="field">
+                    <div class="name"><a href="#" class="inline-link"><b><i>&#123;{$id}&#125;</i></b></a></div>
+                    {if !is_array($data)}
+                        <div class="value"><span class="hint">{$data}</span></div>{/if}
+                </div>
+                {if is_array($data)}
+                    {foreach $data as $sub_id => $sub_data}
+                        <div class="field subfield">
+                            <div class="name"><a href="#" class="inline-link"><b><i>&#123;{$sub_id}&#125;</i></b></a></div>
+                            <div class="value"><span class="hint">{$sub_data}</span></div>
+                        </div>
+                    {/foreach}
+                {/if}
+            {/foreach}
+        </div>
+    </div>
+    {$show_body_flag = true}
+{/if}
+
+<script type="text/javascript">
+    $("#wa-editor-help-{$name} ul.tabs li a").click(function () {
+        $("#wa-editor-help-{$name} ul.tabs li.selected").removeClass('selected');
+        var id = $(this).parent().addClass('selected').attr('id') + '-content';
+        $("#wa-editor-help-{$name} div.tab-content").hide();
+        $('#' + id).show();
+        return false;
+    });
+
+
+    //@todo for compatibility to old versions. Need delete.
+    // Start delete.
+
+    $(".wa-dropdown").addClass('wa-cheatsheet-dropdown');
+    $(".wa-dropdown-block").addClass('wa-cheatsheet-dropdown-block');
+
+    $("#wa-editor-help ul.tabs li a").click(function () {
+        $("#wa-editor-help ul.tabs li.selected").removeClass('selected');
+        var id = $(this).parent().addClass('selected').attr('id') + '-content';
+        $("#wa-editor-help div.tab-content").hide();
+        $('#' + id).show();
+        return false;
+    });
+
+    // End delete
+
+</script>

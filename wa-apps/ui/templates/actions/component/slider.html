@@ -1,0 +1,160 @@
+{$_title = ".waSlider()"}
+{$wa->title($_title|json_encode)}
+
+{function name="_render_1"}
+<div class="slider" id="slider-1">
+    <script>
+        ( function($) {
+            $("#slider-1").waSlider({
+                hide: { min: true, max: false },
+                limit: { min: 0, max: 100 }
+            });
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+{function name="_render_1_1"}
+    <div class="slider" id="slider-1-1">
+        <input type="text" id="min-1-1" class="custom-mt-24" value="1">
+        <input type="text" id="max-1-1" class="custom-mt-24" value="25">
+        <script>
+            ( function($) {
+                $("#slider-1-1").waSlider({
+                    $input_min: $("#min-1-1"),
+                    $input_max: $("#max-1-1"),
+                    limit: { min: 0, max: 100 }
+                });
+            })(jQuery);
+        </script>
+    </div>
+{/function}
+
+{function name="_render_2"}
+<div class="slider" id="slider-2">
+    <input type="text" id="min-2" class="custom-mt-24" value="60">
+    <input type="text" id="max-2" class="custom-mt-24" value="140">
+
+    <script>
+        ( function($) {
+            var $slider = $("#slider-2");
+
+            $slider.waSlider({
+                $input_min: $("#min-2"),
+                $input_max: $("#max-2"),
+                limit: {
+                    min: 50,
+                    max: 150
+                },
+                values: {
+                    min: 70,
+                    max: 130
+                }
+            });
+
+            var slider = $slider.data("slider");
+            slider.setValues([80, 120]);
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+{function name="_render_3"}
+<div class="slider" id="slider-3">
+    <script>
+        ( function($) {
+            var $slider = $("#slider-3");
+
+            $slider.waSlider({
+                limit: {
+                    min: -50,
+                    max: 50
+                },
+                move: function(values, slider) {
+                    console.log("move", values, slider);
+                },
+                change: function(values, slider) {
+                    console.log("change", values, slider);
+                }
+            });
+
+            $slider.on("move", function(event, values, slider) {
+                console.log("move", values, slider);
+            });
+
+            $slider.on("slider_change", function(event, values, slider) {
+                console.log("change", values, slider);
+            });
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <h2><code>.slider</code></h2>
+
+    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2.</blockquote>
+
+    <div class="line">
+        <p>Простой пример:</p>
+        {_render_1}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_1|escape}</pre>
+    </div>
+
+    <div class="line">
+        <p>Простой пример с привязкой полей:</p>
+        {_render_1_1}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_1_1|escape}</pre>
+    </div>
+
+    <div class="line">
+        <p>Задание стартовых величин:</p>
+        {_render_2}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_2|escape}</pre>
+    </div>
+
+    <div class="line">
+        <p>События изменения состояний:</p>
+        {_render_3}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_3|escape}</pre>
+    </div>
+
+    <div class="line">
+        <h2>API</h2>
+        <p>
+            <span class="bold">slider.getValue(offset)</span>
+            <br>@param offset — количество процентов от 0 до 1
+            <br>@return значение (number)
+        </p>
+        <p>
+            <span class="bold">slider.getOffset(value)</span>
+            <br>@param value(number)
+            <br>@return процент от 0 до 1
+        </p>
+        <p>
+            <span class="bold">slider.setValues(values_array)</span>
+            <br>@param values_array [min(number), max(number)]
+        </p>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

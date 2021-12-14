@@ -69,8 +69,8 @@ class waPageActions extends waActions
         $event_params = array();
         $data['backend_pages_sidebar'] = wa()->event('backend_pages_sidebar', $event_params);
 
-        $template = $this->getConfig()->getRootPath().'/wa-system/page/templates/Page.html';
-        $this->display($this->prepareData($data), $template);
+        $this->setTemplate('Page.html', true);
+        $this->display($this->prepareData($data));
     }
 
     protected function settleAction()
@@ -142,6 +142,17 @@ class waPageActions extends waActions
             $url = null;
         }
 
+        $warnings = array();
+        if (!isset($routes[$domain.'/'.$route])) {
+            if (empty($page)) {
+                $warnings['no_site_storefront'] = true;
+            } elseif (empty($routes)) {
+                $warnings['deleted_site_storefront'] = true;
+            } else {
+                $warnings['several_site_storefront'] = true;
+            }
+        }
+
         if ($url) {
             $idna = new waIdna();
             $url_decoded = $idna->decode($url);
@@ -152,6 +163,7 @@ class waPageActions extends waActions
         $data = array(
             'url'          => $url,
             'url_decoded'  => $url_decoded,
+            'warnings'     => $warnings,
             'page'         => $page,
             'page_url'     => $this->url,
             'options'      => $this->options,
@@ -178,8 +190,8 @@ class waPageActions extends waActions
             'settings_section'
         ));
 
-        $template = $this->getConfig()->getRootPath().'/wa-system/page/templates/PageEdit.html';
-        $this->display($data, $template);
+        $this->setTemplate('PageEdit.html', true);
+        $this->display($data);
     }
 
     protected function getPagesTree($pages)
@@ -205,24 +217,50 @@ class waPageActions extends waActions
 
     public static function printPagesTree($p, $pages, $prefix_url)
     {
-        $html = '<ul class="menu-v with-icons" data-parent-id="'.$p['id'].'">';
-        foreach ($pages as $page) {
-            $html .= '<li class="drag-newposition"></li>';
-            $html .= '<li class="dr" id="page-'.$page['id'].'">'.
-            (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').'<i class="icon16 notebook"></i>'.
-            '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><span class="count"><i class="icon10 add wa-page-add"></i></span>'.
-            htmlspecialchars($page['name']).
-            ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span>';
-            if (!$page['status']) {
-                $html .= ' <span class="wa-page-draft">'._ws('draft').'</span>';
+        if (wa()->whichUI() == '2.0') {
+            $html = '<ul class="menu" data-parent-id="'.$p['id'].'">';
+            foreach ($pages as $page) {
+
+                $icon = '<i class="fas fa-file-alt"></i>';
+                if(!$page['status']){
+                    $icon = '<i class="fas fa-pencil-alt"></i>';
+                }
+
+                $html .= '<li class="drag-newposition"></li>';
+                $html .= '<li class="dr" id="page-'.$page['id'].'" data-page-id="'.$page['id'].'">'.
+                    (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').
+                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'">'.$icon.
+                    '<span>'.htmlspecialchars($page['name']).
+                    ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span></span>'.
+                    '<span class="count action small"><i class="fas fa-plus-circle wa-page-add"></i></span>';
+                $html .= '</a>';
+                if (!empty($page['childs'])) {
+                    $html .= self::printPagesTree($page, $page['childs'], $prefix_url);
+                }
+                $html .= '</li>';
             }
-            $html .= '</a>';
-            if (!empty($page['childs'])) {
-                $html .= self::printPagesTree($page, $page['childs'], $prefix_url);
+            $html .= '<li class="drag-newposition"></li></ul>';
+        }else{
+            $html = '<ul class="menu-v with-icons" data-parent-id="'.$p['id'].'">';
+            foreach ($pages as $page) {
+                $html .= '<li class="drag-newposition"></li>';
+                $html .= '<li class="dr" id="page-'.$page['id'].'">'.
+                    (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').'<i class="icon16 notebook"></i>'.
+                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><span class="count"><i class="icon10 add wa-page-add"></i></span>'.
+                    htmlspecialchars($page['name']).
+                    ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span>';
+                if (!$page['status']) {
+                    $html .= ' <span class="wa-page-draft">'._ws('draft').'</span>';
+                }
+                $html .= '</a>';
+                if (!empty($page['childs'])) {
+                    $html .= self::printPagesTree($page, $page['childs'], $prefix_url);
+                }
+                $html .= '</li>';
             }
-            $html .= '</li>';
+            $html .= '<li class="drag-newposition"></li></ul>';
         }
-        $html .= '<li class="drag-newposition"></li></ul>';
+
         return $html;
     }
 
@@ -310,28 +348,35 @@ class waPageActions extends waActions
     public function saveAction()
     {
         $id = (int)waRequest::get('id');
-        $data = waRequest::post('info');
-        if (empty($data['name'])) {
-            $data['name'] = '('._ws('no-title').')';
+        $data = waRequest::post('info', array());
+        $data['url'] = trim($data['url'], '/');
+        if (strlen($data['url']) > 0) {
+            $data['url'] .= '/';
         }
-        $data['url'] = ltrim($data['url'], '/');
-        $data['status'] = isset($data['status']) ? 1 : 0;
 
         try {
-            $this->checkGlobalRouting();
+            $this->checkGlobalRouting($id, $data);
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
             return;
         }
+
+        if (empty($data['name'])) {
+            $data['name'] = '('._ws('no-title').')';
+        }
+        $data['status'] = isset($data['status']) ? 1 : 0;
 
         $page_model = $this->getPageModel();
 
         if ($id) {
             $is_new = false;
             $old = $page_model->getById($id);
-            $data['full_url'] = substr($old['full_url'], 0, -strlen($old['url'])).$data['url'];
-            if ($old['full_url'] && substr($old['full_url'], -1, 1) != '/') {
-                $old['full_url'] .= '/';
+            if (!empty($old['parent_id'])) {
+                $parent = $this->getPage($old['parent_id']);
+                $parent_full_url = $parent['full_url'] ? rtrim($parent['full_url'], '/') . '/' : '';
+                $data['full_url'] = $parent_full_url . $data['url'];
+            } else {
+                $data['full_url'] = $data['url'];
             }
             // save to database
             if (!$page_model->update($id, $data)) {
@@ -347,12 +392,10 @@ class waPageActions extends waActions
             if (waRequest::post('translit') && !$data['url']) {
                 $data['url'] = $this->translit($data['name']);
             }
-            if ($data['url'] && substr($data['url'], -1) != '/' && strpos(substr($data['url'], -5), '.') === false) {
-                $data['url'] .= '/';
-            }
             if (!empty($data['parent_id'])) {
                 $parent = $this->getPage($data['parent_id']);
-                $data['full_url'] = ($parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '').$data['url'];
+                $parent_full_url = $parent['full_url'] ? rtrim($parent['full_url'], '/') . '/' : '';
+                $data['full_url'] = $parent_full_url . $data['url'];
                 $data['domain'] = $parent['domain'];
                 $data['route'] = $parent['route'];
                 $this->beforeSave($data, $parent);
@@ -361,7 +404,8 @@ class waPageActions extends waActions
                 $this->beforeSave($data);
             }
             $is_new = true;
-            if ($id = $page_model->add($data)) {
+            $id = $page_model->add($data);
+            if ($id) {
                 $data['id'] = $id;
                 $this->logAction('page_add', $id);
             } else {
@@ -401,38 +445,36 @@ class waPageActions extends waActions
         ));
     }
 
-    protected function checkGlobalRouting()
+    protected function checkGlobalRouting($id, $data)
     {
-        $id = (int)waRequest::get('id');
-        $data = waRequest::post('info', array(), waRequest::TYPE_ARRAY_TRIM);
-        $data['url'] = ltrim($data['url'], '/');
-
         $page_url = $data['url'];
-        if ($page_url && substr($page_url, -1) != '/' && strpos(substr($page_url, -5), '.') === false) {
-            $page_url .= '/';
-        }
 
         // Get Domain
-        if (!empty($data['parent_id'])) {
-            $parent = $this->getPage($data['parent_id']);
+        $parent = null;
+        $page = null;
+        $parent_id = ifset($data['parent_id'], null);
+        if ($id && empty($parent_id)) {
+            $page = $this->getPageModel()->getById($id);
+            $parent_id = ifset($page['parent_id'], null);
+        }
+        if (!empty($parent_id)) {
+            $parent = $this->getPage($parent_id);
             $domain = (!empty($parent['domain'])) ? $parent['domain'] : null;
             $page_url = ($parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '') . $page_url;
         }
 
         if (!empty($data['domain'])) {
             $domain = trim($data['domain']);
-
-        // Find domain by PAGE
         } elseif ($id) {
+            // Find domain by PAGE
             $page = $this->getPageModel()->getById($id);
             $domain = ifempty($page[$this->getPageModel()->getDomainField()]);
             if ($this->getPageModel()->getDomainField() === 'domain_id') {
                 $domain_data = $this->getDomainModel()->getById($page['domain_id']);
                 $domain = ifempty($domain_data['name']);
             }
-
-        // Find domain by domain_id in an external table (e.g. site_domain)
         } elseif (!empty($data['domain_id'])) {
+            // Find domain by domain_id in an external table (e.g. site_domain)
             $domain_data = $this->getDomainModel()->getById($data['domain_id']);
             $domain = ifempty($domain_data['name']);
         }
@@ -449,21 +491,7 @@ class waPageActions extends waActions
         if (empty($domain)) throw new waException(_ws('Unknown page domain'));
         if (empty($route)) throw new waException(_ws('Unknown page route'));
 
-        $page_model = $this->getPageModel();
-        $domain_field = $page_model->getDomainField();
-        $domain_name = $domain_field === 'domain_id' ? $data['domain_id'] : $domain;
-        $same_url = $page_model->getByField(array(
-            $domain_field => $domain_name,
-            'url' => $page_url
-        ), true);
-
-        if (!empty($same_url)) {
-            foreach ($same_url as $page) {
-                if ($page['id'] != $id) {
-                    throw new waException(_ws('Specified URL already exists.'));
-                }
-            }
-        }
+        $this->checkSimilarPages($id, $domain, $route, $data, $page, $parent);
 
         $page_url = str_replace('*', '', $route) . $page_url;
         $domain_routes = wa()->getRouting()->getRoutes($domain);
@@ -473,6 +501,64 @@ class waPageActions extends waActions
         if ($route !== ifempty($rule_for_url['url'])) {
             throw new waException(_ws('Page URL is in conflict with the website structure.'));
         }
+    }
+
+    protected function checkSimilarPages($id, $domain, $route, $data, $page, $parent)
+    {
+        $page_model = $this->getPageModel();
+        $domain_field = $page_model->getDomainField();
+        if ($domain_field == 'domain_id') {
+            if (!empty($data['domain_id'])) {
+                $domain_name = $data['domain_id'];
+            } elseif (!empty($page['domain_id'])) {
+                $domain_name = $page['domain_id'];
+            } elseif (!empty($parent['domain_id'])) {
+                $domain_name = $parent['domain_id'];
+            }
+        } else {
+            $domain_name = $domain;
+        }
+
+        $full_url = '';
+        if (!empty($parent['full_url'])) {
+            if (substr($parent['full_url'], -1) == '/') {
+                $full_url = $parent['full_url'];
+            } else {
+                $full_url = $parent['full_url'] . '/';
+            }
+        }
+        $full_url .= $data['url'];
+
+        $blacklist_url = $this->getBlacklistUrl();
+        foreach ($blacklist_url as $url) {
+            if ($full_url === $url) {
+                throw new waException(_ws('Page URL is in conflict with the website structure.'));
+            }
+        }
+
+        $similar_pages = $page_model->getByField(array(
+            $domain_field => $domain_name,
+            'route' => $route,
+            'full_url' => $full_url,
+        ), true);
+
+        if (!empty($similar_pages)) {
+            foreach ($similar_pages as $similar_page) {
+                if ($similar_page['id'] != $id) {
+                    if (empty($similar_page['url']) && !empty($similar_page['parent_id'])) {
+                        $error_message = _ws('This page has sub-pages with empty addresses.');
+                    } else {
+                        $error_message = _ws('Specified URL already exists.');
+                    }
+                    throw new waException($error_message);
+                }
+            }
+        }
+    }
+
+    protected function getBlacklistUrl()
+    {
+        return array();
     }
 
     public function getPageChilds($id)
@@ -715,6 +801,22 @@ class waPageActions extends waActions
     protected function getView()
     {
         return wa('webasyst')->getView();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getLegacyTemplateDir()
+    {
+        return $this->getConfig()->getRootPath().'/wa-system/page/templates-legacy/';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getTemplateDir()
+    {
+        return $this->getConfig()->getRootPath().'/wa-system/page/templates/';
     }
 
 }

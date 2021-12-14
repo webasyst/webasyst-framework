@@ -1,0 +1,178 @@
+{$_title = "Цвета и градиенты"}
+{$wa->title($_title)}
+
+<h1>{$_title}</h1>
+
+{function name="_render" class=""}
+html {
+    --accent-color:        #1a9afe;
+    --accent-color-hover:  #05e;
+}
+{/function}
+
+{$gradients = [
+    ['start' => '#FF248B', 'end' => '#FF5900'],
+    ['start' => '#FFA629', 'end' => '#FF743D'],
+    ['start' => '#E6CF00', 'end' => '#F5A300'],
+    ['start' => '#E0E000', 'end' => '#99CC00'],
+    ['start' => '#28F500', 'end' => '#88CC00'],
+    ['start' => '#42F642', 'end' => '#00D66B'],
+    ['start' => '#00FA7D', 'end' => '#00CCAA'],
+    ['start' => '#00F0F0', 'end' => '#00BBFA'],
+    ['start' => '#57C7FF', 'end' => '#668CFF'],
+    ['start' => '#B18AFF', 'end' => '#4C6AFF'],
+    ['start' => '#E252FF', 'end' => '#A05CFF'],
+    ['start' => '#F370FF', 'end' => '#F23DA7'],
+    ['start' => '#C4C4C4', 'end' => '#808080'],
+    ['start' => '#FF0F80', 'end' => '#CC4700'],
+    ['start' => '#F58F00', 'end' => '#FA4700'],
+    ['start' => '#DBC500', 'end' => '#C78500'],
+    ['start' => '#CCCC00', 'end' => '#7EA800'],
+    ['start' => '#24DB00', 'end' => '#669900'],
+    ['start' => '#0BDF0B', 'end' => '#00994C'],
+    ['start' => '#00EB75', 'end' => '#00A88C'],
+    ['start' => '#00D6D6', 'end' => '#0091C2'],
+    ['start' => '#05ACFF', 'end' => '#1F57FF'],
+    ['start' => '#8B52FF', 'end' => '#1E42F5'],
+    ['start' => '#D91AFF', 'end' => '#6A00FF'],
+    ['start' => '#EE2EFF', 'end' => '#BF0D75'],
+    ['start' => '#999999', 'end' => '#545454'],
+    ['start' => '#DB0067', 'end' => '#993500'],
+    ['start' => '#DB8000', 'end' => '#C73800'],
+    ['start' => '#A89700', 'end' => '#8A5C00'],
+    ['start' => '#A3A300', 'end' => '#547000'],
+    ['start' => '#1FBD00', 'end' => '#4E7500'],
+    ['start' => '#09B909', 'end' => '#00753B'],
+    ['start' => '#00B359', 'end' => '#006B59'],
+    ['start' => '#00ADAD', 'end' => '#006B8F'],
+    ['start' => '#008BD1', 'end' => '#0029A3'],
+    ['start' => '#793EEF', 'end' => '#0724B0'],
+    ['start' => '#A600C7', 'end' => '#4A00B3'],
+    ['start' => '#B600C7', 'end' => '#690740'],
+    ['start' => '#757575', 'end' => '#333333'],
+    ['start' => '#A3004D', 'end' => '#5C2000'],
+    ['start' => '#995900', 'end' => '#8A2700'],
+    ['start' => '#706500', 'end' => '#473000'],
+    ['start' => '#707000', 'end' => '#2E3D00'],
+    ['start' => '#147A00', 'end' => '#334D00'],
+    ['start' => '#067E06', 'end' => '#004D26'],
+    ['start' => '#007A3D', 'end' => '#003D33'],
+    ['start' => '#006080', 'end' => '#003838'],
+    ['start' => '#00527A', 'end' => '#001452'],
+    ['start' => '#4000C2', 'end' => '#000E52'],
+    ['start' => '#73008A', 'end' => '#280061'],
+    ['start' => '#670070', 'end' => '#30031D'],
+    ['start' => '#5E5E5E', 'end' => '#171717'],
+    ['start' => '#520026', 'end' => '#1A0900'],
+    ['start' => '#523000', 'end' => '#1F0900'],
+    ['start' => '#474000', 'end' => '#140E00'],
+    ['start' => '#474700', 'end' => '#0F1400'],
+    ['start' => '#0C4700', 'end' => '#0E1400'],
+    ['start' => '#044904', 'end' => '#00140A'],
+    ['start' => '#004221', 'end' => '#001411'],
+    ['start' => '#00394D', 'end' => '#000F0F'],
+    ['start' => '#003652', 'end' => '#00061A'],
+    ['start' => '#23006B', 'end' => '#000624'],
+    ['start' => '#440052', 'end' => '#110029'],
+    ['start' => '#410047', 'end' => '#18020F'],
+    ['start' => '#383838', 'end' => '#0F0F0F']
+]}
+
+<p>Базовые цвета для использования в интерфейсе приложения:</p>
+
+{$colors = [
+    'red',
+    'green',
+    'blue',
+    'yellow',
+    'orange',
+    'purple',
+    'brown',
+    'pink',
+    'white',
+    'black',
+    'gray',
+    'light-gray',
+    'dark-gray'
+]}
+
+<div class="ui-color-table">
+    {foreach $colors as $c}
+        <div class="ui-color">
+            <div class="ui-color-box" style="background: var(--{$c});"></div>
+            <span class="ui-color-name">{$c}</span>
+        </div>
+    {/foreach}
+</div>
+
+<p>Все вышеперечисленные цвета доступны для использовании в CSS в виде <code>var(--<b>COLOR</b>)</code>. Например, <code style="background: var(--purple); color: var(--white);">background: var(--purple); color: var(--white);</code>.</p>
+
+<h3>var(<code>--accent-color</code>)</h3>
+
+<p>CSS-переменные <code>var(--accent-color)</code> и <code>var(--accent-color-hover)</code> задают цвет выделения. Например, цвет выбранного пункта в списке, цвет чекбокса и т.д.</p>
+<p>По умолчанию это синий цвет: <span class="icon"><i class="rounded" style="background: var(--accent-color);"></i></span> </p>
+<p>Допускается переопределение цвета выделения на уровне приложения. Устанавливайте свои цвета в CSS приложения, переопределив значение переменных <code>var(--accent-color)</code> и <code>var(--accent-color-hover)</code>, если это помогает сделать интерфейс визуально более выразительным.</p>
+
+<div class="line">
+    <pre class="prettyprint">{_render|escape}</pre>
+</div>
+
+<h3>Градиенты</h3>
+
+<p>В Webasyst 2 градиенты используются повсеместно. В особенности в компонентах, которые требуют повышенного внимания и должны быть заметнее других компонентов в интерфейсе: кнопки, уведомления, логотип компании, иконки приложений, баннеры, уведомления и т.д.</p>
+
+<p>Базовые рекомендации по параметрам градиентов:</p>
+
+<ul>
+    <li>Только два цвета, близко расположенных на цветом круге.</li>
+    <li>Не блеклые, довольно насыщенные, но не ядовитые цвета.</li>
+    <li>Линейный тип градиента.</li>
+    <li>Наклон 0˚ или 45˚, со светлым цветом слева или в левом верхнем углу.</li>
+    <li>Помните, что градиент будет отображаться и в светлом, и в темном режимах.</li>
+</ul>
+
+<p>Рекомендуемый набор градиентов почти на все случаи жизни (нажмите, чтобы получить CSS):</p>
+
+<div class="ui-gradient-table">
+    {foreach $gradients as $g}
+        <div class="ui-gradient-box" style="background: linear-gradient(90deg, {$g.start} 0%, {$g.end} 100%);" data-attr-color-start="{$g.start}" data-attr-color-end="{$g.end}"></div>
+    {/foreach}
+</div>
+
+<style>
+
+    .ui-color-table { display: flex; width: 100%; flex-wrap: wrap; }
+    .ui-color { flex: 1 0 2.5rem; text-align: center; margin-right: 0.75rem; margin-bottom: 0.75rem; line-height: 0.75; }
+    .ui-color-box { width: 2.5rem; height: 2.5rem; margin: 0 auto 0.25rem; border-radius: 0.25rem; cursor: pointer; border: 1px solid var(--border-color-soft); }
+    .ui-color-name { font-size: 0.675rem; }
+
+    .ui-gradient-table { display: flex; width: 100%; flex-wrap: wrap; }
+    .ui-gradient-box { flex: 1 0 5.5%; width: 3rem; height: 3rem; margin-right: 1rem; margin-bottom: 1rem; border-radius: 0.25rem; cursor: pointer; }
+
+    @media screen and (max-width: 960px) and (min-width: 561px) {
+        .ui-gradient-box { flex: 1 0 13%; height: 4rem; }
+        .ui-color { flex: 1 0 4rem; }
+    }
+    @media screen and (max-width: 560px) {
+        .ui-gradient-box { flex: 1 0 20%; height: 4rem; }
+        .ui-color { flex: 1 0 4rem; }
+    }
+
+</style>
+
+<script>
+
+    $.wa_ui.title.set({$_title|json_encode});
+
+    $('.ui-gradient-box').click(function(){
+
+        var dialog_html = "<div class=\"dialog\" id=\"\"> <div class=\"dialog-background\"><\/div> <div class=\"dialog-body\"> <a href=\"#\" class=\"dialog-close js-close-dialog\"><i class=\"fas fa-times\"><\/i><\/a> <header class=\"dialog-header\"><h1>" + $(this).attr('data-attr-color-start') + " &rarr; " + $(this).attr('data-attr-color-end') + "<\/h1><\/header> <div class=\"dialog-content\"><textarea class=\"full-width\" style=\"height: 4rem;\">" + $(this).attr('style') + "</textarea><\/div> <\/div> <\/div> ";
+
+        var dialog = $.waDialog({
+                html: dialog_html
+            });
+
+        return false;
+
+    });
+</script>

@@ -35,6 +35,29 @@ class teamAccessSaveActions extends waJsonActions
     {
         $this->contact['is_user'] = -1;
         $this->saveContact();
+
+        $reason = $this->getRequest()->post('text', '', waRequest::TYPE_STRING_TRIM);
+
+        $log_model = new waLogModel();
+        $log_item = $log_model->select('*')->where(
+            "subject_contact_id = i:id AND action = 'access_disable'",
+            array('id' => $this->contact['id'])
+        )->order('id DESC')->limit(1)->fetch();
+
+        if ($log_item && strlen($reason) > 0) {
+            $log_item_params = [];
+            if ($log_item['params']) {
+                $log_item_params = json_decode($log_item['params'], true);
+                if (!is_array($log_item_params)) {
+                    $log_item_params = [];
+                }
+            }
+            $log_item_params['reason'] = $reason;
+            $log_model->updateById($log_item['id'], [
+                'params' => json_encode($log_item_params)
+            ]);
+        }
+
         $this->response = array(
             'access_disable_msg' => teamProfileAccessAction::getAccessDisableMsg($this->contact),
         );
@@ -63,6 +86,11 @@ class teamAccessSaveActions extends waJsonActions
             $this->contact['login'] = $login;
             $this->contact['password'] = $password;
             $this->saveContact();
+
+            // set rights right away
+            if ($this->getRequest()->post('set_rights')) {
+                $this->rightsAction();
+            }
         }
     }
 
@@ -153,6 +181,10 @@ class teamAccessSaveActions extends waJsonActions
             $this->errors[] = _w('Passwords do not match.');
             return null;
         }
+        if (strlen($password) > waAuth::PASSWORD_MAX_LENGTH) {
+            $this->errors[] = _w('Specified password is too long.');
+            return null;
+        }
         return $password;
     }
 
@@ -229,13 +261,28 @@ class teamAccessSaveActions extends waJsonActions
             }
         }
 
+        // Rights inherited from groups
+        $group_rights = [];
+        if ($this->id > 0) {
+            // Groups of a user
+            $user_groups_model = new waUserGroupsModel();
+            $group_ids = $user_groups_model->getGroupIds($this->id);
+            $group_ids = array_map(wa_lambda('$a', 'return -$a;'), $group_ids);
+            if (!empty($group_ids)) {
+                $group_rights = $right_model->get($group_ids, $app_id, null, false);
+            }
+        }
+
         // Update $app_id access records
         foreach ($values as $name => $value) {
             if ($right_config && $right_config->setRights($this->id, $name, $value)) {
                 // If we've got response from custom rights config, then no need to update main rights table
                 continue;
             }
-
+            if ($value === ifset($group_rights[$name])) {
+                // If right level equals inherited from groups, then no need to save it
+                $value = 0;
+            }
             $right_model->save($this->id, $app_id, $name, $value);
         }
 

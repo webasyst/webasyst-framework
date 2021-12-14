@@ -1,0 +1,115 @@
+{* Announcements *}
+{function name="_renderAnnouncement" _app_id="" _texts=[]}
+    {strip}
+        <a href="#" rel="{$_app_id}" class="wa-announcement-close" title="close">&times;</a>
+        <p>
+            {implode('<br />', $_texts)}
+        </p>
+    {/strip}
+{/function}
+{* Header item *}
+{strip}
+{function name="_renderHeaderItem" _id="" _info=[]}
+    {* Build item url *}
+        {* pseudo-app *}
+        {if !empty($_info.app_id) && !empty($_info.link)}
+            {$_item_url = "`$backend_url``$_info.app_id`/`$_info.link`/"}
+        {* real app *}
+        {else}
+            {$_item_url = "`$backend_url``$_id`/"}
+        {/if}
+    {* Version *}
+    {if !empty($_info.version)}
+        {$_version = "?v=`$_info.version|escape`"}
+    {else}
+        {$_version = null}
+    {/if}
+
+    <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($request_uri, $_item_url) !== false} class="selected"{/if}>
+        {* Build app icon count *}
+        {$_count = null}
+        {if $counts && isset($counts[$_id])}
+            {if is_array($counts[$_id])}
+                {$_item_url = $counts[$_id]['url']}
+                {$_count = $counts[$_id]['count']}
+            {else}
+                {$_count = $counts[$_id]}
+            {/if}
+        {/if}
+        <a href="{$_item_url}" class="tooltip bottom" data-title="{$_info.name|ifempty}">
+            {if isset($_info.img)}
+                <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{$_info.img}{$_version}" alt="">
+            {/if}
+            <span>{$_info.name|ifempty}</span>
+            {if $_count}
+                <span class="badge">{$_count}</span>
+            {/if}
+        </a>
+    </li>
+{/function}
+{/strip}
+{strip}
+{* @event backend_header *}
+{* $return[%app_id%]['header_top'] *}
+{if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
+<script type="text/javascript">var backend_url = "{$backend_url}";</script>
+{if !empty($include_wa_push)}
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
+{/if}
+
+{* Announcements *}
+{if !empty($announcements)}
+    <div id="wa-announcement">
+        {foreach $announcements as $_app_id => $_texts}
+            {_renderAnnouncement _app_id=$_app_id _texts=$_texts}
+        {/foreach}
+    </div>
+{/if}
+<div id="wa-header">
+    {* Account name *}
+    <div id="wa-account">
+        <a href="{$backend_url}" class="wa-dashboard-link">
+            <h3 title="{$company_name}">{$company_name|truncate:1:''}</h3>
+        </a>
+    </div>
+
+    {* App list *}
+    <div id="wa-applist"{if is_array($counts)} class="counts-cached"{/if}>
+        {strip}
+        <ul>
+            {foreach $header_items as $_id => $_info}
+                {_renderHeaderItem _id=$_id _info=$_info}
+            {/foreach}
+            <li>
+                <a href="#" id="wa-moreapps"></a>
+            </li>
+            <li id="wa-mobile-hamburger"><a href="#"><i class="fas fa-chevron-down"></i></a></li>
+        </ul>
+        {/strip}
+
+        {if $request_uri == $backend_url || $request_uri == "`$backend_url`/"}
+            <div class="d-dashboard-header-content">
+                <div class="d-dashboards-list-wrapper" id="d-dashboards-list-wrapper"></div>
+                <div class="d-dashboard-link-wrapper" id="d-dashboard-link-wrapper">
+                    <i class="icon10 lock-bw"></i> [s`Only you can see this dashboard.`]
+                </div>
+            </div>
+        {/if}
+    </div>
+
+    {* Current user *}
+    <div id="wa-usercorner" data-user-id="{$user['id']}">
+        <a href="{$backend_url}?module=profile">
+            <img src="{$user->getPhoto(96)}" alt="" class="wa-userpic" />
+        </a>
+    </div>
+
+</div>
+<script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header-legacy.js?{$wa_version}"{if !$user['timezone']} data-determine-timezone="1"{/if}></script>
+{* @event backend_header *}
+{* $return[%app_id%] *}
+{if !empty($header_middle)}{foreach $header_middle as $_}{$_}{/foreach}{/if}
+{* @event backend_header *}
+{* $return[%app_id%]['header_bottom'] *}
+{if !empty($header_bottom)}{foreach $header_bottom as $_}{$_}{/foreach}{/if}
+{/strip}

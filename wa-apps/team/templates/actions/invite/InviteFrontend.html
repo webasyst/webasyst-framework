@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>[`Sign up as a new user`]</title>
+    <link href="{$wa_url}wa-content/css/wa/wa-1.3.css?{$wa->version(true)}" rel="stylesheet">
+    <link href="{$wa_app_static_url}css/invite.css?{$wa->version()}" rel="stylesheet">
+    {$wa->css()}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js?{$wa->version(true)}"></script>
+    <script src="{$wa_app_static_url}js/invite.js?{$wa->version()}"></script>
+    {$wa->js()}
+</head>
+<body>
+
+{$_background_url = ''}
+{if $background}
+    {$_background_url = "`$wa_url``$background|ltrim:'/'`"}
+{/if}
+
+<div class="t-invite-page" id="t-invite-page"{if $background} style="background-image:url('{$_background_url}');{if !$stretch}background-size:auto;{/if}"{/if}>
+    <div class="t-invite-block">
+
+        {* Conflict: backend user already bound *}
+        {$_webasyst_id_contact_already_bound = $webasyst_id_auth_result && !$webasyst_id_auth_result.status && $webasyst_id_auth_result.details.error_code === 'already_bound'}
+        {if $_webasyst_id_contact_already_bound}
+            {include file="./webasyst_contact_info.inc.html" webasyst_contact_info=$webasyst_id_auth_result.details.webasyst_contact_info|default:[]}
+        {/if}
+
+        <form action="{$token_link}" method="post">
+            <h1{if !empty($title_style)} style="{$title_style}"{/if}>{$title|escape}</h1>
+            <p>[`Please specify login and password to create new backend user.`]</p>
+            <div class="t-fields">
+                <div class="field">
+                    <div class="name">[`Login`]:</div>
+                    <div class="value">
+                        <input type="text" name="data[login]" value="{$data.login|escape}">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`Password`]:</div>
+                    <div class="value">
+                        <input type="password" name="data[password]">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`Password (again)`]:</div>
+                    <div class="value">
+                        <input type="password" name="data[password_confirm]">
+                    </div>
+                </div>
+            </div>
+
+            <div class="t-actions">
+                <input type="submit" class="button green" value="[`Save and proceed`]">
+            </div>
+
+
+            {if $webasyst_id_auth_url}
+                <div class="waid-login">
+                    <span class="separator">[`or`]</span>
+
+                    {capture name='webasyst_logo_html'}&nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span>{/capture}
+
+                    <a href="{$webasyst_id_auth_url}{if $_webasyst_id_contact_already_bound}&change_user=1{/if}" class="waid-auth-link js-webasyst-auth-link">{sprintf(_w('Sign in with %s'), $smarty.capture.webasyst_logo_html)}</a>
+                    <a href="#" class="hint js-waid-hint">[`What is it?`]</a>
+                </div>
+            {/if}
+
+        </form>
+    </div>
+</div>
+
+<script>jQuery(function($){
+    new InvitePage({
+        $wrapper: $("#t-invite-page"),
+        backend_url: {$backend_url|json_encode},
+        errors: {$errors|json_encode}
+    });
+});</script>
+
+</body>
+</html>

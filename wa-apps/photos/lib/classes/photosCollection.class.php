@@ -8,6 +8,7 @@ class photosCollection
     protected $frontend_base_url;
     protected $frontend_rights_user;
     protected $where;
+    protected $fields = [];
     protected $order_by = 'p.upload_datetime DESC,p.id';
     protected $joins;
     protected $join_index = array();
@@ -88,7 +89,7 @@ class photosCollection
     {
         $photo_model = $this->getModel();
         if ($fields == '*') {
-            return 'p.*';
+            return 'p.*'.($this->fields ? ",".implode(",", $this->fields) : '');
         }
 
         $required_fields = array('id' => 'p', 'ext' => 'p', 'hash' => 'p', 'status' => 'p'); // field => table, to be added later in any case
@@ -123,6 +124,14 @@ class photosCollection
         foreach ($required_fields as $field => $table) {
             $fields[] = ($table ? $table."." : '').$field;
         }
+
+        if ($this->fields) {
+            foreach (array_unique($this->fields) as $f) {
+                $fields[] = $f;
+            }
+        }
+
+        $fields = array_unique($fields);
 
         return implode(",", $fields);
     }
@@ -371,6 +380,7 @@ class photosCollection
             );
             $this->where[] = "ap.album_id = ".(int)$id;
             $this->order_by = 'ap.sort ASC';
+            $this->fields['order_by'] = 'ap.sort';
         }
     }
 
@@ -395,7 +405,7 @@ class photosCollection
             $this->tagPrepareIntersection($id);
         } else {
             $this->where[] = "pt.tag_id = ".(int)$id;
-            $this->addTitle( sprintf( _w('Tagged “%s”'), $tag['name'] ) );
+            $this->addTitle( sprintf( _w('Tagged “%s”'), $tag ? $tag['name'] : $id ) );
         }
     }
 
@@ -565,18 +575,36 @@ class photosCollection
 
     /**
      * @param string $hash
-     * @param boolean $check_album
+     * @param array $options
+     *      - bool $options['check_album'] [optional]. Default is TRUE
+                IF $options['check_album'] === TRUE, options will be passed to photosFrontendAlbum::getLink
+     *
+     * @see photosFrontendAlbum::getLink
+     *
      * @return string
+     * @throws waException
      */
-    public static function getFrontendLink($hash = '', $check_album = true)
+    public static function getFrontendLink($hash = '', $options = [])
     {
+        // legacy workaround when second argument was boolean $check_album
+        $check_album = true;
+        if (!is_array($options)) {
+            $check_album = (bool)$options;
+        } else {
+            if (array_key_exists('check_album', $options)) {
+                $check_album = (bool)ifset($options['check_album']);
+            }
+        }
+
         if ($check_album) {
             $url = self::frontendAlbumHashToUrl($hash);
             if (strlen($url)) {
-                $link = photosFrontendAlbum::getLink($url);
-                return $link;
+                $link_options = $options;
+                unset($link_options['check_album']);
+                return photosFrontendAlbum::getLink($url, $link_options);
             }
         }
+
         // another type of collection
         if (substr($hash, 0, 1) == '#') {
             $hash = substr($hash, 1);
@@ -719,7 +747,7 @@ class photosCollection
                                         break;
                                     case 'middle':
                                         $size = photosPhoto::getMiddlePhotoSize();
-                                        break;;
+                                        break;
                                     case 'big':
                                         $size = photosPhoto::getBigPhotoSize();
                                         break;

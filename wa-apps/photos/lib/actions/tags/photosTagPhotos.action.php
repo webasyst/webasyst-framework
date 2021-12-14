@@ -48,7 +48,7 @@ class photosTagPhotosAction extends waViewAction
         $this->view->assign('photos', $photos);
         $this->view->assign('big_size', $config->getSize('big'));
         $this->view->assign('sort_method', 'upload_datetime');
-        
-        $this->template = 'templates/actions/photo/PhotoList.html';
+
+        $this->setTemplate('photo/PhotoList.html', true);
     }
 }

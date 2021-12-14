@@ -6,6 +6,7 @@ class teamScheduleDayAction extends teamCalendarAction
     {
         $date = waRequest::post('date', null, waRequest::TYPE_STRING_TRIM);
         $ids = waRequest::post('id', array(), waRequest::TYPE_ARRAY_TRIM);
+        $selected_user_id = waRequest::post('selected_user_id', null, waRequest::TYPE_INT);
 
         $cem = new waContactEventsModel();
 
@@ -29,6 +30,9 @@ class teamScheduleDayAction extends teamCalendarAction
             if ($u['birthday'] < $day || $u['birthday'] > $day) {
                 continue;
             } else {
+                if($selected_user_id && $selected_user_id != $id) {
+                    continue;
+                }
                 $events['birthday'.$id] = array(
                     'id'          => null,
                     'calendar_id' => 'birthday',
@@ -42,12 +46,17 @@ class teamScheduleDayAction extends teamCalendarAction
                     'is_allday'   => 1,
                     'is_status'   => null,
                 );
+                if (wa('team')->whichUi('team')) {
+                    $events['birthday'.$id]['bg_color'] = '#e43a89';
+                    $events['birthday'.$id]['font_color'] = '#ffffff';
+                    $events['birthday'.$id]['icon'] = 'fas fa-birthday-cake';
+                }
             }
         }
 
         /*
         $day = array(
-            "month_name" => _w("Август"),
+            "month_name" => "Август",
             "number" => 4
         );
 

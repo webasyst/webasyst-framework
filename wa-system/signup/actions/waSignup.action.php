@@ -215,8 +215,7 @@ class waSignupAction extends waViewAction
             return;
         }
 
-        // Email is now confirmed
-        $cem->updateById($email_row['id'], array('status' => waContactEmailsModel::STATUS_CONFIRMED));
+        $already_had_password = (bool)$contact['password'];
 
         // For some reasons can't signup contact
         if (!$this->trySignupContact($contact)) {
@@ -224,13 +223,30 @@ class waSignupAction extends waViewAction
             return;
         }
 
-        // send sign up notification
+        // And of course confirm email
+        $cem->updateById($email_row['id'], array('status' => waContactEmailsModel::STATUS_CONFIRMED));
+
+        // need to send notification about successful ending of signup process
         if ($this->auth_config->getSignUpNotify()) {
-            $addresses = array(
-                'email' => $validated_email,
-                'phone' => $contact->get('phone', 'default')
-            );
-            $this->sendSignupNotify($addresses);
+
+            // send notification only if phone is not confirmed, which is indication that we now in ending of signup process
+            // otherwise signup process had been ended when phone has been confirmed (so notification has been send by SMS)
+
+            // If phone is confirmed then contact was signed up already in past (password for sure already exists cause of previous check in code)
+            $phones = $contact->get('phone');
+            $phone = isset($phones[0]) ? $phones[0] : null;
+            $phone_is_confirmed = $phone && $phone['status'] === waContactDataModel::STATUS_CONFIRMED;
+
+            if (!$phone_is_confirmed) {
+                $addresses = array(
+                    'email' => $validated_email,
+                    'phone' => $contact->get('phone', 'default')
+                );
+
+                $this->sendSignupNotify($addresses, [
+                    'force_no_password' => $already_had_password    // not event try send password in notification if contact already had password in past
+                ]);
+            }
         }
 
         $this->redirectToEmailConfirmedPage();
@@ -363,7 +379,7 @@ class waSignupAction extends waViewAction
                 $ignore_url = is_string($ignore_url) ? $ignore_url : '';
 
                 // if referer "looks like" ignorable url
-                if (strpos($referer, $ignore_url) !== false || strpos($ignore_url, $referer) !== false) {
+                if (!is_null($referer) && (strpos($referer, $ignore_url) !== false || strpos($ignore_url, $referer) !== false)) {
                     // Suck url not consider as referer
                     $referer = null;
                 }
@@ -376,33 +392,43 @@ class waSignupAction extends waViewAction
     }
 
     /**
+     * Generate password and returns, if password already generated returns it right away
+     * @param bool $extended - use extended alphabet or not. This argument applicable only of first call, other calls of course doesn't use this argument
      * @return string
      */
-    protected function getGeneratePassword()
+    protected function getGeneratedPassword($extended = true)
     {
         if (!$this->generated_password) {
-            $this->generated_password = waContact::generatePassword();
+            $len = 11;
+            if (!$extended) {
+                $len = 13;  // lag of diversity compensate with greater length of password
+            }
+            $this->generated_password = waContact::generatePassword($len, $extended);
         }
+
         return $this->generated_password;
     }
 
     /**
      * Send notification about successful signing up to first working address in list
-     *
-     * IMPORTANT: Send also generated password in proper mode ( waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD )
+     * Send also generated password in waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD mode unless $options['force_no_password'] is TRUE
      *
      * @param $addresses array of addresses where we can sent notification indexed by field id ('email', 'phone')
-     *
-     *
-     * @param null|string $priority waVerificationChannelModel::TYPE_* const
+     * @param array $options
+     *      - null|string   $options['priority'] waVerificationChannelModel::TYPE_* const
+     *      - bool          $options['force_no_password'] - if TRUE then in notification will not have password no matter what
+     *                          Default is FALSE
      * @return array(0 => <status>, 1 => <details>)
      * @throws waException
      */
-    protected function sendSignupNotify($addresses, $priority = null)
+    protected function sendSignupNotify($addresses, array $options = [])
     {
         if (!$this->auth_config->getSignUpNotify()) {
             return array(false, array());
         }
+
+        $priority = isset($options['priority']) ? $options['priority'] : null;
+        $force_no_password = !empty($options['force_no_password']);
 
         $generated_password_auth_type = $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD;
 
@@ -422,17 +448,23 @@ class waSignupAction extends waViewAction
                 'site_name' => $this->auth_config->getSiteName(),
                 'login_url' => $this->auth_config->getLoginUrl(array(), true)
             );
-            if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD) {
-                $options['password'] = $this->getGeneratePassword();
-            }
 
             if ($channel->isEmail() && !empty($addresses['email'])) {
                 $address = $addresses['email'];
+
+                if ($generated_password_auth_type && !$force_no_password) {
+                    $options['password'] = $this->getGeneratedPassword();
+                }
+
                 $sent = $channel->sendSignUpSuccessNotification($address, $options);
             } elseif ($channel->isSMS() && !empty($addresses['phone'])) {
 
                 $phone = $addresses['phone'];
                 $is_international = substr($phone, 0, 1) === '+';
+
+                if ($generated_password_auth_type && !$force_no_password) {
+                    $options['password'] = $this->getGeneratedPassword(false);
+                }
 
                 $sent = $channel->sendSignUpSuccessNotification($phone, $options);
 
@@ -621,7 +653,9 @@ class waSignupAction extends waViewAction
         }
 
         // diagnostic already printed inside
-        list($notify_sent, $notify_details) = $this->sendSignupNotify($data, $priority);
+        list($notify_sent, $notify_details) = $this->sendSignupNotify($data, [
+            'priority' => $priority
+        ]);
 
         // IMPORTANT detail
         // Through 'assign' we inform ALSO signup & login forms
@@ -875,17 +909,22 @@ class waSignupAction extends waViewAction
         // See below onetime_password validation
         if ($this->auth_config->getField('password') && !$onetime_password_need) {
 
-            // check required
-            if (!isset($errors['password']) && !$data['password']) {
-                $errors['password'] = array();
-                $errors['password_confirm']['required'] = _ws('Password can not be empty.');
-            }
-
-            // check passwords
-            if (!isset($errors['password']) && $data['password'] !== $data['password_confirm']) {
-                $errors['password'] = (array)ifset($errors['password']);
-                $errors['password_confirm'] = (array)ifset($errors['password_confirm']);
-                $errors['password_confirm']['not_match'] = _ws('Passwords do not match');
+            if (!isset($errors['password'])) {
+                if (!$data['password']) {
+                    // check required
+                    $errors['password'] = array();
+                    $errors['password_confirm']['required'] = _ws('A password cannot be empty.');
+                } elseif ($data['password'] !== $data['password_confirm']) {
+                    // check passwords match
+                    $errors['password'] = (array)ifset($errors['password']);
+                    $errors['password_confirm'] = (array)ifset($errors['password_confirm']);
+                    $errors['password_confirm']['not_match'] = _ws('Passwords do not match');
+                } elseif (strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
+                    // check passwords length
+                    $errors['password'] = (array)ifset($errors['password']);
+                    $errors['password_confirm'] = (array)ifset($errors['password_confirm']);
+                    $errors['password_confirm']['too_long'] = _ws('Specified password is too long.');
+                }
             }
 
         }
@@ -900,7 +939,7 @@ class waSignupAction extends waViewAction
 
         // check captcha
         if ($this->auth_config->getSignUpCaptcha()) {
-            if (!wa()->getCaptcha()->isValid()) {
+            if (!wa()->getCaptcha(['app_id' => $this->auth_config->getApp()])->isValid()) {
                 $errors['captcha'] = _ws('Invalid captcha');
             }
         }
@@ -1207,6 +1246,18 @@ class waSignupAction extends waViewAction
         // So try save & sign up client right away
         if (!$need_confirm || $confirm_by_sms) {
 
+            if ($confirm_by_sms) {
+                // If confirmed by SMS, than try generate password on not extended alphabet
+                $this->getGeneratedPassword(false);
+            } elseif (!$need_confirm) {
+                // if confirmation is not required, but sms channel has priority (first in list), than try generate passowrd on not extended alphabet
+                $channels = $this->auth_config->getVerificationChannelInstances();
+                $channel = reset($channels);
+                if ($channel->isSMS()) {
+                    $this->getGeneratedPassword(false);
+                }
+            }
+
             $save_options = array();
             if ($confirm_by_sms) {
                 // to mark that phone is confirmed
@@ -1223,7 +1274,9 @@ class waSignupAction extends waViewAction
             // In UI we will show LOGIN FORM for that user
             $auth_right_away = $this->auth_config->getAuthType() !== waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD;
 
-            if (!$this->trySignupContact($contact, $auth_right_away)) {
+            $is_signed_up = $this->trySignupContact($contact, $auth_right_away);
+
+            if (!$is_signed_up) {
                 // error already logged - so no need log one time again
                 return array(self::SIGNED_UP_STATUS_FAILED, array());
             }
@@ -1239,12 +1292,13 @@ class waSignupAction extends waViewAction
         // phone was transformed?
         $phone_transformed = false;
 
-        $channels = $this->auth_config->getVerificationChannelInstances();
+        $channels = $this->getChannelsForConfirmation();
         $contact = null;
+
+        $errors = [];
 
         foreach ($channels as $channel) {
 
-            // try email first
             if ($channel->isEmail() && !empty($data['email'])) {
 
                 // We might need rollback contact creation when sending link has failed
@@ -1256,6 +1310,7 @@ class waSignupAction extends waViewAction
                 $contact = $this->trySaveContact($data, $errors, array(
                     'creation_hash' => $creation_hash
                 ));
+
                 if ($errors) {
                     break;
                 }
@@ -1283,7 +1338,6 @@ class waSignupAction extends waViewAction
                 }
             }
 
-            // then try sms
             if ($channel->isSMS() && !empty($data['phone'])) {
 
                 list($ok, $details) = $this->sendCode($data['phone']);
@@ -1329,7 +1383,16 @@ class waSignupAction extends waViewAction
             array('line' => __LINE__, 'file' => __FILE__)
         );
 
-        return array(self::SIGNED_UP_STATUS_FAILED, array());
+        return array(self::SIGNED_UP_STATUS_FAILED, $errors);
+    }
+
+    /**
+     * You can in child custom action override it and return for example only one channel possible for confirmation
+     * @return waVerificationChannel[]
+     */
+    protected function getChannelsForConfirmation()
+    {
+        return $this->auth_config->getVerificationChannelInstances();
     }
 
     /**
@@ -1367,7 +1430,7 @@ class waSignupAction extends waViewAction
         // Always generate password if contact hasn't it
         // contact.password must not be empty
         if (!$contact->get('password')) {
-            $password = $this->getGeneratePassword();
+            $password = $this->getGeneratedPassword();
             $contact->save(array('password' => $password));
         }
 
@@ -1384,7 +1447,10 @@ class waSignupAction extends waViewAction
 
         // try auth new contact if needed
         if ($need_auth) {
-            return $this->tryAuthContact($contact);
+            $auth_result = $this->tryAuthContact($contact);
+            if ($auth_result) {
+                $this->afterAuth();
+            }
         }
 
         return true;
@@ -1425,7 +1491,7 @@ class waSignupAction extends waViewAction
         $data_to_save['is_company'] = waRequest::request('contact_type') === 'company' ? 1 : 0;
 
         if (empty($data_to_save['password'])) {
-            $data_to_save['password'] = $this->getGeneratePassword();
+            $data_to_save['password'] = $this->getGeneratedPassword();
         }
 
         if (wa()->getEnv() === 'frontend') {
@@ -1758,6 +1824,14 @@ class waSignupAction extends waViewAction
      * @param waContact $contact
      */
     protected function afterSignup(waContact $contact)
+    {
+
+    }
+
+    /**
+     * After successful auth
+     */
+    protected function afterAuth()
     {
 
     }

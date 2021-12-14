@@ -1,17 +1,13 @@
 <?php
 return array(
     'name'       => 'Team',
-    'icon'       =>
-        array(
-            24 => 'img/team24.png',
-            48 => 'img/team48.png',
-            96 => 'img/team96.png',
-        ),
-    'version'    => '1.0.11',
+    'icon'       => 'img/team.svg',
+    'version'    => '2.0.2',
     'vendor'     => 'webasyst',
     'sash_color' => '#f0dc03',
     'system'     => true,
     'rights'     => true,
     'plugins'    => true,
     'csrf'       => true,
+    'ui'         => '1.3,2.0'
 );

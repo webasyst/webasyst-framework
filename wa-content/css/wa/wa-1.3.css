@@ -100,6 +100,9 @@ a#wa-launchpad-add { float: right; margin-right: 12px; color: #888; text-decorat
 #wa-announcement.critical { background: #fcc; }
 #wa-announcement.critical p { border-color: #caa; }
 #wa-announcement a.wa-announcement-close { float: right; display: inline-block; margin-right: 12px; margin-top: 7px; margin-left: 13px; color: #aa6; text-decoration: none; font-size: 1.6em; }
+#wa-announcement .w-webasyst-id-banner { background: #e2ffdb; }
+#wa-announcement .w-webasyst-id-banner a.wa-announcement-close { color: #71aa64; }
+#wa-announcement .w-webasyst-id-banner .icon16.waid-green { background-image: url("../../img/webasyst-wand-bold.svg"); background-size: 16px 16px; }
 #wa-account { width: 200px; }
 #wa-account { float: left; text-align: center; }
 #wa-account h3 { font-weight: normal; font-size: 16px; text-decoration: none; margin: 15px 0 5px; }
@@ -654,9 +657,10 @@ table.light td.no-border { border: none; }
 /* PAGING: 1 2 3 ... 43 prev next
 -------------------------------------------- */
 .paging { }
-.paging a { padding: 4px 6px; text-decoration: none; }
-.paging a.selected { color: #000; background: #eee; }
-.paging a.selected:hover { color: #000 !important; }
+.paging li { display: inline-block; }
+.paging a, .paging li { padding: 4px 6px; text-decoration: none; }
+.paging a.selected, .paging li.selected { color: #000; background: #eee; }
+.paging a.selected:hover, .paging li.selected:hover { color: #000 !important; }
 .paging a.prevnext { margin-left: 15px; font-weight: bold; }
 
 /* DIALOGs
@@ -749,7 +753,7 @@ table.light td.no-border { border: none; }
 
 /* 16x16
 -------------------------------------------- */
-i.icon16 { background-repeat:no-repeat; background-image: url(../../../wa-content/img/icon16.png?1504); height:16px; width:16px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
+i.icon16 { background-repeat:no-repeat; background-image: url(../../../wa-content/img/icon16.png?1505); height:16px; width:16px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
 * i.icon16 { text-decoration:none!important; vertical-align:top; margin: -0.1em 0.25em 0 0; }
 .heading i.icon16 { vertical-align:top; margin:-0.1em 0.1em 0 -0.5em; }
 .hint i.icon10 { vertical-align:top; margin:0.15em 0.15em 0 0; }
@@ -877,6 +881,7 @@ i.icon16.hidden { display: none; }
 .icon16.google { background-position:-288px -112px; }
 .icon16.linkedin { background-position:-304px -112px; }
 .icon16.telegram { background-position:-320px -112px; }
+.icon16.viber { background-position:-336px -112px; }
 .icon16.vkontakte { background-position:-240px -112px; }
 .icon16.livejournal { background-position:-256px -112px; }
 .icon16.picasa { background-position:-272px -112px; }
@@ -1077,7 +1082,7 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 (-webkit-min-device-pixel-ratio: 2),
 (min-resolution: 192dpi) {
     i.icon10 { background-image: url(../../../wa-content/img/icon10@2x.png?1504); background-size: 120px 50px; }
-    i.icon16 { background-image: url(../../../wa-content/img/icon16@2x.png?1504); background-size: 512px 128px; }
+    i.icon16 { background-image: url(../../../wa-content/img/icon16@2x.png?1505); background-size: 512px 128px; }
     i.icon16.country { background-size: 16px; }
 }
 

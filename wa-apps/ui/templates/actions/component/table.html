@@ -1,0 +1,201 @@
+{$_title = "Таблицы"}
+{$wa->title($_title|json_encode)}
+
+{$_menu = [
+[
+    "name" => "Главная",
+    "url" => "javascript:void(0);",
+    "count" => 1
+],
+[
+    "name" => "Новости",
+    "url" => "javascript:void(0);",
+    "selected" => 1,
+    "count" => 24
+],
+[
+    "name" => "Блог",
+    "url" => "javascript:void(0);",
+    "count" => ""
+],
+[
+    "name" => "Магазин",
+    "url" => "javascript:void(0);",
+    "icon" => "fas fa-store",
+    "count" => "<span class=\"badge yellow\">5</span>"
+],
+[
+    "name" => "Поддержка",
+    "url" => "javascript:void(0);",
+    "count" => 6
+]
+]}
+
+{function name="_render" class=""}
+<table{if !empty($class)} class="{$class}"{/if}>
+    <tr>
+        <th class="min-width"></th>
+        <th><span>Name <i class="fas fa-caret-down"></i></span></th>
+        <th class="align-center">URL</th>
+        <th class="align-right">#</th>
+    </tr>
+{foreach $_menu as $_item}
+    <tr{if !empty($_item.selected)} class="selected"{/if}>
+        <td class="min-width"><input type="checkbox"{if !empty($_item.selected)} checked="checked"{/if}></td>
+        <td>{$_item.name}</td>
+        <td class="align-center">{$_item.url}</td>
+        <td class="align-right">{$_item.count}</td>
+    </tr>
+{/foreach}
+</table>
+{/function}
+
+{function name="_render_sl"}
+<table class="zebra single-lined">
+    <thead>
+        <tr>
+            <th class="min-width"></th>
+            <th><span class="nowrap">Title <i class="fas fa-caret-down"></i></span></th>
+            <th>Description</th>
+            <th class="align-right">Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+{foreach $_menu as $_item}
+        <tr{if !empty($_item.selected)} class="selected"{/if}>
+            <td class="min-width valign-top"><input type="checkbox"{if !empty($_item.selected)} checked="checked"{/if}></td>
+            <td>
+                <div>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    <i class="shortener"></i>
+                </div>
+            </td>
+            <td class="max-width">
+                <div>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    <i class="shortener"></i>
+                </div>
+            </td>
+            <td>
+                <div>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    <i class="shortener"></i>
+                </div>
+            </td>
+        </tr>
+{/foreach}
+    </tbody>
+</table>
+{/function}
+
+{function name="_render_adaptive"}
+<div class="table-scrollable-x">
+    <table class="zebra">
+        <thead>
+            <tr>
+                <th></th>
+                <th><span class="nowrap">Title <i class="fas fa-caret-down"></i></span></th>
+            </tr>
+        </thead>
+
+        <tbody>
+{foreach $_menu as $_item}
+            <tr{if !empty($_item.selected)} class="selected"{/if}>
+                <td class="valign-top"><input type="checkbox"{if !empty($_item.selected)} checked="checked"{/if}></td>
+                <td>
+                    <div class="nowrap">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    </div>
+                </td>
+            </tr>
+{/foreach}
+        </tbody>
+    </table>
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Обычная таблица <code>&lt;table&gt;</code> без дополнительных стилей:</p>
+
+    <div class="line">
+        {_render}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <p>Размер таблицы можно <a href="{$wa_app_url}component/misc/">корректировать</a> с помощью классов <code>table<strong>.smallest</strong></code> — <code>table<strong>.largest</strong></code>:</p>
+
+    <div class="line">
+        {_render class="small"}
+    </div>
+
+    <h3>td</h3>
+
+    <p>Выравнивание контента внутри ячеек регулируется с помощью классов <code>td<strong>.align-left</strong></code> (по умолчанию), <code>td<strong>.align-center</strong></code>, <code>td<strong>.align-right</strong></code> и <code>td<strong>.valign-top</strong></code>, <code>td<strong>.valign-middle</strong></code> (по умолчанию), <code>td<strong>.valign-bottom</strong></code>.</p>
+    <p>Форсированная установка минимальной и максимальной ширины для ячейки — <code>td<strong>.min-width</strong></code> и <code>td<strong>.max-width</strong></code>.</p>
+
+    <h3>tr<code>.selected</code></h3>
+    <p>Если в таблице используются чекбоксы, выбранный ряд рекомендуется выделять с помощью <code>tr<strong>.selected</strong></code>.</p>
+
+    <h3>table<code>.zebra</code></h3>
+    <p>Полосатая таблица <code>table<strong>.zebra</strong></code>.</p>
+    <div class="line">
+        {_render class="zebra"}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="zebra"}</pre>
+    </div>
+
+    <h3>table<code>.bordered</code></h3>
+    <p>Таблица, в которой у каждой ячейки есть явные границы <code>table<strong>.bordered</strong></code>.</p>
+    <div class="line">
+        {_render class="bordered"}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="bordered"}</pre>
+    </div>
+
+    <h3>table<code>.borderless</code></h3>
+    <p>Таблица без визуальных границ у ячеек <code>table<strong>.borderless</strong></code>.</p>
+    <div class="line">
+        {_render class="borderless"}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="borderless"}</pre>
+    </div>
+
+    <h3>table<code>.single-lined</code></h3>
+    <p>Таблица с фиксированной высотой каждой строки и обрезанием внутреннего контента в случае, когда он не помещается, — <code>table<strong>.single-lined</strong></code>. Что-то вроде ellipsis, только с градиентным обрезанием контента.</p>
+
+    <p>Вариант с <code>.single-lined</code> можно совмещать со всеми перечисленными выше вариантами таблиц: <code>.zebra</code>, <code>.bordered</code>, <code>.borderless</code>.</p>
+
+    <div class="line">
+        {_render_sl}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_sl|escape}</pre>
+    </div>
+
+    <h3>Адаптивные таблицы</h3>
+    <p>Для использования адаптивных таблиц оберните таблицу элементом с классом <code>.table-scrollable-x</code>.<br>Таким образом у таблицы получится горизонтальный скролл</p>
+
+    <div class="line">
+        {_render_adaptive}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_adaptive|escape}</pre>
+    </div>
+
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

@@ -8,65 +8,46 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)"
-">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 2.0.6\n"
+"Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: //wa-plugins/shipping/pickup/lib/config/plugin.php:3
 msgid "Store pickup"
 msgstr "Самовывоз"
 
-#: //wa-plugins/shipping/pickup/lib/config/plugin.php:4
-msgid ""
-"Self pickup from a nearby store location (customer selects location from the "
-"list)."
-msgstr ""
-"Самовывоз из ближайшей точки выдачи (список точек доступен в виде списка)."
+msgid "Self pickup from a nearby store location (customer selects location from the list)."
+msgstr "Самовывоз из ближайшей точки выдачи (список точек доступен в виде списка)."
 
-#: //wa-plugins/shipping/pickup/lib/pickupShipping.class.php:88
 msgid "Delivery sheet"
 msgstr "Лист доставки"
 
-#: //wa-plugins/shipping/pickup/lib/pickupShipping.class.php:89
 msgid "Delivery sheet for courier"
 msgstr "Лист доставки для курьера"
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:3
 msgid "Currency"
 msgstr "Валюта"
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:15
 msgid "Locations"
 msgstr "Точки выдачи"
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:17
 msgid "Customer will be prompted to select preferred location from the list"
 msgstr "Покупателю будет предложено выбрать точку выдачи заказа из списка."
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:67
 msgid "Location name"
 msgstr "Название точки выдачи"
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:25
 msgid "Shipping rate (surcharge)"
 msgstr "Стоимость доставки (наценка)"
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:33
 msgid "Add location"
 msgstr "Добавить точку выдачи"
 
-#: //wa-plugins/shipping/pickup/lib/config/settings.php:12
 msgid "Prompt for address"
 msgstr "Запрашивать адрес"
 
-#: //wa-plugins/shipping/pickup/lib/config/settings.php:13
-msgid ""
-"Request customer to fill in all address fields in case shipping address was "
-"not provided yet"
-msgstr ""
-"Просить покупателя ввести адрес доставки, если он еще не был введен до "
-"расчета стоимости доставки"
+msgid "Request customer to fill in all address fields in case shipping address was not provided yet"
+msgstr "Просить покупателя ввести адрес доставки, если он еще не был введен до расчета стоимости доставки"

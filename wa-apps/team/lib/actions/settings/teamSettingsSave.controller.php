@@ -25,7 +25,6 @@ class teamSettingsSaveController extends waJsonController
 
     public function getData()
     {
-        $data = (array) $this->getRequest()->post('data');
-        return $data;
+        return (array)$this->getRequest()->post('data');
     }
 }

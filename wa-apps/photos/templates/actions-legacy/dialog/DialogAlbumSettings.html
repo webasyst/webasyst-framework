@@ -1,0 +1,281 @@
+<div class="dialog width700px height500px" id="album-settings-dialog">
+    <div class="dialog-background"></div>
+    <form method="post" action="?module=album&action=save">
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1>[`Album settings`]</h1>
+                <div class="fields form p-dialog-form">
+
+                    {* @event backend_album_settings.%plugin_id%.top *}
+                    {foreach $backend_album_settings as $plugin_id => $item}
+                        {$item.top|default:''}
+                    {/foreach}
+
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                [`Album name`]
+                            </div>
+                            <div class="value">
+                                <input type="text" name="name" class="large p-full-width-input" value="{$album.name|escape}">
+                                {if $album.type == photosAlbumModel::TYPE_DYNAMIC}
+                                    <i class="icon16 funnel" title="[`Filter`]"></i>
+                                {else}
+                                    <i class="icon16 pictures" title="[`Album`]"></i>
+                                {/if}
+                            </div>
+                        </div>
+                        <div class="field" id="frontend-url-field" {if $album.status <= 0}style="display:none"{/if}>
+                            <div class="name">
+                                [`Frontend URL`]
+                            </div>
+                            <div class="value">
+                                {if isset($album.full_base_url)}
+                                    <span>{if $album.full_base_url}{$album.full_base_url|escape}{/if}</span><input type="text" name="url" value="{$album.url}">/
+                                    <em class="errormsg"></em>
+                                {else}
+                                    <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos.`]</span>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                [`Visibility`]
+                            </div>
+                            <div class="value no-shift">
+                                <label for="access-public">
+                                    <i class="icon10 yes overhanging"></i>
+                                    <input id="access-public" type="radio" {if !empty($parent) && $parent.status <= 0}disabled{else if $album.status == 1}checked{/if} name="status" value="1">
+                                    [`Public`]
+                                    <span class="hint">[`Album is visible in the public gallery`]</span>
+                                </label>
+                            </div>
+                            <div class="value no-shift bottom-padded">
+                                <label for="access-private">
+                                    <i class="icon10 lock-bw overhanging"></i>
+                                    <input id="access-all-groups" type="hidden" name="groups[]" value="0" {if !isset($rights[0])}disabled{/if} >
+                                    <input id="access-private" type="radio" {if $album.status <= 0}checked{/if} name="status" value="0">
+                                    [`Private`]
+                                    <span class="hint">
+                                        [`Album is visible only to authorized users of the Photos app, or by a private link`].
+                                        <a class="inline-link p-privacy-settings-link" href="#"><b><i>[`Privacy settings`]</i></b></a>
+                                    </span>
+                                    <div class="hint p-privacy-settings" {if $album.status == 1 || isset($rights[0])}style="display: none;"{/if}>
+                                        <br><br>
+                                        {if !empty($groups)}
+                                            [`Select user groups you want to have access to this album`]:
+                                            <div class="block">
+                                                {foreach from=$groups item=group key=group_id}
+                                                    <label for="album-group-{$group_id}"><input id="album-group-{$group_id}" name="groups[]" value="{$group_id}" type="checkbox" {if isset($rights[0]) || isset($rights[$group_id])}checked{/if} {if isset($rights[0])}disabled{/if}> <span>{$group.name|escape}</span></label><br>
+                                                {/foreach}
+                                            </div>
+                                            <em>[`Uncheck all groups to make this album visible to you only.`]</em>
+                                        {else}
+                                            <input type="hidden" name="groups[]" value="0" {if isset($rights[0])}disabled{/if} >
+                                            <em>[`There are no user groups in your Webasyst installation. Add groups in the Contacts app to be able to manage access to photos`]</em>
+                                        {/if}
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="value">
+                                <label>
+                                    <input type="checkbox" name="apply_all_photos" value="1">
+                                    <span class="gray" id="apply-all-photos-message">[`Apply visibility change to all photos of this album`] ({$photos_count})</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                <label for="description">
+                                [`Description`]
+                                </label>
+                            </div>
+                            <div class="value no-shift">
+                                <textarea id="description" name="description" rows="10" cols="5">{$album.description|escape}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    {if $album.type == photosAlbumModel::TYPE_DYNAMIC}
+                    <div class="field-group" id="dynamic-field-group">
+                        <div class="field">
+                            <div class="name">
+                                [`Filter`]
+                            </div>
+                            <div class="value no-shift">
+                                <table class="zebra p-smart-album-setup">
+                                    <tbody>
+                                    {if !empty($parent)}
+                                        <tr>
+                                            <td class="min-width" style="vertical-align: top;">
+                                                <input type="checkbox" disabled="disabled" checked="checked">
+                                            </td>
+                                            <td colspan="3">
+                                                {sprintf('[`<strong>%s</strong> album only`]', $parent.name|escape)}
+                                                <p class="hint" style="margin-bottom: 0;">[`Dynamic albums filter photos only from albums they belong to.`]</p>
+                                            </td>
+                                        </tr>
+                                    {/if}
+                                    <tr>
+                                        <td class="min-width">
+                                            <input id="condition-rate" type="checkbox" name="condition[]" value="rate" {if isset($album.conditions.rate)}checked{/if}>
+                                        </td>
+                                        <td>
+                                            <label for="condition-rate">[`Rating`]</label>
+                                        </td>
+                                        <td>
+                                            <select name="rate[]">
+                                                <option value=">=" {if isset($album.conditions.rate[0]) && $album.conditions.rate[0] == '>='}selected{/if}>[`is greater or equal`]</option>
+                                                <option value="<=" {if isset($album.conditions.rate[0]) && $album.conditions.rate[0] == '<='}selected{/if}>[`is lesser or equal`]</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="hidden" id="album-rate-value" name="rate[]" value="{if isset($album.conditions.rate[1])}{$album.conditions.rate[1]}{else}0{/if}">
+                                            <a href="javascript:void(0);" class="p-rate-photo" title="Rate photo" id="album-rate" class="p-rate-photo" data-rate="{if isset($album.conditions.rate[1])}{$album.conditions.rate[1]}{else}0{/if}">
+                                                {section name=r loop=5 start=0 step=1}
+                                                    <i class="icon16 star-empty"></i>
+                                                {/section}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="min-width">
+                                            <input id="condition-tag" type="checkbox" name="condition[]" value="tag" {if isset($album.conditions.tag)}checked{/if}>
+                                        </td>
+                                        <td>
+                                            <label for="condition-tag">[`Tags`]</label>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="block double-padded align-center">
+                                            {foreach $cloud as $tag}
+                                                <label><span class="p-tag" style="font-size: {$tag.size}%;" data-id="{$tag.id}"><input type="checkbox" name="tag[]" value="{$tag.name}" {if isset($tag.checked)}checked{/if}> {$tag.name|escape}</span></label>
+                                            {/foreach}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="min-width">
+                                            <input id="condition-access" type="checkbox" name="condition[]" value="access" {if isset($album.conditions.status)}checked{/if}>
+                                        </td>
+                                        <td>
+                                            <label for="condition-access">[`Access`]</label>
+                                        </td>
+                                        <td>
+                                            <select name="access">
+                                                <option value="public" {if isset($album.conditions.status[1]) && $album.conditions.status[1] == 1}selected{/if}>[`public`]</option>
+                                                <option value="private" {if isset($album.conditions.status[1]) && $album.conditions.status[1] == 0}selected{/if}>[`private`]</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                        </td>
+                                    </tr>
+                                </tbody></table>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[`Order`]</div>
+                            <div class="value no-shift">
+                                <select name="order">
+                                    <option value="">[`uploaded`]</option>
+                                    <option value="rate"{if isset($params.order) && $params.order == 'rate'}selected{/if}>[`top rated`]</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                <label for="custom-settings">
+                                [`Custom parameters`]
+                                </label>
+                            </div>
+                            <div class="value no-shift">
+                                <textarea id="custom-settings" name="params" rows="10" cols="5">{if $params}{foreach $params as $k=>$v}{if $k!='order'}{$k}={$v|escape|cat:"\n"}{/if}{/foreach}{/if}</textarea><br>
+                                <span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$album.key&#125;</em>. Each key=value pair should be on a separate line.`]</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {* @event backend_album_settings.%plugin_id%.bottom *}
+                    {foreach $backend_album_settings as $plugin_id => $item}
+                        {$item.bottom|default:''}
+                    {/foreach}
+
+                </div>
+            </div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <input type="submit" value="[`Save`]" class="button green">
+                [`or`] <a class="cancel" href="#">[`cancel`]</a>
+            </div>
+        </div>
+        <input type="hidden" name="type" value="{$album.type}">
+        <input type="hidden" name="id" value="{$album.id}">
+    </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var d = $("#album-settings-dialog"),
+            apply_all_photos_span = $('#apply-all-photos-message');
+        $("a.p-privacy-settings-link", d).click(function () {
+             apply_all_photos_span.removeClass('gray');
+             if ($("div.p-privacy-settings", d).is(":hidden")) {
+                 $("#access-all-groups", d).attr('disabled', 'disabled');
+                 $("div.p-privacy-settings input", d).removeAttr('disabled');
+                 $("div.p-privacy-settings", d).show();
+                 $('#access-private', d).attr('checked', true);
+             } else {
+                 $("#access-all-groups", d).removeAttr('disabled');
+                 $("div.p-privacy-settings input", d).attr('disabled', 'disabled');
+                 $("div.p-privacy-settings", d).hide();
+             }
+             return false;
+        });
+        $('input[name^=groups]', d).click(function() {
+            apply_all_photos_span.removeClass('gray');
+        });
+        $("input[name=status]", d).change(function() {
+            apply_all_photos_span.removeClass('gray');
+            if (+this.value) {
+                $("#access-all-groups", d).removeAttr('disabled');
+                $("div.p-privacy-settings input", d).attr('disabled', 'disabled');
+                $("div.p-privacy-settings", d).hide();
+                $('#frontend-url-field').slideDown();
+            } else {
+                $('#frontend-url-field').slideUp();
+            }
+        });
+        $("input[name=apply_all_photos]", d).click(function() {
+            apply_all_photos_span.removeClass('gray');
+        });
+        if ($('#dynamic-field-group', d).length) {
+            $('#album-rate', d).rateWidget({
+                withClearAction: false,
+                onUpdate: function(rate) {
+                    $('#album-rate-value', d).val(rate);
+                }
+            });
+        }
+
+        // check corresponding checkbox when change control
+        $('select[name^=rate]', d).change(function() {
+            $('#condition-rate').attr('checked', true);
+        });
+        $('#album-rate', d).click(function() {
+            $('#condition-rate').attr('checked', true);
+        });
+        $('input[name^=tag]', d).die().live('change', function() {
+            $('#condition-tag').attr('checked', true);
+        });
+        $('select[name=access]', d).click(function() {
+            $('#condition-access').attr('checked', true);
+        });
+    });
+</script>

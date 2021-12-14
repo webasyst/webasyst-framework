@@ -50,6 +50,8 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
     protected $receipt_number;
 
+    const CHESTNYZNAK_PRODUCT_CODE = 'chestnyznak';
+
     /**
      * Transfer of all payments into rubles.
      * @return string
@@ -80,31 +82,69 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         try {
-            if ($auto_submit && $this->TESTMODE) {
-                $auto_submit = false;
-            }
-
             $order_data = waOrder::factory($order_data);
-            $redirect_url = null;
 
             $transactions = $this->getAvailableTransactions($order_data->id);
+            $create_new_transaction = true;
+            $maximum_part_number = null;
+            foreach ($transactions as $transaction) {
+                if ($transaction['part_number'] > $maximum_part_number) {
+                    $maximum_part_number = $transaction['part_number'];
+                }
+            }
             if (isset($transactions[waPayment::TRANSACTION_PAYMENT])) {
+                $create_new_transaction = false;
                 $create_transaction = $transactions[waPayment::TRANSACTION_PAYMENT];
+                $maximum_part_number = $create_transaction['part_number'];
                 $transaction_data = $this->getGatewayTransactionStatus($order_data['order_id'], $create_transaction);
-
-                if (!empty($transaction_data['callback_method'])) {
-                    $this->handleTransaction($transaction_data);
-                    return 'Состояние платежа изменилось — обновите страницу.';
-                } elseif (!empty($create_transaction['raw_data']['formUrl'])) {
-                    return $this->viewForm($create_transaction['raw_data']['formUrl'], $auto_submit);
-                } else {
-                    return 'Ошибка получения формы оплаты.';
+                if ($transaction_data['state'] == waPayment::STATE_DECLINED
+                    || $transaction_data['state'] == waPayment::STATE_CANCELED
+                ) {
+                    $create_new_transaction = true;
+                }
+                if ($create_new_transaction == false) {
+                    if ($transaction_data['amount'] != $order_data['total']) {
+                        if ($this->isInstallmentOrder($order_data->id)) {
+                            $data_log = array(
+                                'order_id' => $order_data['id'],
+                                'plugin' => $this->getId(),
+                                'state' => "Стоимость заказа после начисления процентов Сбербанком {$transaction_data['amount']}"
+                            );
+                            $this->getAdapter()->execCallbackHandler(self::CALLBACK_NOTIFY, $data_log);
+                            $this->handleTransaction($transaction_data);
+                        } else {
+                            try {
+                                $create_new_transaction = true;
+                                $this->cancel($create_transaction);
+                            } catch (waException $e) {
+                                return 'Сумма оплаты отличается от суммы заказа';
+                            }
+                        }
+                    } elseif (!empty($transaction_data['callback_method'])) {
+                        $this->handleTransaction($transaction_data);
+                        return 'Состояние платежа изменилось — обновите страницу.';
+                    } elseif (!empty($create_transaction['raw_data']['formUrl'])) {
+                        return $this->viewForm($create_transaction['raw_data']['formUrl'], $auto_submit);
+                    } else {
+                        return 'Ошибка получения формы оплаты.';
+                    }
                 }
 
-            } else {
-                // It's a new order, we need to create new transaction
-                $transaction = $this->registerOrder($order_data);
-                $redirect_url = $transaction['raw_data']['formUrl'];
+            }
+            if ($create_new_transaction) {
+                // create new transaction
+                $storage = wa()->getStorage();
+                $storage->write('sb_order', $order_data);
+                if (isset($maximum_part_number)) {
+                    $maximum_part_number++;
+                }
+                $get_query = array(
+                    'register_order' => 1,
+                    'app_id' => $this->app_id,
+                    'merchant_id' => $this->merchant_id,
+                    'orderNumber' => $this->getOrderNumber($order_data['order_id'], $maximum_part_number),
+                );
+                $redirect_url = wa()->getRootUrl() . 'payments.php/sb/?' . http_build_query($get_query);
                 return $this->viewForm($redirect_url, $auto_submit);
             }
         } catch (waPaymentException $ex) {
@@ -291,11 +331,12 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             if (empty($native_id)) {
                 // Register a new payment for bundles
                 $order_data['is_recurrent'] = true;
+                // TODO ADD PART_NUMBER?
                 $transaction_data = $this->registerOrder($order_data);
                 $native_id = ifset($transaction_data, 'native_id', null);
             } else {
 
-                $last_data_transaction = $this->getGatewayTransactionStatus($order_data['order_id'], $native_id);
+                $last_data_transaction = $this->getGatewayTransactionStatus($order_data['order_id'], ['native_id' => $native_id]);
                 // We valid that the money is not blocked and it makes sense to re-register
                 if (isset($last_data_transaction['callback_method'])) {
                     switch ($last_data_transaction['callback_method']) {
@@ -380,6 +421,33 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     }
 
     /**
+     * @param array<int, array> $item_product_codes - array of product code records indexed by id of record
+     *  id => [
+     *      int      'id'
+     *      string   'code'
+     *      string   'name' [optional]
+     *      string   'icon' [optional]
+     *      string   'logo' [optional]
+     *      string[] 'values' - promo code item value for each instance of product item
+     *  ]
+     * @return array - chestnyznak values
+     */
+    protected function getChestnyznakCodeValues(array $item_product_codes)
+    {
+        $values = [];
+        foreach ($item_product_codes as $product_code) {
+            if (isset($product_code['code']) && $product_code['code'] === self::CHESTNYZNAK_PRODUCT_CODE) {
+                if (isset($product_code['values'])) {
+                    $values = $product_code['values'];
+                    break;
+                }
+            }
+        }
+
+        return $values;
+    }
+
+    /**
      * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:getorderstatusextended
      * @param array $transaction_raw_data
      * @return array
@@ -393,8 +461,13 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $transaction_raw_data = $this->formalizeRawData($transaction_raw_data);
 
         $related_transactions = $this->getRelatedTransactions($transaction_raw_data['order_id']);
+        $related_transactions = array_filter($related_transactions, function($t) {
+            // ignore repeated callbacks
+            return !empty($t['type']) && ifset($t, 'result', '') !== 'is_repeated';
+        });
         $transaction = end($related_transactions);
-
+        $orderNumber = $transaction_raw_data['orderNumber'];
+        $order_number_parts = explode('_', $orderNumber);
         $transaction_data += array(
             'native_id'   => $transaction['native_id'],
             'order_id'    => $transaction_raw_data['order_id'],
@@ -403,6 +476,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'amount'      => intval($transaction_raw_data['amount']) / 100,
             'currency_id' => $transaction['currency_id'],
             'result'      => 1,
+            'part_number' => !empty($order_number_parts[3]) ? (int)$order_number_parts[3] : 0,
         );
 
         $view_data = &$transaction_data['view_data'];
@@ -416,6 +490,19 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 //требуется getOrderStatusExtended 03 и выше
                 break;
             case 'CREATED': # заказ создан;
+                if (!empty($transaction_raw_data['actionCodeDescription']) || !empty($transaction_raw_data['actionCode'])) {
+                    // Была неудачная попытка оплаты, но возможна повторная оплата того же самого заказа на стороне сбера
+                    $view_data[] = 'Зафиксирована неудачная попытка оплаты';
+                    if (!empty($transaction_raw_data['actionCodeDescription'])) {
+                        $transaction_data['error'] = $transaction_raw_data['actionCodeDescription'];
+                        if (!empty($transaction_raw_data['actionCode'])) {
+                            $transaction_data['error'] .= ' ('.$transaction_raw_data['actionCode'].')';
+                        }
+                    } elseif (!empty($transaction_raw_data['actionCode'])) {
+                        $transaction_data['error'] = $transaction_raw_data['actionCode'];
+                    }
+                    $view_data[] = $transaction_data['error'];
+                }
                 $transaction_data += array(
                     'type'  => waPayment::OPERATION_CHECK,
                     'state' => waPayment::STATE_VERIFIED,
@@ -435,7 +522,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 break;
             case 'DECLINED': # заказ отклонён;
                 $transaction_data += array(
-                    'type'  => self::OPERATION_CHECK,
+                    'type'  => self::OPERATION_AUTH_ONLY,
                     'state' => self::STATE_DECLINED,
                 );
                 break;
@@ -491,7 +578,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 break;
             case self::SB_ORDER_DECLINE: # авторизация отклонена
                 $transaction_data += array(
-                    'type'  => self::OPERATION_CHECK,
+                    'type'  => self::OPERATION_AUTH_ONLY,
                     'state' => self::STATE_DECLINED,
                 );
                 break;
@@ -552,7 +639,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $payment_fields = array();
         switch ($transaction_data['type']) {
             case self::OPERATION_AUTH_ONLY:
-                $view_data[] = 'Деньги заблокированы';
+                if ($transaction_data['state'] === self::STATE_AUTH) {
+                    $view_data[] = 'Деньги заблокированы';
+                }
                 break;
 
             case self::OPERATION_CANCEL:
@@ -580,6 +669,23 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     'paymentAmountInfo.approvedAmount'  => 'Заблокировано %0.2f %s',
                 );
                 break;
+        }
+
+        if ($transaction_data['state'] === self::STATE_DECLINED) {
+            $transaction_data['result'] = '';
+            $card_fields = array(
+                'cardAuthInfo.pan'            => 'Pan: %s',
+                'cardAuthInfo.cardholderName' => 'CardHolder: %s',
+            );
+
+            if (!empty($transaction_raw_data['actionCodeDescription'])) {
+                $transaction_data['error'] = $transaction_raw_data['actionCodeDescription'];
+            } elseif (!empty($transaction_raw_data['actionCode'])) {
+                $transaction_data['error'] = $transaction_raw_data['actionCode'];
+            }
+            if (!empty($transaction_data['error'])) {
+                $view_data[] = $transaction_data['error'];
+            }
         }
 
         foreach ($card_fields as $field => $format) {
@@ -634,9 +740,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         $order_id = null;
         if (!empty($request['orderNumber'])) {
-            $request = $this->extendByCallbackRequest($request);
-            $this->app_id = ifset($request, 'app_id', null);
-            $this->merchant_id = ifset($request, 'merchant_id', null);
+            $modified_request = $this->extendByCallbackRequest($request);
+            $this->app_id = ifset($modified_request, 'app_id', null);
+            $this->merchant_id = ifset($modified_request, 'merchant_id', null);
         } else {
             throw new waPaymentException('Empty required field(s)');
         }
@@ -651,7 +757,33 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
      */
     public function callbackHandler($request)
     {
-        $verified = $this->verifyRequest($request);
+        if (isset($request['register_order'])) {
+            $storage = wa()->getStorage();
+            /** @var waOrder $order_data */
+            $order_data = $storage->get('sb_order');
+            $order_number_parts = explode('_', $request['orderNumber']);
+            $part_number = 0;
+            if (!empty($order_number_parts[3])) {
+                $part_number = $order_number_parts[3];
+            }
+            $transaction = $this->registerOrder($order_data, $part_number);
+            $redirect_url = $transaction['raw_data']['formUrl'];
+            $storage->remove('sb_order');
+            wa()->getResponse()->redirect($redirect_url);
+        }
+        try {
+            $verified = $this->verifyRequest($request);
+        } catch (waPaymentException $e) {
+            // Process badly signed callback as untrusted: as if a customer comes back to store page.
+            // Will not use data from GET. Will load fresh data from API and act accordindly.
+            $verified = false;
+            static::log($this->id, [
+                'message' => 'API callback signature is invalid. Process as if data came from untrusted source.',
+                'error' => $e->getMessage(),
+                'method'  => __METHOD__,
+                'request' => $request,
+            ]);
+        }
 
         //extend request data
         $request = $this->extendByCallbackRequest($request);
@@ -677,9 +809,60 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
             try {
                 if ($transaction = $this->getGatewayTransactionStatus($order_id, $related)) {
+                    $transaction['credit_type'] = isset($transactions[waPayment::TRANSACTION_CONFIRM]['raw_data']['credit_type']) ? $transactions['confirm']['raw_data']['credit_type'] : null;
+                    $transaction['confirm_amount'] = isset($transactions[waPayment::TRANSACTION_CONFIRM]['amount']) ? (double)$transactions['confirm']['amount'] : null;
+
+                    if ($this->TESTMODE) {
+                        static::log($this->id, [
+                            'message' => 'getGatewayTransactionStatus result',
+                            'order_id' => $order_id,
+                            'transaction' => $transaction,
+                            'related' => $related,
+                        ]);
+                    }
+
+                    if (isset($transaction['callback_method']) && $transaction['callback_method'] != self::CALLBACK_NOTIFY) {
+                        // When we know API callbacks are enabled and they work,
+                        // do not try to perform app action when user comes back to store page.
+                        // This action is better performed during API callback.
+                        if ($this->getSettings('api_callbacks_enabled') && !$this->isApiCallbackRequest($request)) {
+                            static::log($this->id, [
+                                'method'                => __METHOD__,
+                                'message'               => 'Ignore browser-based order notification because API callbacks are enabled',
+                                'order_id'              => $order_id,
+                                'old_type'              => $transaction['type'],
+                                'old_result'            => $transaction['result'],
+                                'old_callback_method'   => $transaction['callback_method'],
+                                'new_type'              => '',
+                                'new_result'            => 'is_repeated',
+                                'new_callback_method'   => self::CALLBACK_NOTIFY,
+                            ]);
+                            $transaction['callback_method'] = self::CALLBACK_NOTIFY;
+                            $transaction['result'] = 'is_repeated';
+                            $transaction['type'] = '';
+                        }
+                    }
+
                     $transaction_data = $this->handleTransaction($transaction);
+                } else {
+                    if ($this->TESTMODE) {
+                        static::log($this->id, [
+                            'message' => 'getGatewayTransactionStatus returned nothing',
+                            'order_id' => $order_id,
+                            'transaction' => $transaction,
+                            'related' => $related,
+                        ]);
+                    }
                 }
             } catch (waException $ex) {
+                static::log($this->id, [
+                    'message' => 'Error handling callback',
+                    'order_id' => $order_id,
+                    'error' => $ex->getMessage(),
+                    'trace' => $ex->getFullTraceAsString(),
+                    'request' => $request,
+                    'related' => $related,
+                ]);
                 if ($verified) {
                     if (empty($transaction_data['callback_method'])) {
                         //Запрос обработан, но требуются расширенные данные
@@ -693,7 +876,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
 
-        if ($verified) {
+        if ($verified || $this->isApiCallbackRequest($request)) {
             //It's gateway callback
             return array(
                 'message' => 'YES',
@@ -790,6 +973,11 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         return $transaction_data;
+    }
+
+    protected function isApiCallbackRequest($request)
+    {
+        return isset($request['orderNumber']) && isset($request['mdOrder']) && isset($request['operation']);
     }
 
     /**
@@ -895,20 +1083,17 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'bankInfo'          => '',
 
         );
-
         foreach ($order_status as $key => $value) {
-            if (array_key_exists($key, $slice)) {
-                foreach ($value as $name => $param) {
-                    $order_status[$key.'.'.$name] = $param;
-                }
-            }
-
             //if there are new arrays
             if (is_array($value)) {
+                if (array_key_exists($key, $slice)) {
+                    foreach ($value as $name => $param) {
+                        $order_status[$key.'.'.$name] = $param;
+                    }
+                }
                 $order_status[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
             }
         }
-
         return array_diff_key($order_status, $delete);
     }
 
@@ -920,15 +1105,23 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 $view_data,
             );
         }
+
+        if (!empty($transaction_data['credit_type']) && $transaction_data['credit_type'] == 'INSTALLMENT'
+            && !empty($transaction_data['confirm_amount']) && $transaction_data['confirm_amount'] != $transaction_data['amount']
+        ) {
+            $transaction_data['amount'] = $transaction_data['confirm_amount'];
+        }
+
         unset($transaction_data['view_data']);
         if ($this->TESTMODE) {
             $view_data[] = 'Тестовый режим';
         }
-        $view_data = implode('. ', $view_data);
+        $transaction_data['view_data'] = implode('. ', $view_data);
+
         $raw_data = $this->formalizeRawData($raw_data);
         $transaction_data = $this->saveTransaction($transaction_data, $raw_data);
 
-        $transaction_data += compact('view_data', 'raw_data');
+        $transaction_data += compact('raw_data');
 
 
         if ($this->TESTMODE) {
@@ -952,11 +1145,21 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         if (isset($transaction_data['callback_method'])) {
             $app_payment_method = $transaction_data['callback_method'];
+        } else if (ifset($transaction_data, 'state', '') === self::STATE_DECLINED) {
+            $app_payment_method = self::CALLBACK_NOTIFY;
         } else {
             switch ($transaction_data['type']) {
                 case self::OPERATION_CHECK:
-                    $app_payment_method = true;
-                    $transaction_data['state'] = self::STATE_VERIFIED;
+                    if (!empty($transaction_data['raw_data']['actionCodeDescription']) && !empty($transaction_data['view_data'])) {
+                        // случай, когда происходит неудачная (но не фатальная) попытка оплаты, и от сбера приходит колбек
+                        // надо уведомить об этом приложение, и пометить запись в wa_transaction как информационную
+                        $app_payment_method = self::CALLBACK_NOTIFY;
+                        $transaction_data['state'] = null;
+                        $transaction_data['type'] = null;
+                    } else {
+                        $app_payment_method = true;
+                        $transaction_data['state'] = self::STATE_VERIFIED;
+                    }
                     break;
                 case self::OPERATION_AUTH_ONLY:
                     $app_payment_method = self::CALLBACK_AUTH;
@@ -1132,9 +1335,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
      * @return array
      * @throws waException
      */
-    protected function registerOrder($wa_order)
+    protected function registerOrder($wa_order, $part_number = 0)
     {
-        $order_number = $this->getOrderNumber($wa_order->id);
+        $order_number = $this->getOrderNumber($wa_order->id, $part_number);
         $return_url = $this->getRelayUrl().'?orderNumber='.$order_number;
         $fail_url = $this->getRelayUrl().'?orderNumber='.$order_number.'&wa_result=fail';
         $register_fields = array(
@@ -1197,10 +1400,14 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 'result'      => 1,
                 'type'        => self::OPERATION_CHECK,
                 'state'       => self::STATE_VERIFIED,
+                'part_number' => $part_number,
                 'raw_data'    => array(
                     'formUrl' => $response['formUrl'],
                 ),
             );
+            if (!empty($this->credit)) {
+                $transaction_data['raw_data']['credit_type'] = $this->credit_type;
+            }
 
             $transaction_data = $this->handleTransaction($transaction_data);
 
@@ -1357,13 +1564,32 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         if (is_array($order_data->items)) {
-            foreach ($order_data->items as $data) {
-                if (!$data['tax_included'] && (int)$data['tax_rate'] > 0) {
-                    static::log($this->id, sprintf('НДС не включён в цену товара: %s.', var_export($data, true)));
+            foreach ($order_data->items as $item_data) {
+                if (!$item_data['tax_included'] && (int)$item_data['tax_rate'] > 0) {
+                    static::log($this->id, sprintf('НДС не включён в цену товара: %s.', var_export($item_data, true)));
                     throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
                 }
 
-                $items[] = $this->formalizeItemData($data, $order_data);
+                $items_data = [];
+                $item_type = ifset($item_data, 'type', null);
+                if ($item_type === 'product') {
+                    // typecast workaround for old versions of framework where 'product_codes' key is missing
+                    $product_codes = isset($item_data['product_codes']) && is_array($item_data['product_codes']) ? $item_data['product_codes'] : [];
+
+                    $values = $this->getChestnyznakCodeValues($product_codes);
+                    if ($values) {
+                        $items_data = $this->splitItem($item_data, $values);
+                    }
+                }
+
+                if ($items_data) {
+                    foreach ($items_data as $split_index => $data) {
+                        $data['split_index'] = $split_index;
+                        $items[] = $this->formalizeItemData($data, $order_data);
+                    }
+                } else {
+                    $items[] = $this->formalizeItemData($item_data, $order_data);
+                }
             }
         };
 
@@ -1378,10 +1604,31 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     }
 
     /**
+     * Split one product item to several items because chestnyznak marking code must be related for single product instance
+     * Extend each new item with 'chestnyznak' value from $values
+     * Invariant $item['quantity'] === count($values)
+     * @param array $item - order item
+     * @param array $values - chestnyznak values
+     * @return array[] - array of items. Each item has 'product_code'
+     */
+    protected function splitItem(array $item, array $values)
+    {
+        $quantity = (int)ifset($item, 'quantity', 0);
+        $items = [];
+        for ($i = 0; $i < $quantity; $i++) {
+            $value = isset($values[$i]) ? $values[$i] : '';
+            $item['chestnyznak'] = $value;
+            $item['quantity'] = 1;
+            $item['total'] = $item['price'];
+            $items[] = $item;
+        }
+        return $items;
+    }
+
+    /**
      * @link https://developer.sberbank.ru/doc/v1/acquiring/api-basket
      * @param array   $data
      * @param waOrder $order_data
-     * @param int     $number
      * @return array
      * @throws waException
      * @throws waPaymentException
@@ -1393,6 +1640,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             $discount = round(ifset($data, 'discount', 0.0), 2);
             $data['price'] = round($data['price'], 2) - $discount; //calculate flexible discounts
         }
+
+        $is_split = isset($data['split_index']);
+
         /**
          * В корзине запрещены для передачи товарные позиции, отсутствующие в оригинальном заказе.
          * Происходит проверка наличия указанного товара в корзине запроса на возврат в изначальном заказе.
@@ -1403,12 +1653,21 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         if (empty($data['id'])) {
             $position_id = $this->receipt_number++;
             $data['id'] = $position_id;
-
+        } elseif ($is_split) {
+            // position_id must be unique in order, so if item has been split position number is autoincrement receipt_number
+            $position_id = $this->receipt_number++;
         } else {
             $position_id = max($data['id'], $this->receipt_number);
             if ($position_id == $this->receipt_number) {
                 ++$this->receipt_number;
             }
+        }
+
+        $item_code = $this->app_id.'_order_'.$order_data['id'].'_'.$data['type'].'_'.$data['id'];
+
+        // if item has been split cause of fiscal code, there is split index, add it as part of item code
+        if ($is_split) {
+            $item_code .= '_' . $data['split_index'];
         }
 
         $tax_sum = $this->getTaxSum($data['price'], $data['tax_rate']);
@@ -1422,27 +1681,43 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'itemAmount'   => number_format($data['total'], 2, '', ''),
             'itemPrice'    => number_format($data['price'], 2, '', ''),
             'itemCurrency' => $this->getCurrencyISO4217Code($order_data['currency']),
-            'itemCode'     => $this->app_id.'_order_'.$order_data['id'].'_'.$data['type'].'_'.$data['id'],
+            'itemCode'     => $item_code,
             'tax'          => array(
                 'taxType' => $this->getTaxType($data['tax_rate']),
                 'taxSum'  => number_format($tax_sum, 2, '', ''),
             ),
         );
 
-        //Credit dont work for ФФД 1.05
+
+        // Credit dont work for ФФД 1.05
         if (!$this->credit) {
-            $item_data['itemAttributes'] = [
-                'attributes' => [
-                    [
-                        'name'  => 'paymentMethod',
-                        'value' => $this->payment_method,
-                    ],
-                    [
-                        'name'  => 'paymentObject',
-                        'value' => $this->getPaymentObject(ifset($data, 'type', null)),
-                    ],
+            $attributes = [
+                [
+                    'name'  => 'paymentMethod',
+                    'value' => $this->payment_method,
+                ],
+                [
+                    'name'  => 'paymentObject',
+                    'value' => $this->getPaymentObject(ifset($data, 'type', null)),
                 ],
             ];
+
+            // Код товара — уникальный номер, который присваивается экземпляру товара при маркировке
+            // Тут идет конвертация из DataMatrix кода (Честный знак) в 1162 тег код для ККТ
+            if (isset($data['chestnyznak'])) {
+                $nomenclature = $this->convertToNomenclatureCode($data['chestnyznak']);
+                if ($nomenclature) {
+                    $attributes[] = [
+                        'name' => 'nomenclature',
+                        'value' => $nomenclature
+                    ];
+                }
+            }
+
+            $item_data['itemAttributes'] = [
+                'attributes' => $attributes,
+            ];
+
         }
 
         return $item_data;
@@ -1468,16 +1743,36 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     }
 
     /**
+     * Конвертация из DataMatrix кода (Честный знак) в код номенклатуры
+     * @param $uid
+     * @return bool|string
+     */
+    protected function convertToNomenclatureCode($uid)
+    {
+        if (!class_exists('shopChestnyznakPluginCodeParser')) {
+            return false;
+        }
+
+        $code = shopChestnyznakPluginCodeParser::extractProductCode($uid);
+        if (!$code) {
+            return false;
+        }
+
+        return $code;
+    }
+
+    /**
      * Checks whether there is a Check Transaction. If so, it requests the status of native_id
      * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:getorderstatusextended
      * @param string $order_id
-     * @param array  $previous_transaction
-     * @param bool   $raw
+     * @param array $previous_transaction
+     *      string $previous_transaction['native_id'] - required
+     * @param bool $raw
      * @return array
      * @throws waException
      * @throws waPaymentException
      */
-    protected function getGatewayTransactionStatus($order_id, $previous_transaction, $raw = false)
+    protected function getGatewayTransactionStatus($order_id, array $previous_transaction, $raw = false)
     {
         $response = array();
 
@@ -1489,9 +1784,6 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         if (!$this->credit) {
             if (empty($previous_transaction)) {
                 return $response;
-            }
-            if (!is_array($previous_transaction)) {
-                $previous_transaction['native_id'] = $previous_transaction;
             }
 
             $request['orderId'] = $previous_transaction['native_id'];
@@ -1905,6 +2197,39 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         ];
     }
 
+    public function isRefundAvailable($order_id)
+    {
+        $transaction = parent::isRefundAvailable($order_id);
+        if ($this->isInstallmentOrder($order_id)
+            && isset($transaction['amount']) && isset($transaction['raw_data']['amount'])
+            && $transaction['amount'] != ($transaction['raw_data']['amount'] / 100)
+        ) {
+            return false;
+        }
+
+        return $transaction;
+    }
+
+    protected function isInstallmentOrder($order_id)
+    {
+        $search = array(
+            'plugin'      => $this->id,
+            'app_id'      => $this->app_id,
+            'merchant_id' => $this->merchant_id,
+            'order_id'    => $order_id,
+            'state'       => waPayment::STATE_VERIFIED,
+        );
+
+        $transactions = self::getTransactionsByFields($search);
+        $is_installment = false;
+        if ($transactions) {
+            $first_transaction = current($transactions);
+            $is_installment = (isset($first_transaction['raw_data']['credit_type']) && $first_transaction['raw_data']['credit_type'] == 'INSTALLMENT');
+        }
+
+        return $is_installment;
+    }
+
 
     /**
      * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:callback:start
@@ -1926,7 +2251,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             return true;
         }
 
-        $signature = hex2bin($signature);
+        $signature = @hex2bin($signature);
 
         #cleanup and prepare request data
         $data = '';
@@ -1982,7 +2307,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $rsa_key->setSignatureMode(phpseclib\Crypt\RSA::SIGNATURE_PKCS1);
         $rsa_key->setHash('sha512');
 
-        if ($rsa_key->verify($data, $signature)) {
+        if ($signature !== false && $rsa_key->verify($data, $signature)) {
             return true;
         }
 

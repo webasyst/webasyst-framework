@@ -952,6 +952,14 @@ return array(
                     1 => 'Cocos',
                 ),
         ),
+    'Asia/Yangon'                =>
+        array(
+            0 => '+06', // +6:30
+            1 =>
+                array(
+                    0 => 'Yangon',
+                ),
+        ),
     'Antarctica/Davis'           =>
         array(
             0 => '+07',

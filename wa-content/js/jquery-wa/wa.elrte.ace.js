@@ -70,7 +70,19 @@ function waEditorAceInit(options)
 
     ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
 
-    wa_editor.setTheme("ace/theme/eclipse");
+    setEditorTheme();
+    document.documentElement.addEventListener('wa-theme-change', setEditorTheme);
+
+    function setEditorTheme() {
+        const theme = document.documentElement.dataset.theme;
+
+        if (theme === 'dark') {
+            wa_editor.setTheme("ace/theme/monokai");
+        } else {
+            wa_editor.setTheme("ace/theme/eclipse");
+        }
+    }
+
     var session = wa_editor.getSession();
 
     if (options.type == 'css') {
@@ -85,7 +97,7 @@ function waEditorAceInit(options)
     session.setUseWrapMode(true);
     wa_editor.setOption("maxLines", 10000);
     wa_editor.setAutoScrollEditorIntoView(true);
-    wa_editor.renderer.setShowGutter(false);
+    wa_editor.renderer.setShowGutter(true);
     wa_editor.setShowPrintMargin(false);
     if (navigator.appVersion.indexOf('Mac') != -1) {
         wa_editor.setFontSize(13);

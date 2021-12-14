@@ -3,77 +3,62 @@ msgstr ""
 "Project-Id-Version: wa-plugins/shipping/pickup\n"
 "POT-Creation-Date: 2013-04-24 17:54+0400\n"
 "PO-Revision-Date: \n"
-"Last-Translator:  wa-plugins/shipping/pickup\n"
-"Language-Team:  wa-plugins/shipping/pickup\n"
+"Last-Translator: wa-plugins/shipping/pickup\n"
+"Language-Team: wa-plugins/shipping/pickup\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: en_US\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"Language: en_US\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: //wa-plugins/shipping/pickup/lib/pickupShipping.class.php:88
 msgid "Delivery sheet"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/lib/pickupShipping.class.php:89
 msgid "Delivery sheet for courier"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/lib/config/plugin.php:4
 msgid "Store pickup"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:3
 msgid "Currency"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:15
 msgid "Locations"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:21
 msgid "Location name"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:74
 msgid "Fee"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:31
 msgid "Add rate"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:67
 msgid "Location"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/lib/config/plugin.php:4
 msgid "Self pickup from a nearby store location (customer selects location from the list)."
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:17
 msgid "Customer will be prompted to select preferred location from the list"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:25
 msgid "Shipping rate (surcharge)"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:33
 msgid "Add location"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/templates/settings.html:74
 msgid "0"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/lib/config/settings.php:12
 msgid "Prompt for address"
 msgstr ""
 
-#: //wa-plugins/shipping/pickup/lib/config/settings.php:13
 msgid "Request customer to fill in all address fields in case shipping address was not provided yet"
 msgstr ""

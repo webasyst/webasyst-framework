@@ -63,7 +63,7 @@ class boxberryShippingHandbookCityZips extends boxberryShippingHandbookManager
         // Save regions that could not match.
         // In the future for support
         if ($bad_regions) {
-            waLog::log("Invalid regions: \n".var_export($bad_regions, true)."\n", 'wa-plugins/shipping/invalid_zip_regions.log');
+            waLog::log("Invalid regions: \n".var_export($bad_regions, true)."\n", 'wa-plugins/shipping/boxberry/invalid_zip_regions.log');
         }
 
         return $result;
@@ -78,7 +78,7 @@ class boxberryShippingHandbookCityZips extends boxberryShippingHandbookManager
      */
     protected function getRegionsMap()
     {
-        $path = $this->data['plugin_path'].'/lib/config/data/regions.php';
+        $path = $this->data['plugin_path'].'/lib/config/data/rus_region_codes.php';
         $regions = [];
 
         if (file_exists($path) && is_readable($path)) {

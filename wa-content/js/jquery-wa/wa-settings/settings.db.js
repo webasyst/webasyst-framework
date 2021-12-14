@@ -7,8 +7,6 @@ var WASettingsDatabase = ( function($) {
         that.$wrapper = options["$wrapper"];
         that.$list_dialog_link = that.$wrapper.find('.js-show-list');
 
-        // VARS
-
         // DYNAMIC VARS
 
         // INIT
@@ -19,8 +17,9 @@ var WASettingsDatabase = ( function($) {
         var that = this;
 
         //
-        $('#s-sidebar-wrapper').find('ul li').removeClass('selected');
-        $('#s-sidebar-wrapper').find('[data-id="db"]').addClass('selected');
+        var $sidebar = $('#js-sidebar-wrapper');
+        $sidebar.find('ul li').removeClass('selected');
+        $sidebar.find('[data-id="db"]').addClass('selected');
         //
         that.initListDialogLink();
     };
@@ -32,8 +31,8 @@ var WASettingsDatabase = ( function($) {
 
         $link.on('click', function () {
             $.get(href, function (html) {
-                new WASettingsDialog({
-                    html: html
+                $.waDialog({
+                    html
                 });
             });
         });

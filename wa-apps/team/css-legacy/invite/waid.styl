@@ -1,0 +1,79 @@
+.waid-login
+    text-align center
+    position relative
+    margin-top 22px
+    margin-bottom 10px
+
+    .separator
+        display flex
+        align-items center
+        text-align center
+        color #aaa
+
+        &::before, &::after
+            content: ''
+            flex: 1
+            border-bottom: 1px solid #ddd
+        &::before
+            margin-right .35em
+        &::after
+            margin-left .35em
+
+    .waid-auth-link
+        border-radius 4px
+        box-shadow 0 5px 10px 0 rgba(0, 0, 0, 0.07)
+        border solid 1px rgba(0, 0, 0, 0.25)
+        background-color #ffffff
+        font-size 18px
+        color: #444
+        font-weight bold
+        padding 11px 22px
+        display inline-block
+        margin-top 22px
+        &:hover
+            box-shadow none
+            color: #444!important
+
+        & > span
+            display inline-block
+            font-style normal
+            &.wa-logo-web
+                color #000
+            &.wa-logo-a
+                color #0077CC
+                transform rotate(5deg)
+            &.wa-logo-s1
+                color #33BB11
+                transform rotate(-8deg)
+            &.wa-logo-y
+                color #EE5500
+            &.wa-logo-s2
+                color #EEBB11
+                transform rotate(8deg)
+            &.wa-logo-t
+                color #44DDDD
+                transform rotate(3deg)
+
+        img
+            height 16px
+            vertical-align middle
+    .hint
+        position absolute
+        top 50px
+        right 40px
+        text-decoration underline
+        font-size 14px
+        color #aaa
+        @media (max-width: 599px)
+            position relative
+            display block
+            top unset
+            right unset
+            margin-top 16px
+
+
+    .error
+        color red
+        font-size: 12px
+        display block
+        margin-top 10px

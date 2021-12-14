@@ -584,9 +584,11 @@ abstract class waAuthConfig
         return $this->formatTimeoutMessage(_ws("You can request a code in <strong>%s:%s</strong>."), $timeout);
     }
 
-    public function getConfirmationCodeTimeoutErrorMessage()
+    public function getConfirmationCodeTimeoutErrorMessage($timeout = null)
     {
-        $timeout = $this->getOnetimePasswordTimeout();
+        if (!$timeout) {
+            $timeout = $this->getOnetimePasswordTimeout();
+        }
         return $this->formatTimeoutMessage(_ws("You have been requesting a code too frequently. Try again in <strong>%s:%s</strong>."), $timeout);
     }
 

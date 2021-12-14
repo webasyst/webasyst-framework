@@ -1,0 +1,380 @@
+{strip}
+
+{* PERIOD *}
+{$_periods = [
+    0 => [
+        "id" => 0,
+        "name" => _w('Last %d day', 'Last %d days', 30),
+        "timeframe" => 30,
+        "groupby" => "days"
+    ],
+    1 => [
+        "id" => 1,
+        "name" => _w('Last %d day', 'Last %d days', 90),
+        "timeframe" => 90,
+        "groupby" => "days"
+    ],
+    2 => [
+        "id" => 2,
+        "name" => _w('Last %d day', 'Last %d days', 365),
+        "timeframe" => 365,
+        "groupby" => "months"
+    ],
+    3 => [
+        "id" => 3,
+        "name" => _w('All time'),
+        "timeframe" => "all",
+        "groupby" => "months"
+    ],
+    "custom" => [
+        "id" => "custom",
+        "class" => "js-show-period-form",
+        "name" => _w('Select dates...')
+    ]
+]}
+
+{$_selected_period = $_periods[1]}
+{if !empty($timeframe) && !empty($group_by)}
+    {$_is_period_set = false}
+    {foreach $_periods as $_period}
+        {if !empty($_period.timeframe) && ($_period.timeframe == $timeframe) && !empty($_period.groupby) && ($_period.groupby == $group_by)}
+            {$_selected_period = $_period}
+            {$_is_period_set = true}
+        {elseif $_period@last && !$_is_period_set}
+            {$_selected_period = $_periods["custom"]}
+        {/if}
+    {/foreach}
+{/if}
+
+{* APPS *}
+{$_apps = []}
+{$_apps["all"] = [
+    "id" => null,
+    "name" => _w('All apps')
+]}
+{$_apps = array_merge($_apps, $apps)}
+
+{$_selected_app = $_apps["all"]}
+{if !empty($selected_app_id)}
+    {$_selected_app = $_apps[$selected_app_id]}
+{/if}
+
+{if !$wa->request("is_update")}
+    <link href="{$wa_app_static_url}css-legacy/team.css?{$wa->version()}" rel="stylesheet">
+    <link href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.all.css?{$wa->version(true)}" rel="stylesheet">
+
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js"></script>
+    {if {$wa->locale()} != 'en_US'}
+        <script src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
+    {/if}
+    <script src="{$wa_url}wa-content/js/d3/d3.min.js?{$wa->version(true)}"></script>
+    <script src="{$wa_app_static_url}js-legacy/profile.stats.js?{$wa->version()}"></script>
+{/if}
+
+<section class="t-stats-wrapper" id="t-stats-wrapper">
+
+    {* HEADER *}
+    <header class="t-header-wrapper">
+
+        {*FILTERS*}
+        <ul class="t-filters">
+            {* APP *}
+            <li class="t-filter t-app-filter">
+                <ul class="menu-h dropdown">
+                    <li>
+                        <a class="t-selected-item inline-link" href="javascript:void(0);">
+                            <b><i>{$_selected_app.name|escape}</i></b>
+                        </a>
+                        <ul class="menu-v">
+                            {foreach $_apps as $_app}
+                                <li class="{if $_app.id === $_selected_app.id}selected{/if}">
+                                    <a href="javascript:void(0);" {if !empty($_app.id)}data-app-id="{$_app.id}"{/if}>
+                                        <b><i>{$_app.name|escape}</i></b>
+                                    </a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </li>
+                </ul>
+                <input name="app_id" type="hidden" value="">
+            </li>
+
+            {* PERIOD *}
+            <li class="t-filter t-period-filter">
+                <ul class="menu-h dropdown">
+                    <li>
+                        <a class="t-selected-item inline-link" href="javascript:void(0);">
+                            <b><i>{$_selected_period.name|escape}</i></b>
+                        </a>
+                        <ul class="menu-v">
+                            {foreach $_periods as $_period}
+                                <li class="{if $_period.id === $_selected_period.id}selected{/if}">
+                                    <a class="{if !empty($_period.class)}{$_period.class}{/if}" href="javascript:void(0);" {if !empty($_period.timeframe)}data-timeframe="{$_period.timeframe}"{/if} {if !empty($_period.groupby)}data-groupby="{$_period.groupby}"{/if} >
+                                        <b><i>{$_period.name|escape}</i></b>
+                                    </a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </li>
+                    <li class="t-hidden-part {if $_selected_period.id === "custom"}is-shown{/if}">
+                        <form action="/">
+                            <label>[`from`]</label>
+
+                            <span>
+                                <input class="t-date js-datepicker" type="text" placeholder="[`Start`]" value="{teamHelper::date($start_date)}">
+                                <input type="hidden" name="from" value="{date('Y-m-d', strtotime($start_date))}">
+                            </span>
+
+                            <label>[`to`]</label>
+
+                            <span>
+                                <input class="t-date js-datepicker" type="text" placeholder="[`End`]" value="{teamHelper::date($end_date)}">
+                                <input type="hidden" name="to" value="{date('Y-m-d', strtotime($end_date))}">
+                            </span>
+
+                            <select name="groupby">
+                                {$_is_month = false}
+                                {if $_selected_period.id === "custom" && !empty($group_by) && $group_by == "months"}
+                                    {$_is_month = true}
+                                {/if}
+                                <option value="days">[`by day`]</option>
+                                <option value="months" {if $_is_month}selected{/if}>[`by month`]</option>
+                            </select>
+
+                            <input class="js-set-custom-period" type="button" value="[`Apply`]">
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        {* TODO: REWORK IT *}
+        <div class="t-todo-rework" style="display: none;">
+
+            {$container_id = uniqid('t-profile-stats-')}
+
+            <div class="block" id="{$container_id}">
+                {*
+                 * Chart period selector
+                 *}
+                <div class="block">
+                    <span>Date filter:</span>
+                    <div class="t-right-column is-middle">
+                        <div class="t-menu-item">
+                            <ul class="menu-h dropdown t-logs-timeframe">
+                                <li class="hidden t-custom-timeframe" style="display: none">
+                                    [`from`]
+                                    <input type="text" name="from" data-datepicker="1">
+                                    [`to`]
+                                    <input type="text" name="to" data-datepicker="1">
+                                    <select name="groupby">
+                                        <option value="days">[`by day`]</option>
+                                        <option value="months">[`by month`]</option>
+                                    </select>
+                                </li>
+                                <li class="t-logs-timeframe-dropdown">
+                                    <a href="javascript:void(0)" class="inline-link float-right"><b><i>{* Changed by JS *}</i></b>
+                                        <i class="icon10 darr"></i>
+                                    </a>
+                                    <ul class="menu-v">
+                                        <li data-timeframe="30" data-groupby="days"><a href="javascript:void(0)" class="nowrap">{_w('Last %d day', 'Last %d days', 30)}</a></li>
+                                        <li data-timeframe="90" data-groupby="days" data-default-choice="1"><a href="javascript:void(0)" class="nowrap">{_w('Last %d day', 'Last %d days', 90)}</a></li>
+                                        <li data-timeframe="365" data-groupby="months"><a href="javascript:void(0)" class="nowrap">{_w('Last %d day', 'Last %d days', 365)}</a></li>
+                                        <li data-timeframe="all" data-groupby="months"><a href="javascript:void(0)" class="nowrap">[`All time`]</a></li>
+                                        <li data-timeframe="custom"><a href="javascript:void(0)" class="nowrap">[`Select dates...`]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {*
+                 * App ID filter
+                 *}
+
+                <div class="block">
+                    <span>App ID:</span>
+                    <select name="app_id">
+                        {foreach $apps as $app}
+                            <option value="{$app.id}">{$app.name|escape}</option>
+                        {/foreach}
+                    </select>
+                </div>
+
+                {*
+                 * Apply button - delete later. Send filter on change any filter states
+                 *}
+                <div class="block">
+                    <input type="button" value="Apply" class="t-filter-apply">
+                </div>
+
+            </div>
+
+            <script>
+
+                $(function () {
+
+                    var container = $('#{$container_id}');
+
+                    {* Init timeframe selector *}
+                    (function (timeframe, groupby) {
+                        var $dropdown = $('.t-logs-timeframe-dropdown', container);
+                        var $groupby = $('select[name=groupby]');
+
+                        var onSelectItem = function ($currenct_item, calc_width) {
+                            $dropdown.find('>a i').text($currenct_item.text());
+                            if (calc_width) {
+                                $dropdown.find('ul').width(2 * $dropdown.find('>a').width());
+                            }
+                            timeframe = $currenct_item.data('timeframe');
+                            if (timeframe === 'custom') {
+                                groupby = $groupby.val();
+                                $('.t-custom-timeframe', container).show().find('[name=groupby]').val(groupby);
+                            } else {
+                                groupby = $currenct_item.data('groupby');
+                            }
+                        };
+
+                        {* Select current item *}
+                        var $currenct_item = $dropdown.find('li[data-timeframe="' + timeframe + '"]');
+                        if (!$currenct_item.length) {
+                            $currenct_item = $dropdown.find('li[data-default-choice=1]');
+                        }
+                        onSelectItem($currenct_item, true);
+
+                        $dropdown.find('li[data-timeframe] a').click(function () {
+                            var $this = $(this), $li = $this.closest('li');
+                            onSelectItem($li);
+                        });
+
+                        $groupby.change(function () {
+                            groupby = $(this).val();
+                        });
+
+                        {* Init datepicker here *}
+
+                        {* Submit button temporary - rework it to on lister changes in filter selector *}
+                        $('.t-filter-apply', container).click(function () {
+
+                            var from = $('[name=from]', container).val();
+                            var to = $('[name=to]', container).val();
+
+                            var params = [];
+                            if (from) {
+                                params.push('from=' + from);
+                            }
+                            if (to) {
+                                params.push('to=' + to);
+                            }
+                            if (timeframe) {
+                                params.push('timeframe=' + timeframe);
+                            }
+                            if (groupby) {
+                                params.push('groupby=' + groupby);
+                            }
+
+                            var app_id = $("[name=app_id]", container).val();
+                            if (app_id) {
+                                params.push('app_id=' + app_id);
+                            }
+
+                            params = params.join('&');
+
+                            console.log('-- Send params to server: ' + params + ' --');
+                        });
+
+                    })('{$timeframe}', '{$group_by}');
+                });
+
+
+            </script>
+
+        </div>
+
+    </header>
+
+    {* BODY *}
+    <div class="t-stats-body">
+        <div class="t-graph-wrapper" id="t-graph-wrapper">
+            <div class="t-graph"></div>
+            <div class="t-hint-wrapper">
+                <div class="t-line">
+                    <span class="t-app"></span>: <span class="t-value"></span>
+                </div>
+                <div class="t-line">
+                    <span class="t-date"></span>
+                </div>
+            </div>
+        </div>
+
+        {if !empty($status_stats)}
+            <div class="t-status-wrapper">
+                <ul class="t-status-list">
+                    {foreach $status_stats as $stat}
+                        {$_styles = []}
+                        {if !empty($stat.bg_color)}
+                            {$_styles[] = "background: `$stat.bg_color`;"}
+                        {/if}
+                        {if !empty($stat.font_color)}
+                            {$_styles[] = "color: `$stat.font_color`;"}
+                        {/if}
+                        <li class="t-status-item">
+                            <span class="t-name" style="{$_styles|join:""}">{$stat.name|escape}</span>
+                            <span class="t-divider">&mdash;</span>
+                            <span class="t-count">
+                                {if $stat.duration.days > 0}
+                                    {sprintf(_w("%d day", "%d days", $stat.duration.days), $stat.duration.days)}
+                                    &nbsp;
+                                {/if}
+                                {if $stat.duration.hours > 0}
+                                    {sprintf(_w("%d hour", "%d hours", $stat.duration.hours), $stat.duration.hours)}
+                                {/if}
+                            </span>
+                        </li>
+                    {/foreach}
+                </ul>
+            </div>
+        {/if}
+    </div>
+
+    <script>
+        (function($) {
+            var $wrapper = $("#t-stats-wrapper").removeAttr("id");
+            new ProfileStatistic({
+                $wrapper: $wrapper,
+                graphData: {$chart_data|json_encode},
+                app_url: "{$wa_app_url}",
+                app_id: {if !empty($_selected_app.id) && $_selected_app.id != "all"}{$_selected_app.id|json_encode}{else}false{/if},
+                group_by: {if !empty($group_by)}{$group_by|json_encode}{else}false{/if},
+                timeframe: {if !empty($timeframe)}{$timeframe|json_encode}{else}false{/if},
+                start_date: {if !empty($start_date)}{$start_date|json_encode}{else}false{/if},
+                end_date: {if !empty($end_date)}{$end_date|json_encode}{else}false{/if},
+                contact_id: {$contact_id|json_encode},
+                locales: {
+                    dateFormat: "{waDateTime::getFormatJS('date')}",
+                    months: [
+                        "{_w('January', 'January')}",
+                        "{_w('February', 'February', 1)}",
+                        "{_w('March', 'March')}",
+                        "{_w('April', 'April')}",
+                        "{_w('May', 'May')}",
+                        "{_w('June', 'June')}",
+                        "{_w('July', 'July')}",
+                        "{_w('August', 'August')}",
+                        "{_w('September', 'September')}",
+                        "{_w('October', 'October')}",
+                        "{_w('November', 'November')}",
+                        "{_w('December', 'December')}"
+                    ]
+                }
+            });
+        })(jQuery);
+    </script>
+</section>
+
+{/strip}

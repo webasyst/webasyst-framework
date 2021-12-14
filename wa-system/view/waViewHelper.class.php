@@ -45,9 +45,55 @@ class waViewHelper
         return $cheat_sheet_button->buttonAction($options);
     }
 
-    public function header()
+    /**
+     * Show webasyst header
+     * @param array $options
+     *      array  $options['custom']               some custom data for injecting into webasyst header
+     *      string $options['custom']['content']    html content that will be shown in header
+     *      string $options['custom']['user']       html content that will be shown inside user aread
+     *
+     * @return string
+     */
+    public function header(array $options = [])
     {
-        return wa_header();
+        return wa_header($options);
+    }
+
+    /**
+     * @param $app_id
+     * @param bool
+     * @return string
+     * @throws waException
+     */
+    public function appIconUrl($app_id, $absolute = false)
+    {
+        $static_app_url = wa()->getAppStaticUrl($app_id, $absolute);
+
+        $app_info = wa()->getAppInfo($app_id);
+
+        $icon = '';
+
+        $icons = isset($app_info['icon']) && is_array($app_info['icon']) ? $app_info['icon'] : [];
+        if ($icons) {
+            $max_size = max(array_keys($icons));
+            $icon = $icons[$max_size];
+        } elseif (isset($app_info['img'])) {
+            $icon = $app_info['img'];
+        }
+
+        if (!$icon) {
+            return '';
+        }
+
+        $icon = ltrim($icon, '/');
+        $prefix = 'wa-apps/' . $app_id . '/';
+        $prefix_len = strlen($prefix);
+
+        if (substr($icon, 0, $prefix_len) === $prefix) {
+            $icon = substr($icon, $prefix_len);
+        }
+
+        return $static_app_url . $icon;
     }
 
     public function app()
@@ -263,6 +309,12 @@ HTML;
                 }
             }
         }
+
+        $canonical = wa()->getResponse()->getCanonical();
+        if ($canonical) {
+            $html .= '<link rel="canonical" href="' . htmlspecialchars($canonical) . '" />' . PHP_EOL;
+        }
+
         return $html;
     }
 
@@ -345,25 +397,54 @@ HTML;
         return waRequest::get('module', $default);
     }
 
+    /**
+     * If in backend intentionally need use legacy wa-1.3.css UI
+     * @param bool $strict
+     * @return string
+     * @throws waException
+     */
+    public function legacyCss($strict = false)
+    {
+        //legacy wa-1.3.css UI environment
+        $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.3.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" >
+            <!--[if IE 9]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie9.css" rel="stylesheet"><![endif]-->
+            <!--[if IE 8]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
+            <!--[if IE 7]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
+            <link type="text/css" rel="stylesheet" href="'.wa()->getRootUrl().'wa-content/font/ruble/arial/fontface.css">'."\n";
+
+        // for handling iPad and tablet computer default view properly
+        if (!waRequest::isMobile(false)) {
+            $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n";
+        }
+
+        return $css.wa()->getResponse()->getCss(true, $strict);
+    }
+
+    /**
+     * @param bool $strict
+     * @return string
+     * @throws waException
+     */
     public function css($strict = false)
     {
-        if (wa()->getEnv() == 'backend' || wa()->getEnv() == 'api') {
-            $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.3.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" >
-<!--[if IE 9]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie9.css" rel="stylesheet"><![endif]-->
-<!--[if IE 8]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
-<!--[if IE 7]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
-<link type="text/css" rel="stylesheet" href="'.wa()->getRootUrl().'wa-content/font/ruble/arial/fontface.css">'."\n";
+        $ui_version = $this->whichUI();
 
-            if (!waRequest::isMobile(false)) {
-                $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n";
-            } //for handling iPad and tablet computer default view properly
+        $css = '';
+        if (wa()->getEnv() == 'backend' || wa()->getEnv() == 'api') {
+
+            if ($ui_version != '2.0') {
+                return $this->legacyCss($strict);
+            }
+
+            $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-2.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css">
+            <script src="'.wa()->getRootUrl().'wa-content/js/jquery-wa/wa.switch-mode.js?v'.$this->version(true).'"></script>
+    <script defer src="'.wa()->getRootUrl().'wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0" />';
 
             // no referrer for backend urls
-            $css .= '<meta name="referrer" content="no-referrer" />';
-
-        } else {
-            $css = '';
+            $css .= '<meta name="referrer" content="origin-when-cross-origin" />';
         }
+
         return $css.wa()->getResponse()->getCss(true, $strict);
     }
 
@@ -525,7 +606,6 @@ HTML;
     {
         return waRequest::isMobile();
     }
-
 
     public function userAgent($type = null)
     {
@@ -811,7 +891,9 @@ HTML;
 
         try {
 
-            $renderer = new waFrontendLoginForm($options);
+
+            //$renderer = new waFrontendLoginForm($options);
+            $renderer = waFrontendLoginForm::factory($options);
 
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
@@ -865,7 +947,7 @@ HTML;
 
         try {
 
-            $renderer = new waFrontendForgotPasswordForm($options);
+            $renderer = waFrontendForgotPasswordForm::factory($options);
 
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
@@ -921,7 +1003,7 @@ HTML;
 
         try {
 
-            $renderer = new waFrontendSetPasswordForm($options);
+            $renderer = waFrontendSetPasswordForm::factory($options);
 
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
@@ -1067,23 +1149,90 @@ HTML;
 
     }
 
+    /**
+     * @param false $return_array
+     * @param array $options
+     *      int $options['width'] [optional]  - window's width for all adapters, unless specific defined. Default is 600
+     *      int $options['height'] [optional] - window's height for all adapters, unless specific defined. Default is 500
+     *      int $options[<adapter_id>]['width']  [optional] - specific adapter windows' width, overrides $options['width']
+     *      int $options[<adapter_id>]['height'] [optional] - specific adapter windows' height, overrides $options['height']
+     * @return array|string
+     * @throws SmartyException
+     * @throws waException
+     */
     public function authAdapters($return_array = false, $options = array())
     {
         $adapters = wa()->getAuthAdapters();
+
         if ($return_array) {
             return $adapters;
         }
+
         if (!$adapters) {
             return '';
         }
+
+        $window_sizes = $this->defaultAuthAdapterWindowSizes();
+
+        foreach ($adapters as $id => $_) {
+            foreach (['width', 'height'] as $key) {
+                if (isset($options[$id][$key]) && is_numeric($options[$id][$key]) && $options[$id][$key] > 0) {
+                    $window_sizes[$id][$key] = $options[$id][$key];
+                } elseif (isset($options[$key]) && is_numeric($options[$key]) && $options[$key] > 0) {
+                    $window_sizes[$id][$key] = $window_sizes['default'][$key];
+                }
+            }
+        }
+
+        unset($window_sizes['default']);
+
+
         $view = wa()->getView();
         $template = wa()->getConfig()->getRootPath().'/wa-system/auth/templates/adapters_list.html';
         $view->assign(array(
+            'window_sizes' => $window_sizes,
             'adapters' => $adapters,
             'options'  => $options,
         ));
-        $html = $view->fetch($template);
-        return $html;
+
+        return $view->fetch($template);
+    }
+
+    /**
+     * Get default modal window sizes for all enabled oauth adapters in system
+     * @return int[][] $sizes
+     *      int $sizes[<adapter_id>]['width']
+     *      int $sizes[<adapter_id>]['height']
+     * @throws waException
+     */
+    public function defaultAuthAdapterWindowSizes()
+    {
+        $adapters = wa()->getAuthAdapters();
+
+        $window_sizes = [
+            'default' => [
+                'width' => 600,
+                'height' => 500,
+            ],
+            'webasystID' => [
+                'width' => 800,
+                'height' => 600
+            ]
+        ];
+
+        foreach ($adapters as $id => $_) {
+            foreach (['width', 'height'] as $key) {
+                if (isset($options[$id][$key]) && is_numeric($options[$id][$key]) && $options[$id][$key] > 0) {
+                    $window_sizes[$id][$key] = $options[$id][$key];
+                } else if (!isset($window_sizes[$id][$key])) {
+                    $window_sizes[$id][$key] = $window_sizes['default'][$key];
+                }
+            }
+        }
+
+        unset($window_sizes['default']);
+
+        return $window_sizes;
     }
 
     public function debug()
@@ -1214,9 +1363,14 @@ HTML;
             $selected_tab = key($tabs);
         }
 
+        $legacy_suffix = '';
+        if ($this->whichUI() == '1.3') {
+            $legacy_suffix = '-legacy';
+        }
+
         $view = wa()->getView();
         $view->assign(array(
-            'profile_content_layout_template' => wa()->getAppPath('templates/actions/profile/ProfileContent.html', 'webasyst'),
+            'profile_content_layout_template' => wa()->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileContent.html', 'webasyst'),
             'uniqid'                          => str_replace('.', '-', uniqid('s', true)),
             'selected_tab'                    => $selected_tab,
             'contact_id'                      => $id,
@@ -1227,7 +1381,75 @@ HTML;
         if (file_exists($template_file)) {
             return $view->fetch('file:'.$template_file);
         } else {
-            return $view->fetch(wa()->getAppPath('templates/actions/profile/ProfileTabs.html', 'webasyst'));
+            return $view->fetch(wa()->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileTabs.html', 'webasyst'));
+        }
+    }
+
+    public function contactProfileSidebar($id, $options = array())
+    {
+        if (!wa_is_int($id)) {
+            throw new waException('bad parameters', 500);
+        }
+
+        $sections = ifset($options['sections']);
+        if (!is_array($sections)) {
+            $sections = $this->getContactTabs((int)$id);
+        }
+
+        $selected_section = ifset($options['selected_section']);
+        if (!$selected_section) {
+            $selected_section = key($sections);
+        }
+
+        $is_profile_sidebar = ifset($options['is_profile_sidebar']);
+        $is_profile_drawer = ifset($options['is_profile_drawer']);
+
+        $active_section = ifset($options['active_section']);
+        if ($active_section && !$is_profile_sidebar && isset($sections[$active_section])) {
+            $sections = [$active_section => $sections[$active_section]];
+        }
+
+        if ($is_profile_sidebar) {
+            unset($sections['activity'],$sections['info']);
+
+            // Clean up html from section
+            foreach ($sections as $section_id => $section) {
+                $sections[$section_id]['html'] = '';
+            }
+
+            $html = ifset($options['html']);
+            if($html) {
+                foreach ($html as $section_id => $content) {
+                    if(isset($sections[$section_id])) {
+                        $sections[$section_id]['html'] = $content;
+                    }
+                }
+            }
+        }
+
+        $legacy_suffix = '';
+        if ($this->whichUI() == '1.3') {
+            $legacy_suffix = '-legacy';
+        }
+
+        $wa = wa();
+        $view = $wa->getView();
+        $view->assign([
+            'profile_content_layout_template' => $wa->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileContent.html', 'webasyst'),
+            'uniqid'                          => str_replace('.', '-', uniqid('s', true)),
+            'selected_section'                => $selected_section,
+            'contact_id'                      => $id,
+            'sections'                        => $sections,
+            'is_profile_sidebar'              => $is_profile_sidebar,
+            'is_profile_drawer'               => $is_profile_drawer,
+            'app_path'                        => $wa->getAppPath(),
+        ]);
+
+        $template_file = $this->getConfig()->getConfigPath('ProfileSidebar.html', true, 'webasyst');
+        if (file_exists($template_file)) {
+            return $view->fetch('file:' . $template_file);
+        } else {
+            return $view->fetch(wa()->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileSidebar.html', 'webasyst'));
         }
     }
 
@@ -1297,6 +1519,18 @@ HTML;
     public function getCdn($url = null)
     {
         return wa()->getCdn($url);
+    }
+
+    /**
+     * Which UI version supported current app
+     * @param string|null|false $app_id - app for which need to check webasyst UI version, default is current app (null)
+     *                                  If pass FALSE will returns version from cookie, ignoring app ui option in app config
+     * @return string '1.3' or '2.0'
+     * @throws waException
+     */
+    public function whichUI($app_id = null)
+    {
+        return wa()->whichUI($app_id);
     }
 
     public function __get($app)

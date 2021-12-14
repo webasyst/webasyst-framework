@@ -1,0 +1,164 @@
+{$_title = ".skeleton"}
+{$wa->title($_title)}
+
+{function _render_skeleton}
+<div class="skeleton">
+
+    <div class="flexbox">
+        <div class="sidebar blank height-auto">
+            <span class="skeleton-custom-circle size-144" style="margin: 0 auto 2rem;"></span>
+            {for $i=1 to 3}
+    <span class="skeleton-line"></span>
+                <span class="skeleton-list"></span>
+                <span class="skeleton-list"></span>
+                <span class="skeleton-list"></span>
+            {/for}
+</div>
+        <div class="content">
+            <div class="article">
+                <div class="article-body" style="padding-top: 0;">
+                    <span class="skeleton-custom-box" style="height: 350px; margin-bottom: 2rem;">
+                        <!-- AVOID ADDING ANY CONTENT INTO THE SKELETON <i class="fas fa-image"></i> -->
+                    </span>
+                    {for $i=1 to 2}
+<span class="skeleton-header" style="width: 70%;"></span>
+                    <span class="skeleton-line"></span>
+                    <span class="skeleton-line"></span>
+                    <span class="skeleton-line" style="width: 60%;"></span>
+                    {/for}
+</div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="thumbs">
+        {for $i=1 to 10}
+<li>
+            <span class="skeleton-custom-box" style="width: 120px; height: 120px;"></span>
+            <span class="skeleton-line"></span>
+        </li>
+        {/for}
+</ul>
+
+    <div class="fields">
+        {for $i=1 to 7}
+<div class="field">
+            <div class="name">
+                <span class="skeleton-line"></span>
+            </div>
+            <div class="value">
+                <span class="skeleton-header" style="width: 50%;"></span>
+                <span class="skeleton-line"></span>
+                <span class="skeleton-line"></span>
+                <span class="skeleton-line"></span>
+                <span class="skeleton-line" style="width: 70%;"></span>
+            </div>
+        </div>
+        {/for}
+</div>
+
+</div> <!-- / .skeleton -->
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Базовый рекомендованный индикатор ожидания загрузки данных для всех случаев, когда загружаемые данные станут отображаться на странице сразу после их получения, и место отображения этих данных в интерфейсе заранее известно. Во всех прочих случаях, в которых загружаемые данные либо не будут показаны на странице, либо их внешний вид не определен, используйте <code><a href="{$wa_app_url}component/loading/">.waLoading()</a></code> или <code><a href="{$wa_app_url}component/spinner/">.spinner</a></code>.</p>
+
+    <p>Компонент позволяет максимально быстро показать общий «скелет» страницы, примерно обозначающий ее визуальную структуру и расположение основных блоков контента, который вот-вот появится.</p>
+    <p>Блоки оформляются внутри общего контейнера <code>.skeleton</code> и наполняются  геометрическими фигурами: полосками поменьше и побольше, прямоугольниками, кругами и прочими примитивами. <code>.skeleton</code> задает единый визуальный вид для всех внутренних компонентов.</p>
+
+    <p>Рекомендуем использовать типовые геометрические примитивы:</p>
+    <ul>
+        <li><code>.skeleton-header</code> — для обозначения больших заголовков типа h1, h2,</li>
+        <li><code>.skeleton-line</code> — для будущих текстовых строк или пунктов меню,</li>
+        <li><code>.skeleton-list</code> — для пункта меню с иконкой.</li>
+    </ul>
+    <p>Или же произвольные геомертические фигуры, размер которых вы регулируете по своему усмотрению.</p>
+    <ul>
+        <li><code>.skeleton-custom-circle</code> — круг. Размер указывается с помощью дополнительных классов .size-48, .size-96, .size-144, .size-192 или явным образом в <code>style=""</code>.</li>
+        <li><code>.skeleton-custom-box</code> — прямоугольник. Требует указания высоты и ширины явным образом в <code>style=""</code>.</li>
+    </ul>
+    <p>Для комбинирования вышеперечисленных фигур на странице используйте базовые элементы разметки wa-2.0.css — <code>.sidebar / .content</code>, <code>.flexbox</code>, <code>.tablebox</code>, <code>.inlinebox</code>, <code>.fields</code>, <code>.thumbs</code> и т. д. — и модификацию размеров с помощью <code>style=""</code>.</p>
+
+    <div class="line">
+        {_render_skeleton}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_skeleton|escape}</pre>
+    </div>
+    <div class="line">
+        <h2>Пример</h2>
+    </div>
+    <p>Типичный пример использования скелета — отображение во время ожидания ответа сервера.</p>
+    <p><strong>1.</strong> Создаем в шаблоне функцию Smarty, которая будет содержать «скелет» списка. Можно вообще обойтись без Smarty-функции, но тогда в пункте <b>3-б</b> (см. ниже) будет не так удобно.</p>
+    <p class="line">
+        <span>SMARTY / HTML</span>
+        {function name="_example_1_html"}{literal}
+{function skeleton}
+    <div class="skeleton">
+        {for $i=1 to 3}
+        <span class="skeleton-list"></span>
+        {/for}
+    </div>
+{/function}{/literal}{/function}
+        <pre class="prettyprint">{_example_1_html|escape}</pre>
+    </p>
+
+    <p><strong>2.</strong> Вызываем функцию Smarty в элементе <code>#content</code>. </p>
+    <p class="line">
+        <span>SMARTY / HTML</span>
+{function name="_example_2_html"}{literal}
+<div id="#content">
+    {skeleton}
+</div>
+{/literal}{/function}
+        <pre class="prettyprint">{_example_2_html|escape}</pre>
+    </p>
+    <p>В том месте, где должен будет появиться список, отобразится сначала нарисованный нами «скелет».</p>
+    <div class="skeleton" style="width:50%;margin:2rem auto;">
+        <span class="skeleton-list"></span>
+        <span class="skeleton-list"></span>
+        <span class="skeleton-list"></span>
+    </div>
+    <p><strong>3-а.</strong> Некое событие (в нашем случае загрузка страницы) инициирует запрос к серверу, чтобы получить нужный нам список.</p>
+    <p class="line">
+        <span>JavaScript</span>
+{function name="_example_3a"}
+<script>
+    $(function() {
+        $.get( "page.php", { }, function( data ) {
+            $('#content').empty().html(data); // очищаем содержимое элемента, убирая «скелет» и вставляем полученный от сервера список
+        })
+    });
+</script>
+{/function}
+<pre class="prettyprint">{_example_3a|escape}</pre>
+    </p>
+
+    <p><strong>3-б.</strong>Если необходимо загружать список, например, только по клику на кнопке, то пункт №2 нужно пропустить, а JavaScript-код будет выглядеть примерно так:</p>
+    <p class="line">
+        <span>JavaScript</span>
+{function name="_example_3b"}
+<script>
+    $(function() {
+        const skeleton = { skeleton|json_encode }; // записываем разметку «скелета» в переменную
+        $('button').on('click', function(){
+            $('#content').empty().html(skeleton); // очищаем содержимое элемента и вставляем «скелет»
+            $.get( "page.php", { }, function( data ) {
+                $('#content').empty().html(data); // очищаем содержимое элемента, убирая «скелет» и вставляем полученный от сервера список
+            })
+        });
+    });
+</script>
+{/function}
+<pre class="prettyprint">{_example_3a|escape}</pre>
+    </p>
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

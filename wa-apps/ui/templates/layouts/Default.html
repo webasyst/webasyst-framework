@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$wa->appName()} &mdash; {$wa->title()}</title>
+    {* CSS *}
+    {$wa->css()}
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/ui.css?v={$wa->version()}">
+    <link href="{$wa_url}wa-content/js/prettify/prettify.css" type="text/css" rel="stylesheet">
+
+    {* JS *}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-3.3.2.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
+    <script src="{$wa_app_static_url}js/ui.js?v={$wa->version()}"></script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/prettify/prettify.js"></script>
+
+    {$wa->js(false)}
+
+    <script>
+        (function($) { "use strict";
+            $.wa_ui.lang = {substr($wa->locale(), 0, 2)|json_encode};
+            $.wa_ui.app_url = {$wa_app_url|json_encode};
+            $.wa_ui.backend_url = {$wa_backend_url|json_encode};
+            $.wa_ui.is_debug = {$wa->debug()|json_encode};
+            $.wa_ui.title.pattern = "{$wa->appName()} — %s";
+        })(jQuery);
+    </script>
+</head>
+<body>
+
+    <div id="wa">
+
+        {$wa->header()}
+
+        <div id="wa-app">
+            <div class="flexbox wrap-mobile">
+
+                <nav class="sidebar hide-scrollbar width-adaptive overflow-visible flexbox mobile-friendly" id="ui-main-sidebar-unique-custom-id-1312">
+                    <nav class="sidebar-mobile-toggle">
+                        <div class="box align-center">
+                            <a href="javascript:void(0);"><i class="fas fa-bars"></i> Меню</a>
+                        </div>
+                    </nav>
+                    <main class="sidebar-body hide-scrollbar" id="wa-app-navigation">
+                        {$sidebar}
+                    </main>
+                </nav>
+
+                <div class="content blank hide-scrollbar">
+
+                    <div class="article">
+                        <div class="article-body" id="wa-app-content">
+                            {$content}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <script>
+                ( function($) {
+                    $.wa_ui.content = $.wa_ui.init.initContentRouter({
+                        $content: $("#wa-app-content"),
+                        onLoad: function() {
+                            $('.temp-element').remove();
+                            $("html, body").scrollTop(0);
+                        }
+                    });
+                })(jQuery);
+            </script>
+        </div>
+
+        <script>
+            ( function($) {
+                var waLoading = $.waLoading();
+
+                $(document)
+                    .on("wa_before_load", function() {
+                        waLoading.show();
+                    })
+                    .on("wa_loading", function(event, xhr_event) {
+                        var percent = (xhr_event.loaded / xhr_event.total) * 100;
+                        waLoading.set(percent);
+                    })
+                    .on("wa_abort", function() {
+                        waLoading.abort();
+                    })
+                    .on("wa_loaded", function() {
+                        waLoading.done();
+                    });
+
+                $.wa_ui.start();
+
+                const $sidebar = $('#ui-main-sidebar-unique-custom-id-1312');
+                $sidebar.waShowSidebar({
+                    direction: "down"
+                });
+
+
+            })(jQuery);
+        </script>
+    </div>
+</body>
+</html>

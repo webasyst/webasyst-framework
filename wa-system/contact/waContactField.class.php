@@ -775,9 +775,13 @@ abstract class waContactField
             $value = ifset($value, 'value', '');
         }
 
-        $name_input = $name = $this->getHTMLName($params);
+        $base_name_input = $this->getHTMLName($params);
+
+        $ext_input = '';
+        $name_input = $base_name_input;
         if ($this->isMulti() && $ext) {
-            $name_input .= '[value]';
+            $ext_input = $base_name_input . '[ext]';
+            $name_input = $base_name_input . '[value]';
         }
 
         $disabled = '';
@@ -796,7 +800,7 @@ abstract class waContactField
         $result = '<input '.$attrs.' title="'.$name.'" '.$disabled.' type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
         if ($ext) {
             // !!! add a proper <select>?
-            $result .= '<input type="hidden" '.$disabled.' name="'.htmlspecialchars($name.'[ext]').'" value="'.htmlspecialchars($ext).'">';
+            $result .= '<input type="hidden" '.$disabled.' name="'.htmlspecialchars($ext_input).'" value="'.htmlspecialchars($ext).'">';
         }
 
         return $result;

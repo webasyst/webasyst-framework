@@ -146,6 +146,8 @@ class waContact implements ArrayAccess
     {
         if ($width === 'original') {
             $size = 'original';
+        } elseif ($width === 'original_crop') {
+            $size = 'original_crop';
         } else if ($width && !$height) {
             $size = $width.'x'.$width;
         } else if (!$width) {
@@ -161,16 +163,23 @@ class waContact implements ArrayAccess
 
         if ($ts) {
             $dir = self::getPhotoDir($id, false);
-            if ($size != 'original' && $retina) {
-                $size .= '@2x';
+
+            if ($size === 'original_crop') {
+                $filename = "{$ts}.jpg";
+            } else{
+                if ($size != 'original' && $retina) {
+                    $size .= '@2x';
+                }
+                $filename = "{$ts}.{$size}.jpg";
             }
+
             if (waSystemConfig::systemOption('mod_rewrite')) {
-                return wa()->getDataUrl("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
+                return wa()->getDataUrl("photos/{$dir}{$filename}", true, 'contacts');
             } else {
-                if (file_exists(wa()->getDataPath("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts'))) {
-                    return wa()->getDataUrl("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
+                if (file_exists(wa()->getDataPath("photos/{$dir}{$filename}.jpg", true, 'contacts'))) {
+                    return wa()->getDataUrl("photos/{$dir}{$filename}.jpg", true, 'contacts');
                 } else {
-                    return wa()->getDataUrl("photos/thumb.php/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
+                    return wa()->getDataUrl("photos/thumb.php/{$dir}{$filename}.jpg", true, 'contacts');
                 }
             }
         } else {
@@ -181,10 +190,21 @@ class waContact implements ArrayAccess
             if ($retina) {
                 $size .= '@2x';
             }
+
+            $ui = wa()->whichUI();
+
             if ($type == 'company') {
-                return wa()->getRootUrl().'wa-content/img/company'.$size.'.jpg';
+                if ($ui == '2.0') {
+                    return wa()->getRootUrl() . 'wa-content/img/company.svg';
+                } else {
+                    return wa()->getRootUrl() . 'wa-content/img/company' . $size . '.jpg';
+                }
             } else {
-                return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
+                if ($ui == '2.0') {
+                    return wa()->getRootUrl() . 'wa-content/img/userpic.svg';
+                } else {
+                    return wa()->getRootUrl() . 'wa-content/img/userpic' . $size . '.jpg';
+                }
             }
         }
     }
@@ -406,33 +426,33 @@ class waContact implements ArrayAccess
             }
             // no special formatting
             else {
-                // Contact without name uses first part of email as fiestname
+                // Contact without name derive firstname from email or phone
                 if ($field_id === 'firstname' &&
-                        $result === null &&
-                        !trim($this['middlename'] !== null ? $this['middlename'] : '') &&
-                        !trim($this['lastname'] !== null ? $this['lastname'] : '') &&
-                        !trim($this['company'] !== null ? $this['company'] : '')
-                    )
+                        !trim($result) &&
+                        !trim($this['middlename']) &&
+                        !trim($this['lastname']) &&
+                        !trim($this['company']))
                 {
-                    $eml = $this->get('email', 'value');
+                    $emls = $this->get('email', 'value');
+                    $emls = waUtils::toStrArray($emls);
+
+                    $eml = $emls ? reset($emls) : '';
+
                     if ($eml) {
-                        if (is_array($eml)) {
-                            $eml = array_values($eml);
-                            $eml = reset($eml);
-                        } else {
-                            $eml = '';
-                        }
                         $pos = strpos($eml, '@');
-                        if ($pos == false) {
-                            return $eml;
-                        } else {
+                        if ($pos !== false) {
                             return substr($eml, 0, $pos);
+                        } else {
+                            return $eml;
                         }
                     }
-                    $phone_as_name = $this->get('phone', 'default|value');
-                    if ($phone_as_name) {
-                        return $phone_as_name;
-                    }
+
+                    // email happend to be empty - now will try phone
+
+                    $phones = $this->get('phone', 'value');
+                    $phones = waUtils::toStrArray($phones);
+
+                    return $phones ? reset($phones) : '';
                 }
 
                 return $result;
@@ -829,7 +849,8 @@ class waContact implements ArrayAccess
         if (waConfig::get('is_template')) {
             unset(
                 $data['is_user'],
-                $data['is_company']
+                $data['is_company'],
+                $data['webasyst_contact_id']
             );
         }
         return $data;
@@ -1305,18 +1326,35 @@ class waContact implements ArrayAccess
 
     /**
      * @param int $len
+     * @param bool $extended - use extended alphabet or only letters and digits
      * @return string
      */
-    public static function generatePassword($len = 11)
+    public static function generatePassword($len = 11, $extended = true)
     {
-        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789!@#$%^&*-?';
-        $alphabet = str_split($alphabet, 1);
+        $alphabet_str = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789';
+
+        $alphabet = str_split($alphabet_str, 1);
         shuffle($alphabet);
+
+        if ($extended) {
+            $extended_alphabet = str_split($alphabet_str . '!@#$%^&*-?', 1);
+            shuffle($extended_alphabet);
+        } else {
+            $extended_alphabet = $alphabet;
+        }
+
         $password = array();
         for ($i = 0; $i < $len; $i++) {
-            $key = array_rand($alphabet);
-            $password[] = $alphabet[$key];
+            // first and last letter always get from base alphabet
+            if ($i == 0 || $i == $len - 1) {
+                $key = array_rand($alphabet);
+                $password[] = $alphabet[$key];
+            } else {
+                $key = array_rand($extended_alphabet);
+                $password[] = $extended_alphabet[$key];
+            }
         }
+
         return join('', $password);
     }
 
@@ -1470,5 +1508,127 @@ class waContact implements ArrayAccess
             '_event' => $event,
         ));
         return $event;
+    }
+
+    /**
+     * Bind current contact with contact of Webasyst ID - this method save right away, not just store in runtime
+     *
+     * @param int $webasyst_contact_id
+     * @param array $token_params - token params
+     *      - string $token_params['access_token']  [required] - access token itself (jwt)
+     *      - string $token_params['refresh_token'] [optional] - refresh token to refresh access token
+     *      - int    $token_params['expires_in']    [optional] - ttl of expiration in seconds
+     *      - string $token_params['token_type']    [optional] - "bearer"
+     * @throws waDbException
+     * @throws waException
+     */
+    public function bindWithWaid($webasyst_contact_id, $token_params)
+    {
+        $cwm = new waContactWaidModel();
+        $cwm->set($this->getId(), $webasyst_contact_id, $token_params);
+    }
+
+    /**
+     * Unbind current contact from contact of Webasyst ID, delete token params
+     * @throws waDbException
+     * @throws waException
+     */
+    public function unbindWaid()
+    {
+        $cwm = new waContactWaidModel();
+        $cwm->del($this->getId());
+    }
+
+    /**
+     * Get bound with current contact Webasyst ID contact
+     * @return int - always return int >= 0. If 0 means bind contact is not valid or not exist at all
+     * @throws waDbException
+     * @throws waException
+     */
+    public function getWebasystContactId()
+    {
+        $cwm = new waContactWaidModel();
+        $data = $cwm->get($this->getId());
+        if ($data) {
+            return intval($data['webasyst_contact_id']);
+        }
+        return 0;
+    }
+
+
+    /**
+     * Update for current contact Webasyst ID token params
+     * Current contact must be already bound with webasyst ID, otherwise method will not has any effect
+     * @param array|null $params - token params or NULL if want to delete token params
+     *      - string $params['access_token']  [required] - access token itself (jwt)
+     *      - string $params['refresh_token'] [optional] - refresh token to refresh access token
+     *      - int    $params['expires_in']    [optional] - ttl of expiration in seconds
+     *      - string $params['token_type']    [optional] - "bearer"
+     * @throws waDbException
+     * @throws waException
+     */
+    public function updateWebasystTokenParams($params = [])
+    {
+        $cwm = new waContactWaidModel();
+        $cwm->updateToken($this->getId(), $params);
+    }
+
+    /**
+     * Get for current contact Webasyst ID token params
+     * @return null|array $params - if token params saved is not valid by expected format OR not existed at all returns NULL, otherwise:
+     *      - string $params['access_token']  [required] - access token itself (jwt), if there is not this field returns NULL
+     *      - string $params['refresh_token'] [optional] - refresh token to refresh access token, if not valid return ''
+     *      - int    $params['expires_in']    [optional] - ttl of expiration in seconds, if not valid return 0
+     *      - string $params['token_type']    [optional] - "bearer", always return "bearer"
+     * @throws waDbException
+     * @throws waException
+     */
+    public function getWebasystTokenParams()
+    {
+        $cwm = new waContactWaidModel();
+        $data = $cwm->get($this->getId());
+        if (!$data) {
+            return null;
+        }
+        return $data['token'];
+    }
+
+    /**
+     * Clear all Webasyst ID assets for all contacts
+     */
+    public static function clearAllWebasystIDAssets()
+    {
+        // not available in templates
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
+        // delete contact id <-> webasyst contact id binds along with token params
+        $cwm = new waContactWaidModel();
+        $cwm->clearAll();
+
+        $csm = new waContactSettingsModel();
+        $csm->clearAllWebasystAnnouncementCloseFacts();
+
+        // delete invitation marks
+        $csm->deleteByField(['name' => 'waid_invite_datetime']);
+    }
+
+    public static function clearWebasystIDAssets(array $contact_ids = [])
+    {
+        // not available in templates
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
+        // delete contact id <-> webasyst contact id binds along with token params
+        $cwm = new waContactWaidModel();
+        $cwm->clear($contact_ids);
+
+        $csm = new waContactSettingsModel();
+        $csm->clearWebasystAnnouncementCloseFacts($contact_ids);
+
+        // delete invitation marks
+        $csm->deleteByField(['contact_id' => $contact_ids, 'name' => 'waid_invite_datetime']);
     }
 }

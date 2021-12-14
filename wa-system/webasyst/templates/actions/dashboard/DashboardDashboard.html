@@ -1,0 +1,93 @@
+<section class="wa-dashboard-page widgets">
+    <div class="d-page-header">
+        <h1>{$dashboard.name|escape}</h1>
+    </div>
+
+    <div class="d-dashboard-link-wrapper box" id="d-dashboard-link-wrapper">
+        <div class="dropdown" id="dashboard_link">
+            <button class="dropdown-toggle button nobutton" type="button">
+                <span><i class="fas fa-tv"></i> [`TV link`]</span>
+            </button>
+            <div class="dropdown-body" style="width: auto; max-width: fit-content;">
+                <ul class="menu">
+                    <li>
+                        <a href="{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/" target="_blank" rel="noopener">
+                            <i class="fas fa-external-link-alt"></i> <span>[`Open in a new window`]</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="js-copy-url">
+                            <i class="fas fa-clipboard"></i> <span>[`Copy`]: <strong class="nowrap">{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/</strong></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <input style="position: absolute; left: -9999em" class="js-dashboard-url" type="text" aria-hidden="true" value="{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/">
+        </div>
+        <span data-wa-tooltip-placement="right" data-wa-tooltip-content="[`This dashboard can be viewed both in a browser and on a TV with the support for basic website browsing. Get a private TV link and open it using an internal browser on your TV.`]">
+                <i class="fas fa-question-circle"></i>
+        </span>
+        <div class="alert-fixed-box hidden" id="link_coped">
+            <span class="alert success">
+                [`Copied`]
+                <span class="alert-close"><i class="fas fa-check"></i></span>
+            </span>
+        </div>
+    </div>
+    <div id="wa_widgets" class="js-dashboard-widgets">
+        {include file="../dashboard/DashboardWidgets.html" inline}
+        <div class="d-settings-wrapper" id="d-settings-wrapper" style="display: none">
+            <div class="d-settings-container" id="d-settings-container">
+                <div class="d-settings-inner-container">
+                    <div class="d-settings-block" id="d-settings-block"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(function () {
+        let $wa_header = document.querySelector('#wa-header'),
+            wa_header_height = $wa_header.clientHeight;
+
+        WaHeader.headerBehavior('.wa-dashboard-page', { rootMargin: `${ wa_header_height }px 0px -100% 0px` });
+
+        new Dashboard();
+        new Group();
+        new Page();
+
+        let $dashboard_link_wrapper = document.querySelector('#d-dashboard-link-wrapper'),
+            $dashboard_link = document.querySelector('.js-dashboard-url'),
+            $copy_btn = $dashboard_link_wrapper.querySelector('.js-copy-url'),
+            $link_coped = $dashboard_link_wrapper.querySelector('#link_coped');
+
+        $copy_btn.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            $dashboard_link.select();
+            document.execCommand("copy");
+
+            let $copy_icon = $copy_btn.querySelector('svg');
+            $copy_icon.classList.toggle('fa-clipboard')
+            $copy_icon.classList.toggle('fa-clipboard-check')
+
+            $link_coped.classList.toggle('hidden');
+
+
+            setTimeout(()=>{
+                $copy_icon = $copy_btn.querySelector('svg');
+                $copy_icon.classList.toggle('fa-clipboard-check')
+                $copy_icon.classList.toggle('fa-clipboard')
+                $link_coped.classList.toggle('hidden');
+            }, 1000)
+        });
+
+        $("#dashboard_link").waDropdown();
+        $("[data-wa-tooltip-content]").waTooltip();
+
+        WaHeader.setHeaderTitle({
+            title_text: "{$dashboard.name|escape}",
+            truncate: 42
+        })
+    });
+</script>

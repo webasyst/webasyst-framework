@@ -1,0 +1,176 @@
+<style>
+    .branch-advanced-settings-dialog .dialog-buttons a { display: inline-block; }
+</style>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.subfield.conditional.values.js?v={$wa->version()}"></script>
+
+{if $prefix == "options"}
+    {$prefix = "options[address][fields]"}
+{/if}
+
+{if in_array($ftype, array('select', 'checklist', 'radio', 'branch'))}
+    <table id="{$uniqid}" class="s-subfield-editor">
+        <tbody class="ui-sortable">
+            {if $f->getParameter('options')}
+                {if $ftype == 'branch'}
+                    {$hide = $f->getParameter('hide')}
+                {/if}
+                {foreach $f->getOptions() as $value => $label}
+                    <tr class="item-row">
+                        <td class="min-width"><i class="icon16 sort ui-sortable-handle"></i></td>
+                        <td>
+                            <input type="text" name="{$prefix}[{$fid}][options][{$value}]" value="{$label|escape}" class="s-small-input">
+                            {if $ftype == 'branch'}
+                                <input type="hidden" name="{$prefix}[{$fid}][hide][{$value}]" value="{implode(',', ifempty($hide[$value], array()))}">
+                            {/if}
+                        </td>
+                        <td class="min-width"><a href="javascript:void(0);" title="[s`Delete`]"><i class="icon10 no js-delete-subitem"></i></a></td>
+                    </tr>
+                {/foreach}
+            {/if}
+            <tr class="hidden item-row template">
+                <td class="min-width"><i class="icon16 sort ui-sortable-handle"></i></td>
+                <td>
+                    <input type="text" name="{$prefix}[{$fid}][options][]" class="s-small-input">
+                    {if $ftype == 'branch'}
+                        <input type="hidden" name="{$prefix}[{$fid}][hide][]" value="">
+                    {/if}
+                </td>
+                <td class="min-width"><a href="javascript:void(0);" title="[s`Delete`]"><i class="icon10 no js-delete-subitem"></i></a></td>
+            </tr>
+            <tr class="add-item">
+                <td colspan="3"><a class="inline-link add-item small" href="javascript:void(0);"><i class="icon10 add"></i> <b><i>[s`Add item`]</i></b></a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="show-in-readonly" style="margin-right: 40px;">
+        {if $f->getParameter('options')}
+            <ul class="menu-v compact small with-icons read-only-items-list hide-when-field-disabled" style="max-width:200px;">
+                {foreach $f->getOptions() as $value => $label}
+                    <li>{$label|escape}</li>
+                {/foreach}
+            </ul>
+        {/if}
+    </div>
+
+    {if $ftype == 'branch'}
+        <div class="hidden branch-advanced-settings-dialog">
+            <h1>[s`Radio selector advanced settings`]</h1>
+            <p>[s`Depending on the current radio selector value, other contact form fields may be set to be omitted (become hidden). Manage form fields visibility settings using checkboxes below for each radio selector value.`]</p>
+            <div class="fields form">
+                <div class="field hidden option template">
+                    <div class="name insert-option-name-here"></div>
+                    <div class="value">
+                        <ul class="menu-v" style="margin-top:0">
+                            <li class="field-checkbox template" style="display:none">
+                                <label>
+                                    <input type="checkbox">{* JS assigns attrs at dialog creation time: name = option name, value = field id *}
+                                    <span class="field-name">{* JS inserts field name here *}</span>
+                                    <span class="hidden hint">[s`Required`]</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    <script>
+        $(function() { "use strict";
+            var $table = $('#{$uniqid}');
+
+            // Sort sub-items
+            $table.find(".ui-sortable").sortable({
+                items : ".item-row",
+                handle : "i.sort",
+                axis: 'y'
+            });
+
+            // Add sub-item
+            $table.on('click', 'tr.add-item a.add-item', function() {
+                var $tmpl = $table.find('tbody > .item-row.template');
+                $tmpl.clone().insertBefore($tmpl).removeClass('template').removeClass('hidden');
+            });
+
+            // Delete sub-item
+            $table.on('click', '.js-delete-subitem', function() {
+                $(this).closest('tr').remove();
+            });
+
+            {if $f->getParameter('options')}
+                // Hide items in read-only list if there are too many
+                (function() {
+                    var $ul = $table.parent().find('.read-only-items-list');
+                    var $lis = $ul.children();
+                    if ($lis.length >= 5) {
+                        $lis.slice(5).hide();
+                        $($lis[4]).after(
+                            $('<li><a href="javascript:void(0)" class="inline-link"><b><i>'+"{sprintf_wp('Show %d more', count($f->getOptions()) - 5)}"+'</i></b></a></li>').click(function() {
+                                $(this).remove();
+                                $lis.show();
+                            })
+                        );
+                    }
+                })();
+            {/if}
+
+            // Form validation: do not allow empty list of values
+            (function() {
+                var $form = $table.closest('form');
+                var h;
+                $form.on('submit', h = function(e) {
+                    if (!$table.parents('html').length) {
+                        $form.off('submit', h);
+                        return;
+                    }
+
+                    $table.find('.errormsg').remove();
+                    $table.find('.error').removeClass('error');
+                    var valid = true;
+
+                    if ($table.closest('tr').find('[name$="[_disabled]"]:checked').length) {
+                        if (!$table.find('tr:not(.template) [name$="[options][]"]').length) {
+                            $table.find('a.add-item').parent().append($('<em class="errormsg"></em>').text("[s`Please specify options for multiple choice field.`]"));
+                            valid = false;
+                        }
+                    }
+
+                    if (!valid) {
+                        e.validation_failed = true;
+                    }
+
+                    return false;
+                });
+            })();
+
+        });
+    </script>
+
+{elseif $ftype == 'textarea'}
+
+    <input type="hidden" name="{$prefix}[{$fid}][input_height]" value="5">
+
+{elseif $ftype == 'conditional'}
+
+    <input type="hidden" name="{$prefix}[{$fid}][hide_unmatched]" value="{$f->getParameter('hide_unmatched')}">
+    <div class="show-always hide-when-modified">
+        <a href="javascript:void(0)" class="small" id="{$uniqid}" style="margin-top: 5px;"><i class="icon10 settings"></i> [s`Manage conditions`]</a>
+    </div>
+    <div class="hidden show-when-modified"><span class="highlighted small italic">[s`Click “Save” button below to commit changes.`]</span></div>
+
+    <script>
+        $(function () {
+            new WASettingsSubfieldConditionalValues({
+                dialog_link: $('#{$uniqid}'),
+                dialog_url: '?module=settingsFieldConditionalValuesDialog&field=address:{$fid}',
+                hidden: $('#{$uniqid}').closest('.field-advanced-settings').find('input:hidden[name$="[hide_unmatched]"]'),
+                locales: {
+                    field_is_required: "[s`This field is required.`]"
+                }
+            });
+        });
+    </script>
+
+{/if}
+

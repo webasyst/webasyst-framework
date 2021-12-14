@@ -49,7 +49,7 @@ class boxberryShippingCalculateHelper
             $free_price = (float)$this->bxb->free_price;
 
             // Check if you need to make delivery free
-            if ($free_price > 0 && $this->bxb->getTotalPrice() > $free_price) {
+            if ($free_price > 0 && $this->bxb->getTotalPrice() >= $free_price) {
                 $rate['price'] = 0;
             }
         }
@@ -209,7 +209,7 @@ class boxberryShippingCalculateHelper
         $result = 0.0;
 
         $payment_type = $this->bxb->getSelectedPaymentTypes();
-        // Если плагин оплаты позволят рассчитаться и авансом и наместе, то значит что-то пошло не так.
+        // Если плагин оплаты позволят рассчитаться и авансом, и на месте, то значит что-то пошло не так.
         // В таком случае считаем минимальную цену.
         if ($payment_type && !in_array(waShipping::PAYMENT_TYPE_PREPAID, $payment_type)) {
             $result = $this->bxb->getTotalPrice();
@@ -249,7 +249,7 @@ class boxberryShippingCalculateHelper
      */
     protected function getApiManager()
     {
-        return new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url);
+        return new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url, $this->bxb);
     }
 
     /**
@@ -268,7 +268,7 @@ class boxberryShippingCalculateHelper
         return '';
     }
 
-    public static function findRusCityName($query_city, $city_names)
+    public static function findCityName($query_city, $city_names)
     {
         foreach ($city_names as $city_name) {
             $original_city_name = $city_name;

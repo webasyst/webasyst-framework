@@ -1,0 +1,83 @@
+.electronic-clock-wrapper
+    height 100%
+    padding 16px
+    box-sizing border-box
+    .electronic-clock-block
+        display: flex;
+        height: 100%;
+        justify-content: space-between;
+        flex-direction: column;
+        align-items: center;
+        overflow hidden
+        .date-block
+            display: flex;
+            height: 100%;
+            justify-content: flex-start;
+            flex-direction: column;
+            align-items: center;
+
+            .date-wrapper
+                font-weight 700
+                font-size 1.3rem
+                color var(--text-color)
+                margin-bottom 16px
+                span
+                    text-transform lowercase
+
+            .time-wrapper
+                display flex
+                justify-content center
+                align-items baseline
+                font-weight 700
+                font-size 3.5rem
+                white-space nowrap
+                color var(--text-color-strongest)
+
+                .divider
+                    margin: 0 8px
+                    color var(--text-color-hint)
+
+                    &.step-1
+                        color var(--text-color)
+
+        .town-wrapper
+            font-size 18px
+            font-weight 700
+            color var(--text-color-strong)
+
+    &:not(.has-town)
+        .electronic-clock-block
+            .date-block
+                justify-content: center;
+
+.widget-2x1
+    .electronic-clock-wrapper
+        padding 8px 16px
+        .electronic-clock-block
+            .date-block
+                .date-wrapper
+                    font-weight 700
+                    font-size 1rem
+                    margin-bottom 8px
+                .time-wrapper
+                    font-size 2.5rem
+                    .divider
+                        margin: 0 6px
+            .town-wrapper
+                font-size 14px
+
+.widget-1x1
+    .electronic-clock-wrapper
+        padding 8px
+        .electronic-clock-block
+            .date-block
+                .date-wrapper
+                    font-weight 700
+                    font-size .875rem
+                    margin-bottom 8px
+                .time-wrapper
+                    font-size 1.6rem
+                    .divider
+                        margin: 0 3px
+            .town-wrapper
+                font-size 14px

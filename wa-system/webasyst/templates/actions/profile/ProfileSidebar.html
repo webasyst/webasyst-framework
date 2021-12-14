@@ -1,0 +1,140 @@
+{*
+ * Default template for $wa->contactProfileSidebar() helper.
+ *
+ * Can be copied for customization to
+ * wa-config/apps/webasyst/ProfileSidebar.html
+ *}
+{if $is_profile_sidebar}
+    {$widget_path = "`$app_path`/templates/actions/profile/sidebarWidgets/Calendar.html"}
+    {$schedule_path = "`$app_path`/templates/actions/schedule/Schedule.inc.html"}
+    <section class="t-profile-sidebar-section js-sidebar-calendar custom-mb-16" data-section="calendar">
+        <div class="t-profile-sidebar-title flexbox middle">
+            <a href="javascript:void(0);"
+               class="large bold js-sidebar-profile-dialog"
+               data-dialog-header="[`Calendar`]"
+               data-dialog-width="1000px"
+               data-section-id="calendar">
+                [`Calendar`]
+            </a>
+            <a href="javascript:void(0);" class="text-light-gray custom-ml-auto js-show-outer-calendar-manager"><i class="fas fa-cog"></i></a>
+        </div>
+        {if file_exists($widget_path)}
+            {include file=$widget_path inline}
+        {/if}
+        {if file_exists($schedule_path) && !$is_profile_drawer}
+            <div class="js-calendar-html" style="display: none">
+                {include file=$schedule_path context='profile' inline}
+            </div>
+        {/if}
+    </section>
+    {foreach $sections as $section_id => $section}
+        {if $section_id !== 'stats'}{continue}{/if}
+        <section class="t-profile-sidebar-section js-sidebar-{$section_id|escape}{if !empty($section.html)} custom-mb-16{/if}" data-section="{$section_id|escape}">
+            <a href="javascript:void(0);"
+               class="t-profile-sidebar-title large bold js-sidebar-profile-dialog"
+               data-url="{$section.url|default:''}"
+               data-dialog-header="{$section.title|escape}"
+               data-dialog-width="1000px"
+               data-section-id="{$section_id|escape}">
+                {$section.title}
+                {if !empty($section.count)}
+                    <span class="count small text-light-gray">{$section.count}</span>
+                {/if}
+            </a>
+            {if !empty($section.html)}
+                {$section.html}
+            {/if}
+            </section>
+    {/foreach}
+    {foreach $sections as $section_id => $section}
+        {if $section_id === 'stats' || $section_id === 'access'}{continue}{/if}
+        <section class="t-profile-sidebar-section js-sidebar-{$section_id|escape}{if !empty($section.html)} custom-mb-16{/if}" data-section="{$section_id|escape}">
+            <a href="javascript:void(0);"
+               class="t-profile-sidebar-title large bold js-sidebar-profile-dialog"
+               data-url="{$section.url|default:''}"
+               data-dialog-header="{$section.title|escape}"
+               data-dialog-width="1000px"
+               data-section-id="{$section_id|escape}">
+                {$section.title}
+                {if !empty($section.count)}
+                    <span class="count small text-light-gray">{$section.count}</span>
+                {/if}
+            </a>
+            {if !empty($section.html)}
+                {$section.html}
+            {/if}
+        </section>
+    {/foreach}
+{else}
+    {$section_id = $options.sectionId|default:''}
+    {if $section_id && isset($sections[$section_id])}
+        {$section = $sections[$section_id]}
+        {$section_url = $section.url|default:''}
+
+        <div id="t-profile-section-dialog-{$uniqid}" class="t-profile-section-iframe height-100"></div>
+        <div class="hidden" id="t-profile-section-layout-html-{$uniqid}">
+            {include file=$profile_content_layout_template assign=layout_html}
+            {$layout_html|escape}
+        </div>
+        {strip} {* strip need for js *}
+            <div class="hidden" id="t-profile-section-html-{$uniqid}">
+                {if !empty($sections[$section_id].html) && empty($section.url)}
+                    {$section.html|escape}
+                {/if}
+            </div>
+        {/strip}
+
+        <script>
+            new class ProfileSidebarSection {
+                constructor() {
+                    const that = this;
+
+                    that.$content_wrapper = $('#t-profile-section-dialog-{$uniqid}') || null;
+
+                    that.dialog = that.$content_wrapper.closest('.dialog-opened').data('dialog');
+                    that.section_url = '{$section_url}';
+                    that.error_msg = "[`Error getting section contents.`]";
+                    that.init();
+                }
+
+                init() {
+                    const that = this;
+
+                    if (!that.section_url) {
+                        that.$content_wrapper.html('<p><i class="fas fa-times-circle text-red"></i> ${ that.error_msg }</p>');
+                        throw new Error(that.error_msg);
+                    }
+
+                    $.ajax({
+                        url: that.section_url,
+                        success(result) {
+                            that.$content_wrapper.html(result);
+
+                            // we need timeout because html method have no callback
+                            // and we need time to repaint content
+                            setTimeout(() => {
+                              that.dialog.resize();
+                            }, 100)
+                        },
+                        error() {
+                            console.warn(that.error_msg);
+                            console.error.apply(console, arguments);
+                            that.$content_wrapper.html(`<p><i class="fas fa-times-circle text-red"></i> ${ that.error_msg }</p>`);
+                            return false;
+                        },
+                        dataType: 'html'
+                    });
+                }
+
+                reload() {
+                    const that = this;
+                    that.$content_wrapper.html.empty();
+                    that.init();
+                }
+            }
+
+            window.isProfileSidebarSection = true;
+        </script>
+    {/if}
+{/if}
+

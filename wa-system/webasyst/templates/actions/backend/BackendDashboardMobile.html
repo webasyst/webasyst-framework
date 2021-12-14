@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="empty-widgets-wrapper {if empty($widgets)}is-shown{/if}" id="empty-widgets-wrapper">
-                    [`Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top.`]
+                    [`Your dashboard is empty. Add widgets by clicking “Edit widgets” button at the top.`]
                 </div>
 
                 {* HIDDEN LOADING SCREEN *}
@@ -49,7 +49,7 @@
 
             {* SCRIPTS *}
             <script>
-                {$_capture_array|implode:''|strip}
+                {$_capture_array|join:''|strip}
             </script>
 
         </section>

@@ -1,0 +1,125 @@
+{strip}
+
+{* CALENDAR *}
+{if $selected_calendar_id && !empty($calendars[$selected_calendar_id])}
+    {$selected_calendar = $calendars[$selected_calendar_id]}
+{else}
+    {$selected_calendar = $calendars["all"]}
+{/if}
+
+{* USER *}
+{if $selected_user_id && !empty($users[$selected_user_id])}
+    {$selected_user = $users[$selected_user_id]}
+{else}
+    {$selected_user = $users["all"]}
+{/if}
+
+<div class="t-calendar-page">
+    {* HEADER *}
+    <header class="t-content-header t-calendar-header">
+        <h1>[`Calendar`]</h1>
+
+        <div class="t-info-notice-wrapper" style="display: none;">
+            <p>[`This is your team calendar. Schedule events and user statuses so all your teammates see who is up to on what. Click on a date or drag between dates to add an event.`]</p>
+            <span class="t-info-notice-toggle">&times;</span>
+        </div>
+
+        <div class="t-layout">
+            <div class="t-column left">
+                <ul class="menu-h dropdown">
+                    {* CALENDAR LIST *}
+                    <li>
+                        <a class="t-selected-item inline-link" href="{teamHelper::getUrl('calendar', $selected_calendar.id)}">
+                            <i class="icon16 {if !empty($selected_calendar.icon_class)}{$selected_calendar.icon_class}{elseif !empty($selected_calendar.bg_color)}userpic20{/if}" style="{if !empty($selected_calendar.bg_color) && empty($selected_calendar.icon_class)}background: {$selected_calendar.bg_color};{/if}"></i>
+                            <b><i>{$selected_calendar.name|escape}</i></b>&nbsp;<i class="icon10 darr"></i>
+                        </a>
+                        <ul class="menu-v with-icons">
+                            {foreach $calendars as $_c}
+                                <li class="t-menu-item {if $selected_calendar.id == $_c.id}selected{/if}">
+                                    <a href="{teamHelper::getUrl('calendar', $_c.id)}">
+                                        <i class="icon16 {if !empty($_c.icon_class)}{$_c.icon_class}{elseif !empty($_c.bg_color)}userpic20{/if}" style="{if !empty($_c.bg_color) && empty($_c.icon_class)}background: {$_c.bg_color};{/if}"></i>
+                                        {$_c.name|escape}
+                                    </a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </li>
+
+                    {* USER LIST *}
+                    <li>
+                        <a class="t-selected-item inline-link" href="{teamHelper::getUrl('user', $selected_user.id)}">
+                            {if !empty($selected_user.photo_url_16)}
+                                <i class="icon16 userpic20" style="background-image: url({$selected_user.photo_url_16})"></i>
+                            {/if}
+                            <b><i>{$selected_user.name|escape}</i></b>&nbsp;<i class="icon10 darr"></i>
+                        </a>
+                        <ul class="menu-v with-icons">
+                            {foreach $users as $_u}
+                                <li class="t-menu-item {if $selected_user.id == $_u.id}selected{/if}"">
+                                    <a href="{teamHelper::getUrl('user', $_u.id)}">
+                                        {if !empty($_u.photo_url_16)}
+                                            <i class="icon16 userpic20" style="background-image: url({$_u.photo_url_16})"></i>
+                                        {/if}
+                                        {$_u.name|escape}
+                                    </a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="t-column right">
+                {* DATE PICKER *}
+                <div class="t-date-filter t-header-item" id="t-date-filter">
+                    {$_set_year = date('Y', strtotime($period_start))}
+                    {$_start_year = date('Y', strtotime('-5 years'))}
+                    {$_end_year = date('Y', strtotime('5 years'))}
+                    {if $_set_year > $_end_year}
+                        {$_end_year = $_set_year}
+                    {elseif $_set_year < $_start_year}
+                        {$_start_year = $_set_year}
+                    {/if}
+                    {$_months = [
+                        _w('January'), _w('February'), _w('March'), _w('April'), _w('May'), _w('June'),
+                        _w('July'), _w('August'), _w('September'), _w('October'), _w('November'), _w('December')
+                    ]}
+
+                    <span class="t-arrow left" title="[`Previous month`]"></span>
+
+                    <select name="month" class="month">
+                        {foreach $_months as $_m}
+                            <option value="{$_m@iteration}" {if date('n', strtotime($period_start)) == $_m@iteration}selected{/if}>{$_m}</option>
+                        {/foreach}
+                    </select>
+
+                    <select name="year" class="year">
+                        {for $_year=$_start_year to $_end_year}
+                            <option value="{$_year}" {if $_year == $_set_year}selected{/if}>{$_year}</option>
+                        {/for}
+                    </select>
+
+                    <span class="t-arrow right" title="[`Next month`]"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {* SCHEDULE *}
+    {include file="../schedule/Schedule.inc.html" context=$context inline}
+
+    {* JS *}
+    <script>
+        ( function($) {
+            new CalendarPage({
+                $wrapper: $(".t-calendar-page"),
+                $dateFilter: $("#t-date-filter"),
+                filters_href: "{teamHelper::getUrl()}",
+                user_id: {$wa->user()->getId()|json_encode}
+            });
+
+            $.team.setTitle("[`Calendar`]");
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

@@ -1,20 +1,34 @@
-<div class="d-notification-wrapper {if empty($show_tutorial)}is-shown{/if}" id="d-notification-wrapper">
-    {foreach $notifications as $n}
-    <div class="d-notification-block">
+<div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
+    {if !empty($notifications)}
+        {foreach $notifications as $n}
+            <div class="alert wa-notification">
+                <div class="wa-notification-header wa-gradient-overlay-medium">
+                    <div class="flexbox middle space-8">
+                        {$_info = $n.app}
 
-        <a href="#" rel="{$n.app_id}" class="wa-announcement-close d-notification-close" title="[s`Close`]">&times;</a>
-        
-        <div class="description-wrapper">
-            {$n.text}
-            <span class="hint nowrap">{waDateTime::format('humandatetime', $n.datetime)}</span>
+                        {* Version *}
+                        {if !empty($_info.version)}
+                            {$_version = "?v=`$_info.version|escape`"}
+                        {else}
+                            {$_version = null}
+                        {/if}
+
+                        <i class="icon size-20" style="background: url('{$root_url}{if !empty($_info.icon.24)}{$_info.icon.24}{else}{$_info.img}{/if}{$_version}'); background-size: 20px 20px;"></i>
+                        <strong class="nowrap uppercase wide">{$_info.name|escape}</strong>
+                        <span class="nowrap">{waDateTime::format('humandatetime', $n.datetime)}</span>
+                        <a data-app-id="{$n.app_id}" href="javascript:void(0);" class="alert-close js-announcement-close" title="[s`Close`]"><i class="fas fa-times"></i></a>
+                    </div>
+                </div>
+                <div class="wa-notification-body">
+                    {$n.text}
+                </div>
+            </div>
+        {/foreach}
+    {else}
+        <div class="alert wa-notification">
+            <div class="wa-notification-body-empty">
+                [s`No new notifications.`]
+            </div>
         </div>
-
-        {*
-            <footer class="button-block">
-                <a class="button green" href="javascript:void(0);">Renew Now</a>
-            </footer>
-        *}
-
-    </div>
-    {/foreach}
+    {/if}
 </div>

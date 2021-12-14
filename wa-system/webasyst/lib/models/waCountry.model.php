@@ -144,6 +144,17 @@ class waCountryModel extends waModel
         return strcmp($a['name'], $b['name']);
     }
 
+    public function getCountriesByIso3($iso_3_codes, $locale = null)
+    {
+        if (!$iso_3_codes) {
+            return array();
+        }
+        $locale = $this->ensureLocale($locale);
+        $sql = "SELECT * FROM {$this->table} WHERE iso3letter IN (:iso_3_codes) ORDER BY name";
+        $countries = $this->query($sql, array('iso_3_codes' => $iso_3_codes))->fetchAll();
+        return $this->translate($locale, $countries);
+    }
+
     /**
      * @return waCountryModel
      */

@@ -32,6 +32,14 @@ var WaBackendLogin = ( function($) {
             $loading: that.$wrapper.find('.wa-request-onetime-password-link-loading')
         });
 
+        if (that.webasyst_id_auth_url) {
+            that.initWebasystIDAuthLink();
+            that.initWebasystIDHelpLink();
+        }
+        if (that.bind_with_webasyst_contact) {
+            that.initSignInAndBindWithWebasystID();
+            that.initWebasystIDHelpLink();
+        }
     };
 
     Self.prototype.initCancelButton = function () {
@@ -54,6 +62,9 @@ var WaBackendLogin = ( function($) {
         that.$wrapper.data('WaAuthForm', that);
         that.is_json_mode = true;
         that.env = 'backend';
+        that.wa_app_url = options.wa_app_url || '';
+        that.webasyst_id_auth_url = options.webasyst_id_auth_url || '';
+        that.bind_with_webasyst_contact = options.bind_with_webasyst_contact || false;
     };
     
     Self.prototype.setupOnetimePasswordView = function () {
@@ -189,6 +200,65 @@ var WaBackendLogin = ( function($) {
             }
         };
         return handlers;
+    };
+
+    Self.prototype.initWebasystIDAuthLink = function (oauth_modal) {
+        var that = this,
+            $wrapper = that.$wrapper,
+            $link = $wrapper.find('.js-webasyst-auth-link'),
+            $remember_me_field = $wrapper.find('.field-remember-me'),
+            $remember_me_checkbox = $remember_me_field.find(':checkbox');
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+
+            var href = $(this).attr('href') || '';
+
+            // remember me hack for webasyst ID auth into backend
+            if ($remember_me_checkbox.is(':checked')) {
+                href = href.replace('backend_auth=1', 'backend_auth=2');
+            }
+
+            if (!oauth_modal) {
+                window.location = href;
+                return;
+            }
+
+            var width = 600;
+            var height = 500;
+            var left = (screen.width - width) / 2;
+            var top = (screen.height - height) / 2;
+
+            window.open(href,'oauth', "width=" + 600 + ",height=" + height + ",left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
+        });
+    };
+
+    /**
+     * Init special mode when we sign in and bind with webasyst ID at the same time
+     */
+    Self.prototype.initSignInAndBindWithWebasystID = function () {
+        var that = this,
+            $back_to_simple = $('.js-back-to-simple-login')
+        $back_to_simple.on('click', function (e) {
+            e.preventDefault();
+            $.post(that.wa_app_url + '?module=login&action=reset', function () {
+                window.location.reload();
+            });
+        });
+    };
+
+    Self.prototype.initWebasystIDHelpLink = function () {
+        var that = this,
+            $wrapper = that.$wrapper,
+            $link = $wrapper.find('.js-waid-hint');
+
+        $link.on('click', function (e) {
+            e.preventDefault();
+            var url = that.wa_app_url + "?module=backend&action=webasystIDHelp";
+            $.get(url, function (html) {
+                $('body').append(html);
+            });
+        });
     };
 
     return Self;

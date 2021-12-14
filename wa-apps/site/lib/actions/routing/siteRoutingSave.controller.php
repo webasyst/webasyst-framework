@@ -135,7 +135,11 @@ class siteRoutingSaveController extends waJsonController
                 }
             }
 
-            if (($new['url'] != $old['url']) || (ifset($new['theme']) != ifset($old['theme'])) || (ifset($new['theme_mobile']) != ifset($old['theme_mobile']))) {
+            if (
+                ($new['url'] != $old['url'])
+                || (ifset($new['theme']) != ifset($old['theme']))
+                || (ifset($new['theme_mobile']) != ifset($old['theme_mobile']))
+            ) {
                 $this->response['change'] = 1;
             }
 
@@ -164,6 +168,10 @@ class siteRoutingSaveController extends waJsonController
                     }
                 }
                 $routes[$domain][$route_id] = $new;
+            }
+
+            if (!$this->validate($new)) {
+                return;
             }
 
             $params = array(
@@ -199,6 +207,9 @@ class siteRoutingSaveController extends waJsonController
             // log
             $this->logAction('route_edit', $domain.'/'.$routes[$domain][$route_id]['url']);
         }
+
+        $config_cache = waConfigCache::getInstance();
+        $config_cache->setFileContents($path, $routes);
 
         //Delete cache problem domains
         $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');
@@ -251,7 +262,7 @@ class siteRoutingSaveController extends waJsonController
                     $name = $title;
                 } else {
                     $app_settings_model = new waAppSettingsModel();
-                    $name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+                    $name = $app_settings_model->get('webasyst', 'name', _ws('My company, LLC'));
                 }
             } elseif ($app_id == ':text') {
                 $params += array(
@@ -322,5 +333,31 @@ class siteRoutingSaveController extends waJsonController
         }
 
         return $r;
+    }
+
+    protected function validate($route = [])
+    {
+        $valid = true;
+        $path = $this->getConfig()->getAppsPath($route['app'], 'lib/config/site.php');
+        if (file_exists($path)) {
+            waSystem::getInstance($route['app'])->setActive($route['app']);
+            $site = include($path);
+            waSystem::setActive('site');
+
+            if (isset($site['params'])) {
+                foreach ($site['params'] as $name => $param) {
+                    $type = ifempty($param, 'type', '');
+                    if (!empty($type) && 'select' === $type) {
+                        $items = ifempty($param, 'items', []);
+                        if (!in_array($route[$name], array_keys($items))) {
+                            $valid = false;
+                            $this->errors = sprintf(_w('Invalid value: %s.'), ifempty($param, 'name', ''));
+                        }
+                    }
+                }
+            }
+        }
+
+        return $valid;
     }
 }

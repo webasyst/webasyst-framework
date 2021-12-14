@@ -1,0 +1,294 @@
+{$_title = "Чекбоксы, радио, селекты"}
+{$wa->title($_title)}
+
+{function name="_render1"}
+<label>
+    <span class="wa-checkbox">
+        <input type="checkbox" name="1" id="checkbox" checked>
+        <span>
+            <span class="icon">
+                <i class="fas fa-check"></i>
+            </span>
+        </span>
+    </span>
+    A checkbox with <code>.wa-checkbox</code> styling
+</label>
+{/function}
+
+{function name="_render1l"}
+<label style="font-size: 2rem;">
+    <span class="wa-checkbox">
+        <input type="checkbox" name="2" id="checkbox" checked>
+        <span>
+            <span class="icon">
+                <i class="fas fa-check"></i>
+            </span>
+        </span>
+    </span>
+    A checkbox with <code>.wa-checkbox</code> styling
+</label>
+{/function}
+
+{function name="_render1d"}
+<div>
+    <label>
+        <span class="wa-checkbox">
+            <input type="checkbox" name="1" id="checkbox" disabled>
+            <span>
+                <span class="icon">
+                    <i class="fas fa-check"></i>
+                </span>
+            </span>
+        </span>
+        Disabled <code>.wa-checkbox</code> styling
+    </label>
+</div>
+
+<div>
+    <label>
+        <span class="wa-checkbox">
+            <input type="checkbox" name="1" id="checkbox" checked disabled>
+            <span>
+                <span class="icon">
+                    <i class="fas fa-check"></i>
+                </span>
+            </span>
+        </span>
+        Disabled checked <code>.wa-checkbox</code> styling
+    </label>
+</div>
+{/function}
+
+{function name="_render2"}
+    <label>
+        <span class="wa-radio">
+            <input type="radio" name="name-1">
+            <span></span>
+        </span>
+        Option 1
+    </label>
+    <label>
+        <span class="wa-radio">
+            <input type="radio" name="name-1">
+            <span></span>
+        </span>
+        Option 2
+    </label>
+    <label>
+        <span class="wa-radio">
+            <input type="radio" name="name-1">
+            <span></span>
+        </span>
+        Option 3
+    </label>
+{/function}
+{function name="_render2s"}
+<div style="font-size: 2rem;">
+    <label>
+        <span class="wa-radio">
+            <input type="radio" name="name-1">
+            <span></span>
+        </span>
+        Option 1
+    </label>
+    <label>
+        <span class="wa-radio">
+            <input type="radio" name="name-1">
+            <span></span>
+        </span>
+        Option 2
+    </label>
+    <label>
+        <span class="wa-radio">
+            <input type="radio" name="name-1">
+            <span></span>
+        </span>
+        Option 3
+    </label>
+</div>
+{/function}
+{function name="_render2d"}
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1" disabled>
+        <span></span>
+    </span>
+    Option 1 disabled
+</label>
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1">
+        <span></span>
+    </span>
+    Option 2
+</label>
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1">
+        <span></span>
+    </span>
+    Option 3
+</label>
+{/function}
+{function name="_render2dc"}
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1" checked disabled>
+        <span></span>
+    </span>
+    Option 1 checked disabled
+</label>
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1">
+        <span></span>
+    </span>
+    Option 2
+</label>
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1">
+        <span></span>
+    </span>
+    Option 3
+</label>
+{/function}
+
+{function name="_render3"}
+    <div class="wa-select">
+        <select name="">
+            <option value="">Saint-Petersburg</option>
+            <option value="moscow">Moscow</option>
+        </select>
+    </div>
+{/function}
+{function name="_render3s"}
+<div style="font-size: 2rem;">
+    <div class="wa-select">
+        <select name="">
+            <option value="">Saint-Petersburg</option>
+            <option value="moscow">Moscow</option>
+        </select>
+    </div>
+</div>
+{/function}
+
+{function name="_render_select_state"}
+<div class="wa-select">
+    <select name="" class="state-error">
+        <option value="">.state-error</option>
+    </select>
+</div>
+<div class="wa-select">
+    <select name="" class="state-success">
+        <option value="">.state-success</option>
+    </select>
+</div>
+<div class="wa-select">
+    <select name="" class="state-caution">
+        <option value="">.state-caution</option>
+    </select>
+</div>
+{/function}
+
+{function name="_render_select_solid"}
+<div class="wa-select solid">
+    <select name="">
+        <option value="">.solid</option>
+    </select>
+</div>
+{/function}
+
+<div class="u-component-page" id="js-fields-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Чекбоксы, радиокнопки и селекты в чистом виде с помощью CSS стилизовать нельзя, поэтому для их стилизации используются классы <code>.wa-checkbox</code>, <code>.wa-radio</code> и <code>.wa-select</code> и более специфические HTML-конструкции. Примеры говорят сами за себя.</p>
+
+    <h4>.wa-checkbox</h4>
+    <div class="line">
+        {_render1}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render1|escape}</pre>
+    </div>
+    <p>Увеличенный вариант — просто поместите внутрь контейнера с нужным значением <code>font-size</code>.</p>
+    <div class="line">
+        {_render1l}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render1l|escape}</pre>
+    </div>
+    <p>Вариант с отключением (атрибут <code>disabled</code>)</p>
+    <div class="line">
+        {_render1d}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render1d|escape}</pre>
+    </div>
+
+    <h4>.wa-radio</h4>
+    <div class="line">
+        {_render2}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render2|escape}</pre>
+    </div>
+    <div class="line">
+        {_render2s}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render2s|escape}</pre>
+    </div>
+    <div class="line">
+        {_render2d}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render2d|escape}</pre>
+    </div>
+    <div class="line">
+        {_render2dc}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render2dc|escape}</pre>
+    </div>
+
+    <h4>.wa-select</h4>
+    <div class="line">
+        {_render3}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render3|escape}</pre>
+    </div>
+    <div class="line">
+        {_render3s}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render3s|escape}</pre>
+    </div>
+
+    <h3>select<code>.state-error</code>, select<code>.state-valid</code>, select<code>.state-caution</code></h3>
+    <p>С помощью классов <code>.state-error</code>, <code>.state-valid</code> и <code>.state-caution</code> (применяется к <code>&lt;select&gt;</code>) можно выделить отдельные поля ввода цветной границей для обозначения валидности введенных данных.</p>
+    <div class="line">
+        {_render_select_state}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_select_state|escape}</pre>
+    </div>
+
+    <h3>select<code>.solid</code></h3>
+    <p>С помощью класса <code>.solid</code> можно изменить оформление селекта и убрать обводку. Иногда это может быть полезно из эстетических соображений и соответствия стилю приложения.</p>
+    <div class="line">
+        {_render_select_solid}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_select_solid|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

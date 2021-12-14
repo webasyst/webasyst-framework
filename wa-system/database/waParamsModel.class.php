@@ -147,7 +147,7 @@ abstract class waParamsModel extends waModel
             // Remove selected set of params only
             $this->deleteByField(array(
                 $this->external_id => $ids,
-                'name' => array_keys($params),
+                $this->name_field => array_keys($params),
             ));
         }
 
@@ -166,8 +166,8 @@ abstract class waParamsModel extends waModel
         foreach ($params as $name => $value) {
             foreach ($ids as $_id) {
                 $add_params[] = array(
-                    'name' => $name,
-                    'value' => $value,
+                    $this->name_field => $name,
+                    $this->value_field => $value,
                     $this->external_id => $_id,
                 );
             }

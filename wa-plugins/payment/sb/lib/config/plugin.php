@@ -4,7 +4,7 @@ return array(
     'description'     => 'Приём платежей через <a href="https://www.sberbank.ru/ru/legal/bankingservice/internet_acquiring">эквайринг «Сбербанка»</a> и фискализация через сервис <a href="https://online.atol.ru/">«АТОЛ Онлайн»</a>',
     'logo'            => 'img/sb.png',
     'icon'            => 'img/sb16.png',
-    'version'         => '2.0.6',
+    'version'         => '2.1.3',
     'vendor'          => 'webasyst',
     'locale'          => array('ru_RU',),
     'discount'        => false,

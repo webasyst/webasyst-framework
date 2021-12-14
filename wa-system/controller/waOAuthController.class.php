@@ -1,31 +1,45 @@
 <?php
 
+/**
+ * Class waOAuthController
+ * Controller for oauth.php?provider=<provider_id>
+ */
 class waOAuthController extends waViewController
 {
     public function execute()
     {
-        // Remember in session who is handling the auth.
-        // Important for multi-step auth such as OAuth2.
-        $app = waRequest::get('app', null, 'string');
-        if ($app) {
-            $this->getStorage()->set('auth_app', $app);
-            $params = waRequest::get();
-            unset($params['app'], $params['provider']);
-            if ($params) {
-                $this->getStorage()->set('auth_params', $params);
+        $provider_id = $this->getAuthProviderId();
+
+        $is_webasyst_id_auth = $provider_id === waWebasystIDAuthAdapter::PROVIDER_ID;
+
+        // Webasyst ID auth provider case not supports app related OAuth controller
+        $ignore_app_controller = $is_webasyst_id_auth;
+
+        if (!$ignore_app_controller) {
+            // Remember in session who is handling the auth.
+            // Important for multi-step auth such as OAuth2.
+            $app = waRequest::get('app', null, 'string');
+            if ($app) {
+                $this->getStorage()->set('auth_app', $app);
+                $params = waRequest::get();
+                unset($params['app'], $params['provider']);
+                if ($params) {
+                    $this->getStorage()->set('auth_params', $params);
+                }
+            }
+
+            // Make sure the correct app is handling the request
+            $app = $this->getStorage()->get('auth_app');
+            if ($app && $app != wa()->getApp()) {
+                if (wa()->appExists($app)) {
+                    return wa($app, true)->getFrontController()->execute(null, 'OAuth');
+                } else {
+                    $this->cleanup();
+                    throw new waException("Page not found", 404);
+                }
             }
         }
 
-        // Make sure the correct app is handling the request
-        $app = $this->getStorage()->get('auth_app');
-        if ($app && $app != wa()->getApp()) {
-            if (wa()->appExists($app)) {
-                return wa($app, true)->getFrontController()->execute(null, 'OAuth');
-            } else {
-                $this->cleanup();
-                throw new waException("Page not found", 404);
-            }
-        }
 
         try {
             // Look into wa-config/auth.php, find provider settings
@@ -36,7 +50,20 @@ class waOAuthController extends waViewController
                 throw new waException('Unknown adapter ID');
             }
 
-            $auth = $this->getAuthAdapter($provider_id);
+            $type = $this->getAuthType();
+            if ($provider_id === waWebasystIDAuthAdapter::PROVIDER_ID && (!$type || $type === waWebasystIDAuthAdapter::TYPE_WA)) {
+                $auth = new waWebasystIDWAAuth();
+            } else {
+                $auth = $this->getAuthAdapter($provider_id);
+            }
+
+            // Webasyst ID WA Auth (auth in WA backend by webasyst ID)
+            if ($auth instanceof waWebasystIDWAAuth) {
+                $controller = new waWebasystIDWAAuthController($auth);
+                $controller->execute();
+                return;
+            }
+
 
             // Use waAuthAdapter to identify the user.
             // In case of waOAuth2Adapter, things are rather complicated:
@@ -46,18 +73,25 @@ class waOAuthController extends waViewController
             //    with a code in GET parameters.
             // 3) That second time, adapter uses the code from GET to fetch user data
             //    from external resource and return here if all goes well.
-            $person_data = $auth->auth();
-            if (!$person_data) {
+            $auth_response_data = $auth->auth();
+            if (!$auth_response_data) {
                 throw new waException('Unable to finish auth process.');
             }
 
             // Person identified. Now properly authorise them as local waContact,
             // possibly creating new waContact from data provided.
-            $result = $this->afterAuth($person_data);
+            $result = $this->afterAuth($auth_response_data);
+
             $this->cleanup();
 
-            // Close oauth popup and reload page that opened it
             $this->displayAuth($result);
+        } catch (waWebasystIDAccessDeniedAuthException $e) {
+            $this->cleanup();
+            // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish proccess)
+            $this->displayAuth([]);
+        } catch (waWebasystIDAuthException $e) {
+            $this->cleanup();
+            $this->displayError($e->getMessage());  // show legitimate error from webasyst ID auth adapter
         } catch (Exception $e) {
             $this->cleanup();
             throw $e; // Caught in waSystem->dispatch()
@@ -67,7 +101,7 @@ class waOAuthController extends waViewController
     protected function getAuthProviderId()
     {
         // callback url might looks like this: oauth.php?provider=<provider_id>
-        $provider_id = waRequest::get('provider', '', 'string');
+        $provider_id = waRequest::get('provider', '', waRequest::TYPE_STRING_TRIM);
         if ($provider_id) {
             return $provider_id;
         }
@@ -84,22 +118,48 @@ class waOAuthController extends waViewController
         }
 
         return null;
-
     }
 
+    /**
+     * Supported only by webasyst ID provider
+     * @return string
+     */
+    protected function getAuthType()
+    {
+        return waRequest::get('type', '', waRequest::TYPE_STRING_TRIM);
+    }
+
+    /**
+     * @param string $provider
+     * @return object|waAuthAdapter|waiAuth
+     * @throws waException
+     */
     protected function getAuthAdapter($provider)
     {
         $config = wa()->getAuthConfig();
         if (!isset($config['adapters'][$provider])) {
             throw new waException('Unknown auth provider');
         }
+
         return wa()->getAuth($provider, $config['adapters'][$provider]);
     }
 
+    /**
+     * @param $result
+     * @throws waException
+     */
     protected function displayAuth($result)
     {
         wa('webasyst');
-        $this->executeAction(new webasystOAuthAction());
+
+        $provider_id = $this->getAuthProviderId();
+
+        $params = [
+            'provider_id' => $provider_id,
+            'result' => $result
+        ];
+        
+        $this->executeAction(new webasystOAuthAction($params));
     }
 
     protected function displayError($error)
@@ -111,6 +171,11 @@ class waOAuthController extends waViewController
     /**
      * @param array $data
      * @return waContact
+     * @throws waAuthConfirmEmailException
+     * @throws waAuthConfirmPhoneException
+     * @throws waAuthException
+     * @throws waAuthInvalidCredentialsException
+     * @throws waException
      */
     protected function afterAuth($data)
     {
@@ -144,11 +209,19 @@ class waOAuthController extends waViewController
 
         // try find user by email
         if (!$contact_id && isset($data['email'])) {
+
+            $email = $data['email'];
+            if (is_array($data['email']) && isset($data['email'][0]['value'])) {
+                $email = $data['email'][0]['value'];
+            }
+
             $contact_model = new waContactModel();
             $sql = "SELECT c.id FROM wa_contact_emails e
-            JOIN wa_contact c ON e.contact_id = c.id
-            WHERE e.email LIKE '".$contact_model->escape($data['email'], 'like')."' AND e.sort = 0 AND c.password != ''";
+                        JOIN wa_contact c ON e.contact_id = c.id
+                    WHERE e.email LIKE '".$contact_model->escape($email, 'like')."' AND e.sort = 0 AND c.password != ''";
+
             $contact_id = $contact_model->query($sql)->fetchField('id');
+
             // save source_id
             if ($contact_id) {
                 $tmp = array(
@@ -166,6 +239,7 @@ class waOAuthController extends waViewController
                 }
             }
         }
+
         // create new contact
         if (!$contact_id) {
             $contact = $this->createContact($data);
@@ -183,6 +257,7 @@ class waOAuthController extends waViewController
             }
             return $contact;
         }
+
         return false;
     }
 
@@ -245,14 +320,35 @@ class waOAuthController extends waViewController
                 $photo_url_parts = explode('/', $photo_url);
                 $path = wa()->getTempPath('auth_photo/'.$contact_id.'.'.md5(end($photo_url_parts)), $app_id);
                 file_put_contents($path, $photo);
-                $contact->setPhoto($path);
+
+                try {
+                    $contact->setPhoto($path);
+                } catch (Exception $exception) {
+
+                }
             }
         }
+
         /**
          * @event signup
          * @param waContact $contact
          */
         wa()->event('signup', $contact);
+
+        $env = wa()->getEnv();
+        $log_record_id = $this->logAction('signup', $env, null, $contact->getId());
+
+        if ($env === 'frontend') {
+            $config = wa()->getAuthConfig();
+            if (isset($config['app']) && wa()->getApp() !== $config['app']) {
+                // event should be fixated on behalf of app that responsible of signup, so admin of this application (but not super-admin) could see this event
+                // #51.6485
+                (new waLogModel())->updateById($log_record_id, [
+                    'app_id' => $config['app']
+                ]);
+            }
+        }
+
         return $contact;
     }
 

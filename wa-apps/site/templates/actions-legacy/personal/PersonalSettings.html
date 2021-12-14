@@ -1,0 +1,142 @@
+{* All callable template functions are in this include template. *}
+{include file="./PersonalSettingsHelpers.inc.html" inline}
+
+{$wrapper_class = 's-personal-settings-wrapper'}
+{$wrapper_id = uniqid($wrapper_class)}
+<div class="{$wrapper_class}" id="{$wrapper_id}">
+    <h1 style="padding: 20px 20px 0 20px;">{sprintf('[`Login and signup settings for %s`]', $domain|escape)}</h1>
+
+    {if $auth_endpoints}
+        {* Auth enabled checkbox *}
+        <div class="fields">
+            <div class="field" style="padding: 0 20px;">
+                <div class="name">[`User personal area`]</div>
+                <div class="value">
+                    <div class="s-ibutton-checkbox">
+                        <ul class="menu-h s-ibutton-checkbox">
+                            <li>
+                                <div>
+                                    <input id="s-auth-enabled" name="enabled" class="ibutton" type="checkbox"
+                                        {if !$auth_endpoints} disabled="disabled"{/if}
+                                        {if $auth_config.auth} checked="checked"{/if}>
+                                </div>
+                            </li>
+                            <li><label for="s-auth-enabled"><span id="s-personal-app-enabled-label">[`authorization enabled`]</span></label></li>
+                        </ul>
+                        <br>
+                        <p{if $auth_config.auth} style="display:none"{/if} class="gray"><i class="icon10 no-bw top-padded"></i> {sprintf('[`User sign up, authorization and personal accounts are not enabled on %s.`]', $domain)}</p>
+                    </div>
+                </div>
+            </div>
+
+            <form action="?module=personalSettingsSave">
+                <div class="s-auth-content js-auth-content"{if !$auth_config.auth} style="display:none"{/if}>
+
+                    {* Auth endpoints (app and urls) list *}
+                    {auth_endpoints_select}
+
+                    {* Ways of login and registration *}
+                    <div class="s-big-label">
+                        <h2>[`Ways of login and registration`]</h2>
+                        <p>[`Set up how website visitors will log in and sign up on your website.`]</p>
+                    </div>
+
+                    {* Password system *}
+                    {password_system}
+
+                    {* Timeout for verification code *}
+                    {timeout}
+
+                    {auth_by_login}
+
+                    {* \\|// *}
+                    <div class="s-auth-methods js-auth-methods">
+                        <table class="s-big-table">
+                            <tbody>
+                                {* EMAIL *}
+                                {email_settings}
+
+                                {* MOBILE PHONE *}
+                                {phone_settings}
+
+                                {* SOCIAL NETWORKS *}
+                                {social_networks_settings}
+                            </tbody>
+                        </table>
+                    </div>
+                    {* Forms *}
+                    <div class="s-big-label">
+                        <h2>[`Login & signup forms`]</h2>
+                        <p>[`Set up fields website visitors will need to complete in login and signup forms.`]</p>
+                        <div class="s-auth-forms">
+                            <table class="s-big-table">
+                                <tbody>
+                                    {* Register form *}
+                                    {register_form}
+                                    {* Login form *}
+                                    {login_form}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {* FIXED Buttons *}
+                <div class="s-form-buttons js-form-buttons blank"{if !$auth_config.auth} style="display:none"{/if}>
+                    <div class="s-footer-actions js-footer-actions">
+                        <div class="fixed">
+                            {* Save *}
+                            <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                            <i class="icon16 loading s-loading" style="display: none;"></i>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {* Warning about the minimum type of auth *}
+        <div class="dialog s-minimum-auth-type-dialog" id="s-minimum-auth-type-dialog">
+            <div class="dialog-background"> </div>
+            <div class="dialog-window">
+                <div class="dialog-content">
+                    <div class="dialog-content-indent">
+                        <h2>[`Cannot disable both authorization options “Email” &amp; “Phone”`]</h2>
+                        <p>[`Keep at least one of these two basic authorization option enabled for website visitors to be able to log into their accounts.`]</p>
+                        <p>[`Authorization with an email address is used by default.`]</p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="dialog-buttons">
+                    <div class="dialog-buttons-gradient">
+                        <a href="javascript:void(0);" class="button cancel">[s`Close`]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {$_locale = [
+            'enabled'     => _w('Enabled'),
+            'disabled'    => _w('Disabled'),
+            'login_names' => [
+                'email'          => _w('Email'),
+                'phone'          => _w('Phone'),
+                'email_or_phone' => _w('Email or phone')
+            ]
+        ]}
+
+        <script type="text/javascript">
+            $(function () {
+                new SitePersonalSettings({
+                    $wrapper: $('#{$wrapper_id}'),
+                    no_channels: {$no_channels|json_encode},
+                    $minimum_auth_type_dialog: $('#s-minimum-auth-type-dialog'),
+                    domain_id: {$domain_id|json_encode},
+                    locale: {$_locale|json_encode}
+                });
+            });
+        </script>
+    {else}
+        <p>[`To enable authorization on this website, install and settle at least one app that supports authorization forms.`]</p>
+    {/if}
+</div>

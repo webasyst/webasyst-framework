@@ -31,7 +31,7 @@ return array(
         'data/regions/'                                            => 'frontend/regions',
         'logout/'                                                  => 'frontend/logout',
         'rss/'                                                     => 'frontend/rss',
-        'author/<contact_id>/'                                     => 'frontend/',
+        'author/<contact_id:(\d+)>/'                               => 'frontend/',
         '<blog_url>/postpreview/'                                  => 'frontend/previewTemplate',
         '<blog_url>/<post_url>/'                                   => 'frontend/post',
         '<blog_url>/'                                              => 'frontend/',
@@ -51,7 +51,7 @@ return array(
         'signup/'                                       => 'signup/',
         'data/regions/'                                 => 'frontend/regions',
         'rss/'                                          => 'frontend/rss',
-        'author/<contact_id>/'                          => 'frontend/',
+        'author/<contact_id:(\d+)>/'                    => 'frontend/',
 
 //timeline
         "<year:{$year}>/<month:{$month}>/<day:{$day}>/" => 'frontend/',
@@ -75,7 +75,7 @@ return array(
         'data/regions/'                                                           => 'frontend/regions',
         "{$blog_prefix}/rss/"                                                     => 'frontend/rss',
         'rss/'                                                                    => 'frontend/rss',
-        'author/<contact_id>/'                                                    => 'frontend/',
+        'author/<contact_id:(\d+)>/'                                              => 'frontend/',
 
 //timeline per blog
         "{$blog_prefix}/<blog_url>/<year:{$year}>/<month:{$month}>/<day:{$day}>/" => 'frontend/',

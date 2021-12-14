@@ -6,7 +6,7 @@ class photosDialogConfirmViewAction extends waViewAction
 
     public function __construct($params = null) {
         parent::__construct($params);
-        $this->template = 'templates/actions/dialog/DialogConfirm.html';
+        $this->setTemplate('dialog/DialogConfirm.html', true);
     }
 
     public function display($clear_assign = true) {

@@ -1,0 +1,105 @@
+{$_title = ".bricks"}
+{$wa->title($_title|json_encode)}
+
+{$_menu = [
+[
+    "name" => "Москва",
+    "url" => "javascript:void(0);",
+    "icon_class" => "fas fa-star",
+    "class" => "selected",
+    "count" => "495 <i class=\"fas fa-lock\"></i>"
+],
+[
+    "name" => "Токио 🗼",
+    "icon_class" => "fas fa-torii-gate",
+    "url" => "javascript:void(0);",
+    "count" => "+ 23 °C"
+],
+[
+    "name" => "Рио-де-Жанейро",
+    "icon_class" => "fas fa-mask",
+    "class" => "accented",
+    "url" => "javascript:void(0);"
+],
+[
+    "name" => "Санкт-Петербург",
+    "url" => "javascript:void(0);",
+    "icon_class" => "fas fa-heart",
+    "count" => "New!"
+],
+[
+    "name" => "Ванкувер",
+    "url" => "javascript:void(0);",
+    "icon_class" => "fas fa-tree",
+    "count" => "<span class=\"badge\">99+</span>"
+],
+[
+    "name" => "Сочи",
+    "url" => "javascript:void(0);",
+    "class" => "selected",
+    "icon_class" => "fas fa-sun",
+    "custom_bg" => "linear-gradient(90deg, #E6CF00 0%, #F5A300 100%)"
+],
+[
+    "name" => "<b style=\"color: #f31;\" class=\"larger\">.full-width</b>",
+    "url" => "javascript:void(0);",
+    "custom_bg" => "linear-gradient(135deg, #444CF755 25%, transparent 25%) -10px 0/ 20px 20px, linear-gradient(225deg, #444CF7 25%, transparent 25%) -10px 0/ 20px 20px, linear-gradient(315deg, #444CF755 25%, transparent 25%) 0px 0/ 20px 20px, linear-gradient(45deg, #444CF7 25%, #E5E5F7 25%) 0px 0/ 20px 20px",
+    "class" => "full-width"
+],
+[
+    "name" => "Ватикан",
+    "url" => "javascript:void(0);",
+    "icon_class" => "fas fa-church"
+],
+[
+    "name" => "Гонконг",
+    "url" => "javascript:void(0);",
+    "icon_url" => "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Regional_Emblem_of_Hong_Kong.svg/2560px-Regional_Emblem_of_Hong_Kong.svg.png"
+]
+]}
+
+{function name="_render" class=""}
+<div style="width: 300px; border: 1px dashed gold; background: var(--background-color);">
+<div class="bricks">
+{foreach $_menu as $_item}
+    <div class="brick{if !empty($_item.class)} {$_item.class}{/if}"{if !empty($_item.custom_bg)} style="background: {$_item.custom_bg};"{/if}>
+        <span class="icon">{if !empty($_item.icon_class) && !empty($_item.icon_uri)}<i class="{$_item.icon_class}" style="background-image: url('{$_item.icon_uri}')"></i>{elseif !empty($_item.icon_class)}<i class="{$_item.icon_class}"></i>{elseif !empty($_item.icon_url)}<img src="{$_item.icon_url}" alt="{$_item.name|escape}" />{else}{/if}</span>
+        {if !empty($_item.count)}<span class="count">{$_item.count}</span>
+        {else}{/if}
+{$_item.name}
+    </div>
+{/foreach}
+</div>
+</div>
+{/function}
+
+<div class="u-component-page">
+
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Блок навигации в сайдбаре в виде «кирпичиков» (кубиков), располагающихся в две колонки.</p>
+
+    <div class="line">
+        {_render}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint break-word">{_render|escape}</pre>
+    </div>
+
+    <p>Каждый «кирпичик» внутри .bricks оформляется в виде либо ссылки <code>&lt;a&gt;</code> (<code>.bricks &gt; <b>a</b></code>), либо произвольного элемента с классом <code>.brick</code> (<code>.bricks &gt; <b>.brick</b></code>).</p>
+
+    <p>Визуальное выделение «кирпичиков» осуществляется с помощью классов <code>.selected</code> и <code>.accented</code>. С помощью класса <code>.full-width</code> «кирпичик» растягивается на всю ширину.</p>
+
+    <p>Внутри каждого «кирпичика» предусмотрено отображение трех элементов: <code>.count</code>, <code>.icon</code> и произвольного текста. Допускается любое изменение внешнего вида «кирпичиков» (например, можно добавить красивый яркий кастомный фон или график), однако не рекомендуется размещать внутри «кирпичика» более, чем три вышеуказанных информационных элемента.</p>
+
+    <p>Компонент задизайнен для использования внутри сайдбара. Но при умелом использовании может пригодится в самых разных интерфейсах.</p>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

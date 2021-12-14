@@ -22,8 +22,19 @@ class waSMS
     {
         try {
             $adapter = $this->getAdapter($from);
-            $result = $adapter->send($to, $text, $from ? $from : $adapter->getOption('from'));
-            return $result;
+            $params = array(
+                'to' => $to,
+                'text' => $text,
+                'from' => $from ? $from : $adapter->getOption('from'),
+                'adapter' => $adapter,
+                'result' => false,
+            );
+            wa()->event('sms_send.before', $params, array('to', 'text', 'from', 'result', 'adapter'));
+            if (empty($params['result'])) {
+                $params['result'] = $params['adapter']->send($params['to'], $params['text'], $params['from']);
+            }
+            wa()->event('sms_send.after', $params);
+            return $params['result'];
         } catch (waException $e) {
             waLog::log($e->getMessage(), 'sms.log');
             return false;
@@ -76,5 +87,29 @@ class waSMS
             throw new waException('Unable to initialize SMS adapter '.$options['adapter']);
         }
         return new $class_name($options);
+    }
+
+    public static function getInstalledAdapterIds()
+    {
+        $path = wa()->getConfig()->getPath('plugins').'/sms/';
+        if (!file_exists($path)) {
+            return array();
+        }
+        $dh = opendir($path);
+        $adapters = array();
+        while (($f = readdir($dh)) !== false) {
+            if ($f === '.' || $f === '..' || !is_dir($path.$f)) {
+                continue;
+            } elseif (file_exists($path.$f.'/lib/'.$f.'SMS.class.php')) {
+                $adapters[] = $f;
+            }
+        }
+        closedir($dh);
+
+        if (class_exists('wadebugSMS') && waSystemConfig::isDebug()) {
+            $adapters[] = 'wadebug';
+        }
+
+        return $adapters;
     }
 }

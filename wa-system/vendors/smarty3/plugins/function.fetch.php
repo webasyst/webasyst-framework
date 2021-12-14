@@ -198,6 +198,11 @@ function smarty_function_fetch($params, $template)
             return;
         }
     } else {
+        $file_info = new SplFileInfo($params['file']);
+        $wa_config_path = wa()->getConfig()->getRootPath() . DIRECTORY_SEPARATOR . 'wa-config';
+        if (strpos($file_info->getRealPath(), $wa_config_path) !== false) {
+            return;
+        }
         $content = @file_get_contents($params['file']);
         if ($content === false) {
             throw new SmartyException("{fetch} cannot read resource '" . $params['file'] ."'");
