@@ -5,7 +5,9 @@
       <aside class="sidebar hide-scrollbar width-adaptive flexbox mobile-friendly" style="overflow: inherit;" id="apiexplorer-main-sidebar">
           <nav class="sidebar-mobile-toggle">
               <div class="box align-center">
-                  <a href="javascript:void(0);" @click="mobileSidebarToggle()"><i class="fas fa-bars"></i> Меню</a>
+                  <a href="javascript:void(0);" @click="mobileSidebarToggle()">
+                    <i class="fas fa-bars"></i> {{ $t('Menu') }}
+                  </a>
               </div>
           </nav>
           <div class="sidebar-header" :style="sidebarStyle">
@@ -19,7 +21,7 @@
               <li :class="[$route.name === 'About' && 'selected']" @click="mobileSidebarHide">
                 <router-link :to="{ name: 'About' }">
                   <i class="fas fa-info"></i>
-                  <span>About</span>
+                  <span>{{ $t('About') }}</span>
                 </router-link>
               </li>
             </ul>
@@ -52,8 +54,10 @@
 
   <div class="alert-fixed-box" v-if="error.state">
     <span class="alert danger">
-      <a href="#" class="alert-close" @click="error.state = false"><i class="fas fa-times"></i></a>
-      <i class="fas fa-skull"></i> {{ error.description }}
+      <a href="javascript:void(0);" class="alert-close" @click="closeError"><i class="fas fa-times"></i></a>
+      <i class="fas fa-skull"></i> <strong v-if="error.title">{{ error.title }}<br /></strong>
+      <span v-if="error.contentType === 'text'">{{ error.description }}</span>
+      <div v-else v-html="error.description"></div>
     </span>
   </div>
 
@@ -76,7 +80,9 @@ export default {
       app_ids: [],
       error: {
         state: false,
-        description: ""
+        description: "",
+        title: "",
+        contentType: "text",
       },
       mobileSidebarOpen: false,
       sidebarStyle: {}
@@ -88,8 +94,16 @@ export default {
     }
   },
   created() {
-    this.emitter.on('error', (err_desc) => {
-      this.error.description = err_desc;
+    this.emitter.on('error', (err) => {
+      if (typeof err === 'object') {
+        this.error.title = err.title;
+        this.error.contentType = err.contentType.startsWith('text/html') ? 'html' : 'text';
+        this.error.description = err.description;
+      } else {
+        this.error.description = err;
+        this.error.contentType = 'text';
+        this.error.title = '';
+      }
       this.error.state = true;
     });
   },
@@ -119,6 +133,12 @@ export default {
         display: 'block',
       };
     },
+    closeError() {
+      this.error.state = false;
+      this.error.description = '';
+      this.error.contentType = 'text';
+      this.error.title = '';
+    }
   }
 };
 </script>

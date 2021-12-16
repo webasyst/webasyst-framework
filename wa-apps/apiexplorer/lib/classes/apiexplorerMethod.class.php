@@ -66,28 +66,6 @@ class apiexplorerMethod extends apiexplorerObject
         return $this->name;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDoc()
-    {
-        if ($this->doc === null && $this->getReflection() && $this->getReflection()->getDocComment()) {
-            $this->doc_info = new DocBlock($this->getReflection()->getDocComment());
-            $this->doc['params'] = isset($this->doc_info->all_params['param']) && is_array($this->doc_info->all_params['param'])
-                ? $this->doc_info->all_params['param']
-                : [];
-            $this->doc['example'] = isset($this->doc_info->all_params['example']) && is_array($this->doc_info->all_params['example'])
-                ? $this->doc_info->all_params['example']
-                : [];
-            $this->doc['return'] = trim($this->doc_info->return);
-            $this->doc['summary'] = trim($this->doc_info->description);
-            $this->doc['throws'] = isset($this->doc_info->all_params['throws']) && is_array($this->doc_info->all_params['throws'])
-                ? $this->doc_info->all_params['throws']
-                : [];
-        }
-
-        return $this->doc;
-    }
 
     /**
      * apiexplorerMethod constructor.
@@ -98,8 +76,6 @@ class apiexplorerMethod extends apiexplorerObject
     {
         $this->app = $app;
         $this->file_info = $file_info;
-        waAutoload::getInstance()->add('DocBlock', 'wa-apps/apiexplorer/lib/vendors/DocBlock.php');
-
     }
 
     /**

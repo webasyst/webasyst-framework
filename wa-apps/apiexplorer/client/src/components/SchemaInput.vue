@@ -91,17 +91,20 @@
             <div class="icon custom-m-8" @click="removeArrayItem(index)"><i class="fas fa-times"></i></div>
         </div>
         <div>
-            <button @click="addRow" class="outlined light-gray small"><i class="fas fa-plus"></i> Add row</button>
+            <button @click="addRow" class="outlined light-gray small"><i class="fas fa-plus"></i> {{ $t('Add row') }}</button>
         </div>
     </div>
     
-    <p v-else>Херовый тип поля - <strong>{{ schema.type }}</strong>. Я такой еще не умею.</p>
+    <p v-else>
+        {{ $t('Unknown field type') }} - <strong>{{ schema.type }}</strong>. 
+        {{ $t('There is no interface for it yet :(') }}.
+    </p>
     <div>
-        <span class="hint" v-if="schema.type === 'integer'">Целое число</span>
-        <span class="hint" v-else-if="schema.type === 'number'">Число</span>
+        <span class="hint" v-if="schema.type === 'integer'">{{ $t('Integer') }}</span>
+        <span class="hint" v-else-if="schema.type === 'number'">{{ $t('Number') }}</span>
         <span v-else-if="schema.type === 'string'">
-            <span class="hint" v-if="schema.format === 'date'">Дата</span>
-            <span class="hint" v-if="schema.format === 'date-time'">Дата + время</span>
+            <span class="hint" v-if="schema.format === 'date'">{{ $t('Date') }}</span>
+            <span class="hint" v-if="schema.format === 'date-time'">{{ $t('Date & time') }}</span>
             <span class="hint" v-if="schema.format === 'email'">Email</span>
             <span class="hint" v-if="schema.format === 'uri'">URI</span>
         </span>

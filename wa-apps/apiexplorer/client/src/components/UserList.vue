@@ -1,5 +1,5 @@
 <template>
-  <h5 class="heading">Users</h5>
+  <h5 class="heading">{{ $t('Users') }}</h5>
   <div v-if="state.loading" class="box skeleton custom-pt-32">
     <span class="skeleton-list"></span>
     <span class="skeleton-list"></span>
@@ -7,6 +7,9 @@
     <span class="skeleton-list"></span>
     <span class="skeleton-list"></span>
     <span class="skeleton-list"></span>
+  </div>
+  <div v-else-if="state.error" class="opacity-50 custom-mt-32 custom-mx-16 custom-p-8">
+    <i class="fas fa-skull"></i> {{ $t('error') }}
   </div>
   <ul class="menu mobile-friendly" v-else>
     <li v-for="user_id in Object.keys(users)" :key="user_id" :class="[current_user_id === user_id && 'selected']">
@@ -49,10 +52,20 @@ export default {
     methods: {
       async loadUsers() {
         this.state.loading = true;
+        this.state.error = false;
         const resp = await this.axios.get('?module=userlist');
+        if (typeof resp.data === 'object') {
+          this.$store.commit('load_users', resp.data.data.users);
+          this.setCurrentUser(window.appState.user_id);
+        } else {
+          this.emitter.emit('error', { 
+            title: "Can't load user list", 
+            description: resp.data.substring(0, 2000), 
+            contentType: resp.headers['content-type'] || ''
+          });
+          this.state.error = true;
+        }
         this.state.loading = false;
-        this.$store.commit('load_users', resp.data.data.users);
-        this.setCurrentUser(window.appState.user_id);
       },
       async setCurrentUser(user_id) {
         if (!(user_id in this.users)) {
@@ -65,7 +78,11 @@ export default {
           params.append("module", "getToken");
           params.append("user", this.users[user_id].login);
           const resp = await this.axios.get('?' + params.toString());
-          this.$store.commit('add_token', {user_id: user_id, token: resp.data.data.token});
+          if (typeof resp.data === 'object') {
+            this.$store.commit('add_token', {user_id: user_id, token: resp.data.data.token});
+          } else {
+            this.emitter.emit('error', 'Invalid server response: ' + resp.data.substring(0, 150));
+          }
         }
       }
     }

@@ -4,10 +4,11 @@ import router from './router';
 import store from './store';
 import mitt from 'mitt';
 import Axios from 'axios';
+import i18n from "./i18n";
 
 const emitter = mitt();
 const app = createApp(App);
-app.use(store).use(router);
+app.use(store).use(router).use(i18n);
 app.config.globalProperties.emitter = emitter;
 app.config.globalProperties.axios = Axios;
 app.config.globalProperties.axios.defaults.baseURL = window.appState.baseUrl;

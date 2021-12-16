@@ -7,20 +7,25 @@
         <span class="skeleton-line"></span>
     </div>
     <div v-else>
-        
+
         <nav class="tablet-only"><a href="javascript:void(0);" @click="backToApp()"><i class="fas fa-arrow-left"></i> {{ app.name }}</a></nav>
         <nav class="mobile-only"><a href="javascript:void(0);" @click="backToApp()"><i class="fas fa-arrow-left"></i> {{ app.name }}</a></nav>
         <div v-if="!!name" style="display: flex; align-items: flex-end;">
             <div :class="['badge', 'squared', 'a-' + type.toLowerCase(), 'custom-mb-4', 'custom-mr-8']">
                 {{ type }}
             </div>
-            <h1>
+            <h1 class="break-word">
                 {{ name }}
             </h1>
         </div>
-        <p v-if="summary">{{ summary }}</p>
-        <p v-else-if="!!method && method.doc">{{ method.doc }}</p>
-        <p v-else class="gray"><em>&lt;No method description&gt;</em></p>
+        <div v-if="!!name" class="flexbox full-width custom-mt-32">
+            <p v-if="summary">{{ summary }}</p>
+            <p v-else class="gray"><em>&lt;{{ $t('No method description') }}&gt;</em></p>
+            <div v-if="isSwagger">
+                <a :href="swaggerDescriptionUrl" :title="$t('OpenAPI Document')"><img :src="swaggerIconUrl" style="width: 2rem;" /></a>
+            </div>
+            <div v-else></div>
+        </div>
         <hr />
 
         <div class="fields custom-mb-32">
@@ -29,17 +34,17 @@
                     <div class="name">
                         URL
                     </div>
-                    <div class="value bold">
+                    <div class="value bold break-word">
                         {{ methodUrl }}
                     </div>
                 </div>
                 <div class="field">
                     <div class="name">
-                        Token
+                        {{ $t('Token') }}
                     </div>
                     <div class="value">
                         <span v-if="!user" class="gray">
-                            <em>&lt;No user selected&gt;</em>
+                            <em>&lt;{{ $t('No user selected') }}&gt;</em>
                         </span>
                         <span v-else>
                             <span class="icon userpic userpic-20" :style='{ "background-image": "url(" + user.photo_url_32 + ")"}'></span>
@@ -62,7 +67,7 @@
                         </label>
                     </div>
                     <div class="value">
-                        <schema-input 
+                        <schema-input
                             :name="param.name"
                             :schema="param.schema"
                             :required="param.required"
@@ -82,7 +87,7 @@
                         </label>
                     </div>
                     <div class="value">
-                        <schema-input 
+                        <schema-input
                             :name="param"
                             :schema="schema"
                             :description="schema.description"
@@ -95,12 +100,12 @@
             </div>
         </div>
         <div v-else>
-            
+
             <div class="fields">
                 <div class="fields-group">
                     <div class="field">
                         <div class="name">
-                            URL params
+                            {{ $t('URL parameters') }}
                         </div>
                         <div class="value">
                             <input type="text" v-model="api_query_string" style="width: 100%" class="custom-mb-4" @input="checkRequestDataPresence" placeholder="key1=value1&amp;key2=value2" />
@@ -108,25 +113,25 @@
                     </div>
                 </div>
             </div>
-            
+
             <div v-if="type !== 'GET'">
                 <ul class="tabs bordered-bottom">
                     <li :class="post_body_tab==='params' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="switchPostTabToParams">
-                            Request POST params
+                            {{ $t('POST request parameters') }}
                         </a>
                     </li>
                     <li :class="post_body_tab==='raw' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="switchPostTabToRaw">
-                            Raw request body
+                            {{ $t('Raw request body') }}
                         </a>
                     </li>
                 </ul>
                 <div v-if="post_body_tab === 'params'" class="custom-mt-4">
                     <table class="borderless custom-mb-8">
                         <tr>
-                            <th>Name</th>
-                            <th class="max-width">Value</th>
+                            <th>{{ $t('Key') }}</th>
+                            <th class="max-width">{{ $t('Value') }}</th>
                             <th class="min-width"></th>
                         </tr>
                         <tr v-for="(param, index) in api_post_params" :key="index">
@@ -141,7 +146,7 @@
                             </td>
                         </tr>
                     </table>
-                    <button class="outlined light-gray small" @click="api_post_params.push(['', ''])"><i class="fas fa-plus"></i> Add param</button>
+                    <button class="outlined light-gray small" @click="api_post_params.push(['', ''])"><i class="fas fa-plus"></i> {{ $t('Add param') }}</button>
                 </div>
                 <div v-if="post_body_tab === 'raw'" class="custom-mt-16">
                     <textarea v-model="api_post_data" style="width: 100%; height: 160px;" @input="checkRequestDataPresence" placeholder="Raw request body"></textarea>
@@ -151,30 +156,30 @@
 
         <div class="flexbox middle space-12 full-width custom-mt-12">
             <div class="flexbox middle space-12">
-                <button 
-                    :class="['button', 'a-' + type.toLowerCase()]" 
-                    @click="call()" 
-                    :disabled="!api_token || state.calling" 
+                <button
+                    :class="['button', 'a-' + type.toLowerCase()]"
+                    @click="call()"
+                    :disabled="!api_token || state.calling"
                 >
-                    <span v-if="!api_token">No token selected</span>
+                    <span v-if="!api_token">{{ $t('No token selected') }}</span>
                     <span v-else>
                         <i class="fas fa-play"></i>
-                        <span class="custom-pl-8">Run API</span>
+                        <span class="custom-pl-8">{{ $t('Run API') }}</span>
                     </span>
                 </button>
                 <div class="spinner" v-if="state.calling"></div>
             </div>
             <button v-if="is_request_data" class="button light-gray" @click="reset()">
                 <i class="fas fa-eraser"></i>
-                <span class="custom-pl-8">Clear</span>
+                <span class="custom-pl-8">{{ $t('Clear') }}</span>
             </button>
         </div>
 
         <div v-if="api_response" class="custom-pt-32">
             <h4>
-                Response code: 
+                {{ $t('Response code') }}:
                 <span :class="['badge', 'squared', 'small', 's-r'+ ('' + api_response.status).substring(0, 1)]">
-                    {{ api_response.status }} 
+                    {{ api_response.status }}
                     <span v-if="api_response.statusText">({{ api_response.statusText }})</span>
                 </span>
             </h4>
@@ -183,32 +188,32 @@
                 <ul class="tabs bordered-bottom">
                     <li v-if="response_info.schema && Object.keys(response_info.schema).length > 0" :class="response_tab_smart==='data' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="switchResponseTab('data')">
-                            Data
+                            {{ $t('Data') }}
                         </a>
                     </li>
                     <li :class="response_tab_smart==='raw' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="switchResponseTab('raw')">
-                            Body
+                            {{ $t('Body') }}
                         </a>
                     </li>
                     <li :class="response_tab_smart==='headers' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="response_tab='headers'">
-                            Headers
+                            {{ $t('Headers') }}
                         </a>
                     </li>
                     <li v-if="response_info.schema && Object.keys(response_info.schema).length > 0" :class="response_tab_smart==='schema' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="response_tab='schema'">
-                            Schema
+                            {{ $t('Schema') }}
                         </a>
                     </li>
                     <li v-if="type !== 'GET'" :class="response_tab_smart==='request' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="response_tab='request'">
-                            Request
+                            {{ $t('Request') }}
                         </a>
                     </li>
                 </ul>
                 <div v-if="response_tab_smart === 'data'" class="fields custom-mt-16">
-                    <schema-data 
+                    <schema-data
                         v-if="response_info.schema && Object.keys(response_info.schema).length > 0"
                         :schema="response_info.schema"
                         :value="api_response.body"
@@ -226,16 +231,16 @@
                     </div>
                 </div>
                 <div v-else-if="response_tab_smart === 'request'" class="custom-pt-16">
-                    <pre v-if="api_request_body_called" class="small highlighted custom-p-8" v-html="api_request_body_called"></pre>
-                    <div v-else class="small highlighted custom-p-8">
-                        <em class="gray">&lt;empty&gt;</em>
+                    <pre v-if="api_request_body_called" class="small highlighted dark-mode-inverted custom-p-8" v-html="api_request_body_called"></pre>
+                    <div v-else class="small highlighted dark-mode-inverted custom-p-8">
+                        <em class="gray">&lt;{{ $t('empty') }}&gt;</em>
                     </div>
                 </div>
-                <pre v-else-if="response_tab_smart === 'schema'" class="small highlighted custom-p-8" v-html="prettifyJson(response_info.schema)"></pre>
-                <pre v-else :class="[ 'small', api_response.status >= 400 && 'orange', 'highlighted', 'custom-p-8']" v-html="prettifyJson(api_response.body || api_response.data)"></pre>
+                <pre v-else-if="response_tab_smart === 'schema'" class="small highlighted dark-mode-inverted custom-p-8" v-html="prettifyJson(response_info.schema)"></pre>
+                <pre v-else :class="[ 'small', api_response.status >= 400 && 'orange', 'highlighted', 'dark-mode-inverted', 'custom-p-8']" v-html="prettifyJson(api_response.body || api_response.data)"></pre>
             </div>
         </div>
-        <p v-else-if="api_error" class="state-error">Ошибке: {{ api_error }}</p>
+        <p v-else-if="api_error" class="state-error">{{ api_error }}</p>
     </div>
 </template>
 
@@ -245,8 +250,8 @@ import marked from 'marked';
 import SchemaInput from '@/components/SchemaInput';
 import SchemaData from '@/components/SchemaData';
 import Token from '@/components/Token';
+import { swaggerUrl, appStaticUrl } from '@/funcs'
 import { prettyPrintJson } from 'pretty-print-json';
-//import SwaggerClient from 'swagger-client';
 export default {
     name: "Method",
     components: {
@@ -284,23 +289,6 @@ export default {
             show_token: false,
         };
     },
-/*    watch: {
-        api_params: function() {
-            this.checkRequestDataPresence();
-        },
-        api_request_body: function() {
-            this.checkRequestDataPresence();
-        },
-        api_query_string: function() {
-            this.checkRequestDataPresence();
-        },
-        api_post_data: function() {
-            this.checkRequestDataPresence();
-        },
-        api_post_params: function() {
-            this.checkRequestDataPresence();
-        },
-    },*/
     computed: {
         api_token() {
             return this.$store.getters.current_token;
@@ -364,7 +352,7 @@ export default {
             return {};
         },
         response_info() {
-            if (!this.isSwagger || !this.api_response || !this.type 
+            if (!this.isSwagger || !this.api_response || !this.type
                 || !(this.type.toLowerCase() in this.method)
                 || !('responses' in this.method[this.type.toLowerCase()])
                 || !(this.api_response.status in this.method[this.type.toLowerCase()].responses)
@@ -392,10 +380,16 @@ export default {
             return marked(this.response_info.description);
         },
         methodUrl() {
-            return document.location.protocol + '//' + document.location.host  + window.appState.rootUrl + 'api.php/' + this.name;
+            return document.location.protocol + '//' + document.location.host + window.appState.rootUrl + 'api.php/' + this.name;
         },
+        swaggerDescriptionUrl() {
+            return document.location.protocol + '//' + document.location.host + swaggerUrl(this.app.id);
+        },
+        swaggerIconUrl() {
+            return appStaticUrl() + '/img/openapis-icon.svg';
+        }
     },
-    async mounted() {
+    mounted() {
         this.name = this.$route.params.name;
         if (this.name) {
             const app_id = this.name.split('.')[0];
@@ -403,16 +397,6 @@ export default {
             this.method = this.$store.getters.getMethod(app_id, this.name);
             if (!this.method) {
                 return;
-            }
-            if (!('name' in this.method) && !this.isSwagger) {
-                this.state.loading = true;
-                const params = new URLSearchParams();
-                params.append("module", "methodinfo");
-                params.append("method", this.name);
-                const resp = await this.axios.get('?' + params.toString());
-                this.method = resp.data.data;
-                this.$store.commit('load_method', { app_id: app_id, method_name: this.name, method: this.method });
-                this.state.loading = false;
             }
         }
         const storedData = JSON.parse(localStorage.getItem('method:' + this.name));
@@ -464,7 +448,7 @@ export default {
                 try {
                     const resp = await axiosInstance({
                         method: method_type,
-                        url: 'api.php/' + this.method.name + '?' + this.api_query_string,
+                        url: 'api.php/' + this.name + '?' + this.api_query_string,
                         data: (method_type === 'GET') ? null : this.api_post_data,
                         headers: { Authorization: 'Bearer ' + this.api_token }
                     });
@@ -486,9 +470,6 @@ export default {
             this.checkRequestDataPresence();
             localStorage.removeItem('method:' + this.name);
             this.emitter.emit('reset');
-        },
-        show(value) {
-            console.log(value);
         },
         backToApp() {
             this.$router.push({name: 'Application', params: {name: this.app.id}});
@@ -563,31 +544,12 @@ export default {
             return true;
         },
         checkRequestDataPresence() {
-            this.is_request_data = !this.isObjectEmpty(this.api_params) 
-                || !this.isObjectEmpty(this.api_request_body) 
-                || this.api_query_string 
+            this.is_request_data = !this.isObjectEmpty(this.api_params)
+                || !this.isObjectEmpty(this.api_request_body)
+                || this.api_query_string
                 || this.api_post_data
                 || !this.isObjectEmpty(this.api_post_params);
         },
     }
 };
 </script>
-
-<style>
-pre { word-break: break-word; white-space: pre-wrap; }
-.json-key           { color: var(--dark-gray); }
-.json-string        { color: var(--purple); }
-.json-number        { color: var(--orange); }
-.json-boolean       { color: var(--pink); }
-.json-null          { color: var(--light-gray); }
-.json-mark          { color: var(--black); }
-/*
-a.json-link         { color: purple var(--purple); transition: all 400ms; }
-a.json-link:visited { color: slategray var(--); }
-a.json-link:hover   { color: blueviolet var(--); }
-a.json-link:active  { color: slategray var(--); }
-*/
-.badge.s-r2 { background-color: var(--green); }
-.badge.s-r4 { background-color: var(--red); }
-.badge.s-r5 { background-color: var(--red); }
-</style>

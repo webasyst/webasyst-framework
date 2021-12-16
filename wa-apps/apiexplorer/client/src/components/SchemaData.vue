@@ -1,7 +1,7 @@
 <template>
     <div v-if="isEmpty(value)">
         <em class="grey">
-            &lt;empty&gt;
+            &lt;{{ $t('empty') }}&gt;
         </em>
         <div class="hint" v-if="description" v-html="descriptionMarkdown"></div>
         <div class="hint" v-if="schema.type === 'array' && 'items' in schema && schema.items.description" v-html="markdown(schema.items.description)"></div>
@@ -71,13 +71,16 @@
                 <div v-else class="custom-my-16"></div>
             </div>
             <em v-if="value === null || value.length === 0" class="grey">
-                &lt;empty&gt;
+                &lt;{{ $t('empty') }}&gt;
             </em>
         </div>
         <pre v-else class="small" v-html="prettifyJson(value)"></pre>
     </div>
     <div v-else>
-        <p>Херовый тип поля - <strong>{{ schema.type }}</strong>. Я такой еще не умею.</p>
+        <p>
+            {{ $t('Unknown field type') }} - <strong>{{ schema.type }}</strong>. 
+            {{ $t('There is no interface for it yet :(') }}.
+        </p>
         <div class="hint" v-if="description" v-html="descriptionMarkdown"></div>
         <pre class="small" v-html="prettifyJson(value)"></pre>
     </div>

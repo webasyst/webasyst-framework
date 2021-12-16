@@ -4,7 +4,6 @@ class apiexplorerMethodlistController extends apiexplorerJsonController
 {
     public function execute()
     {
-        //$app = waRequest::get('app', false);
         $api_version = waRequest::get('version', 'v1');
         $force_renew = waRequest::get('renew', false);
         $user = wa()->getUser();

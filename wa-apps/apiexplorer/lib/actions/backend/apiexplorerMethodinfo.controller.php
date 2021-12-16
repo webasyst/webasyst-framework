@@ -11,7 +11,6 @@ class apiexplorerMethodinfoController extends apiexplorerJsonController
         $this->response = [
             'type'    => $method->getType(),
             'name'    => $method->getName(),
-            'doc'     => $method->getDoc(),
             'app'     => $app,
         ];
 

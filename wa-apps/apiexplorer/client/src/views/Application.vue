@@ -8,7 +8,7 @@
     <method-list :app_id="app_id" />
   </div>
   <div class="mobile-only">
-    <h1 class="custom-px-12"><img :src="'/' + app.img" class="icon"/> {{ app.name }}</h1>
+    <h1 class="custom-px-12"><img :src="rootUrl + app.img" class="icon"/> {{ app.name }}</h1>
     <method-list :app_id="app_id" />
   </div>
 </template>
@@ -28,6 +28,11 @@ export default {
         icon: []
       }
     };
+  },
+  computed: {
+    rootUrl() {
+      return window.appState.rootUrl;
+    }
   },
   mounted() {
     this.app_id = this.$route.params.name;

@@ -24,12 +24,9 @@
     </div>
   </div>
   <div v-else-if="!!app_id && !method_groups[app_id]" class="custom-p-32 align-center">
-    <i class="fas fa-times-circle" style="font-size: 8rem; opacity: .1;"></i>
-    <h4>The {{ $store.state.apps[app_id].name }} app does not offer any public APIs</h4>
-    <p class="hint">
-      If you are a developer of this app, please refer to this guide on how to create 
-      <a href="https://developers.webasyst.ru/docs/features/apis/" target="_blank">an API-enabled Webasyst app</a>.
-    </p>
+    <i class="fas fa-times-circle" style="font-size: 8rem; opacity: 0.15;"></i>
+    <h4>{{ $t('no-api-message', [$store.state.apps[app_id].name]) }}</h4>
+    <p class="hint" v-html="$t('no-api-hint')"></p>
   </div>
 </template>
 
@@ -68,11 +65,3 @@ export default {
     }
 }
 </script>
-
-<style>
-.a-get { background-color: var(--blue); }
-.a-post { background-color: var(--orange); }
-.a-put { background-color: var(--purple); }
-.a-delete { background-color: var(--brown); }
-.a-unknown { background-color: var(--gray); }
-</style>

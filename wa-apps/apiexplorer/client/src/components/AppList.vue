@@ -2,17 +2,20 @@
   <div v-if="!ready" class="box skeleton custom-pt-32">
     <span class="skeleton-header custom-mb-0"></span>
   </div>
+  <div v-else-if="state.error" class="highlighted bg-light-gray opacity-70 custom-mt-32 custom-mx-16 custom-p-8">
+    <i class="fas fa-skull"></i> {{ $t('error') }}
+  </div>
   <div v-else class="bricks dropdown" id="apps-dropdown">
-    <div class="brick selected full-width dropdown-toggle">
+    <div :class="['brick', 'selected', 'full-width', 'dropdown-toggle', !selected_app && 'pulsar' ]">
       <div v-if="!selected_app">
-        Select App
+        {{ $t('Select app') }}
       </div>
       <div v-else class="flexbox middle" @click="selectApp(selected_app)">
         <img :src="rootUrl + apps[selected_app].icon['48']" class="icon" :title="apps[selected_app].name"/>
         <div class="app-wrapper">
           <span class="app-name">{{ apps[selected_app].name }}</span>
-          <span v-if="$store.state.counts[selected_app]" class="count">{{ $store.state.counts[selected_app] }} APIs</span>
-          <span v-else class="empty">No API</span>
+          <span v-if="$store.state.counts[selected_app]" class="count">{{ $store.state.counts[selected_app] }} API</span>
+          <span v-else class="empty">{{ $t('No API') }}</span>
         </div>
       </div>
     </div>
@@ -33,6 +36,7 @@
 
 <script>
 import SwaggerClient from 'swagger-client';
+import { swaggerUrl } from '@/funcs'
 export default {
     name: "AppList",
     emits: ["apps-loaded", "app-selected"],
@@ -67,10 +71,19 @@ export default {
     async mounted() {
       if (!this.apps || Object.keys(this.apps).length === 0) {
         this.state.loading = true;
+        this.state.error = false;
         const resp = await this.axios.get('?module=applist');
-        const apps = resp.data.data.apps;
-        this.$store.commit('load_apps', apps);
-
+        if (typeof resp.data === 'object') {
+          const apps = resp.data.data.apps;
+          this.$store.commit('load_apps', apps);
+        } else {
+          this.emitter.emit('error', {
+            title: "Can't load app list",
+            description: resp.data.substring(0, 2000),
+            contentType: resp.headers['content-type'] || ''
+          });
+          this.state.error = true;
+        }
         let promises = [];
         Object.entries(this.$store.state.apps).forEach(([app_id, app]) => {
           if (app.swagger) {
@@ -90,6 +103,14 @@ export default {
       } else if (this.$route.name === 'Application') {
         this.selected_app = this.$route.params.name;
         this.$emit('app-selected', this.selected_app);
+      } else {
+        const nonEmptyApiApps = Object.keys(this.$store.state.counts);
+        const apps = Object.keys(this.$store.state.method_groups);
+        if (nonEmptyApiApps.length > 0) {
+          this.selectApp(nonEmptyApiApps[0]);
+        } else if (apps.length > 0) {
+          this.selectApp(apps[0]);
+        }
       }
       this.doDropdown();
     },
@@ -115,9 +136,13 @@ export default {
         this.$router.push({name: 'Application', params: {name: app_id}});
       },
       async loadSwagger(app_id) {
-        const swagger = await new SwaggerClient({ url: window.appState.baseUrl + '?module=swaggerRead&app=' + app_id});
-        if ('status' in swagger.spec && swagger.spec.status === 'fail') {
-          console.log('Swagger для ' + app_id + ' не шмогла');
+        const swagger = await new SwaggerClient({ url: swaggerUrl(app_id) });
+        if (!('spec' in swagger) || Object.entries(swagger.spec).length == 0 || ('errors' in swagger && swagger.errors.length > 0) || ('status' in swagger.spec && swagger.spec.status === 'fail')) {
+          this.emitter.emit('error', {
+            title: "Can't load Open API description for " + app_id,
+            description: (swagger.errors.length > 0) ? swagger.errors : '',
+            contentType: ''
+          });
         } else {
           this.$store.commit('load_app_methods', { app_id: app_id, methods: swagger.spec.paths });
           this.$store.commit('load_swagger', { app_id: app_id, swagger: swagger });
@@ -129,63 +154,13 @@ export default {
           const methods = resp.data.data.methods;
           this.$store.commit('load_methods', methods);
         } else {
-          this.emitter.emit('error', 'Invalid server response: ' + resp.data.substring(0, 150));
-          this.state.error = true;
+          this.emitter.emit('error', {
+            title: "Can't load method list",
+            description: resp.data.substring(0, 2000),
+            contentType: resp.headers['content-type'] || ''
+          });
         }
       }
     }
 }
 </script>
-
-
-<style scoped>
-.brick .icon {
-  width: 3rem; 
-  height: 3rem; 
-  margin-right: 0.5rem; 
-}
-.brick .count {
-  color: var(--gray);
-  display: block;
-  white-space: nowrap;
-}
-.brick .empty {
-  color: var(--light-gray);
-  display: block;
-  white-space: nowrap;
-}
-.brick .app-wrapper {
-  vertical-align: top; 
-  padding-top: 0.25rem; 
-  display: inline-block;
-  overflow: hidden; 
-  text-overflow: ellipsis;
-}
-.brick .app-name {
-  font-size: 1rem;
-  padding-bottom: 0.5rem; 
-  display: block;
-  white-space: nowrap;
-}
-.app-icon {
-  background-size: 1.25rem 1.25rem;
-  left: -0.125rem;
-  top: -0.125rem;
-  position: relative;
-  flex: 0 0 1.25rem;
-  max-width: 1.25rem;
-  max-height: 1.25rem;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.25rem;
-}
-.bricks {
-  width: 100%;
-  display: block;
-}
-.bricks .dropdown-body {
-  width: calc(100% - 2.5rem);
-  min-width: calc(100% - 2.5rem);
-  left: -1px;
-}
-</style>

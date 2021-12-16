@@ -1,16 +1,16 @@
 <template>
     <span v-if="value">
         <span v-if="show_token">
-            <a href="javascript:void(0);" class="custom-mx-8" title="Hide token" @click="show_token=false">
+            <a href="javascript:void(0);" class="custom-mx-8" :title="$t('Hide token')" @click="show_token=false">
                 <i class="fas fa-eye-slash"></i>
             </a>
             <span class="hint custom-mr-8">{{ value }}</span>
             <span v-if="delete_status.loading" class="spinner hint"></span>
-            <a v-else href="javascript:void(0);" class="hint nowrap" title="Delete token" @click="deleteToken">
-                <i class="fas fa-trash-alt"></i> delete
+            <a v-else href="javascript:void(0);" class="hint nowrap" :title="$t('Delete token')" @click="deleteToken">
+                <i class="fas fa-trash-alt"></i> {{ $t('delete') }}
             </a>
         </span>
-        <a href="javascript:void(0);" v-else class="custom-mx-8" title="Show token" @click="show_token=true"><i class="fas fa-eye"></i></a>
+        <a href="javascript:void(0);" v-else class="custom-mx-8" :title="$t('Show token')" @click="show_token=true"><i class="fas fa-eye"></i></a>
     </span>
 </template>
 

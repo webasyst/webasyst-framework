@@ -1,5 +1,5 @@
 <template>
-    <h1>How it works</h1>
+    <h1>{{ $t('How it works') }}</h1>
     <div v-if="state.loading" class="box skeleton custom-pt-32" style="width: 70%;">
         <span class="skeleton-line"></span>
         <span class="skeleton-line"></span>
