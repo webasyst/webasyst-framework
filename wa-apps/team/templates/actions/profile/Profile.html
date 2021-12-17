@@ -264,10 +264,10 @@
                     {else}
                     <div class="t-profile-block">
                         <div class="t-profile-block__icon">
-                            <i class="fas fa-envelope text-blue"></i>
+                            <i class="fas fa-envelope text-light-gray"></i>
                         </div>
 
-                        <div class="t-profile-block__value">
+                        <div class="t-profile-block__value text-gray">
                             [`no data`]
                         </div>
 
@@ -296,10 +296,10 @@
                     {else}
                     <div class="t-profile-block">
                         <div class="t-profile-block__icon">
-                            <i class="fas fa-phone-alt text-green"></i>
+                            <i class="fas fa-phone-alt text-light-gray"></i>
                         </div>
 
-                        <div class="t-profile-block__value">
+                        <div class="t-profile-block__value text-gray">
                             [`no data`]
                         </div>
 
@@ -369,10 +369,12 @@
                             <script>
                                 {if $geocoding.type == 'yandex'}
                                 ymaps.ready(init);
+                                {else}
+                                init();
+                                {/if}
 
                                 function init() {
-                                {/if}
-                                    const $map = document.querySelector('#map');
+                                    const $map = $('#map');
                                     const map = new TeamMap($map, '{$geocoding.type}');
 
                                     map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
@@ -380,20 +382,26 @@
                                     function renderMap(lat, lng) {
                                         map.render(lat, lng);
                                     }
-                                {if $geocoding.type == 'yandex'}
                                 }
-                                {/if}
                             </script>
                         </div>
                     </div>
                     {/if}
-                </div>
 
-                {if empty($geocoding.key)}
-                <div class="hint custom-mt-12">
-                    {sprintf('[`Для отображения карты укажите api ключ в <a href="%s" class="link">системных настройках</a>.`]', "`$wa_backend_url`webasyst/settings/")}
+                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && !empty($geocoding.type) && empty($geocoding.key)}
+                    <div class="t-profile-block t-profile-block_map">
+                        <i class="fas fa-map-marker-alt text-light-gray t-profile-block__icon"></i>
+
+                        <div class="t-profile-block__value text-gray">
+                            [`карта недоступна`]
+                        </div>
+
+                        <div class="hint">
+                            {sprintf('[`укажите API-ключ в <a href="%s" class="link">настройках</a>.`]', "`$wa_backend_url`webasyst/settings/")}
+                        </div>
+                    </div>
+                    {/if}
                 </div>
-                {/if}
 
                 <div class="t-profile-user-info-block fields custom-mt-20 custom-pb-40" id="tc-contact">
                     <div class="align-center">

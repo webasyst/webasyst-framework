@@ -15,7 +15,7 @@ var Sidebar = ( function($) {
         that.initClass();
     };
 
-    Sidebar.prototype.reset = function() {
+    Sidebar.prototype.initClass = function() {
         const that = this;
 
         that.$body = that.$wrapper.find('.sidebar-body');
@@ -27,21 +27,6 @@ var Sidebar = ( function($) {
         that.$searchForm = that.$wrapper.find('.t-search-form');
         that.$addGroupLink = that.$wrapper.find('.js-add-user-group');
         that.$addOfficeLink = that.$wrapper.find('.js-add-user-location');
-
-        that.setCounts();
-        if (that.options.can_sort) {
-            that.initSortable();
-        }
-        that.initDroppable();
-        if (!that.$activeMenuItem.length) {
-            that.selectLink();
-        }
-
-        that.bindEvents();
-    }
-
-    Sidebar.prototype.initClass = function() {
-        const that = this;
 
         const options = {
             storage_count_name: 'team/sidebar_counts',
@@ -57,11 +42,21 @@ var Sidebar = ( function($) {
         that.$activeMenuItem = (that.$wrapper.find(`li.${that.options.classes.selected}:first`) || false);
         that.groupDialog = {};
 
-        that.reset();
-        that.initUpdater();
+        that.setCounts();
+
+        if (that.options.can_sort) {
+            that.initSortable();
+        }
+
+        that.initDroppable();
+
         if (!that.$activeMenuItem.length) {
             that.selectLink();
         }
+
+        that.initUpdater();
+
+        that.bindEvents();
     };
 
     Sidebar.prototype.bindEvents = function() {
@@ -171,7 +166,7 @@ var Sidebar = ( function($) {
             that.$wrapper.find('.sidebar-body').css('display', '');
             that.$wrapper.find('.sidebar-footer').css('display', '');
 
-            that.reset();
+            that.initClass();
         });
     };
 

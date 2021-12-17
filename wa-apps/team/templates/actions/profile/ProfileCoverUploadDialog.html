@@ -370,7 +370,7 @@
               }
             }
 
-            that.$grid.sortable(options)
+            new Sortable(that.$grid[0], options);
           }
 
           updateCheckboxes() {
