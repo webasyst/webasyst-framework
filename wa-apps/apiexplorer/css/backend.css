@@ -1,0 +1,66 @@
+.brick .icon {
+  width: 3rem;
+  height: 3rem;
+  margin-right: 0.5rem;
+}
+.brick .count {
+  color: var(--gray);
+  display: block;
+  white-space: nowrap;
+}
+.brick .empty {
+  color: var(--light-gray);
+  display: block;
+  white-space: nowrap;
+}
+.brick .app-wrapper {
+  vertical-align: top;
+  padding-top: 0.25rem;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.brick .app-name {
+  font-size: 1rem;
+  padding-bottom: 0.5rem;
+  display: block;
+  white-space: nowrap;
+}
+.app-icon {
+  background-size: 1.25rem 1.25rem;
+  left: -0.125rem;
+  top: -0.125rem;
+  position: relative;
+  flex: 0 0 1.25rem;
+  max-width: 1.25rem;
+  max-height: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.25rem;
+}
+.bricks {
+  width: 100%;
+  display: block;
+}
+.bricks .dropdown-body {
+  width: calc(100% - 2.5rem);
+  min-width: calc(100% - 2.5rem);
+  left: -1px;
+}
+
+pre { word-break: break-word; white-space: pre-wrap; }
+.json-key           { color: var(--text-color-hint-strong); }
+.json-string        { color: var(--purple); }
+.json-number        { color: var(--orange); }
+.json-boolean       { color: var(--pink); }
+.json-null          { color: var(--text-color-hint); }
+.json-mark          { color: var(--text-color-stronger); }
+.badge.s-r2 { background-color: var(--green); }
+.badge.s-r4 { background-color: var(--red); }
+.badge.s-r5 { background-color: var(--red); }
+
+.a-get { background-color: var(--blue); }
+.a-post { background-color: var(--orange); }
+.a-put { background-color: var(--purple); }
+.a-delete { background-color: var(--brown); }
+.a-unknown { background-color: var(--gray); }

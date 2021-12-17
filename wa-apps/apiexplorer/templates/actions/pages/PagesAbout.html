@@ -1,0 +1,23 @@
+<p>[`<strong>API Explorer</strong> is intended for testing APIs of other apps powered by the Webasyst framework. It supports only standard API, implemented by means of the <code>waAPIMethod</code> class, which works via the <strong><code>/api.php</code></strong> endpoint.`]</p>
+
+<h3>[`Retrieving of API methods info`]</h3>
+
+<p>[`API Explorer can retrieve information only about API methods of the apps to which a current user has access.`]</p>
+
+<ul>
+    <li>[`If a selected app contains a file with API methods’ descriptions in the <a href="https://swagger.io/resources/open-api/" target="_blank">Open API (Swagger)</a> format then this description file is used. The relative path to the description file in the app’s folder must be <code>api/swagger/v1.yaml</code>.`]</li>
+    <li>[`If an app contains no such file then the list of its API methods is automatically obtained from the app’s <code>api/</code> folder.`]</li>
+</ul>
+
+<p>[`To display the method list as fast as possible, API Explorer generates it once and then saves it to cache. Therefore, if you need to refresh the list — for instance, if you have added a new API method to your own app and would like to see how API Explorer will display it — clear the Webasyst cache and reload the browser tab.`]</p>
+
+<h3>[`Access rights`]</h3>
+
+<p>[`A user <em>without</em> administrator access rights can execute API methods on their own behalf only.`]</p>
+<p>[`A user <em>with</em> administrator access rights can also select an arbitrary user in the sidebar and call API methods on behalf of that user.`]</p>
+
+<h3>[`Auto-creation of access token`]</h3>
+
+<p>[`API Explorer facilitates accessing the API, which in ordinary conditions <a href="https://developers.webasyst.com/features/apis/" target="_blank">requires an access token</a>. A token allowing access to all installed apps’ APIs is created automatically when a user is selected in the sidebar, with that user’s access rights taken into account.`]</p>
+
+<p>[`An automatically created token can be deleted when necessary — via the <em>Show token → <strong>Delete</strong></em> item on any API method viewing page.`]</p>
