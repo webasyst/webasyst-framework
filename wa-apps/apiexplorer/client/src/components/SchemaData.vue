@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import marked from 'marked';
+import { marked } from 'marked';
 import { prettyPrintJson } from 'pretty-print-json';
 export default {
     name: "SchemaData",
@@ -104,7 +104,7 @@ export default {
     },
     computed: {
         descriptionMarkdown() {
-            return marked(this.description);
+            return marked.parse(this.description);
         },
         isSimpleItemsArray() {
             return 'items' in this.schema
@@ -117,7 +117,7 @@ export default {
             if (!str) {
                 return '';
             }
-            return marked(str);
+            return marked.parse(str);
         },
         prettifyJson(obj) {
             return prettyPrintJson.toHtml(obj);
