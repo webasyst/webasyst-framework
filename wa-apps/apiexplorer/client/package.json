@@ -1,6 +1,6 @@
 {
-  "name": "apiexplorer-spa",
-  "version": "0.1.0",
+  "name": "apiexplorer-client",
+  "version": "1.0.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -11,29 +11,29 @@
     "copymanifest": "copyfiles dist/manifest.json ../js --flat"
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.0",
+    "@popperjs/core": "^2.11.2",
     "axios": "^0.21.4",
     "copyfiles": "^2.4.1",
-    "core-js": "^3.19.0",
-    "marked": "^3.0.8",
+    "core-js": "^3.20.3",
+    "marked": "^4.0.10",
     "mitt": "^3.0.0",
-    "pretty-print-json": "^1.1.1",
-    "swagger-client": "^3.17.0",
+    "pretty-print-json": "^1.1.2",
+    "swagger-client": "^3.18.1",
     "v-calendar": "^3.0.0-alpha.6",
-    "vue": "^3.2.20",
-    "vue-i18n": "^9.2.0-beta.23",
+    "vue": "^3.2.27",
+    "vue-i18n": "^9.2.0-beta.28",
     "vue-router": "^4.0.12",
-    "vuex": "^4.0.0-0"
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.5.14",
-    "@vue/cli-plugin-eslint": "^4.5.14",
-    "@vue/cli-plugin-router": "^4.5.14",
-    "@vue/cli-plugin-vuex": "^4.5.14",
-    "@vue/cli-service": "^4.5.14",
-    "@vue/compiler-sfc": "^3.2.20",
+    "@vue/cli-plugin-babel": "^4.5.15",
+    "@vue/cli-plugin-eslint": "^4.5.15",
+    "@vue/cli-plugin-router": "^4.5.15",
+    "@vue/cli-plugin-vuex": "^4.5.15",
+    "@vue/cli-service": "^4.5.15",
+    "@vue/compiler-sfc": "^3.2.27",
     "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
+    "eslint": "^6.8.0",
     "eslint-plugin-vue": "^7.20.0"
   },
   "eslintConfig": {

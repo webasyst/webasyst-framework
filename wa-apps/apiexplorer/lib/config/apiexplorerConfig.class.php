@@ -2,5 +2,5 @@
 
 class apiexplorerConfig extends waAppConfig
 {
-	const API_CLIENT_ID = 'apiexplorer';
+	const API_CLIENT_ID = 'API-Explorer';
 }

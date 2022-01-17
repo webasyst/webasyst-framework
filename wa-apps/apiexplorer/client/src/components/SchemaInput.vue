@@ -113,7 +113,7 @@
 </template>
 
 <script>
-import marked from 'marked';
+import { marked } from 'marked';
 import { /*Calendar,*/ DatePicker } from 'v-calendar';
 export default {
     name: "SchemaInput",
@@ -159,7 +159,7 @@ export default {
     },
     computed: {
         descriptionMarkdown() {
-            return marked(this.description);
+            return marked.parse(this.description);
         }
     },
     methods: {

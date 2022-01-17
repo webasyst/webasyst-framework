@@ -6,8 +6,15 @@ class apiexplorerGetTokenController extends apiexplorerJsonController
     {
         $login = waRequest::get('user', false, waRequest::TYPE_STRING_TRIM);
         $user = $login && wa()->getUser()->isAdmin() ? waUser::getByLogin($login) : wa()->getUser();
+        
+        $methods = (new apiexplorerAllMethods($user))->getList();
 
-        $scope = waRequest::post('scope', implode(',', array_keys($user->getApps())), waRequest::TYPE_STRING_TRIM);
+        $scope = waRequest::post('scope', false, waRequest::TYPE_STRING_TRIM);
+        if (!$scope) {
+            $methods = (new apiexplorerAllMethods($user))->getList();
+            $scope = implode(',', array_keys($methods));
+        }
+
         $scope = explode(',', $scope);
         sort($scope);
         $scope = implode(',', $scope);

@@ -246,7 +246,7 @@
 
 <script>
 import Axios from 'axios';
-import marked from 'marked';
+import { marked } from 'marked';
 import SchemaInput from '@/components/SchemaInput';
 import SchemaData from '@/components/SchemaData';
 import Token from '@/components/Token';
@@ -377,7 +377,7 @@ export default {
             return this.response_tab;
         },
         descriptionMarkdown() {
-            return marked(this.response_info.description);
+            return marked.parse(this.response_info.description);
         },
         methodUrl() {
             return document.location.protocol + '//' + document.location.host + window.appState.rootUrl + 'api.php/' + this.name;
