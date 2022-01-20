@@ -566,14 +566,14 @@ class waFiles
 
             //SSL
             if (!empty($options['verify'])) {
-                $context_params['ssl']['verify_peer'] = true;
-                $context_params['ssl']['verify_peer_name'] = true;
-                $context_params['ssl']['allow_self_signed'] = false;
+                $context_params_ssl['verify_peer'] = true;
+                $context_params_ssl['verify_peer_name'] = true;
+                $context_params_ssl['allow_self_signed'] = false;
                 if (is_string($options['verify'])) {
                     if (!file_exists($options['verify'])) {
                         throw new RuntimeException("SSL CA bundle not found: {$options['verify']}");
                     }
-                    $context_params['ssl']['cafile'] = $options['verify'];
+                    $context_params_ssl['cafile'] = $options['verify'];
 
                 } else {
                     // PHP 5.6 or greater will find the system cert by default. When
@@ -584,11 +584,11 @@ class waFiles
                     }
                 }
             } else {
-                $context_params['ssl']['verify_peer'] = false;
-                $context_params['ssl']['verify_peer_name'] = false;
+                $context_params_ssl['verify_peer'] = false;
+                $context_params_ssl['verify_peer_name'] = false;
             }
 
-            $context = stream_context_create(array('http' => $context_params,));
+            $context = stream_context_create(array('http' => $context_params, 'ssl' => $context_params_ssl));
         }
         return $context;
     }
