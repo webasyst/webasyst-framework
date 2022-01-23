@@ -11,7 +11,7 @@
         <em class="hint">Ctrl + S</em>
         <span id="wa-editor-status" class="custom-ml-24" style="display: none"></span>
         {if $file}
-            {$wa->getCheatSheetButton(['data' => ["app" =>{$wa->app()}, "index" =>{$file|escape:'url'|default:""}]])}
+            {$wa->getCheatSheetButton(["app" => $wa->app(), "key" => $file])}
         {/if}
     {if $action === 'theme'}
         </div>
