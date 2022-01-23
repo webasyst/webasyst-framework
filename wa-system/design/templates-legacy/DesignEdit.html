@@ -184,7 +184,7 @@
         </div>
         {if $options.save_panel}
         <div class="wa-design-save-panel block bordered-top">
-            {$wa->getCheatSheetButton(["app" => $wa->app(), "key" => $file.id])}
+            {$wa->getCheatSheetButton(["key" => $file.id])}
             <input id="wa-design-button" type="submit" class="button green" value="[s`Save`]" />
             <em class="hint">Ctrl + S</em>
             <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
