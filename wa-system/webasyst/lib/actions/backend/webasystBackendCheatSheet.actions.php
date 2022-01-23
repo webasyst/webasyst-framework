@@ -25,8 +25,8 @@
  *
  * How to connect:
  * There are 3 ways to connect to the template:
-    1) Directly request the "Button" - /webasyst?module=backendCheatSheet&action=button
-    2) Directly request the Cheat Sheet body - /webasyst?module=backendCheatSheet&action=cheatSheet
+    1) Directly request the "Button" - /webasyst/?module=backendCheatSheet&action=button
+    2) Directly request the Cheat Sheet body - /webasyst/?module=backendCheatSheet&action=cheatSheet
     3) Calling the getCheetSheetButton method from waView - {$wa->getCheatSheetButton()}.
  *
  * Options:
@@ -44,12 +44,12 @@
  * Request format:
     a) If you call a "Button" then all parameters must be in the "options" array.
     E.g.:
-        1) Smarty - {$wa->getCheatSheetButton(["name" => "webasyst", "app" => {$wa->app()}])}
-        2) Js - $("#wa-editor-help-webasyst").load('/webasyst?module=backendCheatSheet&action=button', {options : { name: 'webasyst', app: 'shop'}}, function () {})
+        1) Smarty - {$wa->getCheatSheetButton(["name" => "webasyst", "app" => $wa->app()])}
+        2) Js - $("#wa-editor-help-webasyst").load('/webasyst/', {module: 'backendCheatSheet', action: 'button', name: 'webasyst', app: 'shop'}, function () {});
 
     b) If you call a Cheat Sheet, send options to POST or GET array
     E.g.:
-        1) $("#wa-editor-help-webasyst").load('/webasyst?module=backendCheatSheet&action=cheatSheet', { name: 'webasyst', app: 'shop'}, function () {})
+        1) $("#wa-editor-help-webasyst").load('/webasyst/', {module: 'backendCheatSheet', action: 'cheatSheet', name: 'webasyst', app: 'shop', key: page}, function () {});
  *
  * Vars format:
  * 1) All keys must be in the vars array.
