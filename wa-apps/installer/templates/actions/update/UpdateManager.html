@@ -57,7 +57,7 @@ $(document).ready( function() {
             <div id="update-content">
                 <div id="template-placeholder">
                     {if $queue_apps}
-                    <h3 class="flexbox middle">
+                    <h3>
                         {_w('Installing the application','Installing applications',count($queue_apps))}
                         {foreach $queue_apps as $item}{$item.name|string_format:'[`"%s"`]'}{if !$item@last}, {/if}{/foreach}
                         <div class="spinner custom-ml-8"></div>
@@ -137,7 +137,7 @@ $(document).ready( function() {
                     {else}{literal}
                     <p>
                         <span class="icon text-green"><i class="fas fa-check-circle"></i></span>
-                        <em class="state-success"><strong>[`Applications were successfully installed`]</strong></em>
+                        <em class="state-success"><strong>[`Installation has been successfully completed`]</strong></em>
                     </p>
                     {/literal}{/if}{literal}
                     {{/if}}

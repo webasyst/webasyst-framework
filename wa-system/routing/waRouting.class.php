@@ -209,7 +209,10 @@ class waRouting
     public function dispatch()
     {
         $url = $this->system->getConfig()->getRequestUrl(true, true);
-        $url = urldecode($url);
+        $decoded_url = urldecode($url);
+        if (mb_check_encoding($decoded_url, 'UTF-8')) {
+            $url = $decoded_url;
+        }
         $r = $this->dispatchRoutes($this->getRoutes(), $url);
         if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
             $r2 = $this->dispatchRoutes($this->getRoutes(), $url.'/');

@@ -136,7 +136,7 @@ class webasystBackendHeaderAction extends waViewAction
             'backend_url'     => $backend_url,
             'request_uri'     => $request_uri,
             'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
-            'company_name'    => htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8'),
+            'company_name'    => htmlspecialchars($app_settings_model->get('webasyst', 'name', _ws('My company, LLC')), ENT_QUOTES, 'utf-8'),
             'logo'            => (new webasystLogoSettings())->get(),
             'company_url'     => $app_settings_model->get('webasyst', 'url', wa()->getRootUrl(true)),
             'date'            => $date,

@@ -136,8 +136,8 @@ class waContactDataModel extends waModel
         }
         $limit = $limit ? "LIMIT {$limit}" : '';
 
-        $sql = "SELECT c.id 
-                  FROM `{$this->table}` d 
+        $sql = "SELECT c.id
+                  FROM `{$this->table}` d
                   JOIN wa_contact c ON d.contact_id = c.id
                 {$where}
                 {$limit}";

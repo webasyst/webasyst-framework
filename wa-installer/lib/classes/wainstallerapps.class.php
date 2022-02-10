@@ -1353,8 +1353,7 @@ class waInstallerApps
 
 
             foreach ($l['icon'] as &$i) {
-                //TODO use ROOT_URL
-                $i = '/wa-apps/'.$item['slug'].'/'.$i;
+                $i = wa()->getRootUrl().'wa-apps/'.$item['slug'].'/'.$i;
             };
             unset($i);
             if (empty($item['icons'])) {
@@ -2403,6 +2402,15 @@ class waInstallerApps
             return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'installer/license');
         } catch (Exception $e) {
             throw new Exception('Unable to build URL to get license');
+        }
+    }
+
+    public function getInstallerProductsUrl()
+    {
+        try {
+            return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'installer/products');
+        } catch (Exception $e) {
+            throw new Exception('Unable to build URL to get products');
         }
     }
 

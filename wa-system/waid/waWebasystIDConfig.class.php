@@ -2,6 +2,8 @@
 
 class waWebasystIDConfig
 {
+    const ENDPOINTS_SYNC_TIME_KEY = 'waid_endpoints_sync_time';
+
     protected $config = [];
     protected $config_path;
 
@@ -37,13 +39,18 @@ class waWebasystIDConfig
      */
     protected function getMTime()
     {
-        if (file_exists($this->config_path)) {
-            $time = @filemtime($this->config_path);
-            if (wa_is_int($time) && $time > 0) {
-                return $time;
-            }
+        $app_settings_model = new waAppSettingsModel();
+        $time = $app_settings_model->get('webasyst', self::ENDPOINTS_SYNC_TIME_KEY, '');
+        if (wa_is_int($time) && $time > 0) {
+            return $time;
         }
         return 0;
+    }
+
+    protected function updateMTime()
+    {
+        $app_settings_model = new waAppSettingsModel();
+        $app_settings_model->set('webasyst', self::ENDPOINTS_SYNC_TIME_KEY, time());
     }
 
     protected function getConfigPath()
@@ -79,8 +86,7 @@ class waWebasystIDConfig
      */
     public function keepEndpointsSynchronized()
     {
-        $elapsed = time() - $this->getMTime();
-        if ($elapsed > $this->sync_endpoints_timeout) {
+        if (!isset($this->config['endpoints']) || time() - $this->getMTime() > $this->sync_endpoints_timeout) {
             $endpoints = (new waWebasystIDEndpointsConfig())->getEndpoints();
             if ($endpoints) {
                 $changed = !isset($this->config['endpoints']) || (isset($this->config['endpoints']) && $this->config['endpoints'] != $endpoints);
@@ -89,6 +95,7 @@ class waWebasystIDConfig
                     $this->commit();
                 }
             }
+            $this->updateMTime();
         }
     }
 
@@ -143,6 +150,7 @@ class waWebasystIDConfig
     protected function generateDefaultConfig()
     {
         $endpoints = (new waWebasystIDEndpointsConfig())->getEndpoints();
+        $this->updateMTime();
         return [
             'endpoints' => $endpoints
         ];

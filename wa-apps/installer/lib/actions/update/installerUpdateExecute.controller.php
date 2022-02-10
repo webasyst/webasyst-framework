@@ -144,6 +144,16 @@ class installerUpdateExecuteController extends waJsonController
 
                         $this->getConfig()->setCount(false);
 
+                        $event_results = wa('installer')->event('end_installation', $this->urls);
+
+                        if (!empty($event_results)) {
+                            foreach ($event_results as $event_result) {
+                                if (!empty($event_result['redirect'])) {
+                                    $this->response['redirect'] = $event_result['redirect'];
+                                    break;
+                                }
+                            }
+                        }
                         if (!array_key_exists('send_response', $this->params) || $this->params['send_response']) {
                             $response = $this->getResponse();
                             $response->addHeader('Content-Type', 'application/json; charset=utf-8');

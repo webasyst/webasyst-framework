@@ -6,6 +6,7 @@
  * Response
  *  {
  *      "name": <string>,
+ *      "backend_url": <string>, - URL to the Webasyst backend, for example - https://vasya.com/webasyst/
  *      "logo": {
  *          "mode": 'gradient' | 'image',
  *          "text": {
@@ -37,7 +38,8 @@ class webasystGetInfoMethod extends waAPIMethod
 
         $this->response = [
             'name' => wa()->accountName(),
-            'logo' => $logo
+            'backend_url' => wa()->getRootUrl(true) . wa()->getConfig()->getBackendUrl(false) . '/',
+            'logo' => $logo,
         ];
     }
 }

@@ -76,7 +76,7 @@ var WASettingsDBListDialog = ( function($) {
             process_hash = null;
 
         that.$stats_wrapper.hide();
-        
+
         if (that.is_locked || !items_for_convert.length) {
             return false;
         }
@@ -102,7 +102,7 @@ var WASettingsDBListDialog = ( function($) {
                 });
             }
         });
-        
+
         function convertCharset(i) {
             if (typeof items_for_convert[i] === 'undefined') {
                 that.$js_action.show();
@@ -111,7 +111,7 @@ var WASettingsDBListDialog = ( function($) {
                 that.is_locked = false;
                 return false;
             }
-            
+
             var $item = $(items_for_convert[i]),
                 $collation = $item.find('.js-collation'),
                 $status = $item.find('.js-status'),
@@ -140,7 +140,7 @@ var WASettingsDBListDialog = ( function($) {
             } else {
                 ++that.tables_all;
             }
-            
+
             $.post(href, data, function (res) {
                 if (res.status == "ok") {
                     $item.data('is-mb4', 1);
@@ -190,12 +190,12 @@ var WASettingsDBListDialog = ( function($) {
 
     WASettingsDBListDialog.prototype.initFilter = function (filter) {
         var that = this,
-            selected_class = 'is-selected';
+            selected_class = 'selected';
 
         // Remove selected
-        that.$filter_wrapper.find('.js-filter-item').removeClass(selected_class);
+        that.$filter_wrapper.find('li').removeClass(selected_class);
         // Add selected
-        that.$filter_wrapper.find('.js-filter-item[data-filter="'+ filter +'"]').addClass(selected_class);
+        that.$filter_wrapper.find('.js-filter-item[data-filter="'+ filter +'"]').closest('li').addClass(selected_class);
 
         //
 
@@ -216,6 +216,8 @@ var WASettingsDBListDialog = ( function($) {
                 }
             });
         }
+
+        $(document).trigger('resize');
 
     };
 
