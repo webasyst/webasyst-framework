@@ -190,7 +190,7 @@ class boxberryShippingDraftPackage
                 'name'     => $item['name'],
                 'price'    => round($item['price'] - $item['discount'], 2),
                 'quantity' => $item['quantity'],
-                'UnitName' => 'шт.'
+                'UnitName' => $item['stock_unit'] ? $item['stock_unit'] : 'шт.'
             ];
 
             if (!empty($item['sku'])) {
@@ -201,6 +201,20 @@ class boxberryShippingDraftPackage
                 $bxb_item['nds'] = (float) $item['tax_rate'];
             }
 
+            $quantity = explode('.', (string)$item['quantity']);
+            if (!empty($quantity[1])) {
+                $bxb_item += [
+                    'name' => $item['name'] . sprintf(" (%.3f %s)", $item['quantity'], $item['stock_unit']),
+                    'price' => round(max(0, $item['price'] * $item['quantity'] - $item['discount'] * $item['quantity']), 2),
+                    'quantity' => 1,
+                ];
+            } else {
+                $bxb_item += [
+                    'name' => $item['name'],
+                    'price' => max(0, round($item['price'] - $item['discount'], 2)),
+                    'quantity' => $item['quantity'],
+                ];
+            }
             $result[] = $bxb_item;
         }
         return $result;
