@@ -480,24 +480,33 @@ function _wp($msgid1, $msgid2 = null, $n = null, $sprintf = true)
 
     //get by themes
     $themes = wa()->getActiveThemes();
-    while ($themes && $result === $msgid1) {
+    while ($themes && ($result === $msgid1 || $result == $msgid2)) {
         $domain = array_pop($themes);
-        $result = _wd($domain, $msgid1, $msgid2, $n, $sprintf);
+        $result = _wd($domain, $msgid1, $msgid2, $n, false);
     }
 
     // Get by plugins
     if ($result === $msgid1 && $domain = wa()->getActiveLocaleDomain()) {
-        $result = _wd($domain, $msgid1, $msgid2, $n, $sprintf);
+        $result = _wd($domain, $msgid1, $msgid2, $n, false);
     }
 
     // Get by apps
     if (!$domain || $result === $msgid1) {
-        $result = _w($msgid1, $msgid2, $n, $sprintf);
+        $result = _w($msgid1, $msgid2, $n, false);
+        // condition from _w function
+        if ($n === 'm' || $n === 'f') {
+            $sprintf = false;
+        }
     }
 
     // Get by system
     if ($result === $msgid1) {
-        $result = _ws($msgid1, $msgid2, $n, $sprintf);
+        $result = _ws($msgid1, $msgid2, $n, false);
     }
-    return $result;
+
+    if ($sprintf && strpos($result, '%') !== false && $msgid2 !== null) {
+        return sprintf($result, $n);
+    } else {
+        return $result;
+    }
 }

@@ -95,8 +95,11 @@ class webasystApiTokenHeadlessController extends waController
                 $format = 'JSON';
             }
         }
-
-        wa()->getResponse()->setStatus($status_code)->sendHeaders();
+        $content_type = ($format === 'XML') ? 'application/xml' : 'application/json';
+        wa()->getResponse()
+            ->addHeader('Content-Type', $content_type)
+            ->setStatus($status_code)
+            ->sendHeaders();
         die(waAPIDecorator::factory($format)->decorate($response));
     }
 

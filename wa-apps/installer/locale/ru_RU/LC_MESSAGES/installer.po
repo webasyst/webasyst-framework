@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -145,8 +145,8 @@ msgstr "Можно включить «Запомнить меня» при вх�
 msgid "An error occurred during installation"
 msgstr "При установке произошла ошибка"
 
-msgid "Applications were successfully installed"
-msgstr "Приложения успешно установлены"
+msgid "Installation has been successfully completed"
+msgstr "Установка успешно завершена"
 
 msgid "View installation log"
 msgstr "Посмотреть журнал установки"
@@ -965,7 +965,7 @@ msgid "Search"
 msgstr "Поиск"
 
 msgid "View theme demo"
-msgstr "Посмотреть демо-сайт"
+msgstr "Посмотреть демосайт"
 
 msgid "<a target=\"_blank\" href=\"https://support.webasyst.com/2024/mailer-dkim/\">What is DKIM</a>"
 msgstr "<a target=\"_blank\" href=\"https://support.webasyst.ru/2023/mailer-dkim/\">Что такое DKIM</a>"
@@ -974,7 +974,7 @@ msgid "Enter an email address in “Sender” field to use DKIM."
 msgstr "Для использования DKIM введите email-адрес в поле «Отправитель»."
 
 msgid "Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address."
-msgstr "Добавьте DKIM-подпись для исходящих email-сообщений, чтобы подтвердить владение адресом оправителя."
+msgstr "Добавьте DKIM-подпись для исходящих email-сообщений, чтобы подтвердить владение адресом отправителя."
 
 msgid "Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name"
 msgstr "Добавьте новую <b>TXT-запись</b> с данным публичным ключом DKIM в DNS-зону домена"

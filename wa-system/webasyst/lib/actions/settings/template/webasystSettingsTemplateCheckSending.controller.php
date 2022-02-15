@@ -26,7 +26,7 @@ class webasystSettingsTemplateCheckSendingController extends webasystSettingsJso
     {
         $errors = null;
         if (!$this->channel->exists()) {
-            $errors[] = array('field' => '[channel_id]', 'message' => _ws('Channel not exists'));
+            $errors[] = array('field' => '[channel_id]', 'message' => _ws('Channel does not exist'));
         }
 
         if (empty($data['recipient'])) {
@@ -48,7 +48,11 @@ class webasystSettingsTemplateCheckSendingController extends webasystSettingsJso
         }
 
         if (empty($errors)) {
-            $result = wa('webasyst')->event('backend_before_email_send_test', ref([
+            $event = 'backend_before_email_send_test';
+            if ($this->channel instanceof waVerificationChannelSMS) {
+                $event = 'backend_before_sms_send_test';
+            }
+            $result = wa('webasyst')->event($event, ref([
                 'channel' => $this->channel,
                 'data' => $data,
             ]));

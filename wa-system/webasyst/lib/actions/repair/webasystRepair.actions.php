@@ -293,42 +293,41 @@ SQL;
      */
     public function widgetsAction()
     {
-        $contact_id = $this->getUserId();
+        $dashboard_id = waRequest::request('dashboard_id', null, 'int');
         $widget_model = new waWidgetModel();
-        $rows = $widget_model->getByContact($contact_id);
-
-        $data = array();
-        foreach ($rows as $row) {
-            $data[$row['block']][] = $row;
+        if ($dashboard_id) {
+            $rows = $widget_model->getByDashboard($dashboard_id);
+        } else {
+            $contact_id = $this->getUserId();
+            $rows = $widget_model->getByContact($contact_id);
         }
 
-        $w = $b = 0;
+        $count_updated_widgets = 0;
+        $block_filled = 0;
+        $sort = $block = 0;
+        foreach ($rows as $row) {
+            $fill = array_product(explode('x', $row['size']));
+            if ($block_filled + $fill > 4) {
+                $block_filled = 0;
+                $block++;
+                $sort = 0;
+            }
 
-        $real_block = 0;
-        foreach ($data as $block => $block_data) {
-            if ($real_block != $block) {
-                $b++;
-                $widget_model->updateByField(array(
-                    'contact_id'   => $contact_id,
-                    'dashboard_id' => null,
-                    'block'        => $block,
-                ), array('block' => $real_block));
+            if ($row['sort'] != $sort || $row['block'] != $block) {
+                $count_updated_widgets++;
+                $widget_model->updateById($row['id'], [
+                    'block' => $block,
+                    'sort' => $sort,
+                ]);
             }
-            foreach ($block_data as $sort => $row) {
-                if ($row['sort'] != $sort) {
-                    $widget_model->updateById($row['id'], array('sort' => $sort));
-                    $w++;
-                }
-            }
-            $real_block++;
+
+            $block_filled += $fill;
+            $sort++;
         }
 
         echo 'OK';
-        if ($b) {
-            echo "\t".$b.' block(s) has been fixed.'.PHP_EOL;
-        }
-        if ($w) {
-            echo "\t".$w.' widgets(s) has been fixed.'.PHP_EOL;
+        if ($count_updated_widgets) {
+            echo "\t".$count_updated_widgets.' widgets(s) has been fixed.';
         }
     }
 

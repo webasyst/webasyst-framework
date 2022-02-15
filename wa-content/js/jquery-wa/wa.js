@@ -2203,7 +2203,6 @@
             that.on.ready(that);
 
             that.$wrapper.on("click", function(event) {
-                event.preventDefault();
                 if (!that.is_disabled) {
                     that.set(!that.is_active);
                 }
@@ -2227,7 +2226,7 @@
             }
 
             if (that.$field.length) {
-                that.$field.attr("checked", active);
+                that.$field.prop("checked", active);
             }
 
             if (trigger_change) {

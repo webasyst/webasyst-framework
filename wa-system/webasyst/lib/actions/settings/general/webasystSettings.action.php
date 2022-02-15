@@ -22,7 +22,7 @@ class webasystSettingsAction extends webasystSettingsViewAction
     {
         $model = new waAppSettingsModel();
         $settings = array(
-            'name'   => 'Webasyst',
+            'name'   => _ws('My company, LLC'),
             'url'    => wa()->getRootUrl(true),
             'locale' => 'ru_RU',
         );

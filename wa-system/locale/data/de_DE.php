@@ -12,7 +12,7 @@ return array(
         'datetime' => 'd.m.Y H:i',
         'fulldatetime' => 'd.m.Y H:i:s'
     ),
-    'decimal_point' => '.',
+    'decimal_point' => ',',
     'frac_digits' => '2',
     'thousands_sep' => ',',
     'amount_in_words' => array(

@@ -57,7 +57,7 @@ abstract class waFileCache implements waiCache
         if ($this->value !== null) {
             return $this->value;
         }
-        $t = func_num_args() ? func_get_args(0) : null;
+        $t = func_num_args() ? func_get_arg(0) : null;
         $this->value = $this->readFromFile($this->getFilePath(), $t);
         return $this->value;
     }
