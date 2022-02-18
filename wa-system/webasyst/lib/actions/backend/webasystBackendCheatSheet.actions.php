@@ -434,7 +434,7 @@ class webasystBackendCheatSheetActions extends waActions
             '{time()}'                                              => _ws('Direct PHP function access. E.g. <em>{time()}</em> displays the current timestamp'),
             '{literal}...{/literal}'                                => _ws('Content between {literal} tags will not be parsed by Smarty'),
             '{strip}...{/strip}'                                    => _ws('Strip extra whitespaces'),
-            '{html_image}'                                          => _ws('Debug'),
+            '{html_image src="..."}'                                => _ws('Image tag'),
             '{debug}'                                               => _ws('Debug'),
             '{include file="..."}'                                  => _ws('Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder'),
             '{if}...{else}...{/if}'                                 => _ws('Similar to PHP if statements'),
