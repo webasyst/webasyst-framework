@@ -351,7 +351,7 @@ class webasystBackendCheatSheetActions extends waActions
     {
         $locale = wa()->getLocale();
         $cache_apps = new waVarExportCache('cheat_sheet_apps_'.$locale, 86400, 'webasyst/backend/cheatsheet');
-        $all_apps_site_config = $cache_apps->get('cheat_sheet_apps_'.$locale);
+        $all_apps_site_config = $cache_apps->get();
 
         //If null cache not set.
         if ($all_apps_site_config === null) {
@@ -376,6 +376,20 @@ class webasystBackendCheatSheetActions extends waActions
             '$wa_app_url'                                                                  => _ws('URL of the current app settlement (relative)'),
             '$wa_backend_url'                                                              => _ws('URL to access Webasyst backend (relative)'),
             '$wa_theme_url'                                                                => _ws('URL of the current app design theme folder (relative)'),
+            'wa_static_url'                                                                => _ws('Base static URL'),
+            'wa_active_theme_path'                                                         => _ws('Active theme path'),
+            'wa_active_theme_url'                                                          => _ws('Active theme URL'),
+            'theme_settings'                                                               => _ws('Theme settings'),
+            'theme_settings_config'                                                        => _ws('Theme settings configuration'),
+            'wa_app'                                                                       => _ws('Application'),
+            'wa_app_static_url'                                                            => _ws('Application static URL'),
+            'wa_real_active_theme_url'                                                     => _ws('Real active theme URL'),
+            'wa_real_app_static_url'                                                       => _ws('Real application static URL'),
+            'wa_real_theme_url'                                                            => _ws('Real theme URL'),
+            'wa_real_parent_theme_url'                                                     => _ws('Real parent theme URL'),
+            'wa_parent_theme_url'                                                          => _ws('Parent theme URL'),
+            'wa_parent_theme_path'                                                         => _ws('Parent theme path'),
+            'wa_theme_version'                                                             => _ws('Theme version'),
             '$wa->title()'                                                                 => _ws('Title'),
             '$wa->title("<em>title</em>")'                                                 => _ws('Assigns a new title'),
             '$wa->accountName()'                                                           => _ws('Returns name of this Webasyst installation (name is specified in “Installer” app settings)'),
@@ -419,6 +433,9 @@ class webasystBackendCheatSheetActions extends waActions
             '{$foo=3*4}'                                            => _ws('Assigns variable a value'),
             '{time()}'                                              => _ws('Direct PHP function access. E.g. <em>{time()}</em> displays the current timestamp'),
             '{literal}...{/literal}'                                => _ws('Content between {literal} tags will not be parsed by Smarty'),
+            '{strip}...{/strip}'                                    => _ws('Strip extra whitespaces'),
+            '{html_image}'                                          => _ws('Debug'),
+            '{debug}'                                               => _ws('Debug'),
             '{include file="..."}'                                  => _ws('Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder'),
             '{if}...{else}...{/if}'                                 => _ws('Similar to PHP if statements'),
             '{foreach $a as $k => $v}...{foreachelse}...{/foreach}' => _ws('{foreach} is for looping over arrays of data'),
