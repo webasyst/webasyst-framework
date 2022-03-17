@@ -866,7 +866,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         if ($asset_name === waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_HASH || $asset_name === waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_HASH) {
             return $input_secret === $asset_secret;
         } else {
-            return waContact::getPasswordHash($input_secret) === $asset_secret;
+            return waContact::verifyPasswordHash($input_secret, $asset_secret);
         }
     }
 
