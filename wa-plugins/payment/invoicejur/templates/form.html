@@ -118,7 +118,7 @@
                         <tr>
                             <td>{$item@iteration}</td>
                             <td><b>{$item.name}</b></td>
-                            <td>шт.</td>
+                            <td>{$item.stock_unit|default:'шт.'|escape}</td>
                             <td>{$item.quantity}</td>
                             <td>{$item.price|wa_format_amount:$order.currency:'%2'}</td>
                             <td style="white-space: nowrap; text-align: right;">{$item.total|wa_format_amount:$order.currency:'%2'}</td>

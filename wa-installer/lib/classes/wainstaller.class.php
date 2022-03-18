@@ -248,6 +248,17 @@ class waInstaller
                         if (!$update['backup'] && $update['pass']) {
                             $update['skipped'] = true;
                         }
+                        $update['info'] = null;
+                        if (function_exists('wa')) {
+                            if ($update['subject'] === 'app') {
+                                $update['info'] = wa()->getConfig()->getAppConfig($update['slug'])->getInfo();
+                            } elseif ($update['subject'] === 'app_plugins') {
+                                $slugs = explode('/', $update['slug']);
+                                if ($slugs[2] === 'plugins') {
+                                    $update['info'] = wa($slugs[1])->getPlugin($slugs[3])->getInfo();
+                                }
+                            }
+                        }
                     }
                     unset($update);
                     //no break
@@ -1343,7 +1354,12 @@ class waInstaller
                                     $this->cleanupPath($path.'/'.$current_path, $skip_directory);
                                 } else {
                                     if (!@unlink(self::$root_path.$path.'/'.$current_path)) {
-                                        throw new Exception("Error on unlink file {$path}/{$current_path}");
+                                        $warning_message = "Error on unlink file {$path}/{$current_path}";
+                                        if (strpos($path, 'wa-cache/') === 0) {
+                                            $this->writeLog($warning_message);
+                                        } else {
+                                            throw new Exception($warning_message);
+                                        }
                                     }
                                 }
                             }

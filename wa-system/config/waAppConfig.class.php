@@ -345,7 +345,7 @@ class waAppConfig extends SystemConfig
                     waLog::log("Error running update of ".$this->application.": {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
                     waConfig::get('disable_exception_log', false);
                     waConfig::set('is_template', $is_from_template);
-                    throw new waException(sprintf(_ws('Error running update of application %s: %s'), $this->application, $file), 500, $e);
+                    throw new waException(sprintf(_ws('Error while running update of %s app: %s'), $this->application, $file), 500, $e);
                 }
             }
             waConfig::get('disable_exception_log', false);

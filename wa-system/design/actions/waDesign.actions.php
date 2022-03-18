@@ -1302,6 +1302,7 @@ HTACCESS;
                     $theme = waTheme::extract($file->tmp_name);
                     $this->logAction('theme_upload', $theme->id);
                     $this->displayJson(array('theme' => $theme->id));
+                    wa()->getConfig()->clearCache();
                 } catch (Exception $e) {
                     waFiles::delete($file->tmp_name);
                     $this->displayJson(array(), $e->getMessage());

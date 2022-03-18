@@ -90,9 +90,9 @@
                                             </a>
                                         {else}
                                             {if !$user.waid_invite_datetime}
-                                                {$_link_text = '[`Email upgrade instructions`]'}
+                                                {$_link_text = '[`Send sign-in instructions by email`]'}
                                             {else}
-                                                {$_link_text = '[`Email again`]'}
+                                                {$_link_text = '[`Re-send sign-in instructions`]'}
                                             {/if}
                                             <a href="javascript:void(0)" class="js-send-email-invitation" data-id="{$user.id}">
                                                 <i class="fas fa-envelope"></i> <span class="js-text">{$_link_text}</span> <i class="fas fa-spinner fa-spin js-loading" style="display: none;"></i>

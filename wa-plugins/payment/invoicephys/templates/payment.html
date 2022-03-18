@@ -1,5 +1,13 @@
-<form action="" method="POST" target="_blank">
+{if !empty($app_payment)}{$_action = "`$wa_app_url`data/payment/invoicephys/printForm/"}{else}{$_action = ''}{/if}
+
+<form action="{$_action}" method="POST" target="_blank">
     {$wa->csrf()}
     <input type="hidden" name="printform" value="1">
     <input type="submit" value="Распечатать квитанцию">
+    {if !empty($app_payment)}
+        <input type="hidden" name="plugin" value="invoicephys">
+        <input type="hidden" name="order_id" value="{$order_id|escape}">
+        <input type="hidden" name="merchant_id" value="{$merchant_id|escape}">
+        <input type="hidden" name="app_payment" value="1">
+    {/if}
 </form>

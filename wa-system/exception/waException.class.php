@@ -151,8 +151,12 @@ class waException extends Exception
             $url = '/';
         }
 
-        // Never show exception details in production
-        $message = '';
+        if ($env == 'backend') {
+            $message = nl2br(htmlspecialchars($this->getMessage(), self::$htmlspecialchars_mode, 'utf-8'));
+        } else {
+            // Never show exception details in production
+            $message = '';
+        }
 
         $file = $code = $this->getCode();
         if (!$code || !file_exists(dirname(__FILE__).'/data/'.$code.'.php')) {

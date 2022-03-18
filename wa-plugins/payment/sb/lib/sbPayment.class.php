@@ -468,7 +468,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $transaction = end($related_transactions);
         $orderNumber = $transaction_raw_data['orderNumber'];
         $order_number_parts = explode('_', $orderNumber);
-        $transaction_data += array(
+        $transaction_data = array_merge($transaction_data, array(
             'native_id'   => $transaction['native_id'],
             'order_id'    => $transaction_raw_data['order_id'],
             'customer_id' => $transaction['customer_id'],
@@ -477,7 +477,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'currency_id' => $transaction['currency_id'],
             'result'      => 1,
             'part_number' => !empty($order_number_parts[3]) ? (int)$order_number_parts[3] : 0,
-        );
+        ));
 
         $view_data = &$transaction_data['view_data'];
 
@@ -822,13 +822,25 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     }
 
                     if (isset($transaction['callback_method']) && $transaction['callback_method'] != self::CALLBACK_NOTIFY) {
-                        // When we know API callbacks are enabled and they work,
-                        // do not try to perform app action when user comes back to store page.
-                        // This action is better performed during API callback.
-                        if ($this->getSettings('api_callbacks_enabled') && !$this->isApiCallbackRequest($request)) {
+
+                        $log_why_ignore_and_notify = null;
+                        $is_api_callback_request = $this->isApiCallbackRequest($request);
+
+                        if ($is_api_callback_request && 'bindingCreated' == ifset($request, 'operation', 'unknown')) {
+                            // Operation = bindingCreated should not trigger payment action in app.
+                            // Switch it to NOTIFY instead.
+                            $log_why_ignore_and_notify = 'Ignore operation = bindingCreated';
+                        } else if ($this->getSettings('api_callbacks_enabled') && !$is_api_callback_request) {
+                            // When we know API callbacks are enabled and they work,
+                            // do not try to perform app action when user comes back to store page.
+                            // This action is better performed during API callback.
+                            $log_why_ignore_and_notify = 'Ignore browser-based order notification because API callbacks are enabled';
+                        }
+
+                        if ($log_why_ignore_and_notify) {
                             static::log($this->id, [
                                 'method'                => __METHOD__,
-                                'message'               => 'Ignore browser-based order notification because API callbacks are enabled',
+                                'message'               => $log_why_ignore_and_notify,
                                 'order_id'              => $order_id,
                                 'old_type'              => $transaction['type'],
                                 'old_result'            => $transaction['result'],
@@ -1553,12 +1565,13 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
             }
             $data = array(
-                'name'     => $order_data->shipping_name,
-                'total'    => $order_data->shipping,
-                'price'    => $order_data->shipping,
-                'quantity' => 1,
-                'tax_rate' => $order_data->shipping_tax_rate,
-                'type'     => 'shipping',
+                'name'       => $order_data->shipping_name,
+                'total'      => $order_data->shipping,
+                'price'      => $order_data->shipping,
+                'quantity'   => 1,
+                'stock_unit' => 'шт.',
+                'tax_rate'   => $order_data->shipping_tax_rate,
+                'type'       => 'shipping',
             );
             $items[] = $this->formalizeItemData($data, $order_data);
         }
@@ -1591,12 +1604,27 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     $items[] = $this->formalizeItemData($item_data, $order_data);
                 }
             }
-        };
+        }
 
+        $sum = 0;
         // Never send zero-quantity item to API
         foreach ($items as $i => $item) {
             if (empty($item['quantity']['value'])) {
                 unset($items[$i]);
+                continue;
+            }
+            $sum += (int)$item['itemAmount'];
+        }
+
+        // solving rounding problems
+        $difference = number_format($order_data->total, 2, '', '') - $sum;
+        if (abs($difference) == 1) {
+            foreach ($items as $i => $item) {
+                if ($item['itemAmount'] > 1 && $item['quantity']['value'] == 1) {
+                    $items[$i]['itemAmount'] += $difference;
+                    $items[$i]['itemPrice'] += $difference;
+                    break;
+                }
             }
         }
 
@@ -1675,11 +1703,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'positionId'   => $position_id,
             'name'         => mb_substr($data['name'], 0, 100),
             'quantity'     => array(
-                'value'   => (int)$data['quantity'],
-                'measure' => 'шт.',
+                'measure' => mb_substr($data['stock_unit'], 0, 20),
             ),
             'itemAmount'   => number_format($data['total'], 2, '', ''),
-            'itemPrice'    => number_format($data['price'], 2, '', ''),
             'itemCurrency' => $this->getCurrencyISO4217Code($order_data['currency']),
             'itemCode'     => $item_code,
             'tax'          => array(
@@ -1687,6 +1713,15 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 'taxSum'  => number_format($tax_sum, 2, '', ''),
             ),
         );
+
+        $quantity = explode('.', (string)$data['quantity']);
+        if (!empty($quantity[1])) {
+            $item_data['quantity']['value'] = 1;
+            $item_data['itemPrice'] = $item_data['itemAmount'];
+        } else {
+            $item_data['quantity']['value'] = (int)$data['quantity'];
+            $item_data['itemPrice'] = number_format($data['price'], 2, '', '');
+        }
 
 
         // Credit dont work for ФФД 1.05

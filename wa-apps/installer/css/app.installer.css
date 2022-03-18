@@ -847,6 +847,9 @@
     align-self: center;
   }
 }
+.installer-update__table td p {
+  margin: inherit;
+}
 .update-result-apps-list {
   list-style: none;
   padding: 0;

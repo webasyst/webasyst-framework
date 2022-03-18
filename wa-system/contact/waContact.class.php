@@ -1325,6 +1325,25 @@ class waContact implements ArrayAccess
     }
 
     /**
+     * Verifies the password hash.
+     *
+     * By default, strict comparison is used. If configuration file wa-config/SystemConfig.class.php
+     * contains information about user-defined function wa_password_verify(), then that function is used for hash verification.
+     *
+     * @param string$password
+     * @param string $hash
+     * @return bool
+     */
+    public static function verifyPasswordHash($password, $hash)
+    {
+        if (function_exists('wa_password_verify')) {
+            return (bool) wa_password_verify($password, $hash);
+        } else {
+            return waContact::getPasswordHash($password) === $hash;
+        }
+    }
+
+    /**
      * @param int $len
      * @param bool $extended - use extended alphabet or only letters and digits
      * @return string

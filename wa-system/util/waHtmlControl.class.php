@@ -504,7 +504,7 @@ class waHtmlControl
             'format'             => 'data-regexp',
             'format_description' => 'data-regexp-hint',
         );
-        $control .= self::addCustomParams($map, $params);
+        $control .= $this->addCustomParams($map, $params);
         $control .= ">";
         return $control;
     }
@@ -513,7 +513,7 @@ class waHtmlControl
     {
         $control_name = self::escape($name);
         $control = "<input type=\"hidden\" name=\"{$control_name}\" ";
-        $control .= self::addCustomParams(array('id', 'class', 'title', 'value', 'disabled'), $params);
+        $control .= $this->addCustomParams(array('id', 'class', 'title', 'value', 'disabled'), $params);
         $control .= ">";
         return $control;
     }
@@ -523,7 +523,7 @@ class waHtmlControl
         $control = '';
         $control_name = self::escape($name);
         $control .= "<input type=\"file\" name=\"{$control_name}\" ";
-        $control .= self::addCustomParams(array('class', 'style', 'id'), $params);
+        $control .= $this->addCustomParams(array('class', 'style', 'id'), $params);
         $control .= ">";
         if (!empty($params['value'])) {
             if (!empty($params['img_path'])) {
@@ -550,7 +550,7 @@ class waHtmlControl
         $control_name = self::escape($name);
         $value = self::escape($params['value']);
         $control .= "<textarea name=\"{$control_name}\"";
-        $control .= self::addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', 'title', 'placeholder', 'readonly', 'autofocus', 'disabled'), $params);
+        $control .= $this->addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', 'title', 'placeholder', 'readonly', 'autofocus', 'disabled'), $params);
         $control .= ">{$value}</textarea>";
 
         if (empty($params['wysiwyg']) && !empty($params['wisywig'])) {
@@ -599,7 +599,7 @@ HTML;
         $control_name = self::escape($name);
         $value = self::escape($params['value']);
         $control .= "<p name=\"{$control_name}\"";
-        $control .= self::addCustomParams(array('id', 'class', 'style',), $params);
+        $control .= $this->addCustomParams(array('id', 'class', 'style',), $params);
         $control .= ">{$value}</p>";
         return $control;
     }
@@ -610,7 +610,7 @@ HTML;
         $control_name = self::escape($name);
         $value = self::escape($params['value']);
         $control .= "<h3 name=\"{$control_name}\"";
-        $control .= self::addCustomParams(array('id', 'class', 'style',), $params);
+        $control .= $this->addCustomParams(array('id', 'class', 'style',), $params);
         $control .= ">{$value}</h3>";
         if (!isset($params['custom_description_wrapper'])) {
             $params['custom_description_wrapper'] = '<h4 class="hint">%s</h4>';
@@ -629,7 +629,7 @@ HTML;
         $control = '';
         $control_name = self::escape($name);
         $control .= "<input type=\"password\" name=\"{$control_name}\"";
-        $control .= self::addCustomParams(array('id', 'class', 'style', 'size', 'maxlength', 'title', 'value', 'placeholder', 'readonly', 'autofocus', 'disabled'), $params);
+        $control .= $this->addCustomParams(array('id', 'class', 'style', 'size', 'maxlength', 'title', 'value', 'placeholder', 'readonly', 'autofocus', 'disabled'), $params);
         $control .= ">";
         return $control;
     }
@@ -654,12 +654,12 @@ HTML;
             $option_value = self::escape($option_value);
             $control_name = self::escape($name);
             $control .= "<input type=\"radio\" name=\"{$control_name}\" value=\"{$option_value}\"";
-            $control .= self::addCustomParams(array('id', 'class', 'style', 'checked', 'readonly', 'disabled',), $params + $option);
+            $control .= $this->addCustomParams(array('id', 'class', 'style', 'checked', 'readonly', 'disabled',), $params + $option);
             if (!empty($option['title'])) {
                 $option_title = self::escape(self::_wp($option['title'], $params));
                 $control .= ">&nbsp;<label";
-                $control .= self::addCustomParams(array('id' => 'for',), $params);
-                $control .= self::addCustomParams(array('class', 'style',), $option);
+                $control .= $this->addCustomParams(array('id' => 'for',), $params);
+                $control .= $this->addCustomParams(array('class', 'style',), $option);
                 $control .= ">{$option_title}</label>\n";
             } else {
                 $control .= ">\n";
@@ -679,7 +679,7 @@ HTML;
         $id = 0;
         $options = isset($params['options']) ? (is_array($params['options']) ? $params['options'] : array($params['options'])) : array();
         $control .= "<select name=\"{$name}\" autocomplete=\"off\"";
-        $control .= self::addCustomParams(array('id', 'class', 'style', 'title', 'readonly', 'autofocus', 'disabled'), $params);
+        $control .= $this->addCustomParams(array('id', 'class', 'style', 'title', 'readonly', 'autofocus', 'disabled'), $params);
         $control .= ">\n";
         $group = null;
         foreach ($options as $option) {
@@ -689,7 +689,7 @@ HTML;
             }
             if (!empty($option['group']) && ($option['group'] != $group)) {
                 $group = (string)$option['group'];
-                $custom_params = self::addCustomParams(
+                $custom_params = $this->addCustomParams(
                     array(
                         'class'       => 'group_class',
                         'group_style' => 'style',
@@ -712,8 +712,8 @@ HTML;
             }
             $option_value = self::escape($option_value);
             $control .= "<option value=\"{$option_value}\"";
-            $control .= self::addCustomParams(array('selected'), $params);
-            $control .= self::addCustomParams(array('class', 'style', 'disabled', 'description' => 'title',), $option);
+            $control .= $this->addCustomParams(array('selected'), $params);
+            $control .= $this->addCustomParams(array('class', 'style', 'disabled', 'description' => 'title',), $option);
             $option_title = self::escape(self::_wp(ifset($option['title'], $option_value), $params));
             $control .= ">{$option_title}</option>\n";
         }
@@ -825,11 +825,11 @@ HTML;
         }
         if (isset($params['label']) && $params['label']) {
             $control .= "<label";
-            $control .= self::addCustomParams(array('for' => 'id'), $params);
+            $control .= $this->addCustomParams(array('for' => 'id'), $params);
             $control .= ">";
         }
         $control .= "<input type=\"checkbox\" name=\"{$name}\"";
-        $control .= self::addCustomParams(array('value', 'class', 'style', 'checked', 'id', 'title', 'disabled',), $params);
+        $control .= $this->addCustomParams(array('value', 'class', 'style', 'checked', 'id', 'title', 'disabled',), $params);
         $control .= ">";
         if (isset($params['label']) && $params['label']) {
             $control .= '&nbsp;'.self::escape(self::_wp($params['label'], $params))."</label>";
@@ -1153,10 +1153,10 @@ HTML;
             var allowed = null;
             var start_timestamp = new Date(option.data('start_date')).getTime();
             var calendar = new Date(timestamp);
-            
+
             if (typeof option.data('value') !== 'undefined') {
                 var interval_left = /(\d{1,2}):(\d{1,2})-\d{1,2}:\d{1,2}/.exec(option.data('value'));
-                
+
                 /** выбранная дата в календаре с началом интервала */
                 calendar.setHours(Number(interval_left[1]), Number(interval_left[2]));
             }

@@ -185,7 +185,7 @@ class waVerificationChannelSMS extends waVerificationChannel
 
     protected function isSecretEquals($input_secret, $asset_secret, $asset_name)
     {
-        return waContact::getPasswordHash($input_secret) === $asset_secret;
+        return waContact::verifyPasswordHash($input_secret, $asset_secret); 
     }
 
 

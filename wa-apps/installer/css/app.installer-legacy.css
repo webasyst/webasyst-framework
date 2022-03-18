@@ -759,6 +759,9 @@ i.icon16.pause {
 .i-update .wa-rates-list .wa-rate.is-active {
   color: #07f;
 }
+.i-update {
+  margin-bottom: 80px;
+}
 .i-update .i-updates .i-update-button {
   max-width: 270px;
 }

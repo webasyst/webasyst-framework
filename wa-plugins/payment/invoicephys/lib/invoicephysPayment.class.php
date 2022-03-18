@@ -22,19 +22,21 @@ class invoicephysPayment extends waPayment implements waIPayment, waIPaymentCapt
 
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
-        $view = wa()->getView();
         if (!empty($payment_form_data['printform'])) {
             $wa_transaction_data = $this->formalizeData($order_data);
             $wa_transaction_data['printform'] = $this->id;
             wa()->getResponse()->redirect($this->getAdapter()->getBackUrl(waAppPayment::URL_PRINTFORM, $wa_transaction_data));
         }
+        $view = wa()->getView();
+        $view->assign('order_id', $order_data['id']);
+        $view->assign('merchant_id', $order_data['merchant_id']);
+        $view->assign('app_payment', ifset($payment_form_data['app_payment']));
         return $view->fetch($this->path.'/templates/payment.html');
     }
 
     public function capture($transaction_raw_data)
     {
         //TODO store transaction data
-        ;
     }
 
     public function getPrintForms(waOrder $order = null)
@@ -79,5 +81,11 @@ class invoicephysPayment extends waPayment implements waIPayment, waIPaymentCapt
         $transaction_data['currency_id'] = $transaction_raw_data['currency_id'];
         $transaction_data['native_id'] = '';
         return $transaction_data;
+    }
+
+    public function printFormAction($params)
+    {
+        $order = new waOrder($params);
+        return $this->displayPrintForm($params['plugin'], $order);
     }
 }

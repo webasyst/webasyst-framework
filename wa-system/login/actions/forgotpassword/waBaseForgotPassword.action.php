@@ -289,7 +289,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         $password = $data['password'];
         $password_confirm = $data['password_confirm'];
         if (strlen($password) <= 0) {
-            $errors['password'] = _ws('Password can not be empty.');
+            $errors['password'] = _ws('Password cannot be empty.');
         }
         if ($password !== $password_confirm) {
             $errors['password_confirm'] = _ws('Passwords do not match');

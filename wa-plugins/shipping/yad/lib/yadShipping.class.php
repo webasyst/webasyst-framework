@@ -1504,15 +1504,21 @@ HTML;
 
         $this->addDimensions($data);
 
-        // items are now deprecated
         foreach ($this->getItems() as $item) {
             $item_params = array(
                 'externalId' => $item['id'],
-                'name'       => $item['name'],
-                'count'      => $item['quantity'],
-                'price'      => max(0, round($item['price'] - $item['discount'])),
                 'tax'        => $this->getTaxType($item),
             );
+            $quantity = explode('.', (string)$item['quantity']);
+            if (!empty($quantity[1])) {
+                $item_params['name'] = $item['name'] . sprintf(" (%.3f %s)", $item['quantity'], $item['stock_unit']);
+                $item_params['count'] = 1;
+                $item_params['price'] = round(max(0, $item['price'] * $item['quantity'] - $item['discount'] * $item['quantity']), 2);
+            } else {
+                $item_params['name'] = $item['name'];
+                $item_params['count'] = $item['quantity'];
+                $item_params['price'] = max(0, round($item['price'] - $item['discount'], 2));
+            }
 
             if (!empty($item['weight'])) {
                 $item_params['dimensions'] = $this->getItemDimensions($item);

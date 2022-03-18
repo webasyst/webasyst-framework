@@ -5,6 +5,6 @@ return array(
     'icon' => 'img/cash16.png',
     'logo' => 'img/cash.png',
     'vendor' => 'webasyst',
-    'version' => '1.0.0',
+    'version' => '1.0.1',
     'type' => waPayment::TYPE_MANUAL,
 );

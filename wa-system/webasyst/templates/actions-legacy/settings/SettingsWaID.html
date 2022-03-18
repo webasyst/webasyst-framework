@@ -86,9 +86,9 @@
                                             </a>
                                         {else}
                                             {if !$user.waid_invite_datetime}
-                                                {$_link_text = '[s`Email upgrade instructions`]'}
+                                                {$_link_text = '[s`Send sign-in instructions by email`]'}
                                             {else}
-                                                {$_link_text = '[s`Email again`]'}
+                                                {$_link_text = '[s`Re-send`]'}
                                             {/if}
                                             <a href="javascript:void(0)" class="js-send-email-invitation nowrap" data-id="{$user.id}">
                                                 <i class="icon16 email"></i> <span class="js-text">{$_link_text}</span> <i class="icon16 loading js-loading" style="display: none;"></i>
