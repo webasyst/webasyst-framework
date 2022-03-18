@@ -82,7 +82,7 @@
                         <p>
                             {if $wa->user()->isAdmin('team')}
                                 {sprintf_wp(
-                                'To add a user to <span class="bold">%s</span> use <a href="%s">Manage group</a> mode.',
+                                'To add a user to <span class="bold">%s</span>, use the <a href="%s">Manage group</a> mode.',
                                 $group.name|escape,
                                 "`$wa_app_url`group/`$group.id`/manage/"
                                 )}
@@ -99,43 +99,31 @@
                         </p>
                     </div>
                     <div>
-                        <a href="#" class="alert-close t-info-notice-toggle"><i class="fas fa-times"></i></a>
+                        <a href="#" class="alert-close t-info-notice-toggle" data-disable-routing><i class="fas fa-times"></i></a>
                     </div>
                 </div>
             </div>
         {/if}
 
-        {if $group.description}
-        <p class="t-description small{if $group.description === '[`Add group description`]'} gray italic{/if} custom-my-8 break-word{if $can_manage_group} editable js-desc-editable{/if}"{if $can_manage_group} contenteditable="true" style="margin: 0 -.25em" data-default-text="[`Add group description`]"{/if}>
-            {$group.description|escape|nl2br}
-        </p>
+        {if $can_manage_group}
+            <p class="t-description small{if $group.description === '[`Add group description`]'} gray italic{/if} custom-my-8 break-word editable js-desc-editable" contenteditable="true" style="margin: 0 -.25em" data-default-text="[`Add group description`]">
+                {$group.description|default:'[`Add group description`]'|escape|nl2br}
+            </p>
+        {elseif $group.description !== '[`Add group description`]'}
+            <p class="t-description small custom-my-8 break-word">
+                {$group.description|escape|nl2br}
+            </p>
         {/if}
 
-        {if !$group.description && $can_manage_group}
-        <p class="t-description small gray italic custom-my-8 break-word editable js-desc-editable" contenteditable="true" style="margin: 0 -.25em" data-default-text="[`Add group description`]">
-            [`Add group description`]
-        </p>
-        {/if}
-
-        {if $_location_enabled && empty($geocoding.type)}
+        {if $_location_enabled && empty($geocoding.key)}
         <div>
             <span class="t-map-link small">
-                <i class="fas fa-map-marker-alt custom-mr-4"></i>
-                {$group.location.address|escape}
+                <a href="https://maps.google.com/?q={$group.location.address|escape}" target="_blank">
+                    <i class="fas fa-map-marker-alt custom-mr-4"></i>
+                    {$group.location.address|escape}
+                    <i class="fas fa-external-link-alt smaller custom-ml-4" style="vertical-align: baseline;"></i>
+                </a>
             </span>
-        </div>
-        {/if}
-
-        {if $_location_enabled && !empty($geocoding.type) && empty($geocoding.key)}
-        <div>
-            <span class="t-map-link small">
-                <i class="fas fa-map-marker-alt custom-mr-4"></i>
-                {$group.location.address|escape}
-            </span>
-
-            <div class="hint">
-                {sprintf('[`Чтобы показать карту укажите API-ключ в <a href="%s" class="link">настройках</a>.`]', "`$wa_backend_url`webasyst/settings/")}
-            </div>
         </div>
         {/if}
 
@@ -146,7 +134,18 @@
             <i class="fas fa-caret-down custom-ml-4"></i>
         </a>
 
-        <div class="t-map-wrapper custom-mt-12">
+        <div class="t-map-wrapper flexbox middle align-center custom-mt-12" style="background-color: var(--background-color-skeleton);">
+            <div class="width-100" style="color: var(--menu-background-color-hover);">
+                <i class="fas fa-map icon size-80"></i>
+            </div>
+
+            <style>
+                .ymaps-2-1-79-gototech,
+                .ymaps-2-1-79-gototaxi {
+                    display: none;
+                }
+            </style>
+
             <div class="t-location-map" id="t-location-map"></div>
         </div>
         {/if}

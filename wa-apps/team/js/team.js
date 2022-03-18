@@ -57,7 +57,7 @@
         },
 
         /* Open dialog to confirm contact deletion */
-        confirmContactDelete: function(contact_ids) {
+        confirmContactDelete: function(contact_ids, reloadPage) {
             $.post('?module=users&action=prepareDelete', { id: contact_ids }, function(html) {
                 $.waDialog({
                     html,
@@ -74,7 +74,14 @@
 
                                 $.post('?module=users&action=delete', { id: allowed_ids }, function(){
                                     dialog.close();
-                                    $.team.content.load($.team.app_url);
+                                    $.team.sidebar.reload();
+
+                                    if (!reloadPage) {
+                                        $.team.content.load($.team.app_url);
+                                        return;
+                                    }
+
+                                    $.team.content.reload();
                                 }).always(function () {
                                     $delete_button.attr('disabled', false).html(btn_text);
                                 });
@@ -94,7 +101,7 @@
             setTimeout(run, $.team.is_debug ? 100 : delay / 2);
 
             function run() {
-                $.post($.team.app_url + "?module=calendarExternal&action=sync")
+                $.post($.team.app_url + "?module=calendarExternal&action=sync&background_process=1")
                     .always(function () {
                         xhr = null;
                         timer = setTimeout(run, delay);
@@ -586,11 +593,6 @@ var TeamEditable = ( function($) {
     TeamEditable.prototype.initClass = function() {
         const that = this;
 
-        const defaultText = that.$wrapper.data('default-text') || '';
-        $.extend(that.options, {
-            defaultText
-        });
-
         that.bindEvents();
     };
 
@@ -625,23 +627,12 @@ var TeamEditable = ( function($) {
         that.cacheText();
 
         that.$wrapper.addClass('editable-highlight');
-
-        if (that.$wrapper.text() === that.options.defaultText) {
-            that.$wrapper.text('');
-        }
     }
 
     TeamEditable.prototype.disableEditor = function() {
         const that = this;
 
         that.$wrapper.removeClass('editable-highlight');
-
-        if (that.$wrapper.text() === '') {
-            that.$wrapper.addClass('gray italic');
-            that.$wrapper.text(that.options.defaultText);
-        } else {
-            that.$wrapper.removeClass('gray italic');
-        }
 
         if (that.$wrapper.text() === that.cachedText) {
             return;

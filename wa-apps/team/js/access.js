@@ -698,17 +698,20 @@ window.ProfileAccessTab = function(o) { "use strict";
             return;
         }
 
-        $('#open-customize-groups').click(function(e) {
+        $('#open-customize-groups').on('click', function(e) {
             e.preventDefault();
+            $(this).hide();
             $('#form-customize-groups').toggle();
         });
-        $('#cancel-customize-groups').click(function(e) {
+
+        $('#cancel-customize-groups').on('click', function(e) {
             e.preventDefault();
-            var form = $('#form-customize-groups').hide();
+            const form = $('#form-customize-groups').hide();
+            $('#open-customize-groups').show();
             form.find('.loading').hide();
             form.find('.state-error-hint').remove();
-            return false;
         });
+
         $form.submit(function() {
             var form = $(this);
             form.find('.state-error-hint').remove();
@@ -933,13 +936,10 @@ window.ProfileAccessTab = function(o) { "use strict";
 
             $.waDialog.confirm({
                 title: `<i class="fas fa-exclamation-triangle smaller state-error"></i> ${$link_block.data('alert')}`,
-                success_button_title: 'Ok',
+                success_button_title: loc['blockUser'] || 'Ok',
                 success_button_class: 'danger',
                 cancel_button_title: loc["cancel"],
                 cancel_button_class: 'light-gray',
-                onOpen($dialog, dialog){
-                    console.log($dialog, dialog)
-                },
                 onSuccess(){
                     var $textarea = $block_form.find('.js-block-user-reason'),
                         text = $.trim($textarea.val());
@@ -976,7 +976,7 @@ window.ProfileAccessTab = function(o) { "use strict";
 
             $.waDialog.confirm({
                 title: `<i class="fas fa-exclamation-triangle smaller state-error"></i> ${$link_unblock.data('alert')}`,
-                success_button_title: 'Ok',
+                success_button_title: loc['unblockUser'] || 'Ok',
                 success_button_class: 'danger',
                 cancel_button_title: loc["cancel"],
                 cancel_button_class: 'light-gray',

@@ -265,12 +265,12 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(responce) {
-                  if (responce.data.rejected.length) {
+                success: function(response) {
+                  if (response.data.rejected.length) {
                     clone.remove();
 
-                    const rejectName = responce.data.rejected[0].name;
-                    const rejectDescription = responce.data.rejected[0].description;
+                    const rejectName = response.data.rejected[0].name;
+                    const rejectDescription = response.data.rejected[0].description;
                     const rejectDiv = $('<div />', { 'class': 'hint text-red bold custom-mb-12', text: rejectName + ': ' + rejectDescription } );
                     rejectDiv.insertBefore(that.$grid).hide().fadeIn().delay(5000).animate({
                       opacity: 0
@@ -285,14 +285,14 @@
                   cloneCancel.remove();
                   cloneSkeleton.remove();
                   cloneProgress.remove();
-                  cloneImg.attr('src', responce.data.thumbnails[0].urls.preview).removeClass('hidden').addClass('fadeIn js-upload-cover-sort');
+                  cloneImg.attr('src', response.data.thumbnails[0].urls.preview).removeClass('hidden').addClass('fadeIn js-upload-cover-sort');
                   cloneCheckboxWrapper.removeClass('hidden');
-                  cloneCheckbox[0].value = responce.data.added[0].photo_id;
-                  clone.attr('data-id', responce.data.added[0].photo_id);
+                  cloneCheckbox[0].value = response.data.added[0].photo_id;
+                  clone.attr('data-id', response.data.added[0].photo_id);
 
                   that.toggleDropdown();
                   that.dialog.resize();
-                  that.updateParentContent();
+                  $.team.content.reload(true);
                 },
                 error: function(event) {
                   clone.addClass('removed');

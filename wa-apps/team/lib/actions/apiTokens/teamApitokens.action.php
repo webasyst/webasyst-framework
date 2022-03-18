@@ -5,7 +5,7 @@ class teamApitokensAction extends teamContentViewAction
     public function execute()
     {
         if (!wa()->getUser()->isAdmin()) {
-            throw new waException(_w('Access denied'));
+            throw new waRightsException(_w('Access denied'));
         }
 
         /* PAGE */

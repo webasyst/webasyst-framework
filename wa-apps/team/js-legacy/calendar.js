@@ -1470,7 +1470,7 @@ var EventEditDialog = ( function($) {
 
         var user = that.users[that.user_id],
             $userIcon = user.$icon.clone(),
-            user_name = user.name;
+            user_name = $.wa.encodeHTML(user.name);
 
         var $type = $("<span class='t-type'>" + ( that.summary ? that.summary : that.locales.empty_type ) + "</span>").css({
             "background": bg_color,
@@ -1707,7 +1707,7 @@ var EventEditDialog = ( function($) {
             result[id] = {
                 id: id,
                 $icon: $icon,
-                name: $.trim( $("<div />").html( $li.text() ).text() )
+                name: $.trim( $("<div />").html( $.wa.encodeHTML($li.text()) ).text() )
             };
 
         });

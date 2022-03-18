@@ -314,12 +314,6 @@ $rem = 16
                 background: var(--chips-background-color);
                 color var(--text-color-hint)
 
-.input-editable
-    border 0 !important
-    background var(--background-color-input-solid) !important
-    padding 0 0.25em !important
-    line-height 1 !important
-
 .t-user-birthday-icon
     right: 0;
     bottom: 0;
@@ -338,3 +332,9 @@ $rem = 16
     outline: 0.125em solid var(--accent-color);
     &:hover
         background-color: inherit;
+
+.editable:empty:not(:focus):before
+    content: attr(data-placeholder);
+    color: var(--gray);
+    font-style: italic;
+    pointer-events: none;

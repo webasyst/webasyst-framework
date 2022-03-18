@@ -193,7 +193,7 @@
                     <button type="button" class="button js-copy-link hidden"><i class="fas fa-copy"></i> <span class="desktop-and-tablet-only">[`Copy`]</span></button>
                     <button type="button" class="button light-gray js-close-dialog">[`Cancel`]</button>
                 </div>
-                <input type="submit" class="button js-submit-button js-by-email" value="[`Send`]">
+                <button type="submit" class="button js-submit-button js-by-email">[`Send`]</button>
                 <button type="button" class="button light-gray js-close-dialog js-by-email">[`Cancel`]</button>
             </div>
         </footer>
@@ -338,7 +338,13 @@
             $form.find('.state-error-hint').remove();
             $form.find('.state-error').removeClass('state-error');
 
+            $button.append('<i class="fas fa-spinner fa-spin custom-ml-4 js-state-loading-spinner"></i>');
+            $button.prop('disabled', true);
+
             $.post(form_action, $form.serialize(), function (result) {
+                $button.find('.js-state-loading-spinner').remove();
+                $button.prop('disabled', false);
+
                 if (result.status === 'ok') {
                     // close dialog
                     dialog.close();
@@ -370,9 +376,16 @@
             const $get_link = $(this);
             $get_link.html(`<i class="fas fa-link"></i> ${ locales.make_invite }... <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>`)
 
-            $.post($.team.app_url + '?module=users&action=createInvitation', $form.serialize(), function(response) {
+            $.post($.team.app_url + '?module=users&action=createInvitation', $form.serialize(), response => {
                 if(response.status === 'ok') {
-                    $('.js-close-dialog:first').toggleClass('light-gray gray').text(locales.done)
+                    $('.js-close-dialog:first')
+                        .toggleClass('light-gray gray')
+                        .text(locales.done)
+                        .on('click', () => {
+                            if (response.data?.contact_url) {
+                                $.team.content.load(response.data?.contact_url);
+                            }
+                    })
                     $get_link.remove()
                     $('.js-invite-link').val(`${ response.data.invitation_link }`).toggleClass('hidden')
                     $('.js-copy-link').toggleClass('hidden')
@@ -386,9 +399,8 @@
                         .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
                     });
                 }
-            }, 'json').always( function() {
-                $get_link.html(`<i class="fas fa-link"></i> ${ locales.get_link }`)
-            });
+            }, 'json')
+                .always(() => $get_link.html(`<i class="fas fa-link"></i> ${ locales.get_link }`));
 
         })
         // Copy link

@@ -290,10 +290,7 @@ var ProfileStatistic = ( function($) {
                 .addClass(that.show_class);
 
             function getHintPosition($point) {
-                var $window = $(window),
-                    window_w = $window.width(),
-                    window_h = $window.height(),
-                    hint_w = that.$hint.outerWidth(),
+                var hint_w = that.$hint.outerWidth(),
                     hint_h = that.$hint.outerHeight(),
                     point_width = Math.ceil( $point.attr("width") ),
                     point_height = Math.ceil( $point.attr("height") ),
@@ -307,8 +304,8 @@ var ProfileStatistic = ( function($) {
                         top: pointOffset.top - wrapperOffset.top + ( (point_height < hint_h) ? point_height - hint_h - point_border_w : point_border_w )
                     };
 
-                if (window_w < hintOffset.left + hint_w) {
-                    hintOffset.left = pointOffset.left - (hint_w + space);
+                if (that.$wrapper.width() < hintOffset.left + hint_w) {
+                    hintOffset.left = hintOffset.left - (hint_w + space + point_width);
                 }
 
                 return hintOffset;

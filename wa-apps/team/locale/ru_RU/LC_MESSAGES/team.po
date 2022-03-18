@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1608,3 +1608,28 @@ msgstr "Загрузите или перетащите фото"
 
 msgid "The cover can show 8 photos at most. To change the order of photos drag them in the list."
 msgstr "В обложке показывается не более 8 фотографий. Чтобы изменить последовательность фотографий, перемещайте их между собой."
+
+msgid "You can also drag a user to this group in the sidebar."
+msgstr "Можно также перетащить пользователя на название этой группы в боковой панели."
+
+msgid "To show a map, save an API key in the <a href=\"%s\" class=\"link\">settings</a>."
+msgstr "Чтобы показать карту, укажите API-ключ в <a href=\"%s\" class=\"link\">настройках</a>."
+
+msgid "To add a user to <span class=\"bold\">%s</span>, use the <a href=\"%s\">Manage group</a> mode."
+msgstr "Чтобы добавить пользователя в «<span class=\"bold\">%s</span>», используйте режим «<a href=\"%s\">Изменить группу</a>»."
+
+msgid "The map is unavailable."
+msgstr "Карта недоступна."
+
+msgid "Save an API key in the <a href=\"%s\" class=\"link\">settings</a>."
+msgstr "Укажите API-ключ в <a href=\"%s\" class=\"link\">настройках</a>."
+
+msgid "Access inherited from user groups."
+msgstr "Доступ унаследован от групп."
+
+msgid "Access granted for the user individually."
+msgstr "Доступ установлен персонально для этого пользователя."
+
+msgid "User added"
+msgstr "Пользователь добавлен"
+
