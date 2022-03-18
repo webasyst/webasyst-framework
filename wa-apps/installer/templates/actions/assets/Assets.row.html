@@ -1,20 +1,20 @@
 {$_product_is_disabled = in_array($item_type,['app','plugin']) && empty($item.enabled) && empty($app.virtual)}
 
-<tr>
+<tr class="js-assets-row {if $_product_is_disabled}i-assets-disabled{/if}">
     <td class="i-assets-col-icon">
         {* ICON *}
-        {if ($item_type eq 'app') && (!empty($item.icons.48)||!empty($item.img))}
-            <img src="{$wa_url}{$item.icons.48|default:$item.img|default:''|ltrim:'/'}" alt="">
+        {if ($item_type eq 'app') && !empty($item.icons.48)}
+            <img src="{$item.icons.48}" alt="">
         {else}
             &nbsp;
         {/if}
     </td>
-    <td class="small{if $_product_is_disabled} gray{/if}">
+    <td class="small i-assets-col">
         {* PRODUCT NAME *}
         {if $item_type eq 'plugin' ||  $item_type eq 'theme' || $item_type eq 'widget' }
             {* theme or plugin *}
             {if !empty($item.icons) && false}
-                <img src="{$wa_url}{$item.icons.16}" alt="">
+                <img src="{$item.icons.16}" alt="">
             {else}
                 <i class="fas fa-{if $item_type eq 'plugin'}plug{elseif $item_type eq 'widget'}table{else}palette{/if}" style="color: {if $item_type eq 'plugin'}var(--text-color-strong){elseif $item_type eq 'widget'}var(--light-gray){else}var(--orange){/if};"></i>
             {/if}
@@ -49,7 +49,7 @@
         {/if}
     </td>
 
-    <td class="small{if $_product_is_disabled} gray{/if}">
+    <td class="small i-assets-col">
         {if !empty($item.installed.version)}
             {$_version = $item.installed.version}
             {if $_version|substr:-2 === '.p'}
@@ -59,9 +59,9 @@
         {/if}
         {if ($item_type !='theme') && empty($item.virtual)}
             {if $item_type !='widget' && ($item_type !='plugin' || empty($app.virtual))}
-                {if empty($item.enabled)}
+                <span class="i-assets-disabled-title">
                     ([`Paused`])
-                {/if}
+                </span>
             {/if}
             {if !$item.applicable}
                 <p class="state-caution-hint">
@@ -88,57 +88,44 @@
         )}
             {if in_array($item_type,['plugin','app'])}
                 {if empty($app.virtual)}
-                    {if empty($item.enabled)}
-                        {if $item.applicable}
-                                <a href="{$wa_app_url}assets/"
-                                   data-url="?module={$item_type}s&action=enable"
-                                   data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
-                                   class="js-switch-item button rounded"
-                                >
-                                    <span class="icon i-assets-spinner js-installer-assets-spinner"><i class="fas fa-spinner"></i></span>
-                                    <span class="icon js-installer-assets-icon"><i class="fas fa-play fa-xs"></i></span>
-                                    [`Resume`]
-                                </a>
-                        {else}
-                            {* requiremnts not sutisfied *}
-                        {/if}
-                    {elseif empty($item.system)}
-                            <a href="{$wa_app_url}assets/"
-                               data-url="?module={$item_type}s&action=disable"
-                               data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
-                               class="js-switch-item button light-gray rounded"
-                            >
-                                <span class="icon i-assets-color-blue i-assets-spinner js-installer-assets-spinner"><i class="fas fa-spinner"></i></span>
-                                <span class="icon i-assets-color-blue js-installer-assets-icon"><i class="far fa-pause-circle"></i></span>
-                                [`Pause`]
-                            </a>
-                    {/if}
-                {/if}
+                    <a href="{$wa_app_url}assets/"
+                       data-type="enable"
+                       data-url="?module={$item_type}s&action=enable"
+                       data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
+                       class="js-switch-item js-switch-enable button rounded"
+                       style="{if !empty($item.enabled) && $item.applicable} display: none;{/if}"
+                    >
+                        <span class="icon i-assets-spinner js-installer-assets-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+                        <span class="icon js-installer-assets-icon"><i class="fas fa-play fa-xs"></i></span>
+                        [`Resume`]
+                    </a>
 
+                    <a href="{$wa_app_url}assets/"
+                       data-type="disable"
+                       data-url="?module={$item_type}s&action=disable"
+                       data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
+                       class="js-switch-item js-switch-disable button light-gray rounded"
+                       style="{if empty($item.enabled) && empty($item.system)} display: none;{/if}"
+                    >
+                        <span class="icon i-assets-color-blue i-assets-spinner js-installer-assets-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+                        <span class="icon i-assets-color-blue js-installer-assets-icon"><i class="far fa-pause-circle"></i></span>
+                        [`Pause`]
+                    </a>
+                {/if}
             {/if}
 
-            {if
-            empty($item.system)
-            &&
-            (
-                !in_array($item_type,['app','plugin'])
-                ||
-                ( $item_type =='plugin' && !empty($app.virtual))
-                ||
-                !empty($item.enabled)
-            )
-            }
-            <a href="{$wa_app_url}assets/" class="js-remove-item button light-gray circle" title="[`Delete`]">
-                <i class="fas fa-trash-alt text-red js-remove-item-icon"></i>
-                <i class="fas fa-spinner wa-animation-spin speed-1500 hidden js-remove-item-spinner"></i>
-            </a>
+            <span class="js-switch-remove" style="{if empty($item.system) && (!in_array($item_type,['app','plugin']) || ($item_type =='plugin' && !empty($app.virtual)) || empty($item.enabled))} display: none;{/if}">
+                <a href="{$wa_app_url}assets/" class="js-remove-item button light-gray circle" title="[`Delete`]">
+                    <i class="fas fa-trash-alt text-red js-remove-item-icon"></i>
+                    <i class="fas fa-spinner wa-animation-spin speed-1500 hidden js-remove-item-spinner"></i>
+                </a>
+            </span>
 
             {if $item_type=='app'}{$field = 'app_id'}{else}{$field='extras_id'}{/if}
             <form action="?module={$item_type}s&action=remove" method="post" class="js-remove-item-form">
                 {$wa->csrf()}
                 <input type="hidden" name="{$field}[{$item.slug}]" value="{$item.installed.vendor|default:'webasyst'|escape}"/>
             </form>
-            {/if}
             {/if}
         </ul>
     </td>

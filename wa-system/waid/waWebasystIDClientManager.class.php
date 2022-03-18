@@ -59,7 +59,11 @@ class waWebasystIDClientManager
      */
     public function isBackendAuthForced()
     {
-        return $this->isConnected() && $this->getWebasystIDConfig()->isBackendAuthForced();
+        try {
+            return $this->isConnected() && $this->getWebasystIDConfig()->isBackendAuthForced();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -248,6 +252,79 @@ class waWebasystIDClientManager
         $this->setBackendAuthForced(false);
 
         return $this->packOkResult();
+    }
+
+
+    /**
+     * Get system (non user) access token
+     * @return string 
+     */
+    public function getSystemAccessToken()
+    {
+        $system_access_token = $this->getAppSettingsModel()->get('webasyst', 'waid_system_access_token');
+        if (!empty($system_access_token) && !(new waWebasystIDAccessTokenManager)->isTokenExpired($system_access_token)) {
+            return $system_access_token;
+        }
+
+        $url = $this->getWebasystIDUrlsProvider()->getAuthCenterUrl('auth/token');
+        $credentials = $this->getCredentials();
+
+        $params = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $credentials['client_id'],
+            'client_secret' => $credentials['client_secret'],
+        ];
+
+        $net_options = [
+            'timeout' => 20,
+            'format' => waNet::FORMAT_RAW,
+            'request_format' => waNet::FORMAT_RAW,
+            'expected_http_code' => null,
+        ];
+
+        $net = new waNet($net_options);
+
+        $response = null;
+        try {
+            $response = $net->query($url, $params, waNet::METHOD_POST);
+        } catch (Exception $e) {
+            if ($e instanceof waNetTimeoutException) {
+                $this->getWebasystIDUrlsProvider()->complainAboutAuthEndpoint();
+            }
+            $this->logException($e);
+            $this->logError([
+                'method' => __METHOD__,
+                'debug' => $net->getResponseDebugInfo()
+            ]);
+            return false;
+        }
+
+        $status = $net->getResponseHeader('http_code');
+        if (!$status || $status >= 500) {
+            $this->getWebasystIDUrlsProvider()->complainAboutAuthEndpoint();
+            return false;
+        }
+
+        if (!$response) {
+            return false;
+        }
+
+        $response = json_decode($response, true);
+        if (!$response || !is_array($response)) {
+            return false;
+        }
+
+        if (isset($response['error'])) {
+            return false;
+        }
+
+        if (!isset($response['access_token'])) {
+            return false;
+        }
+
+        $this->getAppSettingsModel()->set('webasyst', 'waid_system_access_token', $response['access_token']);
+
+        return $response['access_token'];
     }
 
     /**

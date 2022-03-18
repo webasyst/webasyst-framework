@@ -701,12 +701,13 @@ class WASettingsEmailTemplate {
                                             let field = error.field,
                                                 message = error.message;
 
-                                            let $input = $form.find('input[name="data' + field + '"]').parent();
-                                            $input.addClass('shake animated');
-                                            $input.after('<div class="js-field-error" style="color: red; margin-left: 12px;">'+ message +'</div>');
+                                            let $input = $form.find('input[name="data' + field + '"]'),
+                                                $input_parent = $input.parent();
+                                            $input_parent.addClass('shake animated');
+                                            $input.after('<p class="js-field-error state-error-hint">'+ message +'</p>');
                                             setTimeout(function(){
-                                                $input.removeClass('shake animated');
-                                                $input.next().remove();
+                                                $input_parent.removeClass('shake animated');
+                                                $input_parent.find('.js-field-error').remove();
                                             },2000);
                                         })
                                     }

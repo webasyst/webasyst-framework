@@ -51,6 +51,14 @@
     function toggleDashboardItems(){
       const grid = $('.js-dashboard-grid');
 
+      if (!grid.length) {
+          return;
+      }
+
+      if (grid[0].getBoundingClientRect().bottom < 0) {
+          return;
+      }
+
       const gridItems = grid.find('li');
       const itemsWidth = grid.find('li').outerWidth();
       const colCounter = Math.floor((grid.outerWidth())/itemsWidth);
@@ -58,9 +66,9 @@
 
       let rowsToShow;
       if ($(window).width() < 1400) {
-        rowsToShow = 3;
-      } else {
         rowsToShow = 4;
+      } else {
+        rowsToShow = 5;
       }
 
       const itemsToShow = rowsToShow * colCounter;

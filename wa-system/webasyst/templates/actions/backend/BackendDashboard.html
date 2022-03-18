@@ -8,7 +8,80 @@
         {if !empty($activity)}
             {include file="../dashboard/DashboardActivityFilter.inc.html" inline}
         {/if}
-        <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+
+        {if $today_users}
+            <div class="activity-list-block">
+                <div class="activity-divider h3">[`Today`]</div>
+                    {foreach $today_users as $group_id => $today_group}
+                        <div class="users-group">
+                            {* Birthday users group (include other) *}
+                            {if stristr($group_id, 'birthday') !== false }
+                                {$user_count = count($today_group)}
+                                {$_is_calendar_group = isset($today_group.calendar)}
+                                {foreach $today_group.contacts as $birthday_user}
+                                    <a href="{$wa_backend_url}contacts/#/contact/{$birthday_user.id}" class="userpic userpic48 outlined" data-wa-tooltip-content="[`Birthday`]" style="z-index:{$user_count - $birthday_user@index}">
+                                        <img src="{$birthday_user.photo_url_48}" alt="{$birthday_user.formatted_name|escape}">
+
+                                        {if $birthday_user@last && $birthday_user@iteration < 5}
+                                            <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
+                                            {if $_is_calendar_group}
+                                                <span class="userstatus"><i class="{$today_group.calendar.icon}"></i></span>
+                                            {/if}
+                                        {/if}
+                                    </a>
+                                {/foreach}
+                                {if $today_group.rest_count > 0}
+                                    <span class="userpic userpic48 rest-count">
+                                        <span>&plus;{$today_group.rest_count}</span>
+                                        <span class="userstatus birthday">
+                                            <i class="fas fa-birthday-cake"></i>
+                                        </span>
+                                    </span>
+                                {/if}
+                            {* Other users *}
+                            {else}
+                                {$contact_count = count($today_group.contacts)}
+                                {foreach $today_group.contacts as $contact}
+                                    <a href="{$wa_backend_url}contacts/#/contact/{$contact.id}" class="userpic userpic48 outlined" data-wa-tooltip-content="{if !empty($contact.summary)}{$contact.summary|escape}{else}{$today_group.name|escape}{/if}" style="z-index:{$contact_count - $contact@index}">
+                                        <img src="{$contact.photo_url_48}" alt="{$contact.formatted_name|escape}">
+                                        {if $contact@last && $contact@iteration < 5}
+                                            <span class="userstatus" style="background-color:{$today_group.bg_color|escape};color:{$today_group.font_color|escape}">
+                                                <i class="{$today_group.icon|escape|default:'fas fa-calendar-alt'}"></i>
+                                            </span>
+                                        {/if}
+                                    </a>
+                                {/foreach}
+                                {if $today_group.rest_count > 0}
+                                    <span class="userpic userpic48 rest-count">
+                                        <span>&plus;{$today_group.rest_count}</span>
+                                        <span class="userstatus" style="background-color:{$today_group.bg_color|escape};color:{$today_group.font_color|escape}">
+                                            <i class="{$today_group.icon|escape|default:'fas fa-calendar-alt'}"></i>
+                                        </span>
+                                    </span>
+                                {/if}
+                            {/if}
+                        </div>
+                    {/foreach}
+                <hr class="custom-my-16">
+            </div>
+        {/if}
+
+        {if $no_today_activity}
+            <div class="activity-list-block activity-empty-today">
+                {if !$today_users}
+                    <div class="activity-divider today h3 2">[`Today`]</div>
+                {/if}
+                <div class="activity-item activity-empty-today custom-mb-24">
+                    <div class="item-content-wrapper">
+                        <div class="inline-content">
+                            [`No activity today yet.`]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {/if}
+
+        <div class="activity-list-block js-activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
             {if !empty($activity)}
                 {include file="../dashboard/DashboardActivity.html" inline}
             {else}

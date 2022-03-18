@@ -259,9 +259,15 @@ class waDispatch
 
         // One-time auth app token?
         if (!strncmp($request_url, 'link.php/', 9)) {
+
+            // Is this a link preview bot after link has been shared via modern messenger?
+            // Deny bots access to one-time-auth links.
+            $user_agent = waRequest::getUserAgent();
+            $this_is_a_bot = preg_match('~WhatsApp|TelegramBot|TwitterBot|facebookexternalhit|Facebot|vkShare|snapchat|Discordbot~i', $user_agent);
+
             $token = strtok(substr($request_url, 9), '/?');
             $token = urldecode($token);
-            if ($token) {
+            if ($token && !$this_is_a_bot) {
                 $app_token_model = new waAppTokensModel();
                 $row = $app_token_model->getById($token);
                 if ($row) {

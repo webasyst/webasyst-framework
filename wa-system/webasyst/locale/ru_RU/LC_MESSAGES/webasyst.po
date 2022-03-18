@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-02-08 09:58+0300\n"
+"PO-Revision-Date: 2022-03-16 15:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -5167,8 +5167,8 @@ msgstr "Измените подпись к полю"
 msgid "Edit hint for this placeholder"
 msgstr "Измените текст подсказки"
 
-msgid "To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway.<br> <a href=\"%s\">Browse for SMS gateway plugins</a> in Installer app."
-msgstr "Для отправки SMS-сообщений установите и настройте подключение к какому-либо из SMS-провайдеров.<br>Плагины для подключения к SMS-провайдерам доступны для установки <a href=\"%s\">в «Инсталлере»</a>."
+msgid "To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway. <a href=\"%s\">Browse for SMS gateway plugins</a> in Installer app."
+msgstr "Для отправки SMS-сообщений установите и настройте подключение к какому-либо из SMS-провайдеров. Плагины для подключения к SMS-провайдерам доступны для установки <a href=\"%s\">в «Инсталлере»</a>."
 
 msgid "Radio selector advanced settings"
 msgstr "Расширенные настройки поля-переключателя"
@@ -6558,3 +6558,15 @@ msgstr "Ошибка во время выполнения метаобновле
 
 msgid "Empty <code>form_id</code> parameter."
 msgstr "Пустой параметр <code>form_id</code>."
+
+msgid "Default UI mode"
+msgstr "Режим интерфейса по умолчанию"
+
+msgid "new"
+msgstr "новый"
+
+msgid "old"
+msgstr "старый"
+msgstr "старый"
+msgid "logged in with Webasyst ID"
+msgstr "вошел в аккаунт с Webasyst ID"

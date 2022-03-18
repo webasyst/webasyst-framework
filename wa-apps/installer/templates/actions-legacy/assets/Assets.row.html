@@ -3,8 +3,8 @@
 <tr{if $_product_is_disabled} class="grey"{/if}>
     <td class="i-update-icon">
         {* ICON *}
-        {if ($item_type eq 'app') && (!empty($item.icons.48)||!empty($item.img))}
-            <img src="{$wa_url}{$item.icons.48|default:$item.img|default:''|ltrim:'/'}" alt="">
+        {if ($item_type eq 'app') && !empty($item.icons.48)}
+            <img src="{$item.icons.48}" alt="">
         {else}
             &nbsp;
         {/if}
@@ -16,7 +16,7 @@
 
             {* theme or plugin *}
             {if !empty($item.icons) && false}
-                <img src="{$wa_url}{$item.icons.16}" alt="">
+                <img src="{$item.icons.16}" alt="">
             {else}
                 <i class="icon16 {if $item_type eq 'plugin'}plugins{elseif $item_type eq 'widget'}widgets{else}design{/if}"></i>
             {/if}

@@ -509,10 +509,8 @@ class waWebasystIDApi
         }
 
         return [
-            'status' => null,
-            'response' => [
-                'error' => ''
-            ]
+            'status' => $status,
+            'response' => $response
         ];
     }
 

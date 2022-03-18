@@ -162,6 +162,9 @@ class waAppConfig extends SystemConfig
             $actions['logout'] = array(
                 'name' => _ws('logged out')
             );
+            $actions['waid_auth'] = array(
+                'name' => _ws('logged in with Webasyst ID')
+            );
             $actions['login_failed'] = array(
                 'name' => _ws('login failed')
             );
@@ -176,6 +179,9 @@ class waAppConfig extends SystemConfig
             );
             $actions['access_disable'] = array(
                 'name' => _ws('disabled access for contact')
+            );
+            $actions['welcome'] = array(
+                'name' => _ws('Webasyst готов к работе! Используйте предустановленные приложения выше или устанавливайте новые с помощью Инсталлера. Приглашайте сотрудников и друзей для совместной работы в приложении «Команда».')
             );
             $this->system_log_actions = $actions;
         }

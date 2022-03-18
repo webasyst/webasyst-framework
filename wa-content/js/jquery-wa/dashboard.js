@@ -23,13 +23,79 @@ const WidgetSort = ( function($) {
             that.$root_widget_groups = $(that.root_selector);
             that.$empty_group = that.$root_widget_groups.find(':last-of-type.js-empty-group');
             that.options = {};
-            that.$dragged= null;
 
             that.init();
+
             //wa_widget_changed_type
-            $(document).on('wa_new_widget_create', function (event) {
-                that.init();
-            })
+            $(document).on('wa_new_widget_create', $.proxy(this.init, this));
+            $(document).on('wa_update_sort', $.proxy(this.updateSort, this));
+        }
+
+        static getGroupedWidgetsOptions() {
+            return {
+                group: 'nested',
+                handle: '.widget-wrapper',
+                animation: 150,
+                swapThreshold: 1,
+                ghostClass: 'widget-ghost',
+                chosenClass: 'widget-chosen',
+                dragClass: 'widget-drag',
+                filter: '.is-removed, .js-empty-group, .size-controls-wrapper, .settings-control-wrapper, .delete-control-wrapper',
+                delay: 200,
+                delayOnTouchOnly: true,
+                fallbackOnBody: true,
+                removeCloneOnHide: false,
+                onAdd(event) {
+                    // Если положили виджет в пустую группу, то создаем новую пустую группу
+                    if (event.to.classList.contains('js-empty-group') && !event.from.classList.contains('list-wrapper')) {
+                        event.to.classList.remove('js-empty-group')
+                        event.to.parentElement.insertAdjacentHTML('beforeend', '<div class="widget-group-wrapper js-nested-sortable js-empty-group"></div>');
+                        const options = WidgetSort.getGroupedWidgetsOptions();
+                        Sortable.create(document.querySelector('.js-empty-group'), options);
+                    }
+                },
+                onMove(event) {
+                    const $element = $(event.to);
+                    const dragged = event.dragged;
+
+                    $element.addClass('hover').siblings().removeClass('hover');
+
+                    const count_small_widgets = $element.find('.widget-1x1').not('.widget-ghost').length;
+                    const count_middle_widgets = $element.find('.widget-2x1').not('.widget-ghost').length;
+                    const is_middle = dragged.classList.contains('widget-2x1');
+                    const is_small = dragged.classList.contains('widget-1x1');
+                    const availableCells = 4 - (count_middle_widgets * 2) - count_small_widgets;
+
+                    switch(true) {
+                        case is_middle && availableCells < 2 && event.from !== event.to:
+                        case is_small && !availableCells && event.from !== event.to:
+                        case is_small && count_small_widgets === 2 && event.related.classList.contains('widget-2x1'):
+                        case is_middle && count_small_widgets === 2 && event.from === event.to:
+                            $element.removeClass('hover');
+                            return false;
+                    }
+                },
+                onRemove(event) {
+                    // Удаляем пустую группу, когда из нее был перенесен последний виджет
+                    if (event.from.children.length === 0) {
+                        Sortable.get(event.from).destroy();
+                        Dashboard.deleteEmptyGroup($(event.from));
+                    }
+                },
+                onStart(event){
+                    $('#d-widgets-block').find(':last-of-type.js-empty-group').toggleClass('is-active', true);
+                },
+                onEnd(event) {
+                    event.to.classList.remove('hover');
+
+                    // exit if have no changes in sorting state
+                    if (event.from === event.to && event.newDraggableIndex === event.oldDraggableIndex) {
+                        return false;
+                    }
+
+                    $(document).trigger('wa_update_sort');
+                }
+            }
         }
 
         init() {
@@ -38,105 +104,10 @@ const WidgetSort = ( function($) {
         }
 
         groupedWidgets() {
-            const that = this;
-            let options = {};
-            that.$grouped_widgets.each(function () {
-                let element = this;
-
-                options = {
-                    group: {
-                        name: 'nested',
-                        put(to, from) {
-                            let $element = $(to.el),
-                                count_small_widgets = $element.children('.widget-1x1').length,
-                                count_middle_widgets = $element.children('.widget-2x1').length,
-                                is_middle = that.$dragged?.classList.contains('widget-2x1'),
-                                is_widgets_list_block = from.el.classList.contains('list-wrapper');
-
-                            return !(count_small_widgets === 4
-                                || count_middle_widgets === 2
-                                || (count_small_widgets === 2 && count_middle_widgets)
-                                || from.el.getAttribute('id') === 'd-widgets-block'
-                                || (count_middle_widgets && is_middle)
-                                || (count_small_widgets === 3 && is_middle)
-                                || is_widgets_list_block);
-                        }
-                    },
-                    handle: '.widget-wrapper',
-                    animation: 150,
-                    fallbackOnBody: true,
-                    swapThreshold: 0.65,
-                    ghostClass: 'widget-ghost',
-                    chosenClass: 'widget-chosen',
-                    dragClass: 'widget-drag',
-                    filter: '.is-removed, .js-empty-group',
-                    delay: 200,
-                    delayOnTouchOnly: true,
-                    onAdd(event) {
-                        // Если положили виджет в пустую группу, то создаем новую пустую группу
-                        if (event.to.classList.contains('js-empty-group') && !event.from.classList.contains('list-wrapper')) {
-                            event.to.classList.remove('js-empty-group')
-                            event.to.parentElement.insertAdjacentHTML('beforeend', '<div class="widget-group-wrapper js-nested-sortable js-empty-group"></div>');
-                            Sortable.create(document.querySelector('.js-empty-group'), options)
-                        }
-
-                        let widget_id = event.item.dataset.widgetId;
-                        let group_index = [].indexOf.call(event.to.parentElement?.children, event.to);
-
-                        if (widget_id) {
-                            that.saveWidget({
-                                widget_id,
-                                widget_sort: event.newIndex,
-                                group_index,
-                                is_new: false
-                            });
-                        }
-                    },
-                    onRemove(event) {
-                        // Удаляем пустую группу, когда из нее был перенесен последний виджет
-                        if (event.from.children.length === 0) {
-                            Sortable.get(event.from).destroy()
-                            event.from.remove();
-                        }
-                    },
-                    onMove(event) {
-
-                        if (event.originalEvent.type === 'dragenter' && event.originalEvent.target.classList.contains('widget-group-wrapper')) {
-                            event.originalEvent.target.classList.toggle('hover')
-                        }
-                        if (event.originalEvent.type === 'dragleave' && event.originalEvent.target.classList.contains('widget-group-wrapper')) {
-                            event.originalEvent.target.classList.toggle('hover')
-                        }
-
-                    },
-                    onStart(event){
-                        that.$dragged = event.item;
-                        that.$empty_group.toggleClass('is-active', true)
-                    },
-                    onEnd(event) {
-/*                        let widget_id = event.item.dataset.widgetId;
-                        let group_index = [].indexOf.call(event.to.parentElement?.children, event.to);
-                        if (widget_id) {
-                            that.saveWidget({
-                                widget_id,
-                                widget_sort: event.newIndex,
-                                group_index,
-                                is_new: false
-                            });
-                        }*/
-                        that.setGroupSortable(event.to)
-                        that.setGroupSortable(event.from)
-
-                        that.$empty_group.toggleClass('is-active', false)
-
-                        // Reinit widget sets
-                        that.init();
-                    }
-                };
-
-                $(element).sortable(options);
-            })
-            that.options = options;
+            const options = WidgetSort.getGroupedWidgetsOptions();
+            this.$grouped_widgets.each(function () {
+                $(this).sortable(options);
+            });
         }
 
         rootWidgetGroups() {
@@ -149,6 +120,7 @@ const WidgetSort = ( function($) {
                 ghostClass: 'widget-ghost',
                 chosenClass: 'widget-chosen',
                 dragClass: 'widget-drag',
+                filter: '.size-controls-wrapper, .settings-control-wrapper, .delete-control-wrapper',
                 forceFallback: true,
                 delay: 200,
                 delayOnTouchOnly: true,
@@ -156,45 +128,29 @@ const WidgetSort = ( function($) {
                     event.item.classList.remove('zoomIn');
                 },
                 onEnd(event) {
-                    let $item = $(event.item),
-                        $widget = $item.find('.widget-wrapper'),
-                        widget_id = $widget.data('widget-id');
-
-                    if (widget_id) {
-                        that.saveWidget({
-                            widget_id,
-                            widget_sort: 0,
-                            group_index: event.newIndex,
-                            is_new: true
-                        });
-                    }
+                    that.updateSort();
                 }
             });
         }
 
-        setGroupSortable(node) {
-            // Запрещаем сортировку, если в группе есть виджеты 2x1 и несколько 1x1 (иначе имеем баг с позиционированием)
-            let children = Array.from(node.childNodes),
-                small_widget = children.filter(el => el.classList.contains('widget-1x1')).length,
-                middle_widget = children.filter(el => el.classList.contains('widget-2x1')).length;
-            Sortable.get(node).options.sort = !(middle_widget > 1 || (middle_widget && small_widget > 1));
-        }
+        updateSort() {
+            const href = '?module=dashboard&action=widgetOrder';
 
-        saveWidget(options) {
-            let $deferred = $.Deferred(),
-                href = "?module=dashboard&action=widgetMove&id=" + options.widget_id,
-                dataArray = {
-                    block: options.group_index,
-                    sort: options.widget_sort
-                };
+            const formData = new FormData();
 
-            if (options.is_new) {
-                dataArray.new_block = 1;
-            }
+            $(this.root_selector).children().each(function(index) {
+                $(this).find('.widget-wrapper').toArray().map((item) => {
+                    formData.append(`blocks[${index}][]`, item.dataset.widgetId);
+                });
+            });
 
-            $.post(href, dataArray, function (request) {
-                $deferred.resolve(request);
-            }, "json");
+            $.ajax({
+                url: href,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false
+            });
         }
 
         sortingState(state) {
@@ -234,26 +190,21 @@ const Dashboard = ( function($) {
                 this.lockWidgetsToggle();
 
                 // Delete Group
-                this.deleteEmptyGroup( $currentGroup, ( animation_time - 1 ) );
+                this.deleteEmptyGroup($currentGroup);
             }
 
-            return result_time;
+            return false;
         }
 
         // Удаляем пустую группу
-        static deleteEmptyGroup( $group, time ) {
-            let that = this
-            if (time > 0) {
-                $group.addClass("is-removed");
-            }
+        static deleteEmptyGroup($group) {
+            $group.addClass('is-removed');
 
-            setTimeout( function () {
-                // Remove Lock
-                that.lockWidgetsToggle();
-
-                // Remove Group
+            $group.on('transitionend', () => {
+                this.lockWidgetsToggle();
                 $group.remove();
-            }, time );
+                $(document).trigger('wa_update_sort');
+            });
         }
 
         // Получаем данные виджетов в группе
@@ -403,9 +354,6 @@ const Group = ( function($, backend_url) {
                     getNewWidgetHref: function () {
                         return "?module=dashboard&action=widgetAdd";
                     },
-                    getSaveHref: function (widget_id) {
-                        return "?module=dashboard&action=widgetMove&id=" + widget_id;
-                    },
                     getLastGroupIndex: function () {
                         return parseInt(this.getWidgetGroups().last().index());
                     },
@@ -415,9 +363,6 @@ const Group = ( function($, backend_url) {
                     getListWrapper: function() {
                         return $(".widgets-list-wrapper");
                     }
-                    //getDropOrnament: function() {
-                    //    return $("#d-drop-ornament");
-                    //}
                 };
 
                 this.nested_selector = '.js-nested-sortable';
@@ -446,163 +391,9 @@ const Group = ( function($, backend_url) {
                     that.onWidgetListClick(event, $(this));
                 }
             });
-
-            /*$widgetList.on("dragstart", ".widget-item-wrapper .image-block"", function(event) {
-                that.onWidgetListDragStart(event, $(this));
-            });
-
-            $widgetList.on("dragend", ".widget-item-wrapper .image-block", function() {
-                that.onWidgetListDragEnd($(this));
-            });
-
-            $groups_wrapper.on("dragstart", ".widget-group-wrapper .widget-draggable-block", function(event) {
-                that.onDragStart(event, $(this));
-            });
-
-            $groups_wrapper.on("dragend", ".widget-group-wrapper .widget-draggable-block", function() {
-                that.onDragEnd($(this));
-            });
-
-            // Hack, иначе Drop не будет срабатывать
-            $groups_wrapper.on("dragover", ".widget-group-wrapper", function(event) {
-                that.prepareDragOver(event, $(this));
-                event.preventDefault();
-            });
-
-            // Custom Dashboard, подцветка при наведении на пустую группу
-            $groups_wrapper.on("dragover", ".ornament-widget-group", function(event) {
-                that.onEmptyGroupOver(event, $(this), $groups_wrapper );
-                event.preventDefault();
-            });
-
-            // Навели на группу
-            $groups_wrapper.on("dragenter", ".widget-group-wrapper", function() {
-                that.onDragEnter( $(this) );
-            });
-
-            $groups_wrapper.on("drop", ".widget-group-wrapper", function(event) {
-                if (that.storage.draggedWidget) {
-                    that.prepareDrop(event, $(this));
-
-                } else if (that.storage.newDraggedWidget) {
-                    that.onWidgetListDrop(event, $(this));
-                }
-                event.preventDefault();
-            });
-
-            // Custom Dashboard
-            $groups_wrapper.on("drop", ".ornament-widget-group", function(event) {
-                that.onEmptyGroupDrop(event);
-                event.preventDefault();
-            });*/
         }
 
         // Group Functions
-
-        onDragEnter($group) {
-
-        }
-
-        onDragStart(event, $target) {
-            let that = this,
-                $dragged_widget_wrapper = $target.closest(".widget-wrapper"),
-                dragged_widget_id = $dragged_widget_wrapper.data("widget-id");
-
-            // Add class
-            $dragged_widget_wrapper.addClass(that.storage.isDraggedClass);
-
-            // Save widget to storage
-            that.storage.draggedWidget = (typeof DashboardWidgets[dragged_widget_id] !== "undefined") ? DashboardWidgets[dragged_widget_id] : false;
-            that.storage.$widget_group = $dragged_widget_wrapper.closest(".widget-group-wrapper");
-
-            // Hack. In FF D&D doesn't work without dataTransfer
-            event.originalEvent.dataTransfer.setData("text/html", "<div class=\"anything\"></div>");
-
-            let $ornament = $dragged_widget_wrapper.find(".widget-draggable-ornament"),
-                ornament_width = parseInt($ornament.width()/2),
-                ornament_height = parseInt($ornament.height()/2);
-
-            event.dataTransfer.setDragImage(
-                $ornament[0],
-                ornament_width,
-                ornament_height
-            )
-        }
-
-        prepareDragOver(event, $group) {
-            let that = this,
-                time = 150;
-            // Flag
-            if (that.storage.doDragOver) {
-                that.storage.doDragOver = false;
-                setTimeout( function() {
-                    that.storage.doDragOver = true;
-                }, time);
-
-                that.onDragOver(event, $group);
-            }
-        }
-
-        onDragOver(event, $group) {
-            let that = this,
-                draggedWidget = ( that.storage.newDraggedWidget || that.storage.draggedWidget );
-
-            if (!draggedWidget) {
-                return false;
-            }
-
-            let groupData = Dashboard.getGroupData($group),
-                dragged_widget_area = ( parseInt(draggedWidget.widget_size.width) * parseInt(draggedWidget.widget_size.height) ),
-                is_group_locked = ( ( dragged_widget_area + groupData.group_area ) > that.storage.max_group_area ),
-                $hover_group = that.storage.$hover_group,
-                activeClass = that.storage.showGroupOrnamentClass,
-                group_offset = $group.offset(),
-                mouse_offset = {
-                    left: event.pageX,
-                    top: event.pageY
-                },
-                border_width = 10,
-                delta = Math.abs(parseInt(group_offset.left - mouse_offset.left));
-
-            // Remove classes from old group
-            if ($hover_group && $hover_group.length) {
-                $hover_group.removeClass(activeClass);
-                $hover_group.removeClass(that.storage.hoverGroupClass);
-                $hover_group.removeClass(that.storage.lockedGroupClass);
-                that.storage.$hover_group = false;
-            }
-
-            // Marking new group
-            if (delta < border_width) {
-
-                that.markingGroup("border-hover", $group);
-
-                that.clearWidgetOrnament();
-
-            } else {
-
-                if ( !$group.hasClass(that.storage.hoverGroupClass) ) {
-
-                    // Lock
-                    if (is_group_locked) {
-                        $group.addClass(that.storage.lockedGroupClass);
-                    }
-
-                    that.markingGroup("hover", $group);
-                }
-
-                if (!is_group_locked) {
-                    that.renderDropArea(event, $group);
-                }
-            }
-        }
-
-        onDragEnd() {
-            // Clear
-            let that = this;
-            that.clearGroupMarkers();
-        }
-
         prepareDrop(event, $group) {
             let that = this,
                 $target_group = $group,
@@ -929,52 +720,9 @@ const Group = ( function($, backend_url) {
                     that.addNewGroup();
                 }
 
-                // Сохраняем виджет, после того пустая группа удалиться
-                setTimeout( function() {
-                    // Переопределяем индекс блока, на случай если он был удалён
-                    new_widget_group_index = parseInt( $group.index() );
-
-                    that.saveWidget({
-                        widget: widget,
-                        widget_id: widget.widget_id,
-                        widget_sort: new_widget_sort,
-                        group_index: new_widget_group_index,
-                        is_new: is_new_group
-                    });
-                }, animation_time);
+                $(document).trigger('wa_update_sort');
 
             }
-        }
-
-        saveWidget(options) {
-            let that = this,
-                widget = options.widget,
-                $deferred = $.Deferred(),
-                href = that.storage.getSaveHref(options.widget_id),
-                dataArray = {
-                    block: options.group_index,
-                    sort:  options.widget_sort
-                };
-
-            if (options.is_new) {
-                dataArray.new_block = 1;
-            }
-
-            $.post(href, dataArray, function(request) {
-                $deferred.resolve(request);
-            }, "json");
-
-            $deferred.done( function(response) {
-                // Действия после успешного ответа
-                if (response.status === "ok") {
-                    // Перезаписываем новые данные сортировки для виджета
-                    widget.widget_sort = options.widget_sort;
-                    widget.widget_group_index = options.group_index;
-
-                    // Виджет успешно сохранён
-                    //console.log("Виджет успешно сохранён.Блок \"" + widget.widget_group_index + "\". Позиция \"" + widget.widget_sort + "\"");
-                }
-            });
         }
 
         addNewGroup($group) {
@@ -985,6 +733,9 @@ const Group = ( function($, backend_url) {
             // Создаём группу перед группой
             if ($group && $group.length) {
                 $group.before($new_group.addClass('zoomIn'));
+                $new_group.on('animationend', () => {
+                    $new_group.removeClass('zoomIn');
+                });
                 return $new_group;
 
                 // Иначе создаём группу в конце
@@ -994,6 +745,9 @@ const Group = ( function($, backend_url) {
                 // After last group
                 let $lastGroup = $wrapper.find(".widget-group-wrapper").last();
                 $lastGroup.after($new_group.addClass('zoomIn'));
+                $new_group.on('animationend', () => {
+                    $new_group.removeClass('zoomIn');
+                });
             }
 
         }
@@ -1214,7 +968,6 @@ const Group = ( function($, backend_url) {
 
                         that.replaceWidgetAfterCreate(event, $group);
                     }
-
                 }
             });
         }
@@ -1227,7 +980,7 @@ const Group = ( function($, backend_url) {
 
             that.storage.draggedWidget = false;
 
-            $(document).trigger('wa_new_widget_create');
+            // $(document).trigger('wa_new_widget_create');
         }
 
         addNewWidget() {
@@ -1246,6 +999,7 @@ const Group = ( function($, backend_url) {
 
             $.post(href, dataArray, function(request) {
                 $deferred.resolve(request);
+                $(document).trigger('wa_update_sort');
             }, "json");
 
             return $deferred;
@@ -1635,10 +1389,9 @@ const Page = ( function($, backend_url) {
                 full_checked = true;
 
             $form.find("input:checkbox").each( function() {
-                let $input = $(this),
-                    is_checked = ( $input.attr("checked") == "checked" );
+                let $input = $(this)
 
-                if (!is_checked) {
+                if (!$input.prop("checked")) {
                     full_checked = false;
                 } else {
                     check_count++;
@@ -1707,7 +1460,7 @@ const Page = ( function($, backend_url) {
             if (!that.storage.isActivityFilterLocked) {
                 that.storage.isActivityFilterLocked = true;
 
-                let $wrapper = $widgetActivity.find(".activity-list-block"),
+                let $wrapper = $widgetActivity.find(".js-activity-list-block"),
                     $form = $("#activity-filter"),
                     $deferred = $.Deferred(),
                     ajaxHref = "?module=dashboard&action=activity",
@@ -1730,6 +1483,9 @@ const Page = ( function($, backend_url) {
                     $wrapper.html(html);
 
                     that.hideLoadingAnimation($widgetActivity);
+
+                    /*TODO check vice versa case*/
+                    $widgetActivity.find('.activity-empty-today').remove();
 
                     that.storage.isActivityFilterLocked = false;
                 });
@@ -1822,11 +1578,10 @@ const Page = ( function($, backend_url) {
             // Save data
             if (!that.storage.isBottomLazyLoadLocked) {
                 that.storage.isBottomLazyLoadLocked = true;
-
                 that.showLoadingAnimation($widgetActivity);
 
                 let $linkWrapper = $link.closest(".show-more-activity-wrapper"),
-                    $wrapper = $widgetActivity.find(".activity-list-block"),
+                    $wrapper = $widgetActivity.find(".js-activity-list-block"),
                     max_id = $wrapper.find(".activity-item:last").data('id'),
                     $deferred = $.Deferred(),
                     ajaxHref = "?module=dashboard&action=activity",
@@ -1842,15 +1597,16 @@ const Page = ( function($, backend_url) {
                     // Remove Link
                     $linkWrapper.remove();
 
-                    if ( $.trim(response).length && !response.includes('activity-empty-today')) {
-                        // Render
-                        $wrapper.append(response);
-                    }
+                    // Render
+                    $wrapper.append(response);
 
                     that.storage.isBottomLazyLoadLocked = false;
                     that.storage.lazyLoadCounter++;
 
                     that.hideLoadingAnimation($widgetActivity);
+
+                    /*TODO check vice versa case*/
+                    $widgetActivity.find('.activity-empty-today').remove();
                 });
             }
         }
@@ -1863,7 +1619,7 @@ const Page = ( function($, backend_url) {
 
                 that.showLoadingAnimation($widgetActivity);
 
-                let $wrapper = $widgetActivity.find(".activity-list-block"),
+                let $wrapper = $widgetActivity.find(".js-activity-list-block"),
                     min_id = $wrapper.find(".activity-item:not(.activity-empty-today):first").data('id'),
                     $deferred = $.Deferred(),
                     ajaxHref = "?module=dashboard&action=activity",
@@ -2226,66 +1982,38 @@ const DashboardWidget = ( function($) {
                     return false;
 
                 } else {
-
-                    // Check and remove old active control
+                    // // Check and remove old active control
                     that.storage.getControlsWrapper(that).find("." + activeClass).removeClass(activeClass);
 
                     // Set active control
                     $link.addClass(activeClass);
 
-                    let groupedWidgetsInstance = Sortable.get($parent_group_wrapper[0]);
-
-                    if (!groupedWidgetsInstance && !$link.hasClass('set-big-size')) {
-                        let options = {
-                            group: 'nested',
-                            handle: '.widget-wrapper',
-                            animation: 150,
-                            fallbackOnBody: true,
-                            swapThreshold: 0.65,
-                            ghostClass: 'widget-ghost',
-                            dragClass: 'widget-drag',
-                            onEnd(event) {
-                                // Удаляем пустую группу, когда из нее был перенесен последний виджет
-                                if($(event.from).children().length === 0) {
-                                    $(event.from).remove();
-                                }
-                            }
-                        }
-                        groupedWidgetsInstance = Sortable.create($parent_group_wrapper[0], options);
-                    }else{
-                        //groupedWidgetsInstance.destroy();
-                    }
-
-                    let $group = $(groupedWidgetsInstance.el);
+                    const sortable_instance = Sortable.get($parent_group_wrapper[0]);
 
                     if($link.hasClass('set-medium-size')) {
-                        $(document).on('wa_widget_changed_type', function () {
-                            if ($group.children('.widget-1x1').length > 1) {
-                                //groupedWidgetsInstance.options.sort = false;
-                                //$group.attr('data-sort-disabled', true);
-                            } else {
-                                //$group.removeAttr('data-sort-disabled');
-                                //groupedWidgetsInstance.options.sort = true;
-                            }
-                        })
                         $parent_group_wrapper.addClass('js-nested-sortable');
+
+                        if (!sortable_instance) {
+                            const options = WidgetSort.getGroupedWidgetsOptions();
+                            Sortable.create($parent_group_wrapper[0], options);
+                        }
                     }
 
                     if($link.hasClass('set-small-size')) {
-                        $(document).on('wa_widget_changed_type', function () {
-                            if ($group.children('.widget-2x1').length > 0) {
-                                //groupedWidgetsInstance.options.sort = false;
-                                //$group.attr('data-sort-disabled', true);
-                            } else {
-                                //$group.removeAttr('data-sort-disabled');
-                                //groupedWidgetsInstance.options.sort = true;
-                            }
-                        })
                         $parent_group_wrapper.addClass('js-nested-sortable');
+
+                        if (!sortable_instance) {
+                            const options = WidgetSort.getGroupedWidgetsOptions();
+                            Sortable.create($parent_group_wrapper[0], options);
+                        }
                     }
 
                     if($link.hasClass('set-big-size')) {
                         $parent_group_wrapper.removeClass('js-nested-sortable');
+
+                        if (sortable_instance) {
+                            sortable_instance.destroy();
+                        }
                     }
                 }
             });
@@ -2327,13 +2055,6 @@ const DashboardWidget = ( function($) {
                 // Delete
                 that.deleteWidget();
             });
-
-            //that.$widget_wrapper.on("mouseenter", function(e) {
-            //    var is_edit_mode = Dashboard.isEditMode();
-            //    if (is_edit_mode) {
-            //        that.initControlsController();
-            //    }
-            //});
         }
 
         getWidgetSettings() {
@@ -2381,23 +2102,18 @@ const DashboardWidget = ( function($) {
             // Ставим на блок
             that.lockToggle();
 
+            // Save new size
+            that.widget_size = size;
+
+            // Render
+            that.renderWidget(true);
+
+            that.lockToggle();
+            $(document).trigger('wa_widget_changed_type');
+
             $.post(href, dataArray, function (request) {
-                $deferred.resolve(request);
+                // $deferred.resolve(request);
             }, "json");
-
-            $deferred.done(function (response) {
-                if (response.status === "ok") {
-                    // Save new size
-                    that.widget_size = size;
-
-                    // Render
-                    that.renderWidget(true);
-                }
-
-                // Снимаем блок
-                that.lockToggle();
-                $(document).trigger('wa_widget_changed_type');
-            })
         }
 
         checkAvailability(size) {
@@ -2722,35 +2438,29 @@ const DashboardWidget = ( function($) {
 
         deleteWidget() {
             let that = this,
-                $deferred = $.Deferred(),
                 href = that.storage.getDeleteHref(),
                 widget_id = that.widget_id,
                 dataArray = {
                     id: widget_id
                 };
 
+            let $currentGroup = that.$widget_wrapper.closest(".widget-group-wrapper"),
+              $groups = that.storage.getWidgetWrapper().find(".widget-group-wrapper");
+
+            // Delete widget body
+            that.$widget_wrapper.remove();
+
+            // Delete Group if Empty
+            Dashboard.checkEmptyGroup($currentGroup, $groups);
+
+            // Delete JS
+            delete DashboardWidgets[widget_id];
+
+            // Check Empty Widgets and Show Notice
+            Dashboard.checkEmptyWidgets();
+
             $.post(href, dataArray, function (request) {
-                $deferred.resolve(request);
             }, "json");
-
-            $deferred.done(function (response) {
-                if (response.status === "ok") {
-                    let $currentGroup = that.$widget_wrapper.closest(".widget-group-wrapper"),
-                        $groups = that.storage.getWidgetWrapper().find(".widget-group-wrapper");
-
-                    // Delete widget body
-                    that.$widget_wrapper.remove();
-
-                    // Delete Group if Empty
-                    Dashboard.checkEmptyGroup($currentGroup, $groups);
-
-                    // Delete JS
-                    delete DashboardWidgets[widget_id];
-
-                    // Check Empty Widgets and Show Notice
-                    Dashboard.checkEmptyWidgets();
-                }
-            });
         }
 
         initControlsController() {

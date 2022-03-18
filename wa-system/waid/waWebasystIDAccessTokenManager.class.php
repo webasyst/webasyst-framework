@@ -17,7 +17,7 @@ class waWebasystIDAccessTokenManager
      * @param array $params
      *  All these keys is required
      *      string      $params['issuer']     - issuer (who release token)
-     *      int         $params['contact_id'] - ID of contact for whom release token
+     *      int         $params['contact_id'] - ID of contact for whom release token OR -1 for service-to-service communicartion token
      *      string      $params['client_id']  - String ID of client for whom release token, contact must be "related" with this client
      *      int         $params['ttl']        - ttl of token in seconds
      *      string[]    $params['scopes']     - list of scopes access to which will be allowed by this access token
@@ -40,7 +40,7 @@ class waWebasystIDAccessTokenManager
             return null;
         }
 
-        if (!isset($params['contact_id']) || !wa_is_int($params['contact_id']) || $params['contact_id'] <= 0) {
+        if (!isset($params['contact_id']) || !wa_is_int($params['contact_id']) || $params['contact_id'] < -1) {
             return null;
         }
 
@@ -132,7 +132,7 @@ class waWebasystIDAccessTokenManager
             if (!is_array($sub)) {
                 $sub = [];
             }
-            if (isset($sub['contact_id']) && wa_is_int($sub['contact_id']) && $sub['contact_id'] > 0) {
+            if (isset($sub['contact_id']) && wa_is_int($sub['contact_id']) && $sub['contact_id'] >= -1) {
                 $info['contact_id'] = intval($sub['contact_id']);
             }
             if (isset($sub['client_id']) && is_string($sub['client_id'])) {
@@ -151,8 +151,10 @@ class waWebasystIDAccessTokenManager
             $info['scopes'] = $scopes;
         }
 
-        $info['scopes'][] = 'profile';
-        $info['scopes'] = array_unique($info['scopes']);
+        if ($sub['contact_id'] > 0) {
+            $info['scopes'][] = 'profile';
+            $info['scopes'] = array_unique($info['scopes']);
+        }
 
         if (isset($payload['email']) && is_string($payload['email'])) {
             $info['email'] = $payload['email'];

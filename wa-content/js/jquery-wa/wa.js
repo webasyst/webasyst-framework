@@ -871,9 +871,14 @@
             var that = this;
 
             // DOM
+            that.$window = $(window);
             that.$wrapper = options["$wrapper"];
             that.$button = that.$wrapper.find("> .dropdown-toggle");
             that.$menu = that.$wrapper.find("> .dropdown-body");
+            that.$header = $('#wa-header');
+            if (that.$header.length) {
+                that.headerHeight = that.$header.outerHeight();
+            }
 
             // VARS
             that.on = {
@@ -957,17 +962,45 @@
         };
 
         Dropdown.prototype.toggleMenu = function(open) {
-            var that = this,
-                active_class = "is-opened";
+            const that = this;
+            const active_class = 'is-opened';
+            const bottom_class = 'bottom';
+            const shift = 20;
+
+            const rect = that.$wrapper[0].getBoundingClientRect()
+            const topOffset = rect.top - (that.headerHeight ? that.headerHeight : 0);
+            const bottomOffset = that.$window.height() - that.$wrapper.outerHeight() - rect.top;
+
+            const menuHeight = that.$menu.outerHeight();
 
             that.is_opened = open;
 
             if (open) {
+                let maxHeight = parseInt(that.$menu.css('max-height'));
+
                 that.$wrapper.addClass(active_class);
+
+                if (bottomOffset < menuHeight && topOffset > bottomOffset) {
+                    that.$menu.addClass(bottom_class);
+
+                    // limit menu height if have no enough space
+                    if (maxHeight > topOffset) {
+                        maxHeight = Math.floor(topOffset - shift);
+                    }
+                } else {
+                    // limit menu height if have no enough space
+                    if (maxHeight > bottomOffset) {
+                        maxHeight = Math.floor(bottomOffset - shift);
+                    }
+                }
+
+                that.$menu[0].style.setProperty('max-height', maxHeight + 'px');
                 that.on.open(that);
 
             } else {
                 that.$wrapper.removeClass(active_class);
+                that.$menu.removeClass(bottom_class);
+                that.$menu[0].style.removeProperty('max-height');
                 that.on.close(that);
             }
         };
@@ -2933,70 +2966,94 @@
     var Sidebar = ( function($) {
 
         Sidebar = function(options) {
-            let that = this;
-
             // DOM
-            that.$wrapper = options["$wrapper"];
-            that.$toggler = that.$wrapper.find('.sidebar-mobile-toggle');
-            that.$sidebar_content = that.$toggler.siblings();
+            this.$window = $(window);
+            this.$document = $(document);
+            this.$wrapper = options["$wrapper"];
+            this.$toggler = this.$wrapper.find('.sidebar-mobile-toggle');
+
+            this.$sidebar_content = this.$toggler.siblings();
 
             // VARS
-            that.is_open = options.is_open || false;
+            this.is_open = options.is_open || false;
             //that.direction = options.direction || 'down';
 
-            // DYNAMIC VARS
-            that.is_mobile = $(that.$toggler).is(':visible');
+            // CSS CLASSES
+            this.classes = {
+                active: '-active'
+            };
 
-            // INIT
-            if (that.is_open) {
-                that.$toggler.siblings().show();
+            this.checkIsMobile();
+            this.bindEvents();
+        }
+
+        Sidebar.prototype.bindEvents = function() {
+            this.$toggler.on('click.sidebar touchstart.sidebar', $.proxy(this.toggleAction, this));
+            this.$document.on('wa_loaded.sidebar', $.proxy(this.toggleAction, this));
+            this.$window.on('resize.sidebar', $.proxy(this.checkIsMobile, this));
+            this.$wrapper.on('click.sidebar', $.proxy(this.toggleClass, this));
+        }
+
+        Sidebar.prototype.toggleAction = function(event) {
+            if (!this.is_mobile) {
+                return;
             }
 
-            that.toggleClick();
-            that.insideClick();
-        };
-
-        Sidebar.prototype.toggleClick = function() {
-            let that = this;
-            that.$toggler.on("click touchstart", function(event) {
+            if (event) {
                 event.preventDefault();
-                that.toggleAction();
+            }
+
+            this.is_open = !this.is_open;
+
+            window.scrollTo({
+                top:0,
+                behavior: 'smooth'
             });
-        };
 
-        Sidebar.prototype.insideClick = function() {
-            const that = this,
-                resizeObserver = new ResizeObserver(entries => {
-                    for (let entry of entries) {
-                        that.is_mobile = !!entry.contentRect.height;
-                    }
-                });
-            resizeObserver.observe(that.$toggler[0]);
-
-            $(document).on("wa_loaded", () => {
-                if(that.is_mobile){
-                    that.toggleAction(true)
-                }
-            });
-        };
-
-        Sidebar.prototype.toggleAction = function(force_close = false) {
-            let that = this;
-            window.scrollTo({top:0, behavior: 'smooth'})
-            that.$toggler.siblings().each(function (i, el) {
-                if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
-                    if(force_close && !$(el).is(':visible')) {
-                        return;
-                    }
+            this.$toggler.siblings().each((i, el) => {
+                if (el.nodeName !== 'SCRIPT' && el.nodeName !== 'STYLE') {
                     $(el).slideToggle(400, function () {
-                        let self = $(this);
-                        if(self.is(':hidden')) {
+                        const self = $(this);
+
+                        if (self.is(':hidden')) {
                             self.css('display', '');
                         }
                     });
                 }
-            })
-        };
+            });
+
+            this.toggleClass();
+        }
+
+        Sidebar.prototype.checkIsMobile = function() {
+            this.is_mobile = this.$toggler.is(':visible');
+
+            if (!this.is_mobile || this.is_open) {
+                this.$toggler.siblings().each((i, el) => {
+                    if (el.nodeName !== 'SCRIPT' && el.nodeName !== 'STYLE') {
+                        $(el).show();
+                    }
+                });
+                this.toggleClass();
+            }
+        }
+
+        Sidebar.prototype.toggleClass = function() {
+            if (!this.is_mobile) {
+                return;
+            }
+
+            this.$wrapper.toggleClass(this.classes.active, this.is_open);
+        }
+
+        Sidebar.prototype.unbindEvents = function() {
+            this.$toggler.off('.sidebar');
+            this.$document.off('.sidebar');
+        }
+
+        Sidebar.prototype.destroy = function() {
+            this.unbindEvents();
+        }
 
         return Sidebar;
 
@@ -3551,7 +3608,7 @@
         confirm: function(options) {
             var deferred = $.Deferred();
 
-            var header = ( options.title ? '<h2>' + options.title + '</h2>' : null );
+            var header = ( options.title ? '<h3>' + options.title + '</h3>' : null );
             var text = ( options.text ? options.text : "" );
             var success_button_title = ( options.success_button_title ? options.success_button_title : $.wa.translate("Confirm") );
             var success_button_class = ( options.success_button_class ? options.success_button_class : "blue" );
@@ -3576,15 +3633,15 @@
                         dialog.close();
                     });
                 },
-                onClose: function() {
+                onClose: function($wrapper) {
                     if (is_success) {
                         if (typeof options.onSuccess === "function") {
-                            options.onSuccess();
+                            options.onSuccess($wrapper);
                         }
                         deferred.resolve();
                     } else {
                         if (typeof options.onCancel === "function") {
-                            options.onCancel();
+                            options.onCancel($wrapper);
                         }
                         deferred.reject();
                     }
@@ -3861,16 +3918,19 @@
         document.documentElement.classList.add('is-wa2')
 
         /* hide/show scrollbar */
-        $('.sidebar, .sidebar-body, .content').on('hover', function () {
-            let $element = $(this),
-                element_class = 'hide-scrollbar';
+        const element_class = 'hide-scrollbar';
 
-            if($element.hasClass(element_class)){
-                $element.removeClass(element_class)
-            }else{
-                $element.addClass(element_class)
+        $('.sidebar, .sidebar-body, .content').on('mouseenter', function (event) {
+            $(this).addClass(element_class);
+        });
+
+        $('.sidebar, .sidebar-body, .content').on('mouseleave', function (event) {
+            if (event.target.tagName === "SELECT") {
+                return;
             }
-        })
+
+            $(this).removeClass(element_class);
+        });
     });
 
     const waBrowserDetect = function() {

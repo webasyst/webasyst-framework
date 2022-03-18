@@ -105,8 +105,13 @@ class webasystTodayUsers
                 $group_id = 'birthday-' . $calendar_id;
                 if (!isset($birthday_with_status_groups[$group_id])) {
                     $birthday_with_status_groups[$group_id]['id'] = $group_id;
-                    $birthday_with_status_groups[$group_id]['name'] = "Birthday + calendar #{$calendar_id}";
-                    $birthday_with_status_groups[$group_id]['color'] = $calendar['color'];
+                    $birthday_with_status_groups[$group_id]['name'] = _ws('Birthday')." + ".$calendar['name'];
+                    $birthday_with_status_groups[$group_id]['calendar']['id'] = $calendar['id'];
+                    $birthday_with_status_groups[$group_id]['calendar']['name'] = $calendar['name'];
+                    $birthday_with_status_groups[$group_id]['calendar']['icon'] = $calendar['icon'] ;
+                    $birthday_with_status_groups[$group_id]['calendar']['font_color'] = $calendar['font_color'] ;
+                    $birthday_with_status_groups[$group_id]['calendar']['bg_color'] = $calendar['bg_color'] ;
+                    $birthday_with_status_groups[$group_id]['color'] = $calendar['bg_color'];
                     $birthday_with_status_groups[$group_id]['contacts'] = [];
                     $birthday_with_status_groups[$group_id]['total_count'] = 0;
 
@@ -161,6 +166,7 @@ class webasystTodayUsers
 
         foreach ($all_groups as $group_id => &$group) {
             foreach ($group['contacts'] as $contact_id => $_) {
+                $contacts[$contact_id]['summary'] = ifset($_, 'status', 'summary', '');
                 $group['contacts'][$contact_id] = $contacts[$contact_id];
             }
         }
@@ -212,7 +218,7 @@ class webasystTodayUsers
         $today = $this->getToday();
 
         $sql = "
-            SELECT wcc.id, wcc.name, wcc.sort, wcc.bg_color AS color, COUNT(*) AS total_count
+            SELECT wcc.id, wcc.name, wcc.sort, wcc.icon, wcc.font_color, wcc.bg_color, COUNT(*) AS total_count
             FROM `wa_contact_calendars` wcc
             JOIN `wa_contact_events` wce ON wcc.id = wce.calendar_id
             JOIN `wa_contact` wc ON wc.id = wce.contact_id

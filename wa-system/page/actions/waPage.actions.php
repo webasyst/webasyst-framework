@@ -678,7 +678,10 @@ class waPageActions extends waActions
     {
         $path = wa()->getDataPath('img', true);
 
-        $response = '';
+        $response_url = '';
+        $response_files = [];
+        $r = waRequest::get('r');
+        $absolute = waRequest::get('absolute');
 
         if (!is_writable($path)) {
             $p = substr($path, strlen(wa()->getDataPath('', true)));
@@ -686,12 +689,31 @@ class waPageActions extends waActions
         } else {
             $errors = array();
             $f = waRequest::file('file');
-            $f->transliterateFilename();
-            $name = $f->name;
-            if ($this->processFile($f, $path, $name, $errors)) {
-                $response = wa()->getDataUrl('img/'.$name, true, null, !!waRequest::get('absolute'));
+            if ($r === 'x') {
+                $index = 1;
+                foreach ($f as $file) {
+                    $file->transliterateFilename();
+                    $name = $file->name;
+                    if ($this->processFile($file, $path, $name, $errors)) {
+                        $response_files['file-' . $index] = [
+                            'url' => wa()->getDataUrl('img/' . $name, true, null, !!$absolute),
+                            'id' => uniqid('', true),
+                        ];
+                        $index++;
+                    }
+                    if ($errors) {
+                        $errors = implode(" \r\n", $errors);
+                        break;
+                    }
+                }
+            } else {
+                $f->transliterateFilename();
+                $name = $f->name;
+                if ($this->processFile($f, $path, $name, $errors)) {
+                    $response_url = wa()->getDataUrl('img/'.$name, true, null, !!$absolute);
+                }
+                $errors = implode(" \r\n", $errors);
             }
-            $errors = implode(" \r\n", $errors);
         }
 
         $this->getResponse()->sendHeaders();
@@ -699,16 +721,22 @@ class waPageActions extends waActions
             if ($errors) {
                 echo json_encode(array('error' => $errors));
             } else {
-                echo json_encode(array('filelink' => $response));
+                echo json_encode(array('filelink' => $response_url));
             }
-        } else if (waRequest::get('r') === '2') {
+        } elseif ($r === '2') {
             if ($errors) {
                 echo json_encode(array('error' => $errors));
             } else {
-                echo json_encode(array('url' => $response));
+                echo json_encode(array('url' => $response_url));
+            }
+        } elseif ($r === 'x') {
+            if ($errors) {
+                echo json_encode(array('error' => $errors));
+            } else {
+                echo json_encode($response_files);
             }
         } else {
-            $this->displayJson($response, $errors);
+            $this->displayJson($response_url, $errors);
         }
     }
 

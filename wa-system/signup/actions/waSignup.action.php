@@ -1062,7 +1062,7 @@ class waSignupAction extends waViewAction
 
         // $auth is NOT always instanceof waAuth, but lookupByLoginFields method only exists for waAuth
         if ($auth instanceof waAuth) {
-            $contacts = $auth->lookupByLoginFields($data);
+            $contacts = $auth->lookupByLoginFields($data, null, 'with_banned');
             foreach ($contacts as $field_id => $contact) {
                 $errors[$field_id] = sprintf(_ws('User with the same “%s” field value is already registered.'), $this->getFieldCaption($field_id));
             }

@@ -895,7 +895,9 @@ abstract class waLongActionController extends waController
         // We'll try to increase execution time limit.
         // It doesn't always work, but it doesn't hurt either.
         // (Less than 5 minutes - common timeout for nginx)
-        @set_time_limit(287);
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(287);
+        }
 
         // How much time we can safely run?
         $this->_max_exec_time = ini_get('max_execution_time');
