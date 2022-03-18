@@ -699,7 +699,7 @@ class waAuth implements waiAuth
     protected function _authByPassword($contact, $password)
     {
         $contact_password = isset($contact['password']) && is_scalar($contact['password']) ? $contact['password'] : '';
-        return strlen($contact_password) > 0 && waContact::getPasswordHash($password) === $contact_password;
+        return strlen($contact_password) > 0 && waContact::verifyPasswordHash($password, $contact_password);
     }
 
     /**
