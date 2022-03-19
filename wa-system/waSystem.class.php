@@ -39,15 +39,33 @@ class waSystem
 
     protected function __construct(waSystemConfig $config)
     {
+        if (empty(self::$instances)) {
+            set_error_handler([$this, 'errorHandler'], error_reporting());
+        }
+
         $this->config = $config;
         try {
             $this->loadFactories();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             /** @var waAppConfig $config */
             $app_name = method_exists($config, 'getApplication') ? $config->getApplication() : '';
             waLog::log('Error initializing waSystem('.$app_name.'): '.$e->getMessage()."\n".wa_dump_helper($config));
             echo $e;
         }
+    }
+
+    /**
+     * Error handler: converts PHP error to `ErrorException`.
+     *
+     * @param int $severity
+     * @param string $message
+     * @param string $file
+     * @param int $line
+     * @throws ErrorException
+     */
+    protected function errorHandler($severity, $message, $file, $line)
+    {
+        throw new ErrorException($message, $severity, $severity, $file, $line);
     }
 
     /**
