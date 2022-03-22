@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-03-01 17:06+0300\n"
+"PO-Revision-Date: 2022-03-22 12:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -185,9 +185,6 @@ msgstr "No user with this login name or email address has been found."
 
 msgid "Access denied."
 msgstr "Access denied"
-
-msgid "Session has expired. Please reload current page and log in again."
-msgstr "Session has expired. Please reload this page and log in again."
 
 msgid "logout"
 msgstr "log out"

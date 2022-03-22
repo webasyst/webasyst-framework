@@ -41,7 +41,7 @@
                         </span>
 
                         <strong>
-                            [s`Use only sign-in option with Webasyst ID — <span class="text-green">recommended</span>`]
+                            {sprintf(_ws('Use only sign-in option with Webasyst ID — <span class="%s">recommended</span>'), 'text-green')}
                         </strong>
 
                         <span class="js-force-save-status" style="display: none;"><i class="fas fa-check-circle"></i> [s`Saved`]</span>
@@ -111,7 +111,7 @@
                                     <div>
                                         {if $user.is_current_contact}
                                             <a href="javascript:void(0)" class="js-connect-yourself bold" data-id="{$user.id}">
-                                                <img class="icon baseline" src="/wa-content/img/webasyst-wand-bold.svg" alt=""> [s`Connect Webasyst ID for my account`]
+                                                <img class="icon baseline" src="{$wa_url}wa-content/img/webasyst-wand-bold.svg" alt=""> [s`Connect Webasyst ID for my account`]
                                             </a>
                                         {else}
                                             {if !$user.waid_invite_datetime}

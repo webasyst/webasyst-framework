@@ -23,6 +23,7 @@ class webasystBackendLayout extends waLayout
             'public_dashboards' => $this->getPublicDashboards(),
             'notifications' => $this->getAnnouncements(['one_per_app' => false]),
             'selected_sidebar_item' => $this->getSelectedSidebarItem(),
+            'has_team_app_access' => wa()->getUser()->getRights('team', 'backend') > 0,
             'teams' => $this->getTeams()
         ]);
     }

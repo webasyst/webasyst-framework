@@ -39,7 +39,7 @@
 
             {elseif $item_type eq 'widget' }
 
-                {sprintf('[`Widget <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/widget/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
+                {sprintf('[`Widget <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/widget/{$item.app|default:''}/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
 
             {else}
 

@@ -36,8 +36,8 @@
         <p class="widgets-list-header hint align-center">
             [`Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]
         </p>
-        <p class="align-center custom-mt-0">
-            {if $wa->user()->getRights('installer', 'backend')} <a class="bold small" href="./installer/store/?filters%5Btype%5D=widget">[`Install new widgets`]</a>{/if}
+        <p class="align-center custom-mt-0 custom-mb-32">
+            {if $wa->user()->getRights('installer', 'backend')} <a class="button webasyst-magic-wand" href="./installer/store/?filters%5Btype%5D=widget"><i class="icon"></i> [`Install new widgets`]</a>{/if}
         </p>
         <section class="d-widgets-list-block">
             {foreach $widgets as $app_id => $app_widgets}

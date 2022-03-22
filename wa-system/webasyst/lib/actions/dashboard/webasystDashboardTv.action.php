@@ -94,9 +94,10 @@ class webasystDashboardTvAction extends waViewAction
 
     protected function whichUI($app_id = null)
     {
-        $ui = waSystemConfig::systemOption('ui');
-        // control UI layout of tv dashboard or UI style of loaded widget
-        // it is all temporary
+        $ui = $this->getRequest()->get('ui');
+        if (empty($ui)) {
+            $ui = waSystemConfig::systemOption('ui');
+        }
         return $ui === '2.0' ? '2.0' : '1.3';
     }
 }

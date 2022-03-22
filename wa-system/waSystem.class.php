@@ -1335,6 +1335,16 @@ class waSystem
             if (is_dir($locale_path)) {
                 waLocale::load($this->getLocale(), $locale_path, $app_id.'_'.$plugin_id, false);
             }
+
+            // Translate fields in $plugin->info
+            $plugin_info['name'] = _wd($app_id.'_'.$plugin_id, $plugin_info['name']);
+            if (isset($plugin_info['title'])) {
+                $plugin_info['title'] = _wd($app_id.'_'.$plugin_id, $plugin_info['title']);
+            }
+            if (isset($plugin_info['description'])) {
+                $plugin_info['description'] = _wd($app_id.'_'.$plugin_id, $plugin_info['description']);
+            }
+
             if ($set_active) {
                 self::pushActivePlugin($plugin_id, $app_id);
             }

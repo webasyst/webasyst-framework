@@ -412,7 +412,26 @@ class waWebasystIDApi
     protected function requestApiMethod($api_method, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
     {
         $url = $this->provider->getApiUrl($api_method);
+        return $this->requestApiUrl($url, $access_token, $params, $http_method, $net_options);
+    }
 
+    /**
+     * @param string $api_method
+     * @param string $access_token
+     * @param array $params
+     * @param string $http_method - waNet::METHOD_
+     * @param array $net_options
+     * @return array $result
+     *      int|null    $result['status']   - http status or if failed before net query NULL
+     *      array       $result['response'] - response data
+     *                      IF $result['status'] == 200:
+     *                          array $result['response'] - as it has been returned by server
+     *                      ELSE:
+     *                          string $result['response']['error'] - error from server
+     * @throws waNetTimeoutException|waException
+     */
+    protected function requestApiUrl($url, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
+    {
         $default_net_options = [
             'timeout' => 20,
             'format' => waNet::FORMAT_JSON,

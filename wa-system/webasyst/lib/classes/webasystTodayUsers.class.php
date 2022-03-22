@@ -210,7 +210,11 @@ class webasystTodayUsers
     protected function getCalendarsBySortsQuery(array $sorts)
     {
         $sorts = waUtils::toIntArray($sorts);
-        $sorts = waUtils::dropNotPositive($sorts);
+        foreach ($sorts as $index => $int) {
+            if ($int < 0) {
+                unset($sorts[$index]);
+            }
+        }
         if (!$sorts) {
             return null;
         }

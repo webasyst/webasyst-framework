@@ -41,7 +41,7 @@
                             </a>
                         </li>
                         {/foreach}
-                        {if $is_admin}
+                        {if !empty($is_admin)}
                         <li class="small">
                             <a class="count action js-new-dashboard" href="javascript:void(0);" data-dashboard="new_dashboard" title="[`New dashboard`]">
                                 <i class="fas fa-plus-circle"></i>
@@ -60,7 +60,7 @@
                             </li>
                         *}
                     </ul>
-                    {if $teams}
+                    {if !empty($has_team_app_access) && $teams}
                         <header class="heading">
                             [`Teams`]
                         </header>
@@ -91,7 +91,7 @@
                     {/if}
                 </div>
             </div>
-            <div class="content hide-scrollbar blank box js-main-content{if $is_fixed_header} header-apps header-fixed{/if}">
+            <div class="content hide-scrollbar blank box dashboard js-main-content{if $is_fixed_header} header-apps header-fixed{/if}">
                 {if $wa_app == 'webasyst'}
                     {$wa->header()}
                 {/if}

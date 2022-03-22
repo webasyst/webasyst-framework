@@ -792,10 +792,10 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 #wa-header.is-extended { height: auto; }
 
 #wa-account { flex: 0 0 auto; display: flex; z-index: 1001; position: relative; transition: 0.2s; background: var(--background-color); }
-#wa-account .wa-header-logo { max-height: 4rem; max-width: 4rem; min-height: 4rem; min-width: 4rem; }
-#wa-account.wa-sidebar-logo .wa-header-logo { max-width: 100%; min-width: 100%; max-height: 100%; object-fit: cover; box-shadow: 0 5px 13px 0 rgba(0, 0, 0, 0.13), 0 10px 25px 0 rgba(40, 40, 80, 0.1); border-radius: 0.25rem; }
+#wa-account .wa-header-logo { max-height: 4rem; max-width: 4rem; min-height: 4rem; min-width: 4rem; margin-top: 0.125rem; }
+#wa-account.wa-sidebar-logo .wa-header-logo { max-width: 100%; min-width: 100%; max-height: 100%; object-fit: cover; box-shadow: 0 5px 13px 0 rgba(0, 0, 0, 0.13), 0 10px 25px 0 rgba(40, 40, 80, 0.1); border-radius: 0.375rem; }
 #wa-account a { flex: 1; padding: 0; color: #fff; display: flex; min-width: 4rem; max-width: 8rem; height: 4rem; width: 100%; }
-#wa-account.wa-sidebar-logo a { width: calc(13rem - 2em); height: calc(13rem - 2em); max-width: calc(13rem - 2em); min-width: calc(13rem - 2em); }
+#wa-account.wa-sidebar-logo a { width: calc(13rem - 1.5em); height: calc(13rem - 1.5em); max-width: calc(13rem - 1.5em); min-width: calc(13rem - 1.5em); }
 #wa-account a h3 { flex: 1; align-self: center; width:64px; text-align: center; font-size: 1.25rem; color: #fff; margin-top: 0; transition: all 300ms; min-width: 4rem; text-transform: uppercase; box-sizing: border-box; }
 #wa-account a h3.two-lines { font-size: 1.6em; line-height: 1.8rem; overflow-wrap: anywhere }
 
@@ -882,6 +882,7 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
     #wa-applist { padding-right: 0; padding-top: 0;}
     #wa-applist ul { max-width: 100%; display: flex; margin: 0; }
     #wa-applist ul li { display: none; }
+    .dashboard #wa-applist ul li { display: block; }
     #wa-applist ul li a { font-size: 1rem; }
     #wa-applist ul li a .badge { font-size: 1rem; right: auto; left: 45%; transform: translate(calc(3.5rem / 2 - 50%)) }
     #wa-applist ul li.selected { display: flex; flex: 1; height: 4rem; width: auto; align-items: center; }
