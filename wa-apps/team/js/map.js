@@ -74,7 +74,7 @@ var TeamMap = (function ($) {
                 if (TeamMap.google_error_html) {
                     that.$map.children().html(TeamMap.google_error_html);
                 } else {
-                    const html = '<div class="gm-err-container"><div class="gm-err-content"><div class="gm-err-icon"><img src="https://maps.gstatic.com/mapfiles/api-3/images/icon_error.png" draggable="false" style="user-select: none;"></div><div class="gm-err-title">:title:</div><div class="gm-err-message">:message1:</div><div class="gm-err-message">:message2:</div></div></div>';
+                    var html = '<div class="gm-err-container"><div class="gm-err-content"><div class="gm-err-icon"><img src="https://maps.gstatic.com/mapfiles/api-3/images/icon_error.png" draggable="false" style="user-select: none;"></div><div class="gm-err-title">:title:</div><div class="gm-err-message">:message1:</div><div class="gm-err-message">:message2:</div></div></div>';
                     html = html.replace(':title:', $.team.locales.map_error_title);
                     html = html.replace(':message1:', $.team.locales.map_error_message);
                     html = html.replace(':message2:', $.team.locales.map_check_your_key);
