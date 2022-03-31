@@ -1,7 +1,7 @@
 <?php
 
 class photosPublicgalleryPlugin extends photosPlugin
-{    
+{
     public function saveSettings($settings = array())
     {
         if (empty($settings['min_size']) || !is_numeric($settings['min_size'])) {
@@ -10,44 +10,44 @@ class photosPublicgalleryPlugin extends photosPlugin
         if (empty($settings['max_size']) || !is_numeric($settings['max_size'])) {
             $settings['max_size'] = '';
         }
-        if (is_numeric($settings['min_size']) && is_numeric($settings['max_size']) && 
-                $settings['min_size'] > $settings['max_size']) 
+        if (is_numeric($settings['min_size']) && is_numeric($settings['max_size']) &&
+                $settings['min_size'] > $settings['max_size'])
         {
             list($settings['max_size'], $settings['min_size']) = array($settings['min_size'], $settings['max_size']);
         }
         parent::saveSettings($settings);
     }
-    
+
     public function frontendSidebar()
     {
         return array('menu' => '<a href="'.wa()->getRouteUrl('photos/frontend/myphotos').'" id="photos-my-photos">'._wp('My uploads').'</a>');
     }
-    
+
     public function frontendPhoto($photo)
     {
         if (!isset($photo['id'])) {
             return;
         }
-        
+
         $photo_model = new photosPhotoModel();
         $photo = $photo_model->getById($photo['id']);
         if (!$photo) {
             return;
         }
-        
+
         $votes_count_text = '';
         if ($photo['votes_count'] > 0) {
             $votes_count_text = _wp('%d vote', '%d votes', $photo['votes_count']);
         }
         $frontend_vote_url = wa()->getRouteUrl('photos/frontend/vote');
-    
+
         $vote_model = new photosPublicgalleryVoteModel();
         $vote_item = $vote_model->getByField(array('photo_id' => $photo['id'], 'contact_id' => wa()->getUser()->getId()));
         $your_rate = 0;
         if ($vote_item) {
             $your_rate = $vote_item['rate'];
         }
-        
+
         $sidebar = '<p><span href="javascript:void(0);" id="photo-rate" class="p-rate-photo" title="'._wp('Rate').'" data-rate="'.$photo['rate'].'">'.
                     photosPhoto::getRatingHtml($photo['rate'], 16, true)
                 .'</span>'.
@@ -60,25 +60,25 @@ class photosPublicgalleryPlugin extends photosPlugin
                     photosPhoto::getRatingHtml($your_rate, 16, true)
                 .'</a>'.
                 '<em class="error" id="photo-rate-error" style="display:none;"></em>'.
-                '<a class="inline-link p-rate-clear small" href="javascript:void(0);" style="display:none;" id="clear-photo-rate"><b><i>'._wp('cancel my vote').'</b></i></a>'.
+                '<a class="p-rate-clear small" href="javascript:void(0);" style="display:none;" id="clear-photo-rate">'._wp('cancel my vote').'</a>'.
             '</span></p>';
         $sidebar .= '<script>$(function() { $.photos.publicgalleryInitRateWidget(); });</script>';
-        
+
         $left = '';
         if ($photo['moderation'] == 0) {
             $left .= "<p class='p-awaiting-moderation'>"._wp("Pending moderation")."</p>";
         } else if ($photo['moderation'] == -1) {
             $left .= "<p class='p-declined'>"._wp("Photo has been declined by the administrator")."</p>";
         }
-        
+
         return array('sidebar' => $sidebar, 'top_left' => $left);
     }
-    
+
     public function backendAssets() {
         $this->addJs('js/backend.js?'.wa()->getVersion());
         return "<style>#sidebar-publicgallery-plugin-awaiting { margin-top: 15px; } </style>";
     }
-    
+
     public function frontendAssets() {
         $v = wa()->getVersion();
         $this->addJs('js/frontend.js?'.$v);
@@ -96,7 +96,7 @@ class photosPublicgalleryPlugin extends photosPlugin
         $view->assign('strings', $strings ? $strings : new stdClass()); // stdClass is used to show {} instead of [] when there's no strings
         return $view->fetch($this->path.'/templates/actions/frontend/FrontendLoc.html');
     }
-    
+
     public function backendSidebar()
     {
         $photo_model = new photosPhotoModel();
@@ -114,21 +114,25 @@ class photosPublicgalleryPlugin extends photosPlugin
             'declined' => '<span class="count">'.$declined_count.'</span><a href="#/search/moderation=-1/"><i class="icon10 no"></i>'._wp('Declined').'</a>'
 
         );
+        if(wa()->whichUI() === '2.0'){
+            $items['awaiting'] = '<a href="#/search/moderation=0/"><i class="fas fa-exclamation-triangle"></i><span>'._wp('Pending moderation').'</span><span class="count '.($awaiting_count ? 'badge text-white' : '').'">'.$awaiting_count.'</span></a>';
+            $items['declined'] = '<a href="#/search/moderation=-1/"><i class="fas fa-times-circle"></i><span>'._wp('Declined').'</span><span class="count">'.$declined_count.'</span></a>';
+        }
         return array(
             'menu' => $items
         );
     }
-    
+
     public function preparePhotosBackend(&$photos)
     {
         if (wa()->getUser()->getRights('photos', 'edit')) {
             foreach ($photos as &$p) {
                 if ($p['source'] == 'publicgallery') {
                     $links = array(
-                        '<a href="javascript:void(0);" class="moderation approve small nowrap" 
+                        '<a href="javascript:void(0);" class="moderation approve small nowrap"
                     style="margin-right: 10px; '.($p['moderation'] == 1 ? 'display:none' : '').'"'.
                               'data-action="approve"><i class="icon10 yes"></i> '._wp('Approve photo').'</a>',
-                        '<a href="javascript:void(0);" class="moderation decline small nowrap" 
+                        '<a href="javascript:void(0);" class="moderation decline small nowrap"
                     style="'.($p['moderation'] == -1 ? 'display:none' : '').'"'.
                              'data-action="decline"><i class="icon10 no"></i> '._wp('Decline').'</a>'
                     );
@@ -138,7 +142,7 @@ class photosPublicgalleryPlugin extends photosPlugin
             unset($p);
         }
     }
-    
+
     public function beforeSaveField(&$params)
     {
         if (empty($params['photo_id'])) {
@@ -149,13 +153,13 @@ class photosPublicgalleryPlugin extends photosPlugin
         } else {
             $photo_id = (int) $params['photo_id'];
         }
-        
+
         $photo_model = new photosPhotoModel();
         $photo = $photo_model->getById($photo_id);
         if (!$photo) {
             return;
         }
-        
+
         if (empty($params['data'])) {
             return;
         }
@@ -163,11 +167,11 @@ class photosPublicgalleryPlugin extends photosPlugin
         if (!isset($data['rate'])) {
             return;
         }
-        
+
         $contact_id = wa()->getUser()->getId();
-        
+
         $vote_model = new photosPublicgalleryVoteModel();
-        
+
         if ($vote_model->getByField(array(
             'photo_id' => $photo_id,
             'contact_id' => $contact_id
@@ -185,7 +189,7 @@ class photosPublicgalleryPlugin extends photosPlugin
             $params['data']['votes_count'] = $vote_model->getVotesCount($photo_id);
         }
     }
-    
+
     public function preparePhotosFrontend(&$photos)
     {
         foreach ($photos as &$p) {
@@ -197,7 +201,7 @@ class photosPublicgalleryPlugin extends photosPlugin
         }
         unset($p);
     }
-    
+
     public function backendPhotoToolbar()
     {
         if (wa()->getUser()->getRights('photos', 'edit')) {
@@ -208,7 +212,7 @@ class photosPublicgalleryPlugin extends photosPlugin
             return array('share_menu' => $items);
         }
     }
-    
+
     public function backendPhoto($photo_id)
     {
         $photo_model = new photosPhotoModel();
@@ -218,34 +222,34 @@ class photosPublicgalleryPlugin extends photosPlugin
             if ($photo['votes_count'] > 0) {
                 $votes_count_text = _wp('%d vote', '%d votes', $photo['votes_count']);
             }
-            
+
             $vote_model = new photosPublicgalleryVoteModel();
             $vote_item = $vote_model->getByField(array('photo_id' => $photo['id'], 'contact_id' => wa()->getUser()->getId()));
             $your_rate = 0;
             if ($vote_item) {
                 $your_rate = $vote_item['rate'];
             }
-            
+
             $html =  '<a class="hint" href="javascript:void(0);" id="photo-rate-votes-count" data-you-voted="'.(int)($your_rate > 0).'"><u>'.$votes_count_text.'</u></a>'.
                     '<span id="p-your-rate-wrapper">'._wp('My vote: ').
                         '<a href="javascript:void(0);" id="your-rate" class="p-rate-photo" data-rate="'.$your_rate.'">'.
                             photosPhoto::getRatingHtml($your_rate, 10, true).
                         '</a></span>'.
-                '<a class="inline-link p-rate-clear small" href="javascript:void(0);" style="display:none;" id="clear-photo-rate"><b><i>'._wp('cancel my vote').'</b></i></a>';
+                '<a class="p-rate-clear small" href="javascript:void(0);" style="display:none;" id="clear-photo-rate">'._wp('cancel my vote').'</a>';
             $html .= '<script>$.photos.publicgalleryInitYourRate();</script>';
             return array(
                 'after_rate' => $html
             );
         }
     }
-    
+
     public function searchFrontendLink($query)
     {
         if ($query == 'votes_count>0' || $query == 'moderation=0' || $query == 'moderation=-1') {
             return '';
         }
     }
-    
+
     public function prepareCollection($params)
     {
         if (isset($params['hash']) && $params['hash'][0] == 'publicgallery' && $params['hash'][1] == 'myphotos') {
@@ -264,8 +268,8 @@ class photosPublicgalleryPlugin extends photosPlugin
             return true;
         }
     }
-    
-    public function extraPrepareCollection($params) 
+
+    public function extraPrepareCollection($params)
     {
         if (isset($params['hash'][1]) && strstr($params['hash'][1], 'moderation=') !== false) {
             if (wa()->getEnv() == 'frontend') {
@@ -283,9 +287,9 @@ class photosPublicgalleryPlugin extends photosPlugin
                 return;
             }
         }
-        
+
         // hash = id/photo_id:private_hash
-        if (isset($params['hash'][0]) && $params['hash'][0] == 'id' && 
+        if (isset($params['hash'][0]) && $params['hash'][0] == 'id' &&
                 isset($params['hash'][1]) && preg_match("!^[\d]+:[\da-fA-F]{32}$!", $params['hash'][1]))
         {
             return;
@@ -294,7 +298,7 @@ class photosPublicgalleryPlugin extends photosPlugin
         if (isset($params['hash']) && $params['hash'][0] == 'publicgallery' && $params['hash'][1] == 'myphotos') {
             return;
         }
-        
+
         $params['collection']->addWhere('moderation=1');
     }
 }

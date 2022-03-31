@@ -477,11 +477,13 @@ class installerHelper
         }
 
         $apps = wa()->getApps();
-        if (
-            (!$status && (empty($app_id) || empty($apps[$app_id])))
-            || ($status && !file_exists("wa-apps/$app_id/lib/config/app.php"))
-        ) {
-            throw new waException('Asset not found');
+        if (empty($app_id) || empty($plugin_id)) {
+            if (
+                empty($app_id)
+                || empty($apps[$app_id]) && !file_exists("wa-apps/$app_id/lib/config/app.php")
+            ) {
+                throw new waException('Asset not found');
+            }
         }
 
         $old_app_id = wa()->getApp();

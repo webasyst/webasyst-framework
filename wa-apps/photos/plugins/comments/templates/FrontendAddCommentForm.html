@@ -43,7 +43,7 @@ $(document).ready(function() {
                     {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
                 </div>
                 {else if $auth_adapters}
-                    <ul class="menu-h auth-type" id="user-auth-provider">
+                    <ul class="menu-h auth-type chips" id="user-auth-provider">
                         {if $require_authorization}
                         <li data-provider="signup" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Sign up`]</a></li>
                         {else}

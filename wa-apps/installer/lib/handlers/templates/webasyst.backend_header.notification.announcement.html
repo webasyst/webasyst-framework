@@ -3,7 +3,7 @@
         {foreach $announcements as $_key => $_a}
             <div class="js-wa-announcement" data-key="{$_key}">
                 {$_a.html}
-                <a data-app-id="installer" href="javascript:void(0);" class="custom-mt-8 hint js-announcement-close flexbox" title="Закрыть">[`Пометить как прочитанное`]</a>
+                <a data-app-id="installer" href="javascript:void(0);" class="custom-mt-8 hint js-announcement-close flexbox" title="[s`Close`]">[s`Mark as read`]</a>
                 {if !$_a@last}
                     <hr class="custom-my-16">
                 {/if}

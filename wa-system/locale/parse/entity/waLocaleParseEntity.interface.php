@@ -13,6 +13,13 @@ interface waLocaleParseEntityInterface
     public function getMessages();
 
     /**
+     * List of words for extended output
+     *
+     * @return array
+     */
+    public function getAdditionalMessages();
+
+    /**
      * Returns the folder for localizations
      * @return string
      */

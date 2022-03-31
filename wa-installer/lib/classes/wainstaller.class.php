@@ -248,17 +248,6 @@ class waInstaller
                         if (!$update['backup'] && $update['pass']) {
                             $update['skipped'] = true;
                         }
-                        $update['info'] = null;
-                        if (function_exists('wa')) {
-                            if ($update['subject'] === 'app') {
-                                $update['info'] = wa()->getConfig()->getAppConfig($update['slug'])->getInfo();
-                            } elseif ($update['subject'] === 'app_plugins') {
-                                $slugs = explode('/', $update['slug']);
-                                if ($slugs[2] === 'plugins') {
-                                    $update['info'] = wa($slugs[1])->getPlugin($slugs[3])->getInfo();
-                                }
-                            }
-                        }
                     }
                     unset($update);
                     //no break
@@ -315,6 +304,25 @@ class waInstaller
                 default:
                     throw new Exception("Invalid resume state {$resume}");
                     break;
+            }
+
+            foreach ($update_list as &$update) {
+                $update['info'] = null;
+                if (function_exists('wa')) {
+                    $path = $update['target'].'lib/config/';
+                    if ($update['subject'] === 'app') {
+                        $path .= 'app.php';
+                        if (file_exists($path)) {
+                            $update['info'] = include $path;
+                        }
+                    } elseif ($update['subject'] === 'app_plugins') {
+                        $path .= 'plugin.php';
+                        $slugs = explode('/', $update['slug']);
+                        if ($slugs[2] === 'plugins' && file_exists($path)) {
+                            $update['info'] = include $path;
+                        }
+                    }
+                }
             }
             //$this->current_stage = 'update_'.self::STATE_COMPLETE;
             //$this->current_chunk_id = 'total';

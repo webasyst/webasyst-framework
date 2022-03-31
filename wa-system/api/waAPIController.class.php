@@ -185,6 +185,7 @@ class waAPIController
 
         // auth user
         wa()->setUser(new waApiAuthUser($data['contact_id']));
+        wa()->setLocale(wa()->getUser()->getLocale());
 
         return $data;
     }
