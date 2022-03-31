@@ -74,37 +74,56 @@
             }
         });
     });
-    $('#i-assets-list a.js-switch-item').click(function () {
-        var $link = $(this);
-        var url = $link.data('url');
-        var data = $link.data('data');
-        $link.data('url', null);
+
+    $('.js-switch-item').on('click', function (event) {
+        event.preventDefault();
+
+        const $link = $(this);
+        const $tr = $link.closest('.js-assets-row');
+        const url = $link.data('url');
+        const data = $link.data('data');
+        const type = $link.data('type');
+
         $link.find('.js-installer-assets-icon').hide();
         $link.find('.js-installer-assets-spinner').addClass('-active');
-        if (url) {
-            $.post(url, data, function (data, textStatus) {
-                if (data.status == 'ok') {
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 1000);
+        $link.prop('disabled', true);
 
+        if (!url) {
+            return;
+        }
+
+        $.post(url, data, function (data, textStatus) {
+            $link.prop('disabled', false);
+
+            if (data.status === 'ok') {
+                $tr.toggleClass('i-assets-disabled');
+
+                $link.hide();
+                if (type === 'enable') {
+                    $link.siblings('.js-switch-disable, .js-switch-remove').show();
                 } else {
-                    var message = '';
-                    if (data.errors) {
-                        for (var i = 0; i < data.errors.length; i++) {
-                            message = (message ? (message + ' ') : '') + data.errors[i][0];
-                        }
-                    } else {
-                        message = textStatus;
-                    }
-                    $link.parent().text(message)
+                    $link.siblings('.js-switch-enable').show()
+                    $link.siblings('.js-switch-remove').hide();
                 }
 
-            });
-        }
-        return false;
+                $link.find('.js-installer-assets-icon').show();
+                $link.find('.js-installer-assets-spinner').removeClass('-active');
+
+                return;
+            }
+
+            let message = '';
+
+            if (data.errors) {
+                for (var i = 0; i < data.errors.length; i++) {
+                    message = (message ? (message + ' ') : '') + data.errors[i][0];
+                }
+            } else {
+                message = textStatus;
+            }
+
+            $link.parent().text(message)
+        });
     });
-
-
     //-->
 </script>

@@ -52,7 +52,7 @@
         {/foreach}
     {else}
         <p>
-            {sprintf('[`To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway.<br> <a href="%s">Browse for SMS gateway plugins</a> in Installer app.`]', $wa_backend_url|cat:'installer/#/plugins/wa-plugins/sms/')}
+            {sprintf('[`To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway. <a href="%s">Browse for SMS gateway plugins</a> in Installer app.`]', $wa_backend_url|cat:'installer/store/?filters%5Bcategory%5D=plugins%3Asms&filters%5Btype%5D=plugin')}
         </p>
     {/if}
 

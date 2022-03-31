@@ -63,7 +63,7 @@ class installerConfig extends waAppConfig
             );
         }
         $this->loadAnnouncements();
-        //$this->loadLicenses();
+        $this->loadLicenses();
 
         try {
             $this->getTokenData();

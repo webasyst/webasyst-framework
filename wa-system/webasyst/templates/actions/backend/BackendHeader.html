@@ -31,18 +31,82 @@
         {if $wa->debug()}
 
             {* force global UI mode switch @ debug mode only *}
-            <div style="position: fixed; z-index: 9999; bottom: 20px; right: 20px; border-radius: 4px; background: #fea; padding: 15px; box-shadow: 0 5px 20px -10px rgba(0,0,0,0.2), 0 3px 10px -5px rgba(0,0,0,0.1); font-size: 16px; border: 2px solid #eda;">
-                <span class="desktop-only">[`Select UI mode`]:</span>
+            <style>
+                .wa-general-settings-place {
+                    position: fixed;
+                    right: 0;
+                    bottom: 20px;
+                    z-index: 9999;
 
-                <select onChange="_setCookie('force_set_wa_backend_ui_version', this.options[this.selectedIndex].value, 180); window.location.reload();" style="font-size: 16px;">
-                    <option value="1.3"{if $_force_set_wa_backend_ui_version == '1.3'} selected{/if}>1.3</option>
-                    <option value="2.0"{if $_force_set_wa_backend_ui_version == '2.0'} selected{/if}>2.0</option>
-                </select>
-                {if $_force_set_wa_backend_ui_version == '2.0'}
-                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 1px 0 8px; cursor: pointer" title="[s`Light mode`]" data-wa-theme-mode="light"></span>
-                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode`]" data-wa-theme-mode="dark"></span>
-                    <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span>
-                {/if}
+                    pointer-events: none;
+                    font-size: 16px;
+                }
+
+                .wa-general-settings-place__toggler {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    width: 55px;
+                    color: #1a9afe;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+                .wa-general-settings-place__toggler:hover {
+                    text-decoration: underline;
+                }
+
+                .wa-general-settings-place__checkbox {
+                    position: absolute;
+                    left: -99999px;
+                }
+
+                .wa-general-settings-place__inner {
+                    pointer-events: auto;
+                    background-color: #fea;
+                    border: 2px solid #eda;
+                    border-radius: 4px;
+                    padding: 12px;
+                    padding-left: 55px;
+                    box-shadow: 0 5px 20px -10px rgba(0,0,0,0.2), 0 3px 10px -5px rgba(0,0,0,0.1);
+                    transform: translate(calc(100% - 55px));
+                    transition: .3s transform;
+                }
+
+                .wa-general-settings-place__checkbox:checked + .wa-general-settings-place__inner {
+                    transform: translate(-20px);
+                }
+            </style>
+
+            <div class="wa-general-settings-place">
+                <input type="checkbox" class="wa-general-settings-place__checkbox" id="wa-general-settings-place">
+
+                <div class="wa-general-settings-place__inner">
+                    <label class="wa-general-settings-place__toggler" for="wa-general-settings-place">
+                        {if $wa->whichUI() == '1.3'}
+                        1.3
+                        {else}
+                        2.0
+                        {/if}
+                    </label>
+
+                    <span class="desktop-only">[`Select UI mode`]:</span>
+
+                    <select onChange="_setCookie('force_set_wa_backend_ui_version', this.options[this.selectedIndex].value, 180); window.location.reload();" style="font-size: 16px;">
+                        <option value="1.3"{if $_force_set_wa_backend_ui_version == '1.3'} selected{/if}>1.3</option>
+                        <option value="2.0"{if $_force_set_wa_backend_ui_version == '2.0'} selected{/if}>2.0</option>
+                    </select>
+                    {if $_force_set_wa_backend_ui_version == '2.0'}
+                        <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 1px 0 8px; cursor: pointer" title="[s`Light mode`]" data-wa-theme-mode="light"></span>
+                        <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode`]" data-wa-theme-mode="dark"></span>
+                        <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span>
+                    {/if}
+                </div>
             </div>
 
         {else}

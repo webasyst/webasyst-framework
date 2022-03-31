@@ -206,70 +206,70 @@ and (orientation : portrait) {
 #content.flexbox {
     flex-wrap: wrap;
 }
-#content.flexbox #wa-design-container {
+.is-wa2 #wa-design-container {
 
 }
 
-#content.flexbox #wa-theme-list .themes a {
+.is-wa2 #wa-theme-list .themes a {
     color: var(--accent-color) !important;
 }
-#content.flexbox #wa-theme-list .themes svg {
+.is-wa2 #wa-theme-list .themes svg {
     color: var(--accent-color);
 }
 
-#content.flexbox #wa-design-container .wa-theme {
+.is-wa2 #wa-design-container .wa-theme {
 
 }
-#content.flexbox #wa-design-container .wa-theme-sidebar .wa-theme-usage .field {
+.is-wa2 #wa-design-container .wa-theme-sidebar .wa-theme-usage .field {
     margin-bottom: unset;
 }
-#content.flexbox #wa-design-container .wa-theme-sidebar .wa-theme-usage .field .name {
+.is-wa2 #wa-design-container .wa-theme-sidebar .wa-theme-usage .field .name {
     float: none;
     padding: unset;
 }
-#content.flexbox #wa-design-container > .flexbox {
+.is-wa2 #wa-design-container > .flexbox {
     display: flex;
     flex-wrap: wrap;
 }
 
-#content.flexbox #wa-design-container .wa-theme-name-section {
+.is-wa2 #wa-design-container .wa-theme-name-section {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
-#content.flexbox #wa-design-container .wa-theme-name-section h1 {
+.is-wa2 #wa-design-container .wa-theme-name-section h1 {
     margin-right: 2rem;
     flex: 0 1 auto;
 }
-#content.flexbox #wa-design-container .wa-theme-name-section .dropdown {
+.is-wa2 #wa-design-container .wa-theme-name-section .dropdown {
     flex: 1 0 auto;
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
 }
-#content.flexbox #wa-design-container .wa-theme-name-section .search-setting-wrapper [type="search"] {
+.is-wa2 #wa-design-container .wa-theme-name-section .search-setting-wrapper [type="search"] {
     max-width: 16.25rem;
 }
 
-#content.flexbox #wa-design-container .wa-theme-info-section {
+.is-wa2 #wa-design-container .wa-theme-info-section {
 
 }
 
 
-#content.flexbox #wa-design-container .value input.color {
+.is-wa2 #wa-design-container .value input.color {
     min-width: 95px;
     width: 95px;
     max-width: 95px;
     margin-right: .3rem
 }
-#content.flexbox #wa-design-container .value input.color + .icon {
+.is-wa2 #wa-design-container .value input.color + .icon {
     opacity: 1;
     cursor: pointer;
     width: auto;
     height: auto;
     vertical-align: middle;
 }
-#content.flexbox #wa-design-container .value .wa-theme-image-select a {
+.is-wa2 #wa-design-container .value .wa-theme-image-select a {
     display: unset;
     max-height: unset;
     max-width: unset;
@@ -277,19 +277,19 @@ and (orientation : portrait) {
     border: 0 none;
 }
 
-#content.flexbox #wa-design-container .bottombar > .bottombar-wrapper {
+.is-wa2 #wa-design-container .bottombar > .bottombar-wrapper {
     margin-left: 15rem;
     width: calc(100% - 16rem);
 }
-#content.flexbox #wa-design-container .bottombar > .bottombar-wrapper .wa-cheatsheet-dropdown {
+.is-wa2 #wa-design-container .bottombar > .bottombar-wrapper .wa-cheatsheet-dropdown {
     margin-left: auto;
 }
 
-#content.flexbox #wa-design-container .wa-design-scroll-action {
+.is-wa2 #wa-design-container .wa-design-scroll-action {
     margin-left: -13rem;
 }
 
-#content.flexbox .skeleton {
+.is-wa2 .skeleton {
     display: flex;
     flex-wrap: wrap;
     -webkit-animation: loader-keyframes-pulse 1.5s ease-in-out 0.5s infinite;
@@ -298,7 +298,7 @@ and (orientation : portrait) {
     -ms-animation: loader-keyframes-pulse 1.5s ease-in-out 0.5s infinite;
     animation: loader-keyframes-pulse 1.5s ease-in-out 0.5s infinite;
 }
-#content.flexbox .skeleton .content {
+.is-wa2 .skeleton .content {
     margin-right: 1rem;
     flex: 1 !important;
     position: relative;
@@ -306,14 +306,14 @@ and (orientation : portrait) {
     overflow: hidden;
     max-height: 100vh;
 }
-#content.flexbox .skeleton .sidebar {
+.is-wa2 .skeleton .sidebar {
     order: 2;
     width: 13rem;
     padding: 1rem;
     max-height: 100vh;
     overflow: hidden;
 }
-#content.flexbox .skeleton .header {
+.is-wa2 .skeleton .header {
     background: var(--background-color-input);
     width: 100%;
     height: 40px;
@@ -321,7 +321,7 @@ and (orientation : portrait) {
     border-radius: 8px;
     margin-bottom: 2rem;
 }
-#content.flexbox .skeleton .line {
+.is-wa2 .skeleton .line {
     background: var(--background-color-input);
     width: 100%;
     height: 20px;
@@ -329,10 +329,10 @@ and (orientation : portrait) {
     border-radius: 8px;
     margin-bottom:1rem;
 }
-#content.flexbox .skeleton .line + .header {
+.is-wa2 .skeleton .line + .header {
     margin-top: 2rem;
 }
-#content.flexbox .skeleton .list {
+.is-wa2 .skeleton .list {
     position: relative;
     background: var(--background-color-input);
     width: auto;
@@ -343,7 +343,7 @@ and (orientation : portrait) {
     margin-left: 30px
 
 }
-#content.flexbox .skeleton .list:before {
+.is-wa2 .skeleton .list:before {
     content: '';
     display: block;
     position: absolute;
@@ -355,57 +355,57 @@ and (orientation : portrait) {
     background: var(--background-color-input);
 }
 
-#content.flexbox .skeleton .list + .line {
+.is-wa2 .skeleton .list + .line {
     margin-top: 2rem;
 }
 
 
-#content.flexbox .wa-theme-templates .fa-file-code {
+.is-wa2 .wa-theme-templates .fa-file-code {
     color: #E26136;
 }
-#content.flexbox .wa-theme-templates .fa-js-square {
+.is-wa2 .wa-theme-templates .fa-js-square {
     color: #D6A100;
 }
-#content.flexbox .wa-theme-templates .fa-css3 {
+.is-wa2 .wa-theme-templates .fa-css3 {
     color: #259EF4;
 }
-#content.flexbox .wa-theme-templates .fa-link{
+.is-wa2 .wa-theme-templates .fa-link{
     color: #888888;
 }
 
-#content.flexbox .tab-content {
+.is-wa2 .tab-content {
     display: none;
 }
-#content.flexbox .tab-content.selected {
+.is-wa2 .tab-content.selected {
     display: flex;
     flex-direction: column;
 }
 
 
-#content.flexbox .wa-theme-settings-list > div {
+.is-wa2 .wa-theme-settings-list > div {
     display: none;
 }
-#content.flexbox .wa-theme-settings-list > div.selected {
+.is-wa2 .wa-theme-settings-list > div.selected {
     display: block;
 }
 
 
-#content.flexbox .wa-theme-select-menu {
+.is-wa2 .wa-theme-select-menu {
     display: flex;
     box-shadow: 0 0.125em 0.75em -0.25em rgba(0, 0, 0, 0.2);
 }
-#content.flexbox .wa-theme-select-menu > img {
+.is-wa2 .wa-theme-select-menu > img {
     margin-right: 1rem;
 }
-#content.flexbox .wa-theme-select-menu.dropdown > .dropdown-toggle::after {
+.is-wa2 .wa-theme-select-menu.dropdown > .dropdown-toggle::after {
     top: 0.7rem;
 }
-#content.flexbox .wa-theme-select-menu.dropdown > .dropdown-body {
+.is-wa2 .wa-theme-select-menu.dropdown > .dropdown-body {
     height: auto;
     max-height: calc(100vh - 10rem);
 }
 
-#content.flexbox .wa-theme-block .heading { margin-top: 1rem; margin-bottom: 1rem; word-break: break-all; }
+.is-wa2 .wa-theme-block .heading { margin-top: 1rem; margin-bottom: 1rem; word-break: break-all; }
 
 @-moz-keyframes loader-keyframes-pulse {
     0% {

@@ -607,6 +607,9 @@ String.prototype.translate = function () {
                                     if (typeof(success_handler) === 'function') {
                                         success_handler(data.data);
                                     }
+                                    if (data.data.redirect) {
+                                        location.href = data.data.redirect;
+                                    }
                                     break;
                                 default :
                                     console.error('unknown status response', data.status);

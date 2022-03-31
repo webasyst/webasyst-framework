@@ -491,6 +491,12 @@ class waWebasystIDWAAuthController extends waViewController
             'remember' => $this->auth->isRememberMe()
         ]);
 
+        $_params = [
+            'type'       => 'backend',
+            'user-agent' => wa()->getRequest()->getUserAgent()
+        ];
+        $this->logAction('waid_auth', json_encode($_params));
+
         /**
          * Event after success auth by webasyst ID
          * User is already authorized in backend to this time

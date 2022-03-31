@@ -26,7 +26,9 @@
                             {if !$is_user_bound_to_webasyst_id}disabled="disabled"{/if}>
 
                 <div class="s-force-description">
-                    <strong><i class="icon16 ws waid-green"></i> [s`Use only sign-in option with Webasyst ID — <span class="s-green">recommended</span>`]</strong>
+                    <strong><i class="icon16 ws waid-green"></i> 
+                        {sprintf(_ws('Use only sign-in option with Webasyst ID — <span class="%s">recommended</span>'), 's-green')}
+                    </strong>
                     <span class="js-force-save-status s-force-save-status"><i class="icon16 yes"></i> [s`Saved`]</span>
                 </div>
             </div>

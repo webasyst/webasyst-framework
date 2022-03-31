@@ -448,13 +448,42 @@ class installerHelper
      */
     public static function pluginSetStatus($app_id, $plugin_id, $status = false)
     {
+        return self::assetSetStatus($app_id, $plugin_id, $status);
+    }
+
+    /**
+     * @param $app_id
+     * @param $status
+     * @return array|bool|string
+     * @throws waException
+     */
+    public static function appSetStatus($app_id, $status = false)
+    {
+        return self::assetSetStatus($app_id, null, $status);
+    }
+
+
+    /**`
+     * @param $app_id
+     * @param $plugin_id
+     * @param $status
+     * @return array|bool|string
+     * @throws waException
+     */
+    private static function assetSetStatus($app_id, $plugin_id, $status = false)
+    {
         if (waConfig::get('is_template')) {
             return '';
         }
 
         $apps = wa()->getApps();
-        if (empty($app_id) || empty($plugin_id) || empty($apps[$app_id])) {
-            throw new waException('Plugin not found');
+        if (empty($app_id) || empty($plugin_id)) {
+            if (
+                empty($app_id)
+                || empty($apps[$app_id]) && !file_exists("wa-apps/$app_id/lib/config/app.php")
+            ) {
+                throw new waException('Asset not found');
+            }
         }
 
         $old_app_id = wa()->getApp();
@@ -462,12 +491,12 @@ class installerHelper
 
         try {
             $result = true;
-            $apps = wa()->getApps();
-            if (empty($app_id) || empty($plugin_id) || empty($apps[$app_id])) {
-                throw new waException('Plugin not found');
-            }
             $installer = new waInstallerApps();
-            $installer->updateAppPluginsConfig($app_id, $plugin_id, $status);
+            if (empty($plugin_id)) {
+                $installer->updateAppConfig($app_id, $status);
+            } else {
+                $installer->updateAppPluginsConfig($app_id, $plugin_id, $status);
+            }
 
             (new waLogModel())->add(
                 ($status === true ? 'item_enable' : 'item_disable'),

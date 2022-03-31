@@ -380,7 +380,10 @@ class waAuth implements waiAuth
             } elseif ($field_id === self::LOGIN_FIELD_PHONE) {
                 $contact = $this->getByPhone($value);
             }
-            if (!$contact || $contact['is_user'] <= -1) {
+            if (
+                !$contact
+                || ($contact['is_user'] <= -1 && $lookup_type !== 'with_banned')
+            ) {
                 continue;
             }
             $result[$field_id] = $contact;

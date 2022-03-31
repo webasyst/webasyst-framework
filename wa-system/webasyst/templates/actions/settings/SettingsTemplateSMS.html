@@ -50,7 +50,7 @@
                         {* FIXED Buttons *}
                         <div class="bottombar flexbox middle"{if $wa->isMobile()} style="overflow-x: scroll;"{/if}>
                             <div class="article flexbox middle space-32 js-footer-actions"{if $wa->isMobile()} style="overflow-x: scroll; min-width: max-content; padding: 0 1rem;"{/if}>
-                                <div>
+                                <div class="nowrap">
                                     {* Save *}
                                     <input class="button js-submit-button" type="submit" name="" value="[s`Save`]">
                                     {* Cancel *}
@@ -60,13 +60,13 @@
                                     </span>
                                     <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
                                 </div>
-                                <div>
+                                <div class="flexbox wrap-mobile">
                                     {* Check sending *}
                                     <input class="smallest button gray rounded js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
                                     {* Cheat sheet *}
                                     <div class="s-cheat-sheet-wrapper js-cheat-sheet-wrapper"></div>
                                 </div>
-                                <div>
+                                <div class="flexbox wrap-mobile">
                                     {* Actions *}
                                     {* Reset *}
                                     <a href="javascript:void(0);" class="button rounded gray outlined smallest js-reset" title="[s`Restore default text`]">

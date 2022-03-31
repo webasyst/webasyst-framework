@@ -383,7 +383,7 @@ HTML;
 
     public function accountName($escape = true)
     {
-        $name = wa()->getSetting('name', 'Webasyst', 'webasyst');
+        $name = wa()->accountName();
         return $escape ? htmlspecialchars($name) : $name;
     }
 
@@ -1394,6 +1394,11 @@ HTML;
         $sections = ifset($options['sections']);
         if (!is_array($sections)) {
             $sections = $this->getContactTabs((int)$id);
+        }
+
+        if (isset($sections['access'])) {
+            $wa_app_url = wa()->getAppUrl('team', true);
+            $sections['access']['url'] = "$wa_app_url?module=profile&action=access&id=$id";
         }
 
         $selected_section = ifset($options['selected_section']);

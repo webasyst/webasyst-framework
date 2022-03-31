@@ -417,7 +417,10 @@ const Page = ( function($, backend_url) {
 
         bindEvents() {
             let that = this,
-                $widgetActivity = that.storage.getWidgetActivity()
+                $widgetActivity = that.storage.getWidgetActivity();
+
+            $widgetActivity.find('.d-load-more-animation').hide()
+            $widgetActivity.find('#d-load-more-activity').show()
 
             $widgetActivity.on("click", "#d-load-more-activity", function () {
                 that.loadOldActivityContent( $(this), $widgetActivity );
@@ -452,7 +455,6 @@ const Page = ( function($, backend_url) {
                 that.loadNewActivityContent($widgetActivity);
             }, that.storage.lazyTime);
         }
-
 
         showFirstNotice() {
             let that = this,
@@ -525,7 +527,7 @@ const Page = ( function($, backend_url) {
             if (!that.storage.isActivityFilterLocked) {
                 that.storage.isActivityFilterLocked = true;
 
-                let $wrapper = $widgetActivity.find(".activity-list-block"),
+                let $wrapper = $widgetActivity.find(".js-activity-list-block"),
                     $form = $("#activity-filter"),
                     $deferred = $.Deferred(),
                     ajaxHref = "?module=dashboard&action=activity",
@@ -549,6 +551,9 @@ const Page = ( function($, backend_url) {
 
                     that.hideLoadingAnimation($widgetActivity);
 
+                    /*TODO check vice versa case*/
+                    $widgetActivity.find('.activity-empty-today').remove();
+
                     that.storage.isActivityFilterLocked = false;
                 });
             }
@@ -563,7 +568,7 @@ const Page = ( function($, backend_url) {
                 that.showLoadingAnimation($widgetActivity);
 
                 let $linkWrapper = $link.closest(".show-more-activity-wrapper"),
-                    $wrapper = $widgetActivity.find(".activity-list-block"),
+                    $wrapper = $widgetActivity.find(".js-activity-list-block"),
                     max_id = $wrapper.find(".activity-item:last").data('id'),
                     $deferred = $.Deferred(),
                     ajaxHref = "?module=dashboard&action=activity",
@@ -579,10 +584,8 @@ const Page = ( function($, backend_url) {
                     // Remove Link
                     $linkWrapper.remove();
 
-                    if ( $.trim(response).length && !response.includes('activity-empty-today')) {
-                        // Render
-                        $wrapper.append(response);
-                    }
+                    // Render
+                    $wrapper.append(response);
 
                     that.storage.isBottomLazyLoadLocked = false;
                     that.storage.lazyLoadCounter++;
@@ -600,7 +603,7 @@ const Page = ( function($, backend_url) {
 
                 that.showLoadingAnimation($widgetActivity);
 
-                let $wrapper = $widgetActivity.find(".activity-list-block"),
+                let $wrapper = $widgetActivity.find(".js-activity-list-block"),
                     min_id = $wrapper.find(".activity-item:not(.activity-empty-today):first").data('id'),
                     $deferred = $.Deferred(),
                     ajaxHref = "?module=dashboard&action=activity",
@@ -637,42 +640,14 @@ const Page = ( function($, backend_url) {
             }
         };
 
-        initActivityLazyLoading(options) {
-            let that = this,
-                scrollTop = options.scrollTop,
-                displayArea = options.displayArea,
-                is_edit_mode = options.is_edit_mode,
-                $activityBlock = options.$activityBlock,
-                activity_height = options.activity_height,
-                $link = $("#d-load-more-activity"),
-                lazyLoadCounter = that.storage.lazyLoadCounter,
-                correction = 47;
-
-            if ($link.length && !is_edit_mode) {
-                let isScrollAtEnd = ( scrollTop >= ( $activityBlock.offset().top + activity_height - displayArea.height - correction ) );
-                if (isScrollAtEnd) {
-                    if (lazyLoadCounter >=2) {
-
-                        let $wrapper = $link.closest(".show-more-activity-wrapper"),
-                            loadingClass = "is-loading";
-
-                        $wrapper.removeClass(loadingClass);
-
-                    } else {
-
-                        // Trigger event
-                        $link.trigger("click");
-                    }
-                }
-            }
-        };
-
         showLoadingAnimation($widgetActivity) {
             $widgetActivity.find(".activity-filter-wrapper .loading").show();
         }
 
         hideLoadingAnimation($widgetActivity) {
             $widgetActivity.find(".activity-filter-wrapper .loading").hide();
+            $widgetActivity.find('.d-load-more-animation').hide()
+            $widgetActivity.find('#d-load-more-activity').show()
         }
 
 

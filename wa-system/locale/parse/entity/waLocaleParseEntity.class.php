@@ -33,6 +33,14 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
     abstract public function getSources();
 
     /**
+     * List of additional files to look for translations in
+     * @return string[]
+     */
+    public function getAdditionalSources() {
+        return [];
+    }
+
+    /**
      * @return array|mixed
      * @throws waException
      */
@@ -54,9 +62,13 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
     /**
      * @return array
      */
-    public function getFiles()
+    public function getFiles($is_additional = false)
     {
-        $sources = $this->getSources();
+        if ($is_additional) {
+            $sources = $this->getAdditionalSources();
+        } else {
+            $sources = $this->getSources();
+        }
 
         $result = [];
         foreach ($sources as $source) {
@@ -106,7 +118,24 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
     public function getMessages()
     {
         $files = $this->getFiles();
+        return $this->findMessages($files);
+    }
 
+    /**
+     * @return array
+     */
+    public function getAdditionalMessages()
+    {
+        $files = $this->getFiles(true);
+        return $this->findMessages($files);
+    }
+
+    /**
+     * @param array $files
+     * @return array
+     */
+    protected function findMessages($files)
+    {
         $result = [];
         $pattern = $this->getBacktickPattern();
 

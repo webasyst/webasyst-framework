@@ -470,17 +470,16 @@ HTML;
                 // Make indicators change when user changes personal access
                 var updateIndicator = function() {
                     var self = $(this),
-                        tr = self.parents("table.c-access-app tr"),
-                        changed = false;
-                    if (tr.find("input[type=\"checkbox\"]:checked").size() > 0) {
-                        changed = tr.find(".js-access-type-own").toggleClass("hidden", false).length > 0;
-                        tr.find(".js-access-type-group").toggleClass("hidden", true);
-                    } else {
-                        changed = tr.find(".js-access-type-own").toggleClass("hidden", true).length > 0;
-                        tr.find(".js-access-type-group").toggleClass("hidden", false);
-                    }
-                    if (changed) {
-                        self.parents("form").trigger("wa.change");
+                        $tr = self.parents("table.c-access-app tr"),
+                        $form = $tr.closest("form"),
+                        is_checked = !!($tr.find("input[type=\"checkbox\"]:checked").length);
+                    
+                    $tr.find(".js-access-type-own").toggleClass("hidden", !is_checked);
+                    $tr.find(".js-access-type-group").toggleClass("hidden", is_checked);
+                    $tr[0].toggleAttribute("data-state-changed");
+                    
+                    if($form.find("tr[data-state-changed]").length){
+                        $form.trigger("wa.change");
                     }
                 };
                 $("table.c-access-app input[type=\"checkbox\"]:enabled").click(updateIndicator);';
@@ -490,13 +489,20 @@ HTML;
                 // Change resulting column for selects
                 const updateIndicatorForSelect = function() {
                     const $self = $(this),
+                        options = this.options,
                         $tr = $self.closest("tr"),
                         group_value = parseInt($tr.find("input.g-value").val(), 10),
                         personal_value = parseInt($self.val(), 10);
+                    
+                    let init_value = Array.from(options).find(item => item.hasAttribute("selected"))?.value;
+                    if(!init_value){
+                        init_value = $tr.find(`[name="${this.name}"]`).eq(0).val()
+                    }
 
-                        $tr.find(".js-access-type-own").toggleClass("hidden", !(group_value !== personal_value));
-                        $tr.find(".js-access-type-group").toggleClass("hidden", (group_value !== personal_value));
+                    $tr.find(".js-access-type-own").toggleClass("hidden", !(group_value !== personal_value));
+                    $tr.find(".js-access-type-group").toggleClass("hidden", (group_value !== personal_value));
 
+                    $tr[0].toggleAttribute("data-state-changed", !(init_value === options[options.selectedIndex].value));
                 };
                 $("table.c-access-app select").change(updateIndicatorForSelect);';
         }
@@ -588,9 +594,14 @@ HTML;
                 $oHTML = array();
                 foreach($o as $val => $opt) {
                     if($inherited !== null){
-                        $oHTML[] = '<option value="'.$val.'"'.(($group != 0 && $own < $group && $group==$val) || ($own > $group && $own==$val) ? ' selected' : '').($val < $group ? ' disabled' : '').'>'.htmlspecialchars($opt).'</option>';
+                        /*$oHTML[] = '<option value="'.$val.'"'.(($group != 0 && $own < $group && $group==$val) || ($own > $group && $own==$val) ? ' selected' : '').($val < $group ? ' disabled' : '').'>'.htmlspecialchars($opt).'</option>';*/
+                        //(($group != 0 && $own < $group && $group==$val) || ($own > $group && $own==$val) ? ' selected' : '')
+                        if(($group != 0 && $own < $group && $group==$val) || ($own==$val)){
+                            $is_selected = '';
+                        }
+                        $oHTML[] = '<option value="'.$val.'" '.(($group != 0 && $own < $group && $group==$val) || ($own==$val) ? ' selected' : '').' '.($val < $group ? ' disabled' : '').'>'.htmlspecialchars($opt).'</option>';
                     }else{
-                        $oHTML[] = '<option value="'.$val.'"'.($own==$val ? ' selected' : '').'>'.htmlspecialchars($opt).'</option>';
+                        $oHTML[] = '<option value="'.$val.'"'.($own==$val ? ' data-init-value selected' : '').'>'.htmlspecialchars($opt).'</option>';
                     }
                 }
                 $oHTML = implode('', $oHTML);
@@ -606,13 +617,13 @@ HTML;
                     '<div class="wa-select custom-m-0"><select name="app['.$name.']">'.$oHTML.'</select></div>'.
                     '</td>'.
 
-                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type-own'.($own > $group ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Access granted for the user individually.').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type-group'.($own > $group ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Access inherited from user groups.').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span><input type="hidden" class="g-value" value="'.$group.'"></td>' : '').
+                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type-own'.((($own != $group && $own >= $group) || $own < $group) ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Access granted for the user individually').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type-group'.((($own != $group && $own >= $group) || $own < $group) ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Access inherited from user groups').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span><input type="hidden" class="g-value" value="'.$group.'"></td>' : '').
                     '</tr>';
             case 'checkbox':
                 return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
                     '<td class="custom-py-8">'.$label.'</td>'.
                     '<td class="custom-py-8 min-width align-right">'.($group ? '<label><span class="wa-checkbox"><input type="checkbox" checked disabled><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>' : '<input type="hidden" name="app['.$name.']" value="0"><label><span class="wa-checkbox"><input type="checkbox" name="app['.$name.']" value="'.(isset($params['value']) ? $params['value'] : 1).'"'.($own ? ' checked="checked"' : '').'><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>').'</td>'.
-                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type js-access-type-own'.($own ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Access granted for the user individually.').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type js-access-type-group'.($own ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Access inherited from user groups.').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span></td>' : '').
+                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type js-access-type-own'.($own > $group ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Access granted for the user individually').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type js-access-type-group'.($own > $group ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Access inherited from user groups').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span></td>' : '').
                     '</tr>';
             case 'always_enabled':
                 $html = '<td class="custom-py-8">'.$label.'</td>'.

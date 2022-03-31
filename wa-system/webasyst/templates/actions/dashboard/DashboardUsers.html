@@ -1,9 +1,9 @@
 <section class="article wa-dashboard-page users">
     <div class="article-body">
         <h1 class="d-page-header">{if $team}{$team.name|escape}{else}[`Everyone`]{/if}</h1>
-    {if $team && !empty($team.description)}
-        <p>{$team.description|escape}</p>
-    {/if}
+        {if $team && !empty($team.description)}
+            <p class="small">{$team.description|escape}</p>
+        {/if}
 
         <ul class="thumbs li150px d-users-list">
             {foreach $users as $user}

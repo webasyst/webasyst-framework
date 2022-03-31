@@ -372,9 +372,16 @@ class waPlugin
     {
         if ($this->settings === null) {
             $this->settings = self::getSettingsModel()->get($this->getSettingsKey());
+            $settings_config = $this->getSettingsConfig();
             foreach ($this->settings as $key => $value) {
                 #decode non string values
                 if (!is_numeric($value)) {
+                    if (
+                        isset($settings_config[$key]['control_type'])
+                        && in_array($settings_config[$key]['control_type'], [waHtmlControl::INPUT, waHtmlControl::TEXTAREA])
+                    ) {
+                        continue;
+                    }
                     $json = json_decode($value, true);
                     if (is_array($json)) {
                         $this->settings[$key] = $json;
@@ -382,7 +389,6 @@ class waPlugin
                 }
             }
             #merge user settings from database with raw default settings
-            $settings_config = $this->getSettingsConfig();
             if ($settings_config) {
                 foreach ($settings_config as $key => $row) {
                     if (!isset($this->settings[$key])) {

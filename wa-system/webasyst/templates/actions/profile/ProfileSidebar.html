@@ -101,7 +101,7 @@
                     const that = this;
 
                     if (!that.section_url) {
-                        that.$content_wrapper.html('<p><i class="fas fa-times-circle text-red"></i> ${ that.error_msg }</p>');
+                        that.$content_wrapper.html(`<p><i class="fas fa-times-circle text-red"></i> ${ that.error_msg }</p>`);
                         throw new Error(that.error_msg);
                     }
 

@@ -28,23 +28,26 @@
     $.installer_settings = {
         options: {
             url: '?module=settings&action=clearCache',
-            loading: '<i class="fas fa-spinner loading"></i>',
             container: '#installer-cache-state',
+            containerStatus: '.js-container-status',
             messages: {}
         },
         container: null,
+        containerStatus: null,
         init: function (options) {
             var that = this;
 
             options = options || {};
 
             this.container = $(that.options.container);
+            this.containerStatus = $(that.options.containerStatus);
 
             $('input[name="clear_cache"]').on('click', function (eventObject) {
                 return that.clear_cache.apply(that, [that, eventObject]);
             });
 
             that.options.messages = options.messages || {};
+            that.options.loading = options.loading || '<i class="fas fa-spinner fa-spin"></i>';
 
             that.initShowStaticIDLink();
             that.initDisconnectBetaTestProductLink(that.options.messages);
@@ -67,16 +70,18 @@
             var self = $.installer_settings;
             try {
                 if (data.status == 'ok') {
-                    self.container.html(data.data.message).show().css('color', 'green');
+                    self.containerStatus.html(data.data.message).show().addClass('state-success-hint').css('color', 'green');
                 } else {
                     var error = '';
                     for (var error_item in data.errors) {
                         error += (error ? '\n' : '') + data.errors[error_item][0];
                     }
-                    self.container.html('&mdash;&nbsp;' + error).show().css('color', 'red');
+                    self.containerStatus.html('&mdash;&nbsp;' + error).show().addClass('state-error-hint red');
                 }
             } catch (e) {
                 console.log(e)
+            } finally {
+                self.container.empty();
             }
         },
 

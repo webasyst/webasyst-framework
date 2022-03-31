@@ -67,6 +67,17 @@ class waLocaleParseEntityApp extends waLocaleParseEntity
     }
 
     /**
+     * @return array
+     * @throws waException
+     */
+    public function getAdditionalSources()
+    {
+        return [
+            $this->generatePath('themes'),
+        ];
+    }
+
+    /**
      * @return string
      */
     public function getProject()

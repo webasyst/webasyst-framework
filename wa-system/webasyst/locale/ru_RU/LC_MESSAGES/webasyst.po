@@ -2,17 +2,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-02-08 09:58+0300\n"
+"PO-Revision-Date: 2022-03-23 10:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 3.0.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1621,8 +1621,8 @@ msgstr "[закрыть]"
 msgid "Recover password for"
 msgstr "Восстановление пароля для"
 
-msgid "Session has expired. Please reload current page and log in again."
-msgstr "Сессия истекла. Обновите пожалуйста страницу и войдите снова."
+msgid "Session has expired. Please reload this page and log in again."
+msgstr "Сессия истекла. Пожалуйста, обновите страницу и войдите снова."
 
 msgid "Theme %s already exists"
 msgstr "Тема дизайна «%s» уже существует"
@@ -4082,7 +4082,7 @@ msgid "Installed"
 msgstr "Установлены"
 
 msgid "Install new widgets"
-msgstr "Добавить виджеты"
+msgstr "Виджеты в Инсталлере"
 
 msgid "Only you can see this dashboard."
 msgstr "Этот дашборд видите только вы."
@@ -5167,8 +5167,8 @@ msgstr "Измените подпись к полю"
 msgid "Edit hint for this placeholder"
 msgstr "Измените текст подсказки"
 
-msgid "To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway.<br> <a href=\"%s\">Browse for SMS gateway plugins</a> in Installer app."
-msgstr "Для отправки SMS-сообщений установите и настройте подключение к какому-либо из SMS-провайдеров.<br>Плагины для подключения к SMS-провайдерам доступны для установки <a href=\"%s\">в «Инсталлере»</a>."
+msgid "To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway. <a href=\"%s\">Browse for SMS gateway plugins</a> in Installer app."
+msgstr "Для отправки SMS-сообщений установите и настройте подключение к какому-либо из SMS-провайдеров. Плагины для подключения к SMS-провайдерам доступны для установки <a href=\"%s\">в «Инсталлере»</a>."
 
 msgid "Radio selector advanced settings"
 msgstr "Расширенные настройки поля-переключателя"
@@ -6256,8 +6256,8 @@ msgstr "Или <a class=\"link\" href=\"%s\">войдите в бекенд ст
 msgid "Use another Webasyst ID"
 msgstr "Использовать другой Webasyst ID"
 
-msgid "Use only sign-in option with Webasyst ID — <span class=\"s-green\">recommended</span>"
-msgstr "Использовать вход только с Webasyst ID — <span class=\"s-green\">рекомендуется</span>"
+msgid "Use only sign-in option with Webasyst ID — <span class=\"%s\">recommended</span>"
+msgstr "Использовать вход только с Webasyst ID — <span class=\"%s\">рекомендуется</span>"
 
 msgid "When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation in section “<a href=\"%s\">Sign-in with Webasyst ID</a>”. Newly added users will get connected to Webasyst ID right away."
 msgstr "При использовании входа с Webasyst ID по умолчанию простой вход отключается с сохранением всех настроек и возможностью возврата к ним. Пользователи бекенда, которые не подключились к Webasyst ID, смогут подключиться позже самостоятельно, либо вы можете отправить им email-приглашение в разделе «<a href=\"%s\">Вход с Webasyst</a>». Новые пользователи бекенда будут сразу подключаться к Webasyst ID."
@@ -6401,7 +6401,7 @@ msgid "Everyone"
 msgstr "Вся команда"
 
 msgid "Activity"
-msgstr "Сегодня"
+msgstr "Новости"
 
 msgid "Dashboards"
 msgstr "Дашборды"
@@ -6558,3 +6558,18 @@ msgstr "Ошибка во время выполнения метаобновле
 
 msgid "Empty <code>form_id</code> parameter."
 msgstr "Пустой параметр <code>form_id</code>."
+
+msgid "Default UI mode"
+msgstr "Режим интерфейса по умолчанию"
+
+msgid "new"
+msgstr "новый"
+
+msgid "old"
+msgstr "старый"
+
+msgid "logged in with Webasyst ID"
+msgstr "вошел в аккаунт с Webasyst ID"
+
+msgid "Mark as read"
+msgstr "Пометить как прочитанное"
