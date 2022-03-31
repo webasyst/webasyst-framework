@@ -14,6 +14,7 @@ class teamUsersCreateInvitationController extends teamUsersNewUserController
                 $this->response = [
                     'contact_id'      => $contact_id,
                     'invitation_link' => waAppTokensModel::getLink($token_data['token']),
+                    'contact_url'     => wa()->getUrl() . 'id/' . $contact_id . '/',
                 ];
             }
         } else {
@@ -32,9 +33,11 @@ class teamUsersCreateInvitationController extends teamUsersNewUserController
                 return;
             }
 
+            $result['details']['contact_url'] = wa()->getUrl() . 'id/' . $result['details']['contact_id'] . '/';
             $this->response = waUtils::extractValuesByKeys($result['details'], [
                 'contact_id',
                 'invitation_link',
+                'contact_url',
             ]);
         }
     }

@@ -126,10 +126,11 @@ var GroupPage = ( function($) {
     };
 
     GroupPage.prototype.initInfoBlock = function () {
-        var that = this,
-            $info_block = that.$wrapper.find(".t-info-notice-wrapper"),
-            storage = new $.store(),
-            key = "team/empty_group_notice_hide";
+        const that = this;
+        const $info_block = that.$wrapper.find('.t-info-notice-wrapper');
+        const $info_block_close = $info_block.find('.t-info-notice-toggle');
+        const storage = new $.store();
+        const key = 'team/empty_group_notice_hide';
 
         if (storage.get(key)) {
             $info_block.hide();
@@ -137,9 +138,11 @@ var GroupPage = ( function($) {
             $info_block.show();
         }
 
-        $info_block.find(".t-info-notice-toggle").on("click", function () {
+        $info_block_close.on('click', function (event) {
+            event.preventDefault();
+
             storage.set(key, 1);
-            $info_block.hide();
+            $info_block.remove();
         });
     };
 

@@ -27,7 +27,7 @@ class teamUsersInviteController extends teamUsersNewUserController
             throw new waException('Something not found');
         }
 
-        $this->errors[] = $result['details']['error'];
+        $this->errors[] = ifset($result['details']['description'], $result['details']['error']);
     }
 
     protected function onSuccessInviting(array $result)

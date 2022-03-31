@@ -1,10 +1,21 @@
+{$is_system_profile = $is_system_profile|default:false}
 {$_user_id = $wa->user("id")}
 {$_is_admin = $wa->user()->isAdmin($wa->app())}
 {$_is_system_admin = $wa->user()->isAdmin()}
 {$_is_my_profile = ( !empty($user.id) && $user.id == $_user_id )}
-{$_group_id = (preg_match('!^group\/\d+$!i', $context)) ? substr($context, 6) : '' }
-{$_context_type = (!empty($_group_id)) ? 'group' : ((substr($context, 0, 7) === 'search/') ? 'search' : $context)}
-
+{if $is_system_profile}
+    {$_context_type = false}
+    {$invite = false}
+    {$backend_profile = []}
+    {$groups = []}
+    {$user_name_formatted = ''}
+    {$wa_app_static_url = $wa_app_static_url|replace:'webasyst':'team'}
+    {$is_own_profile = $_is_my_profile}
+    {$contacts = []}
+{else}
+    {$_group_id = (preg_match('!^group\/\d+$!i', $context)) ? substr($context, 6) : '' }
+    {$_context_type = (!empty($_group_id)) ? 'group' : ((substr($context, 0, 7) === 'search/') ? 'search' : $context)}
+{/if}
 {$cover_thumbnails = $cover_thumbnails|default:[]}
 
 {$cover_thumbnails_limit = 8}
@@ -205,7 +216,7 @@
                             <button type="button"
                                     class="button light-gray rounded edit-link custom-mr-0 nowrap desktop-and-tablet-only"
                                     title="[`Contacts`]">
-                                <i class="fas fa-pen text-blue"></i> [`Contacts`]
+                                <i class="fas fa-pen text-blue"></i> [`Edit`]
                             </button>
                             {if $_is_my_profile || $_is_system_admin}
                                 <button type="button"
@@ -377,27 +388,17 @@
                                     const $map = $('#map');
                                     const map = new TeamMap($map, '{$geocoding.type}');
 
-                                    map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
+                                    map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap, errorMsg);
 
                                     function renderMap(lat, lng) {
                                         map.render(lat, lng);
                                     }
+
+                                    function errorMsg(error) {
+                                        $map.closest('.t-profile-block_map').remove();
+                                    }
                                 }
                             </script>
-                        </div>
-                    </div>
-                    {/if}
-
-                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && !empty($geocoding.type) && empty($geocoding.key)}
-                    <div class="t-profile-block t-profile-block_map">
-                        <i class="fas fa-map-marker-alt text-light-gray t-profile-block__icon"></i>
-
-                        <div class="t-profile-block__value text-gray">
-                            [`карта недоступна`]
-                        </div>
-
-                        <div class="hint">
-                            {sprintf('[`укажите API-ключ в <a href="%s" class="link">настройках</a>.`]', "`$wa_backend_url`webasyst/settings/")}
                         </div>
                     </div>
                     {/if}
@@ -443,18 +444,20 @@
             <div class="drawer-block t-profile-drawer" style="background-color:var(--background-color)">
                 <div class="drawer-content">
                     {include file="./sidebarWidgets/Access.html" inline}
-                    {include file="./sidebarWidgets/Stats.html" is_drawer=true assign=stats_html}
-                    {$wa->contactProfileSidebar($user.id, [
-                        'is_profile_sidebar' => true,
-                        'is_profile_drawer' => true,
-                        'html' => [
-                            'stats' => $stats_html
-                        ]
-                    ])}
+                    {if !$is_system_profile}
+                        {include file="./sidebarWidgets/Stats.html" is_drawer=true assign=stats_html}
+                        {$wa->contactProfileSidebar($user.id, [
+                            'is_profile_sidebar' => true,
+                            'is_profile_drawer' => true,
+                            'html' => [
+                                'stats' => $stats_html
+                            ]
+                        ])}
 
-                    {$wa->contactProfileTabs($user.id, [
-                        'is_profile_sidebar' => true
-                    ])}
+                        {$wa->contactProfileTabs($user.id, [
+                            'is_profile_sidebar' => true
+                        ])}
+                    {/if}
                 </div>
             </div>
         </div>
@@ -590,11 +593,11 @@
                 }, 1500);
             });
         });
-
-        $.get('{$wa_app_url|json_encode}?module=profile&action=activity&user_id={$user.id|json_encode}', function(response) {
-            $('.t-profile-user-info-activity').append(response)
-        });
-
+        {if !$is_system_profile}
+            $.get('{$wa_app_url|json_encode}?module=profile&action=activity&user_id={$user.id|json_encode}', function(response) {
+                $('.t-profile-user-info-activity').append(response)
+            });
+        {/if}
         const $tooltip_wrapper = document.querySelector('.t-profile');
         $(".wa-tooltip").waTooltip({
             appendTo: $tooltip_wrapper,
