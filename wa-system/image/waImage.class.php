@@ -79,20 +79,16 @@ class waImage
      */
     public function getExt()
     {
-        switch ($this->type)
-        {
-            case IMAGETYPE_JPEG: {
+        switch ($this->type) {
+            case IMAGETYPE_JPEG:
                 return 'jpg';
-                break;
-            }
-            case IMAGETYPE_GIF: {
+            case IMAGETYPE_GIF:
                 return 'gif';
-                break;
-            }
-            case IMAGETYPE_PNG: {
+            case IMAGETYPE_PNG:
                 return 'png';
-                break;
-            }
+        }
+        if (PHP_VERSION_ID >= 70100 && $this->type === IMAGETYPE_WEBP) {
+            return 'webp';
         }
         return null;
     }
