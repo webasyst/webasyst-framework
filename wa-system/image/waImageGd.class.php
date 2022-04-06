@@ -37,10 +37,11 @@ class waImageGd extends waImage
             case IMAGETYPE_PNG:
                 $create_function = 'imagecreatefrompng';
                 break;
-            case IMAGETYPE_WEBP:
-                $create_function = 'imagecreatefromwebp';
         }
-
+        if (!isset($create_function) && PHP_VERSION_ID >= 70100 && $type === IMAGETYPE_WEBP) {
+            $create_function = 'imagecreatefromwebp';
+        }
+        
         if (!isset($create_function) || !function_exists($create_function)) {
             throw new waException(sprintf(_ws('GD does not support %s images'), $type));
         }
@@ -222,7 +223,7 @@ class waImageGd extends waImage
                 $quality = NULL;
                 break;
             case 'webp':
-                if (PHP_VERSION_ID > 70100) {
+                if (PHP_VERSION_ID >= 70100) {
                     $save = 'imagewebp';
                     $type = IMAGETYPE_WEBP;
                     $quality = 90;
