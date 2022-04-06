@@ -146,32 +146,37 @@ class waImageImagick extends waImage
         return $this->im->getImageBlob();
     }
 
-    protected function _save_function($extension, & $quality)
+    protected function _save_function($extension, &$quality)
     {
-        switch (strtolower($extension))
-        {
+        switch (strtolower($extension)) {
             case 'jpg':
+            case 'jfif':
             case 'jpeg':
                 $type = IMAGETYPE_JPEG;
-                if ($this->type == "png" || $this->type == "gif") {
+                if ($this->type === "png" || $this->type === "gif") {
                     $this->im->borderImage(new ImagickPixel("white"), 1, 1);
                 }
                 $this->im->setImageFormat('jpeg');
-            break;
+                break;
             case 'gif':
                 $type = IMAGETYPE_GIF;
                 $this->im->setImageFormat('gif');
-            break;
+                break;
             case 'png':
                 $type = IMAGETYPE_PNG;
                 $this->im->setImageFormat('png');
-            break;
+                break;
+            case 'webp':
+                if (PHP_VERSION_ID >= 70100) {
+                    $type = IMAGETYPE_WEBP;
+                    $this->im->setImageFormat('webp');
+                    break;
+                }
             default:
                 throw new waException(_ws(sprintf('Installed ImageMagick does not support %s images', $extension)));
-            break;
         }
 
-        $quality = $quality - 5;
+        $quality -= 5;
 
         return $type;
     }
@@ -378,4 +383,3 @@ class waImageImagick extends waImage
         return $result;
     }
 }
-
