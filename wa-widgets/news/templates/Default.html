@@ -6,17 +6,17 @@
     .wa-news-widget .snw-entry a { text-decoration: none; }
     .wa-news-widget .entry-datetime { font-size: 12px; font-weight: 500; }
 
-    .wa-news-widget::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(to bottom, var(--dashboard-widget-fade-background-start) 0%, var(--dashboard-widget-fade-background-end) 100%); }
-    .wa-news-widget::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 20px; background: linear-gradient(to top, var(--dashboard-widget-fade-background-start) 0%, var(--dashboard-widget-fade-background-end) 50%); }
+    .wa-news-widget__before { position: absolute; right: 0; bottom: 0; left: 0; z-index: 5; height: 40px; background-image: linear-gradient(to bottom, var(--dashboard-widget-fade-background-start) 0%, var(--dashboard-widget-fade-background-end) 100%); }
+    .wa-news-widget__after { position: absolute; top: 0; right: 0; left: 0; z-index: 5; height: 20px; background-image: linear-gradient(to top, var(--dashboard-widget-fade-background-start) 0%, var(--dashboard-widget-fade-background-end) 50%); }
 
     .wa-empty-feed { margin: 30px 20px; font-weight: normal; }
 
     .widget-2x1 .wa-empty-feed { margin: 45px 55px; }
     .widget-2x2 .wa-empty-feed { margin: 105px 35px; }
 
-    .widget-block .wa-news-widget .wa-link-to-all-news { position: absolute; bottom: 0; left: 0; right: 0; opacity: 1; height: 42px; background: var(--dashboard-widget-background-color); box-shadow: inset 0px 1px 0px rgba(0, 0, 0, 0.1); display: flex; justify-content: center; align-items: center; transition: transform 0.3s ease-in-out; transform: translateY(43px)}
+    .widget-block .wa-news-widget .wa-link-to-all-news { position: absolute; right: 0; bottom: 0; left: 0; z-index: 10; height: 42px; background-color: var(--dashboard-widget-background-color); box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1); display: flex; justify-content: center; align-items: center; transition: transform .3s ease-in-out; transform: translateY(43px); }
 
-    .widget-block:hover .wa-news-widget .wa-link-to-all-news { opacity: 1; transform: translateY(0)}
+    .widget-block:hover .wa-news-widget .wa-link-to-all-news { transform: none; }
 
     .widget-2x1 .wa-news-widget .snw-entry { line-height: 120%; font-size: 13px; font-weight: 500; }
     .widget-2x1 .wa-news-widget .entry-datetime { font-size: 12px; font-weight: 500; }
@@ -48,6 +48,9 @@
                     <a class="button nobutton" href="{$channel.link}" target="_blank" rel="noopener">[`Show all news`] <i class="custom-ml-4 fas fa-external-link-alt"></i></a>
             </div>
             {/if}
+
+            <div class="wa-news-widget__before"></div>
+            <div class="wa-news-widget__after"></div>
         </div>
             <script>
                 (function ($) {
