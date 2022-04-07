@@ -181,7 +181,7 @@ class waAppConfig extends SystemConfig
                 'name' => _ws('disabled access for contact')
             );
             $actions['welcome'] = array(
-                'name' => _ws('Webasyst готов к работе! Используйте предустановленные приложения выше или устанавливайте новые с помощью Инсталлера. Приглашайте сотрудников и друзей для совместной работы в приложении «Команда».')
+                'name' => _ws('Webasyst is ready for work! Use the available apps via the icons at the page top and add more apps via Installer. Invite teammates and friends for collaboration via the Team app.')
             );
             $this->system_log_actions = $actions;
         }

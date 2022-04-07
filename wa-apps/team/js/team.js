@@ -599,12 +599,13 @@ var TeamEditable = ( function($) {
     TeamEditable.prototype.bindEvents = function() {
         const that = this;
 
-        that.$wrapper.on('keypress', $.proxy(that.checkValue, that));
+        that.$wrapper.on('keydown', $.proxy(that.checkPressEnter, that));
         that.$wrapper.on('focus', $.proxy(that.enableEditor, that));
         that.$wrapper.on('blur', $.proxy(that.disableEditor, that));
+        that.$wrapper.on('paste', $.proxy(that.clearHtml, that));
     }
 
-    TeamEditable.prototype.checkValue = function(event) {
+    TeamEditable.prototype.checkPressEnter = function(event) {
         const that = this;
 
         if (event.keyCode !== 13) {
@@ -639,6 +640,19 @@ var TeamEditable = ( function($) {
         }
 
         that.save();
+    }
+
+    TeamEditable.prototype.clearHtml = function(event) {
+        event.preventDefault();
+
+        let text = event.originalEvent.clipboardData.getData('text/plain');
+        text = text.replace(/<[^>]*>?/gm, '');
+
+        if (document.queryCommandSupported('insertText')) {
+            document.execCommand('insertText', false, text);
+        } else {
+            document.execCommand('paste', false, text);
+        }
     }
 
     TeamEditable.prototype.save = function() {
