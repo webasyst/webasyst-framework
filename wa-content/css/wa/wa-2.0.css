@@ -972,7 +972,7 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 
 .content { flex: 1 !important; position: relative; }
 
-.blank { background: var(--background-color-blank); }
+.blank { background-color: var(--background-color-blank); }
 
 @media screen and (min-width: 1441px) { /* wider desktops */
 
