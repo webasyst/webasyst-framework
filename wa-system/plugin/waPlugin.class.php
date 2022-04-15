@@ -524,25 +524,21 @@ class waPlugin
     }
 
     /**
-     * Build full template path with taking into account which UI
-     * @param string $scope
-     * @param string $template_path
+     * Build absolute template path with taking into account which UI.
+     *
+     * @param string $scope scope (root folder without "-legacy" prefix) inside "templates/" of current plugin
+     * @param string $template_path relative template path inside scope
      * @return string
      * @throws waException
      */
     protected function buildFullTemplatePath($scope, $template_path)
     {
-        $app_id = $this->app_id;
-        $plugin_id = $this->id;
-
-        $scope = trim(trim($scope), '/');
-
-        if (wa()->whichUI($app_id) !== '2.0') {
+        $scope = DIRECTORY_SEPARATOR . trim($scope, '\/ ');
+        if (waSystem::getInstance()->whichUI($this->app_id) !== '2.0') {
             $scope .= '-legacy';
         }
+        $template_path = DIRECTORY_SEPARATOR . trim($template_path, '\/ ');
 
-        $templates_dir = wa()->getAppPath('plugins/' . $plugin_id . '/templates/' . $scope, $app_id);
-        return $templates_dir . '/' . $template_path;
+        return $this->path . DIRECTORY_SEPARATOR . 'templates' . $scope . $template_path;
     }
-
 }
