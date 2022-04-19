@@ -626,7 +626,7 @@ input.solid:focus { border-color: var(--accent-color); background-color: var(--b
 .state-with-inner-icon.left > input { padding-left: 2.25em; }
 .state-with-inner-icon.left > .icon { left: 0.75em; }
 
-textarea { display: block; padding: 0.3125em 0.5em; margin: 0; border: 0.125em solid var(--border-color-input); width: 60%; height: 10em; min-height: 2.5em; background: var(--background-color-input); border-radius: 0.25em; line-height: 1.5em; color: var(--text-color-input); -webkit-appearance: none; appearance: none; outline: none; box-sizing: border-box; resize: vertical; -webkit-opacity: 1; transition: 0.1s; }
+textarea { display: block; padding: 0.3125em 0.5em; margin: 0; border: 0.125em solid var(--border-color-input); width: 60%; height: 10em; min-height: 2.5em; background: var(--background-color-input); border-radius: 0.25em; line-height: 1.5em; color: var(--text-color-input); -webkit-appearance: none; appearance: none; outline: none; box-sizing: border-box; resize: auto; -webkit-opacity: 1; transition: 0.1s; }
 textarea.full-width { width: 100%; }
 
 textarea:hover { border-color: var(--border-color-input-hover); }

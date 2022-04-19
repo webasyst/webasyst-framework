@@ -131,7 +131,7 @@
                                 <li data-app="{$app_id}">
                                     <a href="{$_item_url}" rel="external">
                                         {if $app.img}<img {if !empty($app.icon.96)}data-src2="{$wa_url}{$app.icon.96}"{/if} src="{$wa_url}{if !empty($app.icon.96)}{$app.icon.96}{else}{$app.img}{/if}" />{/if}
-                                        <span>{$app.name}</span>
+                                        <span class="nowrap">{$app.name}</span>
                                         {if $_count}
                                             <span class="badge{* wa-1.3-legacy-class *} indicator{* /wa-1.3-legacy-class *}">{$_count}</span>
                                         {/if}
