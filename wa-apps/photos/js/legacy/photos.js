@@ -808,6 +808,13 @@
             }
 
             $('#content').trigger('photos_list_load');
+
+            const $highlighted = $('#photo-list').find('li.highlighted');
+            if ($highlighted.length) {
+                $('.i-product-review-widget-wrappper').show();
+            } else {
+                $('.i-product-review-widget-wrappper').hide();
+            }
         },
 
         loadPhoto: function (id) {
@@ -1906,7 +1913,7 @@
 
         updatePhotoTags: function(tags)
         {
-            var tags_input = $('#photo-tags');
+            var tags_input = $('.js-photos-tags');
             tags_input.data('current_value', tags_input.val());
             if (typeof tags !== 'undefined') {
                 if (typeof tags === 'object' && tags) {
@@ -3361,6 +3368,18 @@
                     });
                 }
             });
+        },
+
+        toggleReviewWidget: function() {
+            if (this.$photoList.length) {
+                const hasHighlighted = this.$photoList.find('li.highlighted').length;
+
+                if (hasHighlighted) {
+                    $('.i-product-review-widget-wrappper').show();
+                } else {
+                    $('.i-product-review-widget-wrappper').hide();
+                }
+            }
         },
 
         hooks_manager: {

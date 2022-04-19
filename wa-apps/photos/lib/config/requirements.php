@@ -18,7 +18,7 @@ return array(
 		'value'=>1,
 	),
 	'app.installer' => array(
-		'version' => '>=2.2.0',
+		'version' => 'latest',
 		'strict' => true
 	),
     'php' => array(

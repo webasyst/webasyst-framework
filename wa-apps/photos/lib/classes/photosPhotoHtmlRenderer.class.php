@@ -39,13 +39,13 @@ class photosPhotoHtmlRenderer
             }
             $li = &$list[$i];
             $class = 'class="';
-            if ($current_photo && $current_photo['id'] == $photo['id']) {
+            if ($photo && $current_photo && $current_photo['id'] == $photo['id']) {
                 $class .= 'selected';
                 $current_index = $i;
             }
             $class .= is_null($photo) ? 'dummy ' : '';
             $class .= '"';
-            $li = "<li $class data-photo-id='".$photo['id']."'>";
+            $li = "<li $class data-photo-id='".ifset($photo, 'id', '')."'>";
 
             // hidden image with class thumb need for rich gradual loading photo effect when go next/prev photo
             if (is_null($photo)) {

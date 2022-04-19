@@ -20,18 +20,19 @@
 {/if}
 <div class="dialog">
     <div class="dialog-background"></div>
-    <form method="post" action="">
     <div class="dialog-body">
-        <header class="dialog-header"><h3>{$title|escape}</h3></header>
-        <div class="dialog-content">
-            {$text|escape}
-        </div>
-        <div class="dialog-buttons dialog-footer">
-            <div class="dialog-buttons-gradient">
-                <input class="button {$button_class}" type="submit" value="{$button_text}">
-                <a class="cancel button light-gray js-close-dialog" href="javascript:void(0);">[`Cancel`]</a>
+        <form method="post" action="">
+            <header class="dialog-header"><h3>{$title}</h3></header>
+
+            <div class="dialog-content">
+                {$text}
             </div>
-        </div>
+
+            <div class="dialog-footer">
+                <button type="submit" class="button {$button_class}">{$button_text}</button>
+
+                <button type="button" class="button light-gray js-close-dialog">[`Cancel`]</button>
+            </div>
+        </form>
     </div>
-    </form>
 </div>

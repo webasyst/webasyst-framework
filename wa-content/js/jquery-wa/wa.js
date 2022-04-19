@@ -221,7 +221,7 @@
             let getPosition = getDefaultPosition;
 
             if (that.position) {
-                css = that.position();
+                css = that.position(that);
                 pad = 0;
             } else {
                 css = getPosition({

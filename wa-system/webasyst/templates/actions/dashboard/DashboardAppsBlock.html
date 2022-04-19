@@ -31,7 +31,7 @@
                 {if isset($_info.img)}
                     <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{if !empty($_info.icon.96)}{$_info.icon.96}{else}{$_info.img}{/if}{$_version}" alt="">
                 {/if}
-                <span>{$_info.name|ifempty}</span>
+                <span class="nowrap">{$_info.name|ifempty}</span>
                 {if $_count}
                     <span class="badge{* wa-1.3-legacy-class *} indicator{* /wa-1.3-legacy-class *}">{$_count}</span>
                 {/if}
