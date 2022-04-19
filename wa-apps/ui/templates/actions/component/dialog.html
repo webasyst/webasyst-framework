@@ -348,8 +348,10 @@
                 <br>
             </li>
             <li><span class="bold">position</span> (function) — функция управления позицией диалога при открытии.
-                <div class="hint"><code>function(dialog_width, dialog_height) { ... }</code>
-                    <br>ваша функция-callback должна вернуть массив вида <code>{ left: 111, top: 222 }</code>.</div>
+                <div class="hint">
+                    <code>function(dialog_instance) { ... }</code><br>
+                    ваша функция-callback должна вернуть объект с полями top и left следующего вида <code>{ top: 222, left: 111 }</code>.
+                </div>
                 <div class="hint">По умолчанию диалог отображается в центре окна браузера, поэтому использование этого метода актуально, только если нужно показать диалог в позиции, отличной от центра окна.</div>
                 <br>
             </li>
