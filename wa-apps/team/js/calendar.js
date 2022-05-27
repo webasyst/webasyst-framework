@@ -316,7 +316,7 @@ var TeamCalendar = ( function($) {
 
     TeamCalendar.prototype.showFullDayEvents = function( $link ) {
         const that = this,
-            events_id = $link.data("events-id").split(","),
+            events_id = $link.data("events-id").toString().split(","),
             date = $link.data("date"),
             data = {
                 date: date,

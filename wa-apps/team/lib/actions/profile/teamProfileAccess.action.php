@@ -72,6 +72,8 @@ class teamProfileAccessAction extends waViewAction
         }
         unset($invite_token);
 
+        $ui = waRequest::get('ui', null, waRequest::TYPE_STRING_TRIM) and waRequest::setParam('force_ui_version', $ui);
+
         $group_model = new waGroupModel();
         $this->view->assign(array(
             'contact'                   => $user,
