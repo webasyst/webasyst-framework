@@ -27,10 +27,10 @@
 </div>
 
 <p style="margin:1.5em 0 0.75em 0" class="hide-when-image-loaded">
-    [`To change drop another photo or upload file (JPG, GIF, or PNG):`]
+    [`To change drop another photo or upload file (JPG, GIF, PNG or WEBP):`]
 </p>
 <p style="margin:1.2em 0 0.4em 0" class="hide-when-image-not-loaded">
-    [`Or upload file (JPG, GIF or PNG):`]
+    [`Or upload file (JPG, GIF, PNG or WEBP):`]
 </p>
 <div>
     <input type="file"/>
@@ -165,7 +165,7 @@
     /* Replace image src to crop when file is selected in <input>
      * or dropped into a dialog from desktop */
     function fileSelected(file) {
-        if (!file.type.match(/^image\/(png|jpe?g|gif)$/)) {
+        if (!file.type.match(/^image\/(png|jpe?g|gif|webp)$/)) {
             alert(must_be_image_msg + ' ' + file.name);
             return false;
         }

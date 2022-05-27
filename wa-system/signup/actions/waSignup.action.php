@@ -884,6 +884,17 @@ class waSignupAction extends waViewAction
             }
         }
 
+        /** проверка ФИО на содержание URL */
+        foreach ($data as $_f => $_val) {
+            if (
+                in_array($_f, ['lastname', 'firstname', 'middlename'])
+                && !empty($_val)
+                && preg_match('~(https?://|www\.)~', $_val)
+            ) {
+                $errors[$_f] = _ws('ФИО не может содержать URL');;
+            }
+        }
+
         // Check formal validity of email
         if ($email_field_presented && !empty($data['email'])) {
             if (!$this->isEmailValid($data['email'])) {

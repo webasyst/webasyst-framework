@@ -64,6 +64,7 @@ class waNet
         'proxy_port'          => null,
         'proxy_user'          => null,
         'proxy_password'      => null,
+        'proxy_type'          => null,
         'proxy_auth'          => 'basic',
         # specify custom interface
         'interface'           => null,
@@ -221,7 +222,7 @@ class waNet
      */
     protected function buildRequest(&$url, &$content, &$method)
     {
-        if ($content && $method == self::METHOD_GET) {
+        if ($content && in_array($method, [self::METHOD_GET, self::METHOD_DELETE])) {
             //
             // Unable to encode FORMAT_XML and FORMAT_JSON for METHOD_GET.
             // Have to deal with it here.
@@ -229,9 +230,11 @@ class waNet
             $format = ifempty($this->options['request_format'], $this->options['format']);
             if (in_array($format, array(self::FORMAT_XML), true)) {
                 // FORMAT_XML, METHOD_GET becomes FORMAT_XML, METHOD_POST
-                $method = self::METHOD_POST;
+                if ($method === self::METHOD_GET) {
+                    $method = self::METHOD_POST;
+                }
             } else {
-                // FORMAT_JSON, METHOD_GET becomes FORMAT_RAW, METHOD_GET
+                // FORMAT_JSON, METHOD_GET or METHOD_DELETE becomes FORMAT_RAW, METHOD_GET (METHOD_DELETE)
                 $get = is_string($content) ? $content : http_build_query($content);
                 $url .= strpos($url, '?') ? '&' : '?'.$get;
                 $content = array();
@@ -257,6 +260,7 @@ class waNet
         switch ($method) {
             case self::METHOD_POST:
             case self::METHOD_PUT:
+            case self::METHOD_DELETE:
                 $content = $this->encodeRequest($content);
                 break;
         }
@@ -514,6 +518,9 @@ class waNet
             $hint[] = 'Enable fsockopen';
         }
 
+        if (!empty($this->options['proxy_host']) && $available[self::TRANSPORT_CURL]) {
+            return self::TRANSPORT_CURL;
+        }
         foreach ($this->options['priority'] as $transport) {
             if (!empty($available[$transport])) {
                 return $transport;
@@ -704,6 +711,7 @@ class waNet
 
                 if (isset($this->options['proxy_host']) && strlen($this->options['proxy_host'])) {
                     $curl_options[CURLOPT_HTTPPROXYTUNNEL] = true;
+                    $curl_options[CURLOPT_PROXYTYPE] = (empty($this->options['proxy_type']) ? CURLPROXY_HTTP : $this->options['proxy_type']);
                     if (isset($this->options['proxy_port']) && $this->options['proxy_port']) {
                         $curl_options[CURLOPT_PROXY] = sprintf("%s:%s", $this->options['proxy_host'], $this->options['proxy_port']);
                     } else {

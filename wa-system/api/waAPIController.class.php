@@ -78,6 +78,8 @@ class waAPIController
             wa()->getFrontController()->execute(null, 'api', 'revoke');
         } elseif ($request_url == 'api.php/token-headless') {
             wa()->getFrontController()->execute(null, 'api', 'tokenHeadless');
+        } elseif ($request_url == 'api.php/profile-update') {
+            wa()->getFrontController()->execute(null, 'api', 'profileUpdate');
         } elseif ($request_url === 'api.php') {
             $this->execute(waRequest::get('app'), waRequest::get('method'));
         } else {

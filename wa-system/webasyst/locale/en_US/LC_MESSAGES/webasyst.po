@@ -330,6 +330,45 @@ msgstr "Theme update requires your confirmation because it may affect changes wh
 msgid "Files marked with <strong>bold</strong> were previously modified by you — select them only if you’d like to completely drop changes you’ve made to these files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically rollback this update. (If you feel non-confident, don’t select modified templates by now. You will be able to update them manually file-by-file later on.)"
 msgstr "Files shown in <strong>bold</strong> were previously modified by you; select them only if you’d like to drop all changes you’ve made to those files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically roll back this update. (If you are not sure about some files, do not select them now; you will be able to update them manually one by one later on.)"
 
+msgid "Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file)."
+msgstr "A theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and a theme.xml manifest file)."
+
+msgid "This design theme is in use on"
+msgstr "This design theme is in use at"
+
+msgid "This design theme is not in use. Apply this theme in your website <span class=\"js-theme-routing-url\">Routing settings</span>."
+msgstr "This design theme is not in use. Apply this theme in your website’s <span class=\"js-theme-routing-url\">Routing settings</span>."
+
+msgid "This will reset all customizations you applied to this design theme. Are you sure?"
+msgstr "This will reset all changes you have applied to this design theme. Are you sure?"
+
+msgid "Change theme"
+msgstr "Change"
+
+msgid "This will permanently delete theme without the ability to recover. Are you sure?"
+msgstr "This will permanently delete the theme without the ability to recover. Are you sure?"
+
+msgid "IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error."
+msgstr "IMPORTANT: Change the Theme ID only if you are sure what you are doing. If this theme is used on any of your websites, you will have to manually update those websites’ settings to use this or another theme after the Theme ID parameter is changed. Otherwise websites may become inaccessible and will return the “Unable to load template file” error."
+
+msgid "IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme."
+msgstr "IMPORTANT: Theme inheritance allows use of HTML templates, CSS files, and images of other design themes. If you are about to change the parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have only one parent theme."
+
+msgid "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme."
+msgstr "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks in your frontend. You can navigate through your website as you usually do. Other users cannot see that you are previewing this design theme."
+
+msgid "Returns authorized user data from associated record in “Contacts” app. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized"
+msgstr "Returns authorized user data from associated record in Contacts app. <code>'field'</code> parameter is optional and indicates the field id whose value must be returned. This function accepts any parameters acceptable for method <code><a href=\"http://www.webasyst.com/developers/docs/basics/classes/waContact#method-get\" target=\"_blank\">get()</a></code> of system class <code>waContact</code>. Returns <code>false</code>, if user is not authorized."
+
+msgid "Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update."
+msgstr "Theme update requires your confirmation because it may affect changes which you previously applied to template files and thus alter your site layout. Click to review the list of files and update."
+
+msgid "User support"
+msgstr "Support"
+
+msgid "Georgia State"
+msgstr "Georgia"
+
 msgid "%s and %d more unmodified files"
 msgstr "%s and %d more non-modified files"
 

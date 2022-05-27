@@ -70,7 +70,7 @@
               $this.css('pointer-events', 'none');
               $this.find('.js-remove-item-icon').addClass('hidden');
               $this.find('.js-remove-item-spinner').removeClass('hidden');
-              $this.siblings('.js-remove-item-form').submit();
+              $this.closest('.js-switch-remove').siblings('.js-remove-item-form').submit();
             }
         });
     });

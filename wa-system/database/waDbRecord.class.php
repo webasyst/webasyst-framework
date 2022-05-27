@@ -119,6 +119,11 @@ class waDbRecord extends waArrayObjectDiff
         // No row in database yet: insert
         if ($do_insert) {
             unset($this->persistent[$this->m->getTableId()]);
+            if (isset($values[$this->m->getTableId()]) && $values[$this->m->getTableId()] === '') {
+                // should not pass empty id in INSERT statement because MySQL will complain
+                // when NO_AUTO_VALUE_ON_ZERO is set in sql mode.
+                unset($values[$this->m->getTableId()]);
+            }
             $this->id = $this->m->insert($values);
             $this[$this->m->getTableId()] = $this->id;
         }

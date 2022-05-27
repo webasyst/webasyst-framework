@@ -127,6 +127,21 @@ class waWebasystIDApi
         return $this->requestApiMethod('profile', $token_params['access_token']);
     }
 
+    public function getProfileUpdated(waContact $contact, $code)
+    {
+        $token_params = $contact->getWebasystTokenParams();
+        $ok = $this->refreshTokenWhenExpired($token_params, $contact->getId());
+        if (!$ok) {
+            return null;
+        }
+
+        $response = $this->requestApiMethod('profile-updated', $token_params['access_token'], [ 'code' => $code ]);
+        if ($response['status'] == 200) {
+            return $response['response'];
+        }
+        return null;
+    }
+
     /**
      * Get auth url for authorization into customer center (aka reverse authorization)
      * @param int $contact_id - what contact authorize into customer center

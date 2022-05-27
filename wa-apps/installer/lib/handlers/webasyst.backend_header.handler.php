@@ -37,6 +37,10 @@ class installerWebasystBackend_headerHandler extends waEventHandler
         $top_header_list = $this->getTopHeaderList($current_app_id);
         $notification_list = $this->getNotificationList($current_app_id);
 
+        // Disable certain plugins if told to
+        $slugs = $this->getSlugsToSwitchOff($top_header_list, $notification_list);
+        $this->switchOffSlugs($slugs);
+
         // top header list by default only for UI 1.3
         // but if there is a force special flag in announcement then it also applicable for UI 2.0
         if ($params['ui_version'] === '2.0') {
@@ -71,7 +75,65 @@ class installerWebasystBackend_headerHandler extends waEventHandler
 
         return $result;
     }
-    
+
+    protected function getSlugsToSwitchOff($top_header_list, $notification_list)
+    {
+        $slugs = [];
+        foreach(array_merge($top_header_list, $notification_list) as $a) {
+            if (!empty($a['switch_off']) && is_array($a['switch_off'])) {
+                $slugs += array_flip($a['switch_off']);
+            }
+        }
+        return array_keys($slugs);
+    }
+
+    protected function switchOffSlugs($slugs)
+    {
+        if (!$slugs) {
+            return;
+        }
+
+        $old_app_id = wa()->getApp();
+        wa('installer', true);
+
+        $something_changed = false;
+        $installer = new waInstallerApps();
+
+        foreach($slugs as $slug) {
+            if (preg_match('~^([^/]+)/plugins/([^/]+)$~', $slug, $matches)) {
+                list($_, $app_id, $plugin_id) = $matches;
+                try {
+                    // Make sure plugin is actually turned on before trying to disable it
+                    if (!wa()->appExists($app_id)) {
+                        continue;
+                    }
+                    $app_plugins = wa($app_id)->getConfig()->getPlugins();
+                    if (!isset($app_plugins[$plugin_id])) {
+                        continue;
+                    }
+
+                    // Disable plugin
+                    $something_changed = true;
+                    $installer->updateAppPluginsConfig($app_id, $plugin_id, false);
+                    (new waLogModel())->add('item_disable', [
+                        'type' => 'plugins',
+                        'id'   => sprintf('%s/%s', $app_id, $plugin_id),
+                        'reason' => 'license',
+                    ], null, 0);
+                } catch (waException $e) {
+                }
+            } else {
+                // Yaarrr!
+            }
+        }
+
+        if ($something_changed) {
+            installerHelper::flushCache();
+        }
+
+        wa($old_app_id, true);
+    }
+
     /**
      * @param $template
      * @param array $assign

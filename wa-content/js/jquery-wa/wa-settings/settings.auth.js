@@ -153,12 +153,12 @@ class WASettingsAuth {
                         dialog.close();
                     });
                     $dialog.find('.button').on('click', function (e) {
-                        e.preventDefault()
+                        e.preventDefault();
                         dialog.close();
                     });
 
                     // not confirm (click cancel) - rollback radio selecting
-                    $dialog.find('.js-close-dialog').click(function () {
+                    $dialog.find('.js-close-dialog').on('click', function () {
                         $auth_type_radio_inputs.not($onetime_password_type).first().click();
                     });
                 }
@@ -448,13 +448,14 @@ class WASettingsAuth {
 
         that.$form.on('submit', function (e) {
             e.preventDefault();
+
             if (that.is_locked) {
                 return;
             }
 
             let errors = validateFields(true);
             if (errors) {
-                return false;
+                return;
             }
 
             that.is_locked = true;

@@ -27,7 +27,7 @@
                     {$_count = $counts[$_id]}
                 {/if}
             {/if}
-            <a href="{$_item_url}">
+            <a href="{$_item_url}" title="{$_info.name|ifempty}">
                 {if isset($_info.img)}
                     <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{if !empty($_info.icon.96)}{$_info.icon.96}{else}{$_info.img}{/if}{$_version}" alt="">
                 {/if}

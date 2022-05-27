@@ -766,7 +766,7 @@ class waPageActions extends waActions
 
     protected function isFileValid($f, &$errors = array())
     {
-        $allowed = array('jpg', 'jpeg', 'png', 'gif');
+        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
         if (!in_array(strtolower($f->extension), $allowed)) {
             $errors[] = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             return false;

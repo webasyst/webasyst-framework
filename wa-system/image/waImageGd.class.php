@@ -37,6 +37,9 @@ class waImageGd extends waImage
             case IMAGETYPE_PNG:
                 $create_function = 'imagecreatefrompng';
                 break;
+            case IMAGETYPE_WEBP:
+                $create_function = 'imagecreatefromwebp';
+                break;
         }
 
         if (!isset($create_function) || !function_exists($create_function)) {
@@ -217,6 +220,11 @@ class waImageGd extends waImage
                 $save = 'imagegif';
                 $type = IMAGETYPE_GIF;
                 $quality = NULL;
+                break;
+            case 'webp':
+                $save = 'imagewebp';
+                $type = IMAGETYPE_WEBP;
+                $quality = 100;
                 break;
             default:
                 throw new waException(sprintf(_ws('GD does not support %s images'), $extension));
