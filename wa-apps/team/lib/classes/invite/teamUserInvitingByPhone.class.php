@@ -1,25 +1,25 @@
 <?php
 
-class teamUserInvitingByEmail extends teamInviting
+class teamUserInvitingByPhone extends teamInviting
 {
-    protected $email;
+    protected $phone;
     protected $options = [];
 
     /**
      * teamUserInviting constructor.
-     * @param string $email
+     * @param string $phone
      * @param array $options
      *      int[]   $options['groups'] - default is empty list
      *      int     $options['tokens_limit'] - max number of tokens that can exist at the same time
      */
-    public function __construct($email, array $options = [])
+    public function __construct($phone, array $options = [])
     {
-        $this->email = $email;
+        $this->phone = $phone;
         parent::__construct($options);
     }
 
     /**
-     * Invite user by sending email invitation
+     * Invite user by sending phone invitation
      * @return array $result
      *      bool $result['status']
      *      array $result['details']
@@ -34,39 +34,19 @@ class teamUserInvitingByEmail extends teamInviting
      */
     public function invite()
     {
+        if (!(new waWebasystIDClientManager())->isConnected()) {
+            return $this->fail('webasyst_id_required');
+        }
+
         $result = $this->createInvitationToken();
         if (!$result['status']) {
             return $result;
         }
 
-        $email = $this->email;
         $token = $result['details']['token'];
-        $contact_info = $result['details']['contact_info'];
-        $app_info = wa()->getAppInfo();
-
-        try {
-            $hours = ceil((strtotime($token['expire_datetime']) - $this->getTime()) / 3600);
-            $locale = $contact_info && !empty($contact_info['locale']) ? $contact_info['locale'] : wa()->getLocale();
-            $this->sendInvitationEmail($email, [
-                '{LOCALE}'       => $locale,
-                '{CONTACT_NAME}' => htmlentities(wa()->getUser()->getName(),ENT_QUOTES,'utf-8'),
-                '{CONTACT_ID}'   => $token['contact_id'],
-                '{COMPANY_SUB}'  => wa()->accountName(),
-                '{COMPANY}'      => htmlentities(wa()->accountName(),ENT_QUOTES,'utf-8'),
-                '{LINK}'         => waAppTokensModel::getLink($token),
-                '{HOURS_LEFT}'   => _w('%d hour', '%d hours', $hours),
-                '{WA_URL}'       => wa()->getRootUrl(true),
-                '{WA_APP_NAME}'  => htmlentities($app_info['name'],ENT_QUOTES,'utf-8'),
-            ]);
-        } catch (waException $e) {
-            return $this->fail('email_send_fail', [
-                'contact_id'  => $token['contact_id'],
-                'description' => $e->getMessage()
-            ]);
-        }
 
         return $this->ok([
-            'contact_id'  => $token['contact_id'],
+            'contact_id'  => $token['contact_id']
         ]);
     }
 
@@ -87,13 +67,12 @@ class teamUserInvitingByEmail extends teamInviting
      */
     protected function createInvitationToken()
     {
-        $email = $this->email;
-        $error = $this->validateEmail($email);
+        $error = $this->validatePhone($this->phone);
         if ($error) {
             return $this->fail($error);
         }
 
-        $contact_info = $this->findUserByEmail($email);
+        $contact_info = $this->findUserByPhone($this->phone);
         $result = $this->validateContact($contact_info);
         if (!$result['status']) {
             return $result;
@@ -104,7 +83,7 @@ class teamUserInvitingByEmail extends teamInviting
         if ($contact_info) {
             $token = $this->createContactToken($contact_info['id'], $data);
         } else {
-            $token = $this->createContactByEmail($email, $data);
+            $token = $this->createContactByPhone($data);
         }
 
         if (!$token) {
@@ -114,33 +93,29 @@ class teamUserInvitingByEmail extends teamInviting
         $this->ensureTokensLimit($token);
 
         return $this->ok([
-            'token'  => $token,
+            'token'        => $token,
             'contact_info' => $contact_info
         ]);
     }
 
-    protected function sendInvitationEmail($email, array $vars = [])
+    /**
+     * @param array $data
+     * @return array|false|null
+     */
+    protected function createContactByPhone(array $data)
     {
-        return teamHelper::sendEmailSimpleTemplate(
-            $email,
-            'welcome_invite',
-            $vars
-        );
-    }
-
-    protected function createContactByEmail($email, array $data)
-    {
-        return teamUser::createContactByEmail($email, $data);
+        return teamUser::createContactByPhone($this->phone, $data);
     }
 
     /**
-     * @param $email
+     * @param $phone
      * @return array[0]array|null Found user or null if not
      * @return array[1]null|string Error
      */
-    protected function findUserByEmail($email)
+    protected function findUserByPhone($phone)
     {
         $cm = new waContactModel();
-        return $cm->getByEmail($email);
+
+        return $cm->getByPhone($phone);
     }
 }

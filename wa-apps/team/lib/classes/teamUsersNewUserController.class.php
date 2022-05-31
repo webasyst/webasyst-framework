@@ -16,6 +16,11 @@ class teamUsersNewUserController extends waJsonController
         return $this->getRequest()->post('email', '', waRequest::TYPE_STRING_TRIM);
     }
 
+    protected function getPhone()
+    {
+        return $this->getRequest()->post('phone', '', waRequest::TYPE_STRING_TRIM);
+    }
+
     protected function validateError($email)
     {
         $v = new waEmailValidator();
