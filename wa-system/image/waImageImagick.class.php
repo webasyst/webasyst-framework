@@ -165,7 +165,11 @@ class waImageImagick extends waImage
             case 'png':
                 $type = IMAGETYPE_PNG;
                 $this->im->setImageFormat('png');
-            break;
+                break;
+            case 'webp':
+                $type = IMAGETYPE_WEBP;
+                $this->im->setImageFormat('webp');
+                break;
             default:
                 throw new waException(_ws(sprintf('Installed ImageMagick does not support %s images', $extension)));
             break;

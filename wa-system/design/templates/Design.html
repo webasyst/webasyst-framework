@@ -13,7 +13,7 @@
 {if $options.js.editor}<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>{/if}
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design.css?{$wa->version()}">
 
-<div class="sidebar flexbox hide-scrollbar bordered-right bordered-left width-21rem{if $wa->isMobile()} height-auto{/if}"{if $wa->isMobile()} style="position: relative; width:100%; min-height: auto; top: 0"{/if}>
+<div class="sidebar flexbox bordered-right bordered-left width-21rem{if $wa->isMobile()} height-auto{/if}"{if $wa->isMobile()} style="position: relative; width:100%; min-height: auto; top: 0"{/if}>
     <div class="sidebar-header box custom-pb-0">
         <div class="blank box rounded dropdown custom-mt-4 flexbox middle js-theme-select-menu wa-theme-select-menu" >
             <img src="{$wa_url}{$app.icon.48}" width="48" class="custom-mr-12">
@@ -123,7 +123,7 @@
             {/if}
         </ul>
     </div>
-    <div class="sidebar-body hide-scrollbar blank">
+    <div class="sidebar-body blank">
         <div class="js-tab-content tab-content flexbox vertical height-100 selected" data-id="theme">
 
             <section class="wa-theme-settings js-theme-settings-section">
@@ -134,7 +134,7 @@
                 <li data-action="settings" class="settings" data-is-nav>
                     <a href="{$design_url}action=settings">
                         <i class="fas fa-cog"></i>
-                        <span>{if $_route_label}{sprintf('[s`Configure %s`]', $_route_label)}{else}[s`Route settings`]{/if}</span>
+                        <span>{if $_route_label}{sprintf('[s`Configure %s`]', "<span class=\"js-route-label\">`$_route_label`</span>")}{else}[s`Route settings`]{/if}</span>
                     </a>
                 </li>
             </ul>
@@ -466,8 +466,14 @@
                     hash = hash + '&domain=' + params['domain'];
                 }
                 $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                localStorage.setItem('wa_photo_current_theme_hash', location.hash);
             } else {
-                location.href = href;
+                const theme_hash = localStorage.getItem('wa_photo_current_theme_hash');
+                if (theme_hash){
+                    location.href = theme_hash;
+                }else{
+                    location.href = href;
+                }
             }
 
             {if !$options.is_ajax}waDesignLoad();{/if}
@@ -586,6 +592,7 @@
 
             if (params['route'] && data_routing) {
                 $settings_design_menu_a.attr('href', $selected_theme_list_a.attr('href') + '&action=settings');
+                $settings_design_menu_a.find('.js-route-label').text($selected_theme_list_a.find('.js-url').text());
                 $settings_design_menu_li.show();
             } else {
                 $settings_design_menu_li.hide();

@@ -3915,22 +3915,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', function() {
-        document.documentElement.classList.add('is-wa2')
-
-        /* hide/show scrollbar */
-        const element_class = 'hide-scrollbar';
-
-        $('.sidebar, .sidebar-body, .content').on('mouseenter', function (event) {
-            $(this).addClass(element_class);
-        });
-
-        $('.sidebar, .sidebar-body, .content').on('mouseleave', function (event) {
-            if (event.target.tagName === "SELECT") {
-                return;
-            }
-
-            $(this).removeClass(element_class);
-        });
+        document.documentElement.classList.add('is-wa2');
     });
 
     const waBrowserDetect = function() {

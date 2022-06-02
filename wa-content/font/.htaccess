@@ -1,0 +1,8 @@
+# There used to be a wa-content/font/fontawesome directory once,
+# which since has moved to wa-content/js/fontawesome.
+# This redirect supports possible legacy code that uses old path.
+<ifModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule fontawesome/(.*)$ ../js/fontawesome/$1 [QSA,L]
+</ifModule>

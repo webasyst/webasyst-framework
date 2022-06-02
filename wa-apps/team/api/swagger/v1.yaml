@@ -110,10 +110,14 @@ paths:
                   type: string
                   format: email
                   description: New user email
-                  required: true
+                  nullable: true
+                phone:
+                  type: string
+                  description: New user phone
+                  nullable: true
                 send:
                   type: boolean
-                  description: Send invitation to email if true. In false case return URL for invitation confirmation.
+                  description: Send invitation to email or phone if true. In false case return URL for invitation confirmation.
       responses:
         200:
           description: Returns result.

@@ -100,33 +100,51 @@
                         [`Resume`]
                     </a>
 
+                    {if empty($item.system)}
                     <a href="{$wa_app_url}assets/"
                        data-type="disable"
                        data-url="?module={$item_type}s&action=disable"
                        data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
                        class="js-switch-item js-switch-disable button light-gray rounded"
-                       style="{if empty($item.enabled) && empty($item.system)} display: none;{/if}"
+                       style="{if empty($item.enabled)} display: none;{/if}"
                     >
                         <span class="icon i-assets-color-blue i-assets-spinner js-installer-assets-spinner"><i class="fas fa-spinner fa-spin"></i></span>
                         <span class="icon i-assets-color-blue js-installer-assets-icon"><i class="far fa-pause-circle"></i></span>
                         [`Pause`]
                     </a>
+                    {/if}
                 {/if}
             {/if}
 
-            <span class="js-switch-remove" style="{if empty($item.system) && (!in_array($item_type,['app','plugin']) || ($item_type =='plugin' && !empty($app.virtual)) || empty($item.enabled))} display: none;{/if}">
+            {if
+                empty($item.system)
+                &&
+                (
+                    !in_array($item_type,['app','plugin'])
+                    ||
+                    ( $item_type =='plugin' && !empty($app.virtual))
+                    ||
+                    !empty($item.enabled)
+                )
+            }
+            <span class="js-switch-remove">
                 <a href="{$wa_app_url}assets/" class="js-remove-item button light-gray circle" title="[`Delete`]">
                     <i class="fas fa-trash-alt text-red js-remove-item-icon"></i>
                     <i class="fas fa-spinner wa-animation-spin speed-1500 hidden js-remove-item-spinner"></i>
                 </a>
             </span>
 
-            {if $item_type=='app'}{$field = 'app_id'}{else}{$field='extras_id'}{/if}
+            {if $item_type=='app'}
+                {$field = 'app_id'}
+            {else}
+                {$field='extras_id'}
+            {/if}
+
             <form action="?module={$item_type}s&action=remove" method="post" class="js-remove-item-form">
                 {$wa->csrf()}
                 <input type="hidden" name="{$field}[{$item.slug}]" value="{$item.installed.vendor|default:'webasyst'|escape}"/>
             </form>
             {/if}
-        </ul>
+        {/if}
     </td>
 </tr>

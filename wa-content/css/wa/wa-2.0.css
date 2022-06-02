@@ -932,12 +932,15 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 
 .sidebar { flex: 0 0 auto; width: 13rem; order: -1; height: calc(100vh - 4rem); z-index: 1; overflow-x: hidden; overflow-y: auto; overflow-y: overlay; position: sticky; top: 4rem; background-color: var(--background-color); box-sizing: border-box; }
 .sidebar > .sidebar-header { flex: 0 0 auto; }
-.sidebar > .sidebar-body { flex: 1; overflow-y: auto; overflow-y: overlay; }
+.sidebar > .sidebar-body { flex: 1; }
 .sidebar > .sidebar-footer { flex: 0 0 auto; }
 .sidebar.flexbox { flex-direction: column; }
 .sidebar.aside,
 .sidebar.right { order: 2; }
 .sidebar.mobile-friendly > .sidebar-mobile-toggle { display: none; }
+
+.sidebar, .sidebar-body { overflow-y: hidden; scrollbar-width: thin; }
+.sidebar:hover, .sidebar-body:hover { overflow-y: auto; overflow-y: overlay; overscroll-behavior-y: contain; }
 
 .sidebar.width-10rem { width: 10rem; }
 .sidebar.width-11rem { width: 11rem; }
@@ -964,7 +967,8 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 .sidebar.rail > .sidebar-body { overflow: hidden; }
 /* see more .sidebar.rail > .menu adjustments in the .menu implementation */
 
-.sidebar.overflow-visible { overflow: visible; }
+.sidebar.overflow-visible,
+.sidebar.overflow-visible:hover { overflow: visible; }
 .sidebar.scrolls-with-content { min-height: calc(100vh - 4rem); height: auto; }
 
 .sidebar > .sidebar-header.shadowed { box-shadow: 0 1rem 2rem -1rem rgba(0,0,0,0.15); }
@@ -1697,12 +1701,6 @@ ul.tabs.overflow-dropdown > .dropdown > .dropdown-toggle { padding-right: 0 }
 .tabs-wrapper.arrows > ul.tabs-arrows-wrapper > li.is-active:hover { transform: scale(1.2) }
 .tabs-wrapper.arrows > ul.tabs-arrows-wrapper > li.is-active:active { transform: scale(1.1) }
 
-@media screen and (max-width: 760px) { /* mobile */
-
-    ul.tabs > li { padding-bottom: 0.25em; }
-
-}
-
 /* Badge
 -------- */
 .badge { border-radius: 1em; background: var(--red); color: var(--white); line-height: 1em; padding: 0.125em 0.4375em; font-weight: 500; font-style: normal; }
@@ -2354,19 +2352,8 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
 @media not all and (min-resolution:.001dpcm){
     @supports (-webkit-appearance:none) {
         .spinner::before {
-            -webkit-mask: none;
-        }
-
-        .spinner::after {
-            position: absolute;
-            top: 3px;
-            right: 3px;
-            bottom: 3px;
-            left: 3px;
-
-            background-color: var(--background-color-blank);
-            border-radius: 50%;
-            content: '';
+            -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 3px),#000 calc(100% - 2px));
+            -webkit-mask-composite: initial;
         }
     }
 }

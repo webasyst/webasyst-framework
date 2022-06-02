@@ -6,12 +6,16 @@ class teamUsersInviteMethod extends waAPIMethod
 
     public function execute()
     {
-        $email = $this->getEmail();
-
-        if ($this->needSend()) {
-            $result = (new teamUserInvitingByEmail($email))->invite();
+        $phone = $this->getPhone();
+        if (!empty($phone)) {
+            $result = (new teamUserInvitingByPhone($phone))->createInvitation();
         } else {
-            $result = (new teamUserInvitingByEmail($email))->createInvitation();
+            $email = $this->getEmail();
+            if ($this->needSend()) {
+                $result = (new teamUserInvitingByEmail($email))->invite();
+            } else {
+                $result = (new teamUserInvitingByEmail($email))->createInvitation();
+            }
         }
 
         if (!$result['status']) {
@@ -33,6 +37,11 @@ class teamUsersInviteMethod extends waAPIMethod
     protected function getEmail()
     {
         return strval($this->post('email', true));
+    }
+
+    protected function getPhone()
+    {
+        return strval($this->post('phone'));
     }
 
     protected function needSend()

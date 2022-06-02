@@ -15,6 +15,8 @@ class teamProfileStatsAction extends waViewAction
 
         $status_stats = self::getStatusStats($start_date, $end_date, $group_by, $contact_id);
 
+        $ui = waRequest::get('ui', null, waRequest::TYPE_STRING_TRIM) and waRequest::setParam('force_ui_version', $ui);
+
         $this->view->assign(array(
             'chart_data' => $chart_data,
             'start_date' => $start_date,

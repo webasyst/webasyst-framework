@@ -1,18 +1,24 @@
 <?php
 
 /**
- * Accepts an Email to send new user invitation to or create user right away
+ * Принимает электронное письмо или номер телефона
+ * для отправки приглашения новому пользователю
+ * или немедленного создания пользователя
  */
 class teamUsersInviteController extends teamUsersNewUserController
 {
     public function execute()
     {
-        $this->invite($this->getEmail(), $this->getGroups());
+        $this->invite($this->getEmail(), $this->getPhone(), $this->getGroups());
     }
 
-    public function invite($email, $groups)
+    public function invite($email, $phone, $groups)
     {
-        $result = (new teamUserInvitingByEmail($email, ['groups' => $groups]))->invite();
+        if (!empty($phone)) {
+            $result = (new teamUserInvitingByPhone($phone, ['groups' => $groups]))->invite();
+        } else {
+            $result = (new teamUserInvitingByEmail($email, ['groups' => $groups]))->invite();
+        }
 
         if (!$result['status']) {
             $this->onFailedInviting($result);

@@ -295,6 +295,14 @@ class waSignupForm
      */
     protected function prepareContactCompositeField(waContactField $field, array $params)
     {
+        $fields = $field->getFields();
+        foreach ($fields as $sub_field_id => $sub_field) {
+            if (!empty($sub_field->getParameter('_disabled'))) {
+                unset($fields[$sub_field_id]);
+            }
+        }
+        $field->setParameter('fields', $fields);
+
         $result = $this->prepareContactNotCompositeField($field, $params);
         $result['is_composite'] = true;
         $result['sub_fields'] = array();

@@ -206,6 +206,24 @@ class teamUser
         return self::createContactToken($c->getId(), $data);
     }
 
+    public static function createContactByPhone($phone, $data = null, $create_method = 'invite')
+    {
+        if (waConfig::get('is_template')) {
+            return false;
+        }
+        $c = new waContact();
+        $c->save([
+            'phone'         => [$phone],
+            'create_method' => $create_method,
+            'locale'        => wa()->getLocale(),
+        ]);
+        if (!$c->getId()) {
+            return false;
+        }
+
+        return self::createContactToken($c->getId(), $data);
+    }
+
     /**
      * @param $contact_id
      * @param null $data
@@ -217,9 +235,7 @@ class teamUser
         if (waConfig::get('is_template')) {
             return null;
         }
-
-        $app_tokens_model = new waAppTokensModel();
-        return $app_tokens_model->add(array(
+        $app_token_data = [
             'app_id'            => 'team',
             'type'              => 'user_invite',
             'contact_id'        => $contact_id,
@@ -227,7 +243,21 @@ class teamUser
             'expire_datetime'   => date('Y-m-d H:i:s', time() + 3600 * 24 * 3),
             'create_datetime'   => date('Y-m-d H:i:s'),
             'data'              => json_encode($data),
-        ));
+        ];
+
+        $app_tokens_model = new waAppTokensModel();
+        $result = $app_tokens_model->add($app_token_data);
+        if ((new waWebasystIDClientManager())->isConnected()) {
+            $app_token_data['type']  = 'waid_invite';
+            $app_token_data['token'] = waAppTokensModel::generateToken();
+            $api = new waWebasystIDApi();
+            $request = $api->createClientInvite($contact_id, $result['token'], $app_token_data['token']);
+            if ($request) {
+                $app_tokens_model->add($app_token_data);
+            }
+        }
+
+        return $result;
     }
 
     /**

@@ -59,6 +59,7 @@ class teamWelcomeSaveController extends waJsonController
                             '{LOCALE}'       => wa()->getLocale(),
                             '{CONTACT_NAME}' => htmlentities(wa()->getUser()->getName(),ENT_QUOTES,'utf-8'),
                             '{CONTACT_ID}'   => $token['contact_id'],
+                            '{COMPANY_SUB}'  => wa()->accountName(),
                             '{COMPANY}'      => htmlentities(wa()->accountName(),ENT_QUOTES,'utf-8'),
                             '{LINK}'         => waAppTokensModel::getLink($token),
                             '{HOURS_LEFT}'   => _w('%d hour', '%d hours', $hours),

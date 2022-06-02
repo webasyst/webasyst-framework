@@ -275,4 +275,42 @@ class teamHelper
     {
         return $contact['is_user'] == -1 && $contact['login'];
     }
+
+    public static function convertToBackendUser($contact_id, array $token_data, $login, $password)
+    {
+        // For security reasons login and is_user
+        // have to be updated directly via model
+        $contact_model = new waContactModel();
+        $contact_model->updateById($contact_id, array(
+            'login' => $login,
+            'is_user' => 1,
+        ));
+
+        // Save password
+        $contact = new waContact($contact_id);
+        $contact['password'] = $password;
+        $contact->save();
+
+        // Save rights
+        if (!empty($token_data['full_access'])) {
+            $contact->setRight('webasyst', 'backend', 2);
+        } else {
+            $contact->setRight('team', 'backend', 1);
+        }
+
+        // Assign to groups
+        if (!empty($token_data['groups'])) {
+            $ugm = new waUserGroupsModel();
+            foreach ($token_data['groups'] as $gid) {
+                try {
+                    $ug = teamGroup::checkUserGroup($gid, $contact_id);
+                    $ug = $ugm->getByField($ug);
+                    if (!$ug) {
+                        $ugm->add($contact_id, $gid);
+                    }
+                } catch (waException $e) {
+                }
+            }
+        }
+    }
 }
