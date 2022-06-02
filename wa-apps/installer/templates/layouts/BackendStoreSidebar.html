@@ -48,7 +48,7 @@
                         {$_is_active = true}
                     {/if}
                     <li{if $_is_active} class="selected"{/if}>
-                        <a href="{$_link|escape}" data-href="{$_store_url|escape}" class="flexbox middle js-installer-route">
+                        <a href="{$_link|escape}" data-href="{$_store_url|escape|substr:1}" class="flexbox middle js-installer-route">
                             {if !empty($_category.icon)}
                             <span class="icon"><i class="{$_category.icon|escape}"></i></span>
                             {/if}

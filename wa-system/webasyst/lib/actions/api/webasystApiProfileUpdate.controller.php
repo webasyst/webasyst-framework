@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Update contact profile data on WAID profile update
+ */
 class webasystApiProfileUpdateController extends waController
 {
 
