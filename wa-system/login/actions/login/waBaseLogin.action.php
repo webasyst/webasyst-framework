@@ -554,7 +554,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      *
      * IMPORTANT: This method MUST return ready and secure (cleaned) data, because
      * this data will be pass straight to $this->getAuthProvider()->auth()
-     * 
+     *
      * @param $data
      * @return array
      */
@@ -835,7 +835,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
             // (This is also the reason to use 200 HTTP response code here: no error handler required at all.)
             //
             header('wa-session-expired: 1');
-            echo _ws('Session has expired. Please reload current page and log in again.').'<script>window.location.reload();</script>';
+            echo _ws('Session has expired. Please reload this page and log in again.').'<script>window.location.reload();</script>';
             exit;
         }
     }

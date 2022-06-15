@@ -127,6 +127,87 @@ class waWebasystIDApi
         return $this->requestApiMethod('profile', $token_params['access_token']);
     }
 
+    public function getProfileUpdated(waContact $contact, $code)
+    {
+        $token_params = $contact->getWebasystTokenParams();
+        $ok = $this->refreshTokenWhenExpired($token_params, $contact->getId());
+        if (!$ok) {
+            return null;
+        }
+
+        $response = $this->requestApiMethod('profile-updated', $token_params['access_token'], [ 'code' => $code ]);
+        if ($response['status'] == 200) {
+            return $response['response'];
+        }
+        return null;
+    }
+
+    /**
+     * Notify WAID server that backend user invitation has been created.
+     * Used by Team app.
+     *
+     * @param $contact_id
+     * @param $user_token
+     * @param $waid_token
+     * @return mixed|null
+     * @throws waDbException
+     * @throws waException
+     * @throws waNetTimeoutException
+     */
+    public function createClientInvite($contact_id, $user_token, $waid_token)
+    {
+        $user = wa()->getUser();
+        $token_params = $user->getWebasystTokenParams();
+        if (!$token_params || !$this->refreshTokenWhenExpired($token_params, $user->getId())) {
+            return false;
+        }
+        $contact = $this->getExistingContact($contact_id);
+        $data = [
+            'email'      => $contact->get('email', 'default'),
+            'phone'      => $contact->get('phone', 'default'),
+            'user_token' => $user_token,
+            'waid_token' => $waid_token
+        ];
+        $response = $this->requestApiMethod(
+            'client-invite',
+            $token_params['access_token'],
+            $data,
+            waNet::METHOD_POST
+        );
+        if ($response['status'] == 201) {
+            return true;
+        }
+
+        return null;
+    }
+
+    /**
+     * Notify WAID server that backend user invitation has been accepted locally.
+     * Returns related contact ID from WAID server or null
+     * Used by Team app.
+     */
+    public function clientInviteAccept($waid_token)
+    {
+        $cm = new waWebasystIDClientManager();
+        if (!$cm->isConnected()) {
+            return null;
+        }
+        $auth_token = $cm->getSystemAccessToken();
+        $response = $this->requestApiMethod('client-invite/accept', $auth_token, [
+            'token' => $waid_token,
+        ], 'POST');
+        if (ifset($response, 'status', null) != 201) {
+            $this->logError([
+                'Abnormal response from API call client-invite/accept',
+                'method' => __METHOD__,
+                'token' => $waid_token,
+                'response' => $response,
+            ]);
+            return null;
+        }
+        return ifset($response['response']['webasyst_contact_id'], null);
+    }
+
     /**
      * Get auth url for authorization into customer center (aka reverse authorization)
      * @param int $contact_id - what contact authorize into customer center
@@ -412,7 +493,26 @@ class waWebasystIDApi
     protected function requestApiMethod($api_method, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
     {
         $url = $this->provider->getApiUrl($api_method);
+        return $this->requestApiUrl($url, $access_token, $params, $http_method, $net_options);
+    }
 
+    /**
+     * @param string $api_method
+     * @param string $access_token
+     * @param array $params
+     * @param string $http_method - waNet::METHOD_
+     * @param array $net_options
+     * @return array $result
+     *      int|null    $result['status']   - http status or if failed before net query NULL
+     *      array       $result['response'] - response data
+     *                      IF $result['status'] == 200:
+     *                          array $result['response'] - as it has been returned by server
+     *                      ELSE:
+     *                          string $result['response']['error'] - error from server
+     * @throws waNetTimeoutException|waException
+     */
+    protected function requestApiUrl($url, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
+    {
         $default_net_options = [
             'timeout' => 20,
             'format' => waNet::FORMAT_JSON,
@@ -509,10 +609,8 @@ class waWebasystIDApi
         }
 
         return [
-            'status' => null,
-            'response' => [
-                'error' => ''
-            ]
+            'status' => $status,
+            'response' => $response
         ];
     }
 

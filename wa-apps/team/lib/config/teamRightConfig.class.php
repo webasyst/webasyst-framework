@@ -101,6 +101,7 @@ class teamRightConfig extends waRightConfig
         $html = parent::getUI20HTML($rights, $inherited);
 
         $js = '<script>(function ($) {';
+        $js .= '$(".c-access-app-limited").find(".alert").hide();';
         $js .= '$access_app = $(".c-access-app select");';
         $js .= '$access_app.find("option[value=0]").filter(":not([disabled])").prev().removeAttr("disabled");';
 

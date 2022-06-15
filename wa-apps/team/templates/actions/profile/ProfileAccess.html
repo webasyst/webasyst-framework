@@ -251,28 +251,32 @@
         {if $invite_tokens}
         {* Invite tokens *}
         <div class="field">
-            {foreach $invite_tokens as $_token}
-                <div class="value submit">
-                    <p class="custom-m-0">
-                        <strong>[`Invitation sent`]</strong>
-                        <span class="hint">[`Expires in`] {$_token.expires_in}</span>
-                    </p>
-                    {if $_token.data}
-                        {$a = json_decode($_token.data, true)}
-                        {if !empty($_token.groups)}
-                            <p class="custom-m-0">
-                            {foreach $_token.groups as $g_id}
-                                {if isset($all_groups[$g_id])}
-                                    <span{if !$g_id@last} class="custom-mr-4"{/if}>
-                                        {$all_groups[$g_id]|escape}{if !$g_id@last},{/if}
-                                    </span>
-                                {/if}
-                            {/foreach}
-                            </p>
+            <div class="value submit">
+                <ul>
+                {foreach $invite_tokens as $_token}
+                    <li>
+                        <p class="custom-m-0">
+                            <strong>[`Invitation sent`]</strong>
+                            <span class="hint">[`Expires in`] {$_token.expires_in}</span>
+                        </p>
+                        {if $_token.data}
+                            {$a = json_decode($_token.data, true)}
+                            {if !empty($_token.groups)}
+                                <p class="custom-m-0">
+                                {foreach $_token.groups as $g_id}
+                                    {if isset($all_groups[$g_id])}
+                                        <span{if !$g_id@last} class="custom-mr-4"{/if}>
+                                            {$all_groups[$g_id]|escape}{if !$g_id@last},{/if}
+                                        </span>
+                                    {/if}
+                                {/foreach}
+                                </p>
+                            {/if}
                         {/if}
-                    {/if}
-                </div>
-            {/foreach}
+                    </li>
+                {/foreach}
+                </ul>
+            </div>
         </div>
         {/if}
     </div>
@@ -639,6 +643,8 @@
                     "Login is required.": "[`Login is required.`]",
                     "cancel": "[`cancel`]",
                     "Cancel": "[`Cancel`]",
+                    "blockUser": "[`Block`]",
+                    "unblockUser": "[`Unblock`]",
                     "Save": "[`Save`]",
                     "remove_ask": "[`The user will not be able to send API requests using this token.`]"
                 }

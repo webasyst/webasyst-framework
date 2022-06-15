@@ -164,8 +164,8 @@ var InstallerProductReviewWidget = ( function($) {
         that.setUIView(is_modal);
 
         if (is_modal) {
-            $.waDialog({
-                $wrapper: $product_widget_block,
+            $.waDialogWidget({
+                html: $product_widget_block,
                 lock_body_scroll: false,
                 onOpen: dataInsert,
                 onClose: function () {
@@ -277,19 +277,10 @@ var InstallerProductReviewWidget = ( function($) {
         }
 
         function initReviewDialog(rate, widget) {
-            let dialog;
-
-            if (that.ui === '1.3') {
-                dialog = $.waDialog({
-                    wrapper: $(that.templates["review_dialog"]),
-                    onOpen: initRateDialogContent
-                });
-            } else {
-                dialog = $.waDialog({
-                    html: that.templates["review_dialog"],
-                    onOpen: initRateDialogContent
-                });
-            }
+            $.waDialogWidget({
+                wrapper: $(that.templates["review_dialog"]),
+                onOpen: initRateDialogContent
+            });
 
             function initRateDialogContent($wrapper, dialog) {
                 // DOM

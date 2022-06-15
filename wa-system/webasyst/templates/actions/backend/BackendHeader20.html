@@ -125,10 +125,10 @@
                 <!-- <a href="#" class="button nobutton gray"><i class="fas fa-sliders-h"></i> Customize</a> -->
                 <div class="dashboard-customize">
                     <a href="javascript:void(0);"
-                       class="button nobutton nowrap gray js-dashboard-edit"
+                       class="button nobutton rounded nowrap gray js-dashboard-edit"
                        data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
                        id="show-dashboard-editable-mode_">
-                        <i class="fas fa-sliders-h"></i> <span>[s`Edit widgets`]</span>
+                        <i class="fas fa-plus-circle"></i> <span>[s`Widgets`]</span>
                     </a>
                     <a href="javascript:void(0);"
                        class="button js-dashboard-edit-close"
@@ -142,6 +142,13 @@
                 <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
                 {include file="../dashboard/DashboardAnnouncement.html" notifications=$notifications inline}
             </div>
+
+            {if isset($app_info['ui']) && $app_info['ui'] === '2.0'}
+                <button class="icon large js-mode-toggle" title="[`Light/dark mode`]" data-wa-mode-toggle>
+                    <i class="fas fa-adjust"></i>
+                </button>
+
+            {/if}
 
             {** wa2ui showcase box in case the wa1 legacy ui is supported by the app **}
             {if !$wa->debug() && ifset($app_info, 'ui', '1.3') === '1.3,2.0'

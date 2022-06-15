@@ -79,31 +79,32 @@ $border_c = #f0f0f0
         top: 4rem;
         z-index 2
         .t-apps-list-wrapper
-            width: max-content
-            display: block
+            display table
             transition-property: transform
-            box-sizing: content-box
-            z-index: 1
-            position: relative
+            box-sizing content-box
+            z-index 1
+            position relative
             .t-app-item
-                display inline-flex
-                flex-direction column
-                justify-content: center;
-                align-items center
-                width $column_w
+                display table-cell
+                vertical-align middle
+                min-width $column_w
                 height 100%
-                box-sizing: border-box;
+                box-sizing border-box
+                .t-app-item-wrapper
+                    display flex
+                    flex-direction column
+                    justify-content center
+                    align-items center
+                    .t-app-image
+                        max-width 48px
+                        height auto
 
-                .t-app-image
-                    max-width 48px
-                    height auto
-
-                .t-app-name
-                    display inline-block
-                    white-space nowrap
-                    overflow hidden
-                    text-overflow ellipsis
-                    max-width $column_w
+                    .t-app-name
+                        display inline-block
+                        white-space nowrap
+                        overflow hidden
+                        text-overflow ellipsis
+                        max-width $column_w
         .t-apps-list-nav
             position absolute
             top 0

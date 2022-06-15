@@ -48,6 +48,7 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
         $config_types = array(
             'debug' => 'boolean',
             'image_adapter' => 'string',
+            'ui' => 'string',
         );
         $flush_settings = array('debug');
 

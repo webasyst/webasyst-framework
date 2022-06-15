@@ -16,6 +16,11 @@ class teamUsersNewUserController extends waJsonController
         return $this->getRequest()->post('email', '', waRequest::TYPE_STRING_TRIM);
     }
 
+    protected function getPhone()
+    {
+        return $this->getRequest()->post('phone', '', waRequest::TYPE_STRING_TRIM);
+    }
+
     protected function validateError($email)
     {
         $v = new waEmailValidator();
@@ -24,7 +29,7 @@ class teamUsersNewUserController extends waJsonController
             $error = _w('This is a required field.');
         } else {
             if (!$v->isValid($email)) {
-                $error = _w('This does not look like a valid email');
+                $error = _w('This does not look like a valid email address.');
             }
         }
         return $error;

@@ -18,36 +18,37 @@
         {/if}
         <div id="wa-app" class="flexbox">
             {$is_fixed_header = $wa->cookie('wa_header_fixed', 0)}
-            <div class="sidebar hide-scrollbar overflow-visible flexbox {if !$is_fixed_header} height-full{else} header-fixed{/if} js-main-sidebar">
+            <div class="sidebar overflow-visible flexbox {if !$is_fixed_header} height-full{else} header-fixed{/if} js-main-sidebar">
                 <div class="sidebar-header box flexbox middle"{if $is_fixed_header} style="display: none;"{/if}>
                     {include file="../actions/backend/BackendHeaderAccount.inc.html" logo=$logo position="sidebar" inline}
                 </div>
-                <div class="sidebar-body hide-scrollbar">
+                <div class="sidebar-body">
                     <ul class="menu js-dashboards-list">
                         <li{if $selected_sidebar_item === 'my'} class="selected"{/if} data-header-title="[`My apps`]">
                             <a href="{$backend_url}" data-dashboard="0">
-                                <i class="fas fa-home"></i>
-                                <span>[`My apps`]</span>
+                                <i class="fas fa-th"></i>
+                                <span>[`My dashboard`]</span>
                             </a>
                         </li>
                         {foreach $public_dashboards as $d}
                         <li{if $selected_sidebar_item === "dashboard/`$d.id`"} class="selected"{/if} data-header-title="[`Everyone`]">
                             <a href="{$dashboard_module_url}dashboard/{$d.id}/" data-dashboard="{$d.id}">
                                 {if $selected_sidebar_item === "dashboard/`$d.id`"}
-                                    <span class="count action small js-dashboard-delete"><i class="fas fa-times-circle"></i></span>
+                                    <span class="count action small js-dashboard-delete"><i class="fas fa-trash-alt"></i></span>
                                 {/if}
-                                <i class="fas fa-table"></i>
+                                <i class="fas fa-tv"></i>
                                 <span>{$d.name|escape}</span>
                             </a>
                         </li>
                         {/foreach}
-
+                        {if !empty($is_admin)}
                         <li class="small">
                             <a class="count action js-new-dashboard" href="javascript:void(0);" data-dashboard="new_dashboard" title="[`New dashboard`]">
                                 <i class="fas fa-plus-circle"></i>
                                 <span>[`New dashboard`]</span>
                             </a>
                         </li>
+                        {/if}
 
                         {*
                             TEASING THE NEW INSTALLER'S SECTION FOR APPS
@@ -59,36 +60,38 @@
                             </li>
                         *}
                     </ul>
-
-                    <header class="heading">
-                        [`Teams`]
-                    </header>
-                    <ul class="menu">
-                        {foreach $teams as $team}
-                            <li{if $selected_sidebar_item === "team/`$team.id`"} class="selected"{/if} data-header-title="{$team.name|escape}">
-                                <a href="{$dashboard_module_url}team/{$team.id}/">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>{$team.name|escape}</span>
-                                    {* if $team.cnt > 0}
-                                        <span class="count">{$team.cnt}</span>
-                                    {/if *}
-                                </a>
-                            </li>
-                        {/foreach}
-                        <li{if $selected_sidebar_item === "users"} class="selected"{/if} data-header-title="[`Everyone`]">
-                            <a href="{$dashboard_module_url}users/">
-                                <i class="fas fa-users"></i>
-                                <span>[`Everyone`]</span>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="box align-center custom-pt-0">
-                        <p class="hint">[`Use the Team app to set up your team and customize access rights.`]</p>
-                    </div>
-
+                    {if !empty($has_team_app_access) && $teams}
+                        <header class="heading">
+                            [`Teams`]
+                        </header>
+                        <ul class="menu">
+                            {foreach $teams as $team}
+                                <li{if $selected_sidebar_item === "team/`$team.id`"} class="selected"{/if} data-header-title="{$team.name|escape}">
+                                    <a href="{$dashboard_module_url}team/{$team.id}/">
+                                        <i class="{$team.icon|escape}"></i>
+                                        <span>{$team.name|escape}</span>
+                                        {* if $team.cnt > 0}
+                                            <span class="count">{$team.cnt}</span>
+                                        {/if *}
+                                    </a>
+                                </li>
+                            {/foreach}
+                            {if count($teams) >= 2}
+                                <li{if $selected_sidebar_item === "users"} class="selected"{/if} data-header-title="[`Everyone`]">
+                                    <a href="{$dashboard_module_url}users/">
+                                        <i class="fas fa-users"></i>
+                                        <span>[`Everyone`]</span>
+                                    </a>
+                                </li>
+                            {/if}
+                        </ul>
+                        <div class="box align-center custom-pt-0">
+                            <p class="hint">[`Use the Team app to set up your team and customize access rights.`]</p>
+                        </div>
+                    {/if}
                 </div>
             </div>
-            <div class="content hide-scrollbar blank box js-main-content{if $is_fixed_header} header-apps header-fixed{/if}">
+            <div class="content blank box dashboard js-main-content{if $is_fixed_header} header-apps header-fixed{/if}">
                 {if $wa_app == 'webasyst'}
                     {$wa->header()}
                 {/if}
@@ -127,7 +130,7 @@
                     </div>
                 </div>
             </div>
-            <div class="widgets-list-wrapper hide-scrollbar" data-backend-url="{$wa_backend_url|escape}">
+            <div class="widgets-list-wrapper" data-backend-url="{$wa_backend_url|escape}">
             {function skeleton}
                 <div class="skeleton list-group-wrapper">
                     <div class="list-wrapper">

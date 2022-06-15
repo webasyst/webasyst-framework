@@ -43,12 +43,12 @@ class webasystSettingsEmailSaveController extends webasystSettingsJsonController
         $model->set('webasyst', 'sender', $sender);
 
         $data = waRequest::post('data',null,waRequest::TYPE_ARRAY_TRIM);
-        $data = $this->prepareDate($data);
+        $data = $this->prepareData($data);
         $wa_mail = new waMail();
         $wa_mail->saveConfigFile($data);
     }
 
-    protected function prepareDate(array $data)
+    protected function prepareData(array $data)
     {
         $configs = array();
         foreach ($data as $key => $config) {
@@ -82,7 +82,7 @@ class webasystSettingsEmailSaveController extends webasystSettingsJsonController
 
     protected function isValidDomain($domain)
     {
-        if (!preg_match('~^(?:[^-.][-а-яА-ЯЁёA-Za-z0-9]{0,61}[^-.]\.)+([а-яА-ЯЁёA-Za-z]{2,6})$|^([а-яА-ЯЁёA-Za-z]+)$~u', $domain)) {
+        if (!preg_match('~^(?:[^-.][-а-яА-ЯЁёA-Za-z0-9]{0,61}[^-.]\.)+([а-яА-ЯЁёA-Za-z]{2,6})$|^([а-яА-ЯЁёA-Za-z]+)$|^(xn--[a-z0-9-]+)(\.xn--[a-z0-9-]+)*(\.xn--[a-z0-9]{4,19})$~u', $domain)) {
             return false;
         }
         return true;

@@ -383,7 +383,7 @@ HTML;
 
     public function accountName($escape = true)
     {
-        $name = wa()->getSetting('name', 'Webasyst', 'webasyst');
+        $name = wa()->accountName();
         return $escape ? htmlspecialchars($name) : $name;
     }
 
@@ -760,7 +760,7 @@ HTML;
         $email = $this->post('email');
         $email_validator = new waEmailValidator();
         if (!$email) {
-            $errors['email'] = _ws('Email is required');
+            $errors['email'] = _ws('Enter an email address');
         } elseif (!$email_validator->isValid($email)) {
             $errors['email'] = implode(', ', $email_validator->getErrors());
         }
@@ -1358,6 +1358,14 @@ HTML;
             $tabs = $this->getContactTabs((int)$id);
         }
 
+        // Add UI-version to URL params
+        foreach ($tabs as $key => &$tab) {
+            if (!empty(ifset($tab['url']))) {
+                $query = parse_url($tab['url'], PHP_URL_QUERY);
+                $tab['url'] .= (!empty($query) ? '&' : '?') . 'ui=' . $this->whichUI();
+            }
+        }
+
         $selected_tab = ifset($options['selected_tab']);
         if (!$selected_tab) {
             $selected_tab = key($tabs);
@@ -1394,6 +1402,11 @@ HTML;
         $sections = ifset($options['sections']);
         if (!is_array($sections)) {
             $sections = $this->getContactTabs((int)$id);
+        }
+
+        if (isset($sections['access'])) {
+            $wa_app_url = wa()->getAppUrl('team', true);
+            $sections['access']['url'] = "$wa_app_url?module=profile&action=access&id=$id";
         }
 
         $selected_section = ifset($options['selected_section']);

@@ -1124,6 +1124,20 @@ XML;
                 $instance->{$param} = $value;
             }
 
+            // rename localization files
+            $files = waFiles::listdir($instance->getLocalePath(), true);
+            foreach ($files as $file_path) {
+                $parent_id = preg_quote($this->id);
+                $new_id = '${1}' . preg_quote($instance->id) . '${3}';
+                $new_name = preg_replace("/(\/LC_MESSAGES\/.*)({$parent_id})(.*(\.po|\.mo))$/", $new_id, $file_path, 1, $count);
+                if ($count === 1) {
+                    $theme_path = $instance->getPath() . '/locale/';
+                    if (file_exists($theme_path . $file_path)) {
+                        rename($theme_path . $file_path, $theme_path . $new_name);
+                    }
+                }
+            }
+
             $instance['system'] = false;
             $instance->save();
             return $instance;
@@ -2596,10 +2610,17 @@ HTACCESS;
                 self::protect($app_id);
                 $target_path = wa()->getDataPath("themes/{$id}", true, $app_id, false);
                 waFiles::delete($target_path);
-                if ($extract_path && !$tar_object->extractModify($target_path, $extract_path)) {
-                    self::throwArchiveException('INTERNAL_ARCHIVE_ERROR');
-                } elseif (!$tar_object->extract($target_path)) {
-                    self::throwArchiveException('INTERNAL_ARCHIVE_ERROR');
+                $extract_result = null;
+                if ($extract_path) {
+                    $extract_result = $tar_object->extractModify($target_path, $extract_path);
+                    if (!$extract_result) {
+                        self::throwArchiveException('INTERNAL_ARCHIVE_ERROR');
+                    }
+                }
+                if (!$extract_result) {
+                    if (!$tar_object->extract($target_path)) {
+                        self::throwArchiveException('INTERNAL_ARCHIVE_ERROR');
+                    }
                 }
 
                 $instance = new self($id, $app_id);

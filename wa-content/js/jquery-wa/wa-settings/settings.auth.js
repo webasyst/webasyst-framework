@@ -42,6 +42,8 @@ class WASettingsAuth {
         that.$wrapper.find('.wa-captcha-input').prop('disabled', true);
 
         //
+        that.initForceAuthToggle();
+        //
         that.initSelectAuthType();
         //
         that.initAuthMethods();
@@ -57,6 +59,41 @@ class WASettingsAuth {
         that.initLoginFormControl();
         //
         that.initSubmit();
+    }
+
+    initForceAuthToggle() {
+        const $toggleWrapper = this.$wrapper.find('.js-force-auth-wrapper');
+        const $toggle = this.$wrapper.find('.js-force-auth-toggler');
+        const $status = this.$wrapper.find('.js-force-save-status');
+        const $fields = this.$wrapper.find('.js-force-save-fields');
+        const url = this.wa_backend_url + "?module=settingsWaID&action=save";
+
+        checkForceWaid();
+
+        $toggle.on('change', () => {
+            checkForceWaid();
+
+            $.post(url, $toggle.serialize())
+                .done(function () {
+                    $status.show();
+
+                    setTimeout(function () {
+                        $status.hide();
+                    }, 2000);
+                });
+        });
+
+        if ($toggle.attr('disabled')) {
+            $toggleWrapper.attr('title', this.locale.disabled_toggle_reason || '');
+        }
+
+        function checkForceWaid() {
+            if ($toggle.is(':checked')) {
+                $fields.addClass('-unactive');
+            } else {
+                $fields.removeClass('-unactive');
+            }
+        }
     }
 
     initSelectAuthType() {
@@ -116,12 +153,12 @@ class WASettingsAuth {
                         dialog.close();
                     });
                     $dialog.find('.button').on('click', function (e) {
-                        e.preventDefault()
+                        e.preventDefault();
                         dialog.close();
                     });
 
                     // not confirm (click cancel) - rollback radio selecting
-                    $dialog.find('.js-close-dialog').click(function () {
+                    $dialog.find('.js-close-dialog').on('click', function () {
                         $auth_type_radio_inputs.not($onetime_password_type).first().click();
                     });
                 }
@@ -411,13 +448,14 @@ class WASettingsAuth {
 
         that.$form.on('submit', function (e) {
             e.preventDefault();
+
             if (that.is_locked) {
                 return;
             }
 
             let errors = validateFields(true);
             if (errors) {
-                return false;
+                return;
             }
 
             that.is_locked = true;

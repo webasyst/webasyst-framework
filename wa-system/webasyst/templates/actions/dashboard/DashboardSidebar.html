@@ -36,8 +36,8 @@
         <p class="widgets-list-header hint align-center">
             [`Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]
         </p>
-        <p class="align-center custom-mt-0">
-            {if $wa->user()->getRights('installer', 'backend')} <a class="bold small" href="./installer/store/?filters%5Btype%5D=widget">[`Install new widgets`]</a>{/if}
+        <p class="align-center custom-mt-0 custom-mb-32">
+            {if $wa->user()->getRights('installer', 'backend')} <a class="button webasyst-magic-wand" href="./installer/store/?filters%5Btype%5D=widget"><i class="icon"></i> [`Install new widgets`]</a>{/if}
         </p>
         <section class="d-widgets-list-block">
             {foreach $widgets as $app_id => $app_widgets}
@@ -66,7 +66,7 @@
                                 <div class="text-block">
                                     {$widget.name}
                                 </div>
-                                <a class="add-widget-link" href="javascript:void(0);" title="[s`Add widget`]"><i class="fas fa-times"></i></a>
+                                <a class="add-widget-link" href="javascript:void(0);" title="[s`Add widget`]"><i class="fas fa-plus"></i></a>
                             </div>
                         {/foreach}
                     </div>
@@ -91,52 +91,4 @@
         {skeleton}
     </div>
     *}
-    <script>
-        $(function () {
-            let $widgets_list = $('.d-widgets-list-block'),
-                widget_groups_count = 1,
-                $list_wrapper = $widgets_list.find('.list-wrapper');
-
-            const group = new Group();
-            group.is_widget_list_page = true;
-
-            $list_wrapper.each(function () {
-                let element = this;
-
-                let options = {
-                    sort: false,
-                    handle: '.image-block',
-                    group: {
-                        name: 'root',
-                        put: false,
-                        pull: 'clone',
-                        revertClone: true
-                    },
-                    animation: 150,
-                    fallbackOnBody: true,
-                    forceFallback: true,
-                    swapThreshold: 0.65,
-                    onChoose: function (event) {
-                        Sortable.get(event.from).options.sort = false;
-                    },
-                    onStart(event) {
-                        widget_groups_count = $('#d-widgets-block').find('.widget-group-wrapper').length;
-                        group.onWidgetListDragStart(event, $(event.item).find('.image-block'));
-                    },
-                    onEnd(event) {
-                        /* if dashboard is empty - add widget at one of possible place */
-                        if (widget_groups_count === 1) {
-                            group.onWidgetListClick(event.originalEvent, $(event.item).find('.image-block'));
-                        }else{
-                            group.onEmptyGroupDrop(event, $(event.item).find('.image-block'));
-                        }
-
-                        $(event.item).remove();
-                    }
-                };
-
-                $(element).sortable(options);
-            })
-        });
-    </script>
 {/strip}

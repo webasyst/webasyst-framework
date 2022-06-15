@@ -26,6 +26,31 @@
 
     {if $is_connected}
         <div class="fields">
+            <div class="fields-group">
+                <div class="js-force-auth-wrapper">
+                    <input type="hidden" name="is_force_auth" value="0">
+
+                    <label>
+                        <span class="wa-checkbox">
+                            <input type="checkbox" name="is_backend_auth_forced" class="js-force-auth-toggler" value="1"{if $is_backend_auth_forced} checked="checked"{/if}{if !$is_user_bound_to_webasyst_id} disabled="disabled"{/if}>
+                            <span>
+                                <span class="icon">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </span>
+                        </span>
+
+                        <strong>
+                            {sprintf(_ws('Use only sign-in option with Webasyst ID — <span class="%s">recommended</span>'), 'text-green')}
+                        </strong>
+
+                        <span class="js-force-save-status" style="display: none;"><i class="fas fa-check-circle"></i> [s`Saved`]</span>
+                    </label>
+                </div>
+
+                <div class="hint">[s`When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation. Newly added users will get connected to Webasyst ID right away.`]</div>
+            </div>
+
         {if $not_connected_users}
             <div class="fields-group s-waid-not-connected-users-block">
                 <h4>
@@ -86,7 +111,7 @@
                                     <div>
                                         {if $user.is_current_contact}
                                             <a href="javascript:void(0)" class="js-connect-yourself bold" data-id="{$user.id}">
-                                                <img class="icon baseline" src="/wa-content/img/webasyst-wand-bold.svg" alt=""> [s`Connect Webasyst ID for my account`]
+                                                <img class="icon baseline" src="{$wa_url}wa-content/img/webasyst-wand-bold.svg" alt=""> [s`Connect Webasyst ID for my account`]
                                             </a>
                                         {else}
                                             {if !$user.waid_invite_datetime}
@@ -199,6 +224,10 @@
             </div>
     {/if}
 
+    {$_locale = [
+        'disabled_toggle_reason' => _ws('You need to connect Webasyst ID to your account.')
+    ]}
+
     <script>
         (function ($) {
             $.wa.title.set({$_title|json_encode});
@@ -206,7 +235,8 @@
                 $wrapper: $('#s-waid-settings-page'),
                 wa_backend_url: {$wa_backend_url|json_encode},
                 upgrade_all: {$upgrade_all|json_encode},
-                webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode}
+                webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode},
+                locale: {$_locale|json_encode},
             });
         })(jQuery);
     </script>

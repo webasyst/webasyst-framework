@@ -1,8 +1,8 @@
 {strip}
-<div class="sidebar right flexbox hide-scrollbar width-adaptive-wider t-profile-sidebar desktop-only custom-ml-auto">
-    <div class="sidebar-body hide-scrollbar box js-profile-sidebar-body">
+<div class="sidebar right flexbox width-adaptive-wider t-profile-sidebar desktop-only custom-ml-auto">
+    <div class="sidebar-body box js-profile-sidebar-body">
         {include file="./sidebarWidgets/Access.html" inline}
-        {if $user}
+        {if $user && !$is_system_profile}
             {include file="./sidebarWidgets/Stats.html" assign=stats_html}
 
             {$wa->contactProfileSidebar($user.id, [

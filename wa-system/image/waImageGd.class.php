@@ -37,6 +37,9 @@ class waImageGd extends waImage
             case IMAGETYPE_PNG:
                 $create_function = 'imagecreatefrompng';
                 break;
+            case IMAGETYPE_WEBP:
+                $create_function = 'imagecreatefromwebp';
+                break;
         }
         if (!isset($create_function) && PHP_VERSION_ID >= 70100 && $type === IMAGETYPE_WEBP) {
             $create_function = 'imagecreatefromwebp';

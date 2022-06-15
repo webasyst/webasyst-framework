@@ -43,7 +43,7 @@ CLI;
 
     public function populateTables()
     {
-        foreach(array('wa_country', 'wa_region') as $table) {
+        foreach(array('wa_country', 'wa_region', 'wa_log') as $table) {
             $this->populateTable($table);
         }
     }

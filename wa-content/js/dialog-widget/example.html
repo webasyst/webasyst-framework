@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Example</title>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="./dialog.js"></script>
+    <link href="./dialog.css" rel="stylesheet">
+</head>
+<body>
+
+<button class="js-show-dialog">Показать диалог</button>
+
+<script>
+    ( function($) {
+
+        var dialog_html = "<div class=\"wa-dialog\">\n" +
+            "    <div class=\"wa-dialog-background\"></div>\n" +
+            "    <div class=\"wa-dialog-body\">\n" +
+            "        <div class=\"wa-dialog-header\">HEADER</div>\n" +
+            "        <div class=\"wa-dialog-content\">CONTENT</div>\n" +
+            "        <div class=\"wa-dialog-footer\">" +
+            "           <button class=\"js-success-button\">Success</button> " +
+            "           <button class=\"js-cancel-button\">Cancel</button> " +
+            "           <button class=\"js-close-dialog\">Close</button> " +
+            "        </div>\n" +
+            "        <span class=\"wa-close-icon js-close-dialog\">X</span>\n" +
+            "    </div>\n" +
+            "</div>";
+
+        var $dialog = $(dialog_html);
+
+        $dialog.on("click", ".js-success-button", function(event) {
+            event.preventDefault();
+            var dialog = $(this).closest(".wa-dialog").data("dialog");
+            dialog.options.onSuccess();
+        });
+
+        $dialog.on("click", ".js-cancel-button", function(event) {
+            event.preventDefault();
+            var dialog = $(this).closest(".wa-dialog").data("dialog");
+            dialog.options.onCancel();
+        });
+
+        $(".js-show-dialog").on("click", function(event) {
+            event.preventDefault();
+            $.waDialog({
+                wrapper: $dialog,
+                options: {
+                    onSuccess: function() {
+                        alert("success");
+                    },
+                    onCancel: function() {
+                        alert("cancel");
+                    }
+                }
+            });
+        });
+
+    })(jQuery);
+</script>
+
+</body>
+</html>

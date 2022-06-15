@@ -109,12 +109,18 @@ class teamConfig extends waAppConfig
 
         $webasyst_id_auth_result = null;
         if (isset($data['token_info'])) {
+            // Return after successfull from WAID auth gets here:
+            // see waWebasystIDWAAuthController->processInviteAuth().
+            // User have seen the invite form (see teamInviteFrontendAction)
+            // and selected WAID auth instead of login and password.
+            // User successfully finished WAID aith, got redirected back here.
+            // Rest of logic is handled in teamInviteFrontendAction called below.
             $webasyst_id_auth_result = isset($data['auth_result']) ? $data['auth_result'] : null;
             $data = $data['token_info'];
         }
 
         // Unknown token type?
-        if ($data['type'] != 'user_invite') {
+        if ($data['type'] != 'user_invite' && $data['type'] != 'waid_invite') {
             $app_tokens_model->deleteById($data['token']);
             throw new waException("Page not found", 404);
         }
@@ -126,19 +132,27 @@ class teamConfig extends waAppConfig
             throw new waException("Page not found", 404);
         }
 
-        wa()->getStorage()->open();
-        $data_data = (array)json_decode($data['data'], true);
-        if (empty($data_data['session_id'])) {
-            // First-time use of the token:
-            // bind it to current session
-            $data_data['session_id'] = session_id();
-            $data['data'] = json_encode($data_data);
-            $app_tokens_model->updateById($data['token'], array(
-                'data' => $data['data'],
-            ));
-        } elseif ($data_data['session_id'] != session_id()) {
-            // Only allow one single bound session to access the page
-            throw new waException("Page not found", 404);
+        if ($data['type'] == 'waid_invite') {
+            //
+            // Token type 'waid_invite' is called by WAID server via API. No user interaction here, no browser.
+            // We need to convert contact to bachend user,
+            // bind this user with WAID provided and give simple API code response.
+            //
+            $token_data = json_decode($data['data'], true);
+            $login = waUtils::getRandomHexString(12);
+            $password = waContact::generatePassword();
+            teamHelper::convertToBackendUser($contact['id'], $token_data, $login, $password);
+
+            $webasyst_contact_id = waRequest::post('webasyst_contact_id', null, 'int');
+            if ($webasyst_contact_id) {
+                $contact_waid_model = new waContactWaidModel();
+                $contact_waid_model->set($contact['id'], $webasyst_contact_id, []);
+            }
+
+            $app_tokens_model->deleteById($data['token']);
+            wa()->getResponse()->setStatus(204);
+            wa()->getResponse()->sendHeaders();
+            return;
         }
 
         wa('webasyst');

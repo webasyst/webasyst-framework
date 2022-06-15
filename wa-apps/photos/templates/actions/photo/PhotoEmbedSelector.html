@@ -10,7 +10,7 @@
 #photo-embedded-selector img.p-app16x16icon-menu { width: 16px; height: 16px; position: absolute; left: 2px; }
 </style>
 <div id="photo-embedded-selector">
-    <aside class="sidebar hide-scrollbar scrolls-with-content right width-12rem">
+    <aside class="sidebar scrolls-with-content right width-12rem">
         <div class="block">
             {if $app_albums}
                 <div class="hierarchical">
@@ -35,7 +35,7 @@
         </div>
     </aside>
 
-    <section class="content hide-scrollbar box">
+    <section class="content box">
         <ul class="thumbs li100px">
         {foreach $photos as $p}
             <li data-photo-id="{$p.id}">

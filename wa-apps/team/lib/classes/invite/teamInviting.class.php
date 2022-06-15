@@ -137,6 +137,21 @@ abstract class teamInviting
         return $error;
     }
 
+    protected function validatePhone($phone)
+    {
+        $v = new waPhoneNumberValidator();
+        $error = null;
+        if (!$phone) {
+            $error = 'phone_required';
+        } else {
+            if (!$v->isValid($phone)) {
+                $error = 'phone_invalid';
+            }
+        }
+
+        return $error;
+    }
+
     protected function ensureTokensLimit(array $token)
     {
         $atm = new waAppTokensModel();
@@ -190,9 +205,14 @@ abstract class teamInviting
             case 'contact_banned':
                 return _w('This contact was banned.');
             case 'email_required':
+            case 'phone_required':
                 return _w('This is a required field.');
             case 'email_invalid':
-                return _w('This does not look like a valid email');
+                return _w('This does not look like a valid email address.');
+            case 'phone_invalid':
+                return _w('This does not look like a valid phone number.');
+            case 'webasyst_id_required':
+                return _w('This installation is not connected to Webasyst ID.');
             default:
                 return $error;
         }

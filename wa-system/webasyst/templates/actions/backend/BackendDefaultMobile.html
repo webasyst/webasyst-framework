@@ -11,8 +11,8 @@
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.switch-mode.js?v{$wa->version(true)}"></script>
     <link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/mobile.css?v={$wa->version()}">
     <script defer src="{$wa_url}wa-content/js/fontawesome/fontawesome-all.min.js?v={$wa->version()}"></script>
-    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
-    <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js" type="text/javascript"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-3.3.2.min.js" type="text/javascript"></script>
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version()}"></script>
 
     <script src="{$wa_url}wa-content/js/d3/d3.min.js"></script>
@@ -102,7 +102,7 @@
 
             <!-- YOUR APP HERE -->
             <div class="flexbox">
-                <div class="content hide-scrollbar blank">
+                <div class="content blank">
                     <section class="dashboard-apps js-dashboard-apps" data-nav="apps">
                         <ul>
                             {foreach $header_items as $app_id => $app}
@@ -131,7 +131,7 @@
                                 <li data-app="{$app_id}">
                                     <a href="{$_item_url}" rel="external">
                                         {if $app.img}<img {if !empty($app.icon.96)}data-src2="{$wa_url}{$app.icon.96}"{/if} src="{$wa_url}{if !empty($app.icon.96)}{$app.icon.96}{else}{$app.img}{/if}" />{/if}
-                                        <span>{$app.name}</span>
+                                        <span class="nowrap">{$app.name}</span>
                                         {if $_count}
                                             <span class="badge{* wa-1.3-legacy-class *} indicator{* /wa-1.3-legacy-class *}">{$_count}</span>
                                         {/if}
@@ -144,19 +144,87 @@
                             {if !empty($activity)}
                                 {include file="../dashboard/DashboardActivityFilter.inc.html" inline}
                             {/if}
-                            <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
-                            {if !empty($activity)}
-                                {include file="../dashboard/DashboardActivity.html" inline}
-                            {else}
-                                <div class="empty-activity-text">
-                                    <h2>[`No events in the live stream yet.`]</h2>
-                                    <p>[`Live stream collects all events from installed apps and presents them in a chronological order.`]</p>
+
+                            {if $today_users}
+                                {$users_birthdays = $today_users.birthday|default:[]}
+                                {$users_statuses = $today_users.status|default:[]}
+
+                                <div class="activity-list-block">
+                                    <div class="activity-divider h3">[`Today`]</div>
+
+                                    {if $users_birthdays}
+                                        <div class="users-group">
+                                            {foreach $users_birthdays.contacts as $contact}
+                                                {if $contact@index == 4}
+                                                    <span class="userpic userpic48 outlined" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3));">
+                                                        <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
+                                                    </span>
+                                                    {break}
+                                                {/if}
+                                                <span class="userpic userpic48 outlined" data-wa-tooltip-content="[`Birthday`]">
+                                                    <img src="{$contact.photo_url_48}" alt="{$contact.formatted_name|escape}">
+                                                    {if $contact@last || $contact@index < 4}
+                                                        <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
+                                                    {/if}
+                                                </span>
+                                            {/foreach}
+                                        </div>
+                                    {/if}
+
+                                    {if $users_statuses}
+                                        <div class="users-group">
+                                            {foreach $users_statuses as $status}
+                                                {if $status@index == 4}
+                                                    <span class="userpic userpic48 outlined" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3));">
+                                                        <span class="userstatus"></span>
+                                                    </span>
+                                                    {break}
+                                                {/if}
+                                                <span class="userpic userpic48 outlined" data-wa-tooltip-content="{$status.statuses[1].calendar.name|escape}">
+                                                    <img src="{$status.photo_url_48}" alt="{$status.formatted_name|escape}">
+                                                    {if $status@last || $status@index < 4}
+                                                        <span class="userstatus" style="background-color: {$status.statuses[1].calendar.bg_color}"></span>
+                                                    {/if}
+                                                </span>
+                                            {/foreach}
+                                        </div>
+                                    {/if}
+
+                                    {if $users_birthdays || $users_statuses}
+                                        <hr class="custom-my-16">
+                                    {/if}
                                 </div>
                             {/if}
+
+                            {if $no_today_activity}
+                                <div class="activity-list-block activity-empty-today">
+                                    {if !$today_users}
+                                        <div class="activity-divider today h3 2">[`Today`]</div>
+                                    {/if}
+                                    <div class="activity-item activity-empty-today custom-mb-24">
+                                        <div class="item-content-wrapper">
+                                            <div class="inline-content">
+                                                [`No activity today yet.`]
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/if}
+
+                            <div class="activity-list-block js-activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+                                {if !empty($activity)}
+                                    {include file="../dashboard/DashboardActivity.html" inline}
+                                {else}
+                                    <div class="empty-activity-text">
+                                        <h3>[`No events in the live stream yet.`]</h3>
+                                        <p>[`Live stream collects all events from installed apps and presents them in a chronological order.`]</p>
+                                    </div>
+                                {/if}
                             </div>
                         </div>
                     </section>
                     <section class="dashboard-widgets js-dashboard-widgets" data-nav="widgets" style="display: none">
+                        {if !empty($public_dashboards)}
                         <div class="dashboard-tabs">
                             <ul class="tabs">
                                 <li class="selected">
@@ -173,6 +241,7 @@
                                 {/foreach}
                             </ul>
                         </div>
+                        {/if}
                         <div class="js-dashboard-widgets-wrapper">
                             {include file="../dashboard/DashboardWidgets.html" inline}
                         </div>
@@ -189,13 +258,13 @@
                     </li>
                     <li>
                         <a href="#" data-nav="activity">
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-bolt"></i>
                             <span>[`Activity`]</span>
                         </a>
                     </li>
                     <li>
                         <a href="#" data-nav="widgets">
-                            <i class="fas fa-chart-line"></i>
+                            <i class="fas fa-tv"></i>
                             <span>[`Dashboards`]</span>
                         </a>
                     </li>
@@ -222,7 +291,11 @@
                 e.preventDefault();
                 $(this).toggleClass('wa-animation-bell');
                 setTimeout(() => $(this).toggleClass('wa-animation-bell'), 1000);
-                $(this).next('.js-notification-wrapper').toggle();
+                if (e.hasOwnProperty('originalEvent')){
+                    $(this).next('.js-notification-wrapper').toggle().removeClass('hidden');
+                }else{
+                    $(this).next('.js-notification-wrapper').toggle();
+                }
             });
             {if !empty($notifications)}
                 $notifications_bell.trigger('click');

@@ -245,10 +245,6 @@ var Profile = ( function($) {
             })
         });
 
-        that.$wrapper.find('.js-userpic').one('click', function() {
-
-        });
-
         that.$wrapper.find('.js-toggle-user-info').on("click", function(event) {
             event.preventDefault();
             $(this).find('svg').toggleClass('fa-caret-down fa-caret-up')

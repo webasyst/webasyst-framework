@@ -49,6 +49,7 @@
                     <div class="value">
                         <input type="button" class="button gray outlined rounded" name="clear_cache" value="[`Clear cache`]">
                         <span id="installer-cache-state" style="display: none;"><!-- state placeholder --></span>
+                        <p class="custom-mt-4 js-container-status" style="display: none"></p>
                     </div>
                 </div>
             </div>
@@ -72,7 +73,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $.installer_settings.init({
-          messages: {$_locale|json_encode}
+          messages: {$_locale|json_encode},
+          loading: '<i class="fas fa-spinner fa-spin"></i>'
         });
     });
 </script>

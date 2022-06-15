@@ -27,7 +27,6 @@
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
         {$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js
-        {$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.min.js
         {$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.min.js
         {$wa_app_static_url}js/legacy/sidebar.js
         {$wa_app_static_url}js/legacy/dragndrop.js
@@ -42,6 +41,7 @@
         {$wa_app_static_url}js/legacy/photo.menu.js
         {$wa_app_static_url}js/legacy/loupe.widget.js
         {$wa_app_static_url}js/legacy/jquery-fieldselection.min.js
+        {$wa_app_static_url}js/legacy/tagsinput.min.js
     {/wa_js}
 
     <script type="text/javascript" src="?action=loc&amp;v={$wa->version()}"></script>
@@ -257,7 +257,7 @@
 {literal}
     <div class="block">
         <h6 class="heading">[`Tags`]</h6>
-        <input id="photo-tags" value="">
+        <input id="photo-tags" value="" class="js-photos-tags">
         <span class="hint">[`Separate tags with comma (,)`]</span><br>
         <div id="photos-photo-popular-tags" class="tags">
             {/literal}
@@ -393,7 +393,7 @@
 {% if (exif.DateTimeOriginal) { %}
     [`Taken`]: <strong>{%# exif.DateTimeOriginal %}</strong><br>
 {% } %}
-<div id="photo-map" style="display:none;"></div>
+<div id="photo-map" style="display:none; height: 100px; overflow: hidden;"></div>
 {/literal}{/capture}
 
 {* js templates block*}

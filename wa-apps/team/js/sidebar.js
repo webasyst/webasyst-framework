@@ -149,9 +149,13 @@ var Sidebar = ( function($) {
         }
     };
 
-    Sidebar.prototype.reload = function() {
+    Sidebar.prototype.reload = function(background) {
         const that = this;
-        const sidebar_uri = $.team.app_url + that.options.api.reload;
+        let sidebar_uri = $.team.app_url + that.options.api.reload;
+
+        if (background) {
+            sidebar_uri += '&background_process=1'
+        }
 
         clearTimeout(that.options.timer);
 
@@ -212,6 +216,9 @@ var Sidebar = ( function($) {
         $.get(href, data, function(html) {
             that.groupDialog[groupType] = $.waDialog({
                 html,
+                onOpen($dialog, dialog) {
+                    dialog.$content.find('.js-edit-group-name').focus();
+                },
                 onClose(dialog) {
                     dialog.hide();
                     return false;
@@ -375,7 +382,7 @@ var Sidebar = ( function($) {
 
         that.options.timer = setTimeout( function() {
             if ($.contains(document, that.$wrapper[0]) ) {
-                that.reload();
+                that.reload(true);
             }
         }, time);
     };

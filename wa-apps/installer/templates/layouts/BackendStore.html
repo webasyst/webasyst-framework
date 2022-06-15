@@ -47,14 +47,14 @@
         <section class="flexbox wrap-mobile vertical-mobile">
             {* Installer Sidebar *}
             <div
-                class="sidebar hide-scrollbar flexbox mobile-friendly width-19rem"
+                class="sidebar flexbox mobile-friendly width-19rem"
                 id="js-app-sidebar"
             >
                 {$installer_sidebar}
             </div>
 
             {* Installer Content (Store iframe and native app pages) *}
-            <div class="content hide-scrollbar blank">
+            <div class="content blank">
 
                 {if !empty($messages)}
                     {foreach $messages as $message}

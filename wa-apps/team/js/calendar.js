@@ -150,10 +150,11 @@ var CalendarPage = ( function($) {
     };
 
     CalendarPage.prototype.initInfoBlock = function () {
-        var that = this,
-            $info_block = that.$wrapper.find(".t-info-notice-wrapper"),
-            storage = that.local_storage,
-            key = "team/calendar_info_warn_block_hide";
+        const that = this;
+        const $info_block = that.$wrapper.find('.t-info-notice-wrapper');
+        const $info_block_close = $info_block.find('.t-info-notice-toggle');
+        const storage = new $.store();
+        const key = 'team/calendar_info_warn_block_hide';
 
         if (storage.get(key)) {
             $info_block.hide();
@@ -161,9 +162,11 @@ var CalendarPage = ( function($) {
             $info_block.show();
         }
 
-        $info_block.find(".t-info-notice-toggle").on("click", function () {
+        $info_block_close.on('click', function (event) {
+            event.preventDefault();
+
             storage.set(key, 1);
-            $info_block.hide();
+            $info_block.remove();
         });
     };
 
@@ -313,7 +316,7 @@ var TeamCalendar = ( function($) {
 
     TeamCalendar.prototype.showFullDayEvents = function( $link ) {
         const that = this,
-            events_id = $link.data("events-id").split(","),
+            events_id = $link.data("events-id").toString().split(","),
             date = $link.data("date"),
             data = {
                 date: date,
@@ -517,13 +520,13 @@ var TeamCalendar = ( function($) {
             helper: "clone",
             appendTo: "body",
             cursor: "move",
-            delay: 200,
+            zIndex: 1100,
             cursorAt: {
                 top: 11,
                 left: 16
             },
             start: function(event, ui) {
-                var $_event = $(ui.helper.context),
+                var $_event = $(event.target),
                     $clone = ui.helper;
 
                 $event = $_event;
@@ -1219,7 +1222,7 @@ var EventEditDialog = ( function($) {
         if (!is_active && !that.is_locked) {
             that.is_locked = true;
             const colors = {bg_color, font_color, status_bg_color, status_font_color} = that.calendars[calendar_id],
-                name = $link.text(),
+                name = $.wa.encodeHTML($link.text()),
                 {prefix, icon} = $link.find('svg').data();
 
             //
@@ -1252,8 +1255,6 @@ var EventEditDialog = ( function($) {
 
     EventEditDialog.prototype.setCalendarSelectColors = function(colors) {
         const that = this;
-
-        console.log(`bg_color: ${colors.bg_color}, status_bg_color: ${colors.status_bg_color}, font_color: ${colors.font_color}, status_font_color: ${colors.status_font_color}`)
 
         const bgColor = () => {
             if (that.is_status) {
@@ -1293,7 +1294,7 @@ var EventEditDialog = ( function($) {
         if (!is_active && !that.is_locked) {
             that.is_locked = true;
             const photo_url = $link.data('user-photo-url'),
-                name = $link.text();
+                name = $.wa.encodeHTML($link.text());
             //
             that.user_id = user_id;
             // unset selected
@@ -1413,6 +1414,17 @@ var EventEditDialog = ( function($) {
                 });
             }
 
+            if (result["data[start_time]"] > result["data[end_time]"]) {
+                errors.push({
+                    field: "data[start_time]",
+                    locale: "period"
+                });
+                errors.push({
+                    field: "data[end_time]",
+                    locale: "period"
+                });
+            }
+
             if (errors.length) {
                 showErrors(errors);
                 return false;
@@ -1452,7 +1464,7 @@ var EventEditDialog = ( function($) {
 
             function showErrors( errors ) {
                 // Remove old errors
-                that.$form.find(".state-error-hint").parent().remove();
+                that.$form.find(".state-error-hint").remove();
 
                 // Display new errors
                 $.each(errors, function(index, item) {
@@ -1461,12 +1473,12 @@ var EventEditDialog = ( function($) {
                         if ($field.parent('.value').length) {
                             $field
                                 .addClass(that.has_error_class)
-                                .after('<span class="state-error-hint">' + that.locales[item.locale] + '</span>')
+                                .after('<span class="state-error-hint custom-mt-4">' + that.locales[item.locale] + '</span>')
                         }else{
                             $field
                                 .addClass(that.has_error_class)
-                                .parent()
-                                .after('<li><span class="state-error-hint custom-ml-24">' + that.locales[item.locale] + '</span></li>')
+                                .closest('.t-date-wrapper')
+                                .append('<div class="state-error-hint custom-mt-4">' + that.locales[item.locale] + '</div>')
                         }
                     }
                 });

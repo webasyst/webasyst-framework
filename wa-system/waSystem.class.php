@@ -709,11 +709,12 @@ class waSystem
      */
     public function whichUI($app_id = null)
     {
+        $check_app_info = waRequest::param('check_app_info', true, waRequest::TYPE_INT);
         $force_version = waRequest::param('force_ui_version', null, waRequest::TYPE_STRING_TRIM);
         $force_version = ($force_version === '1.3' || $force_version === '2.0') ? $force_version : waSystemConfig::whichBackendUI();
 
         // special case if pass FALSE - return current value of version saved in cookie
-        if ($app_id === false) {
+        if ($app_id === false || empty($check_app_info)) {
             return $force_version;
         }
 
@@ -1335,6 +1336,16 @@ class waSystem
             if (is_dir($locale_path)) {
                 waLocale::load($this->getLocale(), $locale_path, $app_id.'_'.$plugin_id, false);
             }
+
+            // Translate fields in $plugin->info
+            $plugin_info['name'] = _wd($app_id.'_'.$plugin_id, $plugin_info['name']);
+            if (isset($plugin_info['title'])) {
+                $plugin_info['title'] = _wd($app_id.'_'.$plugin_id, $plugin_info['title']);
+            }
+            if (isset($plugin_info['description'])) {
+                $plugin_info['description'] = _wd($app_id.'_'.$plugin_id, $plugin_info['description']);
+            }
+
             if ($set_active) {
                 self::pushActivePlugin($plugin_id, $app_id);
             }

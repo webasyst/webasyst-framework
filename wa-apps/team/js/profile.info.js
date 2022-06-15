@@ -1465,7 +1465,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 }
             }
 
-            var wrapper = $('<div class="composite '+mode+' field" data-field-id="'+this.fieldData.id+'"></div>').append(contactEditor.wrapper('<span style="display:none" class="replace-with-ext"></span>', this.fieldData.name, 'hdr'));
+            var wrapper = $('<div class="composite '+mode+'" data-field-id="'+this.fieldData.id+'"></div>').append(contactEditor.wrapper('<span style="display:none" class="replace-with-ext"></span>', this.fieldData.name, 'hdr'));
 
             // For each field call its newFieldElement and add to wrapper
             for(var sfid in this.subfieldEditors) {
@@ -1569,7 +1569,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     //.append('<div class="ext"><strong><span style="display:none" class="replace-with-ext"></span></strong></div>')
                     .append('<span class="small">'+this.fieldValue.value+'</span>')
                     .append('<span style="display:none" class="replace-with-ext"></span> ')
-                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="map-link small">' + $_('map') + '</a>');
+                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="map-link small">' + $_('map') + '<i class="fas fa-external-link-alt small custom-ml-4"></i></a>');
                 return result;
             }
 

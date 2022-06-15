@@ -380,7 +380,10 @@ class waAuth implements waiAuth
             } elseif ($field_id === self::LOGIN_FIELD_PHONE) {
                 $contact = $this->getByPhone($value);
             }
-            if (!$contact || $contact['is_user'] <= -1) {
+            if (
+                !$contact
+                || ($contact['is_user'] <= -1 && $lookup_type !== 'with_banned')
+            ) {
                 continue;
             }
             $result[$field_id] = $contact;
@@ -699,7 +702,7 @@ class waAuth implements waiAuth
     protected function _authByPassword($contact, $password)
     {
         $contact_password = isset($contact['password']) && is_scalar($contact['password']) ? $contact['password'] : '';
-        return strlen($contact_password) > 0 && waContact::getPasswordHash($password) === $contact_password;
+        return strlen($contact_password) > 0 && waContact::verifyPasswordHash($password, $contact_password);
     }
 
     /**
