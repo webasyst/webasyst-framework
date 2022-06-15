@@ -465,8 +465,8 @@ msgstr ""
 msgid "Upload photos (%d)"
 msgstr ""
 
-msgid "Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only."
-msgstr "Only files with name extensions .gif, .jpg, .jpeg, .png are allowed."
+msgid "Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only."
+msgstr "Only files with name extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed."
 
 msgid "You don't have sufficient access rights"
 msgstr "You don't have sufficient access rights."

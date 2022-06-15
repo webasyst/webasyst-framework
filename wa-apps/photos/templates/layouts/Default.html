@@ -58,7 +58,7 @@
     <div class="p-app-wrapper" id="wa-app">
         <div class="flexbox wrap-mobile">
             {include "templates/layouts/Sidebar.html"}
-            <div class="content blank p-app-content flexbox hide-scrollbar" id="content">
+            <div class="content blank p-app-content flexbox" id="content">
                 {if isset($content)}{$content}{/if}
             </div>
         </div>
@@ -300,7 +300,7 @@
 {/literal}{/capture}
 
 {capture name="template-p-block"}
-<section class="content hide-scrollbar" id="p-content">
+<section class="content" id="p-content">
     <div id="p-block"></div>
     <div id="changable-area"></div>
     <div id="cover" class="dialog-background" style="display:none;">

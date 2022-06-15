@@ -3165,10 +3165,10 @@
                     $(".lazyloading-wrapper .lazyloading-link").hide();
                     $.post(
                         '?module=photo&action=loadList',
-                        { offset : offset, hash: $.photos.hash },
+                        { offset : offset, hash: decodeURI($.photos.hash) },
                         function (r) {
                             // if hash has changed already than ignore
-                            if (r.data.hash != $.photos.hash) {
+                            if (r.data.hash != decodeURI($.photos.hash)) {
                                 return;
                             }
                             var target = $("#photo-list");

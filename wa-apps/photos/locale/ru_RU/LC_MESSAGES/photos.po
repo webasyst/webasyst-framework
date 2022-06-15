@@ -511,8 +511,8 @@ msgstr "Применить фильтр резкости при создании
 msgid "Click “Save” button below to apply this change."
 msgstr "Щелкните по кнопке «Сохранить» внизу, чтобы применить это изменение."
 
-msgid "Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only."
-msgstr "Допускаются только файлы с расширениями имени .gif, .jpg, .jpeg, .png"
+msgid "Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only."
+msgstr "Допускаются только файлы с расширениями имени *.gif, *.jpg, *.jpeg, *.png, *.webp"
 
 msgid "You don't have sufficient access rights"
 msgstr "У вас недостаточно прав доступа."
