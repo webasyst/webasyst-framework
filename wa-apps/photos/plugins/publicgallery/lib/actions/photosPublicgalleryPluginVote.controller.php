@@ -5,7 +5,7 @@ class photosPublicgalleryPluginVoteController extends waJsonController
     public function execute()
     {
         if (!$this->getUser()->getId()) {
-            $this->errors[] = sprintf_wp("Please %ssign in%s to be able to vote for photos", '<a href="'.wa()->getRouteUrl('/login', null, true).'">', '</a>');
+            $this->errors[] = sprintf_wp("Please %ssign in%s to be able to vote for photos.", '<a href="'.wa()->getRouteUrl('/login', null, true).'">', '</a>');
             return;
         }
 
