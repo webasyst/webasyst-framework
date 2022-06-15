@@ -1057,8 +1057,8 @@ msgstr "Авторизация не удалась"
 msgid "External calendar plugin not found"
 msgstr "Не найден плагин для внешнего календаря"
 
-msgid "This does not look like a valid email"
-msgstr "Неверный формат email"
+msgid "This does not look like a valid email address."
+msgstr "Неверный формат email-адреса."
 
 msgid "All calendars"
 msgstr "Все календари"
@@ -1635,3 +1635,9 @@ msgstr "Доступ установлен персонально для этог
 
 msgid "User added"
 msgstr "Пользователь добавлен"
+
+msgid "This does not look like a valid phone number."
+msgstr "Неверный формат номера телефона."
+
+msgid "This installation is not connected to Webasyst ID."
+msgstr "Эта установка не подключена к Webasyst ID."
