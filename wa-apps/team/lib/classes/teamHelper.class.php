@@ -278,6 +278,9 @@ class teamHelper
 
     public static function convertToBackendUser($contact_id, array $token_data, $login, $password)
     {
+        if (waConfig::get('is_template')) {
+            return;
+        }
         // For security reasons login and is_user
         // have to be updated directly via model
         $contact_model = new waContactModel();

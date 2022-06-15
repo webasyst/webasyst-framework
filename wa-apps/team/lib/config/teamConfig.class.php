@@ -155,26 +155,6 @@ class teamConfig extends waAppConfig
             return;
         }
 
-        //
-        // The rest is only for $data['type'] == 'user_invite':
-        // User came via invite link.
-        //
-
-        wa()->getStorage()->open();
-        $data_data = (array)json_decode($data['data'], true);
-        if (empty($data_data['session_id'])) {
-            // First-time use of the token:
-            // bind it to current session
-            $data_data['session_id'] = session_id();
-            $data['data'] = json_encode($data_data);
-            $app_tokens_model->updateById($data['token'], array(
-                'data' => $data['data'],
-            ));
-        } elseif ($data_data['session_id'] != session_id()) {
-            // Only allow one single bound session to access the page
-            throw new waException("Page not found", 404);
-        }
-
         wa('webasyst');
         $controller = wa()->getDefaultController();
         $controller->setAction(new teamInviteFrontendAction($data, $webasyst_id_auth_result));

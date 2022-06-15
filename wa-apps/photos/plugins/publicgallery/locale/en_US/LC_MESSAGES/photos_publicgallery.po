@@ -75,7 +75,7 @@ msgid "Upload complete! <a href=\"#\">Reload page</a> to view your photos."
 msgstr ""
 
 #: /wa-apps/photos/plugins/publicgallery/js/jquery.fileupload-ui.js:366
-msgid "Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only."
+msgid "Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only."
 msgstr ""
 
 #: /wa-apps/photos/plugins/publicgallery/lib/actions/backend/photosPublicgalleryPluginBackendModeration.controller.php:12

@@ -45,6 +45,8 @@
     {if $wa->whichUI() === '1.3'}
     {$dialog_prefix = 'wa-'}
     {/if}
+    <link href="{$wa_url}wa-apps/installer/css/helper/review-widget.css?v={$wa->version()}" rel="stylesheet">
+    
     <div class="{$dialog_prefix}dialog i-product-review-dialog">
         <div class="{$dialog_prefix}dialog-background"></div>
         <div class="{$dialog_prefix}dialog-body">

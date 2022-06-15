@@ -891,7 +891,7 @@ class waSignupAction extends waViewAction
                 && !empty($_val)
                 && preg_match('~(https?://|www\.)~', $_val)
             ) {
-                $errors[$_f] = _ws('ФИО не может содержать URL');;
+                $errors[$_f] = _ws('Names must not contain URLs.');
             }
         }
 

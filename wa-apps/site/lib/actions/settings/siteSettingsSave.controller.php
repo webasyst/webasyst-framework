@@ -192,7 +192,7 @@ class siteSettingsSaveController extends waJsonController
     {
         $background = waRequest::file('background_file');
         if ($background && $background->uploaded()) {
-            $allowed = array('jpg', 'jpeg', 'png', 'gif');
+            $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
             if (!in_array($background->extension, $allowed)) {
                 $this->errors = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             } else {

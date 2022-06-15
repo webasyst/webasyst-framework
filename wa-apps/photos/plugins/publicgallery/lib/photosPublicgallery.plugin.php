@@ -87,7 +87,7 @@ class photosPublicgalleryPlugin extends photosPlugin
         $strings = array();
         foreach(array(
             'Empty result', //_w('Empty result')
-            'Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only.', //_w('Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only.')
+            'Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only.', //_w('Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only.')
             'Upload complete! <a href="#">Reload page</a> to view your photos.', //_w('Upload complete! <a href="#">Reload page</a> to view your photos.')
         ) as $s) {
             $strings[$s] = _w($s);

@@ -98,6 +98,10 @@ class yadShipping extends waShipping
                 'method' => waNet::METHOD_DELETE,
                 'url' => 'orders/{id}',
             ),
+            'searchOrder' => array(
+                'method' => waNet::METHOD_PUT,
+                'url' => 'orders/search',
+            ),
             'confirmSenderOrders' => array(
                 'method' => waNet::METHOD_POST,
                 'url' => 'orders/submit',
@@ -1595,12 +1599,13 @@ HTML;
                 $view_data = sprintf($template, $status, $this->companyId, $response, $response);
             }
 
+            $order_info = $this->apiQuery('getOrder', ['id' => $response]);
             $shipping_data = array(
                 'order_id'        => $response,
                 'status'          => 1,
                 'client_id'       => $this->client_id,
                 'view_data'       => $view_data,
-                'tracking_number' => $response,
+                'tracking_number' => !empty($order_info['deliveryServiceExternalId']) ? $order_info['deliveryServiceExternalId'] : $response,
             );
 
             return $shipping_data;
@@ -1724,8 +1729,9 @@ HTML;
                 return $this->getErrorMessage($response['violations']);
             } elseif (!empty($response['orderId'])) {
                 $shipment_date = ifempty($shipping_data['shipment_date'], date('Y-m-d', strtotime('tomorrow')));
+                $order_info = $this->apiQuery('getOrder', ['id' => $order_id]);
                 $data = array(
-                    'tracking_number' => $order_id,
+                    'tracking_number' => $order_info['deliveryServiceExternalId'],
                     'status'          => 'CREATED',
                     'shipment_date'   => $shipment_date,
                     'view_data'       => sprintf('Ожидаемая дата отгрузки заказа в службу доставки: %s.', $shipment_date),
@@ -1795,23 +1801,49 @@ HTML;
     public function tracking($tracking_id = null)
     {
         if (!empty($tracking_id)) {
-            $params = array(
-                'senderId' => $this->senderId,
-                'orders' => array(
-                    array('id' => $tracking_id)
-                )
-            );
-            try {
-                $response = $this->apiQuery('getSenderOrderStatus', $params);
-                if (isset($response[0]['status']['description']) && !empty($response[0]['status']['description'])) {
-                    return sprintf('Статус отправления: «%s».', $response[0]['status']['description']);
+            if (is_numeric($tracking_id)) {
+                return $this->getStatusMessage($tracking_id);
+            } elseif (is_string($tracking_id)) {
+                $params = [
+                    'senderIds' => [
+                        $this->senderId
+                    ],
+                    'term' => $tracking_id
+                ];
+                try {
+                    $response = $this->apiQuery('searchOrder', $params);
+                    if ($response['totalElements'] == 1 && isset($response['data'][0]['id'])) {
+                        return $this->getStatusMessage($response['data'][0]['id']);
+                    }
+                } catch (waException $e) {
+                    return 'Статус отправления: «Заказ не найден».';
                 }
-            } catch (waException $e) {
-                return 'Статус отправления: «Заказ не найден».';
             }
         }
 
         return null;
+    }
+
+    /**
+     * @param mixed $order_id
+     * @return string|void
+     */
+    private function getStatusMessage($order_id)
+    {
+        $params = array(
+            'senderId' => $this->senderId,
+            'orders' => [
+                ['id' => $order_id]
+            ]
+        );
+        try {
+            $response = $this->apiQuery('getSenderOrderStatus', $params);
+            if (isset($response[0]['status']['description']) && !empty($response[0]['status']['description'])) {
+                return sprintf('Статус отправления: «%s».', $response[0]['status']['description']);
+            }
+        } catch (waException $e) {
+            return 'Статус отправления: «Заказ не найден».';
+        }
     }
 
     // FORMS

@@ -208,11 +208,11 @@ abstract class teamInviting
             case 'phone_required':
                 return _w('This is a required field.');
             case 'email_invalid':
-                return _w('This does not look like a valid email');
+                return _w('This does not look like a valid email address.');
             case 'phone_invalid':
-                return _w('This does not look like a valid phone');
+                return _w('This does not look like a valid phone number.');
             case 'webasyst_id_required':
-                return _w('Установка не подключена к Webasyst ID');
+                return _w('This installation is not connected to Webasyst ID.');
             default:
                 return $error;
         }
