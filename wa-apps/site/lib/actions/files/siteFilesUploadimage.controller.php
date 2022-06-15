@@ -20,7 +20,7 @@ class siteFilesUploadimageController extends siteFilesUploadController
     
     protected function isValid($f)
     {
-        $allowed = array('jpg', 'jpeg', 'png', 'gif');
+        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
         if (!in_array(strtolower($f->extension), $allowed)) {
             $this->errors[] = sprintf(_w("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             return false;
