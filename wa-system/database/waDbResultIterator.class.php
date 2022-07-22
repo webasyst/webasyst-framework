@@ -90,7 +90,7 @@ class waDbResultIterator implements Iterator
 
     /**
      * Reset key
-     * @return mixed|null
+     * @return void
      */
     public function rewind()
     {
@@ -99,7 +99,6 @@ class waDbResultIterator implements Iterator
         if ($this->count()) {
             $this->seek(0);
         }
-        return $this->current;
     }
 
     /**
