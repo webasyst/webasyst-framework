@@ -186,7 +186,7 @@ class waNet
                 $response = $this->runSocketContext($url, $content, $method);
                 break;
             default:
-                throw new waNetException('There no suitable network transports', 500);
+                throw new waNetException(_ws('No supported network transports are available.'), 500);
                 break;
         }
 

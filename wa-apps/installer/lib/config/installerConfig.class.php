@@ -274,7 +274,7 @@ class installerConfig extends waAppConfig
 
     protected function loadAnnouncements()
     {
-        $cache = new waVarExportCache('announcements', self::ANNOUNCE_CACHE_TTL, 'installer');
+        $cache = $this->getAnnouncementsCache();
         if ($cache->isCached() && ($res = $cache->get())) {
             return;
         }
@@ -307,9 +307,7 @@ class installerConfig extends waAppConfig
         $wasm = new waAppSettingsModel();
 
         if (!$res['data']) {
-            $wcsm = new waContactSettingsModel();
-            $wasm->exec("DELETE FROM {$wasm->getTableName()} WHERE app_id = 'installer' AND name LIKE 'a-%'");
-            $wcsm->exec("DELETE FROM {$wcsm->getTableName()} WHERE app_id = 'installer' AND name LIKE 'a-%'");
+            $this->clearBanners();
             return;
         }
         $ads = (array)$res['data'];
@@ -341,6 +339,24 @@ class installerConfig extends waAppConfig
             $wcsm->exec("DELETE FROM {$wcsm->getTableName()} WHERE app_id = 'installer' AND name IN('"
                 .join("','", $wcsm->escape($del))."')");
         }
+    }
+
+    public function clearAnnouncementsCache()
+    {
+        $this->clearBanners();
+        $this->getAnnouncementsCache()->delete();
+    }
+
+    protected function clearBanners()
+    {
+        $m = new waModel();
+        $m->exec("DELETE FROM wa_app_settings WHERE app_id = 'installer' AND name LIKE 'a-%'");
+        $m->exec("DELETE FROM wa_contact_settings WHERE app_id = 'installer' AND name LIKE 'a-%'");
+    }
+
+    protected function getAnnouncementsCache()
+    {
+        return new waVarExportCache('announcements', self::ANNOUNCE_CACHE_TTL, 'installer');
     }
 
     public function loadLicenses()

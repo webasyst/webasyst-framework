@@ -116,18 +116,8 @@
                 {/if}
             {/if}
 
-            {if
-                empty($item.system)
-                &&
-                (
-                    !in_array($item_type,['app','plugin'])
-                    ||
-                    ( $item_type =='plugin' && !empty($app.virtual))
-                    ||
-                    !empty($item.enabled)
-                )
-            }
-            <span class="js-switch-remove">
+            {if empty($item.system)}
+            <span class="js-switch-remove"{if in_array($item_type,['plugin','app']) && empty($app.virtual)} style="display: none;"{/if}>
                 <a href="{$wa_app_url}assets/" class="js-remove-item button light-gray circle" title="[`Delete`]">
                     <i class="fas fa-trash-alt text-red js-remove-item-icon"></i>
                     <i class="fas fa-spinner wa-animation-spin speed-1500 hidden js-remove-item-spinner"></i>

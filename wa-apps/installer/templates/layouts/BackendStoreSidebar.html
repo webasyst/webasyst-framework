@@ -34,6 +34,14 @@
                         </a>
                     </li>
                 {/foreach}
+                {foreach $_sidebar_item.TOP.extra as $_item}
+                    <li>
+                        <a href="{$_item.url|escape}" class="flexbox middle">
+                            <span class="icon"><i class="{$_item.icon|escape}"></i></span>
+                            <span class="semibold">{$_item.name|escape}{if !empty($_item.badge)} <i class="badge small bold rounded red">{$_item.badge}</i>{/if}</span>
+                        </a>
+                    </li>
+                {/foreach}
             </ul>
         {/foreach}
 

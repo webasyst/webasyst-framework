@@ -55,6 +55,8 @@
 <script type="text/javascript">
     document.title = {$title|json_encode};
 
+    $('.js-assets-row:not(.i-assets-disabled)').find('.js-switch-remove').show();
+
     $('.js-remove-item').on('click', function(e) {
         e.preventDefault();
 

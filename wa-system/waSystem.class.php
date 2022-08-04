@@ -1084,7 +1084,7 @@ class waSystem
     public function accountName()
     {
         $app_settings_model = new waAppSettingsModel();
-        return $app_settings_model->get('webasyst', 'name', _ws('My company, LLC'));
+        return $app_settings_model->get('webasyst', 'name', _ws('My company'));
     }
 
     /**

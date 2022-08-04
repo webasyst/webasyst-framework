@@ -523,7 +523,7 @@ class waHtmlControl
         $control = '';
         $control_name = self::escape($name);
         $control .= "<input type=\"file\" name=\"{$control_name}\" ";
-        $control .= $this->addCustomParams(array('class', 'style', 'id'), $params);
+        $control .= $this->addCustomParams(array('class', 'style', 'id', 'accept', 'multiple'), $params);
         $control .= ">";
         if (!empty($params['value'])) {
             if (!empty($params['img_path'])) {
@@ -1493,7 +1493,7 @@ HTML;
                         $param_value = $param;
                     }
                     $param_value = self::escape($param_value);
-                    if (in_array($param, array('autofocus'))) {
+                    if (in_array($param, array('autofocus', 'multiple'))) {
                         $params_string .= " {$target}";
                     } elseif (strpos($param, 'data-') === 0) {
                         $params_string .= " {$target}='{$param_value}'";

@@ -2,9 +2,6 @@
 
 function smarty_gettext_translate($matches)
 {
-    if ($str = waLocale::getString($matches[1])) {
-        return $str;
-    }
     return _wp(str_replace('\"', '"', $matches[1]));
 }
 

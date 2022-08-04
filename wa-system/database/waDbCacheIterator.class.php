@@ -16,18 +16,18 @@ class waDbCacheIterator implements Iterator
 {
     /**
      * Current key
-     * 
+     *
      * @var int
      */
     protected $key = '';
-    
+
     /**
      * Array of the data
      *
      * @var array
      */
     private $array = array();
-    
+
     private $iteration = 0;
 
     /**
@@ -37,27 +37,27 @@ class waDbCacheIterator implements Iterator
     {
         $this->array = (array)$array;
     }
-    
+
     /**
      * Return the current element
-     * 
+     *
      * @return mixed
      */
     public function current()
     {
         return current($this->array);
     }
-    
+
     /**
      *  Return the key of the current element
-     * 
+     *
      * @return int
      */
     public function key()
     {
         return key($this->array);
     }
-    
+
     /**
      * Move forward to next element
      */
@@ -67,22 +67,21 @@ class waDbCacheIterator implements Iterator
         $this->key = $this->key();
         $this->iteration++;
     }
-    
+
     /**
      * Rewind the Iterator to the first element
      *
-     * @return mixed
+     * @return void
      */
     public function rewind()
     {
         $this->key = 0;
         $this->iteration = 0;
-        return reset($this->array);
     }
-    
+
     /**
      * Checks if current position is valid
-     * 
+     *
      * @return bool
      */
     public function valid()
@@ -90,7 +89,7 @@ class waDbCacheIterator implements Iterator
         if (!$this->count()) {
             return false;
         }
-        
+
         return $this->iteration < $this->count();
     }
 
@@ -108,7 +107,7 @@ class waDbCacheIterator implements Iterator
         }
         return true;
     }
-    
+
     /**
      * Return number of the elements
      *
@@ -118,7 +117,7 @@ class waDbCacheIterator implements Iterator
     {
         return count($this->array);
     }
-    
+
     public function fetch()
     {
         $row = $this->current();

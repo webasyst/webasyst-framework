@@ -327,7 +327,7 @@ html { line-height: 1.15; -webkit-text-size-adjust: 100%; }
 body { margin: 0; }
 main { display: block; }
 hr { box-sizing: content-box; height: 0; overflow: visible; }
-pre { font-family: monospace, monospace; font-size: 1em; }
+pre { font-family: monospace, monospace; font-size: 1em; white-space: pre-wrap; }
 a { background-color: transparent; }
 abbr[title] { border-bottom: none; text-decoration: underline; text-decoration: underline dotted; }
 b, strong { font-weight: bolder; }

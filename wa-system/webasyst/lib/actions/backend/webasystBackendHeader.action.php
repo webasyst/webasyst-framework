@@ -49,6 +49,9 @@ class webasystBackendHeaderAction extends waViewAction
             }
         }
 
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+
         /**
          * @event backend_header
          * @param string $current_app
@@ -63,6 +66,8 @@ class webasystBackendHeaderAction extends waViewAction
             'ui_version' => $ui_version
         ];
         $backend_header = wa()->event(array('webasyst', 'backend_header'), $params);
+
+        waConfig::set('is_template', $is_from_template);
 
         $header_top = [];
         $header_middle = [];
@@ -136,7 +141,7 @@ class webasystBackendHeaderAction extends waViewAction
             'backend_url'     => $backend_url,
             'request_uri'     => $request_uri,
             'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
-            'company_name'    => htmlspecialchars($app_settings_model->get('webasyst', 'name', _ws('My company, LLC')), ENT_QUOTES, 'utf-8'),
+            'company_name'    => htmlspecialchars($app_settings_model->get('webasyst', 'name', _ws('My company')), ENT_QUOTES, 'utf-8'),
             'logo'            => (new webasystLogoSettings())->get(),
             'company_url'     => $app_settings_model->get('webasyst', 'url', wa()->getRootUrl(true)),
             'date'            => $date,

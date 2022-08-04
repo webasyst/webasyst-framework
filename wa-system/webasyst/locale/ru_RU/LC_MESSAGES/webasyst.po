@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-06-09 10:43+0300\n"
+"PO-Revision-Date: 2022-06-20 12:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -6544,8 +6544,8 @@ msgstr "Доступ установлен персонально для этог
 msgid "Access inherited from user groups"
 msgstr "Доступ унаследован от групп"
 
-msgid "My company, LLC"
-msgstr "ООО «Моя компания»"
+msgid "My company"
+msgstr "Моя компания"
 
 msgid "Error while running update of %s.%s plugin: %s"
 msgstr "Ошибка во время выполнения метаобновления плагина %s.%s: %s"
@@ -6582,3 +6582,6 @@ msgstr "Webasyst готов к работе! Используйте устано
 
 msgid "Names must not contain URLs."
 msgstr "Имена не должны содержать URL-адреса."
+
+msgid "No supported network transports are available."
+msgstr "Отсутствуют поддерживаемые сетевые инструменты передачи данных."

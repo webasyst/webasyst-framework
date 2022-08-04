@@ -2361,7 +2361,7 @@
             that.wa_url =  window.wa_url || '/';
 
             //
-            that.options.arrow = false;
+            that.options.arrow = that.options.arrow || false;
             if (that.icon) {
                 that.options.allowHTML = true;
             }

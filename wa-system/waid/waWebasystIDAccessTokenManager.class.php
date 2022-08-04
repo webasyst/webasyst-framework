@@ -83,6 +83,10 @@ class waWebasystIDAccessTokenManager
             'email' => isset($params['email']) && is_string($params['email']) ? $params['email'] : '',
         ];
 
+        if (!empty(ifempty($params['aux_info']))) {
+            $payload['aux_info'] = json_encode($params['aux_info']);
+        }
+
         $header_str = json_encode($header);
         $header_str = waUtils::urlSafeBase64Encode($header_str);
         $payload_str = json_encode($payload);
@@ -158,6 +162,13 @@ class waWebasystIDAccessTokenManager
 
         if (isset($payload['email']) && is_string($payload['email'])) {
             $info['email'] = $payload['email'];
+        }
+
+        if (isset($payload['aux_info']) && is_string($payload['aux_info'])) {
+            $aux_info = json_decode($payload['aux_info'], true);
+            if (is_array($aux_info)) {
+                $info['aux_info'] = $aux_info;
+            }
         }
 
         return $info;

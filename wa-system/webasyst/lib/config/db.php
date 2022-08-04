@@ -312,6 +312,7 @@ return array(
         ':keys' => array(
             'PRIMARY' => 'id',
             'contact' => array('contact_id', 'id'),
+            'datetime' => 'datetime',
         ),
     ),
     'wa_login_log' => array(
