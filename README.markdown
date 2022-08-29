@@ -29,7 +29,7 @@ Website: http://www.webasyst.com
 	git:
 	```
 	cd %PATH%
-	git clone git://github.com/webasyst/webasyst-framework.git
+	git clone git@github.com:webasyst/webasyst-framework.git
 	```
 
 	SVN:
