@@ -229,8 +229,8 @@ msgstr "Поиск"
 msgid "Choose all"
 msgstr "Выбрать все"
 
-msgid "No region selected in country settings"
-msgstr "В настройках страны не выбран ни один регион"
+msgid "No regions are set up for this country."
+msgstr "Для этой страны регионы не настроены."
 
 msgid "Save"
 msgstr "Сохранить"
