@@ -262,7 +262,7 @@ class siteRoutingSaveController extends waJsonController
                     $name = $title;
                 } else {
                     $app_settings_model = new waAppSettingsModel();
-                    $name = $app_settings_model->get('webasyst', 'name', _ws('My company, LLC'));
+                    $name = $app_settings_model->get('webasyst', 'name', _ws('My company'));
                 }
             } elseif ($app_id == ':text') {
                 $params += array(
