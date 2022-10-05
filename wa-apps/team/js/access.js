@@ -843,7 +843,9 @@ window.ProfileAccessTab = function(o) { "use strict";
                         } catch (e) {
                         }
                     }
+                    const new_url = window.location.href.replace(login, new_login);
                     login = new_login;
+                    window.location.assign(new_url);
                 } else if (r.status === 'fail') {
                     $form.find('input[type="submit"]').parent().prepend($('<p class="state-error-hint custom-mt-4 custom-mb-8">'+r.errors.join("\n<br>\n")+'</p>'));
                 }

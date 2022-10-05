@@ -221,12 +221,27 @@
                     {$_selector_avaiable = !$is_webasyst_id_forced || $_has_credentials}
 
                     {if $_selector_avaiable}
-                        <div class="wa-select small custom-mb-8">
-                            <select id="c-access-rights-toggle">
-                                <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
-                                <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
-                                <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
-                            </select>
+                        {$event_message = ''}
+                        <!-- plugin hook: 'frontend_user_backend_access' -->
+                        {* @event frontend_user_backend_access.%app_id% *}
+                        {foreach $frontend_user_backend_access as $message}
+                            {if $message}
+                                {$event_message = "`$event_message` `$message`"}
+                            {/if}
+                        {/foreach}
+                        <div class="custom-mb-8">
+                            <div class="wa-select small">
+                                <select id="c-access-rights-toggle" {if $event_message}disabled{/if}>
+                                    <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
+                                    <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
+                                    <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
+                                </select>
+                            </div>
+                            {if $event_message}
+                                <div class="hint custom-mt-4">
+                                    {$event_message|strip}  
+                                </div>
+                            {/if}
                         </div>
                         <div>
                             <span id="access-rights-toggle-confirm" style="display:none;">
@@ -466,14 +481,32 @@
                             >
                                 <i class="fas fa-times-circle text-red"></i> [`Block contact`]
                             </a>
+
+                            {$event_message = ''}
+                            {if $contact.is_user == '-1'}
+                                <!-- plugin hook: 'frontend_user_backend_access' -->
+                                {* @event frontend_user_backend_access.%app_id% *}
+                                {foreach $frontend_user_backend_access as $message}
+                                    {if $message}
+                                        {$event_message = "`$event_message` `$message`"}
+                                    {/if}
+                                {/foreach}
+                            {/if}
+
                             <a href="javascript:void(0)"
-                               id="c-access-link-unblock"
-                               class="c-shown-on-disabled semibold"
-                                    {if $contact.is_user != '-1'} style="display:none"{/if}
-                               data-alert="[`Enable this contact?`]"
+                                {if empty($event_message)}
+                                    id="c-access-link-unblock"
+                                    data-alert="[`Enable this contact?`]"
+                                {/if}
+                                {if $contact.is_user != '-1'} style="display:none"{/if}
+                                class="c-shown-on-disabled semibold{if !empty($event_message)} gray{/if}"
                             >
                                 [`Unblock contact`]
                             </a>
+                            {if $contact.is_user == '-1' && !empty($event_message)}
+                                <div class="hint">{$event_message|strip}</div>
+                            {/if}
+
                             <i class="fas fa-spinner fa-spin loading wa-animation-spin speed-1000" style="display:none;"></i>
                             <form class="js-block-user-reason-form custom-mt-16" style="display: none">
                                 <textarea class="js-block-user-reason small" placeholder="[`Optional comment about the reason for blocking`]"></textarea>

@@ -71,7 +71,10 @@ class teamProfileAccessAction extends waViewAction
             $invite_token['expires_in'] = teamUsersInvitedAction::timeLeft($invite_token['expire_datetime']);
         }
         unset($invite_token);
-
+        
+        $event_data = compact('user', 'invite_tokens', 'groups', 'apps');
+        $frontend_user_backend_access = (!$ownAccess['webasyst'] && $noAccess || $user['is_user'] == '-1') ? 
+            wa()->event('frontend_user_backend_access', $event_data) : null;
         $ui = waRequest::get('ui', null, waRequest::TYPE_STRING_TRIM) and waRequest::setParam('force_ui_version', $ui);
 
         $group_model = new waGroupModel();
@@ -109,6 +112,8 @@ class teamProfileAccessAction extends waViewAction
             'customer_center_auth_url'       => $this->getCustomerCenterAuthUrl(),
             'webasyst_id_email'              => $this->getWebasystIDEmail(),
             'is_webasyst_id_forced'          => $this->isWebasystIDForced(),
+
+            'frontend_user_backend_access'   => $frontend_user_backend_access,
         ));
     }
 

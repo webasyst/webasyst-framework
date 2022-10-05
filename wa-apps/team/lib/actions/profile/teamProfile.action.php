@@ -32,7 +32,7 @@ class teamProfileAction extends teamProfileContentViewAction
         $invite = null;
         if ($this->profile_contact['is_user'] == 0) {
             $watm = new waAppTokensModel();
-            $invite = $watm->select('expire_datetime')->where("contact_id=".intval($this->profile_contact['id']." AND expire_datetime < '".date('Y-m-d H:i:s')."'"))->fetchAssoc();
+            $invite = $watm->select('expire_datetime')->where("contact_id=".intval($this->profile_contact['id'])." AND expire_datetime > '".date('Y-m-d H:i:s')."'")->fetchAssoc();
         }
 
         $twasm = new teamWaAppSettingsModel();
