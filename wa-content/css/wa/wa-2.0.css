@@ -41,7 +41,7 @@ html {
     --highlighted-blue:                       #c9e9ff;
     --highlighted-yellow:                     #fea;
     --highlighted-pink:                       #ffc9ed;
-    --highlighted-green:                      #c4f4b4;
+    --highlighted-green:                      #d4f7c4;
     --highlighted-orange:                     #ffd1c1;
 
     /* core layout */
@@ -193,7 +193,7 @@ html[data-theme='dark'] {
     --highlighted-blue:                       rgba(40,121,204,0.5);
     --highlighted-yellow:                     rgba(155,145,25,0.15);
     --highlighted-pink:                       rgba(186,35,50,0.5);
-    --highlighted-green:                      rgba(50,135,50,0.5);
+    --highlighted-green:                      rgba(50,135,50,0.3);
     --highlighted-orange:                     rgba(202,85,46,0.25);
 
     --background-color:                       #07051c;
@@ -559,6 +559,7 @@ input[type="search"],
 input[type="email"],
 input[type="number"],
 input[type="time"],
+input[type="tel"],
 input[type="date"]{ display: inline-block; padding: 0.3125em 0.5em; border-radius: 0.25em; margin: 0 0.25em 0 0; border: 0.125em solid var(--border-color-input); line-height: 1.25em; background: var(--background-color-input); color: var(--text-color-input); -webkit-appearance: none; appearance: none; outline: none; box-sizing: border-box; max-width: 100%; transition: 0.1s; }
 input[type="number"],
 input.number { text-align: right; }
@@ -1348,6 +1349,8 @@ button.webasyst-magic-wand .icon,
 .icon.rounded,
 .icon > .rounded { border-radius: 50%; }
 .icon.userpic { font-size: 1.25rem; vertical-align: -0.125em; }
+.icon.webasyst-magic-wand { width: 1.25em; height: 1.25em; background-image: url('../../img/webasyst-wand-bold.svg') !important; background-size: 100%; vertical-align: -0.25em; margin-right: 0.25em; }
+
 
 button.icon { padding: 0; border: 0; outline: none; color: var(--text-color); }
 

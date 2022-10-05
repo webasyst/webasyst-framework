@@ -547,4 +547,12 @@ class waPlugin
         return $templates_dir . '/' . $template_path;
     }
 
+    /**
+     * @return bool
+     * @see waLicensing
+     */
+    public function isAnyPremiumFeatureEnabled()
+    {
+        return false;
+    }
 }

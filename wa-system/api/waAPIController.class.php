@@ -175,7 +175,7 @@ class waAPIController
 
         $tokens_model = new waApiTokensModel();
         $data = $tokens_model->getById($token);
-        if (!$data) {
+        if (!$data || $data['token'] != $token) {
             throw new waAPIException('invalid_token', 'Invalid access token', 401);
         }
         if ($data['expires'] && (strtotime($data['expires']) < time())) {

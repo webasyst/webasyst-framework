@@ -2864,6 +2864,7 @@ HTACCESS;
             foreach ($files as $file) {
                 $file_name = ifempty($file['filename']);
                 $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+                $file_ext = mb_strtolower($file_ext);
 
                 foreach ($missed_images as $i => $image) {
                     $pattern = "@(/|^)".wa_make_pattern($image, '@')."$@";

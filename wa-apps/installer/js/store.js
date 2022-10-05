@@ -124,8 +124,14 @@ var InstallerStore = (function ($) {
                         if (that.options.uiVersion !== '1.3') {
                             that.postMessage({
                                 action: 'this_new_ui',
-                                version: that.options.uiVersion
+                                version: that.options.uiVersion,
+                                theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
                             })
+
+                            document.documentElement.addEventListener(
+                                'wa-theme-change',
+                                () => that.postMessage({theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'})
+                            )
                         }
 
                         if (data.in_app && data.title) {

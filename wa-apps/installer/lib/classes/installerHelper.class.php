@@ -462,6 +462,44 @@ class installerHelper
         return self::assetSetStatus($app_id, null, $status);
     }
 
+    /**
+     * @return array of three elements: app_id, ext_id and type (app|plugin|theme|widget|payment|shipping|sms)
+     * @since 2.7.0
+     */
+    public static function parseSlug($slug)
+    {
+        $parts = explode('/', $slug, 4);
+
+        // app?
+        if (count($parts) == 1) {
+            return [$slug, null, 'app'];
+        }
+
+        if (count($parts) == 3) {
+
+            // app plugin, theme, or widget?
+            // system-wide widgets inside wa-widgets directory
+            // go here, too, e.g.: webasyst/widgets/currencyquotes
+            if ($parts[1] == 'plugins') {
+                return [$parts[0], $parts[2], 'plugin'];
+            } else if ($parts[1] == 'widgets') {
+                return [$parts[0], $parts[2], 'widget'];
+            } else if ($parts[1] == 'themes') {
+                return [$parts[0], $parts[2], 'theme'];
+            }
+
+            // system plugin: payment, shipping, or sms?
+            if ($parts[0] == 'wa-plugins') {
+                if ($parts[1] == 'payment' || $parts[1] == 'shipping' || $parts[1] == 'sms') {
+                    return ['webasyst', $parts[2], $parts[1]];
+                }
+            }
+
+        }
+
+        // Unsupported type of slug
+        return [null, null, 'unsupported'];
+    }
 
     /**`
      * @param $app_id

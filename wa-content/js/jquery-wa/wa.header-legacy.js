@@ -158,11 +158,13 @@ $(function () {
 
     $('.js-webasyst-id-connect-announcement .js-webasyst-id-helplink').on('click', function (e) {
         e.preventDefault();
+        e.stopImmediatePropagation();
         showWebasystIDHelp();
     });
 
     $('.js-webasyst-id-auth-announcement .js-webasyst-id-helplink').on('click', function (e) {
         e.preventDefault();
+        e.stopImmediatePropagation();
         showWebasystIDHelp();
     });
 
