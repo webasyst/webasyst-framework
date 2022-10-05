@@ -1641,3 +1641,6 @@ msgstr "Неверный формат номера телефона."
 
 msgid "This installation is not connected to Webasyst ID."
 msgstr "Эта установка не подключена к Webasyst ID."
+
+msgid "This profile is not available for editing."
+msgstr "Этот профиль недоступен для редактирования."

@@ -55,7 +55,9 @@ class waImage
     {
         try {
             $file = realpath($file);
-            $image_info = @getimagesize($file);
+            if ($file) {
+                $image_info = @getimagesize($file);
+            }
         }
         catch (Exception $e){}
         if (empty($file) OR empty($image_info)) {

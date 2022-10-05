@@ -33,6 +33,7 @@ class waNet
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
     const METHOD_PUT = 'PUT';
+    const METHOD_PATCH = 'PATCH'; // since 2.7.0
     const METHOD_DELETE = 'DELETE';
 
     const FORMAT_JSON = 'json';
@@ -260,6 +261,7 @@ class waNet
         switch ($method) {
             case self::METHOD_POST:
             case self::METHOD_PUT:
+            case self::METHOD_PATCH:
             case self::METHOD_DELETE:
                 $content = $this->encodeRequest($content);
                 break;
@@ -737,14 +739,9 @@ class waNet
                         $curl_options[CURLOPT_POSTFIELDS] = $content;
                     }
                     break;
-                case self::METHOD_PUT:
-                    $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
-                    if ($content) {
-                        $curl_options[CURLOPT_POST] = 0;
-                        $curl_options[CURLOPT_POSTFIELDS] = $content;
-                    }
-                    break;
                 case self::METHOD_DELETE:
+                case self::METHOD_PATCH:
+                case self::METHOD_PUT:
                     $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
                     if ($content) {
                         $curl_options[CURLOPT_POST] = 0;
@@ -854,7 +851,7 @@ class waNet
 
         $context_params['header'] = implode("\r\n", $headers); //5.2.10 array support
 
-        if (in_array($method, array(self::METHOD_POST, self::METHOD_PUT))) {
+        if (in_array($method, array(self::METHOD_POST, self::METHOD_PUT, self::METHOD_PATCH))) {
             $context_params += array(
                 'method'  => $method,
                 'content' => $content,
@@ -864,6 +861,8 @@ class waNet
             'follow_location' => true,//PHP >= 5.3.4
             'max_redirects'   => 5,
         );
+
+        $context_params = ['http' => $context_params];
 
         //SSL
         if (!empty($this->options['verify'])) {
@@ -889,7 +888,7 @@ class waNet
             $context_params['ssl']['verify_peer_name'] = false;
         }
 
-        return stream_context_create(array('http' => $context_params,));
+        return stream_context_create($context_params);
     }
 
     /**

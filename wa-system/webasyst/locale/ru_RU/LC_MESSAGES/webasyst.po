@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-06-20 12:56+0300\n"
+"PO-Revision-Date: 2022-10-03 15:13+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -6585,3 +6585,15 @@ msgstr "Имена не должны содержать URL-адреса."
 
 msgid "No supported network transports are available."
 msgstr "Отсутствуют поддерживаемые сетевые инструменты передачи данных."
+
+msgid "<strong>Enable secure sign-in with 2-factor authentication (2FA).</strong> Your account will be connected to Webasyst ID, and any sign-in attempts from new devices will be protected with an SMS confirmation code."
+msgstr "<strong>Подключите безопасный вход с двухфакторной аутентификацией (2FA).</strong> Ваш аккаунт будет подключен к Webasyst ID, и все попытки входа с новых устройств будут защищены подтверждением по SMS."
+
+msgid "+1"
+msgstr "+7"
+
+msgid "Sign-in with 2FA"
+msgstr "Вход с 2FA"
+
+msgid "Last sign-in with 2-factor authentication"
+msgstr "Последний вход с двухфакторной авторизацией"

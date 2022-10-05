@@ -2311,8 +2311,15 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     'type': that.contactType,
                     'id': that.contact_id != null ? that.contact_id : 0
                 }, function(newData) {
-                    if (newData.status != 'ok') {
-                        throw new Exception('AJAX error:', newData);
+                    if (newData.status !== 'ok') {
+                        if (newData.errors.length) {
+                            showError(newData.errors['0']);
+                            return;
+                        } else {
+                            throw new Exception('AJAX error:', newData);
+                        }
+                    } else {
+                        deleteError();
                     }
 
                     var oldData = that.fieldsValues || {};
@@ -2381,6 +2388,15 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     }
 
                 }, 'json');
+            }
+
+            function showError(error) {
+                $('.buttons .loading').hide();
+                $('#validation-notice').text(error.text);
+            }
+
+            function deleteError() {
+                $('#validation-notice').text('');
             }
 
             function updateGeocoding(oldData, newData) {
@@ -2554,6 +2570,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             var cancelBtn = $('<a href="javascript:void(0)" class="cancel button light-gray js-close-dialog">'+$_('Cancel')+'</a>');
             cancelBtn.on('click', function(event) {
                 event.preventDefault();
+                $('#validation-notice').text('');
                 $('.buttons .loading').hide();
 
                 // remove topmost validation errors

@@ -9,7 +9,11 @@ class teamProfileSaveController extends webasystProfileSaveController
         $this->id = waRequest::post('id', null, 'int');
         $this->can_edit = teamUser::canEdit($this->id);
         if (!$this->id || !$this->can_edit) {
-            throw new waRightsException();
+            $this->errors[] = [
+                'id' => 'cannot_be_edited',
+                'text' => _w('This profile is not available for editing.'),
+            ];
+            return null;
         }
         return new waContact($this->id);
     }

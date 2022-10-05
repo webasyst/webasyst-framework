@@ -27,6 +27,7 @@ export default {
         const resp = await this.axios.get('?module=pages&action=about');
         this.page = resp.data;
         this.state.loading = false;
+        document.title = 'About — API Explorer';
     }
 }
 </script>

@@ -133,6 +133,10 @@ class webasystBackendActions extends waViewActions
             'show_tutorial'      => !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'),
             'public_dashboards'  => $this->getPublicDashboards(),
             'no_today_activity'  => $no_today_activity,
+            'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
+            'webasyst_id_auth_banner'  => $this->getWebasystIDAuthBanner(),
+            'show_connection_banner'   => $this->showConnectionBanner(),
+            'current_domain'     => $this->getCurrentDomain(),
         ]);
     }
 
@@ -234,5 +238,9 @@ class webasystBackendActions extends waViewActions
 
         return $public_dashboards;
     }
-}
 
+    protected function getCurrentDomain() {
+        $domain = wa()->getConfig()->getDomain();
+        return waIdna::dec($domain);
+    }
+}

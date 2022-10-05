@@ -172,9 +172,10 @@ var WelcomePage = ( function($) {
                     index = parseInt( name.replace(/[^0-9]/g, '') );
 
                 var $field = that.$inviteList.find(".t-invite-item").eq(index).find('[type="email"]');
-                if ($field.length) {
+                if ($field.length || name == 'general') {
                     result.push({
                         $field: $field,
+                        name: name,
                         locale: locale
                     });
                 }
@@ -189,10 +190,10 @@ var WelcomePage = ( function($) {
 
         if ($input) {
             $input.removeClass(error_class);
-            $input.parent().find(".state-error-hint").remove();
+            $input.closest(".t-invite-item").find(".state-error-hint").remove();
         } else {
-            that.$inviteList.find(".state-error-hint").remove();
-            that.$inviteList.find("." + error_class).removeClass(error_class);
+            that.$wrapper.find(".state-error-hint").remove();
+            that.$wrapper.find("." + error_class).removeClass(error_class);
         }
     };
 
@@ -205,9 +206,14 @@ var WelcomePage = ( function($) {
         $.each(errors, function(index, item) {
             var error = '<span class="state-error-hint" style="display: block">' + item.locale + '</span>';
 
-            item.$field
-                .addClass(error_class)
-                .after( error );
+            if (item.name == 'general') {
+                that.$inviteWrapper.after( error );
+            } else {
+                item.$field
+                    .addClass(error_class)
+                    .closest(".t-invite-item")
+                    .append( error );
+            }
         });
 
     };

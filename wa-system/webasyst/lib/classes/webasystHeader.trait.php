@@ -144,4 +144,64 @@ trait webasystHeaderTrait
         }
         return $announcements;
     }
+
+    protected function getWebasystIDSettingsUrl()
+    {
+        return wa()->getConfig()->getBackendUrl(true) . 'webasyst/settings/waid/';
+    }
+
+    /**
+     * Is installation connected to webasyst ID
+     * @return bool
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function isConnectedToWebasystID()
+    {
+        // client (installation) not connected
+        $auth = new waWebasystIDWAAuth();
+        return $auth->isClientConnected();
+    }
+
+    protected function showConnectionBanner()
+    {
+        $is_connected = $this->isConnectedToWebasystID();
+        if ($is_connected) {
+            return false;
+        }
+
+        $is_closed = wa()->getUser()->getSettings('webasyst', 'webasyst_id_announcement_close');
+        if ($is_closed) {
+            return false;
+        }
+
+        return wa()->getUser()->isAdmin('webasyst');
+    }
+
+    protected function getWebasystIDAuthBanner()
+    {
+        $is_closed = wa()->getUser()->getSettings('webasyst', 'webasyst_id_announcement_close');
+        if ($is_closed) {
+            return null;
+        }
+
+        $is_connected = $this->isConnectedToWebasystID();
+        if (!$is_connected) {
+            return null;
+        }
+
+        // user is bound with webasyst contact id already
+        $user = $this->getUser();
+        $webasyst_contact_id = $user->getWebasystContactId();
+        if ($webasyst_contact_id) {
+            return null;
+        }
+
+        $auth_url = (new waWebasystIDWAAuth)->getUrl();
+        $phone_formatted = (new waContactPhoneField('phone', ''))->format(wa()->getUser()->get('phone', 'default'), 'value');
+        return [
+            'url' => $auth_url,
+            'phone' => $phone_formatted,
+        ];
+    }
 }

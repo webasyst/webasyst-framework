@@ -64,10 +64,33 @@ var SystemPaymentSBPluginSettings = ( function($) {
             $subjects = that.$wrapper.find('.js-payment-sb-subjects-wrapper'),
             $tax_system = that.$wrapper.find('.js-payment-sb-tax-wrapper'),
             $fiscalization = that.$wrapper.find('.js-payment-sb-fiscalization'),
+            $ffd_block = that.$wrapper.find('.js-payment-sb-ffd-wrapper'),
+            $ffd_version = that.$wrapper.find('#sb_payment_ffd_version'),
+            $okei_table = that.$wrapper.find('.js-okei-table'),
             $credit = that.$wrapper.find('.js-payment-sb-credit');
 
         $fiscalization.on('change', function () {
             showSubject();
+        });
+
+        $ffd_version.on('change', function (e) {
+            if ($(this).val() === '1.2') {
+                $okei_table.show();
+
+            } else {
+                $okei_table.hide();
+            }
+        });
+
+        $okei_table.on('click', 'a', function (e) {
+            e.preventDefault();
+            if ($(this).text() === 'Развернуть') {
+                $(this).text('Свернуть');
+                $okei_table.find('table').show();
+            } else {
+                $(this).text('Развернуть');
+                $okei_table.find('table').hide();
+            }
         });
 
         function showSubject() {
@@ -80,12 +103,15 @@ var SystemPaymentSBPluginSettings = ( function($) {
 
                 if ($credit.is(':checked')) {
                     $subjects.hide();
+                    $ffd_block.hide();
                 } else {
                     $subjects.show();
+                    $ffd_block.show();
                 }
 
             } else {
                 $subjects.hide();
+                $ffd_block.hide();
                 $tax_system.hide();
             }
         }

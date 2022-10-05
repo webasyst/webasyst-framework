@@ -104,6 +104,106 @@
             <div class="flexbox">
                 <div class="content blank">
                     <section class="dashboard-apps js-dashboard-apps" data-nav="apps">
+                        {if !empty($show_connection_banner)}
+                            <div class="box rounded highlighted green custom-p-16 custom-pb-4 custom-m-16 js-waid-alert">
+                                <div class="flexbox">
+                                    <div class="js-webasyst-id-announcement js-webasyst-id-auth-announcement js-webasyst-id-connect-announcement w-webasyst-id-banner">
+                                        <p class="small">
+                                            <i class="icon webasyst-magic-wand"></i>
+                                            [s`<strong>Enable sign-in with Webasyst ID</strong>, a universal authorization option that unites Webasyst Customer Center and backend sign-in on your custom domains. Webasyst ID allows you to use all Webasyst apps, sites, and services, and to avoid the use of different passwords on various domains.`]&nbsp;
+                                            <a href="javascript:void(0)"
+                                               class="button large green width-100 bold custom-mt-12 js-webasyst-id-connect">{sprintf('[s`Enable&nbsp;Webasyst&nbsp;ID on %s — it’s free and secure!`]', $current_domain|escape|mb_strtoupper)}</a>
+                                        </p>
+                                        <div class="custom-mb-12 align-center">
+                                            <a href="javascript:void(0);" class="small js-webasyst-id-helplink">[s`How does it work?`]</a>
+                                        </div>
+                                    </div>
+                                    <a href="javascript:void(0);" class="alert-close" title="[s`Close`]">
+                                        <i class="fas fa-times custom-ml-16 black opacity-30"></i>
+                                    </a>
+                                </div>
+                                <script>
+                                    const $waid_alert = $('.js-waid-alert');
+
+                                    $waid_alert.on('click', '.js-webasyst-id-connect', function (e) {
+                                        e.preventDefault();
+                                        location.href = '{$webasyst_id_settings_url}';
+                                    });
+
+                                    $waid_alert.on('click', '.js-webasyst-id-helplink', function (e) {
+                                        e.preventDefault();
+                                        const url = "{$wa_backend_url}?module=backend&action=webasystIDHelp";
+                                        $.get(url, html => $('body').append(html));
+                                    });
+
+                                    $waid_alert.on("click", ".alert-close", function(e) {
+                                        e.preventDefault();
+                                        const url = "{$wa_backend_url}?module=settings&action=save";
+                                        $.post(url, {
+                                            app_id: 'webasyst',
+                                            name: 'webasyst_id_announcement_close',
+                                            value: 'now()'
+                                        }, function () {
+                                            $waid_alert.hide()
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        {elseif !empty($webasyst_id_auth_banner)}
+                            <div class="box rounded highlighted green custom-p-16 custom-pb-4 custom-m-16 js-link-phone-alert">
+                                <div class="flexbox">
+                                    <p class="custom-mb-16 small">
+                                        <i class="icon webasyst-magic-wand"></i>
+                                        [s`<strong>Enable secure sign-in with 2-factor authentication (2FA).</strong> Your account will be connected to Webasyst ID, and any sign-in attempts from new devices will be protected with an SMS confirmation code.`]
+                                    </p>
+                                    <a href="javascript:void(0);" class="alert-close" title="[s`Close`]">
+                                        <i class="fas fa-times custom-ml-16 black opacity-30"></i>
+                                    </a>
+                                </div>
+                                <form class="">
+                                    <input type="tel" placeholder="[s`+1`]" class="width-100 custom-mb-12 solid bold" value="{$webasyst_id_auth_banner.phone|default:'[s`+1`]'}" style="background-color: var(--background-color-blank);">
+                                    <button type="submit" class="button gradient green width-100">[s`Connect`]</button>
+                                    <div class="custom-m-12 align-center">
+                                        <a href="javascript:void(0);" class="js-webasyst-id-helplink small">[s`How does it work?`]</a>
+                                    </div>
+                                    <script>
+                                        const $link_phone_alert = $('.js-link-phone-alert');
+                                        const $link_phone_form = $link_phone_alert.find('form');
+                                        {if !empty($webasyst_id_auth_banner)}
+                                            $link_phone_form.on('submit', function (e) {
+                                                e.preventDefault();
+                                                const phone_number = $(this).find('input').val();
+                                                let phone_param = '';
+
+                                                if (phone_number) {
+                                                    phone_param = '&phone=' + phone_number.replace(/[^-0-9\s.():+]/g,'')
+                                                }
+
+                                                const referrer_url = window.location.href;
+                                                window.location.replace('{$webasyst_id_auth_banner.url}&referrer_url=' + encodeURIComponent(referrer_url) + phone_param)
+                                            });
+                                        {/if}
+                                        $link_phone_form.on('click', '.js-webasyst-id-helplink', function (e) {
+                                            e.preventDefault();
+                                            const url = {$wa_backend_url} + "?module=backend&action=webasystIDHelp";
+                                            $.get(url, html => $('body').append(html));
+                                        });
+
+                                        $link_phone_alert.on("click", ".alert-close", function(e) {
+                                            e.preventDefault();
+                                            const url = {$wa_backend_url} + "?module=settings&action=save";
+                                            $.post(url, {
+                                                app_id: 'webasyst',
+                                                name: 'webasyst_id_announcement_close',
+                                                value: 'now()'
+                                            }, function () {
+                                                $link_phone_alert.hide()
+                                            });
+                                        });
+                                    </script>
+                                </form>
+                            </div>
+                        {/if}
                         <ul>
                             {foreach $header_items as $app_id => $app}
 

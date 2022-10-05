@@ -20,6 +20,16 @@
         </span>
         <input v-else-if="schema.format === 'email'" :value="modelValue" @input="updateValue($event.target.value)" :id="name" type="email" />
         <input v-else-if="schema.format === 'password'" :value="modelValue" @input="updateValue($event.target.value)" :id="name" type="password" />
+        <div v-else-if="schema.format === 'binary'">
+            <div class="upload">
+                <label class="link">
+                    <i class="fas fa-file-upload"></i>
+                    <span v-if="filename" class="custom-mx-8">{{ filename }}</span>
+                    <span v-else class="custom-mx-8">{{ $t("Select file") }}</span>
+                    <input type="file" autocomplete="off" @change="readFile" :id="name" />
+                </label>
+            </div>
+        </div>
         <input v-else :value="modelValue" @input="updateValue($event.target.value)" :id="name" type="text" class="long" />
     </span>
     <input v-else-if="schema.type === 'integer'" :value="modelValue" @input="updateValue($event.target.value)" :id="name" type="number" />
@@ -132,7 +142,8 @@ export default {
     },
     data() {
         return {
-            l_value: {}
+            l_value: {},
+            filename: null
         };
     },
     created() {
@@ -166,6 +177,19 @@ export default {
       updateValue: function (val) {
         this.$emit('update:modelValue', val);
         this.$emit('updated');
+      },
+      readFile: function (event) {
+        if (event.target.files.length == 0) {
+            return;
+        }
+        const file = event.target.files[0];
+        if (Object.prototype.toString.call(file) !== '[object File]') {
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = e => this.updateValue(e.target.result);
+        reader.readAsBinaryString(file);
+        this.filename = file.name;
       },
       updateArrValue: function (val, index) {
         this.l_value[index] = val;

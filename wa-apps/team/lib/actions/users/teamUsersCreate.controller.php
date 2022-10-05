@@ -30,6 +30,12 @@ class teamUsersCreateController extends teamUsersNewUserController
             return;
         }
 
+        $event_data = compact('email', 'groups', 'contact_info', 'credentials');
+        $this->runCreateUserHook($event_data);
+        if ($this->errors) {
+            return;
+        }
+
         $data = $credentials;
         unset($data['password_confirm']);
         $data['email'] = array($email);
@@ -111,6 +117,21 @@ class teamUsersCreateController extends teamUsersNewUserController
         $rm->save($contact_id, 'team', 'backend', 1);
 
         return $contact_id;
+    }
+
+    /**
+     * @param array $event_data
+     * @return void
+     * @throws waException
+     */
+    protected function runCreateUserHook($event_data)
+    {
+        $create_user_event = wa()->event('create_user', $event_data);
+        foreach ($create_user_event as $message) {
+            if ($message) {
+                $this->errors[] = [$message, 'general'];
+            }
+        }
     }
 
 }

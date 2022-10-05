@@ -160,9 +160,9 @@
                     <tr>
                         <th class="min-width"></th>
                         <th>[s`Name`]</th>
-                        <th>[`Webasyst ID`]</th>
-                        <th>[s`Connected`]</th>
-                        <th>[s`Last sign-in with Webasyst ID`]</th>
+                        <th>[s`Webasyst ID`]</th>
+                        <th class="align-center">[s`Connected`]</th>
+                        <th class="align-center" title="[s`Last sign-in with 2-factor authentication`]">[s`Sign-in with 2FA`]</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -183,8 +183,16 @@
                                     {$user.webasyst_id|escape}</a><i class="shortener"></i>
 </div>
                             </td>
-                            <td>{$user.waid_create_datetime|wa_date:'humandatetime'}</td>
-                            <td>{$user.waid_login_datetime|wa_date:'humandatetime'}</td>
+                            <td class="align-center">{* $user.waid_create_datetime|wa_date:'humandatetime' *}
+                                <i class="fas fa-check text-green"></i>
+                            </td>
+                            <td class="align-center">
+                                {if $user.two_fa_mode && $user.two_fa_time}
+                                    {$user.two_fa_time|wa_date:'humandatetime'}
+                                {else}
+                                    <i class="fas fa-times text-grey"></i>
+                                {/if}
+                            </td>
                         </tr>
                     {/foreach}
                     </tbody>

@@ -1,5 +1,6 @@
 .wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body {
   width: 500px;
+  z-index: inherit;
 }
 .wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .wa-dialog-content {
   padding-bottom: 20px;

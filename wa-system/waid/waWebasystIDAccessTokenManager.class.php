@@ -83,6 +83,18 @@ class waWebasystIDAccessTokenManager
             'email' => isset($params['email']) && is_string($params['email']) ? $params['email'] : '',
         ];
 
+        if (isset($params['phone']) && is_string($params['phone'])) {
+            $payload['phone'] = $params['phone'];
+        }
+
+        if (isset($params['two_fa_mode']) && is_string($params['two_fa_mode'])) {
+            $payload['two_fa_mode'] = $params['two_fa_mode'];
+        }
+
+        if (isset($params['two_fa_time']) && is_string($params['two_fa_time'])) {
+            $payload['two_fa_time'] = $params['two_fa_time'];
+        }
+
         if (!empty(ifempty($params['aux_info']))) {
             $payload['aux_info'] = json_encode($params['aux_info']);
         }
@@ -162,6 +174,18 @@ class waWebasystIDAccessTokenManager
 
         if (isset($payload['email']) && is_string($payload['email'])) {
             $info['email'] = $payload['email'];
+        }
+
+        if (isset($payload['phone']) && is_string($payload['phone'])) {
+            $info['phone'] = $payload['phone'];
+        }
+
+        if (isset($payload['two_fa_mode']) && is_string($payload['two_fa_mode'])) {
+            $info['two_fa_mode'] = $payload['two_fa_mode'];
+        }
+
+        if (isset($payload['two_fa_time']) && is_string($payload['two_fa_time'])) {
+            $info['two_fa_time'] = $payload['two_fa_time'];
         }
 
         if (isset($payload['aux_info']) && is_string($payload['aux_info'])) {

@@ -161,9 +161,10 @@ var WelcomePage = ( function($) {
                     index = parseInt( name.replace("data[", "").replace("][email]", "") );
 
                 var $field = that.$inviteList.find(".t-invite-item").eq(index).find(".t-field");
-                if ($field.length) {
+                if ($field.length || name == 'general') {
                     result.push({
                         $field: $field,
+                        name: name,
                         locale: locale
                     });
                 }
@@ -180,8 +181,8 @@ var WelcomePage = ( function($) {
             $input.removeClass(error_class);
             $input.parent().find(".t-error").remove();
         } else {
-            that.$inviteList.find(".t-error").remove();
-            that.$inviteList.find("." + error_class).removeClass(error_class);
+            that.$wrapper.find(".t-error").remove();
+            that.$wrapper.find("." + error_class).removeClass(error_class);
         }
     };
 
@@ -194,9 +195,13 @@ var WelcomePage = ( function($) {
         $.each(errors, function(index, item) {
             var error = '<span class="t-error">' + item.locale + '</span>';
 
-            item.$field
-                .addClass(error_class)
-                .before( error );
+            if (item.name == 'general') {
+                that.$inviteWrapper.after( error );
+            } else {
+                item.$field
+                    .addClass(error_class)
+                    .before( error );
+            }
         });
 
     };

@@ -197,8 +197,6 @@
                 }
 
                 var hash = location.hash;
-                console.log(hash);
-                console.log(params);
                 if (hash.indexOf('theme=') !== -1) {
                     if (!params['route']) {
                         hash = hash.replace(/&route=[^&]+/, '');

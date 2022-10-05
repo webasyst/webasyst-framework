@@ -1,5 +1,5 @@
 //import Vue from "vue";
-import { createI18n } from "vue-i18n";
+import { createI18n } from "vue-i18n/index";
 
 //Vue.use(VueI18n);
 

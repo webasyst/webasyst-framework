@@ -32,6 +32,7 @@ var WAThemeSettings = ( function($) {
         that.theme_routes = options["theme_routes"];
         that.design_url = options["design_url"];
         that.locale = options["locale"];
+        that.wa_url = options["wa_url"];
         that.theme_storage_key = "theme/"+that.theme_id+"/expand";
         that.expand_all_storage_value = '-ALL-';
         that.classes = {
@@ -107,6 +108,7 @@ var WAThemeSettings = ( function($) {
         }
 
         //
+        that.initDialog();
         if (that.is_wa2) {
             that.initThemeRenameDialogWA2();
             that.initThemeImportSettingsDialogWA2();
@@ -252,6 +254,7 @@ var WAThemeSettings = ( function($) {
                     }
                     $export_error_caption.html(res.errors.message + app_link);
                     $export_error.slideDown();
+                    $export_error.removeClass('hidden').css('display', 'inline-block');
                     $export_button.closest('li').addClass('disabled');
                     e.preventDefault();
                 } else {
@@ -1735,6 +1738,171 @@ var WAThemeSettings = ( function($) {
                 }
             });
         });
+    };
+
+    WAThemeSettings.prototype.initDialog = function () {
+        const that = this;
+        let dialog_undefined, sources;
+        if (that.is_wa2) {
+            dialog_undefined = (jQuery.waDialog === undefined);
+            sources = [{
+                id: "wa-dialog-js",
+                type: "js",
+                uri: `${that.wa_url}wa-content/js/jquery-wa/wa.js`
+            }];
+        }else{
+            dialog_undefined = (jQuery.fn.waDialog === undefined)
+            sources = [{
+                id: "wa-dialog-js",
+                type: "js",
+                uri: `${that.wa_url}wa-content/js/jquery-wa/wa.dialog.js`
+            }];
+        }
+
+        if (dialog_undefined && sources) {
+            sourceLoader(sources);
+        }
+
+        function sourceLoader(sources, async) {
+            async = (typeof async === "boolean" ? async : true);
+
+            const deferred = $.Deferred();
+
+            loader(sources).then( function() {
+                deferred.resolve();
+            }, function(bad_sources) {
+                if (console && console.error) {
+                    console.error("Error loading resource", bad_sources);
+                }
+                deferred.reject(bad_sources);
+            });
+
+            return deferred.promise();
+
+            function loader(sources) {
+                const deferred = $.Deferred();
+                let counter = sources.length;
+
+                const bad_sources = [];
+
+                if (async) {
+                    $.each(sources, (i, source) => loadSource(source));
+                } else {
+                    runner();
+                    function runner(i) {
+                        i = (typeof i === "number" ? i : 1);
+                        loadSource(sources[i - 1]).always( function() {
+                            if (i < sources.length) {
+                                runner(i + 1);
+                            }
+                        });
+                    }
+                }
+
+                return deferred.promise();
+
+                function loadSource(source) {
+                    let result;
+
+                    switch (source.type) {
+                        case "css":
+                            result = loadCSS(source).then(onLoad, onError);
+                            break;
+
+                        case "js":
+                            result = loadJS(source).then(onLoad, onError);
+                            break;
+
+                        default:
+                            const deferred = $.Deferred();
+                            deferred.reject();
+                            result = deferred.promise();
+                            counter -= 1;
+                            break;
+                    }
+
+                    return result;
+                }
+
+                function loadJS(source) {
+                    const deferred = $.Deferred();
+                    let promise = deferred.promise();
+
+                    const $script = $("#" + source.id);
+                    if ($script.length) {
+                        promise = $script.data("promise");
+
+                    } else {
+                        const script = document.createElement("script");
+                        document.getElementsByTagName("head")[0].appendChild(script);
+
+                        const $script = $(script)
+                            .attr("id", source.id)
+                            .data("promise", promise);
+
+                        $script
+                            .on("load", function() {
+                                deferred.resolve(source);
+                            }).on("error", function() {
+                            deferred.reject(source);
+                        });
+
+                        $script.attr("src", source.uri);
+                    }
+
+                    return promise;
+                }
+
+                function loadCSS(source) {
+                    const deferred = $.Deferred();
+                    let promise = deferred.promise();
+
+                    const $link = $("#" + source.id);
+                    if ($link.length) {
+                        promise = $link.data("promise");
+
+                    } else {
+                        const $link = $("<link />", {
+                            id: source.id,
+                            rel: "stylesheet"
+                        }).appendTo("head")
+                            .data("promise", promise);
+
+                        $link
+                            .on("load", function() {
+                                deferred.resolve(source);
+                            }).on("error", function() {
+                            deferred.reject(source);
+                        });
+
+                        $link.attr("href", source.uri);
+                    }
+
+                    return promise;
+                }
+
+                function onLoad() {
+                    counter -= 1;
+                    watcher();
+                }
+
+                function onError(source) {
+                    bad_sources.push(source);
+                    counter -= 1;
+                    watcher();
+                }
+
+                function watcher() {
+                    if (counter === 0) {
+                        if (!bad_sources.length) {
+                            deferred.resolve();
+                        } else {
+                            deferred.reject(bad_sources);
+                        }
+                    }
+                }
+            }
+        }
     };
 
     return WAThemeSettings;

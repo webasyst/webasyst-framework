@@ -931,7 +931,6 @@ class waAppConfig extends SystemConfig
     }
 
     /**
-     *
      * Update general plugin sort
      * @param string $plugin plugin id
      * @param int $sort 0 is first
@@ -940,20 +939,36 @@ class waAppConfig extends SystemConfig
     public function setPluginSort($plugin, $sort)
     {
         $path = $this->getConfigPath('plugins.php', true);
-        if (file_exists($path) && ($plugins = include($path)) && !empty($plugins[$plugin])) {
-            $sort = max(0, min(intval($sort), count($plugins) - 1));
-            $order = array_flip(array_keys($plugins));
-            if ($order[$plugin] != $sort) {
-                $b = array($plugin => $plugins[$plugin]);
-                unset($plugins[$plugin]);
-                $a = array_slice($plugins, 0, $sort, true);
-                $c = array_slice($plugins, $sort, null, true);
-                $plugins = array_merge($a, $b, $c);
-                if (waUtils::varExportToFile($plugins, $path)) {
-                    waFiles::delete(waConfig::get('wa_path_cache')."/apps/".$this->application.'/config', true);
-                } else {
-                    throw new waException("Fail while update plugins sort order");
+        if (file_exists($path) && ($all_plugins = include($path)) && !empty($all_plugins[$plugin])) {
+            $a     = [];
+            $c     = [];
+            $index = 0;
+            $sort = max(0, min(intval($sort), count($all_plugins) - 1));
+            foreach ($all_plugins as $plugin_id => $enabled) {
+                if ($plugin === $plugin_id) {
+                    continue;
                 }
+                if ($index < $sort) {
+                    $a[$plugin_id] = $enabled;
+                } else {
+                    $c[$plugin_id] = $enabled;
+                }
+
+                $plugin_config = $this->getPluginPath($plugin_id).'/lib/config/plugin.php';
+                if ($enabled && file_exists($plugin_config)) {
+                    /**
+                     * для положения в списке плагинов, учитываем разную нумерацию
+                     * и что плагины выводятся только включенные
+                     * и только действительно установленные
+                     */
+                    $index++;
+                }
+            }
+            $plugins = array_merge($a, [$plugin => $all_plugins[$plugin]], $c);
+            if (waUtils::varExportToFile($plugins, $path)) {
+                waFiles::delete(waConfig::get('wa_path_cache').'/apps/'.$this->application.'/config', true);
+            } else {
+                throw new waException("Fail while update plugins sort order");
             }
         }
     }
@@ -1007,5 +1022,14 @@ class waAppConfig extends SystemConfig
         // Called when route is not found in backend routing, see waFrontController.
         // Overriden in webasystConfig because of backend dashboard logic.
         throw new waException('Page not found', 404);
+    }
+
+    /**
+     * @return bool
+     * @see waLicensing
+     */
+    public function isAnyPremiumFeatureEnabled()
+    {
+        return false;
     }
 }
