@@ -44,7 +44,7 @@ class newsWidget extends waWidget
 
         if (wa()->getLocale() == 'ru_RU') {
             $feeds = array_merge(array(
-                'https://news.yandex.ru/index.rss' => 'Яндекс.Новости',
+                //'https://news.yandex.ru/index.rss' => 'Яндекс.Новости',
                 'http://russian.rt.com/rss/'       => 'Russia Today (на русском)',
                 'https://meduza.io/rss/all'        => 'Meduza.io',
             ), $feeds);
