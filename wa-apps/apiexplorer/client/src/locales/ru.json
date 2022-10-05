@@ -28,6 +28,7 @@
   "Headers": "Заголовки",
   "Schema": "Схема",
   "Request": "Запрос",
+  "Response": "Ответ",
   "no-api-message": "Приложение «{0}» не предоставляет публичного API",
   "No API": "Нет API",
   "no-api-hint": "Если вы являетесь разработчиком данного приложения, ознакомьтесь с инструкцией по созданию <a href='https://developers.webasyst.ru/docs/features/apis/' target='_blank'>публичного API в приложениях Webasyst</a>.",
@@ -38,5 +39,11 @@
   "URL parameters": "Параметры строки запроса",
   "Run API": "Запустить API",
   "Body": "Содержимое",
-  "OpenAPI Document": "Описание OpenAPI"
+  "OpenAPI Document": "Описание OpenAPI",
+  "Query string parameters": "Параметры строки запроса",
+  "Request body parameters": "Параметры тела запроса",
+  "Select file": "Выберите файл",
+  "Response data format": "Формат ответа",
+  "show": "показать",
+  "hide": "скрыть"
 }

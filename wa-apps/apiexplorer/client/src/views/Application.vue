@@ -37,6 +37,7 @@ export default {
   mounted() {
     this.app_id = this.$route.params.name;
     this.app = this.$store.getters.getApp(this.app_id);
+    document.title = this.app.name + ' — API Explorer';
   }
 }
 </script>
