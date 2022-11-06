@@ -666,7 +666,7 @@ class waModel
      * @return resource|bool Returns true if there are no data to be inserted.
      * @throws waException
      */
-    public function multipleInsert($data)
+    public function multipleInsert($dataб $mode=null)
     {
         if ($mode !== self::INSERT_IGNORE && !is_array($mode))
             return parent::multipleInsert($data);
