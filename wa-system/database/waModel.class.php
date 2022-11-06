@@ -653,14 +653,60 @@ class waModel
      *     'color' => array('red', 'green', 'blue'),
      * );</pre>
      *
+     * @param null|int|array $mode Allows to produce 'INSERT IGNORE ...' or 'INSERT ... ON DUPLICATE KEY UPDATE ...' queries
+     *     a) if $mode is int and equals to waModel::INSERT_IGNORE it allows to ignore rows with duplicate PRIMARY/UNIQUE keys
+     *     b) if $mode is array it contains fields to be updated in case of duplicate PRIMARY/UNIQUE key. See an example
+     *        which sets a field 'updated' to the fixed value and updates field 'name' with new value from dataset provided
+     *        in the $data array
+     * @example <pre>array(
+     *      'updated' => '2022-02-22 16:15:11',
+     *      'name=VALUES(name)'
+     *);<pre>
+     *
      * @return resource|bool Returns true if there are no data to be inserted.
      * @throws waException
      */
     public function multipleInsert($data)
     {
-        if (!$data) {
-            return true;
+        if ($mode !== self::INSERT_IGNORE && !is_array($mode))
+            return parent::multipleInsert($data);
+
+        $data = $this->_prepareMultipleInsertData($data);
+        if (!$data || empty($data['fields']) || empty($data['values'])) return true;
+
+        $sql = 'INSERT' . ($mode === self::INSERT_IGNORE ? ' IGNORE' : '');
+
+        $sql .= ' INTO `' . $this->getTableName() .
+            '` (' . implode(',', $data['fields']) .
+            ') VALUES ('
+            . implode('),(', $data['values']) .
+            ')';
+
+        if (is_array($mode)) {
+            $values = [];
+            foreach ($mode as $field => $value) {
+                if (is_numeric($field) && isset($this->fields[$value])) {
+                    $escaped_field = $this->escapeField($value);
+                    $values[] = "$escaped_field=VALUES($escaped_field)";
+                } elseif (isset($this->fields[$field]))
+                    $values[] = $this->escapeField($field) . "=$value";
+            }
+            if ($values)
+                $sql .= ' ON DUPLICATE KEY UPDATE ' . implode(',', $values);
         }
+
+        return $this->query($sql);
+    }
+    
+   /**
+     * @param array $data
+     * @return array
+     * @throws waException
+     */
+    protected function _prepareMultipleInsertData(array $data): array
+    {
+        if (!$data) return [];
+
         $values = array();
         $fields = array();
         if (isset($data[0])) {
@@ -699,10 +745,8 @@ class waModel
                 $values[] = implode(',', $row_values);
             }
         }
-        if ($values) {
-            return $this->adapter->multipleInsert($this->table, $fields, $values);
-        }
-        return true;
+
+        return ['fields' => $fields, 'values' => $values];
     }
 
     public function isAutoIncrement()
