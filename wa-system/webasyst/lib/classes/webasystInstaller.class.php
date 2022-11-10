@@ -33,7 +33,7 @@ CLI;
     public function protectPrivateDirs()
     {
         // Protect private dirs with .htaccess
-        $paths = array('log','cache','config','installer');
+        $paths = array('log','cache','config','installer','cache_root');
         foreach ($paths as $path) {
             $path = waSystem::getInstance()->getConfig()->getPath($path);
             waFiles::protect($path);

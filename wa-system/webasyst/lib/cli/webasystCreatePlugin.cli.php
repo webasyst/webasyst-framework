@@ -57,6 +57,10 @@ HELP;
                     if (isset($params['frontend']) && empty($info['frontend'])) {
                         $errors[] = "Invalid option frontend, application {$this->app_id} doesn't support frontend";
                     }
+                    $this->initPath();
+                    if (file_exists($this->path)) {
+                        $errors[] = "Plugin directory '$this->plugin_id' already exists in the application $this->app_id";
+                    }
                 }
             } else {
                 $errors[] = "Application not found";

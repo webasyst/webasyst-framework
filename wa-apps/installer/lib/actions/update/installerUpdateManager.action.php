@@ -95,7 +95,7 @@ class installerUpdateManagerAction extends waViewAction
                             foreach ($info['download_url'] as $target => $url) {
                                 $_info = $info;
                                 $_info['download_url'] = $url;
-                                $_info['name'] = _w('Webasyst Framework').' ('.$target.')';
+                                $_info['name'] = _w('Webasyst framework').' ('.$target.')';
                                 $this->add($target, $_info);
                                 $queue_apps[$target] = $_info;
                                 unset($_info);
@@ -194,7 +194,7 @@ class installerUpdateManagerAction extends waViewAction
                 waUtils::varExportToFile($this->urls, $path);
 
             } else {
-                $msg = _w('Update is already in progress. Please wait while previous update session is finished before starting update session again.');
+                $msg = _w('Update is already in progress. Please wait while the current update session is completed before starting a new session.');
                 $this->redirect(array(
                     'module' => $this->module,
                     'msg'    => installerMessage::getInstance()->raiseMessage($msg, installerMessage::R_FAIL),

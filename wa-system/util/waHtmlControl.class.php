@@ -1151,7 +1151,7 @@ HTML;
                days = input_date.data('available_days');
             }
             var allowed = null;
-            var start_timestamp = new Date(option.data('start_date')).getTime();
+            var start_timestamp = new Date(option.data('start_date').replace(/-/g, '/')).getTime();
             var calendar = new Date(timestamp);
 
             if (typeof option.data('value') !== 'undefined') {

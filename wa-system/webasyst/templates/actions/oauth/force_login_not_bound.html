@@ -9,7 +9,7 @@
     {/if}
 
     <p>
-        {sprintf(_ws('You cannot sign in because Webasyst ID <strong>%s</strong> is connected to the backend at <strong>%s</strong>.'), $_email, $domain|escape)}
+        {sprintf(_ws('You cannot sign in because Webasyst ID <strong>%s</strong> is not connected to the backend at <strong>%s</strong>.'), $_email, $domain|escape)}
     </p>
 
     <div class="actions-buttons">
@@ -20,4 +20,3 @@
         {sprintf(_ws('Or <a class="link" href="%s">sign into your backend in the usual way</a> and connect it to your Webasyst ID.'), $forced_login_url)}
     </p>
 </div>
-

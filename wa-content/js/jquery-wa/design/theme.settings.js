@@ -30,6 +30,7 @@ var WAThemeSettings = ( function($) {
         // VARS
         that.theme_id = options["theme_id"];
         that.theme_routes = options["theme_routes"];
+        that.has_child_themes = options["has_child_themes"];
         that.design_url = options["design_url"];
         that.locale = options["locale"];
         that.wa_url = options["wa_url"];
@@ -755,7 +756,7 @@ var WAThemeSettings = ( function($) {
         $link.on('click', function () {
             var $self = $(this);
 
-            if (that.theme_routes.length) {
+            if (that.theme_routes.length || that.has_child_themes) {
                 var $dialog_wrapper = that.$wrapper.find('#wa-theme-blocking-removal-dialog');
                 $dialog_wrapper.waDialog();
 
@@ -795,7 +796,7 @@ var WAThemeSettings = ( function($) {
             e.preventDefault();
             const $self = $(this);
 
-            if (that.theme_routes.length) {
+            if (that.theme_routes.length || that.has_child_themes) {
                 const $wrapper = that.$wrapper.find('#wa-theme-blocking-removal-dialog');
                 $.waDialog({$wrapper});
 

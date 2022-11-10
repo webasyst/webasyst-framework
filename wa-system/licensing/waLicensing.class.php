@@ -64,7 +64,7 @@ class waLicensing
      */
     public function isStandard()
     {
-        return !self::isPremium();
+        return !$this->isPremium();
     }
 
     /**
@@ -90,12 +90,12 @@ class waLicensing
 
         // If any premium feature is enabled, force Premium license mode.
         // Installer checks this occasionally and enforces licensing penalties.
-        if (self::isAnyPremiumFeatureEnabled()) {
+        if ($this->isAnyPremiumFeatureEnabled()) {
             return true;
         }
 
         // Ask Installer if we have a proper license.
-        if (self::hasPremiumLicense()) {
+        if ($this->hasPremiumLicense()) {
             $this->setSetting('license_premium', date('Y-m-d H:i:s'));
             return true;
         }
@@ -128,29 +128,95 @@ class waLicensing
     }
 
     /**
+     * @param bool $err_if_unable_to_connect if true, will raise waException in case licensing servers are down
      * @return bool whether installation has a proper license (basic or premium) bound to it
+     * @throws waException
+     *
+     * $err_if_unable_to_connect was added in 2.7.1
      */
-    public function hasLicense()
+    public function hasLicense($err_if_unable_to_connect=false)
     {
-        $license = self::getLicense();
-        return !empty($license['status']);
+        $had_license = $this->getSetting('had_license');
+        $license = $this->getLicense();
+        if (!$license) {
+            if ($err_if_unable_to_connect) {
+                throw new waException('Unable to connect to licensing server');
+            }
+            return (bool) $had_license;
+        }
+        $result = !empty($license['status']);
+        if ($result) {
+            $date = date('Y-m-d');
+            if ($had_license != $date) {
+                $this->setSetting('had_license', $date);
+            }
+        } else {
+            if ($had_license) {
+                $this->setSetting('had_license', null);
+            }
+        }
+        return $result;
     }
 
     /**
+     * @param bool $err_if_unable_to_connect if true, will raise waException in case licensing servers are down
      * @return bool whether installation has a license bound to it with Premium features enabled
+     * @throws waException
+     *
+     * $err_if_unable_to_connect was added in 2.7.1
      */
-    public function hasPremiumLicense()
+    public function hasPremiumLicense($err_if_unable_to_connect=false)
     {
-        $license = self::getLicense();
-        return ifempty($license, 'options', 'edition', null) === 'PREMIUM';
+        $had_license = $this->getSetting('had_premium_license');
+        $license = $this->getLicense();
+        if (!$license) {
+            if ($err_if_unable_to_connect) {
+                throw new waException('Unable to connect to licensing server');
+            }
+            return (bool) $had_license;
+        }
+        $result = ifempty($license, 'options', 'edition', null) === 'PREMIUM';
+        if ($result) {
+            $date = date('Y-m-d');
+            if ($had_license != $date) {
+                $this->setSetting('had_premium_license', $date);
+            }
+        } else {
+            if ($had_license) {
+                $this->setSetting('had_premium_license', null);
+            }
+        }
+        return $result;
     }
 
     /**
+     * @param bool $err_if_unable_to_connect if true, will raise waException in case licensing servers are down
      * @return bool whether installation has a basic (non-premium) license bound to it
+     * @throws waException
+     *
+     * $err_if_unable_to_connect was added in 2.7.1
      */
-    public function hasStandardLicense()
+    public function hasStandardLicense($err_if_unable_to_connect=false)
     {
-        return $this->hasLicense() && !$this->hasPremiumLicense();
+        return $this->hasLicense($err_if_unable_to_connect) && !$this->hasPremiumLicense($err_if_unable_to_connect);
+    }
+
+    /**
+     * Returns true if next call to methods of this class will not require API call to licensing server.
+     * If false, methods of this class may take longer to return, which might be useful to know to application code.
+     * @return bool
+     * @since 2.7.1
+     */
+    public function isCached()
+    {
+        if (!wa()->appExists('installer')) {
+            // next call to getLicense() will be quick, so we return true here
+            return true;
+        }
+
+        wa('installer');
+        $cache = new waVarExportCache('licenses', installerConfig::LICENSE_CACHE_TTL, 'installer');
+        return $cache->isCached();
     }
 
     /**
@@ -198,7 +264,7 @@ class waLicensing
         return $this->getAppSettingModel()->get($product_key, $name, $default);
     }
 
-    public function setSetting($name, $value)
+    protected function setSetting($name, $value)
     {
         $product_key = $this->getSettingsProductKey();
         if (!$product_key) {

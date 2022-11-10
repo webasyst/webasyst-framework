@@ -95,8 +95,17 @@ class waImage
                 return 'png';
                 break;
             }
+            case IMAGETYPE_WEBP: {
+                return 'webp';
+            }
         }
         return null;
+    }
+
+    /** @since 2.7.1 */
+    public static function isWebpSupported()
+    {
+        return (strpos($_SERVER['HTTP_ACCEPT'], 'image/webp') >= 0);
     }
 
     private static function getDefaultAdapter()

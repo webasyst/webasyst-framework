@@ -84,7 +84,14 @@ class waGettext
             } elseif (substr($string, 0, 5) == 'msgid') {
                 if ($buffer) {
                     if (isset($buffer['msgid']) && (!empty($buffer['msgstr']) || $this->all)) {
-                        $messages[$buffer['msgid']] = isset($buffer['msgstr']) ? $buffer['msgstr'] : '';
+                        if ($buffer['msgid'] === '') {
+                            if (empty($messages[''])) {
+                                $messages[''] = ifset($buffer, 'msgstr', '');
+                            } else {
+                                continue;
+                            }
+                        }
+                        $messages[$buffer['msgid']] = ifset($buffer, 'msgstr', '');
                         if (isset($buffer['msgid_plural'])) {
                             $plurals[$buffer['msgid']] = $buffer;
                         }
@@ -120,7 +127,9 @@ class waGettext
         }
 
         if (isset($buffer['msgid']) && (!empty($buffer['msgstr']) || $this->all)) {
-            $messages[$buffer['msgid']] = isset($buffer['msgstr']) ? $buffer['msgstr'] : '';
+            if ($buffer['msgid'] !== '' || empty($messages[''])) {
+                $messages[$buffer['msgid']] = ifset($buffer, 'msgstr', '');
+            }
             if (isset($buffer['msgstr'])) {
                 $plurals[$buffer['msgid']] = $buffer;
             }

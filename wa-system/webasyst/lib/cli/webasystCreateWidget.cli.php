@@ -26,6 +26,14 @@ HELP;
         if (!preg_match('@^[a-z][a-z0-9]+$@', $this->widget_id)) {
             $errors[] = "Invalid widget ID";
         }
+        $this->initPath();
+        if (file_exists($this->path)) {
+            if ($this->app_id == 'webasyst') {
+                $errors[] = "Widget directory '$this->widget_id' already exists.";
+            } else {
+                $errors[] = "Widget directory '$this->widget_id' already exists in the application $this->app_id.";
+            }
+        }
         return $errors;
     }
 

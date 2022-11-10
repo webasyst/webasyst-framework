@@ -54,7 +54,7 @@ class installerAppsRemoveAction extends waViewAction
                 if (isset($app_ids[$app_id])) {
                     if ($app_ids[$app_id]['vendor'] == $info['vendor']) {
                         if (!empty($info['installed']['system'])) {
-                            throw new waException(sprintf(_w('Can not delete system application "%s"'), $info['name']));
+                            throw new waException(sprintf(_w('Cannot delete system application “%s”.'), $info['name']));
                         }
                         $deleted_apps[] = $this->deleteApp($app_id);
                     }
@@ -70,7 +70,7 @@ class installerAppsRemoveAction extends waViewAction
             if (!$deleted_apps) {
                 throw new waException(_w('Application not found'));
             }
-            $message = _w('Application %s has been deleted', 'Applications %s have been deleted', min(2, count($deleted_apps)), false);
+            $message = _w('Application “%s” has been deleted.', 'Applications “%s” have been deleted.', min(2, count($deleted_apps)), false);
             $message = sprintf($message, implode(', ', $deleted_apps));
             $msg = installerMessage::getInstance()->raiseMessage($message);
         } catch (Exception $ex) {

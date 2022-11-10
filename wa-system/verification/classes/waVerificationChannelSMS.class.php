@@ -594,13 +594,6 @@ class waVerificationChannelSMS extends waVerificationChannel
         return $this->sendSMS($recipient['phone'], $message);
     }
 
-    public function getTemplatesList()
-    {
-        $templates_list = parent::getTemplatesList();
-        unset($templates_list['recovery_password']);
-        return $templates_list;
-    }
-
     /**
      * Get vars name for each predefined template, optionally with description
      * For list of available templates and description about they @see getTemplatesList
@@ -624,6 +617,9 @@ class waVerificationChannelSMS extends waVerificationChannel
                 ),
                 'password' => array(
                     'password' => _ws('New password'),
+                ),
+                'recovery_password' => array(
+                    'code' => _ws('Confirmation code'),
                 ),
                 'successful_signup' => array(
                     'password' => _ws('Generated password'),

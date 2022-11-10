@@ -148,8 +148,11 @@ class waAPIController
     protected function hasAppAccess($app)
     {
         $user = wa()->getUser();
+        if ($user->get('is_user') <= 0) {
+            return false;
+        }
         if ($app === 'webasyst') {
-            return $user->get('is_user') > 0;
+            return true;
         }
         return $user->getRights($app, 'backend') > 0;
     }

@@ -1879,7 +1879,7 @@ class waInstallerApps
                     foreach ($routes as $route_id => $route) {
                         if (is_array($route)) {
                             if (isset($route['app']) && ($route['app'] == $app_id)) {
-                                unset($routes[$route_id]);
+                                $routes[$route_id]['temporarily_off'] = true;
                             }
                         } else { //route is string
                             $parts = array_filter(explode('/', $route), 'strlen');
@@ -1938,11 +1938,11 @@ class waInstallerApps
             }
 
             $rule_exists = false;
-            foreach ($current_routing[$domain] as $route) {
+            foreach ($current_routing[$domain] as $_id => $route) {
                 if (is_array($route)) { //route is array
                     if (isset($route['app']) && ($route['app'] == $app_id)) {
                         $rule_exists = true;
-                        break;
+                        unset($current_routing[$domain][$_id]['temporarily_off']);
                     }
                 } else { //route is string
                     $parts = array_filter(explode('/', $route), 'strlen');

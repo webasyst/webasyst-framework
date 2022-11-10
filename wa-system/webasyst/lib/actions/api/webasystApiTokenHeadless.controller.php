@@ -41,7 +41,7 @@ class webasystApiTokenHeadlessController extends waController
         if (!$contact) {
             $this->response([
                 'error' => 'invalid_grant',
-                'error_description' => 'No backend user is linked with this Webasyst ID',
+                'error_description' => _ws('No backend user is linked with this Webasyst ID.'),
             ], 403);
             return;
         }

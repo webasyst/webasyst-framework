@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-10-03 15:13+0300\n"
+"PO-Revision-Date: 2022-11-08 15:43+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -6247,7 +6247,7 @@ msgstr "Страница не опубликована, потому что не
 msgid "Try with another Webasyst ID"
 msgstr "Попробовать с другим Webasyst ID"
 
-msgid "You cannot sign in because Webasyst ID <strong>%s</strong> is connected to the backend at <strong>%s</strong>."
+msgid "You cannot sign in because Webasyst ID <strong>%s</strong> is not connected to the backend at <strong>%s</strong>."
 msgstr "Вы не можете войти, потому что аккаунт Webasyst ID <strong>%s</strong> не подключен к бекенду <strong>%s</strong>."
 
 msgid "Or <a class=\"link\" href=\"%s\">sign into your backend in the usual way</a> and connect it to your Webasyst ID."
@@ -6436,7 +6436,7 @@ msgstr "На сайте протокола <a href=\"http://ogp.me\" rel=\"noope
 msgid "The page is not published because it is not connected to any of your website’s structure entries, or routing rules. Add a new entry to Site app’s “Structure” section in order to publish this page."
 msgstr "Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Добавьте новое правило в разделе «Структура» приложения «Сайт» для публикации этой страницы."
 
-msgid "The page will not be published because there is no settlement, or routing rule, of the app in the website structure settings. Add a new entry to Site apps’s “Structure” section in order to publish this page."
+msgid "The page will not be published because there is no settlement, or routing rule, of the app in the website structure settings. Add a new entry to Site app’s “Structure” section in order to publish this page."
 msgstr "Страница не будет опубликована, потому что в настройках структуры сайта нет ни одного поселения приложения (правил маршрутизации). Настройте поселение для публикации этой страницы в разделе «Структура» приложения «Сайт»."
 
 msgid "Notifications"
@@ -6597,3 +6597,36 @@ msgstr "Вход с 2FA"
 
 msgid "Last sign-in with 2-factor authentication"
 msgstr "Последний вход с двухфакторной авторизацией"
+
+msgid "No backend user is linked with this Webasyst ID."
+msgstr "Нет пользователя бекенда, связанного с этим Webasyst ID."
+
+msgid "No user found with this email address."
+msgstr "Пользователь с этим email-адресом не найден."
+
+msgid "No user found with this phone number."
+msgstr "Пользователь с этим номером телефона не найден."
+
+msgid "No user found with these sign-in credentials."
+msgstr "Пользователь с этими данными для входа не найден."
+
+msgid "This is a parent design theme, which has child themes."
+msgstr "Эта тема дизайна является родительской, и у нее есть дочерние темы."
+
+msgid "Delete child themes or select another parent theme for them."
+msgstr "Удалите дочерние темы дизайна или выберите для них другую родительскую."
+
+msgid "“%s” theme for the “%s” app"
+msgstr "Тема «%s» для приложения «%s»"
+
+msgid "Enter your email address or phone number."
+msgstr "Введите свой email-адрес или номер телефона."
+
+msgid "Enter your email address."
+msgstr "Введите свой email-адрес."
+
+msgid "Enter your phone number."
+msgstr "Введите свой номер телефона."
+
+msgid "A design theme’s localization string key is the same as an app’s localization string key."
+msgstr "Ключ из файла локализации темы дизайна совпадает с ключом в файле локализации приложения."

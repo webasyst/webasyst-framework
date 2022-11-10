@@ -875,7 +875,12 @@ class waFiles
      */
     public static function protect($path)
     {
-        self::write($path.'/.htaccess', "Deny from all\n");
+        if ($path && is_dir($path) && is_writable($path)) {
+            $htaccess_path = $path.'/.htaccess';
+            if (!file_exists($htaccess_path)) {
+                self::write($htaccess_path, "Deny from all\n");
+            }
+        }
     }
 
     /**

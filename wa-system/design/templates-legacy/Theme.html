@@ -646,6 +646,7 @@
             $wrapper: $("#{$id}"),
             theme_id: {$theme.id|json_encode},
             theme_routes: {$theme_routes|json_encode},
+            has_child_themes: !{empty($child_themes)|json_encode},
             design_url: {$design_url|json_encode},
             locale: {$_locale|json_encode},
             wa_url: {$wa_url|json_encode}

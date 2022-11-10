@@ -656,6 +656,7 @@ HTACCESS;
         $app_id = $this->getAppId();
         $theme_id = waRequest::get('theme');
         $parent_themes = array();
+        $all_child_themes = [];
         $apps = wa()->getApps();
         /**
          * @var waTheme $current_theme
@@ -668,6 +669,13 @@ HTACCESS;
                 foreach ($themes as $id => $theme) {
                     if (($app_id == $theme_app_id) && ($theme_id == $id)) {
                         $current_theme = $theme;
+                    }
+                    if ($theme->parent_theme_id) {
+                        $all_child_themes[$theme_app_id][$id] = [
+                            'app_name' => $app['name'],
+                            'name' => $theme->name,
+                            'parent_theme_id' => $theme->parent_theme_id
+                        ];
                     }
                     $themes_data[$id] = $theme->name;
                 }
@@ -745,6 +753,17 @@ HTACCESS;
                 }
                 if (($r['theme'] == $theme_id) || ($r['theme_mobile'] == $theme_id)) {
                     $theme_routes[] = $r;
+                }
+            }
+            $parent_theme_id = $app_id . ':' . $theme_id;
+            $child_themes = [];
+            if (empty($current_theme->parent_theme_id)) {
+                foreach ($all_child_themes as $child_theme_app_id => $themes) {
+                    foreach ($themes as $theme_info) {
+                        if ($theme_info['parent_theme_id'] == $parent_theme_id) {
+                            $child_themes[$child_theme_app_id] = $theme_info;
+                        }
+                    }
                 }
             }
 
@@ -837,6 +856,7 @@ HTACCESS;
                 'options'                             => $this->options,
                 'parent_themes'                       => $parent_themes,
                 'theme_routes'                        => $theme_routes,
+                'child_themes'                        => $child_themes,
                 'path'                                => waTheme::getThemesPath($app_id),
                 'cover'                               => $cover,
                 'route_url'                           => $route_url,

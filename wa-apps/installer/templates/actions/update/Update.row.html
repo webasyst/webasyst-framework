@@ -52,7 +52,7 @@
                     <span class="js-update-tooltip">([`beta version`]) <i class="fas fa-info-circle"></i></span>
 
                     <div class="wa-tooltip-template" id="update-beta-notice">
-                        [`Beta test notice`]
+                        [`<p><b>Software product update available for testing purposes, which has not been reviewed by Webasyst.</b></p><p>The beta version will remain available in the updates list, even after its installation, until the developer publishes the product update in the Installer or disables the beta testing option for this product.</p>`]
                     </div>
                 {else if !empty($item.update_datetime)}
                     <span class="custom-ml-12 hint">{$item.update_datetime|wa_date:'humandate'}</span>

@@ -29,7 +29,7 @@
                                     </a>
                                 </li>
                             {/foreach}
-                            {foreach $_sidebar_item.TOP.extra as $_item}
+                            {foreach ifset($_sidebar_item, 'TOP', 'extra', []) as $_item}
                                 <li>
                                     <a href="{$_item.url|escape}">
                                         <i class="{$_item.icon|escape}"></i>

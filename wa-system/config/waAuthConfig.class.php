@@ -205,6 +205,11 @@ abstract class waAuthConfig
         $this->setScalarValue('password_placeholder', $placeholder);
     }
 
+    public function getLoginForgotRequired()
+    {
+        return $this->getScalarValue('login_required', _ws('Login is required'));
+    }
+
     /**
      * IMPORTANT:
      *

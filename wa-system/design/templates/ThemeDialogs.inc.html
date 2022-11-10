@@ -278,7 +278,7 @@
                             <label class="link button outlined">
                                 <i class="fas fa-file-upload"></i>
                                 <span>[s`Select a TAR.GZ archive file`]</span>
-                                <input type="file" name="theme_settings" accept=".tar.gz">
+                                <input type="file" name="theme_settings" accept=".gz">
                             </label>
                         </div>
                         <span class="wa-archive-name js-archive-name"></span>
@@ -300,20 +300,39 @@
     <div class="dialog-body">
         <h3 class="dialog-header">[s`Unable to delete design theme`]</h3>
         <div class="dialog-content">
-            <p class="small">
-                [s`This design theme is still in use on your website.`]
-                [s`To delete this theme, first select another theme in the following settlements’ settings:`]
-            </p>
-            <ul class="zebra">
-                {foreach $theme_routes as $_r}
+            <ol style="{if !empty($theme_routes) && !empty($child_themes)}padding-left: 16px;{else}padding-left: 0;list-style: none;{/if}">
+                {if !empty($theme_routes)}
                     <li>
-                        <a rel="noopener" target="_blank" href="{$_r._url}">
-                            {$_r._domain_decoded}/{$_r.url}
-                            <i class="fas fa-external-link-alt fa-xs"></i>
-                        </a>
+                        <p class="small">
+                            [s`This design theme is still in use on your website.`]<br>
+                            [s`To delete this theme, first select another theme in the following settlements’ settings:`]
+                        </p>
+                        <ul class="zebra">
+                            {foreach $theme_routes as $_r}
+                                <li>
+                                    <a rel="noopener" target="_blank" href="{$_r._url}">
+                                        {$_r._domain_decoded}/{$_r.url}
+                                        <i class="fas fa-external-link-alt fa-xs"></i>
+                                    </a>
+                                </li>
+                            {/foreach}
+                        </ul>
                     </li>
-                {/foreach}
-            </ul>
+                {/if}
+                {if !empty($child_themes)}
+                    <li>
+                        <p>
+                            [s`This is a parent design theme, which has child themes.`]<br>
+                            [s`Delete child themes or select another parent theme for them.`]
+                        </p>
+                        <ul class="zebra">
+                            {foreach $child_themes as $_theme}
+                                <li>{sprintf('[`“%s” theme for the “%s” app`]', $_theme.name|escape, $_theme.app_name|escape)}</li>
+                            {/foreach}
+                        </ul>
+                    </li>
+                {/if}
+            </ol>
         </div>
         <div class="dialog-footer">
             <input type="submit" class="js-close-dialog button light-gray" value="[s`Close`]">
