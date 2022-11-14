@@ -10,7 +10,7 @@ Website: http://www.webasyst.com
 	* Web server
 		* e.g., Apache, nginx, or IIS
 		
-	* PHP 5.6+
+	* PHP 7.4+
  
 	* PHP extensions
 		* spl
