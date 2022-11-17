@@ -22,7 +22,7 @@ document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}
                 <li class="top-padded{if !$block} selected{/if}">
                     <a href="#/blocks/add/" class="small"><i class="icon10 add"></i>[`New block`]</a>
                 </li>
-                
+
             </ul>
     </div>
 
@@ -44,7 +44,7 @@ document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}
             </ul>
             </div>
             <h4>{$block.id|escape}</h4>
-            <span class="hint">[`Embed block into a page or a template`]:<br>
+            <span class="hint">[`Embed block in a page or template`]:<br>
                 <strong class="s-block-code">&#123;$wa-&gt;block("{$block.id|escape}")&#125;</strong>
             </span>
             {/if}
@@ -68,14 +68,14 @@ document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}
                     </div>
                 </div>
                 <div class="clear"></div>
-            </div>        
-        </div>    
+            </div>
+        </div>
         <div class="s-editor-core-wrapper">
             <div class="ace">
                 <textarea id="content" name="info[content]" class="s-entire-core" style="width:99%">{if $block}{$block.content|escape}{/if}</textarea>
             </div>
-        </div>            
-    </form>    
+        </div>
+    </form>
     <div class="clear"></div>
     </div>
 </div>
@@ -107,7 +107,7 @@ document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}
                 $(".error").removeClass('error');
                 $("#wa-editor-status").html('<i class="icon16 yes"></i>' + $_('Saved')).fadeOut('slow');
                 $('#s-editor-save-button').removeClass('yellow').removeClass('red').addClass('green');
-                
+
                 var blockHtml = function(b) {
                     var icon = '';
                     if (b.app_icon) {
@@ -116,10 +116,10 @@ document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}
                         icon = '<i class="icon16 zone"></i>';
                     }
                     return '<li data-block-id="' + b.id + '" class="selected sortable">' +
-                            '<a href="#/blocks/id=' + b.id + '">' + icon + b.id + 
+                            '<a href="#/blocks/id=' + b.id + '">' + icon + b.id +
                             ' <span class="hint">' + b.description + '</span></a></li>';
                 }
-                
+
                 var blocks_ul = $("#ul-blocks");
                 {if !$block || isset($block.app)}
                     form.attr('action', form.attr('action') + '&id=' + response.data.id);
@@ -127,9 +127,9 @@ document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}
                     {if $block}
                         blocks_ul.find('li[data-block-id="' + b.id + '"]').remove();
                     {/if}
-                    
+
                     blocks_ul.find("li.selected").removeClass('selected');
-                    
+
                     var insert_target = blocks_ul.find("li.sortable:last");
                     if (insert_target.length) {
                         insert_target.after(blockHtml(b));
@@ -170,7 +170,7 @@ document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}
     });
 $("#ul-blocks").sortable({
     distance: 5,
-    helper: 'clone',    
+    helper: 'clone',
     items: 'li.sortable',
     opacity: 0.75,
     tolerance: 'pointer',
@@ -194,9 +194,9 @@ $(".s-block-code").click(function () {
 });
 
 {if isset($block.original)}
-    {$confirm_message = '[`This will reset all customizations you applied to this block. Are you sure?`]'}
+    {$confirm_message = '[`This will reset all changes you have applied to this block. Are you sure?`]'}
 {else}
-    {$confirm_message = '[`This will permanently delete this snipper. Are you sure?`]'}
+    {$confirm_message = '[`This will permanently delete this snippet. Are you sure?`]'}
 {/if}
 
 {if !empty($block.id)}

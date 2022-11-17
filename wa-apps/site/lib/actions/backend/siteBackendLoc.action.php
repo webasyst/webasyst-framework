@@ -1,7 +1,7 @@
 <?php
 
-/** 
- * A list of localized strings to use in JS. 
+/**
+ * A list of localized strings to use in JS.
  */
 class siteBackendLocAction extends waViewAction
 {
@@ -23,7 +23,7 @@ class siteBackendLocAction extends waViewAction
               'Saved', // _w('Saved')
               'An error occurred while saving', // _w('An error occurred while saving')
               'Unsaved changes will be lost if you leave this page now. Are you sure?', // _w('Unsaved changes will be lost if you leave this page now. Are you sure?')
-              'Image will be uploaded into', // _w('Image will be uploaded into')
+              'Image will be uploaded to', // _w('Image will be uploaded to')
         ) as $s) {
             $strings[$s] = _w($s);
         }
@@ -35,7 +35,7 @@ class siteBackendLocAction extends waViewAction
         $strings['Save'] = _ws('Save');
 
         $this->view->assign('strings', $strings ? $strings : new stdClass()); // stdClass is used to show {} instead of [] when there's no strings
-        
+
         $this->getResponse()->addHeader('Content-Type', 'text/javascript; charset=utf-8');
     }
 }

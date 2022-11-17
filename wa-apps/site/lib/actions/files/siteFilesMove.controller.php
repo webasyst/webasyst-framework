@@ -10,17 +10,17 @@ class siteFilesMoveController extends waJsonController
         $new_path = wa()->getDataPath($new_path, true, null, false).($new_path ? '' : '/');
 
         if (!is_writable($new_path)) {
-            $this->errors = sprintf(_w("Files could not bet moved due to the insufficient file write permissions for the %s folder."), rtrim($hash, '/'));
+            $this->errors = sprintf(_w("Files could not be moved due to insufficient file write permissions for folder %s."), rtrim($hash, '/'));
             return;
         }
-        
+
         if ($file = waRequest::post('file')) {
             if (!is_array($file)) {
                 $file = array($file);
             }
             foreach ($file as $f) {
                 if (!@rename($path."/".$f, $new_path.$f)) {
-                    $this->errors[] = sprintf(_w("Can not move file “%s” to a new location"), $f);    
+                    $this->errors[] = sprintf(_w("Cannot move file “%s” to a new location."), $f);
                 }
             }
             if ($this->errors && is_array($this->errors)) {
@@ -32,7 +32,7 @@ class siteFilesMoveController extends waJsonController
             if (@rename($path, $new_path)) {
                 $this->response['hash'] = $hash;
             } else {
-                $this->errors = _w("Can not move to a new location");
+                $this->errors = _w("Cannot move to a new location.");
             }
         }
     }

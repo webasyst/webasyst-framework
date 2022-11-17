@@ -16,7 +16,7 @@ class sitePersonalSettingsSaveController extends waJsonController
         $config = waDomainAuthConfig::factory($domain);
         $config->setData($data);
         if (!$config->commit()) {
-            $this->errors = sprintf(_w('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/');
+            $this->errors = sprintf(_w('File could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-config/');
         }
     }
 
