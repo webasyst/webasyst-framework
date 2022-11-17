@@ -240,9 +240,10 @@ class waWebasystIDAccessTokenManager
     /**
      * Check token expiration
      * @param string $token
+     * @param string $grace_interval 
      * @return bool
      */
-    public function isTokenExpired($token)
+    public function isTokenExpired($token, $grace_interval = null)
     {
         $payload = $this->extractPayload($token);
         if (!$payload) {
@@ -251,7 +252,10 @@ class waWebasystIDAccessTokenManager
         if (!isset($payload['exp']) || !wa_is_int($payload['exp']) || $payload['exp'] <= 0) {
             return true;
         }
-        return intval($payload['exp']) < $this->getNowTime();
+        if (!wa_is_int($grace_interval) || $grace_interval < 0) {
+            $grace_interval = 0;
+        }
+        return intval($payload['exp']) < ($this->getNowTime() - intval($grace_interval));
     }
 
     /**
