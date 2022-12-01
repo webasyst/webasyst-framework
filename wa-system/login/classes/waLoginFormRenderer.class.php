@@ -560,9 +560,10 @@ abstract class waLoginFormRenderer
     protected function prepareFormWrapper($form_html)
     {
         return array(
-            'html'     => $form_html,
-            'errors'   => $this->getAllErrors(),
-            'messages' => $this->getMessages(),
+            'html'           => $form_html,
+            'errors'         => $this->getAllErrors(),
+            'messages'       => $this->getMessages(),
+            'login_required' => $this->auth_config->getLoginForgotRequired(),
         );
     }
 

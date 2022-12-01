@@ -224,6 +224,8 @@ return array(
     'waDesignActions'                   => 'design/actions/waDesign.actions.php',
     'waPluginsActions'                  => 'plugin/actions/waPlugins.actions.php',
 
+    'waLicensing'                       => 'licensing/waLicensing.class.php',
+
     'waMapAdapter'                      => 'map/waMapAdapter.class.php',
     'waDisabledMapAdapter'              => 'map/adapters/waDisabledMapAdapter.class.php',
 

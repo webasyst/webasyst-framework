@@ -1395,7 +1395,7 @@ class waArchiveTar
             $data['path'] = '';
 
             // ----- Look for last block (empty block)
-            if (($checksum == 256) && ($data['chksum'] == 0)) {
+            if ($checksum == 256 && empty($data['chksum'])) {
                 return $data;
             }
 

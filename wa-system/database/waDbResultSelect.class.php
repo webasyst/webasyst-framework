@@ -156,12 +156,11 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Rewind iterator
      *
-     * @return waDbResultSelect
+     * @return void
      */
     public function rewind()
     {
         $this->getIterator()->rewind();
-        return $this;
     }
 
     /**

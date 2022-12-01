@@ -163,7 +163,7 @@ class siteSettingsSaveController extends waJsonController
             wa()->getStorage()->del('apps-count');
 
             if ($save_config && !waUtils::varExportToFile($domain_config, $domain_config_path)) {
-                $this->errors = sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/apps/site/domains');
+                $this->errors = sprintf(_w('Settings could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-config/apps/site/domains');
             } else {
                 $domain_config = $orig_domain_config;
             }
@@ -194,12 +194,12 @@ class siteSettingsSaveController extends waJsonController
         if ($background && $background->uploaded()) {
             $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
             if (!in_array($background->extension, $allowed)) {
-                $this->errors = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
+                $this->errors = sprintf(_ws("Only files with name extensions %s are allowed."), '*.'.implode(', *.', $allowed));
             } else {
                 $path = wa()->getDataPath('background/', true);
                 $ext = $background->extension;
                 if (!file_exists($path) || !is_writable($path)) {
-                    $this->errors = sprintf(_w('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
+                    $this->errors = sprintf(_w('File could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
                 } elseif (!$background->moveTo($path, siteHelper::getDomainId().'.'.$ext)) {
                     $this->errors = _w('Failed to upload file.');
                 } else {
@@ -217,11 +217,11 @@ class siteSettingsSaveController extends waJsonController
             $ext = strtolower($favicon->extension);
             $mime_favicon = $favicon->type === 'image/x-icon' || $favicon->type === 'image/vnd.microsoft.icon';
             if ($ext !== 'ico' && !$mime_favicon) {
-                $this->errors = _w('Files with extension *.ico are allowed only.');
+                $this->errors = _w('Only files with name extension .ico are allowed.');
             } else {
                 $path = wa()->getDataPath('data/'.siteHelper::getDomain().'/', true);
                 if (!file_exists($path) || !is_writable($path)) {
-                    $this->errors = sprintf(_w('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
+                    $this->errors = sprintf(_w('File could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
                 } elseif (!$favicon->moveTo($path, 'favicon.ico')) {
                     $this->errors = _w('Failed to upload file.');
                 }
@@ -241,7 +241,7 @@ class siteSettingsSaveController extends waJsonController
             } else {
                 $path = wa()->getDataPath('data/'.siteHelper::getDomain().'/', true);
                 if (!file_exists($path) || !is_writable($path)) {
-                    $this->errors = sprintf(_w('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
+                    $this->errors = sprintf(_w('File could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
                 } elseif (!$touchicon->moveTo($path, 'apple-touch-icon.png')) {
                     $this->errors = _w('Failed to upload file.');
                 }
@@ -256,7 +256,7 @@ class siteSettingsSaveController extends waJsonController
         $path = wa()->getDataPath('data/'.siteHelper::getDomain().'/', true);
         if ($robots = waRequest::post('robots')) {
             if (!file_exists($path) || !is_writable($path)) {
-                $this->errors = sprintf(_w('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
+                $this->errors = sprintf(_w('File could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
             } else {
                 file_put_contents($path.'robots.txt', $robots);
             }

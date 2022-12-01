@@ -132,24 +132,26 @@ class waPlugin
                 }
             }
             $is_from_template = waConfig::get('is_template');
+            $disable_exception_log = waConfig::get('disable_exception_log');
+            waConfig::set('disable_exception_log', true);
             waConfig::set('is_template', null);
-            waConfig::get('disable_exception_log', true);
-            foreach ($files as $t => $file) {
-                try {
-                    if (!$ignore_all) {
-                        $this->includeUpdate($file);
-                        waFiles::delete($cache_database_dir);
-                        $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+            try {
+                foreach ($files as $t => $file) {
+                    try {
+                        if (!$ignore_all) {
+                            $this->includeUpdate($file);
+                            waFiles::delete($cache_database_dir);
+                            $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+                        }
+                    } catch (Exception $e) {
+                        waLog::log("Error running update of plugin {$this->app_id}.{$this->id}: {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                        throw new waException(sprintf(_ws('Error while running update of %s.%s plugin: %s'), $this->app_id, $this->id, $file), 500, $e);
                     }
-                } catch (Exception $e) {
-                    waLog::log("Error running update of plugin {$this->app_id}.{$this->id}: {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                    waConfig::get('disable_exception_log', false);
-                    waConfig::set('is_template', $is_from_template);
-                    throw new waException(sprintf(_ws('Error while running update of %s.%s plugin: %s'), $this->app_id, $this->id, $file), 500, $e);
                 }
+            } finally {
+                waConfig::set('disable_exception_log', $disable_exception_log);
+                waConfig::set('is_template', $is_from_template);
             }
-            waConfig::get('disable_exception_log', false);
-            waConfig::set('is_template', $is_from_template);
         } else {
             $t = 1;
         }
@@ -545,4 +547,12 @@ class waPlugin
         return $templates_dir . '/' . $template_path;
     }
 
+    /**
+     * @return bool
+     * @see waLicensing
+     */
+    public function isAnyPremiumFeatureEnabled()
+    {
+        return false;
+    }
 }

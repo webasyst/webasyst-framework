@@ -46,7 +46,7 @@ class waDbResultIterator implements Iterator
         $this->result = $result;
         $this->adapter = $adapter;
     }
-    
+
     public function __destruct()
     {
         $this->free();
@@ -90,7 +90,7 @@ class waDbResultIterator implements Iterator
 
     /**
      * Reset key
-     * @return mixed|null
+     * @return void
      */
     public function rewind()
     {
@@ -99,7 +99,6 @@ class waDbResultIterator implements Iterator
         if ($this->count()) {
             $this->seek(0);
         }
-        return $this->current;
     }
 
     /**

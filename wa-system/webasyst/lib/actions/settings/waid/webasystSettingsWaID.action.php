@@ -63,6 +63,8 @@ class webasystSettingsWaIDAction extends webasystSettingsViewAction
             if (!empty($info['email'])) {
                 $user['webasyst_id'] = $info['email'];
             }
+            $user['two_fa_mode'] = ifempty($info['two_fa_mode'], false);
+            $user['two_fa_time'] = intval(ifempty($info['two_fa_time'])) ? date('Y-m-d H:i:s', intval($info['two_fa_time'])) : false;
         }
         unset($user);
 

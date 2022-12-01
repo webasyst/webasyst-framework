@@ -60,7 +60,7 @@ class waLocale
 
     public static function getString($id)
     {
-        return ifset(self::$strings[$id]);
+        return ifset(self::$strings, $id, null);
     }
 
     /**
@@ -463,7 +463,7 @@ function _wd($domain, $msgid1, $msgid2 = null, $n = null, $sprintf = true)
 }
 
 /**
- * Translate string in domain of current active plugin, if any.
+ * Translate string in domain of current active theme or plugin, if any.
  * Otherwise fall back to _w()
  *
  * @param string $msgid1
@@ -478,16 +478,29 @@ function _wp($msgid1, $msgid2 = null, $n = null, $sprintf = true)
     $result = $msgid1;
     $domain = null;
 
-    //get by themes
+    // Get by themes
     $themes = wa()->getActiveThemes();
-    while ($themes && ($result === $msgid1 || $result == $msgid2)) {
-        $domain = array_pop($themes);
-        $result = _wd($domain, $msgid1, $msgid2, $n, false);
+    if ($themes) {
+        if ($msgid2 === null) {
+            // localization via string in theme.xml
+            $str = waLocale::getString($msgid1);
+            if ($str) {
+                return $str;
+            }
+        }
+        // gettext localization in themes
+        while ($themes && ($result === $msgid1 || $result == $msgid2)) {
+            $domain = array_pop($themes);
+            $result = _wd($domain, $msgid1, $msgid2, $n, false);
+        }
     }
 
     // Get by plugins
-    if ($result === $msgid1 && $domain = wa()->getActiveLocaleDomain()) {
-        $result = _wd($domain, $msgid1, $msgid2, $n, false);
+    if ($result === $msgid1) {
+        $domain = wa()->getActiveLocaleDomain();
+        if ($domain) {
+            $result = _wd($domain, $msgid1, $msgid2, $n, false);
+        }
     }
 
     // Get by apps

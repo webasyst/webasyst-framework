@@ -22,20 +22,8 @@ msgstr "Приложение"
 msgid "Version"
 msgstr "Версия"
 
-msgid "Installed"
-msgstr "Установлено"
-
-msgid "Application is disabled"
-msgstr "Приложение выключено"
-
-msgid "Application is enabled"
-msgstr "Приложение включено и работает"
-
 msgid "Install"
 msgstr "Установить"
-
-msgid "App can not be updated due to unresolved conflicts:"
-msgstr "Приложение не может быть обновлено в связи с неразрешенными конфликтами:"
 
 msgid "Do you confirm the installation?"
 msgstr "Вы подтверждаете установку?"
@@ -54,51 +42,6 @@ msgstr "Настройки"
 
 msgid "Installer"
 msgstr "Инсталлер"
-
-msgid "Company name"
-msgstr "Название компании"
-
-msgid "Website address"
-msgstr "Адрес сайта"
-
-msgid "Your website, blog or company URL (will be displayed as a link below the company name in the top left corner)."
-msgstr "Адрес вашего сайта или блога (будет отображаться в виде ссылки под названием компании в левом верхнем углу)."
-
-msgid "Default Webasyst interface language"
-msgstr "Язык интерфейса Вебасиста по умолчанию"
-
-msgid "Email"
-msgstr "Email"
-
-msgid "User authentication"
-msgstr "Авторизация пользователей"
-
-msgid "Login only"
-msgstr "Только логин"
-
-msgid "Login or email"
-msgstr "Логин или email"
-
-msgid "Authorization form background image"
-msgstr "Фон формы авторизации"
-
-msgid "Stretch to fill entire screen"
-msgstr "Растянуть изображение на весь экран"
-
-msgid "Save"
-msgstr "Сохранить"
-
-msgid "Update all"
-msgstr "Установить все обновления"
-
-msgid "Update now"
-msgstr "Обновить"
-
-msgid "Latest version"
-msgstr "Последняя версия"
-
-msgid "Updates are not available for this application."
-msgstr "Обновления для этого приложения недоступны."
 
 msgid "Preparing"
 msgstr "Подготовка к установке"
@@ -139,134 +82,17 @@ msgstr "Текущая версия"
 msgid "New version"
 msgstr "Новая версия"
 
-msgid "Allow \"Remember me\" option in Webasyst authorization form"
-msgstr "Можно включить «Запомнить меня» при входе в Вебасист"
+msgid "An error occurred during the installation."
+msgstr "При установке произошла ошибка."
 
-msgid "An error occurred during installation"
-msgstr "При установке произошла ошибка"
-
-msgid "Installation has been successfully completed"
-msgstr "Установка успешно завершена"
-
-msgid "View installation log"
-msgstr "Посмотреть журнал установки"
-
-msgid "Reply-To address for system email notifications sent by Webasyst."
-msgstr "Этот электронный адрес будет указан в качестве обратного адреса в системных email-уведомлениях, отправляемых Вебасистом."
-
-msgid "Delete authorization form background image?"
-msgstr "Удалить фоновое изображение формы авторизации?"
+msgid "Installation has been successfully completed."
+msgstr "Установка успешно завершена."
 
 msgid "Delete"
 msgstr "Удалить"
 
-msgid "Settings saved"
-msgstr "Настройки сохранены"
-
-msgid "Image uploaded"
-msgstr "Изображение загружено"
-
-msgid "Please install updates for the proper verification requirements"
-msgstr "Обновите приложение «Инсталлер» для корректной проверки системных требований"
-
-msgid "extension %s has %s version but should be %s %s"
-msgstr "Требуется версия расширения «%1$s» %3$s %4$s (текущая версия — %2$s)"
-
-msgid "extension %s has %s version but recomended is %s %s"
-msgstr "Рекомендуется версия расширения «%1$s» %3$s %4$s (текущая версия — %2$s)"
-
-msgid "PHP extension %s is required"
-msgstr "Требуется расширение %s для PHP"
-
-msgid "PHP has version %s but should be %s %s"
-msgstr "Требуется версия PHP %2$s %3$s, текущая версия %1$s"
-
-msgid "%s has %s version but should be %s %s"
-msgstr "Требуется «%1$s» версии %3$s %4$s (текущая версия — %2$s)"
-
-msgid "%s has %s version but recomended is %s %s"
-msgstr "Рекомендуется «%1$s» версии %3$s %4$s (текущая версия — %2$s)"
-
-msgid "%s not installed"
-msgstr "Приложение «%s» не установлено"
-
-msgid "%s should be writeable"
-msgstr "Файлы (папки) %s должны быть доступны для записи"
-
-msgid "%s is writeable"
-msgstr "Файлы (папки) %s доступны для записи"
-
-msgid "server module loaded"
-msgstr "есть"
-
-msgid "server module not loaded"
-msgstr "нет"
-
-msgid "not Apache server"
-msgstr "Не удалось получить список установленных серверных модулей"
-
-msgid "CGI PHP mode"
-msgstr "PHP запущен в режиме CGI"
-
-msgid "PHP version"
-msgstr "Версия PHP"
-
-msgid "PHP extension %s"
-msgstr "Расширение PHP: %s"
-
-msgid "PHP setting %s"
-msgstr "Настройка PHP: %s"
-
-msgid "Version of %s"
-msgstr "%s, версия"
-
-msgid "Files access rights"
-msgstr "Права доступа к файлам и директориям"
-
-msgid "Files checksum"
-msgstr "Контрольная сумма файлов"
-
-msgid "Server module %s"
-msgstr "Модуль сервера: %s"
-
-msgid "Server software version"
-msgstr "Веб-сервер"
-
-msgid "Value of PHP configuration parameter %s: %s. Required value: %s."
-msgstr "Значение параметра конфигурации PHP %s: %s. Требуемое значение: %s."
-
-msgid "Value of PHP configuration parameter %s: %s. Recommended value: %s."
-msgstr "Значение параметра конфигурации PHP %s: %s. Рекомендуемое значение: %s."
-
-msgid "B,KB,MB"
-msgstr "Б,КБ,МБ"
-
 msgid "Download installation log"
 msgstr "Скачать журнал установки"
-
-msgid "Application list is downloaded from webasyst.com website. Every application is installed in a single \"Install\" button click."
-msgstr "Список приложений, доступных для установки, загружается с сайта webasyst.com. Установка приложений выполняется одним щелчком по кнопке «Установить»."
-
-msgid "All applications"
-msgstr "Все приложения"
-
-msgid "Developer"
-msgstr "Разработчик"
-
-msgid "Size"
-msgstr "Размер"
-
-msgid "License"
-msgstr "Лицензия"
-
-msgid "Application will be downloaded from Webasyst server and added into your installation."
-msgstr "Приложение будет загружено с сервера Вебасиста и установлено автоматически."
-
-msgid "Application \"%s\""
-msgstr "Приложение «%s»"
-
-msgid "File not found"
-msgstr "Файл не найден"
 
 msgid "Application not found"
 msgstr "Приложение не найдено"
@@ -277,16 +103,10 @@ msgstr "Приложение не удалено (активирован реж�
 msgid "A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file."
 msgstr "Обнаружен каталог .git или .svn. Чтобы игнорировать режим разработки, добавьте параметр 'installer_in_developer_mode' => true в файл wa-config/config.php."
 
-msgid "Can not delete system application \"%s\""
-msgstr "Нельзя удалить системное приложение «%s»"
+msgid "Cannot delete system application “%s”."
+msgstr "Нельзя удалить системное приложение «%s»."
 
-msgid "Update to version %s is available."
-msgstr "Доступно обновление до версии %s."
-
-msgid "Image deleted"
-msgstr "Фоновое изображение удалено"
-
-msgid "Update is already in progress. Please wait while previous update session is finished before starting update session again."
+msgid "Update is already in progress. Please wait while the current update session is completed before starting a new session."
 msgstr "Обновление уже запущено и еще не завершено. Пожалуйста, дождитесь окончания предыдущего сеанса обновления, прежде чем запускать его заново."
 
 msgid "application successfully installed"
@@ -301,17 +121,11 @@ msgstr[0] "не установлено"
 msgstr[1] "не установлены"
 msgstr[2] "не установлены"
 
-msgid "Application  %s has been installed"
-msgid_plural "Applications  %s have been installed"
-msgstr[0] "Приложение «%s» установлено"
-msgstr[1] "Приложения «%s» установлены"
-msgstr[2] "Приложений «%s» установлены"
-
-msgid "Application %s has been deleted"
-msgid_plural "Applications %s have been deleted"
-msgstr[0] "Приложение «%s» удалено"
-msgstr[1] "Приложения «%s» удалены"
-msgstr[2] "Приложений «%s» удалены"
+msgid "Application “%s” has been deleted."
+msgid_plural "Applications “%s” have been deleted."
+msgstr[0] "Приложение «%s» удалено."
+msgstr[1] "Приложения «%s» удалены."
+msgstr[2] "Приложений «%s» удалены."
 
 msgid "Installing the application"
 msgid_plural "Installing applications"
@@ -319,107 +133,47 @@ msgstr[0] "Установка"
 msgstr[1] "Установка"
 msgstr[2] "Установка"
 
-msgid "Developer mode"
-msgstr "Режим отладки (debug mode)"
-
-msgid "Recommended while development"
-msgstr "Режим отладки отключает кеширование и включает подробный вывод сообщений об ошибках. Рекомендуется включить при разработке приложений."
-
-msgid "<"
-msgstr "менее"
-
-msgid "<="
-msgstr "не более"
-
-msgid "="
-msgstr "равной"
-
-msgid ">"
-msgstr "более"
-
-msgid ">="
-msgstr "не менее"
-
 msgid "Plugins"
 msgstr "Плагины"
 
 msgid "Themes"
 msgstr "Темы дизайна"
 
-msgid "App plugin can not be installed due to unresolved conflicts:"
-msgstr "Плагин не может быть установлен в связи с неразрешенными конфликтами:"
-
-msgid "This will delete application plugin source code and data without the ability to recover. Are you sure?"
-msgstr "Это полностью удалит код и данные расширения без возможности восстановления. Вы уверены?"
-
-msgid "There are no available plugins for the application"
-msgstr "У приложения нет доступных плагинов"
-
-msgid "App theme can not be installed"
-msgstr "Тема дизайна не может быть установлена"
-
-msgid "This will delete application theme code and data without the ability to recover. Are you sure?"
-msgstr "Это полностью удалит код и данные темы без возможности восстановления. Вы уверены?"
-
-msgid "There are no available themes for the the application"
-msgstr "У приложения нет доступных тем"
-
-msgid "Nothing to update"
-msgstr "Нет обновлений, доступных для установки"
-
-msgid "Updates are not available for this item."
-msgstr "Нет обновлений для выбранного продукта."
-
 msgid "Please select items for update"
 msgstr "Выберите продукты для обновления"
 
-msgid "Unable to delete application's themes (developer version is on)"
-msgstr "Тема дизайна не удалена: в директории есть папка с названием .svn или .git"
+msgid "Design theme not deleted: .svn or .git folder located in the theme directory."
+msgstr "Тема дизайна не удалена: в директории есть папка с названием .svn или .git."
 
-msgid "Unable to delete application's plugins (developer version is on)"
-msgstr "Плагин не удален: в директории есть папка с названием .svn или .git"
+msgid "Plugin not deleted: .svn or .git folder located in the plugin directory."
+msgstr "Плагин не удален: в директории есть папка с названием .svn или .git."
 
-msgid "Application themes not found"
+msgid "Themes not found"
 msgstr "Темы дизайна не найдены"
 
-msgid "Application plugins not found"
+msgid "Plugins not found"
 msgstr "Плагины не найдены"
 
-msgid "Can not delete system application's themes \"%s\""
-msgstr "Невозможно удалить тему «%s»"
+msgid "Unable to delete theme “%s”."
+msgstr "Невозможно удалить тему «%s»."
 
-msgid "Can not delete system application's plugins \"%s\""
-msgstr "Невозможно удалить плагин «%s»"
+msgid "Unable to delete plugin “%s”."
+msgstr "Невозможно удалить плагин «%s»."
 
-msgid "Application plugin %s has been deleted"
-msgid_plural "Application plugins %s have been deleted"
-msgstr[0] "Плагин «%s» удален"
-msgstr[1] "Плагины «%s» удалены"
-msgstr[2] "Плагины «%s» удалены"
+msgid "Plugin “%s“ has been deleted."
+msgid_plural "Plugins “%s“ have been deleted."
+msgstr[0] "Плагин «%s» удален."
+msgstr[1] "Плагины «%s» удалены."
+msgstr[2] "Плагины «%s» удалены."
 
-msgid "Application theme %s has been deleted"
-msgid_plural "Application themes %s have been deleted"
-msgstr[0] "Тема «%s» удалена"
-msgstr[1] "Темы «%s» удалены"
-msgstr[2] "Темы «%s» удалены"
-
-msgid "Checkup"
-msgstr "Проверка"
-
-msgid "Plugins list is downloaded from webasyst.com website. Every plugin is installed in a single \"Install\" button click."
-msgstr "Список плагинов загружается с сайта webasyst.com. Установка производится автоматически при нажатии на кнопку «Установить»."
-
-msgid "No applications with support for themes"
-msgstr "Не установлено ни одного приложения, которое поддерживало бы работу с темами оформления."
-
-msgid "Themes list is downloaded from webasyst.com website. Every application is installed in a single \"Install\" button click."
-msgstr "Список тем оформления загружается с сайта webasyst.com. Установка тем производится автоматически при нажатии на кнопку «Установить»."
+msgid "Theme “%s“ has been deleted."
+msgid_plural "Themes “%s“ have been deleted."
+msgstr[0] "Тема «%s» удалена."
+msgstr[1] "Темы «%s» удалены."
+msgstr[2] "Темы «%s» удалены."
 
 msgid "All apps are up to date."
 msgstr "Установлены последние версии всех приложений."
-
-msgid "No applications with support for plugins"
-msgstr "Не установлено ни одного приложения, которое поддерживало бы работу с плагинами."
 
 msgid "Clear cache"
 msgstr "Очистить кеш"
@@ -430,119 +184,17 @@ msgstr "Кеш очищен"
 msgid "Webasyst version"
 msgstr "Версия Вебасиста"
 
-msgid "License expired or invalid"
-msgstr "Срок действия лицензии истек, либо лицензия недействительна."
-
-msgid "License is invalid"
-msgstr "Лицензия недействительна"
-
-msgid "Renew license"
-msgstr "Продлить лицензию"
-
-msgid "This application is not available for purchase"
-msgstr "Это приложение недоступно для покупки."
-
-msgid "Buy for"
-msgstr "Купить за"
-
-msgid "Payware"
-msgstr "Платное приложение"
-
-msgid "Correct license"
-msgstr "Правильный номер лицензии"
-
-msgid "In use"
-msgstr "Используется"
-
-msgid "Free"
-msgstr "Бесплатно"
-
-msgid "Renew for"
-msgstr "Продлить на"
-
-msgid "Theme not found"
-msgstr "Тема не найдена"
-
-msgid "Installer & system"
-msgstr "Инсталлер и ядро фреймворка"
-
-msgid "No plugin enabled apps are installed."
-msgstr "Не установлено ни одного приложения с поддержкой плагинов."
-
-msgid "Plugins are downloaded from webasyst.com website and installed in a single click."
-msgstr "Плагины загружаются с сайта webasyst.com и устанавливаются одним кликом."
-
-msgid "No design theme enabled apps installed."
-msgstr "Не установлено ни одного приложения с поддержкой тем оформления."
-
-msgid "Design theme can not be installed"
-msgstr "Установка темы оформления невозможна."
-
-msgid "This will delete this design theme templates and files without the ability to recover. Are you sure?"
-msgstr "Будут удалены шаблоны этой темы оформления без возможности восстановления. Удалить?"
-
-msgid "No design themes are available for this application."
-msgstr "Для этого приложения нет доступных тем оформления."
-
-msgid "Design themes are downloaded from webasyst.com website and installed in a single click."
-msgstr "Темы оформления загружаются с сайта webasyst.com и устанавливаются одним щелчком мыши."
-
-msgid "No thumbnail available"
-msgstr "Предпросмотр недоступен"
-
-msgid "Theme %s is now in use on"
-msgstr "Тема «%s» используется по адресу"
-
-msgid "Theme “%s” is installed, but not used by any apps. To start using this theme, apply it in your Site app's Routing settings."
-msgstr "Тема  «%s» установлена, но не используется ни одним приложением. Чтобы подключить эту тему оформления, выберите ее в настройках маршрутизации приложения «Сайт»."
-
-msgid "or"
-msgstr "или"
-
-msgid "Buy"
-msgstr "Купить"
-
-msgid "Install theme \"%s\" for the %s app?"
-msgstr "Установить тему «%s» для приложения %s?"
-
 msgid "more"
 msgstr "еще"
 
-msgid "Webasyst Framework"
+msgid "Webasyst framework"
 msgstr "Фреймворк Вебасист"
-
-msgid "This theme is not available for purchase"
-msgstr "Тема недоступна для покупки"
-
-msgid "Setup routing"
-msgstr "Настроить маршрутизацию"
 
 msgid "Your current version is %s."
 msgstr "Установленная версия: %s"
 
-msgid "\"%s\""
+msgid "“%s”"
 msgstr "«%s»"
-
-msgid "By app"
-msgstr "По приложению"
-
-msgid "By type"
-msgstr "По типу"
-
-msgid "Plugin \"%s\""
-msgstr "Плагин «%s»"
-
-msgid "Theme \"%s\""
-msgstr "Тема дизайна «%s»"
-
-msgid "Payment"
-msgstr "Платежные системы"
-
-msgid "Shipping"
-msgstr "Расчет стоимости доставки"
-
-msgid "SMS"
-msgstr "SMS"
 
 msgid "Install all updates"
 msgstr "Установить все обновления"
@@ -553,116 +205,11 @@ msgstr "Лицензия истекла либо недействительна 
 msgid "Install update"
 msgstr "Обновить"
 
-msgid "Update cannot be installed:"
-msgstr "Обновление не может быть установлено:"
-
-msgid "Updated"
-msgstr "Обновлено"
-
-msgid "Status"
-msgstr "Статус"
-
-msgid "Installed version"
-msgstr "Установленная версия"
-
-msgid "%s/mo"
-msgstr "%s/мес."
-
-msgid "Apps"
-msgstr "Приложения"
-
-msgid "All apps"
-msgstr "Все приложения"
-
-msgid "License for using %s on <strong>%s</strong> has expired on %s"
-msgstr "Лицензия на использование «%s» на домене <strong>%s</strong> истекла %s"
-
 msgid "Get license"
 msgstr "Получить лицензию"
 
-msgid "Installation and usage of the %s app on <strong>%s</strong> is not licensed. Updates are disabled. License your installation by clicking the button above."
-msgstr "Установка и использование приложения «%s» на домене <strong>%s</strong> не лицензирована. Возможность установки обновлений отключена. Получите лицензию для продолжения использования приложения."
-
-msgid "A newer version of %s <strong>%s</strong> is available for installation (your current version is %s)."
-msgstr "Новая версия %s <strong>%s</strong> доступна для установки (сейчас установлена версия %s)."
-
-msgid "View release notes"
-msgstr "Список изменений"
-
-msgid "This application cannot be updated"
-msgstr "Приложение не может быть обновлено"
-
-msgid "Extend license"
-msgstr "Продлить лицензию"
-
-msgid "This is a licensed installation of %s on %s. License is valid through <strong>%s</strong>."
-msgstr "Это лицензионная установка «%s» на домене %s. Лицензия действительна до <strong>%s</strong>."
-
-msgid "You have the latest version of %s installed: <strong>%s</strong>"
-msgstr "Установлена последняя версия «%s»: <strong>%s</strong>"
-
-msgid "Buy & Install"
-msgstr "Купить и установить"
-
-msgid "This application cannot be installed"
-msgstr "Приложение не может быть установлено"
-
-msgid "Price"
-msgstr "Цена"
-
-msgid "for rent, first 30 days free"
-msgstr "в аренду, первые 30 дней бесплатно"
-
-msgid "Webasyst License"
-msgstr "Лицензия Webasyst"
-
-msgid "Delete this app"
-msgstr "Удалить приложение"
-
-msgid "Overview"
-msgstr "Обзор"
-
 msgid "All"
 msgstr "Все"
-
-msgid "Paid"
-msgstr "Платные"
-
-msgid "No plugins were found."
-msgstr "Не найдено ни одного плагина."
-
-msgid "All plugins"
-msgstr "Все плагины"
-
-msgid "List"
-msgstr "Список"
-
-msgid "Installation and usage of the %s plugin on <strong>%s</strong> is not licensed. Updates are disabled. License your installation by clicking the button above."
-msgstr "Установка и использование плагина «%s» на домене <strong>%s</strong> не лицензирована. Возможность установки обновлений отключена. Получите лицензию для продолжения использования плагина."
-
-msgid "Delete this plugin"
-msgstr "Удалить плагин"
-
-msgid "Universal themes"
-msgstr "Универсальные темы"
-
-msgid "All colors"
-msgstr "Все цвета"
-
-msgid "No design themes were found."
-msgstr "Не найдено ни одной темы дизайна."
-
-msgid "All themes"
-msgstr "Все темы"
-
-msgid "Installation and usage of the %s theme on <strong>%s</strong> is not licensed. Updates are disabled. License your installation by clicking the button above."
-msgstr "Установка и использование темы дизайна «%s» на домене <strong>%s</strong> не лицензирована. Возможность установки обновлений отключена. Получите лицензию для продолжения использования темы."
-
-msgid "Delete this theme"
-msgstr "Удалить тему"
-
-msgid "Editor’s choice"
-msgstr "Выбор редакции"
 
 msgid "Unable to install the product (developer mode is on)."
 msgstr "Невозможно установить продукт (активирован режим разработки)."
@@ -670,47 +217,14 @@ msgstr "Невозможно установить продукт (активир
 msgid "Unable to update the product (developer mode is on)."
 msgstr "Невозможно обновить продукт (активирован режим разработки)."
 
-msgid "Demo"
-msgstr "Демо"
-
 msgid "Plugin \"<strong>%s</strong>\""
 msgstr "Плагин «<strong>%s</strong>»"
 
 msgid "Theme \"<strong>%s</strong>\""
 msgstr "Тема дизайна «<strong>%s</strong>»"
 
-msgid "Apps by %s"
-msgstr "Приложения %s"
-
-msgid "Commercial"
-msgstr "Коммерческая"
-
-msgid "View"
-msgstr "Открыть"
-
-msgid "%s end user license agreement"
-msgstr "Лицензионное соглашения на использование «%s»"
-
 msgid "Close"
 msgstr "Закрыть"
-
-msgid "No license"
-msgstr "Без лицензии"
-
-msgid "Open"
-msgstr "Открыть"
-
-msgid "by %s"
-msgstr "%s"
-
-msgid "Info"
-msgstr "Информация"
-
-msgid "Write a review"
-msgstr "Написать отзыв"
-
-msgid "Website"
-msgstr "Сайт"
 
 msgid "Reviews"
 msgstr "Отзывы"
@@ -718,143 +232,11 @@ msgstr "Отзывы"
 msgid "But with errors:"
 msgstr "С ошибками:"
 
-msgid "Popular plugins"
-msgstr "Популярные плагины"
-
-msgid "The following list of plugins is automatically updated from the Webasyst Store. Click on a plugin to install."
-msgstr "Щелкните по плагину, чтобы автоматически скачать и установить его из магазина Webasyst."
-
-msgid "Plugin"
-msgstr "Плагин"
-
-msgid "Theme"
-msgstr "Тема"
-
-msgid "Not licensed"
-msgstr "Нет лицензии"
-
-msgid "Expires %s"
-msgstr "Истекает %s"
-
-msgid "Expired %s"
-msgstr "Истекло %s"
-
-msgid "Licensed"
-msgstr "Лицензия"
-
-msgid "Link license"
-msgstr "Подключить лицензию"
-
-msgid "Installation and usage of %s app on <strong>%s</strong> is not licensed. Updates are disabled. Buy a new license or link your existing %s license to this Webasyst installation."
-msgstr "Установка и использование «%s» на домене <strong>%s</strong> не лицензирована. Возможность установки обновлений отключена. Купите новую лицензию или подключите приобретенную ранее лицензию «%s» к этой установке Webasyst."
-
-msgid "This is a valid licensed installation of %s on <strong>%s</strong>."
-msgstr "Лицензионная установка «%s» на домене <strong>%s</strong>."
-
-msgid "Buy more licenses"
-msgstr "Купить еще лицензию"
-
-msgid "Additional licenses are required if you are using %s on more than one domain name (<a href='%s' target='_blank'>one license per domain</a>)."
-msgstr "Приобретение дополнительных лицензий требуется, если вы используете «%s» более чем на одном доменном имени (<a href='%s' target='_blank'>одна лицензия на домен</a>)."
-
-msgid "http://www.webasyst.com/help/1200/paid-app-licensing/"
-msgstr "http://www.webasyst.ru/help/1199/paid-app-licensing/"
-
-msgid "%s will be automatically downloaded from Webasyst Store and installed immediately after you make payment."
-msgstr "Загрузка и установка «%s» будет произведена автоматически сразу после оплаты."
-
-msgid "%s will be downloaded from Webasyst Store and installed automatically."
-msgstr "Загрузка и установка «%s» будет произведена автоматически."
-
-msgid "Most popular"
-msgstr "Популярные"
-
-msgid "Newest"
-msgstr "Новые"
-
-msgid "Installation and usage of %s plugin on <strong>%s</strong> is not licensed. Updates are disabled. Buy a new license or link your existing %s plugin license to this Webasyst installation."
-msgstr "Установка и использование плагина «%s» на домене <strong>%s</strong> не лицензирована. Возможность установки обновлений отключена. Купите новую лицензию или подключите приобретенную ранее лицензию плагина «%s» к этой установке Webasyst."
-
-msgid "Installation and usage of %s theme on <strong>%s</strong> is not licensed. Updates are disabled. Buy a new license or link your existing %s theme license to this Webasyst installation."
-msgstr "Установка и использование темы дизайна «%s» на домене <strong>%s</strong> не лицензирована. Возможность установки обновлений отключена. Купите новую лицензию или подключите приобретенную ранее лицензию темы дизайна «%s» к этой установке Webasyst."
-
-msgid "Plugin not found"
-msgstr "Плагин не найден"
-
-msgid "If you already have a license, click the button above to link it to this Webasyst installation."
-msgstr "Если у вас уже есть приобретенная лицензия, щелкните по кнопке выше, чтобы подключить лицензию к этой установке Webasyst."
-
-msgid "New!"
-msgstr "Новинка"
-
-msgid "Popular!"
-msgstr "Хит!"
-
-msgid "New version!"
-msgstr "Новая версия"
-
-msgid "Or browse for all plugins in <a href=\"%s\">Installer</a> app."
-msgstr "Или просмотрите все плагины в приложении «<a href=\"%s\">Инсталлер</a>»."
-
-msgid "Installed design themes"
-msgstr "Установленные темы дизайна"
-
-msgid "New themes from Webasyst Store"
-msgstr "Новые темы дизайна из магазина Webasyst"
-
-msgid "Install \"%s\" plugin?"
-msgstr "Установить плагин «%s»?"
-
 msgid "Finalizing the installation and redirecting back to the app..."
 msgstr "Завершение установки и перенаправление обратно в приложение..."
 
-msgid "or "
-msgstr "или"
-
-msgid "buy permanent license"
-msgstr "купить постоянную лицензию"
-
-msgid "Permanent license saves you money on your monthly bills (your monthly payment will be reduced by %s)."
-msgstr "Постоянная лицензия позволяет сэкономить на ежемесячных платежах за хостинг (платеж уменьшится на %s)."
-
-msgid "Not in use"
-msgstr "Не используется"
-
-msgid "Get new themes from Webasyst Store"
-msgstr "Новые темы дизайна из магазина Webasyst"
-
-msgid "%s will be downloaded from Webasyst Store and installed for free. Once installed, you will be able either to pay for the app on a monthly basis or to buy a permanent license."
-msgstr "«%s» будет скачано и установлено бесплатно. После установки вы сможете пользоваться приложением либо оплачивая стоимость аренды ежемесячно, либо купив постоянную лицензию."
-
-msgid "Main account administrative email where system notification will be sent."
-msgstr "Основной электронный адрес администратора, на который будут отправляться системные уведомления."
-
-msgid "Sender"
-msgstr "Отправитель"
-
 msgid "Widgets"
 msgstr "Виджеты"
-
-msgid "No widget enabled apps are installed."
-msgstr "Не установлено ни одного приложения с виджетами."
-
-msgid "No widgets were found."
-msgstr "Виджеты не найдены."
-
-msgid "All widgets"
-msgstr "Все виджеты"
-
-msgid "Installation and usage of %s widget on <strong>%s</strong> is not licensed. Updates are disabled. Buy a new license or link your existing %s widget license to this Webasyst installation."
-msgstr "Установка и использование виджета «%s» на домене <strong>%s</strong> не лицензирована. Возможность установки обновлений отключена. Получите лицензию для продолжения использования виджета."
-
-msgid "Delete this widget"
-msgstr "Удалить виджет"
-
-msgid "Webasyst framework"
-msgstr "Фреймворк Webasyst"
-
-msgid "Widget not found"
-msgstr "Виджет не найден"
 
 msgid "Application widget %s has been deleted"
 msgid_plural "Applications widgets %s have been deleted"
@@ -871,12 +253,6 @@ msgstr "Виджет «<strong>%s</strong>»"
 msgid "This widget will be updated automatically when you update %s app."
 msgstr "Виджет будет обновлен автоматически при установке обновления приложения «%s»."
 
-msgid "Localization"
-msgstr "Локализация"
-
-msgid "Gettext (recommended)"
-msgstr "Gettext (рекомендуется)"
-
 msgid "Can not delete system application's widgets \"%s\""
 msgstr "Ошибка удаления виджетов системного приложения «%s»"
 
@@ -885,18 +261,6 @@ msgstr "Ошибка удаления виджетов системного пр
 
 msgid "Gathering information about available updates..."
 msgstr "Сбор информации о доступных обновлениях…"
-
-msgid "Recommended"
-msgstr "Рекомендуем"
-
-msgid "Best new apps"
-msgstr "Лучшие новые приложения"
-
-msgid "Top Free & Paid"
-msgstr "Лидеры продаж и скачиваний"
-
-msgid "Actions"
-msgstr "Действия"
 
 msgid "Assets"
 msgstr "Активы"
@@ -916,116 +280,17 @@ msgstr "Выключен"
 msgid "Resume"
 msgstr "Включить"
 
-msgid "Active"
-msgstr "Активно"
-
 msgid "Pause"
 msgstr "Выключить"
 
 msgid "System requirements not met:"
 msgstr "Системные требования не выполнены:"
 
-msgid "Recommended apps"
-msgstr "Рекомендуемые приложения"
-
-msgid "Recommended themes"
-msgstr "Рекомендуемые темы дизайна"
-
-msgid "Recommended plugins"
-msgstr "Рекомендуемые плагины"
-
-msgid "Recommended widgets"
-msgstr "Рекомендуемые виджеты"
-
-msgid "Featured"
-msgstr "Рекомендуем"
-
-msgid "Filter by app and type"
-msgstr "Фильтровать по приложению и типу"
-
-msgid "Filter by category"
-msgstr "Категории"
-
 msgid "Webasyst Framework version <strong>%s</strong>"
 msgstr "Версия Webasyst — <strong>%s</strong>"
 
-msgid "Plugins for apps"
-msgstr "Плагины"
-
 msgid "Manage apps"
 msgstr "Установлено"
-
-msgid "Your account status enables you to install %s for free!"
-msgstr "Статус вашего аккаунта позволяет установить «%s» бесплатно!"
-
-msgid "See all"
-msgstr "Смотреть все"
-
-msgid "Search"
-msgstr "Поиск"
-
-msgid "View theme demo"
-msgstr "Посмотреть демосайт"
-
-msgid "<a target=\"_blank\" href=\"https://support.webasyst.com/2024/mailer-dkim/\">What is DKIM</a>"
-msgstr "<a target=\"_blank\" href=\"https://support.webasyst.ru/2023/mailer-dkim/\">Что такое DKIM</a>"
-
-msgid "Enter an email address in “Sender” field to use DKIM."
-msgstr "Для использования DKIM введите email-адрес в поле «Отправитель»."
-
-msgid "Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address."
-msgstr "Добавьте DKIM-подпись для исходящих email-сообщений, чтобы подтвердить владение адресом отправителя."
-
-msgid "Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name"
-msgstr "Добавьте новую <b>TXT-запись</b> с данным публичным ключом DKIM в DNS-зону домена"
-
-msgid "Host "
-msgstr "Хост"
-
-msgid "Domain"
-msgstr "Домен"
-
-msgid "Record type"
-msgstr "Тип записи"
-
-msgid "Value"
-msgstr "Значение"
-
-msgid "Captcha"
-msgstr "Капча"
-
-msgid "Selected captcha type will be used throughout your storefront wherever applicable."
-msgstr "Выбранный тип капчи будет использоваться на всех страницах сайта, где это нужно."
-
-msgid "Invisible mode"
-msgstr "Невидимый режим"
-
-msgid "Get site key and secret for your website"
-msgstr "Получить значения для своего сайта"
-
-msgid "You need to install openssl php extention to use DKIM"
-msgstr "Вам необходимо установить расширение openssl php для использования DKIM"
-
-msgid "You need PHP version 5.3 or higher to use DKIM. Your current version is:"
-msgstr "Для использования DKIM вам потребуется PHP версии 5.3 или выше. Текущая версия:"
-
-msgid "Extension openssl is not installed"
-msgstr "Расширение openssl не установлено"
-
-msgid "Failed to create DKIM signature"
-msgstr "Не удалось сгенерировать DKIM ключ"
-
-msgid "Webasyst Captcha"
-msgstr ""
-
-msgid "Google reCAPTCHA"
-msgstr ""
-
-msgid "Site Key"
-msgstr ""
-
-msgid "Secret"
-msgstr ""
 
 msgid "App %s installed"
 msgstr "Приложение «%s» установлено"
@@ -1102,92 +367,11 @@ msgstr "Продукт включен"
 msgid "Item uninstalled"
 msgstr "Продукт удален"
 
-msgid "Email transport"
-msgstr "Email транспорт"
-
-msgid "php mail() function"
-msgstr "PHP-функция mail()"
-
-msgid "Debug mailer"
-msgstr "Тестовый отправитель"
-
-msgid "When this option is selected messages are sent by the default transport specified in the Webasyst framework configuration."
-msgstr "При выборе этого варианта рассылки будут отправляться транспортом по умолчанию, указанным в конфигурации фреймворка Вебасист."
-
-msgid "Some web-hosting companies allow sending email message by means of this transport only. If it is required to specify additional parameters for the mail() function you can enter them in the provided text field. The default parameters are -f%s."
-msgstr "Некоторые хостинг-провайдеры позволяют отправлять электронные сообщения только этим транспортом. Если имеется необходимость ввести дополнительные параметры, их можно указать в текстовом поле при выборе варианта «PHP-функция mail()». По умолчанию используется параметр -f%s."
-
-msgid "This is the web server's system command for sending email in UNIX-like operating systems. The \"Sendmail\" option will allow you to specify a non-standard system command for sending messages if you are an experienced server administrator."
-msgstr "Это системная команда веб-сервера, с помощью которой выполняется отправка сообщений на UNIX-хостингах. Вариант транспорта «Sendmail» позволит вам указать нестандартную системную команду для отправки сообщений, если вы самостоятельно администрируете работу вашего веб-сервера."
-
-msgid "Special server which is specifically used for sending email messages. You can send newsletters via any SMTP server for which you have connection credentials: host, port, user name, and password. It can be the SMTP server of your web-hosting company or that of a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
-msgstr "Специальный почтовый сервер, предназначенный для отправки электронной почты. Вы можете отправлять рассылки через любой SMTP-сервер, для подключения к которому у вас есть данные: адрес сервера, номер порта, имя пользователя (логин) и пароль — это может быть SMTP-сервер вашего хостинг-провайдера или публичного почтового сервиса (Mail.ru, Gmail и т. п.)."
-
-msgid "Options"
-msgstr "Параметры"
-
-msgid "Command"
-msgstr "Команда"
-
-msgid "Encryption"
-msgstr "Шифрование"
-
-msgid "Note: mail will be saved in wa-log/mailer/ and will NOT be sent to recipients."
-msgstr "Внимание: сообщения сохранятся в wa-log/mailer/ и НЕ будут отправлены получателям."
-
-msgid "None"
-msgstr "Нет"
-
 msgid "System settings"
 msgstr "Системные настройки"
 
 msgid "<a href=\"%s\">Change system settings in Settings app</a>."
 msgstr "<a href=\"%s\">Управляйте системными настройками в приложении «Настройки»</a>."
-
-msgid "This will delete the app’s source code and settings without the recovery option. Delete the app?"
-msgstr "Исходный код и настройки приложения будут удалены без возможности восстановления. Удалить приложение?"
-
-msgid "This will delete the design theme’s source code and settings without the recovery option. Delete the theme?"
-msgstr "Исходный код и настройки темы дизайна будут удалены без возможности восстановления. Удалить тему?"
-
-msgid "This will delete the plugin’s source code and settings without the recovery option. Delete the plugin?"
-msgstr "Исходный код и настройки плагина будут удалены без возможности восстановления. Удалить плагин?"
-
-msgid "This will delete the widget’s source code and settings without the recovery option. Delete the widget?"
-msgstr "Исходный код и настройки виджета будут удалены без возможности восстановления. Удалить виджет?"
-
-msgid "Proceed to theme settings →"
-msgstr "Перейти к настройкам темы →"
-
-msgid "Subscription for updates expired on <strong style='white-space:nowrap;'>%s</strong>"
-msgstr "Подписка на обновления закончилась <strong style='white-space:nowrap;'>%s</strong>"
-
-msgid "Extend subscription for updates"
-msgstr "Продлить подписку на обновления"
-
-msgid "App’s hosted license is expired. To continue using the app, extend its hosted license."
-msgstr "Аренда приложения закончилась. Чтобы продолжить использовать приложение, продлите аренду."
-
-msgid "Pay for app’s hosted license"
-msgstr "Оплатить аренду приложения"
-
-msgid "Subscription for updates is valid until <strong style='white-space:nowrap;'>%s</strong>."
-msgstr "Подписка на обновления действует до <strong style='white-space:nowrap;'>%s</strong>."
-
-msgid "App’s hosted license has been paid until <strong style='white-space:nowrap;'>%s</strong>."
-msgstr "Аренда приложения оплачена до <strong style='white-space:nowrap;'>%s</strong>."
-
-msgid "Home"
-msgstr "Главная"
-
-msgid "New "
-msgstr "Новинки"
-
-msgid "Top-chart"
-msgstr "Топ-чарты"
-
-msgid "Developers"
-msgstr "Разработчики"
 
 msgid "Failed to get the URL of the remote Store"
 msgstr "Не удалось получить URL удаленного Магазина"
@@ -1246,12 +430,6 @@ msgstr "Вы авторизованы в Центре заказчика как 
 msgid "If you want to add a review as another customer, please <a class=\"js-customer-center-logout-link\">sign out</a>."
 msgstr "Если вы хотите оставить отзыв под другим именем, то <a class=\"js-customer-center-logout-link\">выйдите</a> из текущей учетной записи."
 
-msgid "To add a review, <a class=\"js-customer-center-login-link\">log into Customer Center</a>"
-msgstr "Чтобы оставить отзыв, <a class=\"js-customer-center-login-link\">войдите в Центр заказчика</a>"
-
-msgid "Sign in required"
-msgstr "Требуется авторизация"
-
 msgid "Contact the developer"
 msgstr "Связь с разработчиком"
 
@@ -1272,9 +450,6 @@ msgstr "Оцените тему"
 
 msgid "Rate app"
 msgstr "Оцените приложение"
-
-msgid "My licenses"
-msgstr "Мои лицензии"
 
 msgid "System error"
 msgstr "Системная ошибка"
@@ -1303,34 +478,22 @@ msgstr "Установка продуктов доступна только по
 msgid "License binding is allowed only to users with admin access to Installer app."
 msgstr "Привязка лицензий доступна только пользователям с административным доступом к приложению «Инсталлер»."
 
-msgid "Product"
-msgstr "Продукт"
-
-msgid "Order ID"
-msgstr "№ заказа"
-
-msgid "reset filters"
-msgstr "очистить фильтры"
-
-msgid "Total rows:"
-msgstr "Всего строк:"
-
 msgid "copy"
 msgstr "копировать"
 
 msgid "Installer ID"
 msgstr "ID Инсталлера"
 
-msgid "View ..."
+msgid "View..."
 msgstr "Показать..."
 
 msgid "beta version"
 msgstr "бета-версия"
 
-msgid "Beta test notice"
+msgid "<p><b>Software product update available for testing purposes, which has not been reviewed by Webasyst.</b></p><p>The beta version will remain available in the updates list, even after its installation, until the developer publishes the product update in the Installer or disables the beta testing option for this product.</p>"
 msgstr "<p><b>Обновление программного продукта, предназначенное для тестирования и не прошедшее проверку модераторами Webasyst.</b></p><p>Бета-версия будет доступна в списке обновлений в том числе после ее установки — до тех пор, пока разработчик не опубликует обновление продукта в магазине Webasyst или не отключит возможность бета-тестирования для этого продукта.</p>"
 
-msgid "Beta test confirm"
+msgid "<p><b>The beta version was not reviewed by Webasyst!</b></p><p>By installing this non-reviewed beta version you agree that errors in its source code may cause abnormal or insecure functioning of your account. Please report issues to the product developer directly.</p>"
 msgstr "<p><b>Бета-версия не проверялась модераторами Webasyst!</b></p><p>Устанавливая бета-версию, вы соглашаетесь с тем, что ошибки в ее коде могут привести к нарушению работы вашего аккаунта. О проблемах, связанных с использованием бета-версии, сообщайте разработчику продукта.</p>"
 
 msgid "Beta test"
@@ -1356,3 +519,6 @@ msgstr "Список продуктов, к бета-тестированию к
 
 msgid "Can’t disconnect."
 msgstr "Не удалось выполнить отключение."
+
+msgid "Deletion of design theme “%s” for the “%s” app is unavailable because it is selected as a parent theme for the child themes of apps %s. Before deleting this design theme, either delete all its child themes or change their parent design theme."
+msgstr "Удаление темы дизайна «%s» для приложения «%s» недоступно, потому что она является родительской для дочерних тем приложений %s. Перед удалением этой темы дизайна удалите все ее дочерние темы или смените для них родительскую тему дизайна."

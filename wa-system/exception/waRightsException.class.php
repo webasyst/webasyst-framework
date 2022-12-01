@@ -59,7 +59,7 @@ HTML;
             return $content;
         } else {
             $app_settings_model = new waAppSettingsModel();
-            $account_name = $app_settings_model->get('webasyst', 'name', _ws('My company, LLC'));
+            $account_name = $app_settings_model->get('webasyst', 'name', _ws('My company'));
             $wa_url = wa()->getRootUrl();
             $version = wa()->getVersion('webasyst');
             $wa_header = wa_header();

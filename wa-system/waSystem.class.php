@@ -513,7 +513,11 @@ class waSystem
         if (!empty($config['adapters'])) {
             foreach ($config['adapters'] as $provider => $params) {
                 if ($params) {
-                    $result[$provider] = $this->getAuth($provider, $params);
+                    try {
+                        $result[$provider] = $this->getAuth($provider, $params);
+                    } catch (waException $e) {
+                        // adapter does not work, skip it
+                    }
                 }
             }
         }
@@ -1084,7 +1088,7 @@ class waSystem
     public function accountName()
     {
         $app_settings_model = new waAppSettingsModel();
-        return $app_settings_model->get('webasyst', 'name', _ws('My company, LLC'));
+        return $app_settings_model->get('webasyst', 'name', _ws('My company'));
     }
 
     /**

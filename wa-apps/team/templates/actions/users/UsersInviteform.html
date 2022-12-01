@@ -1,9 +1,20 @@
 {strip}
+{$invite_html = ''}
+<!-- plugin hook: 'frontend_invite_user' -->
+{* @event frontend_invite_user.%app_id% *}
+{foreach $frontend_invite_user as $html}
+    {if $html}
+        {$invite_html = $html}
+    {/if}
+{/foreach}
 <div class="dialog t-invite-user-dialog" id="t-invite-user-dialog">
     <div class="dialog-background"></div>
-    <form class="dialog-body" method="post" id="t-invite-user-form">
+    <form class="dialog-body" method="post" id="t-invite-user-form" autocomplete="off">
         <h3 class="dialog-header">[`Invite new user`]</h3>
         <div class="dialog-content">
+            {if $invite_html}
+                {$invite_html}
+            {else}
             <div class="fields">
                 <div class="fields-group">
                     <div class="toggle rounded js-invite-type">
@@ -19,7 +30,7 @@
                     <div class="field">
                         <div class="name for-input">[`Email`]</div>
                         <div class="value">
-                            <input class="long bold" type="text" name="email" placeholder="[`name@company.com`]">
+                            <input class="long bold" type="text" name="email" placeholder="[`name@company.com`]" autocomplete="new-password">
                             <p class="hint by-email-hint">[`Enter an email address to send the new user an invitation with sign-in instructions.`]</p>
                         </div>
                     </div>
@@ -27,7 +38,7 @@
                         <div class="field">
                             <div class="name for-input">[`Login`]</div>
                             <div class="value">
-                                <input type="text" name="login">
+                                <input type="text" name="login" autocomplete="new-password">
                             </div>
                         </div>
                         <div class="field">
@@ -35,7 +46,7 @@
                                 [`Password`]
                             </div>
                             <div class="value">
-                                <input type="password" name="password">
+                                <input type="password" name="password" autocomplete="new-password">
                             </div>
                         </div>
                         <div class="field">
@@ -43,7 +54,7 @@
                                 [`Confirm password`]
                             </div>
                             <div class="value">
-                                <input type="password" name="password_confirm">
+                                <input type="password" name="password_confirm" autocomplete="new-password">
                             </div>
                         </div>
                     </div>
@@ -52,8 +63,8 @@
                 <div class="fields-group custom-mt-24 js-by-link hidden">
                     <div class="field">
                         <div class="value">
-                            <input class="short bold custom-mr-8 custom-mt-8" type="text" name="firstname" placeholder="[`First name`]">
-                            <input class="short bold custom-mt-8" type="text" name="lastname" placeholder="[`Last name`]">
+                            <input class="short bold custom-mr-8 custom-mt-8" type="text" name="firstname" placeholder="[`First name`]" autocomplete="new-password">
+                            <input class="short bold custom-mt-8" type="text" name="lastname" placeholder="[`Last name`]" autocomplete="new-password">
                         </div>
                     </div>
                     <div class="field">
@@ -118,9 +129,10 @@
                     </div>
                 </div>
             </div>
+            {/if}
         </div>
         <footer class="dialog-footer fields">
-            {if $groups || $locations}
+            {if !$invite_html && ($groups || $locations)}
             <div class="field t-apps-list-wrapper custom-my-16 invisible">
                 <div class="name">[`The user will access`]</div>
                 <div class="value js-swiper-groups swiper-container">
@@ -187,6 +199,7 @@
             </div>
             {/if}
             <div class="action-buttons">
+                {if !$invite_html}
                 <div class="flexbox middle js-by-link hidden">
                     <input type="text" class="wide short js-invite-link text-gray hidden">
                     <button type="button" class="button outlined js-get-link"><i class="fas fa-link"></i> [`Create link`]</button>
@@ -194,6 +207,7 @@
                     <button type="button" class="button light-gray js-close-dialog">[`Cancel`]</button>
                 </div>
                 <button type="submit" class="button js-submit-button js-by-email">[`Send`]</button>
+                {/if}
                 <button type="button" class="button light-gray js-close-dialog js-by-email">[`Cancel`]</button>
             </div>
         </footer>
@@ -326,6 +340,8 @@
 
                 if (is_login) {
                     form_action = "?module=users&action=create";
+                } else {
+                    form_action = "?module=users&action=invite";
                 }
 
                 dialog.resize();
@@ -358,6 +374,10 @@
                     $.each(result.errors, function (key, value) {
                         let $input;
                         if ($.isArray(value)) {
+                            if (value[1] == "general") {
+                                $('.action-buttons').append('<p class="state-error-hint">'+value[0]+'</p>');
+                                return;
+                            }
                             $input = $form.find('[name="' + value[1] + '"]').addClass('state-error');
                             value = value[0];
                         } else {
@@ -373,6 +393,9 @@
 
         // Get Link
         $('.js-get-link').on('click', function () {
+            $form.find('.state-error-hint').remove();
+            $form.find('.state-error').removeClass('state-error');
+            
             const $get_link = $(this);
             $get_link.html(`<i class="fas fa-link"></i> ${ locales.make_invite }... <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>`)
 
@@ -391,12 +414,16 @@
                     $('.js-copy-link').toggleClass('hidden')
                     // reload sidebar
                     $.team.sidebar.reload();
-                }else{
+                } else {
                     $.each(response.errors, function (key, value) {
-                        $form.find(`[name="${ key }"]`)
-                        .addClass('state-error')
-                        .parent()
-                        .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                        if (key == "general") {
+                            $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                        } else {
+                            $form.find(`[name="${ key }"]`)
+                                .addClass('state-error')
+                                .parent()
+                                .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                        }
                     });
                 }
             }, 'json')

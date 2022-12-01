@@ -15,6 +15,6 @@ return array(
     # plugin vendor ID (for 3rd parties vendors it's a number)
     'vendor'      => 'webasyst',
     # plugin version
-    'version'     => '1.0.6',
+    'version'     => '1.0.9',
     'type'        => waPayment::TYPE_ONLINE,
 );

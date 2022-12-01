@@ -355,7 +355,7 @@
             <ul class="menu-v with-icons">
                 {if !empty($settings.items)}
                     {* Export theme settings *}
-                    <li><a href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}"><i class="icon16 import"></i>[s`Export theme settings`]</a></li>
+                    <li><a class="js-export-theme-settings" href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}"><i class="icon16 import"></i>[s`Export theme settings`]</a><span class="hidden js-export-error hint flexbox"><span class="js-export-error-caption" style="color: red;"></span></span></li>
                     {* Import theme settings *}
                     <li><a class="js-import-theme-settings" href="#"><i class="icon16 export"></i>[s`Import theme settings`]</a></li>
                 {/if}
@@ -646,8 +646,10 @@
             $wrapper: $("#{$id}"),
             theme_id: {$theme.id|json_encode},
             theme_routes: {$theme_routes|json_encode},
+            has_child_themes: !{empty($child_themes)|json_encode},
             design_url: {$design_url|json_encode},
-            locale: {$_locale|json_encode}
+            locale: {$_locale|json_encode},
+            wa_url: {$wa_url|json_encode}
         });
     })(jQuery);
 </script>

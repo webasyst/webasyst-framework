@@ -369,6 +369,22 @@ class webasystBackendCheatSheetActions extends waActions
         return $all_apps_site_config;
     }
 
+    public function updateAppCacheConfig($app_id)
+    {
+        $locale = wa()->getLocale();
+        $cache_apps = new waVarExportCache('cheat_sheet_apps_'.$locale, 86400, 'webasyst/backend/cheatsheet');
+        $all_apps_site_config = $cache_apps->get('cheat_sheet_apps_'.$locale);
+
+        if ($all_apps_site_config !== null) {
+            $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+            if (file_exists($path)) {
+                wa($app_id, 1);
+                $all_apps_site_config[$app_id] = include($path);
+            }
+            $cache_apps->set($all_apps_site_config);
+        }
+    }
+
     public function getWaVars()
     {
         return array(

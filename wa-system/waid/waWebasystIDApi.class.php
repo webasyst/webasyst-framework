@@ -540,10 +540,12 @@ class waWebasystIDApi
         }
 
         $status = $net->getResponseHeader('http_code');
+        $response_headers = $net->getResponseHeader();
         $body = trim($net->getResponse(true));
         if ($status == 204 && strlen($body) == 0) {
             return [
                 'status' => 204,
+                'headers' => $response_headers,
                 'response' => []
             ];
         }
@@ -560,9 +562,11 @@ class waWebasystIDApi
             ]);
 
             return [
-                'status' => null,
+                'status' => $status,
+                'headers' => $response_headers,
                 'response' => [
-                    'error' => 'system_error'
+                    'error' => 'system_error',
+                    'error_description' => 'System error (see ' . get_class($this) . '.log for details)'
                 ]
             ];
         }
@@ -570,6 +574,7 @@ class waWebasystIDApi
         if ($response) {
             return [
                 'status' => $status,
+                'headers' => $response_headers,
                 'response' => $response
             ];
         }
@@ -591,6 +596,7 @@ class waWebasystIDApi
                 if ($resp_error) {
                     return [
                         'status' => $status,
+                        'headers' => $response_headers,
                         'response' => [
                             'error' => $resp_error
                         ]
@@ -610,6 +616,7 @@ class waWebasystIDApi
 
         return [
             'status' => $status,
+            'headers' => $response_headers,
             'response' => $response
         ];
     }

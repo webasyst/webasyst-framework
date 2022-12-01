@@ -36,19 +36,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/group'
         403:
-          description: A police officer is waiting for you at the entrance. 
+          description: Access denied to the Team app or this API method.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
         400:
-          description: Invalid request. Learn the materiel!
+          description: Invalid request data.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
         500:
-          description: Call the proctolog, please
+          description: Internal server error.
   /team.users.getList:
     get:
       security:
@@ -82,19 +82,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/user'
         403:
-          description: A police officer is waiting for you at the entrance. 
+          description: Access denied to the Team app or this API method.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
         400:
-          description: Invalid request. Learn the materiel!
+          description: Invalid request data.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
         500:
-          description: Call the proctolog, please
+          description: Internal server error.
   /team.users.invite:
     post:
       security:
@@ -134,19 +134,19 @@ paths:
                     format: uri
                     description: URL for invitation confirmation
         403:
-          description: A police officer is waiting for you at the entrance. 
+          description: Access denied to the Team app or this API method.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
         400:
-          description: Invalid request. Learn the materiel!
+          description: Invalid request data.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
         500:
-          description: Call the proctolog, please
+          description: Internal server error.
 
 components:
   securitySchemes:
@@ -170,7 +170,7 @@ components:
           description: The group name
         cnt:
           type: integer
-          description: The number of users in the group 
+          description: The number of users in the group
         type:
           type: string
           enum:
@@ -224,7 +224,7 @@ components:
                 description: Phone number
               ext:
                 type: string
-                description: Phone type classification 
+                description: Phone type classification
                 nullable: true
               status:
                 type: string

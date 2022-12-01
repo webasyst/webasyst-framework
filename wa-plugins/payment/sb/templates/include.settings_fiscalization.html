@@ -97,3 +97,51 @@
     </div>
 </div>
 
+<div class="field js-payment-sb-ffd-wrapper">
+    <div class="name">
+        <label for="{$prefix}ffd_version">Версия ФФД</label>
+    </div>
+    <div class="value">
+        <select name="{$namespace}[ffd_version]" autocomplete="off" id="{$prefix}ffd_version">
+            {$current_ffd = ifset($settings, 'ffd_version', '')}
+            <option value="1.05">1.05 (V4)</option>
+            <option value="1.2"{if $current_ffd === '1.2'} selected{/if}>1.2 (V5)</option>
+        </select>
+        <br>
+        <span class="hint">Текущая выбранная версия должна совпадать с версией в настройках ОФД</span>
+    </div>
+
+    <div class="value js-okei-table" style="{if $current_ffd !== '1.2'} display: none; {/if}padding: 1rem; border-radius: 5px; background: #efefef; border: solid 1px rgba(0,0,0,0.1); width: 450px;">
+        <h5>Проверьте правильность настроек единиц измерения количества</h5>
+        <small><a>Развернуть</a></small>
+        <table class="light" style="width: 300px; margin: 30px 30px 10px; display: none;">
+            <tr>
+                <th>Наименование единицы</th>
+                <th>Код ОКЕИ</th>
+            </tr>
+            <tr><td>Штука               </td><td>796 </td></tr>
+            <tr><td>Грамм               </td><td>163 </td></tr>
+            <tr><td>Килограмм           </td><td>166 </td></tr>
+            <tr><td>Тонна               </td><td>168 </td></tr>
+            <tr><td>Сантиметр           </td><td>004 </td></tr>
+            <tr><td>Дециметр            </td><td>005 </td></tr>
+            <tr><td>Метр                </td><td>006 </td></tr>
+            <tr><td>Квадратный сантиметр</td><td>051 </td></tr>
+            <tr><td>Квадратный дециметр </td><td>053 </td></tr>
+            <tr><td>Квадратный метр     </td><td>055 </td></tr>
+            <tr><td>Миллилитр           </td><td>111 </td></tr>
+            <tr><td>Литр                </td><td>112 </td></tr>
+            <tr><td>Кубический метр     </td><td>113 </td></tr>
+            <tr><td>Киловатт-час        </td><td>245 </td></tr>
+            <tr><td>Гигакалория         </td><td>233 </td></tr>
+            <tr><td>Сутки (день)        </td><td>359 </td></tr>
+            <tr><td>Час                 </td><td>356 </td></tr>
+            <tr><td>Минута              </td><td>355 </td></tr>
+            <tr><td>Секунда             </td><td>354 </td></tr>
+            <tr><td>Килобайт            </td><td>256 </td></tr>
+            <tr><td>Мегабайт            </td><td>257 </td></tr>
+            <tr><td>Гигабайт            </td><td>2553</td></tr>
+            <tr><td>Терабайт            </td><td>2554</td></tr>
+        </table>
+    </div>
+</div>

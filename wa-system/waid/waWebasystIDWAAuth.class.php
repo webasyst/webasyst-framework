@@ -96,10 +96,10 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
         $ignore = array_flip($ignore);
         foreach (waRequest::get() as $key => $value) {
             if (!isset($ignore[$key]) && $value) {
-                $callback_url .= '&' . $key . '=' . $value;
+                $callback_url .= '&' . $key . '=' . urlencode($value);
             }
         }
-
+        
         return $callback_url;
     }
 
@@ -154,7 +154,7 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
     {
         $referrer_url = isset($params['referrer_url']) ? $params['referrer_url'] : null;
 
-        if (!$referrer_url) {
+        if (!$referrer_url && !waRequest::request('background_process')) {
             $url = wa()->getConfig()->getRequestUrl(true, false);
             $url = ltrim($url, '/');
             $domain = wa()->getConfig()->getDomain();
@@ -166,9 +166,10 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
             }
         }
 
-        $referrer_url = waUtils::urlSafeBase64Encode($referrer_url);
-
-        $params['referrer_url'] = $referrer_url;
+        if (!empty($referrer_url)) {
+            $referrer_url = waUtils::urlSafeBase64Encode($referrer_url);
+            $params['referrer_url'] = $referrer_url;
+        }
 
         if ($this->getClientManager()->isBackendAuthForced()) {
             $params['mode'] = 'forced';
@@ -263,7 +264,32 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
         if (!$this->isClientConnected()) {
             return '';
         }
-        return parent::getAuthCodeUrl();
+
+        $auth_url = parent::getAuthCodeUrl();
+        if (empty($auth_url)) {
+            return $auth_url;
+        }
+
+        $phone = waContactPhoneField::cleanPhoneNumber(waRequest::get('phone', '', waRequest::TYPE_STRING_TRIM));
+        if (empty($phone) || !(new waPhoneNumberValidator)->isValid($phone) || !wa()->getUser()->isAuth()) {
+            return $auth_url;
+        }
+        
+        $this->savePhone($phone);
+        return $auth_url . '&auth_type=onetime_password&2fa_phone=' . urlencode($phone);
+    }
+
+    private function savePhone($phone)
+    {
+        $user = wa()->getUser();
+        if (!$user->isAuth()) {
+            return;
+        }
+        $user_phones = $user->get('phone');
+        if (!in_array($phone, array_column($user_phones, 'value'))) {
+            $user->add('phone', $phone);
+            $user->save();
+        }
     }
 
     /**

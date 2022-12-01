@@ -9,6 +9,12 @@ class teamUsersCreateInvitationController extends teamUsersNewUserController
     {
         $contact_id = $this->getRequest()->post('contact_id', '', waRequest::TYPE_INT);
         if ($contact_id) {
+            $event_data = compact('contact_id');
+            $this->runCreateInvitationHook($event_data);
+            if ($this->errors) {
+                return;
+            }
+
             $token_data = teamUser::createContactToken($contact_id);
             if ($token_data && isset($token_data['token'])) {
                 $this->response = [
@@ -22,6 +28,12 @@ class teamUsersCreateInvitationController extends teamUsersNewUserController
             $data = $this->getData();
             if ($errors = $this->validateData($data)) {
                 $this->errors = $errors;
+                return;
+            }
+
+            $event_data = compact('data');
+            $this->runCreateInvitationHook($event_data);
+            if ($this->errors) {
                 return;
             }
 
@@ -70,4 +82,15 @@ class teamUsersCreateInvitationController extends teamUsersNewUserController
 
         return [];
     }
+
+    protected function runCreateInvitationHook($event_data)
+    {
+        $event_results = wa('team')->event('create_invitation', $event_data);
+        foreach ($event_results as $message) {
+            if ($message) {
+                $this->errors['general'] = $message;
+            }
+        }
+    }
+
 }

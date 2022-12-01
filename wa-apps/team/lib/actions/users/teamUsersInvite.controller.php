@@ -14,6 +14,11 @@ class teamUsersInviteController extends teamUsersNewUserController
 
     public function invite($email, $phone, $groups)
     {
+        $event_data = compact('email', 'phone', 'groups');
+        $this->runInviteUserHook($event_data);
+        if ($this->errors) {
+            return;
+        }
         if (!empty($phone)) {
             $result = (new teamUserInvitingByPhone($phone, ['groups' => $groups]))->invite();
         } else {
@@ -43,5 +48,20 @@ class teamUsersInviteController extends teamUsersNewUserController
             'contact_id'  => $result['details']['contact_id'],
             'contact_url' => wa()->getUrl().'id/'.$result['details']['contact_id'].'/',
         );
+    }
+
+    /**
+     * @param array $event_data
+     * @return void
+     * @throws waException
+     */
+    protected function runInviteUserHook($event_data)
+    {
+        $invite_user_event = wa()->event('invite_user', $event_data);
+        foreach ($invite_user_event as $message) {
+            if ($message) {
+                $this->errors[] = [$message, 'general'];
+            }
+        }
     }
 }

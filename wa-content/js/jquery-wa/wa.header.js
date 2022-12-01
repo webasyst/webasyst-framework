@@ -268,6 +268,8 @@ class WaHeader {
                 forceFallback: true,
                 delay: 200,
                 delayOnTouchOnly: true,
+                fallbackTolerance: 5,
+                touchStartThreshold: 5,
                 onStart(event) {
                     $(event.item).css('pointer-events', 'none');
                 },

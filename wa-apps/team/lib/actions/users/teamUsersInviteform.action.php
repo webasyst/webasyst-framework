@@ -31,7 +31,9 @@ class teamUsersInviteformAction extends waViewAction
             }
         }
 
+        $event_data = compact('groups', 'locations');
         $this->view->assign(array(
+            'frontend_invite_user' => wa()->event('frontend_invite_user', $event_data),
             'groups'    => $groups,
             'locations' => $locations,
             'access_types' => teamHelper::getAccessTypes(),

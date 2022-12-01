@@ -127,9 +127,12 @@ class waLocaleParseEntityTheme extends waLocaleParseEntity
     {
         $app_messages = $this->getAppMessages($locale);
         $parent_messages = $this->getParentMessages($locale);
+        $theme_messages = $this->getThemeMessages();
 
         foreach ($messages as $msgid => $message) {
-            if (isset($app_messages[$msgid]) || isset($parent_messages[$msgid])) {
+            if (isset($app_messages[$msgid])) {
+                $messages[$msgid]['comments'][] = _ws('A design theme’s localization string key is the same as an app’s localization string key.');
+            } elseif (isset($parent_messages[$msgid]) || isset($theme_messages[$msgid])) {
                 unset($messages[$msgid]);
             }
         }
@@ -173,10 +176,25 @@ class waLocaleParseEntityTheme extends waLocaleParseEntity
 
         $app_messages = [];
         if (file_exists($file_path)) {
-            $gettext_data = $gettext_data = (new waGettext($file_path, true))->getMessagesMetaPlurals();
+            $gettext_data = (new waGettext($file_path, true))->getMessagesMetaPlurals();
             $app_messages = $gettext_data['messages'];
         }
 
         return $app_messages;
+    }
+
+    /**
+     * @return array
+     * @throws waException
+     */
+    public function getThemeMessages()
+    {
+        $theme_messages = [];
+        $theme = new waTheme($this->getThemeID(), $this->getAppID());
+        if ($theme instanceof waTheme) {
+            $theme_messages = array_merge($theme->getLocales(), $theme->parent_theme->getLocales());
+        }
+
+        return $theme_messages;
     }
 }

@@ -16,43 +16,33 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: //wa-plugins/payment/paypal/lib/config/plugin.php:3
 msgid "PayPal"
 msgstr ""
 
-#: //wa-plugins/payment/paypal/lib/config/plugin.php:4
 msgid "PayPal Payments Standard Integration"
 msgstr ""
 
-#: //wa-plugins/payment/paypal/lib/config/settings.php:6
 msgid "Merchant email"
 msgstr "Email продавца"
 
-#: //wa-plugins/payment/paypal/lib/config/settings.php:7
 msgid "Your PayPal account email address"
 msgstr "Ваш email, зарегистрированный в PayPal"
 
-#: //wa-plugins/payment/paypal/lib/config/settings.php:13
 msgid "Transaction currency"
 msgstr "Валюта платежа"
 
-#: //wa-plugins/payment/paypal/lib/config/settings.php:14
 msgid "Must be acceptable at merchant settings"
 msgstr "Должна быть доступна в вашем аккаунте продавца"
 
-#: //wa-plugins/payment/paypal/lib/config/settings.php:19
 msgid "Sandbox"
 msgstr "Тестовый режим"
 
-#: //wa-plugins/payment/paypal/lib/config/settings.php:20
 msgid "Enable for test mode"
 msgstr "Включите для тестирования"
 
-#: //wa-plugins/payment/paypal/templates/payment.html:8
 msgid "Redirecting to secure PayPal website for payment..."
 msgstr "Перенаправление на сайт PayPal для оплаты..."
 
-#: //wa-plugins/payment/paypal/templates/payment.html:16
 msgid "Proceed to PayPal to make payment"
 msgstr "Оплатить заказ на сайте  PayPal"
 
@@ -61,3 +51,9 @@ msgstr "Тип транзакции: %s"
 
 msgid "unknown"
 msgstr "неизвестен"
+
+msgid "IPN"
+msgstr "URL-адрес для уведомлений"
+
+msgid "The URL to which instant payment notifications (IPN) will be sent by the payment gateway."
+msgstr "URL, на который будут отправляться запросы от платёжного шлюза."

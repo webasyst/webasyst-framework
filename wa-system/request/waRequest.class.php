@@ -633,9 +633,12 @@ class waRequest
         if (!empty($_SERVER['HTTP_X_SCHEME']) && strtolower($_SERVER['HTTP_X_SCHEME']) == 'https') {
             return true;
         }
-        $http_cf_visitor = json_decode(self::server('HTTP_CF_VISITOR'), true);
-        if (!empty($http_cf_visitor['scheme']) && $http_cf_visitor['scheme'] == 'https') {
-            return true;
+        $http_cf_visitor = self::server('HTTP_CF_VISITOR');
+        if ($http_cf_visitor && is_string($http_cf_visitor)) {
+            $http_cf_visitor = json_decode($http_cf_visitor, true);
+            if (!empty($http_cf_visitor['scheme']) && $http_cf_visitor['scheme'] == 'https') {
+                return true;
+            }
         }
         return false;
     }

@@ -27,7 +27,7 @@ class siteFilesDeleteController extends waJsonController
             } else if ($path) {
                 $path = wa()->getDataPath($path, true, null, false);
                 if (!is_writable($path)) {
-                    $this->errors = sprintf(_w("Folder could not bet deleted due to the insufficient permissions."), $path);
+                    $this->errors = sprintf(_w("Folder could not be deleted due to insufficient permissions."), $path);
                 } else {
                     waFiles::delete($path);
                     $this->log('file_delete', 1);

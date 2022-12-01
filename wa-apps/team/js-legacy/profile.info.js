@@ -2173,7 +2173,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             $(this).trigger('before_switch_mode', [mode, this]);
 
             // Remove all buttons
-            el.find('div.field.buttons').remove();
+            el.find('div.field.buttons,div.field.errors').remove();
 
             // Update DOM for all fields
             var fieldsToUpdate = [];
@@ -2358,8 +2358,15 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     'type': that.contactType,
                     'id': that.contact_id != null ? that.contact_id : 0
                 }, function(newData) {
-                    if (newData.status != 'ok') {
-                        throw new Exception('AJAX error:', newData);
+                    if (newData.status !== 'ok') {
+                        if (newData.errors.length) {
+                            showError(newData.errors['0']);
+                            return;
+                        } else {
+                            throw new Exception('AJAX error:', newData);
+                        }
+                    } else {
+                        deleteError();
                     }
 
                     var oldData = that.fieldsValues || {};
@@ -2426,6 +2433,21 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     }
 
                 }, 'json');
+            }
+
+            function showError(error) {
+                var $error_message = $('#save-error-message');
+                $('.buttons .loading').hide();
+                if ($error_message.length) {
+                    $error_message.text(error.text);
+                } else {
+                    $('#contact-info-block').append('<div class="field errors"><div class="value">' +
+                        '<p class="errormsg" id="save-error-message">' + error.text + '</p></div></div>');
+                }
+            }
+
+            function deleteError() {
+                $('#contact-info-block .field.errors').remove();
             }
 
             function updateGeocoding(oldData, newData) {

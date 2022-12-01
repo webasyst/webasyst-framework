@@ -4,6 +4,7 @@
   "no-api-hint": "If you are a developer of this app, please refer to this guide on how to create <a href='https://developers.webasyst.com/features/apis/' target='_blank'>an API-enabled Webasyst app</a>.",
   "empty": "empty",
   "Request": "Request",
+  "Response": "Response",
   "Schema": "Schema",
   "Headers": "Headers",
   "Data": "Data",
@@ -38,5 +39,11 @@
   "Date & time": "Date & time",
   "Run API": "Run API",
   "Body": "Body",
-  "OpenAPI Document": "OpenAPI Document"
+  "OpenAPI Document": "OpenAPI Document",
+  "Query string parameters": "Query string parameters",
+  "Request body parameters": "Request body parameters",
+  "Select file": "Select file",
+  "Response data format": "Response data format",
+  "show": "show",
+  "hide": "hide"
 }

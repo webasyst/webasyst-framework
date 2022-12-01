@@ -1565,13 +1565,14 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
             }
             $data = array(
-                'name'       => $order_data->shipping_name,
-                'total'      => $order_data->shipping,
-                'price'      => $order_data->shipping,
-                'quantity'   => 1,
-                'stock_unit' => 'шт.',
-                'tax_rate'   => $order_data->shipping_tax_rate,
-                'type'       => 'shipping',
+                'name'            => $order_data->shipping_name,
+                'total'           => $order_data->shipping,
+                'price'           => $order_data->shipping,
+                'quantity'        => 1,
+                'stock_unit'      => 'шт.',
+                'stock_unit_code' => '796',
+                'tax_rate'        => $order_data->shipping_tax_rate,
+                'type'            => 'shipping',
             );
             $items[] = $this->formalizeItemData($data, $order_data);
         }
@@ -1703,7 +1704,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'positionId'   => $position_id,
             'name'         => mb_substr($data['name'], 0, 100),
             'quantity'     => array(
-                'measure' => mb_substr($data['stock_unit'], 0, 20),
+                'measure' => $this->getMeasure($data),
             ),
             'itemAmount'   => number_format($data['total'], 2, '', ''),
             'itemCurrency' => $this->getCurrencyISO4217Code($order_data['currency']),
@@ -2347,5 +2348,83 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         throw new waPaymentException('Invalid signature');
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    private function getMeasure($data)
+    {
+        if ($this->ffd_version === '1.2') {
+            $okei_code = ifset($data, 'stock_unit_code', '796');
+            $measure = $this->measureMatch($okei_code);
+        } else {
+            $unit = ifset($data, 'stock_unit', 'шт.');
+            $measure = mb_substr($unit, 0, 20);
+        }
+
+        return $measure;
+    }
+
+    /**
+     * https://classifikators.ru/okei
+     * https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:register_cart#quantity
+     * @param $okei_code
+     * @return int
+     */
+    private function measureMatch($okei_code)
+    {
+        /** основные значения (в ФФД 1.2) */
+        $okei_sb_measure = [
+            '163'  => 10,  // Грамм
+            '166'  => 11,  // Килограмм
+            '168'  => 12,  // Тонна
+            '004'  => 20,  // Сантиметр
+            '04'   => 20,
+            '4'    => 20,
+            '005'  => 21,  // Дециметр
+            '05'   => 21,
+            '5'    => 21,
+            '006'  => 22,  // Метр
+            '06'   => 22,
+            '6'    => 22,
+            '051'  => 30,  // Квадратный сантиметр
+            '51'   => 30,
+            '053'  => 31,  // Квадратный дециметр
+            '53'   => 31,
+            '055'  => 32,  // Квадратный метр
+            '55'   => 32,
+            '111'  => 40,  // Миллилитр
+            '112'  => 41,  // Литр
+            '113'  => 42,  // Кубический метр
+            '245'  => 50,  // Киловатт час
+            '233'  => 51,  // Гигакалория
+            '359'  => 70,  // Сутки (день)
+            '356'  => 71,  // Час
+            '355'  => 72,  // Минута
+            '354'  => 73,  // Секунда
+            '256'  => 80,  // Килобайт
+            '257'  => 81,  // Мегабайт
+            '2553' => 82,  // Гигабайт
+            '2554' => 83   // Терабайт
+        ];
+
+        /** дополнительные значения (поштучно или единицами) */
+        $okei_sb_measure += [
+            '616' => 0,   // Бобина
+            '625' => 0,   // Лист
+            '704' => 0,   // Набор
+            '715' => 0,   // Пара (2 шт.)
+            '728' => 0,   // Пачка
+            '736' => 0,   // Рулон
+            '778' => 0,   // Упаковка
+            '796' => 0,   // Штука
+            '812' => 0,   // Ящик
+            '868' => 0,   // Бутылка
+            '*'   => 255  // Иная мера измерения
+        ];
+
+        return (int) ifset($okei_sb_measure, $okei_code, $okei_sb_measure['*']);
     }
 }

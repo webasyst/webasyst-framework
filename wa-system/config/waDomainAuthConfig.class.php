@@ -317,6 +317,20 @@ class waDomainAuthConfig extends waAuthConfig
         return $this->getScalarValue('login_placeholder', _ws('Email'));
     }
 
+    public function getLoginForgotRequired()
+    {
+        $result = parent::getLoginForgotRequired();
+        $auth_methods = $this->getUsedAuthMethods();
+        if (in_array(self::AUTH_METHOD_EMAIL, $auth_methods) && in_array(self::AUTH_METHOD_SMS, $auth_methods)) {
+            $result = _ws('Enter your email address or phone number.');
+        } elseif (in_array(self::AUTH_METHOD_EMAIL, $auth_methods)) {
+            $result = _ws('Enter your email address.');
+        } elseif (in_array(self::AUTH_METHOD_SMS, $auth_methods)) {
+            $result = _ws('Enter your phone number.');
+        }
+
+        return $result;
+    }
 
     /**
      * @return bool

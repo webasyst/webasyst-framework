@@ -8,7 +8,7 @@ class webasystBackendActions extends waViewActions
     {
         $app_settings_model = new waAppSettingsModel();
         $this->view->assign('header_items', $this->getHeaderItems());
-        $this->view->assign('company_name', htmlspecialchars($app_settings_model->get('webasyst', 'name', _ws('My company, LLC')), ENT_QUOTES, 'utf-8'));
+        $this->view->assign('company_name', htmlspecialchars($app_settings_model->get('webasyst', 'name', _ws('My company')), ENT_QUOTES, 'utf-8'));
         $this->view->assign('backend_url', $this->getConfig()->getBackendUrl(true));
         $this->view->assign('public_dashboards', $this->getPublicDashboards());
         $this->view->assign('counts', wa()->getStorage()->read('apps-count'));
@@ -133,6 +133,10 @@ class webasystBackendActions extends waViewActions
             'show_tutorial'      => !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'),
             'public_dashboards'  => $this->getPublicDashboards(),
             'no_today_activity'  => $no_today_activity,
+            'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
+            'webasyst_id_auth_banner'  => $this->getWebasystIDAuthBanner(),
+            'show_connection_banner'   => $this->showConnectionBanner(),
+            'current_domain'     => $this->getCurrentDomain(),
         ]);
     }
 
@@ -234,5 +238,9 @@ class webasystBackendActions extends waViewActions
 
         return $public_dashboards;
     }
-}
 
+    protected function getCurrentDomain() {
+        $domain = wa()->getConfig()->getDomain();
+        return waIdna::dec($domain);
+    }
+}

@@ -4,6 +4,6 @@ return array(
     'size' => array('2x2', '2x1', '1x1'),
     'img' => 'img/currencyquotes.png',
     'locale' => 'ru_RU',
-    'version' => '1.5.2',
+    'version' => '1.5.3',
     'vendor' => 'webasyst',
 );

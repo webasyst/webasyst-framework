@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @see https://kassa.yandex.ru/developers/api
+ * @link https://yookassa.ru/developers/api
  *
  * @property-read string  $shop_id
  * @property-read string  $shop_password
@@ -25,6 +25,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         'USD',
     );
 
+    const TTL_PAYMENT = 3300;   // 55 мин
     const CHESTNYZNAK_PRODUCT_CODE = 'chestnyznak';
 
     public function getSettingsHTML($params = array())
@@ -161,8 +162,13 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             $full_refund = !empty($actual_transaction_data['refunded_amount']['value'])
                 && $actual_transaction_data['amount']['value'] == $actual_transaction_data['refunded_amount']['value'];
             $changed_total = !empty($actual_transaction_data) && $actual_transaction_data['amount']['value'] != $order->total;
-            if (empty($actual_transaction_data)
-                || ifset($actual_transaction_data, 'status', '') == 'canceled' || $full_refund || $changed_total
+            $life_time = (empty($actual_transaction_data['created_at']) ? 0 : strtotime('now') - strtotime($actual_transaction_data['created_at']));
+            if (
+                empty($actual_transaction_data)
+                || ifset($actual_transaction_data, 'status', '') == 'canceled'
+                || $full_refund
+                || $changed_total
+                || $life_time > self::TTL_PAYMENT
             ) {
                 $attempt = $unique_native_ids ? count($unique_native_ids) : 0;
                 $payment = $this->createPayment($order, $type, $attempt);
@@ -356,14 +362,14 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
      */
     protected function getEndpointUrl($method, &$data)
     {
-        $url = 'https://payment.yandex.net/api/v3/';
+        $url = 'https://api.yookassa.ru/v3/';
         switch ($method) {
-            case 'info': #https://payment.yandex.net/api/v3/payments/{payment_id}
+            case 'info': #https://api.yookassa.ru/v3/payments/{payment_id}
                 $url .= sprintf('payments/%s', $data);
                 $data = null;
                 break;
-            case 'capture': #https://payment.yandex.net/api/v3/payments/{payment_id}/capture
-                $url .= sprintf('payments/%s/capture ', $data['native_id']);
+            case 'capture': #https://api.yookassa.ru/v3/payments/{payment_id}/capture
+                $url .= sprintf('payments/%s/capture', $data['native_id']);
                 $data = array(
                     'amount'  => array(
                         'value'    => number_format($data['amount'], 2, '.', ''),
@@ -377,11 +383,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                     unset($data['receipt']);
                 }
                 break;
-            case 'cancel': #https://payment.yandex.net/api/v3/payments/{payment_id}/cancel
+            case 'cancel': #https://api.yookassa.ru/v3/payments/{payment_id}/cancel
                 $url .= sprintf('payments/%s/cancel', $data['native_id']);
                 $data = '{}';
                 break;
-            case 'create': #https://payment.yandex.net/api/v3/payments
+            case 'create': #https://api.yookassa.ru/v3/payments
                 if ($data instanceof waOrder) {
                     $data = $this->formatPaymentData($data);
                 }
@@ -390,9 +396,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             case 'refunds':
             case 'refunds_info':
                 if (!is_array($data)) {
+                    #https://api.yookassa.ru/v3/refunds/{refund_id}
                     $url .= sprintf('refunds/%s', $data);
                     $data = null;
                 } else {
+                    #https://api.yookassa.ru/v3/refunds
                     $url .= 'refunds';
                 }
                 break;
@@ -547,7 +555,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     }
 
     /**
-     * @see https://kassa.yandex.ru/developers/api#payment_object
+     * @link https://yookassa.ru/developers/api#payment_object
      * @param string $native_order_id
      * @return array
      * @throws waException
@@ -558,7 +566,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     }
 
     /**
-     * @see https://kassa.yandex.ru/developers/api#refund_object
+     * @link https://yookassa.ru/developers/api#refund_object
      * @param string $native_refund_id
      * @return array
      * @throws waException
@@ -851,7 +859,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
 
     /**
-     * @see https://kassa.yandex.ru/developers/api#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5_%D0%BF%D0%BB%D0%B0%D1%82%D0%B5%D0%B6%D0%B0_receipt
+     * @link https://yookassa.ru/developers/api#receipt_object
      * @param waOrder $order
      * @return array|null
      * @throws waPaymentException
@@ -966,7 +974,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     }
 
     /**
-     * @see https://kassa.yandex.ru/developers/api#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5_%D0%BF%D0%BB%D0%B0%D1%82%D0%B5%D0%B6%D0%B0_receipt_items
+     * @link https://yookassa.ru/developers/api#receipt_object
      * @param array  $item
      * @param string $currency
      * @return array
@@ -1034,7 +1042,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     }
 
     /**
-     * @see https://kassa.yandex.ru/developers/payments/54fz/parameters-values#vat-codes
+     * @link https://yookassa.ru/developers/payment-acceptance/scenario-extensions/54fz/parameters-values#vat-codes
      * @param $item
      * @return int
      * @throws waPaymentException
@@ -1206,7 +1214,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                             $card['number'] = chunk_split($card['number'], 4, ' ');
                             $view[] = sprintf($template, $card['card_type'], $card['number'], $card['expiry_month'], $card['expiry_year']);
                             break;
-                        case 'yandex_money':
+                        case 'yandex_money': // compatibility with old version of api
+                        case 'yoo_money':
                             if (!empty($payment_method['account_number'])) {
                                 $template = 'Аккаунт: %s';
                                 $view[] = sprintf($template, $payment_method['account_number']);
@@ -1304,7 +1313,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             case 'merchant':
                 $view = 'Продавец товаров и услуг (вы)';
                 break;
-            case 'yandex_checkout':
+            case 'yandex_checkout': // compatibility with old version of api
+            case 'yoo_money':
                 $view = 'ЮKassa';
                 break;
             case 'payment_network':
@@ -1323,7 +1333,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     }
 
     /**
-     * @see https://kassa.yandex.ru/developers/payments/54fz/parameters-values#payment-subject
+     * @link https://yookassa.ru/developers/payment-acceptance/scenario-extensions/54fz/parameters-values#payment-subject
      * @return array
      */
     public static function settingsPaymentSubjectTypeOptions()
@@ -1351,7 +1361,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     }
 
     /**
-     * @see https://kassa.yandex.ru/developers/payments/54fz/parameters-values#tax-systems
+     * @link https://yookassa.ru/developers/payment-acceptance/scenario-extensions/54fz/parameters-values#tax-systems
      * @return array
      * @throws waException
      */
@@ -1448,7 +1458,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     }
 
     /**
-     * @link https://kassa.yandex.ru/developers/payment-methods/overview
+     * @link https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods
      * @return array
      */
     public static function settingsCustomerPaymentTypeOptions()
@@ -1484,9 +1494,9 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 'recurrent' => false,
             ),
             //Электронные деньги
-            'yandex_money'   => array(
-                'value'     => 'yandex_money',
-                'title'     => 'ЮMoney (Яндекс.Деньги)',
+            'yoo_money'      => array(
+                'value'     => 'yoo_money',
+                'title'     => 'ЮMoney',
                 'ttl'       => '1 час',
                 'hold'      => '7 дней',
                 'code'      => 'PC',
@@ -1507,6 +1517,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             'webmoney'       => array(
                 'value'     => 'webmoney',
                 'title'     => 'WebMoney',
+                'disabled'  => 'disabled',
                 'ttl'       => '1 час',
                 'hold'      => '6 часов',
                 'code'      => 'WM',
@@ -1517,6 +1528,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             'wechat'         => array(
                 'value'     => 'wechat',
                 'title'     => 'WeChat',
+                'disabled'  => 'disabled',
                 'ttl'       => '2 минуты',
                 'hold'      => '—',
                 'code'      => 'WP',
@@ -1527,12 +1539,12 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             //Интернет-банкинг
             'sberbank'       => array(
                 'value'     => 'sberbank',
-                'title'     => 'Сбербанк Онлайн',
-                'ttl'       => '8 часов',
-                'hold'      => '6 часов',
+                'title'     => 'SberPay',
+                'ttl'       => '1 час',
+                'hold'      => '7 дней',
                 'code'      => 'SB',
                 'refund'    => true,
-                'recurrent' => false,
+                'recurrent' => true,
                 'group'     => 'Интернет-банкинг',
             ),
             'alfabank'       => array(
@@ -1568,6 +1580,16 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 'group'     => 'B2B-платежи',
             ),
             //Другие способы
+            'sbp'           => array(
+                'value'     => 'sbp',
+                'title'     => 'СБП (Система быстрых платежей)',
+                'ttl'       => '1 час',
+                'hold'      => '6 часов',
+                'code'      => 'CP',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Другие способы',
+            ),
             'mobile_balance' => array(
                 'value'     => 'mobile_balance',
                 'title'     => 'Баланс телефона',
@@ -1774,6 +1796,15 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         return $values;
     }
 
+    /**
+     * @link https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/other/installments/widget
+     * @param $amount
+     * @param $app_id
+     * @param $id
+     * @param $selector
+     * @return string
+     * @throws waException
+     */
     public static function getCreditInfo($amount, $app_id = null, $id = null, $selector = null)
     {
         if (empty($id)) {
@@ -1805,9 +1836,9 @@ HTML;
 
         $result .= /** @lang html */
             <<<HTML
-<script src="https://static.yandex.net/kassa/pay-in-parts/ui/v1"></script>
+<script src="https://static.yoomoney.ru/checkout-credit-ui/v1/index.js/"></script>
 <script>
-const \$checkoutCreditUI = YandexCheckoutCreditUI({
+const \$checkoutCreditUI = CheckoutCreditUI({
     shopId: '{$instance->shop_id}',
     sum: {$amount}
 });

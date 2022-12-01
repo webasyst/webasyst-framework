@@ -34,7 +34,11 @@
                             {/if}
                         </td>
                         <td class="s-actions align-right">
+                            {if empty($route.temporarily_off)}
                             <a href="#" class="s-route-action s-route-settings" title="[`Settings`]"><i class="icon16 settings"></i></a>
+                            {else}
+                            <i class="icon16 broom-bw"></i>
+                            {/if}
                             <i class="icon16 lock {if $route.ssl_all|default:false}{else}hidden{/if}" title="[`Redirect to HTTPS`]"></i>
                         </td>
                     </tr>
@@ -51,7 +55,7 @@
             	<div class="block double-padded align-center hint">
             		<br />
             		<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />
-            		[`Select route to manage its settings`]
+            		[`Select a route to manage its settings`]
             		<div class="clear"></div>
             	</div>
             </div>
@@ -67,7 +71,7 @@ $.wa.site.updateIncorrectRouting({$routing_errors.incorrect_ids|json_encode});
 function site_routing_full()
 {
     $("#s-route-params").html('<div class="block double-padded align-center hint"><br />' +
-            '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select route to manage its settings`]' +
+            '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select a route to manage its settings`]' +
             '<div class="clear"></div></div>'
     ).animate({ 'margin-left': '75%'}, 'slow');
     $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');

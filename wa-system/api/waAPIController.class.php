@@ -148,8 +148,11 @@ class waAPIController
     protected function hasAppAccess($app)
     {
         $user = wa()->getUser();
+        if ($user->get('is_user') <= 0) {
+            return false;
+        }
         if ($app === 'webasyst') {
-            return $user->get('is_user') > 0;
+            return true;
         }
         return $user->getRights($app, 'backend') > 0;
     }
@@ -175,7 +178,7 @@ class waAPIController
 
         $tokens_model = new waApiTokensModel();
         $data = $tokens_model->getById($token);
-        if (!$data) {
+        if (!$data || $data['token'] != $token) {
             throw new waAPIException('invalid_token', 'Invalid access token', 401);
         }
         if ($data['expires'] && (strtotime($data['expires']) < time())) {

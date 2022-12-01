@@ -84,7 +84,7 @@
                         </label>
                     </div>
                     <div class="value">
-                        <div class="hint">[`Enable for <strong>temproray</strong> redirecting only, which you are planning to cancel in the future.`]</div>
+                        <div class="hint">[`Enable for <strong>temporary</strong> redirecting only, which you are planning to cancel in the future.`]</div>
                         <div class="hint">[`Disable for <strong>permanent</strong> redirecting with server response code 301, which is used to inform search engines that the new URL should be indexed instead of the old one.`]</div>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
                         <div class="name">[`Settlement name`]</div>
                         <div class="value">
                             <input type="text" name="params[_name]" value="{$route_name|escape}" class="bold" /><br />
-                            <span class="hint">[`Name is used in the <em>$wa->apps</em> navigation menu of this website`]</span>
+                            <span class="hint">[`The name is used in the <em>$wa->apps</em> navigation menu of this website.`]</span>
                         </div>
                     </div>
                     {if $themes}
@@ -231,7 +231,7 @@
 
 {/if}{/foreach}</textarea>
                         <br />
-                        <span class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param("key")&#125;</em>. Each key=value pair must be specified on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/design/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
+                        <span class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param("key")&#125;</em>. Each key=value pair must be specified on a separate line.`] <a href="[`https://developers.webasyst.com/docs/templates/design-themes/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
                     </div>
                 </div>
                 {elseif $app_id === ':text'}
@@ -267,7 +267,14 @@
                     <div class="field-group">
                         <div class="field">
                             <div class="name"></div>
-                            <div class="value red"><i class="icon16 exclamation"></i> {$app_id|escape|string_format:"[`App [%s] deleted or disabled.`]"}</div>
+                            <div class="value red">
+                                <i class="icon16 exclamation"></i>
+                                {if empty($route.temporarily_off)}
+                                {$app_id|escape|string_format:"[`The [%s] app deleted or disabled.`]"}
+                                {else}
+                                {$app_id|escape|string_format:"[`The [%s] app is disabled.`]"}
+                                {/if}
+                            </div>
                         </div>
                     </div>
                 {/if}
@@ -428,7 +435,7 @@ $(function () {
     // Delete route
     $("a.s-route-delete").on('click', function () {
         var last_app_route = {$last_app_route|json_encode},
-            content = '[`This will delete the rule from website structure. Are you sure?`]';
+            content = '[`This will delete the rule from the website structure. Are you sure?`]';
 
         if (last_app_route) {
             content = '{sprintf('[`You are about to delete the only routing rule set up for <b>%s</b> app.`]', ifempty($app.name))}</p><p>[`This will limit its functionality. Delete the rule?`]';
@@ -452,7 +459,7 @@ $(function () {
                 if (response.status == 'ok') {
                     $("#route-{$route_id}").remove();
                     $("#s-route-params").html('<div class="block double-padded align-center hint"><br />' +
-                        '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select route to manage its settings`]' +
+                        '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select a route to manage its settings`]' +
                         '<div class="clear"></div></div>'
                     ).animate({ 'margin-left': '75%' }, 'slow');
                     $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');

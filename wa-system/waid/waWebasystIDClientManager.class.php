@@ -241,6 +241,7 @@ class waWebasystIDClientManager
 
         $asm = $this->getAppSettingsModel();
         $asm->del('webasyst', 'waid_credentials');
+        $asm->del('webasyst', 'waid_system_access_token');
 
         // Fact about disconnecting save in settings for future
         //  differentiate cases when current installation never was connected yet
@@ -257,7 +258,7 @@ class waWebasystIDClientManager
 
     /**
      * Get system (non user) access token
-     * @return string 
+     * @return string
      */
     public function getSystemAccessToken()
     {
@@ -268,6 +269,9 @@ class waWebasystIDClientManager
 
         $url = $this->getWebasystIDUrlsProvider()->getAuthCenterUrl('auth/token');
         $credentials = $this->getCredentials();
+        if (!$credentials) {
+            return false;
+        }
 
         $params = [
             'grant_type' => 'client_credentials',

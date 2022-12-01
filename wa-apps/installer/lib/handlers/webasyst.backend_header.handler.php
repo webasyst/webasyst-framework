@@ -87,8 +87,68 @@ class installerWebasystBackend_headerHandler extends waEventHandler
         return array_keys($slugs);
     }
 
+    protected function getProductsLeaseStatus($slugs)
+    {
+        try {
+            $installer = installerHelper::getInstaller();
+            $domain = $installer->getDomain();
+            $hash = $installer->getHash();
+            $url = $installer->getCheckProductLeaseStatusUrl();
+
+            $net_options = [
+                'timeout' => 20,
+                'format' => waNet::FORMAT_JSON,
+                'request_format' => waNet::FORMAT_RAW,
+                'expected_http_code' => null
+            ];
+
+            $net = new waNet($net_options);
+            $params = [
+                'domain' => $domain,
+                'hash' => $hash,
+                'slug' => array_values($slugs),
+            ];
+
+            $result = [];
+            foreach($slugs as $slug) {
+                $result[$slug] = 'unknown';
+            }
+            $response = $net->query($url, $params, waNet::METHOD_POST);
+            $response = is_array($response) && isset($response['data']['statuses']) && is_array($response['data']['statuses']) ? $response['data']['statuses'] : [];
+            foreach($response as $slug => $arr) {
+                $result[$slug] = ifset($arr, 'status', 'unknown');
+            }
+            return $result;
+        } catch (waException $e) {
+            return [];
+        }
+    }
+
     protected function switchOffSlugs($slugs)
     {
+        // Filter $slugs: only keep app plugins that are actually still enabled
+        $slugs = array_filter($slugs, function($slug) {
+            try {
+                if (preg_match('~^([^/]+)/plugins/([^/]+)$~', $slug, $matches)) {
+                    list($_, $app_id, $plugin_id) = $matches;
+                    if (wa()->appExists($app_id)) {
+                        $app_plugins = wa($app_id)->getConfig()->getPlugins();
+                        return isset($app_plugins[$plugin_id]);
+                    }
+                }
+            } catch (waException $e) {
+            }
+            return false;
+        });
+
+        if ($slugs) {
+            // Ask WA server again if client has licenses:
+            // they might have fixed licensing since last banner update.
+            $lease_status = $this->getProductsLeaseStatus($slugs);
+            $slugs = array_filter($slugs, function($slug) use ($lease_status) {
+                return ifset($lease_status, $slug, null) == 'blocked';
+            });
+        }
         if (!$slugs) {
             return;
         }
@@ -96,40 +156,27 @@ class installerWebasystBackend_headerHandler extends waEventHandler
         $old_app_id = wa()->getApp();
         wa('installer', true);
 
-        $something_changed = false;
         $installer = new waInstallerApps();
 
         foreach($slugs as $slug) {
-            if (preg_match('~^([^/]+)/plugins/([^/]+)$~', $slug, $matches)) {
-                list($_, $app_id, $plugin_id) = $matches;
-                try {
-                    // Make sure plugin is actually turned on before trying to disable it
-                    if (!wa()->appExists($app_id)) {
-                        continue;
-                    }
-                    $app_plugins = wa($app_id)->getConfig()->getPlugins();
-                    if (!isset($app_plugins[$plugin_id])) {
-                        continue;
-                    }
-
-                    // Disable plugin
-                    $something_changed = true;
-                    $installer->updateAppPluginsConfig($app_id, $plugin_id, false);
-                    (new waLogModel())->add('item_disable', [
-                        'type' => 'plugins',
-                        'id'   => sprintf('%s/%s', $app_id, $plugin_id),
-                        'reason' => 'license',
-                    ], null, 0);
-                } catch (waException $e) {
-                }
-            } else {
-                // Yaarrr!
+            if (!preg_match('~^([^/]+)/plugins/([^/]+)$~', $slug, $matches)) {
+                continue;
+            }
+            list($_, $app_id, $plugin_id) = $matches;
+            try {
+                // Disable plugin
+                $installer->updateAppPluginsConfig($app_id, $plugin_id, false);
+                (new waLogModel())->add('item_disable', [
+                    'type' => 'plugins',
+                    'id'   => sprintf('%s/%s', $app_id, $plugin_id),
+                    'reason' => 'license',
+                ], null, 0);
+            } catch (waException $e) {
             }
         }
 
-        if ($something_changed) {
-            installerHelper::flushCache();
-        }
+        wa('installer')->getConfig()->clearAnnouncementsCache();
+        installerHelper::flushCache();
 
         wa($old_app_id, true);
     }

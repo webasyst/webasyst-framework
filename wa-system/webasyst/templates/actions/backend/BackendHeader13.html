@@ -67,10 +67,27 @@
         <div class="js-webasyst-id-announcement js-webasyst-id-auth-announcement js-webasyst-id-auth-announcement w-webasyst-id-banner">
             <a href="javascript:void(0);" class="wa-announcement-close js-close-webasyst-id-announcement" title="close"  data-name="webasyst_id_announcement_close" rel="webasyst">&times;</a>
             <p>
-                <i class="icon16 userpic20" style="background-image: url('{$user->getPhoto(32)}');"></i>+ <i class="icon16 waid-green"></i> {sprintf('[s`<strong>Upgrade your user account (%s) to Webasyst ID</strong>, a unified authorization across all Webasyst apps, sites, and services. It’s free, secure, and takes just a minute.`]', $user.login|escape|strtoupper)}&nbsp;
-                <a href="{$webasyst_id_auth_banner.url}"
-                    class="bold js-webasyst-id-auth">{sprintf('[s`Enable&nbsp;Webasyst&nbsp;ID for %s now!`]', $user.login|escape|strtoupper)}</a>&nbsp;
+                <i class="icon16 waid-green"></i> [s`<strong>Enable secure sign-in with 2-factor authentication (2FA).</strong> Your account will be connected to Webasyst ID, and any sign-in attempts from new devices will be protected with an SMS confirmation code.`]
+                <br>
+                <input type="tel" placeholder="[s`+1`]" class="bold" style="font-size:15px;margin-top:10px;margin-right:10px;" value="{$webasyst_id_auth_banner.phone|default:'[s`+1`]'}">
+                <a href="javascript:void(0);" class="bold js-waid-link-phone" style="margin-right:10px;">[s`Connect`]</a>
                 <a href="javascript:void(0);" class="gray js-webasyst-id-helplink">[s`How does it work?`]</a>
+                <script>
+                    const $link_phone_alert = $('.js-webasyst-id-auth-announcement');
+
+                    $link_phone_alert.on('click', '.js-waid-link-phone', function (e) {
+                        e.preventDefault();
+                        const phone_number = $link_phone_alert.find('input').val();
+                        let phone_param = '';
+
+                        if (phone_number) {
+                            phone_param = '&phone=' + phone_number.replace(/[^-0-9\s.():+]/g,'')
+                        }
+
+                        const referrer_url = window.location.href;
+                        window.location.replace('{$webasyst_id_auth_banner.url}&referrer_url=' + encodeURIComponent(referrer_url) + phone_param);
+                    });
+                </script>
             </p>
         </div>
     {/if}

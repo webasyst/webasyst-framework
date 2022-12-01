@@ -247,6 +247,9 @@ class waAppConfig extends SystemConfig
 
     public function checkUpdates()
     {
+        $is_from_template = waConfig::get('is_template');
+        $disable_exception_log = waConfig::get('disable_exception_log');
+        waConfig::set('disable_exception_log', true);
         try {
             $app_settings_model = new waAppSettingsModel();
         } catch (waDbException $e) {
@@ -259,9 +262,11 @@ class waAppConfig extends SystemConfig
                 // 'webasyst' system app is not automatically started in frontend (as opposed to backend).
                 // When framework is first launched via frontend, wa_* tables do not exist yet.
                 // So we launch the app to give it a chance to install properly.
+                waConfig::set('disable_exception_log', $disable_exception_log);
                 $this->initWebasystApp();
                 $app_settings_model = new waAppSettingsModel();
             } else {
+                waLog::log($e->real_message."\n".$e->getFullTraceAsString(), 'db.log');
                 throw $e;
             }
         } catch (waException $e) {
@@ -272,6 +277,8 @@ class waAppConfig extends SystemConfig
             } else {
                 throw $e;
             }
+        } finally {
+            waConfig::set('disable_exception_log', $disable_exception_log);
         }
         if (!empty($app_settings_model)) {
             $time = $app_settings_model->get($this->application, 'update_time', null);
@@ -280,19 +287,20 @@ class waAppConfig extends SystemConfig
         // Install the app and remember to skip all updates
         // if this is the first launch.
         $is_first_launch = false;
-        $is_from_template = waConfig::get('is_template');
         if (empty($time)) {
             $time = null;
             $is_first_launch = true;
 
+            waConfig::set('disable_exception_log', true);
+            waConfig::set('is_template', null);
             try {
-                waConfig::set('is_template', null);
                 $this->install();
-                waConfig::set('is_template', $is_from_template);
             } catch (waException $e) {
                 waLog::log("Error installing application ".$this->application." at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                waConfig::set('is_template', $is_from_template);
                 throw $e;
+            } finally {
+                waConfig::set('disable_exception_log', $disable_exception_log);
+                waConfig::set('is_template', $is_from_template);
             }
 
             if (empty($app_settings_model)) {
@@ -334,28 +342,29 @@ class waAppConfig extends SystemConfig
                 // Force load locale
                 $this->setLocale(wa()->getLocale());
             }
+            waConfig::set('disable_exception_log', true);
             waConfig::set('is_template', null);
-            waConfig::get('disable_exception_log', true);
             $cache_database_dir = $this->getPath('cache').'/db';
-            foreach ($files as $t => $file) {
-                try {
+            try {
+                foreach ($files as $t => $file) {
+                    try {
 
-                    if (waSystemConfig::isDebug()) {
-                        waLog::dump(sprintf('Try include file %s by app %s', $file, $this->application), 'meta_update.log');
+                        if (waSystemConfig::isDebug()) {
+                            waLog::dump(sprintf('Try include file %s by app %s', $file, $this->application), 'meta_update.log');
+                        }
+
+                        $this->includeUpdate($file);
+                        waFiles::delete($cache_database_dir, true);
+                        $app_settings_model->set($this->application, 'update_time', $t);
+                    } catch (Exception $e) {
+                        waLog::log("Error running update of ".$this->application.": {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                        throw new waException(sprintf(_ws('Error while running update of %s app: %s'), $this->application, $file), 500, $e);
                     }
-
-                    $this->includeUpdate($file);
-                    waFiles::delete($cache_database_dir, true);
-                    $app_settings_model->set($this->application, 'update_time', $t);
-                } catch (Exception $e) {
-                    waLog::log("Error running update of ".$this->application.": {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                    waConfig::get('disable_exception_log', false);
-                    waConfig::set('is_template', $is_from_template);
-                    throw new waException(sprintf(_ws('Error while running update of %s app: %s'), $this->application, $file), 500, $e);
                 }
+            } finally {
+                waConfig::set('disable_exception_log', $disable_exception_log);
+                waConfig::set('is_template', $is_from_template);
             }
-            waConfig::get('disable_exception_log', false);
-            waConfig::set('is_template', $is_from_template);
         }
 
     }
@@ -922,7 +931,6 @@ class waAppConfig extends SystemConfig
     }
 
     /**
-     *
      * Update general plugin sort
      * @param string $plugin plugin id
      * @param int $sort 0 is first
@@ -931,20 +939,36 @@ class waAppConfig extends SystemConfig
     public function setPluginSort($plugin, $sort)
     {
         $path = $this->getConfigPath('plugins.php', true);
-        if (file_exists($path) && ($plugins = include($path)) && !empty($plugins[$plugin])) {
-            $sort = max(0, min(intval($sort), count($plugins) - 1));
-            $order = array_flip(array_keys($plugins));
-            if ($order[$plugin] != $sort) {
-                $b = array($plugin => $plugins[$plugin]);
-                unset($plugins[$plugin]);
-                $a = array_slice($plugins, 0, $sort, true);
-                $c = array_slice($plugins, $sort, null, true);
-                $plugins = array_merge($a, $b, $c);
-                if (waUtils::varExportToFile($plugins, $path)) {
-                    waFiles::delete(waConfig::get('wa_path_cache')."/apps/".$this->application.'/config', true);
-                } else {
-                    throw new waException("Fail while update plugins sort order");
+        if (file_exists($path) && ($all_plugins = include($path)) && !empty($all_plugins[$plugin])) {
+            $a     = [];
+            $c     = [];
+            $index = 0;
+            $sort = max(0, min(intval($sort), count($all_plugins) - 1));
+            foreach ($all_plugins as $plugin_id => $enabled) {
+                if ($plugin === $plugin_id) {
+                    continue;
                 }
+                if ($index < $sort) {
+                    $a[$plugin_id] = $enabled;
+                } else {
+                    $c[$plugin_id] = $enabled;
+                }
+
+                $plugin_config = $this->getPluginPath($plugin_id).'/lib/config/plugin.php';
+                if ($enabled && file_exists($plugin_config)) {
+                    /**
+                     * для положения в списке плагинов, учитываем разную нумерацию
+                     * и что плагины выводятся только включенные
+                     * и только действительно установленные
+                     */
+                    $index++;
+                }
+            }
+            $plugins = array_merge($a, [$plugin => $all_plugins[$plugin]], $c);
+            if (waUtils::varExportToFile($plugins, $path)) {
+                waFiles::delete(waConfig::get('wa_path_cache').'/apps/'.$this->application.'/config', true);
+            } else {
+                throw new waException("Fail while update plugins sort order");
             }
         }
     }
@@ -998,5 +1022,14 @@ class waAppConfig extends SystemConfig
         // Called when route is not found in backend routing, see waFrontController.
         // Overriden in webasystConfig because of backend dashboard logic.
         throw new waException('Page not found', 404);
+    }
+
+    /**
+     * @return bool
+     * @see waLicensing
+     */
+    public function isAnyPremiumFeatureEnabled()
+    {
+        return false;
     }
 }

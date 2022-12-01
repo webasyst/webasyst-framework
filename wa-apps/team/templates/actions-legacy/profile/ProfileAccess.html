@@ -157,11 +157,26 @@
                     {$_selector_avaiable = !$is_webasyst_id_forced || $_has_credentials}
 
                     {if $_selector_avaiable}
-                        <select id="c-access-rights-toggle">
+                        {$event_message = ''}
+                        <!-- plugin hook: 'frontend_user_backend_access' -->
+                        {* @event frontend_user_backend_access.%app_id% *}
+                        {foreach $frontend_user_backend_access as $message}
+                            {if $message}
+                                {$event_message = $message}
+                            {/if}
+                        {/foreach}
+                        <select id="c-access-rights-toggle" {if $event_message}disabled{/if}>
                             <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
                             <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
                             <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
                         </select>
+
+                        {if $event_message}
+                            <br>
+                            <span class="hint">
+                                {$event_message|strip}  
+                            </span>
+                        {/if}
 
                         <span id="access-rights-toggle-confirm" style="display:none;">
                             <a href="javascript:void(0)" class="button yellow">[`Confirm access change`]</a>
@@ -374,14 +389,31 @@
                             >
                                 <i class="icon16 no"></i><b>[`Block contact`]</b>
                             </a>
+
+                            {$event_message = ''}
+                            {if $contact.is_user == '-1'}
+                                <!-- plugin hook: 'frontend_user_backend_access' -->
+                                {* @event frontend_user_backend_access.%app_id% *}
+                                {foreach $frontend_user_backend_access as $message}
+                                    {if $message}
+                                        {$event_message = "`$event_message` `$message`"}
+                                    {/if}
+                                {/foreach}
+                            {/if}
+
                             <a href="javascript:void(0)"
-                                id="c-access-link-unblock"
-                                class="inline-link c-shown-on-disabled"
+                                {if empty($event_message)}
+                                    id="c-access-link-unblock"
+                                    data-alert="[`Enable this contact?`]"
+                                {/if}
                                 {if $contact.is_user != '-1'} style="display:none"{/if}
-                                data-alert="[`Enable this contact?`]"
+                                class="inline-link c-shown-on-disabled{if !empty($event_message)} gray{/if}"
                             >
-                                <b>[`Unblock contact`]</b>
+                                [`Unblock contact`]
                             </a>
+                            {if $contact.is_user == '-1' && !empty($event_message)}
+                                <p class="hint">{$event_message|strip}</p>
+                            {/if}
 
                             <form class="js-block-user-reason-form" style="display: none">
                                 <br>

@@ -59,7 +59,7 @@ $(document).ready( function() {
                     {if $queue_apps}
                     <h3>
                         {_w('Installing the application','Installing applications',count($queue_apps))}
-                        {foreach $queue_apps as $item}{$item.name|string_format:'[`"%s"`]'}{if !$item@last}, {/if}{/foreach}
+                        {foreach $queue_apps as $item}{$item.name|string_format:'[`“%s”`]'}{if !$item@last}, {/if}{/foreach}
                         <div class="spinner custom-ml-8"></div>
                     </h3>
                     {/if}
@@ -112,7 +112,7 @@ $(document).ready( function() {
 
                     {{else}}
                     {{if current_state.stage_status == 'error'}}
-                    <p>[`An error occurred during installation`]</p>
+                    <p>[`An error occurred during the installation.`]</p>
                     <p>
                         <span class="icon text-red"><i class="fas fa-times-circle"></i></span>
                         <em class="state-error"><strong>{{html current_state.error}}</strong></em>
@@ -137,7 +137,7 @@ $(document).ready( function() {
                     {else}{literal}
                     <p>
                         <span class="icon text-green"><i class="fas fa-check-circle"></i></span>
-                        <em class="state-success"><strong>[`Installation has been successfully completed`]</strong></em>
+                        <em class="state-success"><strong>[`Installation has been successfully completed.`]</strong></em>
                     </p>
                     {/literal}{/if}{literal}
                     {{/if}}
@@ -200,7 +200,7 @@ $(document).ready( function() {
                         {/literal}{_w('Installing the application','Installing applications',2)}{literal}
                         {{else}}
                         [`Installing the application`]
-                        {{/if}} {{each(app_index, app_slug) apps}}${'[`"%s"`]'.replace(/%s/,app_slug.slug.translate())}{{if app_index < apps.length - 1}}, {{/if}}{{/each}}
+                        {{/if}} {{each(app_index, app_slug) apps}}${'[`“%s”`]'.replace(/%s/,app_slug.slug.translate())}{{if app_index < apps.length - 1}}, {{/if}}{{/each}}
                         {{if (state_class!=null)}}<i id="update-raw-state-icon" class="fas fa-{{if (state_class == 'yes')}}check-circle{{else}}spinner wa-animation-spin speed-1500 text-gray{{/if}}"></i>{{/if}}
                     </h3>
                     {{each stages}}{{if ($value) && ($value.chunk_id)}}

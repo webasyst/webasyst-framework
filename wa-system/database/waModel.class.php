@@ -87,7 +87,7 @@ class waModel
     public function getMetadata()
     {
         if ($this->table && !$this->fields) {
-            $runtime_cache = new waRuntimeCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
+            $runtime_cache = $this->getMetadataCache();
             if ($this->fields = $runtime_cache->get()) {
                 return $this->fields;
             }
@@ -112,12 +112,24 @@ class waModel
      */
     public function clearMetadataCache()
     {
-        $runtime_cache = new waRuntimeCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
-        $runtime_cache->delete();
+        $this->getMetadataCache()->delete();
         $cache = new waSystemCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
         $cache->delete();
         $this->fields = null;
         return $this->getMetadata();
+    }
+
+    protected function getMetadataCache()
+    {
+        if (is_scalar($this->type)) {
+            $key = $this->type;
+        } else {
+            if (empty($this->type['metadata_cache_key'])) {
+                $this->type['metadata_cache_key'] = uniqid('m', true);
+            }
+            $key = $this->type['metadata_cache_key'];
+        }
+        return new waRuntimeCache('db/'.$key.'/'.$this->table, -1, 'webasyst');
     }
 
     /**
@@ -420,7 +432,7 @@ class waModel
      */
     public function updateByField($field, $value, $data = null, $options = null, $return_object = false)
     {
-        if (is_array($field)) {
+        if (is_array($field) && is_array($value)) {
             $return_object = $options;
             $options = $data;
             $data = $value;

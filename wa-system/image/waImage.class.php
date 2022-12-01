@@ -55,7 +55,9 @@ class waImage
     {
         try {
             $file = realpath($file);
-            $image_info = @getimagesize($file);
+            if ($file) {
+                $image_info = @getimagesize($file);
+            }
         }
         catch (Exception $e){}
         if (empty($file) OR empty($image_info)) {
@@ -93,8 +95,17 @@ class waImage
                 return 'png';
                 break;
             }
+            case IMAGETYPE_WEBP: {
+                return 'webp';
+            }
         }
         return null;
+    }
+
+    /** @since 2.7.1 */
+    public static function isWebpSupported()
+    {
+        return (strpos($_SERVER['HTTP_ACCEPT'], 'image/webp') >= 0);
     }
 
     private static function getDefaultAdapter()

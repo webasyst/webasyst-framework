@@ -260,6 +260,10 @@ class webasystLoginAction extends waBackendLoginAction
 
     public static function clearWebasystIDAuthProcessState()
     {
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
         $storage = wa()->getStorage();
 
         // Delete result about attempt authorize backend user by Webasyst ID

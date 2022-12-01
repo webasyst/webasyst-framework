@@ -205,6 +205,11 @@ abstract class waAuthConfig
         $this->setScalarValue('password_placeholder', $placeholder);
     }
 
+    public function getLoginForgotRequired()
+    {
+        return $this->getScalarValue('login_required', _ws('Login is required'));
+    }
+
     /**
      * IMPORTANT:
      *
@@ -587,7 +592,7 @@ abstract class waAuthConfig
     public function getConfirmationCodeTimeoutErrorMessage($timeout = null)
     {
         if (!$timeout) {
-            $timeout = $this->getOnetimePasswordTimeout();
+            $timeout = $this->getConfirmationCodeTimeout();
         }
         return $this->formatTimeoutMessage(_ws("You have been requesting a code too frequently. Try again in <strong>%s:%s</strong>."), $timeout);
     }

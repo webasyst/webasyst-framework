@@ -203,11 +203,11 @@ class siteSettingsAction extends waViewAction
 
         if (strpos($domain, '/') !== false) {
             $this->view->assign('touchicon_message', sprintf(_w('Touch icon you upload here will not take effect for you website %s because your website is set for a subfolder on a domain. Touch icon uploaded using the form above will be set only for websites set from the domain root folder.'), $domain));
-            $this->view->assign('favicon_message', sprintf(_w('Favicon image you upload here will not take effect for you website %s because your website is set for a subfolder on a domain. Favicon uploaded using the form above will be set only for websites set from the domain root folder.'), $domain));
+            $this->view->assign('favicon_message', sprintf(_w('Favicon image you upload here will not take effect for your website %s, because the website is accessible in a subfolder. A favicon uploaded using the form above will be applied only to websites accessible at the domain root.'), $domain));
             } else {
             $root_path = $this->getConfig()->getRootPath();
             if (file_exists($root_path.'/favicon.ico')) {
-                $this->view->assign('favicon_message', _w('File favicon.ico exists in the Webasyst framework installation folder. The favicon you upload here will be overridden by the icon uploaded as file unless you delete this file.'));
+                $this->view->assign('favicon_message', _w('File favicon.ico exists in the Webasyst framework installation folder. The favicon you upload here will be overridden by the existing icon file unless you delete it.'));
             }
             if (file_exists($root_path.'/apple-touch-icon.png')) {
                 $this->view->assign('touchicon_message', _w('File apple-touch-icon.png exists in the Webasyst framework installation folder. The touch icon you upload here will be overridden by the icon uploaded as file unless you delete this file.'));
@@ -240,11 +240,11 @@ class siteSettingsAction extends waViewAction
         $this->view->assign('robots', $robots);
 
         if (strpos($domain, '/') !== false) {
-            $this->view->assign('robots_message', sprintf(_w('Rules you set above for robots.txt will not take effect for you website %s because your website is set for a subfolder on a domain. Rules for robots.txt from the form above will be effective only for websites set to the domain root folder.'), $domain));
+            $this->view->assign('robots_message', sprintf(_w('Rules you specify above for robots.txt will not take effect for you website %s, because the website is accessible in a subfolder. Rules for robots.txt entered in the form above will be effective only for websites accessible at the domain root.'), $domain));
         } else {
             $root_path = $this->getConfig()->getRootPath();
             if (file_exists($root_path.'/robots.txt')) {
-                $this->view->assign('robots_message', _w('File robots.txt exists in the Webasyst framework installation folder. Rules for robots.txt you specify above will not take effect unless you delete this file.'));
+                $this->view->assign('robots_message', _w('File robots.txt exists in the Webasyst framework installation folder. Rules for robots.txt you specify above will not take effect unless you delete the existing file.'));
             }
         }
     }

@@ -38,6 +38,9 @@ class teamWelcomeSaveController extends waJsonController
             }
         }
 
+        $event_data = compact('post_data', 'create');
+        $this->runWelcomeSaveHook($event_data);
+
         if ($this->errors || !$create) {
             return;
         }
@@ -71,6 +74,19 @@ class teamWelcomeSaveController extends waJsonController
                     );
                 } catch (waException $e) {
                 }
+            }
+        }
+    }
+
+    protected function runWelcomeSaveHook($event_data)
+    {
+        $event_results = wa('team')->event('welcome_save', $event_data);
+        foreach ($event_results as $message) {
+            if ($message) {
+                $this->errors[] = [
+                    'name' => 'general',
+                    'text' => $message,
+                ];
             }
         }
     }
