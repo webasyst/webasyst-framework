@@ -91,6 +91,9 @@ class teamInviteFrontendAction extends waViewAction
             if (!$errors) {
 
                 $token_data = json_decode($this->params['data'], true);
+                if ($token_data === null) {
+                    $token_data = ['full_access' => false];
+                }
                 teamHelper::convertToBackendUser($contact_id, $token_data, $data['login'], $data['password']);
 
                 // If there's a waid_invite token, notify WAID server that invite has been accepted locally
