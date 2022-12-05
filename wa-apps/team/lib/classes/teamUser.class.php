@@ -235,6 +235,24 @@ class teamUser
         if (waConfig::get('is_template')) {
             return null;
         }
+        $app_tokens_model = new waAppTokensModel();
+
+        if (empty($data)) {
+            // if no access params presented 
+            // than use access params from previously created and not expired invite token
+            $prev_tokens = array_filter($app_tokens_model->getByField([
+                'app_id' => 'team', 
+                'type' => 'user_invite', 
+                'contact_id' => $contact_id
+            ], true), function ($el) {
+                return !empty($el['data']) && $el['data'] !== 'null' && strtotime($el['expire_datetime']) > time();
+            });
+            $prev_token = reset($prev_tokens);
+            if (!empty($prev_token)) {
+                $data = json_decode(ifset($prev_token['data']), true);
+            }
+        }
+
         $app_token_data = [
             'app_id'            => 'team',
             'type'              => 'user_invite',
@@ -245,7 +263,6 @@ class teamUser
             'data'              => json_encode($data),
         ];
 
-        $app_tokens_model = new waAppTokensModel();
         $result = $app_tokens_model->add($app_token_data);
         if ((new waWebasystIDClientManager())->isConnected()) {
             $app_token_data['type']  = 'waid_invite';
