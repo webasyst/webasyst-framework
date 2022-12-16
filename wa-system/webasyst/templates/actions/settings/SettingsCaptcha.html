@@ -53,6 +53,42 @@
                     </div>
                     </label>
                             </li>
+                            <li>
+                                <label>
+                                    <span class="wa-radio">
+                                        <input type="radio" name="captcha"{if ifset($captcha) == 'waSmartCaptcha'} checked{/if} value="waSmartCaptcha">
+                                    <span></span>
+                                    </span>
+                                    [s`Yandex SmartCaptcha`]
+                                    <div{if ifset($captcha) != 'waSmartCaptcha'} style="display: none"{/if} class="js-smart-captcha-adapter-settings fields-group">
+                                        <div class="field">
+                                            <div class="name">[s`Ключ клиента`]</div>
+                                            <div class="value">
+                                                <input type="text" name="captcha_options[client_key]" value="{$captcha_options.client_key|default:''|escape}">
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="name">[s`Ключ сервера`]</div>
+                                            <div class="value">
+                                                <input type="text" name="captcha_options[server_key]" value="{$captcha_options.server_key|default:''|escape}"><br>
+                                                <p class="hint">
+                                                    <a href="https://cloud.yandex.ru/services/smartcaptcha" target="_blank">[s`Получить значения для своего сайта`]</a> <i class="fas fa-external-link-alt"></i>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="name">
+                                                <label for="smart_invisible">[s`Невидимая капча`]</label>
+                                            </div>
+                                            <div class="value">
+                                            <span class="switch" id="smart_invisible">
+                                                <input id="smart_invisible" type="checkbox" name="captcha_options[smart_invisible]" value="true"{if ifset($captcha_options.smart_invisible)} checked{/if}>
+                                            </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -66,6 +102,7 @@
 <script>
     (function($) {
         $("#invisible").waSwitch();
+        $("#smart_invisible").waSwitch();
         new WASettingsCaptcha({
             $wrapper: $("#s-captcha-settings-page"),
             wa2: true

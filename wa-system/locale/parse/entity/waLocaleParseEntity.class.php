@@ -496,15 +496,10 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
         // Opening quotes
         $word_pattern .= $quote;
 
-        // Find whitespace character
-        $word_pattern .= '[\\s]*';
-
         // Ignore quotes in text
         // example: _w("Shop \"Hell\"")
-        $word_pattern .= "((?:\\\\$quote|[^$quote\\r\\n])+?)";
-
-        // Find whitespace character
-        $word_pattern .= '[\\s]*';
+        // example: _w("   Shop ")
+        $word_pattern .= "([\\s]*(?:\\\\$quote|[^$quote\\r\\n])+?[\\s]*)";
 
         // Closed quotes
         $word_pattern .= $quote;

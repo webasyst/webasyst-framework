@@ -17,7 +17,7 @@
         {/if}
         <div class="item-content-wrapper">
             <div class="inline-content small">
-                <a class="activity-username" href="{$wa_backend_url}contacts/#/contact/{$activity_item.contact_id}">{$activity_item.contact_name|escape}</a>
+                <a class="activity-username" href="{$wa_backend_url}contacts/#/contact/{$activity_item.contact_id}">{$activity_item.contact_name|default: ''|escape}</a>
                 <span class="activity-action gray">{$activity_item.action_name|escape}</span>
                 {if !empty($activity_item.params_html)}
                     {$activity_item.params_html|replace:'&nbsp;':' '}

@@ -56,7 +56,7 @@ $path = preg_replace('!/[^/]*$!', '/', $path);
 $host = preg_replace('@:80(/|/?$)@', '', $_SERVER['HTTP_HOST']).($path ? "/{$path}/" : '/');
 $host = preg_replace('@(([^:]|^)/)/{1,}@', '$1', $host);
 
-setcookie('auth_token', null, -1, $path);
+setcookie('auth_token', '', -1, $path);
 
 /**
  * @param $stages
@@ -654,9 +654,11 @@ HTACCESS;
                             if (!class_exists('waInstallerApps')) {
                                 throw new Exception('Class <b>waInstallerApps</b> not found');
                             }
-                            if (mysqli_query($link, 'SELECT 1 FROM `wa_app_settings` WHERE 0')) {
-                                throw new Exception($wa_locale->_('Webasyst cannot be installed into "%s" database because this database already contains Webasyst tables. Please specify connection credentials for another MySQL database.',
-                                    $db_options['database']));
+                            if ($result = mysqli_query($link, 'SHOW TABLES LIKE "wa_app_settings"')) {
+                                if (mysqli_num_rows($result)) {
+                                    throw new Exception($wa_locale->_('Webasyst cannot be installed into "%s" database because this database already contains Webasyst tables. Please specify connection credentials for another MySQL database.',
+                                        $db_options['database']));
+                                }
                             } elseif ($result = mysqli_query($link, 'SHOW TABLES')) {
                                 if ($count = mysqli_num_rows($result)) {
                                     $warning = $wa_locale->_('The database already contains %d tables.', $count);

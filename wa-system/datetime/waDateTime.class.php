@@ -153,6 +153,7 @@ class waDateTime
             $time = date('Y-m-d H:i:s', $time);
         }
         try {
+            $time = ifempty($time, '');
             $date_time = new DateTime($time);
             if ($timezone) {
                 if (!$timezone instanceof DateTimeZone) {
@@ -489,6 +490,7 @@ class waDateTime
             $info[$k] = $values[$i];
         }
 
+        $date_format = empty(array_diff_key(array_flip(['Y', 'm', 'd']), $info));
         if (!isset($info['s'])) {
             $info['s'] = '00';
         }
@@ -508,7 +510,7 @@ class waDateTime
                 $info['d'] = str_pad($info['j'], 2, "0", STR_PAD_LEFT);
             }
         }
-        if ($format == 'date' || $format == 'humandate') {
+        if ($format == 'date' || $format == 'humandate' || $date_format) {
             $result = $info['Y']."-".$info['m']."-".$info['d'];
             $result_format = "Y-m-d";
         } elseif ($format == 'time' || $format == 'fulltime') {

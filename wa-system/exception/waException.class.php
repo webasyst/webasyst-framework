@@ -260,7 +260,7 @@ HTML;
         }
 
         // CLI-friendly error message
-        if (($wa && $wa->getEnv() == 'cli') || (!$wa && php_sapi_name() == 'cli')) {
+        if (($wa && $wa->getEnv() == 'cli') || ((!$wa || defined('WA_TEST_ENVIRONMENT')) && php_sapi_name() == 'cli')) {
             return $this->toStringCli($wa, $additional_info);
         }
 

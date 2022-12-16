@@ -41,11 +41,12 @@ var WASettingsCaptcha = ( function($) {
     WASettingsCaptcha.prototype.initChangeAdapter = function () {
         var that = this;
 
-        that.$form.find(':input[name="captcha"]').on('change', function(){
+        that.$form.find(':input[name="captcha"]').on('change', function () {
+            that.$form.find('div.js-captcha-adapter-settings, div.js-smart-captcha-adapter-settings').slideUp();
             if (this.value == 'waReCaptcha') {
                 that.$form.find('div.js-captcha-adapter-settings').slideDown();
-            } else {
-                that.$form.find('div.js-captcha-adapter-settings').slideUp();
+            } else if (this.value == 'waSmartCaptcha') {
+                that.$form.find('div.js-smart-captcha-adapter-settings').slideDown();
             }
         });
     };

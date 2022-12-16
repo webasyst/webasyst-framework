@@ -354,6 +354,7 @@ class waTheme implements ArrayAccess
                             if (is_int($settings_group)) {
                                 $s['level'] = max(0, $settings_group);
                             } else {
+                                $settings_group = ifempty($settings_group, '');
                                 $s['level'] = strlen($settings_group) ? substr_count($settings_group, '/') + 1 : 0;
                             }
 
@@ -1831,9 +1832,12 @@ HTACCESS;
     }
 
     /**
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
+     *
      * @param mixed $offset
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         if ($this->getMethod($offset)) {
@@ -1847,6 +1851,7 @@ HTACCESS;
      * @param mixed $offset
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $value = null;
@@ -1876,6 +1881,7 @@ HTACCESS;
      * @param mixed $value
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $method_name = $this->getMethod($offset, 'set');
@@ -1915,6 +1921,7 @@ HTACCESS;
      * @param mixed $offset
      * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         if (is_null($this->info)) {

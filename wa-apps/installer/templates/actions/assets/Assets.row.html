@@ -90,6 +90,7 @@
                 {if empty($app.virtual)}
                     <a href="{$wa_app_url}assets/"
                        data-type="enable"
+                       data-item="{$item_type}"
                        data-url="?module={$item_type}s&action=enable"
                        data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
                        class="js-switch-item js-switch-enable button rounded"
@@ -103,6 +104,7 @@
                     {if empty($item.system)}
                     <a href="{$wa_app_url}assets/"
                        data-type="disable"
+                       data-item="{$item_type}"
                        data-url="?module={$item_type}s&action=disable"
                        data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
                        class="js-switch-item js-switch-disable button light-gray rounded"

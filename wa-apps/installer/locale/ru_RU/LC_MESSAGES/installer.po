@@ -522,3 +522,7 @@ msgstr "Не удалось выполнить отключение."
 
 msgid "Deletion of design theme “%s” for the “%s” app is unavailable because it is selected as a parent theme for the child themes of apps %s. Before deleting this design theme, either delete all its child themes or change their parent design theme."
 msgstr "Удаление темы дизайна «%s» для приложения «%s» недоступно, потому что она является родительской для дочерних тем приложений %s. Перед удалением этой темы дизайна удалите все ее дочерние темы или смените для них родительскую тему дизайна."
+
+msgid "Never show again"
+msgstr "Больше не показывать"
+

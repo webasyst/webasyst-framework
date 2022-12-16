@@ -523,7 +523,7 @@ class waContactForm
     }
 
     /**
-     * System waContactNameField field always requires "At least one of these fields must be filled"
+     * System waContactNameField field always requires "At least one of these fields must be filled in."
      * In this situation other name fields ('firstname', 'middlename', 'lastname') need to be marked visually (by error class)
      * To achieve it call this method
      *

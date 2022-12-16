@@ -57,7 +57,7 @@
                                     <td><input type="text" class="js-input-required" name="region_names[]" placeholder="[s`Region name`]" value="{$r.name|escape}"
                                                rel="{$r.name|escape}"></td>
                                     <td><input type="text" class="js-input-required shorter" name="region_codes[]" placeholder="[s`Region code`]" value="{$r.code|escape}"></td>
-                                    <td><input type="text" name="region_centers[]" placeholder="[s`Administrative center`]" value="{$r.region_center|escape}"></td>
+                                    <td><input type="text" name="region_centers[]" placeholder="[s`Administrative center`]" value="{ifempty($r.region_center, '')|escape}"></td>
                                     {strip}<td><a class="nowrap js-action-fav custom-mr-16" href="javascript:void(0)">
                                             {if $r.fav_sort === null}
                                                 <input type="hidden" name="region_favs[]" value="">

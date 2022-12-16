@@ -1516,11 +1516,11 @@ class waInstaller
 
             );
         }
-        if (strpos($this->current_stage, '_') === false) {
+        if (strpos((string) $this->current_stage, '_') === false) {
             $stage_name = 'unknown';
             $stage_status = self::STAGE_NONE;
         } else {
-            list($stage_name, $stage_status) = explode('_', $this->current_stage, 2);
+            list($stage_name, $stage_status) = explode('_', (string) $this->current_stage, 2);
         }
 
         $default = array(
@@ -1655,7 +1655,7 @@ class waInstaller
 
     private function getFullStateCallback(&$val, $key)
     {
-        $val = preg_match("/^-?\d+(\.|,)\d+$/", $val) ? intval($val) : $val;
+        $val = preg_match("/^-?\d+(\.|,)\d+$/", (string) $val) ? intval($val) : $val;
     }
 
     private function skipPath($path)

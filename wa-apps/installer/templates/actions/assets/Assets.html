@@ -85,6 +85,8 @@
         const url = $link.data('url');
         const data = $link.data('data');
         const type = $link.data('type');
+        const app_id = data.replace('app_id=', '');
+        const isApp = ($link.data('item') === 'app');
 
         $link.find('.js-installer-assets-icon').hide();
         $link.find('.js-installer-assets-spinner').addClass('-active');
@@ -94,19 +96,55 @@
             return;
         }
 
-        $.post(url, data, function (data, textStatus) {
+        $.post(url, data, function (response, textStatus) {
             $link.prop('disabled', false);
 
-            if (data.status === 'ok') {
+            if (response.status === 'ok') {
                 $tr.toggleClass('i-assets-disabled');
 
                 $link.hide();
+
+                const app_img_path = $tr.find('.i-assets-col-icon img').attr('src');
+                const app_name = $tr.find('td:eq(1) a').text();
+                const app_url = '{$wa_backend_url}' + app_id + '/';
+
+                {literal}
                 if (type === 'enable') {
                     $link.siblings('.js-switch-disable, .js-switch-remove').show();
+                    if (isApp) {
+                        const menu_item_tmpl = `<li id="wa-app-${app_id}" class="wa-animation-swing" data-app="${app_id}">
+                                            <a href="${app_url}">
+                                                <img src="${app_img_path}" alt="${app_name}">
+                                                <span class="wa-app-name">${app_name}</span>
+                                            </a>
+                                        </li>`;
+                        const applist_menu = $('#wa-applist ul');
+                        const item_index_insert = Math.ceil(applist_menu.find('li').length / 2);
+                        applist_menu.find(`li:eq(${item_index_insert})`).before(menu_item_tmpl);
+
+                        const $app_plugins = $('#i-assets-list').find('[data-type="enable"][data-data^="app_id=' + app_id + '&plugin_id="]');
+                        if ($app_plugins.length) {
+                            $app_plugins.each(function() {
+                                $(this).closest('td').css('visibility', 'visible')
+                            });
+                        }
+                    }
                 } else {
                     $link.siblings('.js-switch-enable').show()
                     $link.siblings('.js-switch-remove').hide();
+                    if (isApp) {
+                        $('#wa-applist').find(`[data-app="${app_id}"]`).remove()
+
+                        const $app_plugins = $('#i-assets-list').find('[data-type="enable"][data-data^="app_id=' + app_id + '&plugin_id="]');
+                        if ($app_plugins.length) {
+                            $app_plugins.each(function() {
+                                $(this).closest('td').css('visibility', 'hidden')
+                            });
+                        }
+                    }
                 }
+                {/literal}
+
 
                 $link.find('.js-installer-assets-icon').show();
                 $link.find('.js-installer-assets-spinner').removeClass('-active');
@@ -116,9 +154,9 @@
 
             let message = '';
 
-            if (data.errors) {
-                for (var i = 0; i < data.errors.length; i++) {
-                    message = (message ? (message + ' ') : '') + data.errors[i][0];
+            if (response.errors) {
+                for (var i = 0; i < response.errors.length; i++) {
+                    message = (message ? (message + ' ') : '') + response.errors[i][0];
                 }
             } else {
                 message = textStatus;

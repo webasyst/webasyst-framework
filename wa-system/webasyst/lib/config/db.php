@@ -104,6 +104,23 @@ return array(
             'name' => 'name',
         ),
     ),
+    'wa_contact_auths' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'session_id' => array('varchar', 255, 'null' => 0),
+        'token' => array('varchar', 42, 'null' => 0),
+        'login_datetime' => array('datetime'),
+        'last_datetime' => array('datetime'),
+        'user_agent' => array('varchar', 255),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'contact_id' => 'contact_id',
+            'token' => 'token',
+            'session_id' => array('session_id', 'unique' => 1),
+            'contact_session_id' => array('contact_id', 'session_id', 'unique' => 1)
+        ),
+    ),
+
     'wa_contact_calendars' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'name' => array('varchar', 255, 'null' => 0),

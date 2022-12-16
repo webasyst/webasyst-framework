@@ -11,12 +11,13 @@
                         <label>
                             <input type="radio" name="captcha" {if ifset($captcha) == 'waPHPCaptcha' || empty($captcha)}checked{/if} value="waPHPCaptcha"> [s`Webasyst Captcha`]
                         </label>
+                        <br>
                     </div>
                     <div class="value no-shift">
                         <label>
                             <input type="radio" name="captcha" {if ifset($captcha) == 'waReCaptcha'}checked{/if} value="waReCaptcha"> [s`Google reCAPTCHA`]
-                            <br><br>
                             <div{if ifset($captcha) != 'waReCaptcha'} style="display: none"{/if} class="js-captcha-adapter-settings">
+                                <br>
                                 <div class="field">
                                     <div class="name">[s`Site Key`]</div>
                                     <div class="value">
@@ -42,6 +43,41 @@
                                 </div>
                             </div>
                         </label>
+                        <br>
+                    </div>
+                    <div class="value no-shift">
+                        <label>
+                            <input type="radio" name="captcha"{if ifset($captcha) == 'waSmartCaptcha'} checked{/if} value="waSmartCaptcha"> [s`Yandex SmartCaptcha`]
+                            <div{if ifset($captcha) != 'waSmartCaptcha'} style="display: none"{/if} class="js-smart-captcha-adapter-settings">
+                                <br>
+                                <div class="field">
+                                    <div class="name">[s`Ключ клиента`]</div>
+                                    <div class="value">
+                                        <input type="text" name="captcha_options[client_key]" value="{$captcha_options.client_key|default:''|escape}">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name">[s`Ключ сервера`]</div>
+                                    <div class="value">
+                                        <input type="text" name="captcha_options[server_key]" value="{$captcha_options.server_key|default:''|escape}"><br>
+                                        <span class="hint">
+                                            <a href="https://cloud.yandex.ru/services/smartcaptcha" target="_blank">[s`Получить значения для своего сайта`]</a> <i class="icon16 new-window"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name">
+                                        <label for="invisible">[s`Невидимая капча`]</label>
+                                    </div>
+                                    <div class="value no-shift">
+                                        <label>
+                                            <input id="smart_invisible" type="checkbox" name="captcha_options[smart_invisible]" value="true"{if ifset($captcha_options.smart_invisible)} checked{/if}>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        <br>
                     </div>
                 </div>
             </div>

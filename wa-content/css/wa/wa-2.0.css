@@ -1290,7 +1290,7 @@ button.webasyst-magic-wand .icon,
 /* Userpic
 ---------- */
 
-.userpic { display: inline-block; position: relative; border-radius: 50%; box-sizing: border-box; background-size: contain; overflow: visible; }
+.userpic { display: inline-block; position: relative; border-radius: 50%; box-sizing: border-box; background-size: contain; }
 .userpic20, .userpic-20 { --border-width: 0.0625rem; min-width: 1.25rem; width: 1.25rem; height: 1.25rem; }
 .userpic32, .userpic-32 { --border-width: 0.09375rem; min-width: 2rem; width: 2rem; height: 2rem; }
 .userpic48, .userpic-48 { --border-width: 0.125rem; min-width: 3rem; width: 3rem; height: 3rem; }

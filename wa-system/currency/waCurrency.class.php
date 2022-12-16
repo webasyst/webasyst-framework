@@ -223,6 +223,7 @@ class waCurrency
             // 'i' format option: floor() $n to $precision.
             // When not present then round() is used.
             // 'w' option implies 'i'
+            $n = ($n === null ? 0 : $n);
             if (strstr($format_lower, 'i') !== false || strstr($format_lower, 'w') !== false) {
                 $n = round($n, $precision + 2);
                 $n = floor($n * pow(10, $precision)) / ((float) pow(10, $precision));

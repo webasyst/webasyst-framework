@@ -110,15 +110,20 @@ class waAppSettingsModel extends waModel
 
     public function describe($table = null, $keys = false)
     {
+        $disable_exception_log = waConfig::get('disable_exception_log');
+        waConfig::set('disable_exception_log', true);
         try {
             return parent::describe($table, $keys);
         } catch (waDbException $e) {
             if ($e->getCode() == 1146) {
                 // Framework not installed?.. Initialize app to create all tables.
                 wa('webasyst');
+                waConfig::set('disable_exception_log', $disable_exception_log);
                 return parent::describe($table, $keys);
             }
             throw $e;
+        } finally {
+            waConfig::set('disable_exception_log', $disable_exception_log);
         }
     }
 }

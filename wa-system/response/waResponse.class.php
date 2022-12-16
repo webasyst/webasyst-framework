@@ -283,7 +283,7 @@ class waResponse
         return $this;
     }
 
-    protected function header($string, $replace = true, $http_response_code = null)
+    protected function header($string, $replace = true, $http_response_code = 0)
     {
         if (!headers_sent()) {
             header($string, $replace, $http_response_code);

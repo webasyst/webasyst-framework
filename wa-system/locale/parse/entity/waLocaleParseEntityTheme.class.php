@@ -192,7 +192,10 @@ class waLocaleParseEntityTheme extends waLocaleParseEntity
         $theme_messages = [];
         $theme = new waTheme($this->getThemeID(), $this->getAppID());
         if ($theme instanceof waTheme) {
-            $theme_messages = array_merge($theme->getLocales(), $theme->parent_theme->getLocales());
+            $theme_messages = $theme->getLocales();
+            if ($theme->parent_theme && $theme->parent_theme instanceof waTheme) {
+                $theme_messages = array_merge($theme_messages, $theme->parent_theme->getLocales());
+            }
         }
 
         return $theme_messages;

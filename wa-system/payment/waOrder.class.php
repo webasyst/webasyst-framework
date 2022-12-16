@@ -268,10 +268,13 @@ class waOrder implements ArrayAccess
     }
 
     /**
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
+     *
      * @param mixed $offset
      * @return bool
      * @internal param $offset
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         if (isset($this->alias[$offset])) {
@@ -285,6 +288,7 @@ class waOrder implements ArrayAccess
      * @param $offset
      * @return mixed|null
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (isset($this->alias[$offset])) {
@@ -316,6 +320,7 @@ class waOrder implements ArrayAccess
      * @param $value
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (isset($this->alias[$offset])) {
@@ -330,6 +335,7 @@ class waOrder implements ArrayAccess
     /**
      * @param mixed $offset
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
     }

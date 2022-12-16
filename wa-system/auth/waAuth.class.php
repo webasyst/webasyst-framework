@@ -92,6 +92,11 @@ class waAuth implements waiAuth
     {
         $result = $this->_auth($params);
         if ($result !== false) {
+
+            // set session_auth and insert into wa_contact_auths
+            (new waContactAuthsModel())->insertContactAuth($result['id'], $result['token']);
+            $result['session_auth'] = true;
+
             waSystem::getInstance()->getStorage()->write('auth_user', $result);
             waSystem::getInstance()->getUser()->init();
         }
@@ -113,6 +118,18 @@ class waAuth implements waiAuth
         if (!$info) {
             $info = $this->_authByCookie();
             if ($info) {
+
+                try {
+                    // set session_auth and insert into wa_contact_auths
+                    (new waContactAuthsModel())->insertContactAuth($info['id'], $info['token']);
+                    $info['session_auth'] = true;
+                } catch  (waDbException $e) {
+                    if ($e->getCode() != 1146) {
+                        // When updating 2.7.1 -> 2.7.2, this can trigger before meta-update created wa_contact_auths
+                        throw $e;
+                    }
+                }
+
                 waSystem::getInstance()->getStorage()->write('auth_user', $info);
             }
         }
@@ -122,6 +139,34 @@ class waAuth implements waiAuth
         }
         return false;
     }
+
+    /**
+     * @param $user_info
+     * @return array
+     */
+    protected function getAuthData($user_info)
+    {
+        $session_auth = null;
+        if (isset($user_info['session_auth']))
+            $session_auth = $user_info['session_auth'];
+        else {
+            $auth_user = waSystem::getInstance()->getStorage()->read('auth_user');
+            if ($auth_user && isset($auth_user['session_auth'])) {
+                $session_auth = $auth_user['session_auth'];
+            }
+        }
+        $result = array (
+            'id' => $user_info['id'],
+            'login' => $user_info['login'],
+            'is_user' => $user_info['is_user'],
+            'token' => $this->getToken($user_info),
+            'storage_set' => time(), // used in waAuthUser->init()
+        );
+        if ($session_auth !== null)
+            $result['session_auth'] = $session_auth;  // also used in waAuthUser->init()
+        return $result;
+    }
+
 
     /**
      * @param string $email
@@ -843,22 +888,6 @@ class waAuth implements waiAuth
             }
         }
         return false;
-    }
-
-
-    /**
-     * @param $user_info
-     * @return array
-     */
-    protected function getAuthData($user_info)
-    {
-        return array(
-            'id' => $user_info['id'],
-            'login' => $user_info['login'],
-            'is_user' => $user_info['is_user'],
-            'token' => $this->getToken($user_info),
-            'storage_set' => time(), // used in waAuthUser->init()
-        );
     }
 
     /**

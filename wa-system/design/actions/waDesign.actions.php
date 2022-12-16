@@ -147,7 +147,7 @@ class waDesignActions extends waActions
             }
             $file = $theme->getFile($get_file);
             if (!$file) {
-                $get_file = preg_replace('@(\\{1,}|/{2,})@', '/', $get_file);
+                $get_file = preg_replace('@(\\{1,}|/{2,})@', '/', ifempty($get_file, ''));
                 if (!$get_file
                     ||
                     preg_match('@(^|/)\.\./@', $get_file)

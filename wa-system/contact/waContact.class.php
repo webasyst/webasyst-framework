@@ -427,12 +427,13 @@ class waContact implements ArrayAccess
             // no special formatting
             else {
                 // Contact without name derive firstname from email or phone
-                if ($field_id === 'firstname' &&
-                        !trim($result) &&
-                        !trim($this['middlename']) &&
-                        !trim($this['lastname']) &&
-                        !trim($this['company']))
-                {
+                if (
+                    $field_id === 'firstname'
+                    && (!isset($result) || !trim($result))
+                    && (!isset($this['middlename']) || !trim($this['middlename']))
+                    && (!isset($this['lastname']) || !trim($this['lastname']))
+                    && (!isset($this['company']) || !trim($this['company']))
+                ) {
                     $emls = $this->get('email', 'value');
                     $emls = waUtils::toStrArray($emls);
 
@@ -1270,6 +1271,12 @@ class waContact implements ArrayAccess
         return 'offline';
     }
 
+    /**
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
+     * @param $offset
+     * @return bool
+     */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         //@TODO
@@ -1280,6 +1287,11 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * @param $offset
+     * @return mixed
+     */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
@@ -1435,11 +1447,22 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * @param $offset
+     * @param $value
+     * @return void
+     */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->set($offset, $value);
     }
 
+    /**
+     * @param $offset
+     * @return void
+     */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->data[$offset] = null;

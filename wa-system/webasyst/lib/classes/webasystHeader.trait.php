@@ -62,7 +62,9 @@ trait webasystHeaderTrait
             }
         }
 
-        $sort = explode(',', $user->getSettings('', 'apps'));
+        $user_settings = $user->getSettings('', 'apps');
+        $user_settings = ifempty($user_settings, '');
+        $sort = explode(',', $user_settings);
 
         // By default, the Settings app, if available
         // for current user, is in fifth place in apps list
