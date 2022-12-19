@@ -16,7 +16,7 @@ class teamUser
 
         try {
             // Look up by login if specified via routing
-            $user_login = urldecode(waRequest::param('login', null, waRequest::TYPE_STRING_TRIM));
+            $user_login = urldecode(waRequest::param('login', '', waRequest::TYPE_STRING_TRIM));
             if ($user_login) {
                 self::$current_user = waUser::getByLogin($user_login);
                 if (!self::$current_user) {
@@ -238,11 +238,11 @@ class teamUser
         $app_tokens_model = new waAppTokensModel();
 
         if (empty($data)) {
-            // if no access params presented 
+            // if no access params presented
             // than use access params from previously created and not expired invite token
             $prev_tokens = array_filter($app_tokens_model->getByField([
-                'app_id' => 'team', 
-                'type' => 'user_invite', 
+                'app_id' => 'team',
+                'type' => 'user_invite',
                 'contact_id' => $contact_id
             ], true), function ($el) {
                 return !empty($el['data']) && $el['data'] !== 'null' && strtotime($el['expire_datetime']) > time();
