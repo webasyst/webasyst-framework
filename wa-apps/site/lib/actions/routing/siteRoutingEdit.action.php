@@ -144,7 +144,7 @@ class siteRoutingEditAction extends waViewAction
                 $result[$id] = array(
                     'name'  => ifset($info['name']),
                     'type'  => $info['type'],
-                    'value' => $this->getHTML($route_id, $info, isset($values[$id]) ? $values[$id] : null)
+                    'value' => $this->getHTML($route_id, $info, isset($values[$id]) ? $values[$id] : '')
                 );
             } else {
                 $result[] = $info;
