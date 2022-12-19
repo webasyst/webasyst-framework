@@ -35,7 +35,7 @@ class waContactNameField extends waContactStringField
         } else {
             $name = array();
             foreach(self::getNameOrder() as $part) {
-                if ( ($part = trim($contact[$part])) || $part === '0') {
+                if ( ($part = trim(ifset($contact, $part, ''))) || $part === '0') {
                     $name[] = $part;
                 }
             }
