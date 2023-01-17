@@ -229,6 +229,11 @@ class siteSettingsSaveController extends waJsonController
         } elseif ($favicon->error_code != UPLOAD_ERR_NO_FILE) {
             $this->errors = $favicon->error;
         }
+        $path = wa()->getDataPath('data/'.siteHelper::getDomain().'/favicon.ico', true);
+        if (!file_exists($path) || !is_writable($path)) {
+            $faviconEmpty = waConfig::get('wa_path_apps').'/site/img/favicon.ico';
+            waFiles::copy($faviconEmpty, $path);
+        }
     }
 
     protected function saveTouchicon()
