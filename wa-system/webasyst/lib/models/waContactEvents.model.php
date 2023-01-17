@@ -30,19 +30,24 @@ class waContactEventsModel extends waModel
     }
 
     public function getEventsByPeriod($start, $end, $calendar_id = null, $contact_id = null)
-    {
-        $condition = '';
+    {        
+        $condition = array('end >= s:start', 'start <= s:end');
+        $condition_values = array('start' => $start, 'end' => $end);
+        
         if ($calendar_id) {
-            $condition .= 'AND calendar_id='.intval($calendar_id);
+            $condition[] = 'calendar_id=i:calendar_id';
+            $condition_values['calendar_id'] = (int)$calendar_id;
         }
         if ($contact_id) {
-            $condition .= ' AND contact_id='.intval($contact_id);
+            $condition[] = 'contact_id=i:contact_id';
+            $condition_values['contact_id'] = (int)$contact_id;
         }
         // $ccm = new waContactCalendarsModel();
-        $sql = "SELECT * FROM {$this->getTableName()}
-                WHERE end >= s:start AND start <= s:end {$condition}
-                ORDER BY is_allday DESC, start ASC";
-        return $this->query($sql, array('start' => $start, 'end' => $end))->fetchAll('id');
+        
+        return $this->select('*')
+            ->where(implode(' AND ', $condition), $condition_values)
+            ->order('is_allday DESC, start ASC')
+            ->fetchAll('id');
     }
 
     public function getEventByContact($contact_id, $limit = null)
