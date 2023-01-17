@@ -293,6 +293,30 @@ jQuery.fn.waEditor2 = function () {
                 console.log('imageUploadError', json);
                 alert(json.error);
             },
+            imageDelete: function(e, img) {
+                // skip if option not defined (action URL), example: '?module=pages&action=deleteImage'
+                if (!options.imageDelete) {
+                    return false;
+                }
+                // add translated message in app
+                var msg = options.locales.deleteImageMsg || 'Delete image from server?';
+                if (confirm(msg)) {
+                    var img = $(img);
+                    if (img.prop('tagName') != 'IMG') {
+                        img = img.find('img');
+                    }
+                    $.post(
+                        options.imageDelete,
+                        {file: img.attr('src').replace(wa_url, '')},
+                        function (response) {
+                            if (response.status == 'fail') {
+                                alert(response.errors.join(' '));
+                            }
+                        }, 
+                        'json'
+                    );
+                }
+            },
             keydown: function (e) {
                 // ctrl + s
                 if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey)) {
