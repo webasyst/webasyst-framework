@@ -5,7 +5,7 @@ return array(
     'description' => /*_wp*/('RFC 5545 iCalendar specification support for events import via WebCal subscriptions (iCal URL) and uploading local .ics files'),
     'icon'        => 'img/ics16.png',
     'img'         => 'img/ics16.png',
-    'version'     => '1.1.0',
+    'version'     => '1.1.1',
     'vendor'      => 'webasyst',
     'frontend'    => false,
     'external_calendar' => true,

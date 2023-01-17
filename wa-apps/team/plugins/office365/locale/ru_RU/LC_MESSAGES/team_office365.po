@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -46,11 +46,11 @@ msgstr "Секрет приложения"
 msgid "Another Microsoft account"
 msgstr "Другой аккаунт Microsoft"
 
-msgid "Need your attention"
-msgstr "Требуется ваше внимание"
+msgid "Your attention is required."
+msgstr "Требуется ваше внимание."
 
-msgid "Authorization code is canceled or expired"
-msgstr "Код авторизации истек или был отменен"
+msgid "Authorization code is canceled or expired."
+msgstr "Код авторизации истёк или был отменён."
 
 msgid "Renew authorization code"
 msgstr "Обновить код авторизации"
@@ -60,3 +60,21 @@ msgstr "Интеграция с онлайн-календарями Microsoft Ou
 
 msgid "Outlook.com Calendar"
 msgstr "Календарь Outlook.com"
+
+msgid "Plugin not found."
+msgstr "Плагин не найден."
+
+msgid "Redirect URI"
+msgstr "URI перенаправления"
+
+msgid "Session protection validated."
+msgstr "Защита сессии проверена."
+
+msgid "Token generation code has not been received. Use a HTTPS redirect URL for Office365."
+msgstr "Не получен код для генерации токена. Для Office365 используйте HTTPS-адрес перенаправления."
+
+msgid "Token generation code has not been received."
+msgstr "Не получен код для генерации токена."
+
+msgid "Token has not been generated."
+msgstr "Токен не сгенерирован."

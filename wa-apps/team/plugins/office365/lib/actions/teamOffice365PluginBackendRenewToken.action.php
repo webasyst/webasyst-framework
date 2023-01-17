@@ -37,7 +37,7 @@ class teamOffice365PluginBackendRenewTokenAction extends waViewAction
 
     public function pluginNotFound()
     {
-        throw new waException(_wp('Plugin not found'));
+        throw new waException(_wp('Plugin not found.'));
     }
 
     public function accessDenied()

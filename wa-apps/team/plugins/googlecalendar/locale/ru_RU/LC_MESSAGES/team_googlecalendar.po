@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -29,7 +29,7 @@ msgid "To receive Client ID and secret <a href=\"https://console.developers.goog
 msgstr "Для получения Идентификатора клиента и секрета <a href=\"https://console.developers.google.com/\" target=\"_blank\">зарегистрируйте приложение</a> в консоли разработчика Google."
 
 msgid "<a href=\"https://support.webasyst.com/16033/team-add-calendar-google/\" target=\"_blank\">Step-by-step manual on connecting with a Google Calendar</a>"
-msgstr "<a href=\"http://support.webasyst.ru/16031/team-add-calendar-google/\" target=\"_blank\">Инструкция по подключению к сервису «Календарь Google»</a>"
+msgstr "<a href=\"https://support.webasyst.ru/16031/team-add-calendar-google/\" target=\"_blank\">Инструкция по подключению к сервису «Календарь Google»</a>"
 
 msgid "Client ID"
 msgstr "Идентификатор клиента"
@@ -43,11 +43,11 @@ msgstr "Открыть в Google Диске"
 msgid "Another Google account"
 msgstr "Другой аккаунт Google"
 
-msgid "Need your attention"
+msgid "Your attention is required"
 msgstr "Требуется ваше внимание"
 
-msgid "Authorization code is canceled or expired"
-msgstr "Код авторизации истек или был отменен"
+msgid "Authorization code is canceled or expired."
+msgstr "Код авторизации истек или был отменён."
 
 msgid "Renew authorization code"
 msgstr "Обновить код авторизации"
@@ -57,3 +57,24 @@ msgstr "Интеграция с календарями Google"
 
 msgid "Google Calendar"
 msgstr "Календарь Google"
+
+msgid "Unknown calendar"
+msgstr "Неизвестный календарь"
+
+msgid "Plugin not found."
+msgstr "Плагин не найден."
+
+msgid "Authorized redirect URI"
+msgstr "Авторизованный URI перенаправления"
+
+msgid "Access denied."
+msgstr "Доступн запрещён."
+
+msgid "Session protection validated."
+msgstr "Защита сессии проверена."
+
+msgid "Token generation code has not been received."
+msgstr "Не получен код для генерации токена."
+
+msgid "Token has not been generated."
+msgstr "Токен не сгенерирован."

@@ -12,18 +12,18 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-msgid "No CalDAV-server on specified URL"
-msgstr "По указанному адресу отсутствует сервер CalDAV"
+msgid "No CalDAV-server on specified URL."
+msgstr "По указанному адресу отсутствует сервер CalDAV."
 
-msgid "Specified login or password is invalid"
-msgstr "Неверный логин или пароль"
+msgid "Specified login or password is invalid."
+msgstr "Неверный логин или пароль."
 
-msgid "Invalid URL"
-msgstr "Указан неверный URL"
+msgid "Invalid URL."
+msgstr "Указан неверный URL."
 
 msgid "Connect"
 msgstr "Подключить"
@@ -57,3 +57,6 @@ msgstr "отмена"
 
 msgid "or"
 msgstr "или"
+
+msgid "Choose server"
+msgstr "Выберите сервер"

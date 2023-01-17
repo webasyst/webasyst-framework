@@ -7,7 +7,7 @@
     {if $is_token_invalid}
         {if $action === 'info'}
             <div style="margin-top: 20px; padding: 20px; background-color: #fee; width: 500px;">
-                <strong class="errormsg">{_wp('Authorization code is canceled or expired')}</strong>
+                <strong class="errormsg">{_wp('Authorization code is canceled or expired.')}</strong>
                 {if $calendar.is_own}
                     <a href="javascript:void(0);" class="t-googlecalendar-receive-token">
                         <i class="icon16 update"></i>
@@ -18,7 +18,7 @@
             </div>
         {elseif $action === 'schedule_settings'}
             <div style="margin-top: 4px;">
-                <a href="{$wa_app_url}calendar/external/?id={$calendar.id}" style="color: red !important; font-weight: bold;">{_wp('Need your attention')}</a>
+                <a href="{$wa_app_url}calendar/external/?id={$calendar.id}" style="color: red !important; font-weight: bold;">{_wp('Your attention is required')}</a>
             </div>
         {/if}
     {/if}

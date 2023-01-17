@@ -12,7 +12,7 @@ class teamIcsPlugin extends teamCalendarExternalPlugin
     public function authorizeBegin($id, $options = array())
     {
         $template_path = $this->getTemplatePath('connect.html');
-        return $this->renderTemplate($template_path, array(
+        return $this->renderCurrentTemplate($template_path, array(
             'id' => $id,
             'url' => self::getCallbackUrlById('ics')
         ));
@@ -40,30 +40,30 @@ class teamIcsPlugin extends teamCalendarExternalPlugin
 
         $url = (string) ifset($params['url']);
         if (strlen($url) <= 0) {
-            $this->raiseConnectionFailedError($id, _wp('URL is empty string'));
+            $this->raiseConnectionFailedError($id, _wp('Empty URL.'));
         }
 
         $parsed = parse_url($url);
         $scheme = ifset($parsed['scheme']);
 
         if ($scheme !== 'http' && $scheme !== 'https' && $scheme !== 'webcal' && $scheme !== 'webcals') {
-            $this->raiseConnectionFailedError($id, _wp('URL scheme is unknown'));
+            $this->raiseConnectionFailedError($id, _wp('Unknown URL scheme.'));
         }
         $url = str_replace(array('webcal', 'webcals'), array('http', 'https'), $url);
 
         if (empty($parsed['host'])) {
-            $this->raiseConnectionFailedError($id, _wp('URL host is empty'));
+            $this->raiseConnectionFailedError($id, _wp('Empty URL host.'));
         }
 
         if (!$this->downloadFile($url)) {
-            $this->raiseConnectionFailedError($id, _wp("Can't download by current URL"));
+            $this->raiseConnectionFailedError($id, _wp("Cannot download data from specified URL."));
         }
 
         $filename = $this->getFilename($url);
         $parser = new teamIcsCalendarParser($filename);
 
         if (!$parser->hasBeginVCalendarStatement() && !$parser->hasEndVCalendarStatement()) {
-            $this->raiseConnectionFailedError($id, _wp("No iCalendar found on specified URL"));
+            $this->raiseConnectionFailedError($id, _wp("No iCalendar found at specified URL."));
         }
 
         $name = $parser->getField('X-WR-CALNAME');
@@ -221,7 +221,7 @@ class teamIcsPlugin extends teamCalendarExternalPlugin
         $native_calendar_id = $this->calendar->getNativeCalendarId();
         return $native_calendar_id === self::NATIVE_CALENDAR_ID_IMPORTED_FROM_FILE ? _w('Imported from file') : $native_calendar_id;
     }
-    
+
     public function backendScheduleSettings($params)
     {
         /**
@@ -278,7 +278,7 @@ class teamIcsPlugin extends teamCalendarExternalPlugin
         return $this->path . '/templates/' . $path;
     }
 
-    protected function renderTemplate($template_path, $assign = array())
+    protected function renderCurrentTemplate($template_path, $assign = array())
     {
         waSystem::pushActivePlugin('ics', 'team');
         $view = wa()->getView();

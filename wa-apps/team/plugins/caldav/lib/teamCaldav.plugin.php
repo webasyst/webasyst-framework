@@ -5,7 +5,7 @@ class teamCaldavPlugin extends teamCalendarExternalPlugin
     public function authorizeBegin($id, $options = array())
     {
         $template_path = $this->getTemplatePath('authorize.html');
-        return $this->renderTemplate($template_path, array(
+        return $this->renderPluginTemplate($template_path, array(
             'id' => $id,
             'url' => self::getCallbackUrlById('caldav')
         ));
@@ -598,7 +598,7 @@ class teamCaldavPlugin extends teamCalendarExternalPlugin
         return $this->path . '/templates/' . $path;
     }
 
-    protected function renderTemplate($template_path, $assign = array())
+    protected function renderPluginTemplate($template_path, $assign = array())
     {
         waSystem::pushActivePlugin('caldav', 'team');
         $view = wa()->getView();

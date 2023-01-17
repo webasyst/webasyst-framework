@@ -204,7 +204,13 @@ class teamOffice365Driver
             ),
             CURLOPT_POSTFIELDS => json_encode($data)
         ));
-        $this->checkError($res);
+        try {
+            $this->checkError($res);
+        } catch (teamOffice365Exception $e) {
+            if ($e->getCode() == 404) {
+                throw new teamCalendarExternalEventNotFoundException();
+            }
+        }
         return $res['body'];
     }
 
@@ -221,7 +227,15 @@ class teamOffice365Driver
         $event_id_encoded = urlencode($event_id);
         $url = "https://graph.microsoft.com/v1.0/me/calendars/{$calendar_id_encoded}/events/{$event_id_encoded}";
         $res = $this->curl->delete($url);
-        $this->checkError($res);
+
+        try {
+            $this->checkError($res);
+        } catch (teamOffice365Exception $e) {
+            if ($e->getCode() == 404) {
+                throw new teamCalendarExternalEventNotFoundException();
+            }
+        }
+
         return $res['body'];
     }
 
@@ -247,6 +261,8 @@ class teamOffice365Driver
                 $msg = 'Access allowed only for registered users.';
             }
             throw new teamCalendarExternalTokenInvalidException($msg);
+        } else if ($res['http_code'] == 404) {
+            throw new teamOffice365Exception('Not found', 404);
         }
     }
 

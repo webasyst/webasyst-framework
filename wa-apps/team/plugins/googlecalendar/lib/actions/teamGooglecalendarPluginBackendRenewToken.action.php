@@ -37,11 +37,11 @@ class teamGooglecalendarPluginBackendRenewTokenAction extends waViewAction
 
     public function pluginNotFound()
     {
-        throw new waException(_wp('Plugin not found'));
+        throw new waException(_wp('Plugin not found.'));
     }
 
     public function accessDenied()
     {
-        throw new waRightsException(_w('Access denied'));
+        throw new waRightsException(_w('Access denied.'));
     }
 }

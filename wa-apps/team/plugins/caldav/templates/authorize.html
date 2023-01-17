@@ -150,11 +150,11 @@
                     } else if ($.isPlainObject(r.errors) && !$.isEmptyObject(r.errors)) {
                         loading.hide();
                         if (r.errors.code <= 0) {
-                            alert("{_wp('Invalid URL')}");
+                            alert("{_wp('Invalid URL.')}");
                         } else if (r.errors.code == 401) {
-                            alert("{_wp('Specified login or password is invalid')}");
+                            alert("{_wp('Specified login or password is invalid.')}");
                         } else {
-                            alert("{_wp('No CalDAV-server on specified URL')}");
+                            alert("{_wp('No CalDAV-server on specified URL.')}");
                         }
                     }
                 });
@@ -176,7 +176,7 @@
                                 }
                             } else if ($.isPlainObject(r.errors) && !$.isEmptyObject(r.errors)) {
                                 loading.hide();
-                                alert("{_wp('Specified login or password is invalid')}");
+                                alert("{_wp('Specified login or password is invalid.')}");
                             }
                         }
                 );

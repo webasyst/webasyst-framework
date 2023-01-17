@@ -393,7 +393,7 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
         if (!$this->checkCalendar()) {
             return _wp('Unknown calendar');
         }
-        return $this->renderTemplate($template_path, array(
+        return $this->renderPluginTemplate($template_path, array(
             'calendar' => array(
                 'id' => $this->calendar->getId(),
                 'is_own' => $this->calendar->getContactId() == wa()->getUser()->getId(),
@@ -592,7 +592,7 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
         return $this->path . '/templates/' . $path;
     }
 
-    protected function renderTemplate($template_path, $assign = array())
+    protected function renderPluginTemplate($template_path, $assign = array())
     {
         $view = wa()->getView();
         $vars = $view->getVars();

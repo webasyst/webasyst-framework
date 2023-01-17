@@ -17,7 +17,7 @@ class assistPayment extends waPayment
         'new'  => 'https://payments%s.paysecure.ru/pay/order.cfm',
         'test' => 'https://payments.demo.paysecure.ru/pay/order.cfm',
         'belarus_test'   => 'https://test.paysec.by/pay/order.cfm',
-        'belarus'   => 'https://payments%s.paysec.by/pay/order.cfm',
+        'belarus'   => 'https://pay%s.paysec.by/pay/order.cfm',
     );
 
     public function allowedCurrency()

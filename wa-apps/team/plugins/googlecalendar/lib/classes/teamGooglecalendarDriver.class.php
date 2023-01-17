@@ -223,15 +223,19 @@ class teamGooglecalendarDriver
             $url .= "?" . http_build_query($params);
         }
         $res = $this->curl->get($url);
-        $this->checkError($res['body']);
+        $this->checkError($res);
         return $res['body'];
     }
 
-    private function checkError($data)
+    private function checkError($resp)
     {
-        if (empty($data['error'])) {
+        $data = $resp['body'];
+        $http_code = $resp['http_code'];
+        if (empty($data['error']) && $http_code < 400) {
             return null;
         }
+
+        $error_code = ifset($data['error']['code'], $http_code);
 
         $error_message = 'Unknown error.';
         if (!empty($data['message'])) {
@@ -254,9 +258,9 @@ class teamGooglecalendarDriver
 
         $e = new teamGooglecalendarDriverException($error_message);
 
-        if ($error_message === 'Invalid Credentials') {
+        if ($error_code === 401 || $http_code === 401) {
             $e = new teamCalendarExternalTokenInvalidException($error_message);
-        } else if ($error_message === 'Resource has been deleted' || $error_message === 'Not Found') {
+        } else if ($error_code === 404 || $error_code === 410) {
             $e = new teamCalendarExternalEventNotFoundException($error_message);
         }
 

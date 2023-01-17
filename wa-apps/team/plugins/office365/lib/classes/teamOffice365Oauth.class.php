@@ -108,7 +108,7 @@ class teamOffice365Oauth
         $secure_hash = wa()->getStorage()->get("team/plugins/{$plugin_id}/secure_hash");
         $received_hash = substr($state, 0, 16) . substr($state, -16);
         if ($received_hash !== $secure_hash) {
-            $e = new teamOffice365OauthException(_wp("Session protection validated"));
+            $e = new teamOffice365OauthException(_wp("Session protection validated."));
             $e->setParams(array(
                 'id' => $calendar_external_id
             ));
@@ -126,9 +126,9 @@ class teamOffice365Oauth
         $code = ifset($res['code']);
         if (!$code) {
             if (!waRequest::isHttps()) {
-                $e = new teamOffice365OauthException(_wp("Code for generating token is not received. Use HTTPS redirect URL for Office365"));
+                $e = new teamOffice365OauthException(_wp("Token generation code has not been received. Use a HTTPS redirect URL for Office365."));
             } else {
-                $e = new teamOffice365OauthException(_wp("Code for generating token is not received"));
+                $e = new teamOffice365OauthException(_wp("Token generation code has not been received."));
             }
             $e->setParams(array(
                 'id' => $calendar_external_id
@@ -152,7 +152,7 @@ class teamOffice365Oauth
         ));
 
         if ($result['http_code'] != 200 || empty($result['body']['access_token'])) {
-            $msg = _wp("Token is not generated");
+            $msg = _wp("Token has not been generated.");
             if (!empty($result['body']['error_description'])) {
                 $msg = $result['body']['error_description'];
             } else if (!empty($result['body']['error'])) {

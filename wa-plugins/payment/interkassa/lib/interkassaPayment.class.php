@@ -17,7 +17,7 @@ class interkassaPayment extends waPayment
 
     public function allowedCurrency()
     {
-        return $this->test ? true : (is_string($this->currency) ? $this->currency : array_keys(array_filter(array_map('intval', $this->currency))));
+        return $this->test ? true : (is_string($this->currency) ? $this->currency : array_keys(array_filter($this->currency)));
     }
 
     public static function availableCurrency()

@@ -51,7 +51,7 @@ class teamCaldavCurl
         $options[CURLOPT_CUSTOMREQUEST] = "OPTIONS";
         $options[CURLOPT_URL] = $url;
         $options[CURLINFO_HEADER_OUT] = true;
-        $options[CURLOPT_VERBOSE] = true;
+        //$options[CURLOPT_VERBOSE] = true;
         $options[CURLOPT_HEADER] = true;
         $ch = $this->getCurl($options);
         $res = $this->executeCurl($ch);

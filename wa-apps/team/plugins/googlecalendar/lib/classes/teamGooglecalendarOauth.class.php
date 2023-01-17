@@ -108,7 +108,7 @@ class teamGooglecalendarOauth
         $secure_hash = wa()->getStorage()->get('team/plugins/googlecalendar/secure_hash');
         $received_hash = substr($state, 0, 16) . substr($state, -16);
         if ($received_hash !== $secure_hash) {
-            $e = new teamGooglecalendarOauthException(_wp("Session protection validated"));
+            $e = new teamGooglecalendarOauthException(_wp("Session protection validated."));
             $e->setParams(array(
                 'id' => $calendar_external_id
             ));
@@ -127,7 +127,7 @@ class teamGooglecalendarOauth
         if ($error) {
             $msg = $error;
             if ($error === 'access_denied') {
-                $msg = _wp('Access denied');
+                $msg = _wp('Access denied.');
             } else if (!empty($res['error_description'])) {
                 $msg = $res['error_description'];
             }
@@ -140,7 +140,7 @@ class teamGooglecalendarOauth
 
         $code = ifset($res['code']);
         if (!$code) {
-            $e = new teamGooglecalendarOauthException(_wp("Code for generating token is not received"));
+            $e = new teamGooglecalendarOauthException(_wp("Token generation code has not been received."));
             $e->setParams(array(
                 'id' => $calendar_external_id
             ));
@@ -167,7 +167,7 @@ class teamGooglecalendarOauth
 
 
         if ($result['http_code'] != 200 || empty($result['body']['access_token'])) {
-            $msg = _wp("Token is not generated");
+            $msg = _wp("Token has not been generated.");
             if (!empty($result['body']['error_description'])) {
                 $msg = $result['body']['error_description'];
             } else if (!empty($result['body']['error'])) {

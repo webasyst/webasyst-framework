@@ -5,7 +5,7 @@ return array(
     'description' => /*_wp*/('Microsoft online Outlook calendar integration'),
     'icon'        => 'img/office365_16.png',
     'img'         => 'img/office365_16.png',
-    'version'     => '1.0',
+    'version'     => '1.1.1',
     'vendor'      => 'webasyst',
     'frontend'    => false,
     'external_calendar' => true,

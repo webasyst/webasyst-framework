@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -35,28 +35,34 @@ msgid "Import events from file"
 msgstr "Импортировать календарь из файла"
 
 msgid "Choose .ics file"
-msgstr "Укажите файл .ics"
+msgstr "Выберите файл .ics"
 
 msgid "Import"
 msgstr "Импортировать"
 
-msgid "URL is empty string"
-msgstr "Указан пустой адрес"
+msgid "Empty URL."
+msgstr "Указан пустой адрес."
 
-msgid "URL scheme is unknown"
-msgstr "Указана неизвестная URI-схема"
+msgid "Unknown URL scheme."
+msgstr "Указана неизвестная схема URL."
 
-msgid "URL host is empty"
-msgstr "Не указан хост в адресе"
+msgid "Empty URL host."
+msgstr "В URL Не указан хост."
 
-msgid "Can't download by current URL"
-msgstr "Получить календарь по указанному адресу не удалось"
+msgid "Cannot download data from specified URL."
+msgstr "Не удалось получить календарь по указанному адресу."
 
-msgid "No iCalendar found on specified URL"
-msgstr "По указанному адресу нет календаря, соответствующего стандарту iCalendar"
+msgid "No iCalendar found at specified URL."
+msgstr "По указанному адресу нет календаря в формате iCalendar."
 
 msgid "Imported from file"
 msgstr "Импортирован из файла"
 
 msgid "RFC 5545 iCalendar specification support for events import via WebCal subscriptions (iCal URL) and uploading local .ics files"
 msgstr "Поддержка стандарта iCalendar (RFC 5545) для импорта календарей через подписку на WebCal-ресурсы, а также из файлов .ics"
+
+msgid "Empty"
+msgstr "Пустой"
+
+msgid "Import from file"
+msgstr "Импорт из файла"
