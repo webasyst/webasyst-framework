@@ -124,9 +124,9 @@ class blogViewHelper extends waAppViewHelper
         return $posts;
     }
 
-    public function comments($blog_id = null, $limit = 10)
+    public function comments($blog_id = null, $limit = 10, $options=array())
     {
-        $contact_photo_size = 20;
+        $contact_photo_size = ifempty($options['contact_photo_size'], 20);
 
         $limit = max(1, intval($limit));
 
