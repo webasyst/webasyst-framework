@@ -427,7 +427,8 @@ class waVerificationChannelEmail extends waVerificationChannel
         }
 
         try {
-            $m = new waMailMessage($subject, $body);
+            $m = new waMailMessage($subject);
+            $m->setBody($body);
             $m->setTo($recipient['email'], isset($recipient['name']) ? $recipient['name'] : null);
             $from = $this->getAddress();
             if ($from) {

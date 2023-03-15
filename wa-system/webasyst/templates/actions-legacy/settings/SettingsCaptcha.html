@@ -28,7 +28,7 @@
                                     <div class="name">[s`Secret`]</div>
                                     <div class="value">
                                         <input type="text" name="captcha_options[secret]" value="{$captcha_options.secret|default:''|escape}"><br>
-                                        <span class="hint"><a href="https://www.google.com/recaptcha" target="_blank">[s`Get site key and secret for your website`]</a> <i class="icon16 new-window"></i></span>
+                                        <span class="hint"><a href="https://www.google.com/recaptcha" target="_blank">[s`Get values for your website`]</a> <i class="icon16 new-window"></i></span>
                                     </div>
                                 </div>
                                 <div class="field">
@@ -51,23 +51,23 @@
                             <div{if ifset($captcha) != 'waSmartCaptcha'} style="display: none"{/if} class="js-smart-captcha-adapter-settings">
                                 <br>
                                 <div class="field">
-                                    <div class="name">[s`Ключ клиента`]</div>
+                                    <div class="name">[s`Client key`]</div>
                                     <div class="value">
                                         <input type="text" name="captcha_options[client_key]" value="{$captcha_options.client_key|default:''|escape}">
                                     </div>
                                 </div>
                                 <div class="field">
-                                    <div class="name">[s`Ключ сервера`]</div>
+                                    <div class="name">[s`Server key`]</div>
                                     <div class="value">
                                         <input type="text" name="captcha_options[server_key]" value="{$captcha_options.server_key|default:''|escape}"><br>
                                         <span class="hint">
-                                            <a href="https://cloud.yandex.ru/services/smartcaptcha" target="_blank">[s`Получить значения для своего сайта`]</a> <i class="icon16 new-window"></i>
+                                            <a href="[s`https://cloud.yandex.com/en/services/smartcaptcha`]" target="_blank">[s`Get values for your website`]</a> <i class="icon16 new-window"></i>
                                         </span>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="name">
-                                        <label for="invisible">[s`Невидимая капча`]</label>
+                                        <label for="invisible">[s`Invisible mode`]</label>
                                     </div>
                                     <div class="value no-shift">
                                         <label>

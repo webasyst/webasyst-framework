@@ -1189,12 +1189,12 @@ class Archive_Tar extends PEAR
         $v_magic = 'ustar ';
 
         $v_version = ' ';
-        
+
         if (function_exists('posix_getpwuid'))
         {
           $userinfo = posix_getpwuid($v_info[4]);
           $groupinfo = posix_getgrgid($v_info[5]);
-          
+
           $v_uname = $userinfo['name'];
           $v_gname = $groupinfo['name'];
         }
@@ -1278,7 +1278,7 @@ class Archive_Tar extends PEAR
         {
           $userinfo = posix_getpwuid($p_uid);
           $groupinfo = posix_getgrgid($p_gid);
-          
+
           $v_uname = $userinfo['name'];
           $v_gname = $groupinfo['name'];
         }
@@ -1287,7 +1287,7 @@ class Archive_Tar extends PEAR
           $v_uname = '';
           $v_gname = '';
         }
-        
+
         $v_devmajor = '';
 
         $v_devminor = '';
@@ -1428,7 +1428,7 @@ class Archive_Tar extends PEAR
                          $v_binary_data);
 
         // ----- Extract the checksum
-        $v_header['checksum'] = OctDec(trim($v_data['checksum']));
+        $v_header['checksum'] = OctDec(str_replace(['8', '9'], '', filter_var($v_data['checksum'], FILTER_SANITIZE_NUMBER_INT)));
         if ($v_header['checksum'] != $v_checksum) {
             $v_header['filename'] = '';
 

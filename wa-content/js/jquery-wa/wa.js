@@ -919,13 +919,17 @@
                 });
             }
 
-            that.$button.on("click", function(event) {
+            that.$button.on("click touchend", function(event) {
                 event.preventDefault();
                 that.toggleMenu(!that.is_opened);
             });
 
             if (that.options.items) {
                 that.initChange(that.options.items);
+            } else if(that.options.hide) {
+                that.$menu.on("click touchend", function() {
+                    that.hide();
+                });
             }
 
             $body.on("keyup", keyWatcher);
@@ -942,7 +946,7 @@
                 }
             }
 
-            $document.on("click", clickWatcher);
+            $document.on("click touchend", clickWatcher);
             function clickWatcher(event) {
                 var wrapper = that.$wrapper[0],
                     is_exist = $.contains(document, wrapper);
@@ -1011,7 +1015,7 @@
 
             that.$active = that.$menu.find(selector + "." + active_class);
 
-            that.$wrapper.on("click", selector, onChange);
+            that.$wrapper.on("click touchend", selector, onChange);
 
             function onChange(event) {
                 event.preventDefault();
@@ -3297,7 +3301,7 @@
 
     if (!window.wa_skip_csrf_prefilter) {
         $.ajaxPrefilter(function (settings, originalSettings, xhr) {
-            if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST') {
+            if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST' || (settings.contentType && settings.contentType.substr(0, 33) !== 'application/x-www-form-urlencoded')) {
                 return;
             }
 
@@ -3787,12 +3791,12 @@
                 var timezone = window.jstz.determine().name();
 
                 // Session cookie timezone
-                document.cookie = "tz="+jstz.determine().name();
+                document.cookie = "tz="+ jstz.determine().name() +"; path=/";
 
                 // Expires in two weeks
                 var expire = new Date();
                 expire.setTime(expire.getTime() + 14*24*60*60*1000); // two weeks
-                document.cookie = "oldtz="+timezone+"; expires="+expire.toUTCString();
+                document.cookie = "oldtz="+timezone+"; path=/; expires="+expire.toUTCString();
 
                 if (callback) { callback(timezone); }
             }
@@ -3864,6 +3868,76 @@
                 } while (bytes > 99);
 
                 return Math.max(bytes, 0.01).toFixed(2) + ((i >=0)? (' ' + $_(['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i])):'');
+            }
+        },
+
+        copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            } else {
+                const textArea = document.createElement("textarea");
+
+                textArea.value = text;
+                textArea.style.position = "absolute";
+                textArea.style.opacity = '0';
+
+                document.body.appendChild(textArea);
+                textArea.select();
+                return new Promise((res, rej) => {
+                    document.execCommand('copy') ? res() : rej();
+                    textArea.remove();
+                });
+            }
+        },
+
+        notify(options) {
+
+            const $appendTo = options.appendTo || document.body,
+                isCloseable = options.isCloseable ?? true,
+                alertTimeout = options.timeout || 0;
+            let $alertWrapper = $appendTo.querySelector('#s-notifications');
+
+            // Create notification
+            const $alert = document.createElement('div');
+            $alert.classList.add('alert', options.class || 'info');
+            $alert.innerHTML = options.content || '';
+
+            if(isCloseable){
+                const closeClass = options.closeClass || 'js-alert-error-close',
+                    $alertClose = document.createElement('a');
+
+                $alertClose.classList.add('alert-close', closeClass);
+                $alertClose.setAttribute('href', 'javascript:void(0)');
+                $alertClose.innerHTML = '<i class="fas fa-times"></i>';
+                $alert.insertAdjacentElement('afterbegin', $alertClose);
+                // Event listener for close notification
+                $alertClose.addEventListener('click', function() {
+                    this.closest('.alert').remove();
+                });
+            }
+
+            if(!$alertWrapper) {
+                // Create notification wrapper
+                $alertWrapper = document.createElement('div');
+                $alertWrapper.className = 'alert-fixed-box';
+                if (options.placement) {
+                    $alertWrapper.classList.add(options.placement);
+                }
+                if (options.size) {
+                    $alertWrapper.classList.add(options.size);
+                }
+                $alertWrapper.id = 't-notifications';
+                $appendTo.append($alertWrapper);
+            }
+
+            if (options.placement) {
+                $alertWrapper.prepend($alert);
+            }else{
+                $alertWrapper.append($alert);
+            }
+
+            if(alertTimeout > 0) {
+                setTimeout(() => $alert.remove(), alertTimeout)
             }
         }
     });

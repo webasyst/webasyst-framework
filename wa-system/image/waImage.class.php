@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage image
  */
+#[\AllowDynamicProperties]
 class waImage
 {
     const NONE    = 'NONE';

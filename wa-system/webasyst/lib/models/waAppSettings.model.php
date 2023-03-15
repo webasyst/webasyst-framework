@@ -62,6 +62,9 @@ class waAppSettingsModel extends waModel
 
     protected function getCache($app_id)
     {
+        if (is_array($app_id)) {
+            $app_id = reset($app_id);
+        }
         // cache one day
         return new waVarExportCache('app_settings/'.$app_id, SystemConfig::isDebug() ? 600 : 86400, 'webasyst');
     }
@@ -69,12 +72,14 @@ class waAppSettingsModel extends waModel
     public function set($app_id, $name, $value)
     {
         $key = $this->getCacheKey($app_id);
+        $this->multipleInsert([
+            'app_id' => $key,
+            'name' => $name,
+            'value' => $value,
+        ], ['value']);
+
         $this->clearCache($app_id, true);
-        if ($this->getByField(array('app_id' => $key, 'name' => $name))) {
-            $this->updateByField(array('app_id' => $key, 'name' => $name), array('value' => $value));
-        } else {
-            $this->insert(array('app_id' => $key, 'name' => $name, 'value' => $value));
-        }
+
         // if settings loaded
         if (isset(self::$settings[$app_id])) {
             self::$settings[$key][$name] = $value;

@@ -133,6 +133,9 @@ class waLocale
      */
     public static function load($locale, $locale_path, $domain, $textdomain = true)
     {
+        if (empty($locale) || empty($locale_path)) {
+            return;
+        }
         if (!self::$locale || $textdomain) {
             self::$locale = $locale;
         }

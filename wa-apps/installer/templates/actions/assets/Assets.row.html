@@ -73,12 +73,12 @@
         {/if}
     </td>
 
-    <td class="nowrap align-right small">
-        {if
+    <td class="nowrap align-right small"{if empty($app.enabled) && in_array($item_type,['plugin','widget', 'theme'])} style="visibility: hidden"{/if}>
+       {if
         empty($item.virtual)
         &&
         (
-            !in_array($item_type,['plugin','widget'])
+            in_array($item_type,['plugin','widget', 'theme'])
             ||
             !empty($app.enabled)
             ||
@@ -119,23 +119,23 @@
             {/if}
 
             {if empty($item.system)}
-            <span class="js-switch-remove"{if in_array($item_type,['plugin','app']) && empty($app.virtual)} style="display: none;"{/if}>
-                <a href="{$wa_app_url}assets/" class="js-remove-item button light-gray circle" title="[`Delete`]">
-                    <i class="fas fa-trash-alt text-red js-remove-item-icon"></i>
-                    <i class="fas fa-spinner wa-animation-spin speed-1500 hidden js-remove-item-spinner"></i>
-                </a>
-            </span>
+                <span class="js-switch-remove"{if in_array($item_type,['plugin','app']) && empty($app.virtual)} style="display: none;"{else} data-app-id="{$app.id}"{/if}>
+                    <a href="{$wa_app_url}assets/" class="js-remove-item button light-gray circle" title="[`Delete`]">
+                        <i class="fas fa-trash-alt text-red js-remove-item-icon"></i>
+                        <i class="fas fa-spinner wa-animation-spin speed-1500 hidden js-remove-item-spinner"></i>
+                    </a>
+                </span>
 
-            {if $item_type=='app'}
-                {$field = 'app_id'}
-            {else}
-                {$field='extras_id'}
-            {/if}
+                {if $item_type=='app'}
+                    {$field = 'app_id'}
+                {else}
+                    {$field='extras_id'}
+                {/if}
 
-            <form action="?module={$item_type}s&action=remove" method="post" class="js-remove-item-form">
-                {$wa->csrf()}
-                <input type="hidden" name="{$field}[{$item.slug}]" value="{$item.installed.vendor|default:'webasyst'|escape}"/>
-            </form>
+                <form action="?module={$item_type}s&action=remove" method="post" class="js-remove-item-form">
+                    {$wa->csrf()}
+                    <input type="hidden" name="{$field}[{$item.slug}]" value="{$item.installed.vendor|default:'webasyst'|escape}"/>
+                </form>
             {/if}
         {/if}
     </td>

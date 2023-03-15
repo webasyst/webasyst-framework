@@ -204,8 +204,8 @@ class waViewHelper
             $i++;
         }
 
+        waRequest::setParam($old_params);
         if (isset($app_id) && $old_app != $app_id) {
-            waRequest::setParam($old_params);
             wa()->setActive($old_app);
         }
 
@@ -786,7 +786,8 @@ HTML;
         $body = nl2br(htmlspecialchars($body));
         $body = _ws('Name').': '.htmlspecialchars($this->post('name'))."<br>\n".
             _ws('Email').': '.htmlspecialchars($email)."<br><br>\n".$body;
-        $m = new waMailMessage($subject, $body);
+        $m = new waMailMessage($subject);
+        $m->setBody($body);
         $m->setTo($to);
         $m->setReplyTo(array($email => $this->post('name')));
         if (!$m->send()) {
@@ -1358,11 +1359,11 @@ HTML;
             $tabs = $this->getContactTabs((int)$id);
         }
 
-        // Add UI-version to URL params
+        // Add UI-version and App Id to URL params
         foreach ($tabs as $key => &$tab) {
             if (!empty(ifset($tab['url']))) {
                 $query = parse_url($tab['url'], PHP_URL_QUERY);
-                $tab['url'] .= (!empty($query) ? '&' : '?') . 'ui=' . $this->whichUI();
+                $tab['url'] .= (!empty($query) ? '&' : '?') . 'ui=' . $this->whichUI() . '&app=' . wa()->getApp();
             }
         }
 
@@ -1479,8 +1480,14 @@ HTML;
             waConfig::set('is_template', null);
         }
 
+        // Force current UI version before trigger event
+        $old_forced_ui_version = waRequest::param('force_ui_version', null, waRequest::TYPE_STRING_TRIM);
+        waRequest::setParam('force_ui_version', $this->whichUI());
+
         // Tabs of 'Team' app should always be on the left
         $event_result = wa()->event(array('contacts', 'profile.tab'), $id);
+
+        waRequest::setParam('force_ui_version', $old_forced_ui_version);
 
         // restore is_template flag
         if ($is_template) {

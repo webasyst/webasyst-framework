@@ -707,6 +707,9 @@ class waContact implements ArrayAccess
             } else if ($this->data['is_user'] != '-1' && $is_user == '-1') {
                 $log_model->add('access_enable', null, $this->id, wa()->getUser()->getId());
             }
+            if ($this->data['is_user'] > 0) {
+                $this->data['is_staff'] = 1;
+            }
         }
 
         $save = array();
@@ -1253,22 +1256,29 @@ class waContact implements ArrayAccess
      */
     public function getStatus()
     {
-        $timeout = self::$options['online_timeout']; // in sec
-        if (($last = $this->get('last_datetime')) && $last != '0000-00-00 00:00:00') {
-            if (time() - strtotime($last) < $timeout) {
-                $m = new waLoginLogModel();
-                $datetime_out = $m->select('datetime_out')->
-                        where('contact_id = i:0', array($this->id))->
-                        order('id DESC')->
-                        limit(1)->fetchField();
-                if ($datetime_out === null) {
-                    return 'online';
-                } else {
-                    return 'offline';
-                }
-            }
+        $last = $this->get('last_datetime');
+        if (!$last || $last == '0000-00-00 00:00:00') {
+            return 'offline';
         }
-        return 'offline';
+
+        $timeout = self::$options['online_timeout']; // in sec
+        $last = strtotime($last);
+        if (time() - $last >= $timeout) {
+            return 'offline';
+        }
+
+        $m = new waLoginLogModel();
+        $datetime_out = $m->select('datetime_out')->
+                where('contact_id = i:0', array($this->id))->
+                order('id DESC')->
+                limit(1)->fetchField();
+        if ($datetime_out === null || strtotime($datetime_out) < $last) {
+            // Time of last logout $datetime_out can be before last user activity time $last
+            // in case last activity was via API which does not get written into wa_login_log.
+            return 'online';
+        } else {
+            return 'offline';
+        }
     }
 
     /**
@@ -1627,6 +1637,11 @@ class waContact implements ArrayAccess
      */
     public function getWebasystTokenParams()
     {
+        // not available in templates
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
         $cwm = new waContactWaidModel();
         $data = $cwm->get($this->getId());
         if (!$data) {

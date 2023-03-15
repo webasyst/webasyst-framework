@@ -46,7 +46,7 @@
                     </div>
                 {/if}
 
-                {if $wa->user()->getRights('installer')}
+                {if $wa->user()->getRights('installer') && $wa->app() != 'shop'}
                     <div class="box custom-mt-0">
                         {*<a href="{$wa_backend_url}installer/store/app/{$wa->app()}/plugins/" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>*}
                         <a href="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>
@@ -123,12 +123,36 @@
 
                 if (this.$menu.find('> li:not(.js-plugins-list) > a').length) {
                     this.helper.loadJqUI(function() {
-                        $.plugins.$menu.sortable({
-                            containment: 'parent',
-                            distance: 5,
-                            items: '> li:not(.js-plugins-list)',
-                            tolerance: 'pointer',
-                            update: $.plugins.sortHandler
+                        Sortable.create($.plugins.$menu[0], {
+                            draggable: 'li:not(.js-plugins-list)',
+                            animation: 150,
+                            removeCloneOnHide: true,
+                            onEnd: function (evt) {
+                                const $item = $(evt.item);
+                                const { oldIndex, newIndex } = evt;
+
+                                const revertSort = () => {
+                                    $item.swap(oldIndex);
+                                };
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '?module=plugins&action=sort',
+                                    data: {
+                                        slug: $item.attr('id').replace(/^plugin-/, ''),
+                                        pos: newIndex
+                                    },
+                                    success: function (data, textStatus, jqXHR) {
+                                        if (!data || !data.status || data.status != "ok") {
+                                            revertSort();
+                                        }
+
+                                    },
+                                    error: function () {
+                                        revertSort();
+                                    }
+                                });
+                            }
                         });
                     });
                 }
@@ -244,6 +268,8 @@
                     self.$menu.find('li.selected').removeClass('selected');
                     var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
                     self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
+
+                    $(document).trigger('wa_loaded');
 
                     if (!self.options.useIframeTransport) {
                       $('#plugins-settings-form').submit(function () {
@@ -362,8 +388,11 @@
                 if (!$.ui || !$.ui.mouse) {
                     files.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
                 }
-                if (!$.fn.sortable) {
-                    files.push('wa-content/js/jquery-ui/jquery.ui.sortable.min.js');
+                if (typeof Sortable === "undefined") {
+                    files.push('wa-content/js/sortable/sortable.min.js');
+                }
+                if (!$().swap) {
+                    files.push('wa-content/js/jquery-plugins/jquery.swap.js');
                 }
 
                 if (files.length) {
@@ -414,25 +443,6 @@
                     $container.empty().show();
                 }, timeout);
             }
-        },
-        sortHandler: function (event, ui) {
-            var self = $.plugins;
-            $.ajax({
-                type: 'POST',
-                url: '?module=plugins&action=sort',
-                data: {
-                    slug: $(ui.item).attr('id').replace(/^plugin-/, ''),
-                    pos: $(ui.item).index()-2
-                },
-                success: function (data, textStatus, jqXHR) {
-                    if (!data || !data.status || data.status != "ok") {
-                        self.$menu.sortable('cancel');
-                    }
-                },
-                error: function () {
-                    self.$menu.sortable('cancel');
-                }
-            });
         }
     };
 

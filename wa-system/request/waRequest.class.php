@@ -582,7 +582,7 @@ class waRequest
             }
         } elseif ($session_theme && waTheme::exists($session_theme)) {
             $session_theme_type = (new waTheme($session_theme))->type;
-            if ($session_theme_type !== waTheme::TRIAL || $session_theme_type === waTheme::TRIAL && wa()->getUser()->get('is_user') == 1) {
+            if ($session_theme_type !== waTheme::TRIAL || wa()->getUser()->get('is_user') == 1) {
                 return $session_theme;
             }
         }

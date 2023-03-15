@@ -60,7 +60,7 @@
         <p class="s-description">[s`Set up how users will log into your Webasyst backend.`]</p>
         <form action="?module=settingsAuthSave" class="fields">
             {if $is_waid_connected}
-            <div class="fields-group">
+            <div class="fields-group blank">
                 <div class="js-force-auth-wrapper">
                     <input type="hidden" name="is_force_auth" value="0">
 
@@ -86,8 +86,8 @@
             </div>
             {/if}
 
-            <div class="fields-group js-force-save-fields">
-                <div class="fields-group s-auth-config-params">
+            <div class="fields-group blank js-force-save-fields">
+                <div class="s-auth-config-params">
                     {* Auth type *}
                     <div class="field">
                         <div class="name">[s`Passwords type`]</div>
@@ -227,7 +227,7 @@
                     </div>
                 </div>
 
-                <div class="fields-group">
+                <div class="custom-mt-32">
                     <h3>[`Login form`]</h3>
                     {* Captcha in auth form *}
                     <div class="field js-captcha-wrapper">
@@ -384,10 +384,10 @@
     })(jQuery);
 </script>
 <style>
-    .fields-group {
+    .fields-group blank {
         transition: opacity var(--timing-default);
     }
-    .fields-group.-unactive {
+    .fields-group blank.-unactive {
         opacity: .3;
         pointer-events: none;
         user-select: none;

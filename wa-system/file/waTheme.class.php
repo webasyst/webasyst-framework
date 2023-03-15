@@ -112,6 +112,8 @@ class waTheme implements ArrayAccess
     private $changed = array();
     private $readonly = false;
 
+    protected static $info_cache = array();
+
     /**
      * Get theme instance
      * @param $id
@@ -222,7 +224,13 @@ class waTheme implements ArrayAccess
     private function init($param = null)
     {
         if (empty($this->info)) {
-            $path = $this->path.'/'.self::PATH;
+            $path = realpath($this->path.'/'.self::PATH);
+
+            if (isset(self::$info_cache[$path])) {
+                $this->info = self::$info_cache[$path];
+                return ($param === null) ? true : isset($this->info[$param]);
+            }
+
             $extension = pathinfo($path, PATHINFO_EXTENSION);
             switch ($extension) {
                 case 'xml':
@@ -293,23 +301,23 @@ class waTheme implements ArrayAccess
                          * @var SimpleXMLElement $files
                          */
                         foreach ($files->children() as $file) {
-                            $path = (string)$file['path'];
-                            if (in_array(pathinfo($path, PATHINFO_EXTENSION), array('js', 'html', 'css'))) {
-                                $this->info['files'][$path] = array(
+                            $file_path = (string)$file['path'];
+                            if (in_array(pathinfo($file_path, PATHINFO_EXTENSION), array('js', 'html', 'css'))) {
+                                $this->info['files'][$file_path] = array(
                                     'custom' => isset($file['custom']) && (string)$file['custom'] ? true : false,
                                 );
                                 if (isset($file['modified']) && (string)$file['modified']) {
-                                    $this->info['files'][$path]['modified'] = true;
+                                    $this->info['files'][$file_path]['modified'] = true;
                                 }
 
-                                $this->info['files'][$path]['parent'] = isset($file['parent']) && (string)$file['parent'] ? true : false;
-                                if ($this->info['files'][$path]['parent']) {
-                                    $this->info['files'][$path]['parent_exists'] = $parent_exists;
+                                $this->info['files'][$file_path]['parent'] = isset($file['parent']) && (string)$file['parent'] ? true : false;
+                                if ($this->info['files'][$file_path]['parent']) {
+                                    $this->info['files'][$file_path]['parent_exists'] = $parent_exists;
                                 }
 
                                 foreach ($file->{'description'} as $value) {
                                     if ($value && ($locale = (string)$value['locale'])) {
-                                        $this->info['files'][$path]['description'][$locale] = (string)$value;
+                                        $this->info['files'][$file_path]['description'][$locale] = (string)$value;
                                     }
                                 }
                             }
@@ -478,11 +486,12 @@ class waTheme implements ArrayAccess
                     $this->info = array();
                     break;
             }
+
+            if (wa()->getEnv() == 'frontend') {
+                self::$info_cache[$path] = $this->info;
+            }
         }
         return ($param === null) ? true : isset($this->info[$param]);
-
-
-        //TODO check info and construct params
     }
 
     /**
@@ -752,7 +761,7 @@ XML;
      */
     private function addLocalizedField($dom, $xpath, $context, $field, $value)
     {
-
+        $is_description = $context->nodeName == 'file' && $field == 'description';
         if (is_array($value)) {
             foreach ($value as $locale => $_value) {
                 $query = "{$field}[@locale='{$locale}']";
@@ -760,11 +769,21 @@ XML;
                     if ($_value === null) {
                         $context->removeChild($node);
                     } else {
-                        $node->nodeValue = $_value;
+                        if ($is_description) {
+                            $node->nodeValue = '';
+                            $node->appendChild(new DOMCdataSection($_value));
+                        } else {
+                            $node->nodeValue = $_value;
+                        }
                     }
 
                 } else {
-                    $node = $this->addNode($dom, $xpath, $context, $field, $_value);
+                    if ($is_description) {
+                        $node = $this->addNode($dom, $xpath, $context, $field);
+                        $node->appendChild(new DOMCdataSection($_value));
+                    } else {
+                        $node = $this->addNode($dom, $xpath, $context, $field, $_value);
+                    }
                     $node->setAttribute('locale', $locale);
                 }
 
@@ -939,7 +958,7 @@ XML;
                                     $value->nodeValue = '';
                                     $value->appendChild(new DOMCdataSection(self::prepareField(ifset($this->settings[$var]['value'], ''))));
                                 } else {
-                                    $value->nodeValue = self::prepareField(ifempty($this->settings[$var]['value'], ''));
+                                    $value->nodeValue = self::prepareField(ifset($this->settings[$var]['value'], ''));
                                 }
 
                                 if ($value->hasAttribute('locale')) {
@@ -2823,6 +2842,7 @@ HTACCESS;
             'bmp',
             'gif',
             'svg',
+            'webp',
         );
 
         try {

@@ -3,6 +3,16 @@
 
 {function name="_render"}
 <div class="fields">
+
+    <div class="field">
+        <div class="name">
+            Company
+        </div>
+        <div class="value">
+            <strong>Webasyst LLC</strong>
+        </div>
+    </div>
+
     <div class="fields-group">
         <div class="field">
             <div class="name">
@@ -212,7 +222,7 @@
                         <option value="">Ms.</option>
                     </select>
                 </div>
-                <input class="long larger bold solid" type="text" name="" placeholder=".larger.solid">
+                <input class="long larger bold solid" type="text" name="" placeholder=".larger">
             </div>
         </div>
 
@@ -243,27 +253,25 @@
                 One more
             </div>
             <div class="value middle">
-                <textarea class="solid" name="" placeholder=".solid"></textarea>
+                <textarea class="outlined" name="" placeholder=".outlined"></textarea>
             </div>
         </div>
-    </div>
 
-    <div class="fields-group">
         <div class="field">
             <div class="value submit">
                 <input type="button" class="button" value="Save">
             </div>
         </div>
+
     </div>
+
+
+
 </div>
 {/function}
 
 <div class="u-component-page" id="js-fields-component-page">
-    <style>
-        input {
-            width: 100%;
-        }
-    </style>
+
     <h1 class="u-page-title">{$_title|escape}</h1>
 
     <blockquote>
@@ -278,11 +286,12 @@
     <hr>
 
     <p>Внутри <code>.fields</code> каждый элемент списка (формы) оформляется в виде элемент <code>.field</code> с дочерними элементами <code>.name</code> и <code>.value</code>.</p>
-    <p>С помощью <code>.fields-group</code> можно выделить несколько элементов <code>.field</code> в одну логическую и визуально слегка обособленную группу.</p>
+    <p>С помощью элементов <code>.fields-group</code> можно выделить несколько элементов <code>.field</code> в единую логически и визуально обособленную группу. Группировку рекомендуется применять во всех сложных формах настройки.</p>
     <p>Между элементами с классом <code>.field</code> допускается использование заголовков класса <a href="{$wa_app_url}component/heading/">.heading</a>.</p>
     <p><code>.field &gt; .value<strong>.submit</strong></code> добавляет отступ слева для расположения кнопки по одной вертикальной линии с элементами <code>input</code> и позволяет обойтись без добавления пустого элемента <code>.name</code>.</p>
 
     <p>Дополнительный класс на общий элемент <code>.fields<strong>.vertical</strong></code> позволяет разместить весь компонент <code>.fields</code> в одну узкую колонку. В этом случае <code>.fields</code> будет выглядеть, как на мобильных устройствах. Полезно для формата отображения в сайдбаре (узкой боковой колонке).</p>
+    <p>Дополнительный класс на элемент <code>.field<strong>.vertical</strong></code> размещает поле в одну колонку. Полезно при размещении последнего поля с широкой таблицой или большой редактируемой областью.</p>
 
     <h5>Отступ для <code>.name</code></h5>
     <p>Вариаций контента, располагающегося в <code>.value</code>, невообразимое множество. Поэтому неизбежно, что <code>.name</code> может быть слегко визуально не быть выровненным в соответствии с контентом <code>.value</code>.</p>
@@ -292,6 +301,7 @@
         <li><code>.name<strong>.for-input</strong></code>: если в <em>.value</em> элемент ввода данных: <a href="{$wa_app_url}component/inputs/">input, textarea, select</a>,</li>
         <li><code>.name<strong>.for-button</strong></code>: если в <em>.value</em> кнопка <a href="{$wa_app_url}component/button/">.button</a>,</li>
         <li><code>.name<strong>.for-checkbox</strong></code>: если в <em>.value</em> чекбокс или радиокнопка <a href="{$wa_app_url}component/inputs/">.wa-*</a>,</li>
+        <li><code>.name<strong>.for-switch</strong></code>: если в <em>.value</em> .waSwitch() <a href="{$wa_app_url}component/switch/">.switch</a>,</li>
         <li><code>.name<strong>.middle</strong></code> и <code>.value<strong>.middle</strong></code>: для вертикального центрирования содержимого ячеек.</li>
     </ul>
 

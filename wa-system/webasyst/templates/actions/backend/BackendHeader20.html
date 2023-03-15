@@ -122,18 +122,20 @@
             {/if}
 
             {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard}
-                <!-- <a href="#" class="button nobutton gray"><i class="fas fa-sliders-h"></i> Customize</a> -->
+                {if $wa->user()->getRights('installer', 'backend')}
+                    <a href="{$backend_url}installer/store/?filters[type]=app"class="button light-gray rounded nowrap"><i class="fas fa-plus-circle"></i> <span>[s`Apps`]</span></a>
+                {/if}
                 <div class="dashboard-customize">
                     <a href="javascript:void(0);"
                        class="button nobutton rounded nowrap gray js-dashboard-edit"
                        data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
                        id="show-dashboard-editable-mode_">
-                        <i class="fas fa-plus-circle"></i> <span>[s`Widgets`]</span>
+                        <i class="fas fa-sliders-h"></i> <span>[s`Widgets`]</span>
                     </a>
                     <a href="javascript:void(0);"
                        class="button js-dashboard-edit-close"
                        style="display: none;">
-                        <i class="fas fa-check"></i> <span>[s`Done`]</span>
+                        <span>[s`Done`]</span>
                     </a>
                 </div>
             {/if}
@@ -255,8 +257,13 @@
             {if $wa->isMobile()}
                 userprofile_options.hover = false;
             {/if}
-            $("#wa-userprofile").waDropdown(userprofile_options);
+            const $userprofile = $("#wa-userprofile");
+            $userprofile.waDropdown(userprofile_options);
 
+            $userprofile.on('click', 'a', function () {
+                $(this).off('click');
+                this.click();
+            })
         });
     </script>
 

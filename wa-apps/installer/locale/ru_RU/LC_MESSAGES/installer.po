@@ -253,10 +253,10 @@ msgstr "Виджет «<strong>%s</strong>»"
 msgid "This widget will be updated automatically when you update %s app."
 msgstr "Виджет будет обновлен автоматически при установке обновления приложения «%s»."
 
-msgid "Can not delete system application's widgets \"%s\""
+msgid "Cannot delete system app’s widgets \"%s\""
 msgstr "Ошибка удаления виджетов системного приложения «%s»"
 
-msgid "Can not delete inbuilt application's widgets \"%s\""
+msgid "Cannot delete built-in app’s widgets \"%s\""
 msgstr "Ошибка удаления виджетов системного приложения «%s»"
 
 msgid "Gathering information about available updates..."
@@ -526,3 +526,20 @@ msgstr "Удаление темы дизайна «%s» для приложен�
 msgid "Never show again"
 msgstr "Больше не показывать"
 
+msgid "App plugin %s has been deleted."
+msgid_plural "App plugins %s have been deleted."
+msgstr[0] "Плагин %s удален."
+msgstr[1] "Плагины %s удалены."
+msgstr[2] "Плагины %s удалены."
+
+msgid "App widget %s has been deleted."
+msgid_plural "App widgets %s have been deleted."
+msgstr[0] "Виджет %s удален."
+msgstr[1] "Виджеты %s удалены."
+msgstr[2] "Виджеты %s удалены."
+
+msgid "App theme %s has been deleted."
+msgid_plural "App themes %s have been deleted."
+msgstr[0] "Тема дизайна %s удалена."
+msgstr[1] "Темы дизайна %s удалены."
+msgstr[2] "Темы дизайна %s удалены."

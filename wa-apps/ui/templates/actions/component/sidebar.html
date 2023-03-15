@@ -148,9 +148,8 @@
 <p>Ширина сайдбара по умолчанию — 13rem (208 пикселей).</p>
 <p>Управлять шириной сайдбара можно, либо явно задавая <code>div class="sidebar" style="width: ...;"</code> для элемента <code>.sidebar</code>, либо с помощью дополнительных классов <code>.sidebar<strong>.width-XXrem</strong></code>, где XX указывает ширину в rem и принимает значения от от 10 до 26, например: <code>.sidebar.width-15rem</code>.</p>
 <p><code>.sidebar<strong>.width-auto</strong></code> сделает ширину рассчитываемой автоматически в зависимости от внутреннего контента.</p>
-<p>Назначение <code>.sidebar<strong>.width-adaptive</strong></code> (или <code>.sidebar<strong>.width-adaptive-wider</strong></code>) сделает ширину изменяемой в зависимости от типа устройства: по умолчанию 13rem (16rem), на планшетах 11rem (13rem), на широких десктоп-дисплеях — 16rem (19rem).</p>
-
-    <p><em><b class="highlighted green">TODO:</b> Сделать опциональный JavaScript-механизм для ресайза сайдбара драг-н-дропом <b>.width-resizable</b>, который будет запоминать его ширину в localStorage браузера для данного конкретного приложения. Только для десктопов.</em></p>
+<p>Назначение <code>.sidebar<strong>.width-adaptive</strong></code> (или <code>.sidebar<strong>.width-adaptive-wider</strong></code> или <code>.sidebar<strong>.width-adaptive-widest</strong></code>) сделает ширину изменяемой в зависимости от типа устройства: по умолчанию 13rem (16rem, 22rem), на планшетах 12rem (14rem, 19rem), на широких десктоп-дисплеях — 15rem (19rem, 25rem соответственно).</p>
+<p>Если в навигации присутствует второй сайдбар (см. пример в приложениях «Задачи» и в списке заказов в Shop-Script), для него рекомендуется использовать вариант <code>.sidebar<strong>.width-adaptive-widest</strong></code>.</p>
 
 <div class="u-example-section">
 

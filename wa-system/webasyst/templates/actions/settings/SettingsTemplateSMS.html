@@ -11,7 +11,7 @@
                 <form class="s-template-form fields vertical" action="?module=settingsTemplateSMSSave&id={$channel->getId()|escape}">
                     <div class="s-sms-templates">
                         <h1 class="s-template-name">{$channel->getName()|escape}</h1>
-                        <div class="fields-group">
+                        <div class="fields-group blank">
                             <div class="field">
                                 <div class="name">[s`Template group name`]</div>
                                 <div class="value">
@@ -147,7 +147,7 @@
     <form action="?module=settingsTemplateCheckSending" class="dialog-body">
         <h4 class="dialog-header">[s`Checking the sending of SMS messages`]</h4>
         <div class="dialog-content fields">
-                <div class="fields-group">
+                <div class="fields-group blank">
                     {* Recipient *}
                     <div class="field s-recipient-field">
                         <div class="name">[s`Recipient's phone number`]</div>

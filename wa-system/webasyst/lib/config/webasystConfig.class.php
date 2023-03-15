@@ -279,30 +279,63 @@ class webasystConfig extends waAppConfig
 
     public function dispatchAppToken($data)
     {
-        $app_tokens_model = new waAppTokensModel();
+        try {
+            if ($data['type'] === 'webasyst_id_invite') {
+                return $this->dispatchAppTokenWebasystIdInvite($data);
+            } else if ($data['type'] === 'waid_connect') {
+                return $this->dispatchAppTokenWaidConnect($data);
+            }
 
-        // Unknown token type?
-        if ($data['type'] != 'webasyst_id_invite') {
-            $app_tokens_model->deleteById($data['token']);
             throw new waException("Page not found", 404);
+        } catch (waException $e) {
+            // When token is unknown or errs, make sure to delete it from DB
+            (new waAppTokensModel())->deleteById($data['token']);
+            throw $e;
         }
+    }
 
-        // Make sure contact is still ok
+    // One-time link to start WAID binding process. Redirects backend user to WAID server for authorization.
+    protected function dispatchAppTokenWebasystIdInvite($data)
+    {
+        // Make sure user is still ok
         $contact = new waContact($data['contact_id']);
         if (!$contact->exists() || $contact['is_user'] < 0) {
-            $app_tokens_model->deleteById($data['token']);
             throw new waException("Page not found", 404);
         }
 
+        // This is a one-time token
+        (new waAppTokensModel())->deleteById($data['token']);
+
+        // log in as user
         $auth = wa()->getAuth();
         $auth->auth(['id' => $contact->getId()]);
 
-        $webasyst_id_auth = new waWebasystIDWAAuth();
-
         // bind webasyst id
+        $webasyst_id_auth = new waWebasystIDWAAuth();
         $url = $webasyst_id_auth->getUrl();
         wa()->getResponse()->redirect($url);
+    }
 
+    // Called by WAID server to finish WAID binding for exsting user.
+    protected function dispatchAppTokenWaidConnect($data)
+    {
+        // Make sure user is still ok
+        $contact = new waContact($data['contact_id']);
+        if (!$contact->exists() || $contact['is_user'] < 0) {
+            throw new waException("Page not found", 404);
+        }
+
+        // This is a one-time token
+        (new waAppTokensModel())->deleteById($data['token']);
+
+        // Bind
+        $webasyst_contact_id = waRequest::request('webasyst_contact_id', null, 'int');
+        if ($webasyst_contact_id) {
+            $contact_waid_model = new waContactWaidModel();
+            $contact_waid_model->set($contact['id'], $webasyst_contact_id, []);
+        }
+
+        wa()->getResponse()->setStatus(204);
+        wa()->getResponse()->sendHeaders();
     }
 }
-

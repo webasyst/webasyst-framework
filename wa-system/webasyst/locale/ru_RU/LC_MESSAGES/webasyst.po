@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-12-07 10:17+0300\n"
+"PO-Revision-Date: 2023-03-03 13:18+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 3.1.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4420,7 +4420,7 @@ msgstr "Тип капчи"
 msgid "Invisible mode"
 msgstr "Невидимый режим"
 
-msgid "Get site key and secret for your website"
+msgid "Get values for your website"
 msgstr "Получить значения для своего сайта"
 
 msgid "Website address"
@@ -6672,3 +6672,18 @@ msgstr "Возвращает массив данных опубликованн�
 
 msgid "Returns the current page’s title."
 msgstr "Возвращает текущий заголовок страницы."
+
+msgid "Yandex SmartCaptcha"
+msgstr ""
+
+msgid "Client key"
+msgstr "Ключ клиента"
+
+msgid "https://cloud.yandex.com/en/services/smartcaptcha"
+msgstr "https://cloud.yandex.ru/services/smartcaptcha"
+
+msgid "Team calendar"
+msgstr "Календарь команды"
+
+msgid "<strong>More profile and account authentication features are available in the Team app.</strong> Contact your Webasyst admin for access."
+msgstr "<strong>В приложении «Команда» есть дополнительные полезные функции управления профилем и авторизацией.</strong> Обратитесь к администратору Webasyst по поводу доступа."

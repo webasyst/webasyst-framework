@@ -83,6 +83,7 @@ return array(
         'company_contact_id' => array('int', 11, 'null' => 0, 'default' => '0'),
         'is_company' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
         'is_user' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
+        'is_staff' => array('int', 11, 'null' => 0, 'default' => '0'),
         'login' => array('varchar', 32),
         'password' => array('varchar', 128, 'null' => 0, 'default' => ''),
         'last_datetime' => array('datetime'),
@@ -102,6 +103,8 @@ return array(
             'PRIMARY' => 'id',
             'login' => array('login', 'unique' => 1),
             'name' => 'name',
+            'is_user' => 'is_user',
+            'is_staff' => 'is_staff'
         ),
     ),
     'wa_contact_auths' => array(

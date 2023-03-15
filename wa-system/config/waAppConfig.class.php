@@ -282,62 +282,85 @@ class waAppConfig extends SystemConfig
         }
         if (!empty($app_settings_model)) {
             $time = $app_settings_model->get($this->application, 'update_time', null);
+            $locking_model = $app_settings_model;
+        } else {
+            $locking_model = new waModel();
         }
 
-        // Install the app and remember to skip all updates
-        // if this is the first launch.
-        $is_first_launch = false;
-        if (empty($time)) {
-            $time = null;
-            $is_first_launch = true;
+        try {
+            // Install the app and remember to skip all updates
+            // if this is the first launch.
+            $is_first_launch = false;
+            if (empty($time)) {
+                $time = null;
+                $is_first_launch = true;
 
-            waConfig::set('disable_exception_log', true);
-            waConfig::set('is_template', null);
-            try {
-                $this->install();
-            } catch (waException $e) {
-                waLog::log("Error installing application ".$this->application." at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                throw $e;
-            } finally {
-                waConfig::set('disable_exception_log', $disable_exception_log);
-                waConfig::set('is_template', $is_from_template);
+                waConfig::set('disable_exception_log', true);
+                waConfig::set('is_template', null);
+                try {
+                    // To avoid running install.php multiple times in parallel, obtain a named lock
+                    // and then read update_time again because it might have changed in another thread
+                    $locking_model->exec("SELECT GET_LOCK(?, -1)", ['wa_init_app_'.$this->application]);
+                    if (!empty($app_settings_model)) {
+                        $app_settings_model->clearCache($this->application);
+                        $time = $app_settings_model->get($this->application, 'update_time', null);
+                    }
+                    if (!$time) {
+                        $this->install();
+                    } else {
+                        // All work has already been done in another thread.
+                        return;
+                    }
+                } catch (waException $e) {
+                    waLog::log("Error installing application ".$this->application." at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                    throw $e;
+                } finally {
+                    waConfig::set('disable_exception_log', $disable_exception_log);
+                    waConfig::set('is_template', $is_from_template);
+                }
+
+                if (empty($app_settings_model)) {
+                    $app_settings_model = new waAppSettingsModel();
+                }
+            }
+
+            // Use cache to skip slow filesystem-based scanning for updates
+            if (!self::isDebug()) {
+                $cache = new waVarExportCache('updates', -1, $this->application);
+                if ($time && $cache->isCached() && $cache->get() <= $time) {
+                    return;
+                }
+            }
+
+            // Scan for app updates
+            $files = $this->getUpdateFiles($this->getAppPath().'/lib/updates', $time);
+            if ($files) {
+                $keys = array_keys($files);
+                $last_update_ts = end($keys);
+            } else {
+                $last_update_ts = 1;
+            }
+
+            // Remember last update file in cache
+            if (!empty($cache)) {
+                $cache->set($last_update_ts);
             }
 
             if (empty($app_settings_model)) {
                 $app_settings_model = new waAppSettingsModel();
             }
-        }
 
-        // Use cache to skip slow filesystem-based scanning for updates
-        if (!self::isDebug()) {
-            $cache = new waVarExportCache('updates', -1, $this->application);
-            if ($time && $cache->isCached() && $cache->get() <= $time) {
-                return;
+            if ($is_first_launch) {
+                // Updates are all skipped on app's first launch with install.php
+                $app_settings_model->set($this->application, 'update_time', $last_update_ts);
+            }
+        } finally {
+            if ($is_first_launch) {
+                $locking_model->exec("SELECT RELEASE_LOCK(?)", ['wa_init_app_'.$this->application]);
             }
         }
 
-        // Scan for app updates
-        $files = $this->getUpdateFiles($this->getAppPath().'/lib/updates', $time);
-        if ($files) {
-            $keys = array_keys($files);
-            $last_update_ts = end($keys);
-        } else {
-            $last_update_ts = 1;
-        }
-
-        // Remember last update file in cache
-        if (!empty($cache)) {
-            $cache->set($last_update_ts);
-        }
-
-        if (empty($app_settings_model)) {
-            $app_settings_model = new waAppSettingsModel();
-        }
-
-        if ($is_first_launch) {
-            // Updates are all skipped on app's first launch with install.php
-            $app_settings_model->set($this->application, 'update_time', $last_update_ts);
-        } elseif ($files) {
+         if (!$is_first_launch && $files) {
             if (!$this->loaded_locale) {
                 // Force load locale
                 $this->setLocale(wa()->getLocale());
@@ -346,7 +369,16 @@ class waAppConfig extends SystemConfig
             waConfig::set('is_template', null);
             $cache_database_dir = $this->getPath('cache').'/db';
             try {
+                // To avoid running meta-updates in parallel, obtain a named lock
+                // and then read update_time again because it might have changed in another thread
+                $locking_model->exec("SELECT GET_LOCK(?, -1)", ['wa_init_app_'.$this->application]);
+                $app_settings_model->clearCache($this->application);
+                $time = $app_settings_model->get($this->application, 'update_time', null);
+
                 foreach ($files as $t => $file) {
+                    if ($time >= $t) {
+                        continue;
+                    }
                     try {
 
                         if (waSystemConfig::isDebug()) {
@@ -364,6 +396,7 @@ class waAppConfig extends SystemConfig
             } finally {
                 waConfig::set('disable_exception_log', $disable_exception_log);
                 waConfig::set('is_template', $is_from_template);
+                $locking_model->exec("SELECT RELEASE_LOCK(?)", ['wa_init_app_'.$this->application]);
             }
         }
 
@@ -967,6 +1000,7 @@ class waAppConfig extends SystemConfig
             $plugins = array_merge($a, [$plugin => $all_plugins[$plugin]], $c);
             if (waUtils::varExportToFile($plugins, $path)) {
                 waFiles::delete(waConfig::get('wa_path_cache').'/apps/'.$this->application.'/config', true);
+                waFiles::delete(waConfig::get('wa_path_cache').'/apps/system/waEvent/cache/handlers.php', true);
             } else {
                 throw new waException("Fail while update plugins sort order");
             }

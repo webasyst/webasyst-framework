@@ -26,7 +26,7 @@
 
     {if $is_connected}
         <div class="fields">
-            <div class="fields-group">
+            <div class="fields-group blank">
                 <div class="js-force-auth-wrapper">
                     <input type="hidden" name="is_force_auth" value="0">
 
@@ -51,8 +51,8 @@
                 <div class="hint">[s`When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation. Newly added users will get connected to Webasyst ID right away.`]</div>
             </div>
 
-        {if $not_connected_users}
-            <div class="fields-group s-waid-not-connected-users-block">
+        {if $not_connected_users && $block_show}
+            <div class="fields-group blank s-waid-not-connected-users-block">
                 <h4>
                     <em>
                         [s`Pending upgrade to Webasyst ID`]
@@ -142,8 +142,8 @@
                 {/if}
             </div>
         {/if}
-        {if $connected_users}
-            <div class="fields-group">
+        {if $connected_users && $block_show}
+            <div class="fields-group blank">
                 <h4>
                     [s`Successfully upgraded to Webasyst ID`]
                     {if $users_count == $connected_users_count}
@@ -178,22 +178,30 @@
                                 <div><a href="{$user.link}">{$user.name|escape}</a><i class="shortener"></i></div>
                             </td>
                             <td>
-                                <div><a href="{$user.link}" class="bold nowrap">
-                                    <img class="icon baseline" src="/wa-content/img/webasyst-wand-bold.svg" alt="">
-                                    {$user.webasyst_id|escape}</a><i class="shortener"></i></div>
+                                <a href="{$user.link}" class="bold nowrap">
+                                    <img class="icon baseline custom-mr-4" src="/wa-content/img/webasyst-wand-bold.svg" alt="">
+                                    <span class="flexbox flexbox-inline vertical">
+                                        {if (!empty($user.webasyst_id['email']))}
+                                            <span>{$user.webasyst_id['email']|escape}</span>
+                                        {/if}
+                                        {if (!empty($user.webasyst_id['phone']))}
+                                            <span>{$user.webasyst_id['phone']|escape}</span>
+                                        {/if}
+                                    </span>
+                                </a>
                             </td>
-                            <td class="align-center">{* $user.waid_create_datetime|wa_date:'humandatetime' *}
-                                <i class="fas fa-check text-green"></i>
+                            <td class="align-center">
+                                <i class="fas fa-check text-green" title="{sprintf_wp('Last sign in with Webasyst ID: %s', $user.waid_create_datetime|wa_date:'humandatetime')}"></i>
                             </td>
                             <td class="align-center">
                                 {if $user.two_fa_mode && $user.two_fa_time}
-                                    {$user.two_fa_time|wa_date:'humandatetime'}
+                                    <i class="fas fa-check text-green" title="{sprintf_wp('Last 2FA verification: %s', $user.two_fa_time|wa_date:'humandatetime')}"></i>
                                 {else}
                                     <i class="fas fa-times text-grey"></i>
                                 {/if}
                             </td>
                             <td class="align-center">
-                                <button title="[s`Auth log`]" class="js-dialog-log button light-gray small blue" data-id="{$user.id}" data-name="{$user.name|escape}">[s`Log`]</button>
+                                <button title="[s`Auth log`]" class="js-dialog-log button light-gray small blue" data-id="{$user.id}" data-name="{$user.name|escape}" data-2fa="{$user.two_fa_time|wa_date:'humandatetime'}">[s`Log`]</button>
                             </td>
                         </tr>
                     {/foreach}
@@ -208,7 +216,7 @@
         <div class="js-dialog-html">
             <div class="dialog">
                 <div class="dialog-background"></div>
-                <div class="dialog-body">
+                <div class="dialog-body" style="width: 50rem">
                     <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
                     <header class="dialog-header"><h6>
                         <div class="large gray custom-mb-8">[s`Auth log`]</div>
@@ -219,8 +227,9 @@
                             <thead>
                                 <tr>
                                     <th>[s`Date`]</th>
-                                    <th class="align-center">[s`Webasyst ID`]</th>
-                                    <th class="align-center">[s`Sign-in with 2FA`]</th>
+                                    <th class="align-center nowrap">[s`Webasyst ID`]</th>
+                                    <th class="align-center nowrap">[s`Sign-in with 2FA`]</th>
+                                    <th class="align-center nowrap">[s`User-Agent`]</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -239,7 +248,7 @@
         <div class="fields">
             <!-- <h4>[s`Allow users to use their Webasyst ID accounts to sign into the backend:`]</h4> -->
 
-            <div class="fields-group">
+            <div class="fields-group blank">
                 <div class="field">
                     <div class="value">
                         <input type="button" class="button rounded larger green gradient custom-mt-8 js-connect-to-waid" value="[s`Enable Webasyst ID`]">
@@ -288,25 +297,40 @@
                 locale: {$_locale|json_encode},
             });
 
+            const alert2fa = user_2fa => {
+                let alert;
+                if (user_2fa){
+                    alert = `<span class="alert success"><i class="fas fa-check text-green custom-mr-4"></i> {sprintf_wp('The user has Webasyst ID two-factor authentication protection enabled! Last 2FA code verification: <b>%s</b>', '${ user_2fa }')}</span>`;
+                }else{
+                    alert = `<span class="alert"><i class="fas fa-times text-red custom-mr-4"></i> {sprintf_wp('Two-factor authentication is not enabled! In security concerns, it is highly recommended that the user enable 2FA in his Webasyst ID profile: %s', '<a href="https://www.webasyst.com/my/" target="_blank">https://www.webasyst.com/my/</a>')}</span>`;
+                }
+                return alert;
+            };
+
             $('.js-dialog-log').on('click', function () {
                 let page = 0;
                 let next = true;
                 let _switch = false;
                 let scroll_position = 0;
                 let user_id = $(this).data('id') || null;
+                let user_2fa = $(this).data('2fa') || null;
                 let user_name = escapeHtml($(this).data('name') || '');
+                let is_backend_auth_forced = $('.js-force-auth-toggler').is(':checked');
+
                 let dialog = $.waDialog({
-                    position: function () {
+                    position: function (dialog_instance) {
                         let win_w = window.innerWidth;
                         let win_h = window.innerHeight;
                         let _t = Math.floor((win_h - 490) / 2);
-                        let _l = Math.floor((win_w - 600) / 2);
+                        let _l = Math.floor((win_w - dialog_instance.$block.width()) / 2);
 
                         return { top: (_t < 0 ? 0 : _t), left: (_l < 0 ? 0 : _l) };
                     },
                     html: $('.js-dialog-html').html(),
                     onOpen: function ($dialog, dialog_instance) {
+
                         $dialog.find('header h6 .js-user-name').html(user_name);
+                        dialog_instance.$content.prepend(alert2fa(user_2fa));
                         let get_user_log = function (dialog, page) {
                             dialog.find('.spinner').show();
                             $.ajax({
@@ -323,17 +347,17 @@
                                 data = data.data || { };
                                 next = data.next || false;
                                 if (typeof data.errors !== 'undefined') {
-                                    html = '<tr><td colspan="3">Ошибка</td></tr>';
+                                    html = '<tr><td colspan="4">Ошибка</td></tr>';
                                 } else {
                                     for (let indx in data.data) {
-                                        html += '<tr><td>'+ data.data[indx]['datetime'] + '</td><td class="align-center">';
+                                        html += '<tr><td class="nowrap">'+ data.data[indx]['datetime'] + '</td><td class="align-center">';
                                         if (data.data[indx]['waid_auth']) {
                                             html += '<i class="fas fa-check text-green"></i>';
                                         } else {
-                                            html += '<i class="fas fa-times text-grey"></i>';
+                                            html += '<i class="fas fa-' + (is_backend_auth_forced ? `check` : `times`) + ' text-grey"></i>';
                                         }
-                                        html += '</td><td class="align-center">';
-                                        
+                                        html += '</td><td class="align-center nowrap">';
+
                                         if (data.data[indx]['params']['two_fa_mode']) {
                                             if (data.data[indx]['params']['two_fa_time']) {
                                                 html += data.data[indx]['params']['two_fa_time'];
@@ -343,7 +367,13 @@
                                         } else {
                                             html += '<i class="fas fa-times text-grey"></i>';
                                         }
-                                        html += '</td></tr>';
+                                        html += '</td>';
+                                        if (data.data[indx]?.['params']?.['user-agent']) {
+                                            html += '<td class="small">' + data.data[indx]?.['params']['user-agent'] + '</td>';
+                                        }else{
+                                            html += '<td class="align-center"> - </td>';
+                                        }
+                                        html += '</tr>';
                                     }
                                 }
                                 $dialog.find('.js-log-table tbody').append(html);

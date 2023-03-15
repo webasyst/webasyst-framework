@@ -47,7 +47,7 @@ class WASettingsFieldEdit {
             let $el = $(this).find('option:selected'),
                 id = $el.data('id'),
                 region = $el.data('name-region'),
-                $main_wrapper = $form.find('.s-local-input-wrapper'),
+                $main_wrapper = $form.find('.s-local-input-wrapper').last(),
                 $clone = $main_wrapper.clone();
 
             $clone
@@ -67,10 +67,12 @@ class WASettingsFieldEdit {
                 .end()
                 .insertAfter($main_wrapper);
 
-            $el.closest('li').hide();
-
-            if ($form.find('.js-name-another-language:not(:hidden)').length <= 0) {
-                $form.find('.js-name-another-language-wrapper').hide();
+            $el.hide();
+            var count_hidden = $form.find('.js-name-another-language').filter(function() {
+                return $(this).css('display') === 'none';
+            }).length;
+            if ($form.find('.js-name-another-language').length === count_hidden) {
+                $el.closest('li').hide();
             }
         });
 

@@ -128,6 +128,13 @@
                                 $(this).closest('td').css('visibility', 'visible')
                             });
                         }
+
+                        const $app_stuffs = $('#i-assets-list').find('[data-app-id="' + app_id + '"]');
+                        if ($app_stuffs.length) {
+                            $app_stuffs.each(function() {
+                                $(this).closest('td').css('visibility', 'visible')
+                            });
+                        }
                     }
                 } else {
                     $link.siblings('.js-switch-enable').show()
@@ -138,6 +145,13 @@
                         const $app_plugins = $('#i-assets-list').find('[data-type="enable"][data-data^="app_id=' + app_id + '&plugin_id="]');
                         if ($app_plugins.length) {
                             $app_plugins.each(function() {
+                                $(this).closest('td').css('visibility', 'hidden')
+                            });
+                        }
+
+                        const $app_stuffs = $('#i-assets-list').find('[data-app-id="' + app_id + '"]');
+                        if ($app_stuffs.length) {
+                            $app_stuffs.each(function() {
                                 $(this).closest('td').css('visibility', 'hidden')
                             });
                         }

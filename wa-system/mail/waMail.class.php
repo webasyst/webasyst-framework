@@ -106,21 +106,14 @@ class waMail extends Swift_Mailer
      */
     public static function getTransportByEmail($email)
     {
-        $email = mb_strtolower($email);
+        $email = waIdna::dec(mb_strtolower($email));
         if (!isset(self::$wa_config['transport'])) {
             self::$wa_config['transport'] = wa()->getConfig()->getConfigFile('mail');
         }
 
-        $config = array();
-        if (isset(self::$wa_config['transport'][$email])) {
-            $config = self::$wa_config['transport'][$email];
-        } else {
-            $email_parts = explode('@', $email);
-            if (isset($email_parts[1]) && isset(self::$wa_config['transport'][$email_parts[1]])) {
-                $config = self::$wa_config['transport'][$email_parts[1]];
-            } elseif (isset(self::$wa_config['transport']['default'])) {
-                $config = self::$wa_config['transport']['default'];
-            }
+        $config = self::findConfigByEmail($email);
+        if (!$config && isset(self::$wa_config['transport']['default'])) {
+            $config = self::$wa_config['transport']['default'];
         }
         if (!$config || !isset($config['type'])) {
             return Swift_MailTransport::newInstance();
@@ -150,6 +143,39 @@ class waMail extends Swift_Mailer
                 return Swift_MailTransport::newInstance();
             }
         }
+    }
+
+    /**
+     * @param string $email_from
+     * @return mixed|null
+     */
+    protected static function findConfigByEmail($email_from)
+    {
+        $emails = [$email_from];
+        if (mb_strpos($email_from, 'xn--') !== false) {
+            $emails[] = waIdna::dec($email_from);
+        } else {
+            $encoded_email = waIdna::enc($email_from);
+            if ($email_from != $encoded_email) {
+                $emails[] = $encoded_email;
+            }
+        }
+
+        $config = null;
+        foreach ($emails as $email) {
+            if (isset(self::$wa_config['transport'][$email])) {
+                $config = self::$wa_config['transport'][$email];
+                break;
+            } else {
+                $email_parts = explode('@', $email);
+                if (isset($email_parts[1]) && isset(self::$wa_config['transport'][$email_parts[1]])) {
+                    $config = self::$wa_config['transport'][$email_parts[1]];
+                    break;
+                }
+            }
+        }
+
+        return $config;
     }
 
     public static function getDefaultFrom($sender = true)

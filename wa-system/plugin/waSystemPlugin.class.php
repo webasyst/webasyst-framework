@@ -17,6 +17,7 @@
  * See: waAppShipping and waAppPayment (both inherit from waiPluginApp);
  * waShipping->getAdapter() and waPayment->getAdapter().
  */
+#[\AllowDynamicProperties]
 abstract class waSystemPlugin
 {
     /**
@@ -390,16 +391,20 @@ abstract class waSystemPlugin
     private static function __w($string, $type, $id, $path)
     {
         static $domains = array();
+
+        // Load system plugin locale unless already loaded
         $domain = sprintf('%s_%s', $type, $id);
-        if (!isset($domains[$domain])) {
+        $locale = waLocale::getLocale();
+        if (!isset($domains[$domain][$locale])) {
             $locale_path = $path.'/locale';
-            if ($domains[$domain] = file_exists($locale_path)) {
-                waLocale::load(waLocale::getLocale(), $locale_path, $domain, false);
+            $domains[$domain][$locale] = file_exists($locale_path);
+            if ($domains[$domain][$locale]) {
+                waLocale::load($locale, $locale_path, $domain, false);
             }
         }
 
         $args = (array)$string;
-        if ($domains[$domain]) {
+        if ($domains[$domain][$locale]) {
             array_unshift($args, $domain);
             $string = call_user_func_array('_wd', $args);
         } else {
@@ -811,76 +816,105 @@ abstract class waSystemPlugin
 
     protected function checkUpdates()
     {
-        $time = $this->getGeneralSettings('update_time', null);
-
-        // Install the plugin and remember to skip all updates
-        // if this is the first launch.
-        $is_first_launch = false;
         $is_from_template = waConfig::get('is_template');
-        if (empty($time)) {
-            $time = null;
-            $is_first_launch = true;
+        $disable_exception_log = waConfig::get('disable_exception_log');
+        waConfig::set('is_template', null);
 
-            try {
-                waConfig::set('is_template', null);
-                $this->install();
-                waConfig::set('is_template', $is_from_template);
-            } catch (waException $e) {
-                waLog::log("Error installing {$this->type} plugin {$this->id} at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                waConfig::set('is_template', $is_from_template);
-                throw $e;
-            }
-        }
+        $locking_model = $app_settings_model = new waAppSettingsModel();
+        $time = $app_settings_model->get($this->getGeneralSettingsKey(), 'update_time', null);
 
-        // Use cache to skip slow filesystem-based scanning for updates
-        if (!SystemConfig::isDebug()) {
-            $cache = new waVarExportCache('updates', -1, $this->getGeneralSettingsKey());
-            if ($time && $cache->isCached() && $cache->get() <= $time) {
-                return;
-            }
-        }
+        try {
 
-        // Scan for app updates
-        $files = $this->getUpdateFiles(self::getPath($this->type, $this->id, 'lib/updates'), $time);
-        if ($files) {
-            $keys = array_keys($files);
-            $last_update_ts = end($keys);
-        } else {
-            $last_update_ts = 1;
-        }
+            // Install the plugin and remember to skip all updates
+            // if this is the first launch.
+            $is_first_launch = false;
+            if (empty($time)) {
+                $time = null;
+                $is_first_launch = true;
 
-        // Remember last update file in cache
-        if (!empty($cache)) {
-            $cache->set($last_update_ts);
-        }
+                // To avoid running install.php multiple times in parallel, obtain a named lock
+                // and then read update_time again because it might have changed in another thread
+                $locking_model->exec("SELECT GET_LOCK(?, -1)", ["wa_init_sysplugin_".$this->getGeneralSettingsKey()]);
+                $app_settings_model->clearCache($this->getGeneralSettingsKey());
+                $time = $app_settings_model->get($this->getGeneralSettingsKey(), 'update_time', null);
 
-        if ($is_first_launch) {
-            // Updates are all skipped on app's first launch with install.php
-            $this->setGeneralSettings('update_time', $last_update_ts);
-
-        } elseif ($files) {
-            waConfig::set('is_template', null);
-            $cache_database_dir = wa()->getConfig()->getPath('cache').'/db';
-            foreach ($files as $t => $file) {
                 try {
-
-                    if (SystemConfig::isDebug()) {
-                        waLog::dump(sprintf('Try include file %s by %s plugin %s', $file, $this->type, $this->id), 'meta_update.log');
+                    if (!$time) {
+                        waConfig::set('disable_exception_log', true);
+                        $this->install();
+                    } else {
+                        // All work has already been done in another thread.
+                        return;
                     }
-
-                    $this->includeCode($file);
-                    waFiles::delete($cache_database_dir, true);
-                    $this->setGeneralSettings('update_time', $t);
-                } catch (Exception $e) {
-                    if (SystemConfig::isDebug()) {
-                        echo $e;
-                    }
-                    // log errors
-                    waLog::log("Error running update of {$this->type} plugin {$this->id}: {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                    break;
+                } catch (waException $e) {
+                    waLog::log("Error installing {$this->type} plugin {$this->id} at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                    throw $e;
                 }
             }
+
+            // Use cache to skip slow filesystem-based scanning for updates
+            if (!SystemConfig::isDebug()) {
+                $cache = new waVarExportCache('updates', -1, $this->getGeneralSettingsKey());
+                if ($time && $cache->isCached() && $cache->get() <= $time) {
+                    return;
+                }
+            }
+
+            // Scan for app updates
+            $files = $this->getUpdateFiles(self::getPath($this->type, $this->id, 'lib/updates'), $time);
+            if ($files) {
+                $keys = array_keys($files);
+                $last_update_ts = end($keys);
+            } else {
+                $last_update_ts = 1;
+            }
+
+            // Remember last update file in cache
+            if (!empty($cache)) {
+                $cache->set($last_update_ts);
+            }
+
+            if ($is_first_launch) {
+                // Updates are all skipped on app's first launch with install.php
+                $this->setGeneralSettings('update_time', $last_update_ts);
+
+            } elseif ($files) {
+
+                // To avoid running meta-updates in parallel, obtain a named lock
+                // and then read update_time again because it might have changed in another thread
+                $locking_model->exec("SELECT GET_LOCK(?, -1)", ["wa_init_sysplugin_".$this->getGeneralSettingsKey()]);
+                $app_settings_model->clearCache($this->getGeneralSettingsKey());
+                $time = $app_settings_model->get($this->getGeneralSettingsKey(), 'update_time', null);
+
+                $cache_database_dir = wa()->getConfig()->getPath('cache').'/db';
+                waConfig::set('disable_exception_log', true);
+                foreach ($files as $t => $file) {
+                    if ($time >= $t) {
+                        continue;
+                    }
+                    try {
+
+                        if (SystemConfig::isDebug()) {
+                            waLog::dump(sprintf('Try include file %s by %s plugin %s', $file, $this->type, $this->id), 'meta_update.log');
+                        }
+
+                        $this->includeCode($file);
+                        waFiles::delete($cache_database_dir, true);
+                        $this->setGeneralSettings('update_time', $t);
+                    } catch (Exception $e) {
+                        // log errors
+                        waLog::log("Error running update of {$this->type} plugin {$this->id}: {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                        throw new waException(sprintf(_ws('Error while running update of %s.%s plugin: %s'), $this->type, $this->id, $file), 500, $e);
+                    }
+                }
+            }
+
+        } finally {
             waConfig::set('is_template', $is_from_template);
+            waConfig::set('disable_exception_log', $disable_exception_log);
+            if (!empty($is_first_launch) || !empty($files)) {
+                $locking_model->exec("SELECT RELEASE_LOCK(?)", ["wa_init_sysplugin_".$this->getGeneralSettingsKey()]);
+            }
         }
     }
 

@@ -85,6 +85,7 @@ class installerUpdateManagerAction extends waViewAction
                     waInstallerApps::ACTION_UPDATE,
                 );
 
+                $count_installer_dependencies = 0;
                 foreach ($items as $app_id => $info) {
                     if (!empty($info['download_url'])
                         && !empty($info['applicable'])
@@ -98,6 +99,7 @@ class installerUpdateManagerAction extends waViewAction
                                 $_info['name'] = _w('Webasyst framework').' ('.$target.')';
                                 $this->add($target, $_info);
                                 $queue_apps[$target] = $_info;
+                                $count_installer_dependencies++;
                                 unset($_info);
                             }
                         } else {
@@ -179,6 +181,7 @@ class installerUpdateManagerAction extends waViewAction
 
                 $this->view->assign('action', 'update');
                 $this->view->assign('queue_apps', $queue_apps);
+                $this->view->assign('count_installer_dependencies', $count_installer_dependencies);
                 $this->view->assign('install', !empty($this->is_install) ? 'install' : '');
                 $this->view->assign('trial', !empty($this->is_trial) ? 'trial' : '');
                 $this->view->assign('title', _w('Updates'));

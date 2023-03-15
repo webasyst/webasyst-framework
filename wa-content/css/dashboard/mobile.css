@@ -70,6 +70,9 @@ html.mobile #wa-app .content .dashboard-apps ul li a {
   font-size: 0.875rem;
   line-height: 1.2;
   text-decoration: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 html.mobile #wa-app .content .dashboard-apps ul li a img {
   display: block;

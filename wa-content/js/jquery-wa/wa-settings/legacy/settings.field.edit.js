@@ -48,7 +48,7 @@ var WASettingsFieldEdit = (function ($) {
             var $el = $(this),
                 id = $el.data('id'),
                 region = $el.data('name-region'),
-                $main_wrapper = $form.find('.s-local-input-wrapper'),
+                $main_wrapper = $form.find('.s-local-input-wrapper').last(),
                 $clone = $main_wrapper.clone();
 
             $clone

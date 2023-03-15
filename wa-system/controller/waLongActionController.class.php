@@ -79,6 +79,7 @@
  * @property-read int $max_exec_time
  * @property-read int $isRunner
  */
+#[\AllowDynamicProperties]
 abstract class waLongActionController extends waController
 {
     const TYPE_RUNNER = 'runner';

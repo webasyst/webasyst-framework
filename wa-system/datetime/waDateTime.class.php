@@ -490,7 +490,7 @@ class waDateTime
             $info[$k] = $values[$i];
         }
 
-        $date_format = empty(array_diff_key(array_flip(['Y', 'm', 'd']), $info));
+        $date_format = empty(array_diff_key($info, array_flip(['Y', 'm', 'd'])));
         if (!isset($info['s'])) {
             $info['s'] = '00';
         }

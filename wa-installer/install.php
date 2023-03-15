@@ -510,8 +510,10 @@ HTML;
             $cwd     = getcwd();
             $installer = new waInstaller(waInstaller::LOG_DEBUG);
             if (empty($_POST['complete'])) {
-                $local_path = dirname(dirname(__FILE__)).'/wa-sources/';
-                if (!file_exists($local_path) || !is_dir($local_path) || file_exists('.git')) {
+                $local_path = dirname(dirname(__FILE__)).'/';
+                $sources_path = $local_path . 'wa-sources/';
+                $apps_path = $local_path . 'wa-apps/';
+                if (!file_exists($sources_path) || !is_dir($sources_path) || (file_exists('.git') && file_exists($apps_path) && is_dir($apps_path))) {
 
                     //
                     // Install from a GIT repo: no wa-sources dir, no archives,
@@ -524,7 +526,6 @@ HTML;
                     // Search sources relative to root directory, list all apps and plugins
                     // We will need the list to activate them via wa-config/apps.php
                     // and wa-config/apps/*/plugins.php
-                    $local_path = dirname(dirname(__FILE__)).'/';
                     chdir($local_path);
                     $glob_pattern = '{wa-apps/*,wa-apps/*/plugins/*}';
                     _getComponents($glob_pattern,'#^([\\w%0-9\\-!]+)$#', $local_path, $urls, $apps, $plugins, $widgets);
@@ -539,9 +540,9 @@ HTML;
 
                     // Search sources relative to wa-sources directory,
                     // and unzip to appropriate places relative to root directory
-                    chdir($local_path);
+                    chdir($sources_path);
                     $glob_pattern = '{*.tar.gz,wa-apps/*.tar.gz,wa-widgets/*.tar.gz,wa-apps/*/plugins/*.tar.gz,wa-apps/*/themes/*.tar.gz,wa-apps/*/widgets/*.tar.gz,wa-plugins/*/*.tar.gz}';
-                    _getComponents($glob_pattern, '@^([\\w%0-9\\-!]+)\\.tar\\.gz$@', $local_path, $urls, $apps, $plugins, $widgets);
+                    _getComponents($glob_pattern, '@^([\\w%0-9\\-!]+)\\.tar\\.gz$@', $sources_path, $urls, $apps, $plugins, $widgets);
                 }
             }
 

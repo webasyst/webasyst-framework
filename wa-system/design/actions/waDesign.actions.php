@@ -257,7 +257,7 @@ class waDesignActions extends waActions
             $routing_url = wa()->getAppUrl('site');
         }
 
-        $domain = wa()->getRouting()->getDomain();
+        $same_domain = true;
         foreach ($routes as $route) {
             $theme_id = (string)ifempty($route, 'theme', 'default');
             if (!isset($themes[$theme_id])) {
@@ -270,8 +270,9 @@ class waDesignActions extends waActions
                 $themes[$route['theme_mobile']]['is_used'] = true;
             }
             $url = $route['_url'];
-            if (!$preview_url && $route['_domain'] == $domain) {
+            if (!$preview_url) {
                 $preview_url = $url;
+                $same_domain = wa()->getRouting()->getDomain() == $route['_domain'];
             }
             $route['_preview_url'] = $url;
 
@@ -285,7 +286,7 @@ class waDesignActions extends waActions
         foreach ($themes as $t_id => &$theme) {
             if (!isset($theme['preview_url'])) {
                 $theme['preview_url'] = $preview_url;
-                if ($preview_url && $theme['type'] !== waTheme::TRIAL) {
+                if ($preview_url && !$same_domain) {
                     $theme['preview_url'] .= $preview_params.$t_id;
                 }
             }
@@ -699,13 +700,14 @@ HTACCESS;
             $routes = $this->getRoutes();
             $theme_routes = array();
             $preview_url = false;
+            $domain = wa()->getConfig()->getDomain();
             foreach ($routes as $r) {
                 if ((waRequest::get('route') == $r['_id']) && !empty($r['locale'])) {
                     $current_locale = $r['locale'];
                 }
                 if (!$preview_url && $r['app'] == $app_id) {
                     $preview_url = $r['_url'];
-                    if ($current_theme->type !== waTheme::TRIAL) {
+                    if ($r['_domain'] !== $domain) {
                         $preview_url .= '?theme_hash='.$this->getThemeHash().'&set_force_theme='.$theme_id;
                     }
                 }
@@ -1116,7 +1118,7 @@ HTACCESS;
     {
         // If you add svg here, then on sites with cdn such pictures will not be loaded.
         // Design themes must use the $wa_real_theme_url variable for settings with the image type.
-        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
+        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'svg');
         if (!in_array(strtolower($f->extension), $allowed)) {
             $error = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             return false;

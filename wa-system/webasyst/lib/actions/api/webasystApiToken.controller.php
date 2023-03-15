@@ -23,7 +23,8 @@ class webasystApiTokenController extends waController
             // check client_id
             if ($row['client_id'] != waRequest::post('client_id')) {
                 $this->response(array(
-                    'error' => 'invalid_grant'
+                    'error' => 'invalid_grant',
+                    'error_description' => 'Client ID does not match the previously specified value'
                 ));
                 return;
             }

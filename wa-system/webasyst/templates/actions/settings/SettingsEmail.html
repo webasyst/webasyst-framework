@@ -1,11 +1,18 @@
 {$_title = "[s`Email settings`] — {$wa->accountName(false)}"}
 {function name="_renderConfig" key=key config=[] is_template=is_template}
-    {$_transport = $config.type|default:mail}
+    {$_transport = $config.type|default:null}
+    {if $_transport === null}
+        {if PHP_MAJOR_VERSION < 8}
+            {$_transport = 'mail'}
+        {else}
+            {$_transport = 'sendmail'}
+        {/if}
+    {/if}
     {$_rand = rand()}
     {strip}
         <div class="s-item {if $is_template} js-template{else}js-item{/if}">
             {if $is_template}
-            <div class="fields-group">
+            <div class="fields-group blank">
             {/if}
 
             {* KEY *}
@@ -19,7 +26,7 @@
                     </div>
                     <div>
                         <div class="s-remove js-remove">
-                            <a href="javascript:void(0);" class="button nobutton small red outlined">
+                            <a href="javascript:void(0);" class="button nobutton small red outlined nowrap">
                                 <span><i class="fas fa-times-circle"></i>&nbsp;[s`Remove`]</span>
                             </a>
                         </div>
@@ -33,18 +40,22 @@
                     <div class="wa-select">
                         <select class="js-transport" data-name="type">
                             {foreach $available_transports as $id => $transport}
-                                <option value="{$id|escape}"{if $_transport == $id} selected{/if}>
-                                    {if is_string($transport)}
-                                        {$transport}
-                                    {else}
-                                        {ifset($transport.name)}
-                                    {/if}
-                                </option>
+                                {if PHP_MAJOR_VERSION < 8 || $id != 'mail' || $_transport == $id}
+                                    <option value="{$id|escape}"{if $_transport == $id} selected{/if}>
+                                        {if is_string($transport)}
+                                            {$transport}
+                                        {else}
+                                            {ifset($transport.name)}
+                                        {/if}
+                                    </option>
+                                {/if}
                             {/foreach}
                         </select>
                     </div>
                     {foreach $available_transports as $id => $transport}
-                        <p class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}">{$transport.description|default:null}</p>
+                        {if PHP_MAJOR_VERSION < 8 || $id != 'mail' || $_transport == $id}
+                            <p class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}">{$transport.description|default:null}</p>
+                        {/if}
                     {/foreach}
                 </div>
             </div>
@@ -59,7 +70,7 @@
             {/if}
             {* SMTP PARAMS *}
             {if isset($available_transports.smtp)}
-                <div class="fields-group s-params js-params js-smtp-params"{if $_transport != 'smtp'} style="display:none"{/if}>
+                <div class="fields-group blank s-params js-params js-smtp-params"{if $_transport != 'smtp'} style="display:none"{/if}>
                     <div class="field">
                         <div class="name for-input">[s`Host`]</div>
                         <div class="value">
@@ -116,7 +127,7 @@
             {/if}
             {* SENDMAIL PARAMS *}
             {if isset($available_transports.sendmail)}
-                <div class="fields-group s-params js-params js-sendmail-params"{if $_transport != 'sendmail'} style="display:none"{/if}>
+                <div class="fields-group blank s-params js-params js-sendmail-params"{if $_transport != 'sendmail'} style="display:none"{/if}>
                     <div class="field">
                         <div class="name for-input">[s`Command`]</div>
                         <div class="value">
@@ -128,7 +139,7 @@
 
             {* DKIM *}
             {if $key !== 'default'}
-                <div class="fields-group s-dkim-field js-dkim-field">
+                <div class="fields-group blank s-dkim-field js-dkim-field">
                     <div class="field">
                         <div class="name for-checkbox">
                             <label for="dkim-{$_rand}">DKIM</label>
@@ -146,7 +157,7 @@
                             </label>
                             <p class="hint js-dkim-error"></p>
                             <p class="hint">[s`Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address.`]</p>
-                            <p class="hint bold js-dkim-needs-email" style="{if mb_strlen($key) != 0} display: none;{/if}">[s`Enter an email address in “Sender” field to use DKIM.`]</p>
+                            <p class="hint bold js-dkim-needs-email" style="{if is_string($key) && mb_strlen($key) != 0} display: none;{/if}">[s`Enter an email address in “Sender” field to use DKIM.`]</p>
                             <input type="hidden" data-name="dkim_pvt_key" class="js-dkim-pvt-key" value="{ifset($config.dkim_pvt_key)|escape}" />
                             <input type="hidden" data-name="dkim_pub_key" class="js-dkim-pub-key" value="{ifset($config.dkim_pub_key)|escape}" />
                             <input type="hidden" data-name="dkim_selector" class="js-dkim-selector" value="{ifset($config.dkim_selector)|escape}" />
@@ -193,8 +204,8 @@
                                 </div>
                                 <div class="field">
                                     <div class="name">[s`Value`]</div>
-                                    <div class="value" style="word-wrap:break-word; width:500px;">
-                                        <code>
+                                    <div class="value break-word">
+                                        <code class="js-copy-dkim">
                                             v=DKIM1; k=rsa; t=s; p=<span class="js-one-string-key">{ifset($config.one_string_key)}</span>
                                         </code>
                                     </div>
@@ -216,7 +227,7 @@
 
     {* Incoming / outgoing emails *}
     <form action="?module=settingsEmailSave" class="fields">
-        <div class="fields-group">
+        <div class="fields-group blank">
             <div class="field">
                 <div class="name">
                     <label for="config-email">[s`Email address for notifications`]</label>
@@ -245,31 +256,26 @@
         <h4 class="heading black">[s`Default sending parameters`]</h4>
         <p class="hint">{sprintf(_ws('The email sending parameters specified below are used by default for all outgoing email messages. If you need to use other parameters for all or certain sender addresses or domains then add extra rules using the “<strong>%s</strong>” button.'), _ws('Add email sending rule'))}</p>
 
-        <div class="fields-group s-settings-items">
+        <div class="fields-group blank s-settings-items">
            {_renderConfig key='default' config=$main_configs.default is_template=false}
         </div>
 
         <h4 class="heading black">[s`Additional sending parameters`]</h4>
 
         <a href="javascript:void(0);" class="button gray rounded outlined s-add-item js-add-item"><span><i class="fas fa-plus-circle"></i> [s`Add email sending rule`]</span></a>
-
-        <div class="fields-group s-settings-items js-settings-items">
+{strip}
+        <div class="fields-group blank s-settings-items js-settings-items">
             {foreach $main_configs as $key => $config}
                 {if $key !== 'default'}
                     {_renderConfig key=$key config=$config is_template=false}
                 {/if}
             {/foreach}
         </div>
+{/strip}
         <div class="s-form-buttons fields-group">
             <div class="s-footer-actions js-footer-actions field">
-                <div class="value submit">
-                    <input class="button js-submit-button" type="submit" name="" value="[s`Save`]">
-                    <span class="s-hidden">
-                        <span style="margin: 0 4px;">[s`or`]</span>
-                        <a href="{$wa_backend_url}webasyst/settings/email/" class="js-cancel">[s`cancel`]</a>
-                    </span>
-                    <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
-                </div>
+                <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
             </div>
         </div>
     </form>
@@ -281,7 +287,8 @@
         new WASettingsEmail({
             $wrapper: $("#s-email-settings-page"),
             locales: {
-                required: '[`This field is required`]'
+                required: '[`This field is required`]',
+                copied: '[`Copied`]',
             }
         });
         $.wa.title.set({$_title|json_encode});

@@ -53,6 +53,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /** @return int number of key => value pairs in this array */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->removeStubs()->rec_data);
@@ -165,21 +166,25 @@ class waArrayObject implements ArrayAccess, IteratorAggregate, Countable
     // Array access interface (copied from field access)
     //
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->__get($offset);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $data)
     {
         $this->__set($offset, $data);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->__isset($offset);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->__unset($offset);
@@ -189,6 +194,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate, Countable
     // IteratorAggregate interface
     //
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->rec_data);

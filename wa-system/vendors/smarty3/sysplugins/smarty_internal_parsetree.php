@@ -130,6 +130,7 @@ class _smarty_code extends _smarty_parsetree {
  * @subpackage Compiler
  * @ignore
  */
+#[\AllowDynamicProperties]
 class _smarty_doublequoted extends _smarty_parsetree {
 
     /**

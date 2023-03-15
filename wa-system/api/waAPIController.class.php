@@ -192,6 +192,15 @@ class waAPIController
         wa()->setUser(new waApiAuthUser($data['contact_id']));
         wa()->setLocale(wa()->getUser()->getLocale());
 
+        // Update user last activity time
+        $time = wa()->getUser()->get('last_datetime');
+        if ($time && time() - strtotime($time) > 30) {
+            $contact_model = new waContactModel();
+            $contact_model->updateById($data['contact_id'], [
+                'last_datetime' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
         return $data;
     }
 }

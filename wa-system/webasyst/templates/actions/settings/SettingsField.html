@@ -12,7 +12,7 @@
         <div class="s-field-constructor">
             <div class="fieldset wa-main-fields fields">
                 {* Main fields *}
-                <div class="fields-group">
+                <div class="fields-group blank">
                     {foreach $fields.main as $field}
 
                         <div class="field">
@@ -25,9 +25,8 @@
                     {/foreach}
                 </div>
 
-                <div class="s-main-fields-label gray fields-group">
+                <div class="s-main-fields-label gray fields-group blank">
                     <p>[s`Main contact fields cannot be modified or disabled.`]</p>
-                    <hr>
                 </div>
             </div>
 
@@ -40,7 +39,7 @@
                 </div>
 
                 {* Other fields *}
-                <div class="js-other-fields fields-group">
+                <div class="js-other-fields fields-group blank">
                     {foreach $fields.other as $field}
                         {include file="./SettingsFieldRow.inc.html" field=$field inline}
                     {/foreach}

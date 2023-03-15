@@ -195,7 +195,7 @@ class waContactNameField extends waContactStringField
         if (!$name && !empty($contact['name'])) {
             $name = $contact['name'];
         }
-        return $name;
+        return (string) $name;
     }
 
     public static function getNameOrder($clear_cache = false)

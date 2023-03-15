@@ -15,7 +15,7 @@
             {* Group divider name *}
             <h{$_h_level} class="wa-theme-setting-divider-name js-divider-name js-search-item"
                           data-name="{$_setting.name|escape}"
-                          data-level="{$_setting.level}"
+                          data-divider-level="{$_setting.level}"
                           data-search="{strip_tags($_setting.name)}">
                 <span class="{if $_setting.var === waTheme::OBSOLETE_SETTINGS_DIVIDER}gray {/if}js-search-item-name">{$_setting.name}</span>
             </h{$_h_level}>
@@ -716,8 +716,10 @@
             theme_routes: {$theme_routes|json_encode},
             design_url: {$design_url|json_encode},
             locale: {$_locale|json_encode},
-            is_wa2: true,
-            wa_url: {$wa_url|json_encode}
+            wa_url: {$wa_url|json_encode},
+            templates: {
+                toggle_group_all_settings: '<span class="button custom-ml-16 js-group-all-settings light-gray rounded smallest wa-theme-group-all-settings" style="font-size: 73%;padding: 3px 6px;">[s`Show all group’s settings`] <i class="js-icon fas fa-chevron-down"></i></span>'
+            }
         });
 
     })(jQuery);

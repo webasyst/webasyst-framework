@@ -191,10 +191,10 @@
 </div>
 {/function}
 
-{function name="_render_select_solid"}
-<div class="wa-select solid">
-    <select name="">
-        <option value="">.solid</option>
+{function name="_render_select_outlined"}
+<div class="wa-select">
+    <select name="" class="outlined">
+        <option value="">.outlined</option>
     </select>
 </div>
 {/function}
@@ -275,13 +275,13 @@
         <pre class="prettyprint">{_render_select_state|escape}</pre>
     </div>
 
-    <h3>select<code>.solid</code></h3>
-    <p>С помощью класса <code>.solid</code> можно изменить оформление селекта и убрать обводку. Иногда это может быть полезно из эстетических соображений и соответствия стилю приложения.</p>
+    <h3>select<code>.outlined</code></h3>
+    <p>С помощью класса <code>.outlined</code> можно изменить оформление селекта и убрать обводку. Иногда это может быть полезно из эстетических соображений и соответствия стилю приложения.</p>
     <div class="line">
-        {_render_select_solid}
+        {_render_select_outlined}
     </div>
     <div class="line">
-        <pre class="prettyprint">{_render_select_solid|escape}</pre>
+        <pre class="prettyprint">{_render_select_outlined|escape}</pre>
     </div>
 
     <script>

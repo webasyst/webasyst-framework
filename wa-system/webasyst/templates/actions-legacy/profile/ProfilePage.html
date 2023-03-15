@@ -35,18 +35,20 @@
                     </p>
                 {/if}
 
-                <ul class="menu compact" id="contact-info-top">
+                <ul class="menu-v compact" id="contact-info-top">
                     {foreach $top as $top_field}
                         <li class="top-field-{$top_field.id}">{if $top_field.id != 'im'}{if $top_field.icon}<i class="icon16 {$top_field.id}"></i>{/if}{/if}{$top_field.value}</li>
                     {/foreach}
                 </ul>
+                <br>
 
                 {* Used for trigger event in access tab - don't touch it *}
                 <span class="js-webasyst-id-unbind-auth hidden"></span>
 
                 {if $webasyst_id_auth_url}
                     <div class="waid-login">
-                        <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">[s`Enable sign in with`]&nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span></a>
+                        <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">[s`Connect my Webasyst ID account`]</a>
+                        &nbsp;
                         <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[s`What is Webasyst ID?`]</a>
                     </div>
                 {elseif $customer_center_auth_url}
@@ -60,6 +62,8 @@
                         </div>
                     </div>
                 {/if}
+
+                <p style="font-size:13px;"><br><em>[s`<strong>More profile and account authentication features are available in the Team app.</strong> Contact your Webasyst admin for access.`]</em></p>
 
             </div>
         </div>
@@ -111,6 +115,7 @@
             wa_url: {$wa_url|json_encode},
             wa_version: {$wa->version()|json_encode},
             webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode},
+            ui: '1.3',
         });
     });
 

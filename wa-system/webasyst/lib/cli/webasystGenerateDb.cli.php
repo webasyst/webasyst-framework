@@ -70,6 +70,7 @@ Usage: php wa.php {$action} slug [parameters...] [tables...]
 Slug examples:
     myapp
     someapp/myplugin
+    wa-plugins/shipping/myplugin
 
 Optional parameters:
     [tables...]             Space-separated list of table names to be updated.

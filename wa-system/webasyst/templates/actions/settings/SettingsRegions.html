@@ -4,7 +4,7 @@
     <h1 class="s-page-header">[s`Countries & regions`]</h1>
     <div class="s-regions-settings-fields-block">
         <form action="?module=settingsRegions" class="fields vertical">
-            <div class="fields-group">
+            <div class="fields-group blank">
                 <div class="field">
                     <div class="name">
                         [s`Country`]
@@ -13,7 +13,7 @@
                         <span class="icon" style="background: url('{$wa_url}wa-content/img/country/{$country.iso3letter}.gif')  no-repeat center;"></span>
                         {$selected = false}
                         <div class="wa-select"{if $wa->isMobile()} style="max-width: 250px;"{/if}>
-                            <select class="js-country-selector">
+                            <select class="js-country-selector" autocomplete="off">
                                 {if !$country.iso3letter}
                                     <option value="">[s`Select a country`]</option>
                                 {/if}
@@ -34,7 +34,7 @@
                 </div>
             </div>
             {if $country.iso3letter}
-            <div class="fields-group">
+            <div class="fields-group blank">
                 <input type="hidden" name="country" value="{$country.iso3letter|escape}">
                 <div class="field">
                     <div class="name">
@@ -82,6 +82,14 @@
                             <tr class="transparent">
                                 <td colspan="4">
                                     <div class="box">
+                                        {if empty($regions)}
+                                        <a href="javascript:void(0)" class="js-fill-regions-link button rounded green">
+                                            <span>
+                                                <i class="fas fa-plus-circle"></i>
+                                                [s`Заполнить список из справочника`]
+                                            </span>
+                                        </a>
+                                        {/if}
                                         <a href="javascript:void(0)" class="js-add-region-link button rounded outlined dark-gray">
                                             <span>
                                                 <i class="fas fa-plus-circle"></i>
@@ -125,9 +133,11 @@
         new WASettingsRegions({
             $wrapper: $("#s-regions-settings-page"),
             wa2: true,
+            wa_url: '{$wa_url}',
             country_iso3letter: '{$country.iso3letter}',
             locales: {
-                'confirm_region_not_saved': '[s`Regions are not saved. Are you sure you want to leave current page?`]'
+                'confirm_region_not_saved': '[s`Regions are not saved. Are you sure you want to leave current page?`]',
+                'country_is_not_list': '[s`Страны нет в списке`]'
             }
         });
         $.wa.title.set({$_title|json_encode});

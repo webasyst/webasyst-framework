@@ -10,6 +10,7 @@ class webasystInstaller
         $this->protectPrivateDirs();
         $this->populateTables();
         $this->installDefaultVerificationChannel();
+        $this->connectToWaid();
     }
 
     public function createCliFile()
@@ -124,6 +125,39 @@ CLI;
         }
 
         return true;
+    }
+
+    public function connectToWaid($source='install.php')
+    {
+        if (!class_exists('waWebasystIDClientManager')) {
+            return; // paranoid
+        }
+        try {
+            $manager = new waWebasystIDClientManager();
+            if (!$manager->isConnected()) {
+                $result = $manager->connect();
+                if (!empty($result['status'])) {
+                    waLog::log("Successfully connected to WAID via ".$source, 'webasyst/waWebasystIDClientManager.log');
+                } else {
+                    $error_code = ifset($result, 'details', 'error_code', '(no code)');
+                    $error_message = ifset($result, 'details', 'error_message', '(no message)');
+
+                    $log = [];
+                    $log[] = "Unable to connect to WAID in ".$source;
+                    $log[] = "Error code {$error_code}: {$error_message}";
+                    $log[] = wa_dump_helper($result);
+                    waLog::log(join("\n", $log), 'webasyst/waWebasystIDClientManager.log');
+                }
+            }
+        } catch (waException $e) {
+            $log = [];
+            $log[] = "Unable to connect to WAID in ".$source;
+            $log[] = "Exception ".get_class($e)." code {$e->getCode()}: {$e->getMessage()}";
+            $log[] = "Call stack:";
+            $log[] = $e->getFullTraceAsString();
+            waLog::log(join("\n", $log), 'webasyst/waWebasystIDClientManager.log');
+        }
+
     }
 
     protected function populateTable($table)

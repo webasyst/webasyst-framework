@@ -1832,6 +1832,9 @@ class waInstallerApps
         $changed = false;
         $routing = self::getConfig(self::CONFIG_ROUTING);
         foreach ($routing as & $routes) {
+            if (!is_array($routes)) {
+                continue; // skip alias domains
+            }
             foreach ($routes as &$route) {
                 if (is_array($route)) { //route is array
                     if (isset($route['app']) && ($route['app'] == $app_id)) {
