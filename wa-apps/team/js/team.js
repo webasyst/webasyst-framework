@@ -70,9 +70,13 @@
                         if (allowed_ids) {
                             $delete_button.on('click', function() {
                                 let btn_text = $delete_button.text();
+                                let delete_forever_value = $dialog.find('[name="delete_forever"]:checked').attr('value');
                                 $delete_button.attr('disabled', true).html(`${btn_text} <i class="fas fa-spin fa-spinner wa-animation-spin speed-1000"></i>`);
 
-                                $.post('?module=users&action=delete', { id: allowed_ids }, function(){
+                                $.post('?module=users&action=delete', {
+                                    delete_forever: delete_forever_value,
+                                    id: allowed_ids
+                                }, function() {
                                     dialog.close();
                                     $.team.sidebar.reload();
 

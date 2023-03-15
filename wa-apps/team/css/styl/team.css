@@ -1593,7 +1593,7 @@ svg {
   align-items: baseline;
 }
 .t-access-sidebar {
-  overflow: unset;
+  overflow: unset !important;
 }
 .t-access-sidebar .t-toggle-wrapper {
   display: flex;

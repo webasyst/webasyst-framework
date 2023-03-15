@@ -47,7 +47,8 @@ var Profile = ( function($) {
             backend_url: that.backend_url,
             wa_url: that.wa_url,
             wa_version: that.wa_version,
-            webasyst_id_auth_url: that.webasyst_id_auth_url
+            webasyst_id_auth_url: that.webasyst_id_auth_url,
+            ui: '1.3'
         });
     };
 

@@ -177,21 +177,10 @@ var Sidebar = ( function($) {
     Sidebar.prototype.showInviteDialog = function(event) {
         event.preventDefault();
 
-        const that = this;
-
-        if (that.inviteDialog) {
-            that.inviteDialog.show();
-            return;
-        }
-
-        const href = $.team.app_url + that.options.api.inviteDialog;
+        const href = $.team.app_url + this.options.api.inviteDialog;
         $.get(href, function(html) {
-            that.inviteDialog = $.waDialog({
-                html,
-                onClose(dialog) {
-                    dialog.hide();
-                    return false;
-                }
+            $.waDialog({
+                html
             });
         });
     };

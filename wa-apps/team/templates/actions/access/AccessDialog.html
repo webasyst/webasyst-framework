@@ -54,9 +54,8 @@
         </header>
 
         <div class="dialog-content small">
-
             {* Limited access customization form *}
-            {if empty($access_levels.limited.is_disabled)}
+            {if !empty($access_levels.limited) && empty($access_levels.limited.is_disabled)}
                 <div class="t-limited-access-form{if empty($access_levels.limited.is_active)} hidden{/if}">
                     <form action="{$wa_app_url}?module=accessSave&action=rights&id={$contact_id}">
                         <div class="c-access-app-limited">

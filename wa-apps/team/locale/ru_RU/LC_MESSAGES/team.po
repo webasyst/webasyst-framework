@@ -5,14 +5,14 @@ msgstr ""
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: team\n"
+"Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 3.1.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -125,7 +125,7 @@ msgid "Administrator"
 msgstr "Администратор"
 
 msgid "This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user."
-msgstr "Этот уровень доступа унаследован от групп. Чтобы изменить его, отредактируйте настройки этих групп или измените набор групп для данного пользователя."
+msgstr "Этот уровень доступа унаследован от групп. Чтобы изменить его, отредактируйте настройки этих групп или измените набор групп для данного сотрудника."
 
 msgid "You cannot revoke administrative access level for yourself. Only another Administrator can do this."
 msgstr "Вы не можете аннулировать административный уровень доступа для самого себя. Только другой администратор может это сделать."
@@ -140,7 +140,7 @@ msgid "Confirm access change"
 msgstr "Подтвердите изменение доступа"
 
 msgid "Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user."
-msgstr "Нельзя выбрать «Нет доступа», потому что некоторые права доступа унаследованы от групп. Для лишения прав доступа отредактируйте настройки групп или набор групп для данного пользователя."
+msgstr "Нельзя выбрать «Нет доступа», потому что некоторые права доступа унаследованы от групп. Для лишения прав доступа отредактируйте настройки групп или набор групп для данного сотрудника."
 
 msgid "Saved"
 msgstr "Сохранено"
@@ -362,7 +362,7 @@ msgid "Contact with id = %s doesn't exist"
 msgstr "Контакт с id = %s не существует"
 
 msgid "All users"
-msgstr "Все пользователи"
+msgstr "Все сотрудники"
 
 msgid "until"
 msgstr "по"
@@ -458,16 +458,16 @@ msgid "Delete group"
 msgstr "Удалить группу"
 
 msgid "Find and add user"
-msgstr "Найти и добавить пользователя"
+msgstr "Найти и добавить сотрудника"
 
 msgid "Users in this group"
 msgstr "Участники группы"
 
 msgid "Others users"
-msgstr "Другие пользователи"
+msgstr "Другие сотрудники"
 
 msgid "All users in this group."
-msgstr "Все пользователи в этой группе."
+msgstr "Все сотрудники в этой группе."
 
 msgid "Already in group"
 msgstr "Уже в группе"
@@ -479,7 +479,7 @@ msgid "Access level selected for this group will be applied to all its members."
 msgstr "Уровень доступа, выбранный для этой группы, применится ко всем ее участникам."
 
 msgid "To extend access rights of individual users within the group, edit their personal access settings."
-msgstr "Чтобы повысить уровень доступа для отдельных пользователей в группе, измените их персональные настройки прав."
+msgstr "Чтобы повысить уровень доступа для отдельных сотрудников в группе, измените их персональные настройки прав."
 
 msgid "me"
 msgstr "я"
@@ -503,28 +503,28 @@ msgid "Add calendar"
 msgstr "Добавить календарь"
 
 msgid "User name format"
-msgstr "Формат имени пользователя"
+msgstr "Формат имени"
 
 msgid "No users."
-msgstr "Нет пользователей."
+msgstr "Нет сотрудников."
 
 msgid "Users"
-msgstr "Пользователи"
+msgstr "Сотрудники"
 
 msgid "No users found."
-msgstr "Пользователи не найдены."
+msgstr "Сотрудники не найдены."
 
 msgid "Invite new user"
-msgstr "Пригласить нового пользователя"
+msgstr "Пригласить нового сотрудника"
 
 msgid "Email"
 msgstr "Email"
 
 msgid "Enter an email address to send the new user an invitation with sign-in instructions."
-msgstr "Укажите email-адрес для отправки пользователю приглашения с инструкциями для входа."
+msgstr "Введите email-адрес, чтобы отправить сотруднику приглашение с инструкциями для входа."
 
 msgid "I will enter password on behalf of this user so no invitation will be sent."
-msgstr "Я введу пароль для этого пользователя, чтобы не отправлять ему приглашение."
+msgstr "Я введу пароль для этого сотрудника, чтобы не отправлять ему приглашение."
 
 msgid "Groups"
 msgstr "Группы"
@@ -539,13 +539,16 @@ msgid "Inactive users"
 msgstr "Заблокированные"
 
 msgid "No inactive users."
-msgstr "Нет заблокированных пользователей."
+msgstr "Нет заблокированных сотрудников."
 
 msgid "No invited contacts."
 msgstr "Нет приглашенных контактов."
 
 msgid "Delete contacts"
 msgstr "Удалить контакты"
+
+msgid "Delete contact"
+msgstr "Удалить контакт"
 
 msgid "Contact deletion cannot be undone."
 msgstr "Контакты будут удалены без возможности восстановления."
@@ -587,16 +590,16 @@ msgid "Invitations"
 msgstr "Приглашения"
 
 msgid "Online users"
-msgstr "Пользователи онлайн"
+msgstr "Сотрудники онлайн"
 
 msgid "No users online."
-msgstr "Нет пользователей онлайн."
+msgstr "Нет сотрудников онлайн."
 
 msgid "Sign up as a new user"
 msgstr "Зарегистрироваться заново"
 
 msgid "Please specify login and password to create new backend user."
-msgstr "Введите логин и пароль для регистрации нового пользователя бекенда."
+msgstr "Введите логин и пароль для регистрации нового сотрудника."
 
 msgid "Password (again)"
 msgstr "Пароль (повторно)"
@@ -605,13 +608,13 @@ msgid "Save and proceed"
 msgstr "Сохранить и продолжить"
 
 msgid "New user"
-msgstr "Новый пользователь"
+msgstr "Новый сотрудник"
 
 msgid "Calendar"
 msgstr "Календарь"
 
 msgid "Search users"
-msgstr "Найти пользователей"
+msgstr "Поиск сотрудника"
 
 msgid "No groups here"
 msgstr "Нет групп"
@@ -629,13 +632,13 @@ msgid "Plugins"
 msgstr "Плагины"
 
 msgid "No events for this user yet."
-msgstr "Для этого пользователя еще нет событий."
+msgstr "В ленте этого сотрудника еще нет событий."
 
 msgid "Edit user"
-msgstr "Редактировать пользователя"
+msgstr "Редактировать сотрудника"
 
 msgid "This user does not belong to any group."
-msgstr "Этот пользователь не включен ни в одну из групп."
+msgstr "Этот сотрудник не включен ни в одну из групп."
 
 msgid "Edit groups"
 msgstr "Редактировать группы"
@@ -701,10 +704,10 @@ msgid "Font color"
 msgstr "Цвет текста"
 
 msgid "Selected user groups only"
-msgstr "Только отдельные группы пользователей"
+msgstr "Только отдельные группы сотрудников"
 
 msgid "Select user groups which you want to be able to control events in this calendar:"
-msgstr "Выберите группы пользователей, которым вы хотите предоставить право управлять событиями в этом календаре:"
+msgstr "Выберите группы сотрудников, которым вы хотите предоставить право управлять событиями в этом календаре:"
 
 msgid "This group does not have access to Team app."
 msgstr "У этой группы нет доступа к приложению «Команда»."
@@ -713,7 +716,7 @@ msgid "Customize group access rights using the <a class=\"js-edit-group inline-l
 msgstr "Настройте права группы в режиме <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Управление группой</i></b></a>."
 
 msgid "There are no user groups in your Webasyst installation."
-msgstr "В вашем бекенде Webasyst нет групп пользователей."
+msgstr "В вашем бекенде Webasyst нет групп сотрудников."
 
 msgid "Add groups to be able to manage access to calendars."
 msgstr "Создайте группы, чтобы управлять доступом к календарям."
@@ -722,7 +725,7 @@ msgid "Default status"
 msgstr "Статус по умолчанию"
 
 msgid "Default label for adding a user status in this calendar"
-msgstr "Метка по умолчанию для создания статуса пользователя в этом календаре"
+msgstr "Метка по умолчанию для создания статуса сотрудника в этом календаре"
 
 msgid "Field is empty"
 msgstr "Поле необходимо заполнить"
@@ -803,7 +806,7 @@ msgid "Add external calendar"
 msgstr "Добавить внешний календарь"
 
 msgid "This is your team calendar. Schedule events and user statuses so all your teammates see who is up to on what. Click on a date or drag between dates to add an event."
-msgstr "Это календарь вашей команды. Добавляйте события и устанавливайте статусы пользователей, чтобы все видели, кто что планирует. Щелкните по отдельной дате или выделите сразу целый период, чтобы добавить новое событие."
+msgstr "Это календарь вашей команды. Добавляйте события и устанавливайте статусы сотрудников, чтобы все видели информацию о планах друг друга. Выберите день или выделите сразу целый период, чтобы добавить новое событие."
 
 msgid "Previous month"
 msgstr "Предыдущий месяц"
@@ -887,7 +890,7 @@ msgid "Event"
 msgstr "Событие"
 
 msgid "User"
-msgstr "Пользователь"
+msgstr "Сотрудник"
 
 msgid "Event name"
 msgstr "Название"
@@ -938,7 +941,7 @@ msgid "Welcome to the team!"
 msgstr "Добро пожаловать в команду!"
 
 msgid "Webasyst is a great way for teams to work together online and share access to apps and data. Enter your teammates email addresses, and Webasyst will automatically create user accounts and send invitations."
-msgstr "Webasyst — это удобная среда для командной работы в онлайне. Введите email-адреса своих коллег. Webasyst автоматически создаст для них профили пользователей и отправит им приглашения для входа."
+msgstr "Webasyst — это удобная среда для командной работы в онлайне. Введите email-адреса своих коллег. Webasyst автоматически создаст для них профили и отправит приглашения для входа."
 
 msgid "Add more people"
 msgstr "Добавить больше сотрудников"
@@ -971,7 +974,7 @@ msgid "Can edit self contact info"
 msgstr "Может редактировать свои данные"
 
 msgid "Can add users"
-msgstr "Может добавлять пользователей"
+msgstr "Может добавлять сотрудников"
 
 msgid "Can add groups"
 msgstr "Может добавлять группы"
@@ -1022,7 +1025,7 @@ msgid "You cannot delete yourself."
 msgstr "Вы не можете удалить себя."
 
 msgid "Only Administrator can delete backend users."
-msgstr "Только администратор может удалять пользователей бекенда."
+msgstr "Только администратор может удалять сотрудников."
 
 msgid "You need full access to Team app to be able to delete contacts."
 msgstr "Для удаления контактов необходим полный доступ к приложению «Команда»."
@@ -1031,10 +1034,10 @@ msgid "Only Administrator can delete contacts that have links to other applicati
 msgstr "Только Администратор может удалять контакты, у которых есть связи с другими приложениями."
 
 msgid "This login is already set for another user"
-msgstr "Указанный логин уже используется другим пользователем"
+msgstr "Указанный логин уже используется другим сотрудником"
 
 msgid "Already in our team!"
-msgstr "Этот пользователь уже в нашей команде!"
+msgstr "Этот контакт уже в команде!"
 
 msgid "This contact was banned."
 msgstr "Этот контакт заблокирован."
@@ -1094,13 +1097,13 @@ msgid "All entries available in an external calendar will be imported into your 
 msgstr "Все данные будут полностью импортированы из внешнего календаря в ваш Webasyst. Из Webasyst во внешний календарь будут экспортироваться вновь добавляемые новые записи, изменения и удаления."
 
 msgid "No users will be deleted."
-msgstr "Пользователи удалены не будут."
+msgstr "Сотрудники удалены не будут."
 
 msgid "To add a user to %s, either use <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Manage group</i></b></a> mode, or drag a user to this group in the sidebar."
-msgstr "Чтобы добавить пользователя в группу «%s», либо используйте режим «<a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Изменить группу</i></b></a>», либо перетащите пользователя на название группы в боковой панели."
+msgstr "Чтобы добавить сотрудника в группу «%s», либо используйте режим «<a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Изменить группу</i></b></a>», либо перетащите сотрудника на название группы в боковой панели."
 
 msgid "To add a user to %s, use <a class=\"inline-link\"><b><i><a class=\"js-edit-group\" href=\"%s\">Manage group</a></i></b></a> mode."
-msgstr "Чтобы добавить пользователя в группу %s, используйте режим «<a class=\"inline-link\"><b><i><a class=\"js-edit-group\" href=\"%s\">Изменить группу</a></i></b></a>»."
+msgstr "Чтобы добавить сотрудника в группу %s, используйте режим «<a class=\"inline-link\"><b><i><a class=\"js-edit-group\" href=\"%s\">Изменить группу</a></i></b></a>»."
 
 msgid "show %s weeks"
 msgstr "показать %s недель"
@@ -1154,7 +1157,7 @@ msgid "%s HQ"
 msgstr "%s"
 
 msgid "This is a list of users who are no longer members of your team. You have disabled their access to your Webasyst backend."
-msgstr "Это список пользователей, которые больше не работают в вашей команде. Им отключен доступ в бекенд вашего Вебасиста."
+msgstr "Это список сотрудников, которые больше не работают в вашей команде. Им отключен доступ в бекенд вашего Вебасиста."
 
 msgid "Access is switched off"
 msgstr "Доступ выключен"
@@ -1163,7 +1166,7 @@ msgid "User invitation was sent."
 msgstr "Отправлено приглашение войти в команду."
 
 msgid "Open your user profile."
-msgstr "Перейдите в свой профиль пользователя."
+msgstr "Перейдите в свой профиль."
 
 msgid "Under the calendar, click <strong>“Personal calendar settings”</strong>."
 msgstr "Под календарем щелкните по ссылке <strong>«Персональные настройки календаря»</strong>."
@@ -1250,7 +1253,7 @@ msgid "Email address changes history"
 msgstr "История изменений email-адреса"
 
 msgid "Unknown user"
-msgstr "Неизвестный пользователь"
+msgstr "Неизвестный сотрудник"
 
 msgid "Unknown action"
 msgstr "Неизвестное действие"
@@ -1259,7 +1262,7 @@ msgid "The token was not transferred."
 msgstr "Токен не был передан."
 
 msgid "This login name is already being used by user %s."
-msgstr "Этот логин уже использует пользователь %s."
+msgstr "Этот логин уже использует сотрудник %s."
 
 msgid "Folders:"
 msgstr "Папки:"
@@ -1292,7 +1295,7 @@ msgid "%sSign-in with Webasyst ID%s is not connected."
 msgstr "%sВход с Webasyst ID%s не подключен."
 
 msgid "Webasyst ID account %s is already connected to a backend user."
-msgstr "Webasyst ID %s уже подключен к пользователю бекенда."
+msgstr "Webasyst ID %s уже подключен к профилю другого сотрудника."
 
 msgid "You can sign in with a login name and a password or use a different Webasyst ID account."
 msgstr "Вы можете войти с логином и паролем или использовать другой Webasyst ID."
@@ -1394,7 +1397,7 @@ msgid "Enter login name & password"
 msgstr "Ввести логин и пароль"
 
 msgid "Enter a login name and a password for this user without sending an invitation."
-msgstr "Введите логин и пароль для этого пользователя, чтобы не отправлять ему приглашение."
+msgstr "Введите логин и пароль для нового сотрудника, не отправляя ему приглашение."
 
 msgid "First name"
 msgstr "Имя"
@@ -1403,10 +1406,10 @@ msgid "Last name"
 msgstr "Фамилия"
 
 msgid "If neither first name nor last name are specified then the invitation date will be used as a temporary name."
-msgstr "Если имя и фамилия не указаны, то будет использоваться временное имя в виде даты приглашения."
+msgstr "Если не указать, вместо имени и фамилии будет использоваться текущая дата."
 
 msgid "The user will access"
-msgstr "Пользователю будут доступны"
+msgstr "Сотруднику будут доступны"
 
 msgid "Create link"
 msgstr "Создать ссылку"
@@ -1451,10 +1454,10 @@ msgid "Status & event calendars"
 msgstr "Календари статусов и событий"
 
 msgid "Map in user profiles"
-msgstr "Карта в профилях пользователей"
+msgstr "Карта в профилях сотрудников"
 
 msgid "Can be used to display online maps on user and office-viewing pages."
-msgstr "Могут использоваться для отображения онлайн-карт в свойствах пользователей и офисов."
+msgstr "Могут использоваться для отображения онлайн-карт в профилях сотрудников и на страницах офисов."
 
 msgid "Set up members"
 msgstr "Настроить участников"
@@ -1466,10 +1469,10 @@ msgid "Change"
 msgstr "Изменить"
 
 msgid "To add a user to %s, either use <a href=\"%s\">Manage group</a> mode%s, or drag a user to this group in the sidebar%s."
-msgstr "Чтобы добавить пользователя в %s, либо используйте режим «<a href=\"%s\">Изменить группу</a>»%s, либо перетащите пользователя в эту группу в боковой панели%s."
+msgstr "Чтобы добавить сотрудника в %s, либо используйте режим «<a href=\"%s\">Изменить группу</a>»%s, либо перетащите сотрудника в эту группу в боковой панели%s."
 
 msgid "To add a user to %s, use <a href=\"%s\">Manage group</a> mode."
-msgstr "Чтобы добавить пользователя в %s, используйте режим «<a href=\"%s\">Manage group</a>»."
+msgstr "Чтобы добавить сотрудника в %s, используйте режим «<a href=\"%s\">Изменить группу</a>»."
 
 msgid "Show navigation"
 msgstr "Показать меню"
@@ -1547,7 +1550,7 @@ msgid "Change password"
 msgstr "Сменить пароль"
 
 msgid "Change login name"
-msgstr "Сменить имя пользователя"
+msgstr "Сменить логин сотрудника"
 
 msgid "Customize groups"
 msgstr "Настроить группы"
@@ -1580,7 +1583,7 @@ msgid "Add teammates manually later"
 msgstr "Добавить коллег позже вручную"
 
 msgid "Status will be displayed next to the user name in various apps."
-msgstr "Статус будет виден рядом с именем пользователя в разных приложениях."
+msgstr "Статус будет виден рядом с именем сотрудника в разных приложениях."
 
 msgid "Events are visible in calendars only."
 msgstr "События видны только в календаре."
@@ -1613,13 +1616,13 @@ msgid "The cover can show 8 photos at most. To change the order of photos drag t
 msgstr "В обложке показывается не более 8 фотографий. Чтобы изменить последовательность фотографий, перемещайте их между собой."
 
 msgid "You can also drag a user to this group in the sidebar."
-msgstr "Можно также перетащить пользователя на название этой группы в боковой панели."
+msgstr "Можно также перетащить сотрудника на название этой группы в боковой панели."
 
 msgid "To show a map, save an API key in the <a href=\"%s\" class=\"link\">settings</a>."
 msgstr "Чтобы показать карту, укажите API-ключ в <a href=\"%s\" class=\"link\">настройках</a>."
 
 msgid "To add a user to <span class=\"bold\">%s</span>, use the <a href=\"%s\">Manage group</a> mode."
-msgstr "Чтобы добавить пользователя в «<span class=\"bold\">%s</span>», используйте режим «<a href=\"%s\">Изменить группу</a>»."
+msgstr "Чтобы добавить сотрудника в «<span class=\"bold\">%s</span>», используйте режим «<a href=\"%s\">Изменить группу</a>»."
 
 msgid "The map is unavailable."
 msgstr "Карта недоступна."
@@ -1631,10 +1634,10 @@ msgid "Access inherited from user groups."
 msgstr "Доступ унаследован от групп."
 
 msgid "Access granted for the user individually."
-msgstr "Доступ установлен персонально для этого пользователя."
+msgstr "Доступ установлен персонально для этого сотрудника."
 
 msgid "User added"
-msgstr "Пользователь добавлен"
+msgstr "Сотрудник добавлен"
 
 msgid "This does not look like a valid phone number."
 msgstr "Неверный формат номера телефона."
@@ -1644,3 +1647,132 @@ msgstr "Эта установка не подключена к Webasyst ID."
 
 msgid "This profile is not available for editing."
 msgstr "Этот профиль недоступен для редактирования."
+
+msgid "Add user"
+msgstr "Добавить сотрудника"
+
+msgid "Link with existing contact"
+msgstr "Связать с контактом"
+
+msgid "A new user will be created from an existing contact managed by some of the apps installed in your Webasyst."
+msgstr "Профиль сотрудника будет создан на основе контакта, добавленного ранее одним из приложений Webasyst."
+
+msgid "Search contacts"
+msgstr "Поиск контактов"
+
+msgid "By code"
+msgstr "По коду"
+
+msgid "Login & password"
+msgstr "Логин и пароль"
+
+msgid "Invite by email."
+msgstr "Пригласить по email."
+
+msgid "Add manually."
+msgstr "Добавить вручную."
+
+msgid "Invite by link."
+msgstr "Пригласить по ссылке."
+
+msgid "Generate a private one-time invitation link and send it to the new user via your favorite messaging app."
+msgstr "Сгенерируйте одноразовую приватную пригласительную ссылку и отправьте ее новому сотруднику через любой мессенджер."
+
+msgid "Get the code"
+msgstr "Получить код"
+
+msgid "Copy the code"
+msgstr "Скопировать код"
+
+msgid "Refresh"
+msgstr "Обновить"
+
+msgid "<strong>Add a team member with no access to Webasyst.</strong> The user won’t be able to access your Webasyst backend, but all other Webasyst users will be able to see the new user profile information in the Team app."
+msgstr "<strong>Добавить сотрудника без доступа к Webasyst.</strong> Новый сотрудник не сможет работать с бекендом вашего Вебасиста, но его профиль будет доступен в приложении «Команда»."
+
+msgid "Add basic contact information"
+msgstr "Заполнить основную контактную информацию"
+
+msgid "Prefill user’s basic contact information. Once signed in for the first time, the user will be happy to start with a non-empty profile."
+msgstr "Введите основные контактные данные сотрудника. Когда он впервые войдет в свой аккаунт, то будет рад увидеть, что его профиль не совсем пустой."
+
+msgid "Browse Webasyst mobile apps"
+msgstr "Мобильные приложения Webasyst"
+
+msgid "The code has expired."
+msgstr "Срок действия кода истек."
+
+msgid "The code will expire shortly."
+msgstr "Срок действия кода скоро истечет."
+
+msgid "Without access"
+msgstr "Без доступа"
+
+msgid "<strong>Invite via a mobile app.</strong> The code generated below is to be used in any Webasyst mobile app in the ‘Add account’ screen to grant access to <code>%s</code>:"
+msgstr "<strong>Пригласить через мобильное приложение.</strong> Сгенерированный ниже код необходимо ввести в мобильном приложении Webasyst в разделе «Добавить аккаунт». По коду приложение автоматически подключится к <code>%s</code>:"
+
+msgid "Mobile app sign-in via QR"
+msgstr "Войти на телефоне по QR"
+
+msgid "Scan the QR code"
+msgstr "Отсканируйте QR-код"
+
+msgid "Open any of the Webasyst mobile apps and scan the code below on the ‘Sign in with QR code’ screen:"
+msgstr "Откройте любое мобильное приложение из экосистемы Webasyst и отсканируйте этот код на экране «Войти по QR-коду»:"
+
+msgid "Mobile app code"
+msgstr "Код для мобильного приложения"
+
+msgid "The invitation code for <strong>%s</strong> to connect a Webasyst mobile app to <strong>%s</strong>."
+msgstr "С кодом <strong>%s</strong> сможет подключиться к <strong>%s</strong> в мобильных приложениях Webasyst."
+
+msgid "Share the code below with <strong>%s</strong>. Entering the code in a Webasyst mobile app in the ‘Add account’ screen will automatically connect the app to <code>%s</code>."
+msgstr "Сообщите код приглашения <strong>%s</strong>. Ввод кода в мобильном приложении Webasyst в разделе «Добавить аккаунт» автоматически подключит его к <code>%s</code>."
+
+msgid "Send the new user an email with a private one-time invitation link to join your team on Webasyst."
+msgstr "Отправьте новому сотруднику письмо с одноразовой приватной пригласительной ссылкой на подключение к вашей команде в Webasyst."
+
+msgid "User email where an invitation link will be sent."
+msgstr "Адрес для отправки сотруднику письма со ссылкой на подключение."
+
+msgid "User email for notifications and recovering a forgotten password."
+msgstr "Адрес сотрудника для уведомлений и восстановления пароля."
+
+msgid "Send invitation"
+msgstr "Отправить приглашение"
+
+msgid "Copy link"
+msgstr "Копировать ссылку"
+
+msgid "Invitation link is valid through %s"
+msgstr "Ссылка на приглашение действует до %s"
+
+msgid "The user must follow the invitation link to chime in."
+msgstr "Сотрудник должен перейти по ссылке-приглашению, чтобы получить доступ."
+
+msgid "Invitation link expires in %s."
+msgstr "Ссылка на приглашение истекает через %s."
+
+msgid "%s is in the team already"
+msgstr "%s уже в вашей команде"
+
+msgid "Once saved, <strong class=\"js-contact-name\"></strong> will be visible in the Team app too."
+msgstr "Профиль <strong class=\"js-contact-name\"></strong> будет также виден в приложении «Команда»."
+
+msgid "Joined %s"
+msgstr "Зарегистрирован %s"
+
+msgid "Users with no access to Webasyst"
+msgstr "Сотрудники без доступа к Webasyst"
+
+msgid "Delete permanently"
+msgstr "Удалить безвозвратно"
+
+msgid "Just remove from the Team app"
+msgstr "Просто исключить из «Команды»"
+
+msgid "The contact record and all related links will remain in Webasyst. The user won’t ever have access to Webasyst from now on."
+msgstr "Контакт и все его связи с приложениями Webasyst будут сохранены. У сотрудника не будет доступа к вашему Webasyst."
+
+msgid "All links will be broken permanently."
+msgstr "Все связи будут разорваны."

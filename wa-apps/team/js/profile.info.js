@@ -2195,8 +2195,8 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 el.addClass('edit-mode');
                 el.removeClass('view-mode');
 
-                el.find('.subname').wrapAll('<div class="subname-wrapper fields-group custom-mt-0"></div>');
-                el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper fields-group"></div>');
+                el.find('.subname').wrapAll('<div class="subname-wrapper custom-mt-0"></div>');
+                el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper"></div>');
 
                 // Save/cancel buttons
                 var buttons = this.inplaceEditorButtons(fieldsToUpdate, function(noValidationErrors) {

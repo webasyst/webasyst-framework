@@ -6,16 +6,42 @@ class teamUsersInviteMethod extends waAPIMethod
 
     public function execute()
     {
-        $phone = $this->getPhone();
-        if (!empty($phone)) {
-            $result = (new teamUserInvitingByPhone($phone))->createInvitation();
+        $invitation_type = $this->post('type');
+        if ($invitation_type === 'code') {
+            $contact_data = array_filter([
+                'email' => $this->getEmail(false),
+                'phone' => $this->getPhone(),
+            ]);
+
+            $result = (new teamUserInviting($contact_data, [
+                'generate_waid_code' => true,
+            ]))->createInvitation();
+
+            $result_fields = [
+                'contact_id',
+                'invitation_code',
+                'invitation_expire',
+            ];
         } else {
-            $email = $this->getEmail();
-            if ($this->needSend()) {
-                $result = (new teamUserInvitingByEmail($email))->invite();
+            $phone = $this->getPhone();
+            if (!empty($phone)) {
+                $result = (new teamUserInvitingByPhone($phone))->createInvitation();
             } else {
-                $result = (new teamUserInvitingByEmail($email))->createInvitation();
+                $email = $this->getEmail();
+                if ($this->needSend()) {
+                    $result = (new teamUserInvitingByEmail($email))->invite();
+                } else {
+                    $result = (new teamUserInvitingByEmail($email))->createInvitation();
+                }
             }
+            if ($result['status']) {
+                $result['details']['invitation_expire'] = time() + 3600*24*3;
+            }
+            $result_fields = [
+                'contact_id',
+                'invitation_link',
+                'invitation_expire',
+            ];
         }
 
         if (!$result['status']) {
@@ -28,15 +54,12 @@ class teamUsersInviteMethod extends waAPIMethod
             );
         }
 
-        $this->response = waUtils::extractValuesByKeys($result['details'], [
-            'contact_id',
-            'invitation_link',
-        ]);
+        $this->response = waUtils::extractValuesByKeys($result['details'], $result_fields);
     }
 
-    protected function getEmail()
+    protected function getEmail($required=true)
     {
-        return strval($this->post('email', true));
+        return strval($this->post('email', $required));
     }
 
     protected function getPhone()

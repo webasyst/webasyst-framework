@@ -18,6 +18,7 @@ return array(
     'welcome/'           => 'welcome/',
     'invited/'           => 'users/invited',
     'inactive/'          => 'users/inactive',
+    'no-access/'         => 'users/noaccess',
     'search/<search>/'   => 'users/search',
 
     'calendar/external/authorize/' => array(

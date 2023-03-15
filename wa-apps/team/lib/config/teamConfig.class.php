@@ -135,7 +135,7 @@ class teamConfig extends waAppConfig
         if ($data['type'] == 'waid_invite') {
             //
             // Token type 'waid_invite' is called by WAID server via API. No user interaction here, no browser.
-            // We need to convert contact to bachend user,
+            // We need to convert contact to backend user,
             // bind this user with WAID provided and give simple API code response.
             //
             $token_data = json_decode($data['data'], true);
@@ -149,6 +149,9 @@ class teamConfig extends waAppConfig
                 $contact_waid_model->set($contact['id'], $webasyst_contact_id, []);
             }
 
+            // Update contact with WAID data if any received
+            $this->updateContactFromPost($contact);
+
             $app_tokens_model->deleteById($data['token']);
             wa()->getResponse()->setStatus(204);
             wa()->getResponse()->sendHeaders();
@@ -159,6 +162,40 @@ class teamConfig extends waAppConfig
         $controller = wa()->getDefaultController();
         $controller->setAction(new teamInviteFrontendAction($data, $webasyst_id_auth_result));
         $controller->run();
+    }
+
+    // helper for dispatchAppToken()
+    protected function updateContactFromPost($contact)
+    {
+        $call_save = false;
+        foreach([
+            'firstname',
+            'middlename',
+            'lastname',
+            'email',
+            'phone',
+        ] as $f) {
+            $value = waRequest::post($f, null, 'string');
+            if ($value) {
+                $contact[$f] = $value;
+                $call_save = true;
+            }
+        }
+
+        if ($call_save) {
+            $contact->save();
+        }
+
+        $photo_url = waRequest::post('photo', null, 'string');
+        if ($photo_url) {
+            $data = file_get_contents($photo_url);
+            if ($data !== false) {
+                $path = tempnam(sys_get_temp_dir(), 'contactphoto');
+                file_put_contents($path, $data);
+                $contact->setPhoto($path);
+            }
+        }
+
     }
 
     public function checkUpdates()
