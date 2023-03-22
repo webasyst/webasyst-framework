@@ -856,6 +856,13 @@ PHP;
                 }
             }
 
+            // Possible scenario when user re-installs framework again on the same domain:
+            // we should log out here because old auth interferes with first user creation script later.
+            if (!headers_sent() && session_status() != PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            unset($_SESSION['auth_user']);
+
             $url = $is_https ? 'https' : 'http';
             $login_path = waInstallerApps::getGenericConfig('mod_rewrite', true) ? 'webasyst/' : 'index.php/webasyst/';
             $content = <<<HTML

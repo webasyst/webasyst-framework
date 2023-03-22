@@ -43,7 +43,6 @@ var WaFrontendLogin = ( function($) {
 
         if (that.isNeedConfirm()) {
             that.initConfirmView();
-            that.onCodeInput()
         }
 
         that.initAuthAdapters();
@@ -449,22 +448,6 @@ var WaFrontendLogin = ( function($) {
 
         };
         return handlers;
-    };
-
-    Self.prototype.onCodeInput = function () {
-        const that = this;
-        const $confirmation_code_input = that.getFormInput('confirmation_code');
-
-        if ($confirmation_code_input.length) {
-            const $form = that.getFormItem(),
-                $button = $form.find(':submit:first:not(:disabled)');
-
-            $confirmation_code_input.on('input', function () {
-                if (this.value.length === 4) {
-                    $button.trigger('click');
-                }
-            });
-        }
     };
 
     return Self;

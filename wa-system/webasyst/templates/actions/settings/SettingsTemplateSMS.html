@@ -49,14 +49,13 @@
                         </div>
                         {* FIXED Buttons *}
                         <div class="bottombar flexbox middle"{if $wa->isMobile()} style="overflow-x: scroll;"{/if}>
-                            <div class="article flexbox middle space-32 js-footer-actions"{if $wa->isMobile()} style="overflow-x: scroll; min-width: max-content; padding: 0 1rem;"{/if}>
+                            <div class="article flexbox middle space-48 js-footer-actions"{if $wa->isMobile()} style="overflow-x: scroll; min-width: max-content; padding: 0 1rem;"{/if}>
                                 <div class="nowrap">
                                     {* Save *}
-                                    <input class="button js-submit-button" type="submit" name="" value="[s`Save`]">
+                                    <input class="button js-submit-button green" type="submit" name="" value="[s`Save`]">
                                     {* Cancel *}
                                     <span class="c-hidden">
-                                        <span style="margin: 0 4px;">[s`or`]</span>
-                                        <a href="{$wa_backend_url}webasyst/settings/sms/template/{$channel->getId()|escape}" class="js-cancel">[s`cancel`]</a>
+                                        <a href="{$wa_backend_url}webasyst/settings/sms/template/{$channel->getId()|escape}" class="button light-gray js-cancel">[s`Cancel`]</a>
                                     </span>
                                     <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
                                 </div>

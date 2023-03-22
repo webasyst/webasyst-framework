@@ -33,13 +33,13 @@
                     </li>
                 {/if}
                 <li>
-                    <a href="#" class="small js-page-settings-toggle" id="wa-page-settings-toggle">
+                    <a href="javascript:void(0);" class="small js-page-settings-toggle" id="wa-page-settings-toggle">
                         <i class="fas fa-edit"></i> [s`Page settings`]
                     </a>
                 </li>
                 <li>
                     <a class="small wa-page-delete js-page-delete" href="?module=pages&action=delete">
-                        <i class="fas fa-trash-alt"></i> [s`Delete`]
+                        <i class="fas fa-trash-alt text-red"></i> [s`Delete`]
                     </a>
                 </li>
             </ul>
@@ -102,7 +102,7 @@
 
 
             {if !$page || !$page.id}
-                <a id="wa-page-advanced-params-link" href="#" class="small gray">
+                <a id="wa-page-advanced-params-link" href="javascript:void(0);" class="small gray">
                     [s`more`]
                     <i class="fas fa-caret-down"></i>
                 </a>
@@ -197,9 +197,9 @@
     <div class="wa-editor-core-wrapper">
         <ul class="tabs overflow-dropdown wa-editor-wysiwyg-html-toggle bordered-bottom custom-ml-8 small">
             <li class="selected">
-                <a class="wysiwyg js-is-wa2" href="#">[s`WYSIWYG`]</a>
+                <a class="wysiwyg js-is-wa2" href="javascript:void(0);">[s`WYSIWYG`]</a>
             </li>
-            <li><a class="html" href="#">HTML</a></li>
+            <li><a class="html" href="javascript:void(0);">HTML</a></li>
         </ul>
         <div style="clear:both">
             <div class="wa-editor-upload-img hidden" title="[s`Upload image`]">
@@ -241,7 +241,7 @@
         </div>
         <div class="dialog-footer">
             <input type="submit" class="button" value="[s`Upload`]">
-            <a href="#" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+            <a href="javascript:void(0);" class="js-close-dialog button light-gray">[s`Cancel`]</a>
         </div>
     </form>
 </div>
@@ -254,7 +254,7 @@
         </div>
         <div class="dialog-footer">
             <input type="submit" class="button orange" value="[`Switch`]" />
-            <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+            <a href="javascript:void(0);" class="js-close-dialog button light-gray">[`Cancel`]</a>
         </div>
     </form>
 </div>
@@ -269,6 +269,8 @@
 
         let $page_form = $('#wa-page-form');
 
+        initSubmitChanged($page_form);
+
         {if $options.is_ajax}
             {if $page}
                 document.title = {$page.name|json_encode} + " — " + {$wa->appName(false)|json_encode};
@@ -281,25 +283,33 @@
             // Link to delete the page
             $(".wa-page-delete").on('click', function(e) {
                 e.preventDefault();
-                if (confirm(page_delete_confirm_msg)) {
-                    $.post($(this).attr('href'), { id:{$page.id}}, function () {
+                var url = $(this).attr('href');
 
-                        var li = $("#page-{$page.id}");
-                        var prev = li.prevAll('.dr:first');
-                        if (prev.length > 0) {
-                            location.href = prev.addClass('selected').find('a').attr('href');
-                            li.remove();
-                        } else {
-                            var next = li.nextAll('.dr:first');
-                            if (next.length > 0) {
-                                location.href = next.addClass('selected').find('a').attr('href');
+                $.waDialog.confirm({
+                    title: page_delete_confirm_msg,
+                    success_button_title: $_('Delete'),
+                    success_button_class: 'danger',
+                    cancel_button_title: $_('Cancel'),
+                    cancel_button_class: 'light-gray',
+                    onSuccess: function ($dialog, dialog_instance) {
+                        $.post(url, { id:{$page.id}}, function () {
+                            var li = $("#page-{$page.id}");
+                            var prev = li.prevAll('.dr:first');
+                            if (prev.length > 0) {
+                                location.href = prev.addClass('selected').find('a').attr('href');
                                 li.remove();
                             } else {
-                                location.reload(true);
+                                var next = li.nextAll('.dr:first');
+                                if (next.length > 0) {
+                                    location.href = next.addClass('selected').find('a').attr('href');
+                                    li.remove();
+                                } else {
+                                    location.reload(true);
+                                }
                             }
-                        }
-                    }, "json");
-                }
+                        }, "json");
+                    }
+                });
                 return false;
             });
         {/if}
@@ -351,7 +361,6 @@
            }else{
                $label.toggleClass('gray', true).text(no_active_text)
            }
-           $('#wa-page-button').removeClass('green').addClass('yellow');
        }
    });
 
@@ -419,90 +428,110 @@
         $page_form.submit();
     })
     $page_form.submit(function (e) {
-    e.preventDefault();
-    const $form = $(this),
-        $page_settings = $('#wa-page-settings'),
-        $page_content = $('#wa-page-content'),
-        $editor_status = $('#wa-editor-status'),
-        $page_button = $('#wa-page-button'),
-        $page_urls_link = $(".wa-page-urls a"),
-        $li = $(".block-pages ul li.selected");
+        e.preventDefault();
+        const $form = $(this),
+            $page_settings = $('#wa-page-settings'),
+            $page_content = $('#wa-page-content'),
+            $editor_status = $('#wa-editor-status'),
+            $page_button = $('#wa-page-button'),
+            $page_urls_link = $(".wa-page-urls a"),
+            $li = $(".block-pages ul li.selected");
 
-    let page_url, page_attr_url, error;
+        let page_url, page_attr_url, error;
 
-    $.wa_editor_ready.then(function(method) {
-        if ($('#wa-page-settings input[name="info[name]"]').is(":focus") && !$("#wa-page-form-translit").length) {
-            $form.append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
-        }
-
-        $page_content[method]('sync');
-
-        $editor_status.html("<i class='fas fa-spin fa-spinner'></i> [s`Saving...`]").fadeIn("slow");
-
-        $.post($form.attr('action'), $form.serialize(), function (response) {
-            if (response.status == 'ok') {
-                $(".error").removeClass('error');
-
-                $editor_status.html('<i class="fas fa-check-circle"></i> [s`Saved`]').fadeOut('slow');
-
-                $page_button.removeClass('yellow').removeClass('red');
-
-                const p = response.data;
-
-                let html = $(`<li id="page-${ p.id }" class="dr selected">
-                                <a class="wa-page-link ui-droppable" href="{$page_url}${ p.id }">
-                                    <i class="fas fa-${ p.status == 0 ? 'pencil' : 'file' }-alt"></i>
-                                    <span>${ p.name } <span class="hint">/${ p.full_url }</span></span>
-                                    <span class="count action small">
-                                        <i class="fas fa-plus-circle wa-page-add"></i>
-                                    </span>
-                                </a>
-                            </li>`);
-
-                if (p.add) {
-                    $li.replaceWith(html);
-                } else {
-                    $("#page-" + p.id).children('a.wa-page-link').replaceWith($(html).find('a.wa-page-link'));
-
-                    $("#page-" + p.id + ' > ul li span.hint').each(function () {
-                        $(this).text('/' + p.full_url + (p.full_url.length > 0 && p.full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(p.old_full_url.length + 1));
-                    });
-                }
-
-                if (response.data.add) {
-                    waLoadPage(p.id);
-                } else {
-                    $(".wa-page-editor .wa-page-name").html(p.name);
-                }
-
-                {if !empty($url)}
-                    page_url = {waIdna::dec($url)|json_encode} + p.url;
-                {elseif isset($page_route)}
-                    page_url = 'http://{waIdna::dec($page.domain)}/{$page_route}' + p.full_url;
-                {/if}
-
-                if ($('#wa-page-v').is(':checked')) {
-                    page_attr_url = page_url;
-                } else {
-                    page_attr_url = page_url + '?preview={$preview_hash}';
-                }
-
-                if ($page_urls_link.length) {
-                    $page_urls_link.attr('href', page_attr_url);
-                    $page_urls_link.is(':first').html(page_url);
-                }
-            } else if (response.status == 'fail') {
-                if ($.isArray(response.errors)) {
-                    error = response.errors[0];
-                    $(response.errors[1]).addClass('error');
-                } else {
-                    error = response.errors;
-                }
-
-                $editor_status.html('<b style="color:red">' + (error ? error : $_('An error occurred while saving')) + '</b>');
-                $page_button.removeClass('yellow').removeClass('green').addClass('red');
+        $.wa_editor_ready.then(function(method) {
+            if ($('#wa-page-settings input[name="info[name]"]').is(":focus") && !$("#wa-page-form-translit").length) {
+                $form.append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
             }
-        }, "json");
+
+            $page_content[method]('sync');
+
+            $editor_status.html("<i class='fas fa-spin fa-spinner'></i> [s`Saving...`]").fadeIn("slow");
+
+            $.post($form.attr('action'), $form.serialize(), function (response) {
+                if (response.status == 'ok') {
+                    $(".state-error").removeClass('state-error');
+
+                    $editor_status.html('<i class="fas fa-check-circle"></i> [s`Saved`]').fadeOut('slow');
+
+                    const p = response.data;
+
+                    let html = $(`<li id="page-${ p.id }" class="dr selected">
+                                    <a class="wa-page-link ui-droppable" href="{$page_url}${ p.id }">
+                                        <i class="fas fa-${ p.status == 0 ? 'pencil' : 'file' }-alt"></i>
+                                        <span>${ p.name } <span class="hint">/${ p.full_url }</span></span>
+                                        <span class="count action small">
+                                            <i class="fas fa-plus-circle wa-page-add"></i>
+                                        </span>
+                                    </a>
+                                </li>`);
+
+                    if (p.add) {
+                        $li.replaceWith(html);
+                    } else {
+                        $("#page-" + p.id).children('a.wa-page-link').replaceWith($(html).find('a.wa-page-link'));
+
+                        $("#page-" + p.id + ' > ul li span.hint').each(function () {
+                            $(this).text('/' + p.full_url + (p.full_url.length > 0 && p.full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(p.old_full_url.length + 1));
+                        });
+                    }
+
+                    if (response.data.add) {
+                        waLoadPage(p.id);
+                    } else {
+                        $(".wa-page-editor .wa-page-name").html(p.name);
+                    }
+
+                    {if !empty($url)}
+                        page_url = {waIdna::dec($url)|json_encode} + p.url;
+                    {elseif isset($page_route)}
+                        page_url = 'http://{waIdna::dec($page.domain)}/{$page_route}' + p.full_url;
+                    {/if}
+
+                    if ($('#wa-page-v').is(':checked')) {
+                        page_attr_url = page_url;
+                    } else {
+                        page_attr_url = page_url + '?preview={$preview_hash}';
+                    }
+
+                    if ($page_urls_link.length) {
+                        $page_urls_link.attr('href', page_attr_url);
+                        $page_urls_link.first().html(page_url);
+                    }
+
+
+                } else if (response.status == 'fail') {
+                    if ($.isArray(response.errors)) {
+                        error = response.errors[0];
+                        $(response.errors[1]).addClass('state-error');
+                    } else {
+                        error = response.errors;
+                    }
+
+                    $editor_status.html('<b style="color:red">' + (error ? error : $_('An error occurred while saving')) + '</b>');
+                    $page_button.removeClass('yellow').removeClass('green').addClass('red');
+                }
+            }, "json");
+        });
     });
-});
+
+    function initSubmitChanged($form) {
+        const $submit = $('#wa-page-button');
+        let is_changed = false;
+
+        const submitChanged = () => {
+            if (is_changed) return true;
+
+            $submit.removeClass('green').addClass('yellow');
+            is_changed = true;
+        };
+
+        $form.on('change', submitChanged);
+        $(':input:not(:submit)', $form).on('input', submitChanged);
+
+        $submit.on('click', function() {
+            $submit.removeClass('yellow').removeClass('red').addClass('green');
+            is_changed = false;
+        });
+    }
 });</script>

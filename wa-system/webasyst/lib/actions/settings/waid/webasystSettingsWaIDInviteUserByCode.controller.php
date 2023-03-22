@@ -17,7 +17,7 @@ class webasystSettingsWaIDInviteUserByCodeController extends waJsonController
 
         // Only allow to send code to self unless global admin.
         if ($user_to_invite['id'] != wa()->getUser()->getId() && !wa()->getUser()->isAdmin()) {
-            $this->errors = _ws('Можно использовать только для себя.');
+            $this->errors = _ws('Can be used only for yourself.');
             return;
         }
 

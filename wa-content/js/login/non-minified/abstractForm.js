@@ -614,7 +614,7 @@ var WaLoginAbstractForm = ( function($) {
             }
         };
     };
-
+    
     Self.prototype.onDoneSubmit = function (r) {
         var that = this,
             handlers = that.onDoneSubmitHandlers(),

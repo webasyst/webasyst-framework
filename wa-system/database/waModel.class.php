@@ -760,7 +760,7 @@ class waModel
                 if (!$fields) {
                     $fields = array_keys($row_values);
                 } else if (count($fields) != count($row_values)) {
-                    throw new waException('Mismatched field count in multipleInsert(): '.join(',', $fields).' != '.join(',', array_keys($row_values)));
+                    continue; // silently ignore rows with field count mismatch
                 }
                 $values[] = implode(',', $row_values);
             }

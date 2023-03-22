@@ -262,13 +262,13 @@
                             <label for="s-rememberme-auth">[`Auto-login`]</label>
                         </div>
                         <div class="value">
-                            <label>
+                            <div class="switch-with-text ">
                                 <input type="hidden" name="rememberme" value="0" />
                                 <span class="switch middle" id="rememberme">
                                     <input id="s-rememberme-auth" name="rememberme" class="js-rememberme-auth-toogle" type="checkbox" value="1"{if $auth_config.rememberme} checked="checked"{/if}>
                                 </span>
-                                <span class="js-rememberme-auth-status">{if $auth_config.rememberme}[`enabled`]{else}[`disabled`]{/if}</span>
-                            </label>
+                                <label class="js-rememberme-auth-status" for="s-rememberme-auth">{if $auth_config.rememberme}[`enabled`]{else}[`disabled`]{/if}</label>
+                            </div>
                             <p class="hint">[s`“Remember me” option`]</p>
                         </div>
                     </div>

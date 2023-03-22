@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-03-03 13:18+0300\n"
+"PO-Revision-Date: 2023-03-22 12:26+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -6687,3 +6687,30 @@ msgstr "Календарь команды"
 
 msgid "<strong>More profile and account authentication features are available in the Team app.</strong> Contact your Webasyst admin for access."
 msgstr "<strong>В приложении «Команда» есть дополнительные полезные функции управления профилем и авторизацией.</strong> Обратитесь к администратору Webasyst по поводу доступа."
+
+msgid "Fill-in default region list"
+msgstr "Заполнить список из справочника"
+
+msgid "The country is not in the list."
+msgstr "Страны нет в списке."
+
+msgid "User-Agent"
+msgstr ""
+
+msgid "Last sign-in with Webasyst ID: %s"
+msgstr "Последний вход с Webasyst ID: %s"
+
+msgid "Last 2FA verification: %s"
+msgstr "Последнее подтверждение с 2FA: %s"
+
+msgid "The user has Webasyst ID two-factor authentication protection enabled! Last 2FA code verification: <b>%s</b>."
+msgstr "У пользователя включена двухфакторная защита аутентификации Webasyst ID! Последнее подтверждение кодом 2FA: <b>%s</b>."
+
+msgid "Two-factor authentication is not enabled! In security concerns, it is highly recommended that the user enable 2FA in his Webasyst ID profile: %s."
+msgstr "Двухфакторная аутентификация не включена! Из соображений безопасности настоятельно рекомендуется, чтобы пользователь включил 2FA в своем профиле Webasyst ID: %s."
+
+msgid "Can be used only for yourself."
+msgstr "Можно использовать только для себя."
+
+msgid "Unable to connect to Webasyst API."
+msgstr "Не удалось подключиться к API Webasyst."

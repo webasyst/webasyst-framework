@@ -104,7 +104,7 @@ INSERT IGNORE INTO wa_region (country_iso3, code, name, fav_sort, region_center)
 ('rus', '44', 'Костромская область', null, null),
 ('rus', '23', 'Краснодарский край', null, null),
 ('rus', '24', 'Красноярский край', null, null),
-('rus', '82', 'Крым республика', null, null),
+('rus', '91', 'Крым республика', null, null),
 ('rus', '45', 'Курганская область', null, null),
 ('rus', '46', 'Курская область', null, null),
 ('rus', '47', 'Ленинградская область', null, null),

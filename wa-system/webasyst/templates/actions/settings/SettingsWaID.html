@@ -191,7 +191,7 @@
                                 </a>
                             </td>
                             <td class="align-center">
-                                <i class="fas fa-check text-green" title="{sprintf_wp('Last sign in with Webasyst ID: %s', $user.waid_create_datetime|wa_date:'humandatetime')}"></i>
+                                <i class="fas fa-check text-green" title="{sprintf_wp('Last sign-in with Webasyst ID: %s', $user.waid_create_datetime|wa_date:'humandatetime')}"></i>
                             </td>
                             <td class="align-center">
                                 {if $user.two_fa_mode && $user.two_fa_time}
@@ -300,9 +300,9 @@
             const alert2fa = user_2fa => {
                 let alert;
                 if (user_2fa){
-                    alert = `<span class="alert success"><i class="fas fa-check text-green custom-mr-4"></i> {sprintf_wp('The user has Webasyst ID two-factor authentication protection enabled! Last 2FA code verification: <b>%s</b>', '${ user_2fa }')}</span>`;
+                    alert = `<span class="alert success"><i class="fas fa-check text-green custom-mr-4"></i> {sprintf_wp('The user has Webasyst ID two-factor authentication protection enabled! Last 2FA code verification: <b>%s</b>.', '${ user_2fa }')}</span>`;
                 }else{
-                    alert = `<span class="alert"><i class="fas fa-times text-red custom-mr-4"></i> {sprintf_wp('Two-factor authentication is not enabled! In security concerns, it is highly recommended that the user enable 2FA in his Webasyst ID profile: %s', '<a href="https://www.webasyst.com/my/" target="_blank">https://www.webasyst.com/my/</a>')}</span>`;
+                    alert = `<span class="alert"><i class="fas fa-times text-red custom-mr-4"></i> {sprintf_wp('Two-factor authentication is not enabled! In security concerns, it is highly recommended that the user enable 2FA in his Webasyst ID profile: %s.', '<a href="https://www.webasyst.com/my/" target="_blank">https://www.webasyst.com/my/</a>')}</span>`;
                 }
                 return alert;
             };
