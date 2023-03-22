@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1776,3 +1776,39 @@ msgstr "Контакт и все его связи с приложениями W
 
 msgid "All links will be broken permanently."
 msgstr "Все связи будут разорваны."
+
+msgid "Middle name"
+msgstr "Отчество"
+
+msgid "Job title"
+msgstr "Должность"
+
+msgid "Company"
+msgstr "Компания"
+
+msgid "Phone"
+msgstr "Телефон"
+
+msgid "Team calendar"
+msgstr "Календарь команды"
+
+msgid "Delete this contact permanently"
+msgstr "Удалить этот контакт навсегда"
+
+msgid "This is a list of users who do not have access to your Webasyst backend."
+msgstr "Здесь показан список сотрудников, у которых нет доступа к бекенду Вебасиста."
+
+msgid "Users with no access to Webasyst backend"
+msgstr "Сотрудники без доступа к бекенду Вебасиста"
+
+msgid "API error: %s"
+msgstr "Ошибка API: %s"
+
+msgid "revoked access from %d contact"
+msgid_plural "revoked access from %d contacts"
+msgstr[0] "отключил доступ для %d контакта"
+msgstr[1] "отключил доступ для %d контактов"
+msgstr[2] "отключил доступ для %d контактов"
+
+msgid "Contact does not exist."
+msgstr "Контакт не существует."

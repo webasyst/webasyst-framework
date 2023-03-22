@@ -1015,7 +1015,7 @@ var EventEditDialog = ( function($) {
         });
 
         that.$form.on("summaryChange", function() {
-            that.$summaryField.val( that.summary );
+            that.$summaryField.val( that.summary.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#039;/g,"'").replace(/&quot;/g,'"') );
         });
 
         if (that.$userToggle.length) {

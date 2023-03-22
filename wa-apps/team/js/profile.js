@@ -414,7 +414,7 @@ var Profile = ( function($) {
         let full_calendar_link = '';
         if (options.sectionId === 'calendar') {
             full_calendar_link = `<a href="${that.wa_app_url}calendar/">
-                                    <span>${options.teamCalendar}</span> 
+                                    <span>${options.dialogTeamCalendar}</span> 
                                     <i class="fas fa-external-link-alt fa-xs"></i>
                                 </a>`;
         }

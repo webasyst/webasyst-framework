@@ -541,11 +541,13 @@ var Sidebar = ( function($) {
         const that = this;
 
         const searchValue = $(event.target).find('.t-search-field').val();
-        const search_string = encodeURIComponent(searchValue);
-        const content_uri = `${$.team.app_url}search/${search_string}/`;
+        if (searchValue) {
+            const search_string = encodeURIComponent(searchValue);
+            const content_uri = `${$.team.app_url}search/${search_string}/`;
 
-        $.team.content.load(content_uri);
-        that.$wrapper.find('.sidebar-mobile-toggle').trigger('click');
+            $.team.content.load(content_uri);
+            that.$wrapper.find('.sidebar-mobile-toggle').trigger('click');
+        }
     };
 
     Sidebar.prototype.setSelected = function(data) {
