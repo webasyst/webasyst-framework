@@ -7,7 +7,7 @@ class webasystProfilePhotoAction extends waViewAction
     public function execute()
     {
         $id = waRequest::request('id', wa()->getUser()->getId(), 'int');
-        $ui = waRequest::request('id', '1.3', 'int');
+        $ui = waRequest::request('ui', null, 'string');
         $contact = new waContact($id);
 
         // If there is a photo for this contact, show it to crop
@@ -18,10 +18,8 @@ class webasystProfilePhotoAction extends waViewAction
             $oldImage = $contact->getPhoto('original');
         }
 
-        if($ui === '1.3') {
-            $this->setTemplate('templates/actions-legacy/profile/ProfilePhoto.html');
-        }else{
-            $this->setTemplate('templates/actions/profile/ProfilePhoto.html');
+        if (!empty($ui) && $ui != wa()->whichUI()) {
+            waRequest::SetParam('force_ui_version', $ui);
         }
 
         $this->view->assign(array(
