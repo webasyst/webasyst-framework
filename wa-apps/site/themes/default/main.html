@@ -1,44 +1,69 @@
-{if $wa->currentUrl() == $wa_app_url && (empty($page.id) && empty($page.content))}
+<!-- plugin hook: 'frontend_header' -->
+{* @event frontend_header.%plugin_id% *}
+{foreach $frontend_header as $_}{$_}{/foreach}
 
-    <div class="welcome">
-        <h1>[`Welcome to your new site!`]</h1>
-        <p>{sprintf('[`Open “<a href="%s">Pages</a>” section and add a new page with an empty address. You will see its contents here.`]', $wa_backend_url|cat:'site/#/pages/')}</p>
-    </div>
+{$_use_store_schema = false}
+{if !empty($action) && ($action === "default")}
+    {$_use_store_schema = true}
+{/if}
 
-{else}
-
-    <article class="content with-sidebar" itemscope itemtype="http://schema.org/WebPage">
-        {$content} {* see page.html *}
-    </article>
-
-    {if isset($page) && (empty($action) || $action == 'page')}
-        <div class="content">
-
-            <!-- FOLLOW -->
-            <aside class="connect inline">
-                {if !empty($theme_settings.facebook_likebox_code)}
-                    <div class="likebox">
-                        {$theme_settings.facebook_likebox_code}
-                    </div>
-                {/if}
-                {if !empty($theme_settings.twitter_timeline_code)}
-                    <div class="likebox">
-                        {$theme_settings.twitter_timeline_code}
-                    </div>
-                {/if}
-                {if !empty($theme_settings.vk_widget_code)}
-                    <div class="likebox">
-                        {$theme_settings.vk_widget_code}
-                    </div>
-                {/if}
-                {*
-                <div class="likebox">
-                     your custom social widget
-                </div>
-                *}
-            </aside>
-
-        </div>
+<div class="content" id="page-content" itemscope itemtype="{if $_use_store_schema}http://schema.org/Store{else}http://schema.org/WebPage{/if}">
+    {if $_use_store_schema}
+        {if !empty($theme_settings.store_address)}
+            <meta itemprop="address" content="{$theme_settings.store_address}">
+        {/if}
+        {if !empty($theme_settings.store_price_range)}
+            <meta itemprop="priceRange" content="{$theme_settings.store_price_range}">
+        {/if}
+        {if !empty($theme_settings.logo)}
+            {$_absolute_thumb_uri = "{$wa->url(true)}{$wa_theme_url|substr:1}{$theme_settings.logo}?v{$wa_theme_version}"}
+            <meta itemprop="image" content="{$_absolute_thumb_uri|escape}">
+        {/if}
     {/if}
 
+    <!-- internal navigation breadcrumbs -->
+    {if !empty($breadcrumbs)}
+        <nav class="breadcrumbs" itemprop="breadcrumb">
+            {if !$wa->globals('isMyAccount')}
+                <a href="{$wa_app_url}">{$wa->shop->settings('name')}</a>
+                <span class="chevron right"></span>
+            {else}
+                {* within My Account we exclude first node from navigation because links are on the page already *}
+                {$breadcrumbs[0] = null}
+            {/if}
+            {foreach $breadcrumbs as $breadcrumb}
+                {if $breadcrumb}
+                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a>
+                    {if !$breadcrumb@last}
+                        <span class="chevron right"></span>
+                    {/if}
+                {/if}
+            {/foreach}
+        </nav>
+    {/if}
+
+    {$content}
+
+</div>
+
+<div id="dialog" class="dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-window">
+        <!-- common part -->
+        <div class="cart">
+
+        </div>
+        <!-- /common part -->
+
+    </div>
+</div>
+
+{if $theme_settings.compare_products}
+<aside id="compare-leash">
+    <div class="container">
+        {$in_comparison = $wa->shop->inComparison()}
+        <a {if !$in_comparison}style="display:none;"{/if} href="{$wa->getUrl('/frontend/compare', ['id' => implode(',', $in_comparison)])}">[`Compare selected products`] (<strong>{count($in_comparison)}</strong>)</a>
+        {*if $in_comparison}<style>.appfooter { padding-bottom: 60px; } </style>{/if*}
+    </div>
+</aside>
 {/if}

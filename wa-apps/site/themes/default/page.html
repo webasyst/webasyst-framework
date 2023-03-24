@@ -1,24 +1,14 @@
-{if !empty($breadcrumbs)}
-    <div class="breadcrumbs"itemprop="breadcrumb">
-        {foreach $breadcrumbs as $breadcrumb}
-            <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
-        {/foreach}
-    </div>
-{/if}
+<h1>{$page.name}</h1>
 
-<h1 itemprop="name">{$page.name|default:'[`(no name)`]'}</h1>
-
-{$subpages = $wa->site->pages($page.id|default:null)}
+{$subpages = $wa->shop->pages($page.id)}
 {if $subpages}
-    <ul class="sub-links">
+    <ul class="sub-links wa-flex wa-flex-wrap">
         {foreach $subpages as $p}
-            <li><a href="{$p.url}">{$p.name}</a></li>
+            <li><a class="button bg-gray" href="{$p.url}">{$p.name}</a></li>
         {/foreach}
     </ul>
 {/if}
 
-<div id="page" role="main" itemprop="description">
+<div id="page" role="main">
     {$page.content}
 </div>
-    
-<div class="clear-both"></div>

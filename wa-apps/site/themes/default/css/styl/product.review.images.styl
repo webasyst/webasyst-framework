@@ -1,0 +1,138 @@
+.s-review-images-section
+    padding 15px 20px
+    border 2px dashed var(--gray5)
+    transition 200ms background linear
+    border-radius: 10px;
+
+    &.is-highlighted
+        background #fafadf
+
+    .s-image-form-section
+        position relative
+
+        .s-description
+            color var(--gray3)
+            .s-icon
+                position relative
+                display inline-block
+                vertical-align -3px
+                width 22px
+                height 19px
+                margin-right 10px
+                svg
+                    position absolute
+                    top 0
+                    left 0
+                    width 100%
+                    height 100%
+            a
+                color var(--link-color)
+
+        .s-file-field
+            position absolute
+            top 0
+            left 0
+            width 100%;
+            height 100%
+            opacity 0
+            cursor pointer
+            text-indent: -100%;
+            font-size: 0;
+
+    .s-attached-files-section
+        &:not(:empty)
+            margin -20px 0 0
+
+        .s-file-wrapper
+            position relative
+            display inline-block
+            vertical-align top
+            margin 40px 40px 0 0
+
+            .s-image-wrapper
+                width 200px
+                height 200px
+                background var(--gray7) 50% no-repeat;
+                background-size contain
+                box-sizing border-box
+                border: 1px solid var(--gray5);
+                border-radius: 7px;
+
+            .s-description-wrapper
+                margin-top 10px
+                font-size 13px
+                line-height (15/13)em
+                min-height 55px
+
+                &.is-extended
+                    .s-visible
+                        display none
+
+                &:not(.is-extended)
+                    .s-hidden
+                        display none
+
+                .s-visible
+                    padding 5px
+
+                .s-textarea
+                    display block
+                    border solid 1px rgba(0, 0, 0, 0.1);
+                    padding 4px 6px
+                    font-size 14px
+                    line-height 15px
+                    width 100%
+                    height 55px
+                    resize none
+                    box-sizing border-box
+                    min-width auto
+                    min-height auto
+
+                a
+                    color var(--link-color)
+
+            .s-actions
+                position absolute
+                top 0
+                right 0
+                transform translate(50%, -10px)
+
+                .s-action
+                    position relative
+                    width 20px
+                    height 20px
+                    box-sizing border-box
+                    border-radius 50%
+                    border solid 1px rgba(0, 0, 0, 0.33);
+                    background var(--white)
+                    cursor pointer
+
+                    &:not(:first-child)
+                        margin-top 10px
+
+                    .s-icon
+                        position absolute
+                        display inline-block
+                        width 10px
+                        height 10px
+                        top 50%
+                        left 50%
+                        transform translate(-50%, -50%)
+
+                        svg
+                            position absolute
+                            top 0
+                            left 0
+                            width 100%
+                            height 100%
+
+    .s-errors-section
+        &:not(:empty)
+            margin 20px 0 0
+
+        .s-error
+            font-size 12px
+            line-height (14/12)em
+            color var(--red)
+            &:not(:first-child)
+                margin-top 5px

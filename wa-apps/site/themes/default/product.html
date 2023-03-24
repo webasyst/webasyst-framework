@@ -1,0 +1,390 @@
+{$_head_prefix = "og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# product: http://ogp.me/ns/product#"}
+{$wa->globals("headPrefix", $_head_prefix)}
+
+<link href="{$wa_theme_url}swipebox/css/swipebox.css" rel="stylesheet">
+<script src="{$wa_theme_url}swipebox/js/jquery.swipebox.js"></script>
+<script src="{$wa_theme_url}js/page.product.js?v={$wa_theme_version}"></script>
+
+{function name="_render_sku_features" _features=[]}
+    <ul class="features row gap32 cols1-mobile" id="product-features">
+        {foreach $_features as $_feature_id => $_feature_value}
+            {$_true_params = ["weight", "brand", "model", "width", "height", "depth", "color", "manufacturer"]}
+            {$_is_good_param = ($_feature_id|in_array:$_true_params)}
+            {$_itemprop = ""}
+            {if $_is_good_param}{$_itemprop = $_feature_id}{/if}
+            {$_feature = ifset($sku_features, $_feature_id, null)}
+
+            {if $_feature}
+                {if $_feature.type == 'divider'}
+                    <li class="col w12 divider{if $_feature_value@iteration != 1} wa-mt-16{/if}">
+                        <h5 class="wa-mb-8">{$_feature.name|escape}</h5>
+                    </li>
+                {else}
+                    <li class="col w6 wa-flex justify-content-between">
+                        <span class="name">{$_feature.name|escape}</span>
+                        <span class="feature-dot-divider wa-flex-fill"></span>
+                        <span class="value" itemprop="{$_itemprop|escape}">
+                        {if is_array($_feature_value)}
+                            {if $_feature.type == 'color'}
+                                {implode('<br>', $_feature_value)}
+                            {else}
+                                {implode(', ', $_feature_value)}
+                            {/if}
+                        {else}
+                            {$_feature_value}
+                        {/if}
+                    </span>
+                    </li>
+                {/if}
+            {/if}
+        {/foreach}
+    </ul>
+{/function}
+
+{$_skus_features_html = []}
+{foreach $product.skus as $_sku}
+    {if !empty($_sku.features)}
+        {capture assign="_sku_features_html"}{_render_sku_features _features=$_sku.features}{/capture}
+        {$_skus_features_html[$_sku.id] = $_sku_features_html}
+    {/if}
+{/foreach}
+
+<article itemscope itemtype="http://schema.org/Product" id="js-product-page">
+
+    <h1 class="wa-mb-16 font-weight-normal">
+        <span itemprop="name">{$product.name|escape}</span>
+    </h1>
+
+    <div class="wa-flex">
+        <!-- product internal nav -->
+        <ul class="product-topbar js-product-topbar">
+            <li class="selected">
+                <a href="{$wa->shop->productUrl($product)}">
+                    [`Overview`]
+                </a>
+            </li>
+            <li>
+                <a href="{$wa->shop->productUrl($product, 'reviews')}">[`Reviews`]</a> <span class="wa-ml-4 wa-mr-8 hint">{$reviews_total_count}</span>
+                {if !empty($product.rating) && $product.rating > 0}
+                    <!-- rating -->
+                    <span class="rating nowrap wa-mb-4" title="{sprintf('[`Average user rating: %s / 5`]', $product.rating)}" {if !empty($reviews_total_count)}itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating"{/if}>
+                        {$wa->shop->ratingHtml($product.rating, 16)}
+                        {if !empty($reviews_total_count)}
+                            <meta itemprop="ratingValue" content = "{$product.rating}">
+                            <meta itemprop="reviewCount" content = "{$reviews_total_count}">
+                        {/if}
+                    </span>
+                {/if}
+            </li>
+
+            {foreach $product.pages as $page}
+                <li>
+                    <a href="{$wa->shop->productUrl($product, 'page', ['page_url' => $page.url])}">
+                        {$page.name|escape}
+                    </a>
+                </li>
+            {/foreach}
+
+            <!-- plugin hook: 'frontend_product.menu' -->
+            {* @event frontend_product.%plugin_id%.menu *}
+            {foreach $frontend_product as $_}{$_.menu}{/foreach}
+            {if $theme_settings.compare_products}
+                <li class="compare">
+                    <div class="wa-flex align-items-center">
+                        <!-- compare -->
+                        <a {if $compare}style="display:none"{/if} class="compare-add inline-link" data-product="{$product.id}" href="#" title="[`Add to comparison table`]">
+                            <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="16" width="8" height="3" rx="1" transform="rotate(-90 0 16)" fill="currentColor"/>
+                                <rect x="6" y="16" width="16" height="3" rx="1" transform="rotate(-90 6 16)" fill="currentColor"/>
+                                <rect x="12" y="16" width="13" height="3" rx="1" transform="rotate(-90 12 16)" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a {if !$compare}style="display:none"{/if} class="compare-remove inline-link" data-product="{$product.id}" href="#" title="[`Remove from comparison table`]">
+                            <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="16" width="8" height="3" rx="1" transform="rotate(-90 0 16)" fill="currentColor"/>
+                                <rect x="6" y="16" width="16" height="3" rx="1" transform="rotate(-90 6 16)" fill="currentColor"/>
+                                <rect x="12" y="16" width="13" height="3" rx="1" transform="rotate(-90 12 16)" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a id="compare-link" class="wa-ml-8" {if count($compare) lt 2}style="display:none"{/if} rel="nofollow" href="{$wa->getUrl('/frontend/compare/', ['id' => implode(',', $compare) ])}" class="bold">[`Compare`] <span class="count">{count($compare)}</span></a>
+                    </div>
+                </li>
+            {/if}
+        </ul>
+    </div>
+
+    <!-- gallery & purchase -->
+    <div class="product-media-purchase">
+        {$video = $product->video}
+        <!-- gallery -->
+        <div class="product-media">
+            {if count($product.images) > 1 || (count($product.images) === 1 && $video)}
+                <!-- thumbs -->
+                <div class="img-thumbs">
+                    <div class="more-images" id="product-gallery">
+                        {if $video}
+                            <div class="image video selected">
+                                <a id="product-image-video" href="{$video.url}" class="swipebox">
+                                    <img src="{$video.images[0]}" alt="">
+                                </a>
+                            </div>
+                        {/if}
+                        {foreach $product.images as $image}
+                            <div class="image{if $image.id == $product.image_id && empty($video)} selected{/if}">
+                                <a id="product-image-{$image.id}" data-href="{if $wa->shop->config('enable_2x')}{$wa->shop->imgUrl($image, '970@2x')}{else}{$wa->shop->imgUrl($image, '970')}{/if}" href="{if $wa->shop->config('enable_2x')}{$wa->shop->imgUrl($image, '420@2x')}{else}{$wa->shop->imgUrl($image, '420')}{/if}">
+                                    {if $wa->shop->config('enable_2x')}
+                                        {$wa->shop->imgHtml($image, '64x64', ['srcset' => "`$wa->shop->imgUrl($image, '64x64@2x')` 2x"])}
+                                    {else}
+                                        {$wa->shop->imgHtml($image, '64x64')}
+                                    {/if}
+                                </a>
+                            </div>
+                        {/foreach}
+                    </div>
+                    <script>
+                        ( function($) {
+                            const $slider = $("#product-gallery");
+                            const href = "{$wa_active_theme_url}bxslider/jquery.bxslider.min.js?v{$wa_theme_version}";
+
+                            (!$.fn.bxSlider) ? $.getScript(href, initSlider) : initSlider();
+
+                            function initSlider() {
+                                $slider.bxSlider({
+                                    mode: 'vertical',
+                                    touchEnabled: true,
+                                    minSlides : 5,
+                                    infiniteLoop: false,
+                                    slideWidth: 64,
+                                    slideMargin: 14,
+                                    pager: false
+                                });
+                            }
+                        })(jQuery);
+                    </script>
+                </div>
+            {/if}
+            <div class="img-main">
+                {if $video}
+                    <div id="video-container" class="video-container" itemscope itemtype="http://schema.org/VideoObject">
+                        <div itemprop="embedHTML">
+                            <iframe src="{$video.url}" width="{$video.width}" height="{$video.height}" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                        </div>
+                        <meta itemprop="width" content="{$video.width}">
+                        <meta itemprop="height" content="{$video.height}">
+                        <meta itemprop="name" content="{$product.name|default:""|escape}">
+                        <meta itemprop="description" content="{$product.description|default:""|escape}">
+                        <meta itemprop="uploadDate" content="{$product.create_datetime|default:""|escape}">
+                        {if !empty($video.images[0])}
+                            {$_thumb = $video.images[0]}
+                            {$_absolute_thumb_uri = "{$wa->url(true)}{$_thumb|substr:1}"}
+                            <meta itemprop="thumbnailUrl" content="{$_absolute_thumb_uri|escape}" />
+                        {/if}
+                    </div>
+                {/if}
+
+                {if $product.images || $video}
+
+                    <figure class="product-gallery wa-flex">
+
+                        {if $product.images}
+
+                            <!-- main image -->
+                            <div class="image" id="product-core-image" {if $video}style="display:none"{/if}>
+                                <a class="wa-flex" href="{if $wa->shop->config('enable_2x')}{$wa->shop->productImgUrl($product, '970')}{else}{$wa->shop->productImgUrl($product, '970')}{/if}">
+                                    {if $wa->shop->config('enable_2x')}
+                                         {$wa->shop->productImgHtml($product, '420', [
+                                            'itemprop' => 'image',
+                                            'id' => 'product-image',
+                                            'alt' => $product.name|escape,
+                                            'srcset' => "`$wa->shop->productImgUrl($product, '420@2x')` 2x"
+                                         ])}
+                                    {else}
+                                        {$wa->shop->productImgHtml($product, '420', [ 'itemprop' => 'image', 'id' => 'product-image', 'alt' => $product.name|escape])}
+                                    {/if}
+                                </a>
+                                <div id="switching-image" style="display: none;"></div>
+                            </div>
+
+                        {/if}
+                    </figure>
+
+                {/if}
+            </div>
+        </div>
+        <!-- purchase -->
+        <div class="product-purchase">
+            <div class="cart" id="cart-flyer">
+
+                {include file="product.cart.html" inline}
+
+                <!-- plugin hook: 'frontend_product.cart' -->
+                {* @event frontend_product.%plugin_id%.cart *}
+                {foreach $frontend_product as $_}{$_.cart}{/foreach}
+
+            </div>
+
+            <!-- plugin hook: 'frontend_product.block_aux' -->
+            {* @event frontend_product.%plugin_id%.block_aux *}
+            {if !empty($frontend_product)}
+                <div class="aux">
+                    {foreach $frontend_product as $_}{$_.block_aux}{/foreach}
+                </div>
+            {/if}
+        </div>
+    </div>
+
+    <!-- product info & gallery -->
+    <div class="product-info" id="overview">
+
+        <!-- plugin hook: 'frontend_product.block' -->
+        {* @event frontend_product.%plugin_id%.block *}
+        {foreach $frontend_product as $_}{$_.block}{/foreach}
+
+        {if $product.description}
+            <div class="description" id="product-description" itemprop="description">
+                <h3>[`О товаре`]</h3>
+                <div class="product-info--wrapper">
+                    {$product.description}
+                </div>
+            </div>
+        {/if}
+
+        <!-- product features -->
+        <div class="s-features-section">
+            <h3>[`Features`]</h3>
+            <div class="product-info--wrapper js-features-section">
+                {if !empty($_skus_features_html[$product.sku_id])}
+                    {$_skus_features_html[$product.sku_id]}
+                {/if}
+            </div>
+        </div>
+
+        <!-- categories -->
+        {if $product.categories}
+            <p>
+                <span class="font-size-big text-black">[`Categories`]:</span>
+                {foreach $product.categories as $c}
+                    {if $c.status}
+                        <a href="{$wa->getUrl('/frontend/category', ['category_url' => $c.full_url])}">{$c.name|escape}</a>
+                    {/if}
+                {/foreach}
+            </p>
+        {/if}
+
+        <!-- tags -->
+        {if $product.tags}
+            <p class="tags" id="product-tags">
+                 <span class="font-size-big text-black">[`Tags`]:</span>
+                {foreach $product.tags as $t}
+                    <a href="{$wa->getUrl('/frontend/tag', ['tag' => str_replace('%2F', '/', urlencode($t))])}">{$t}</a>
+                {/foreach}
+            </p>
+        {/if}
+
+        <!-- product reviews -->
+        <section class="reviews">
+            <div class="row align-items-center justify-content-between wa-mb-16">
+                <h3 class="wa-mb-0">{sprintf('[`%s reviews`]', $product.name|escape)} <span class="hint">({$reviews_total_count})</span></h3>
+                <a class="button bg-gray font-weight-normal" href="reviews/?writeReview">[`Write a review`]</a>
+            </div>
+
+            {if !empty($rates)}
+                <p class="rating">
+                    <span class="font-size-big text-gray">[`Average customer rating:`]</span>
+                    {$wa->shop->ratingHtml($product.rating, 16)} (<a href="reviews/" class="font-size-big">{$reviews_total_count}</a>)
+                    {if $product.rating > 0}<span class="font-size-big hint">{sprintf('[`%s out of 5 stars`]', $product.rating)}</span>{/if}
+                </p>
+
+                <table class="rating-distribution">
+                    {$_total_count = 0}
+                    {foreach $rates as $_rate => $_count}
+                        {$_total_count = $_total_count + $_count}
+                    {/foreach}
+                    {* foreach $rates as $_rate => $_count *}
+                    {for $i = 5 to 0 step -1}
+                        {if empty($rates[$i]) || !$rates[$i]}{$_count = 0}{else}{$_count = $rates[$i]}{/if}
+                        {if $i || $_count}
+                            <tr>
+                                <td class="min-width hint">{$_count}</td>
+                                <td>
+                                    <div class="bar">
+                                        <div class="filling" style="width: {if $_total_count > 0}{str_replace(',','.', 100*$_count/$_total_count)}{else}0{/if}%;{if !$i} background: #BDBDBD;{/if}{if (100*$_count/$_total_count) >= 100} border-top-right-radius: 7px; border-bottom-right-radius: 7px;{/if}"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="rating">{for $j=1 to $i}<i class="icon10 star"></i>{forelse}<span class="hint">[`no rate`]</span>{/for}</span>
+                                </td>
+                            </tr>
+                        {/if}
+                    {/for}
+                </table>
+            {/if}
+
+            <ul class="row gap32 cols1-mobile cols2-tablet wa-mt-32">
+                {foreach $reviews as $review}
+                    <li data-id={$review.id} data-parent-id="0" class="s-review-wrapper col w6 wa-mb-0">
+                        {include file="review.html" reply_allowed=false inline}
+                    </li>
+                {/foreach}
+            </ul>
+            {if !$reviews}
+                <p class="wa-mt-32">{sprintf('[`Be the first to <a href="%s">write a review</a> of this product!`]', 'reviews/')}</p>
+            {else}
+                <a href="reviews/" class="button bg-gray font-weight-normal wa-flex justify-content-center wa-mt-32">[`Читать все отзывы`]</a>
+            {/if}
+        </section>
+
+    </div>
+
+    <script>
+        ( function($, waTheme) {
+            initProductPage({
+                $wrapper: $("#js-product-page"),
+                skus_features_html: {$_skus_features_html|json_encode}
+            });
+
+            const observer = new MutationObserver(mutations => {
+                for (const mutation of mutations) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+                       mutation.target.srcset = '';
+                    }
+                }
+            });
+            observer.observe(document.querySelector('#product-image'), {
+                attributes: true,
+                attributeFilter: ['src']
+            });
+        })(jQuery);
+    </script>
+</article>
+
+
+<!-- RELATED PRODUCTS -->
+{$upselling = $product->upSelling(12)}
+{$crossselling = $product->crossSelling(12)}
+
+{if $upselling || $crossselling}
+    <div class="product-info">
+
+        {if $crossselling}
+            <section class="related">
+                <h3>{sprintf('[`Customers who bought %s also bought`]', $product.name|escape)}</h3>
+                {include file="list-thumbs-mini.html" products=$crossselling ulclass="related-bxslider"}
+            </section>
+        {/if}
+
+        {if $upselling}
+            <section class="related">
+                <h3>
+                    [`See also`]
+                    {$compare_ids = array_merge(array($product.id), array_keys($upselling))}
+                    {if $theme_settings.compare_products}
+                        <input type="button" onClick="javascript:window.location='{$wa->getUrl('/frontend/compare', ['id' => implode(',', $compare_ids)])}';" value="[`Compare all`]" class="gray" />
+                    {/if}
+                </h3>
+                {include file="list-thumbs-mini.html" products=$upselling ulclass="related-bxslider"}
+            </section>
+        {/if}
+
+    </div>
+{/if}

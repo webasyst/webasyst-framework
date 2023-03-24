@@ -1,0 +1,549 @@
+@import "nib";
+
+$rem($size = 14)
+    $_rem = 14
+    return ($size/$_rem)rem
+
+html.is-order-page
+
+    .maincontent
+        @media screen and (max-width: 760px)
+            background var(--white)
+
+    .globalheader
+        #globalnav
+            @media screen and (max-width: 760px)
+                z-index 999
+
+    .container
+        min-width: 0;
+        width 100%
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0;
+        box-sizing border-box
+
+        @media screen and (max-width 1300px)
+            width 100%
+
+        @media screen and (min-width 1301px)
+            width 1300px
+
+        @media screen and (min-width 761px)
+            padding 0 20px
+
+        @media screen and (min-width 1101px)
+            padding 0 40px
+
+        @media screen and (max-width: 760px)
+            padding 0 20px
+
+@import "./ui.styl";
+
+.wa-product-edit-dialog
+    .wa-cart-section
+        .wa-features-wrapper
+            .wa-feature-wrapper
+                &.color
+                    padding-bottom 20px
+
+                    .wa-variants-list
+                        .wa-variant
+                            overflow visible
+                            min-width: auto;
+                            width: 40px;
+                            height 40px
+                            padding 10px 0;
+                            box-sizing border-box
+
+                            &.selected
+                                position relative
+                                &:after
+                                    content ""
+                                    position absolute
+                                    top 50%
+                                    left 50%
+                                    width 66%
+                                    height 66%
+                                    display: block;
+                                    background-repeat: no-repeat;
+                                    background-color rgba(255,255,255,.5)
+                                    background-image: url("../img/svg/icon-yes.svg");
+                                    transform translate(-50%,-50%)
+                                    border-radius 50%
+
+                            .wa-variant-name
+                                display inline-block
+                                color var(--black)
+                                font-size 8px
+                                font-weight 400
+                                transform translate(0, 28px)
+
+.s-order-page
+    padding: 42px 0 80px;
+    @media screen and (max-width: 760px)
+        background var(--white)
+    *, ::after, ::before
+        box-sizing: unset;
+
+    .s-back-link
+        text-align right
+        font-weight 600
+        font-size: 13px
+
+    .s-order-section
+        &:not(:first-child)
+            margin-top 20px
+
+        & > .s-section-header
+            margin-bottom: 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            & > .s-header
+                margin: 0;
+                font-size: 24px;
+                line-height: 28px;
+                font-weight 400
+                color var(--black)
+
+            .s-delete-button
+                color: var(--gray4);
+                font-weight: 600;
+                font-size: 13px;
+                line-height: 15px;
+                margin-right: 10px
+
+                &:hover
+                    color: var(--red);
+                    .s-delete-icon
+                        fill: var(--red);
+
+                .s-delete-icon
+                    display: inline-block;
+                    width: 10px;
+                    height: 10px;
+                    margin: 0 6px 0 0;
+                    fill: #b8b8b8;
+
+        & > .s-section-body
+            background: var(--white);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.06);
+            border-radius: 15px;
+            padding: 18px;
+            @media screen and (max-width: 760px)
+                box-shadow none
+            .wa-form-body
+                .wa-step-section
+                    position: relative;
+                    &:not(.not-blurred, .wa-step-auth-section)
+                        &::after
+                            content ''
+                            position absolute
+                            width 101%
+                            height 100%
+                            bottom 0
+                            left -1px
+                            background rgba(255,255,255, .8)
+                .wa-header
+                    font-weight: 600
+                    color: var(--gray1)
+                    margin-right: 8px
+                .wa-contact-name
+                    color: var(--gray1)
+                .wa-logout-link
+                    color: var(--link-color)
+                .wa-name
+                    color: var(--gray1)
+                .wa-value
+                    color var(--gray1)
+                .wa-label
+                    color: var(--gray4)
+                    font-weight: 400;
+                    font-size: 14px;
+                .wa-item
+                    margin-top: 24px !important
+                    &.wa-item-total
+                        .wa-price
+                            font-weight 600 !important
+                .wa-input
+                    color: var(--gray1)
+                    font-size: 14px
+                    padding: 0.6rem 0.75rem;
+                    border: 1px solid var(--gray5);
+                    border-radius: 10px;
+                    line-height: 1.5;
+                .wa-checkbox
+                    display inline-block
+                    font-size: 9px;
+                    margin-top: -0.3em;
+                    + span
+                        display: none
+                .wa-text
+                    line-height: 150%;
+                .wa-submit-button
+                    color: var(--white);
+                    text-shadow: none;
+                    padding: 0.857em 1.07em 0.857em 1.14em;
+                    border-radius: 28px;
+                    font-size: 16px;
+                .wa-select
+                    border: 1px solid var(--gray5);
+                    border-radius: 10px;
+                    padding: 12px 12px;
+                    height: auto;
+                    line-height: 1.125em
+                    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23333333' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+                    background-position: right 0.525em center  !important;
+                    background-size: 16px  !important;
+                    background-repeat no-repeat;
+                    + .s-icon
+                        display: none
+                    &:disabled,
+                    &.disabled
+                        background: var(--gray6)
+                        color: var(--gray4)
+                    &.wa-error
+                        border 1px solid var(--red)
+                        color var(--red)
+                .wa-required-text
+                    color: var(--gray3)
+                    .wa-required
+                        color: var(--orange)
+                        font-size: 24px;
+                .wa-error-text
+                    color var(--red)
+                    font-size: 14px;
+                .wa-dropdown
+                    &.is-locked
+                         > .wa-dropdown-toggle
+                                background-color: var(--gray6) !important;
+                                color: var(--gray4)
+                     > .wa-dropdown-toggle
+                        padding: 11px 12px;
+                        border: 1px solid var(--gray5);
+                        border-radius: 10px;
+                        font-size: 14px;
+                .wa-step-confirm-section
+                    border-top 2px solid var(--gray6)
+                    padding-top 32px
+                .wa-step-shipping-section
+                    .wa-delivery-types-section
+                        margin-top: 24px
+                        .wa-header
+                            font-size: 1em
+                            margin-bottom: 16px
+                        .wa-types-list
+                            .wa-type-wrapper
+                                position relative
+                                border 1px solid var(--gray5)
+                                background var(--gray7)
+                                padding: 16px
+                                &:first-child
+                                    &:not(:last-child)
+                                        border-radius 10px 0 0 10px
+                                &:last-child
+                                    &:not(:first-child)
+                                        border-radius 0 10px 10px 0
+                                &.is-active
+                                    box-shadow none
+                                    background var(--white)
+                                    z-index: 0
+                                    overflow hidden
+                                    &::after
+                                        content ''
+                                        position: absolute
+                                        background var(--link-color)
+                                        left 0
+                                        top 0
+                                        width 100%
+                                        height 100%
+                                        z-index: -1
+                                        opacity: 0.15
+                                    .wa-name
+                                        font-weight 600
+                                        color: var(--gray1)
+                                &:not(.is-active):hover
+                                    background: var(--gray6)
+                                .wa-name
+                                    color: var(--link-color)
+
+                                .wa-price
+                                    display inline-block
+                                .wa-date
+                                    display inline-block
+                                    margin-left 8px
+                                    color: var(--gray3)
+                    .wa-delivery-variants-section
+                        margin-top 24px
+                        .wa-header
+                            font-size: 1em
+                            margin-bottom: 16px
+                .wa-step-payment-section
+                    .wa-methods-list
+                        &.wide
+                            .wa-method-wrapper
+                                position relative
+                                border 1px solid var(--gray5)
+                                background var(--gray7)
+                                padding: 16px
+                                &:first-child
+                                    &:not(:last-child)
+                                        border-radius 10px 10px 0 0
+                                &:last-child
+                                    &:not(:first-child)
+                                        border-radius 0 0 10px 10px
+                                &.is-active
+                                    box-shadow none
+                                    background var(--white)
+                                    z-index: 0
+                                    overflow hidden
+                                    &::after
+                                        content ''
+                                        position: absolute
+                                        background var(--link-color)
+                                        left 0
+                                        top 0
+                                        width 100%
+                                        height 100%
+                                        z-index: -1
+                                        opacity: 0.15
+                                    .wa-payment-name
+                                        font-weight 600
+                                        color: var(--gray1)
+                                &:not(.is-active):hover
+                                    background: var(--gray6)
+                                .wa-payment-name
+                                    font-size 16px
+                                    color: var(--link-color)
+            .wa-cart-body
+                padding 0
+                .wa-product
+                    border: 0 none
+                    padding: 16px 0
+                    .wa-product-body
+                        .wa-column-image
+                            padding-right: 8px;
+                            .wa-image-section
+                                img
+                                    border-radius 10px
+                        .wa-column-details
+                            padding-top 0 !important
+                            padding-right 8px
+                            .wa-details
+                                display flex
+                                flex-wrap wrap
+                                gap 5px
+                                .wa-name
+                                    font-weight 600 !important
+                                    font-size: var(--h5-size)
+                                    margin 0
+                                    display inline-block
+                                .wa-sku
+                                    color var(--gray1)
+                                    margin 0
+                                .wa-actions
+                                    .wa-action
+                                        font-weight 600 !important
+                                        color: var(--gray4) !important
+                                        font-size: 13px !important
+                            .wa-services
+                                .s-checkbox
+                                    input
+                                        display inline-block
+                                        font-size 9px
+                                        & + span
+                                            display none !important
+                                .wa-label
+                                    padding: 3px 0 0 22px !important;
+                                .wa-variant
+                                    margin-left: 23px !important
+                        .wa-column-quantity
+                            .wa-quantity-cart-section
+                                margin-top: 18px
+                                padding-right 8px
+                                .wa-field-wrapper
+                                    .wa-field
+                                        font-size: 14px;
+                                        border: 1px solid var(--gray5);
+                                        border-radius: 10px;
+                                        color: var(--gray1)
+                                    .wa-unit
+                                        line-height: 22px
+                                        font-size: 14px
+                                .wa-button-wrapper
+                                    .wa-button
+                                    button
+                                        background: transparent;
+                                        display: inline-flex;
+                                        flex-direction: column;
+                                        align-items: center;
+                                        min-width: 30px;
+                                        min-height: 32px;
+                                        padding: 0;
+                                        margin: 0;
+                                        border: 0;
+                                        line-height: 1em;
+                                        border-color: transparent;
+                                        color: #c4c4c4;
+                                        &:hover
+                                            &::after
+                                                background: transparent !important;
+                                                border-color: transparent !important;
+                                                color: #c4c4c4;
+                                        .wa-description
+                                            color: var(--gray4)
+                                            font-weight: 400
+                                            font-size: 12px;
+                                            line-height: 16px;
+                                input
+                                    width: 2.25em
+                            .wa-product-fractional-prices
+                                margin-right 0
+                                text-align: center
+                            .price
+                                font-weight: 400 !important;
+                                color: var(--gray4) !important;
+                                font-size: 13px
+                                line-height: 1
+                        .wa-column-price
+                            width: 90px
+                            .wa-price-total
+                                font-weight 600
+                                color: var(--gray1)
+                select
+                    background-color: var(--white) !important;
+                    background-repeat: no-repeat !important;
+                    border: 1px solid var(--gray4) !important;
+                    border-radius: 0.5em !important;
+                    vertical-align: middle
+                    padding: 0.392em 2.25em 0.392em 0.57em  !important
+                    font-weight: 400;
+                    line-height: 1.15;
+                    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23333333' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+                    background-position: right 0.525em center  !important;
+                    background-size: 16px  !important;
+                    + .s-icon
+                        display: none
+
+                .wa-cart-details
+                    border-top 2px solid var(--gray6)
+                    margin-top: 18px
+                    padding-top: 32px
+                    .wa-button
+                        font-weight: normal;
+                        color: var(--link-color)
+                    .wa-affiliate-section
+                        margin-top: 16px
+                        .wa-order-bonus
+                            color: var(--gray4)
+                            line-height: 150%
+                    .wa-price-discount
+                        color: var(--gray4)
+                    .wa-price-total
+                        color: var(--gray1)
+                    .wa-weight-section
+                        color: var(--gray4)
+                        line-height: 150%
+                    .wa-coupon-section
+                        .wa-input
+                            font-size 1em
+                            padding: .392em .57em;
+                        .wa-inactive-state
+                            .wa-button
+                                font-size 1em
+                                padding: .392em .857em;
+                                &.gray
+                                    color var(--gray3)
+                                    &:hover
+                                        color var(--white)
+                        .wa-active-state
+                            .wa-button
+                                font-size 1em
+                                color var(--white)
+
+& > .s-section-footer
+            padding: 32px 10px 17px 20px;
+
+    .wa-order-cross_selling-wrapper
+        .wa-product-wrapper
+            .wa-actions-wrapper
+                .wa-button
+                    padding-top 4px
+                    padding-bottom 4px
+
+    .wa-order-cart-wrapper
+    .wa-order-form-wrapper
+        p
+            &:first-child
+                margin-top 0
+            &:last-child
+                margin-bottom 0
+
+        & > .wa-cart-body
+        & > .wa-form-body
+            background: var(--white);
+            padding: 20px 20px 40px;
+
+        & > .wa-cart-footer
+        & > .wa-form-footer
+            padding: 15px 20px;
+            color var(--gray3);
+
+            a
+                color #999
+
+    .wa-order-form-wrapper
+        .wa-field-wrapper
+            &:not(.is-agreement-field)
+                .s-checkbox
+                    font-size $rem(16)
+                    transform translate(0,.15em)
+
+            &.is-agreement-field
+                .s-checkbox
+                    input:checked + span
+                        background #949494
+
+@media screen and (min-width: 841px)
+    .s-order-page
+        display table
+        width 100%
+        table-layout fixed
+
+        & > .s-order-column
+            display table-cell
+            vertical-align top
+            padding 0 13px
+
+            &:first-of-type
+                padding-left 0
+            &:last-of-type
+                padding-right 0
+
+    .wa-order-form-wrapper
+        .wa-form-footer
+            font-size 14px
+            line-height (17/14)em
+            text-align right
+
+@media screen and (max-width: 840px)
+    .s-order-page
+        & > .s-order-column
+            margin-top: 40px;
+            &:first-child
+                margin-top 0
+
+@media screen and (max-width: 768px)
+    .s-order-section
+        & > .s-section-header
+            .s-delete-button
+                width: 43%;
+                line-height: 14px;
+                text-align: right;
+
+    .s-order-page
+        .wa-dropdown.is-opened > .wa-dropdown-area
+            max-height: 300px;
+            z-index 998

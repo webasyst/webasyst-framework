@@ -1,0 +1,191 @@
+.s-checkbox
+    display: inline-block;
+    font-size: $rem(12);
+    cursor: pointer;
+    transform translate(0, 1px)
+    line-height 0
+
+    input
+        display: none;
+
+        & + span
+            position: relative;
+            display: block;
+            width: 1em;
+            height: 1em;
+            border-radius: 3px;
+            border: 1px solid rgba(0,0,0,.3);
+            background: #fff;
+            cursor: pointer;
+            box-sizing: border-box;
+
+            &:hover
+                border-color rgba(0,0,0,.6);
+
+            .s-icon
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width 70%
+                height 70%
+                transform: translate(-50%, -50%);
+                display: inline-block;
+                vertical-align: top;
+                visibility: hidden;
+                color: #fff
+                line-height 0
+
+                svg
+                    width 100%
+                    height 100%
+
+        &:checked + span
+            border 0
+            background: #3389E0;
+
+            .s-icon
+                visibility: visible;
+
+        &:disabled + span
+            background #e0e0e0
+            cursor default
+
+        &.wa-error + span
+            border-color red
+            background transparent
+
+.s-radio
+    display: inline-block;
+    font-size: $rem(16);
+    line-height 1em
+    cursor: pointer;
+
+    input
+        display: none;
+
+        & + span
+            position: relative;
+            display: inline-block;
+            vertical-align top
+            width: 1em;
+            height: 1em;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,.3);
+            background: #fff;
+            cursor: pointer;
+            box-sizing: border-box;
+
+            &:hover
+                border-color rgba(0,0,0,.6);
+
+        &:checked + span
+            border-color #39f
+            border-width (5/16)em
+
+        &:disabled + span
+            background #e0e0e0
+            cursor default
+
+        &.wa-error + span
+            border-color red
+
+.wa-field-wrapper .s-styled-select
+    display block
+    select
+        width 100%
+
+.s-styled-select
+    $_space = $rem(28)
+    position relative
+    display inline-block
+    vertical-align top
+    margin-right 20px
+    max-width 100%
+    &:last-child
+        margin-right 0
+
+    select
+        position relative
+        display inline-block
+        padding-right $_space
+        padding-left .25em
+        margin 0 !important
+        border 1px solid #cfcfcf
+        border-radius 0
+
+        font-size: inherit
+        line-height 1.5em
+        color #1f2d3d
+
+        appearance: none;
+        outline: 0;
+
+        background transparent
+        box-sizing: border-box;
+        cursor pointer
+        transition border-color 200ms linear
+
+        &.wa-error
+            border-color: #f00;
+            color: #f00;
+            & + .s-icon
+                border-color #f00
+
+        &:not(:disabled):not(.wa-error)
+            &:hover
+                z-index 1
+                border-color #888
+                & + .s-icon
+                    border-color #888
+
+            &:focus
+                z-index 1
+                border-color #006bd8
+                & + .s-icon
+                    border-color #006bd8
+
+        &:disabled
+            cursor default
+            opacity .5
+
+        option
+            color #333
+
+            &:disabled
+                color #888
+
+            &.selected
+                font-weight bold
+
+    .s-icon
+        $_size = $rem(6)
+        content ""
+        display block
+        position absolute
+        top 50%
+        right ($_space/2)
+        width: $_size
+        height: $_size;
+        transform translate(50%,-75%) rotate(45deg)
+        border solid #aaa
+        border-width 0 1px 1px 0
+        transition border-color 200ms linear
+
+@media screen and (max-width 760px)
+    .s-styled-select
+        display block
+        select
+            width 100%
+
+    .wa-signup-form-wrapper
+        .wa-field
+            &.wa-field-birthday
+                .wa-value
+                    display flex
+                    justify-content space-between
+
+                    .s-styled-select
+                        display inline-block
+                        margin-right 0
+                        select
+                            margin-right 0

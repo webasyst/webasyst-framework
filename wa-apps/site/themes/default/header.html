@@ -1,22 +1,142 @@
-<!-- Site app page list -->
-{$pages = $wa->site->pages()}
+{if $theme_settings.header_links == 'shop-pages'}
+    {$shop_pages = []} {* pages were shown in the core layout index.html template already *}
+{else}
+    {$shop_pages = $wa->shop->pages()}
+{/if}
 
-{if count($pages)}
-    <ul class="pages">
+{if $shop_pages || $theme_settings.category_nav_mode != 'sidebar'}
 
-        {* get selected node (a little magic here): for Site app, due to it's page-only functionality, page heirarchy and ambiguous select highlighe conditions for root app URL we get selected node in 2 foreach's, while for other apps single foreach for pages is ok due to their own content for homepage *}
-        {$selected_node = null}
-        {foreach $pages as $p}
-            {if $wa->currentUrl()|strstr:$p.url && strlen($p.url) >= strlen(ifset($selected_node, 'url', ''))}{$selected_node = $p}{/if}
-        {/foreach}
-        {if !$selected_node}{$selected_node.id = null}{/if}
+    {if isset($category)}{$selected_category=$category.id}{else}{$selected_category=null}{/if}
+    {$categories = $wa->shop->categories(0, null, true)}
+    {$tagcloud = $wa->shop->tags()}
+    <!-- plugin hook: 'frontend_nav' -->
+    {* @event frontend_nav.%plugin_id% *}
+    {$_hook_frontend_sidebar_section = false}
+    {foreach $frontend_nav as $plugin => $output}
+        {if !empty($output)}
+            {$_hook_frontend_sidebar_section = true}
+        {/if}
+    {/foreach}
 
-        {* render *}
-        {foreach $pages as $p}
-            {if $p.url != $wa_url} {* exclude root page link to avoid duplicate link which is on the logo/title *}
-                <li{if $p.id == $selected_node.id} class="selected"{/if}><a href="{$p.url}">{$p.name}</a></li>
+    <ul class="pages flyout-nav">
+
+        {if $theme_settings.category_nav_mode != 'sidebar'}
+
+            {if $theme_settings.category_nav_mode == 'dropdown'}
+
+                {* DROPDOWN "Shop by Department" navigation *}
+
+                <li class="collapsible">
+                    <a href="{$wa_app_url}" class="chevron down">[`Shop by Department`]</a>
+                    <div class="flyout">
+                        <div class="container">
+                            {if count($categories)}
+                                <div class="departments">
+                                    {wa_print_tree tree=$categories unfolded=true collapsible_class='collapsible' class="menu-v" elem ='<a href=":url" title=":name">:name</a>'}
+                                </div>
+                            {else}
+                                <p class="align-center gray"><br><br>[`You did not create any product categories yet.`]</p>
+                            {/if}
+                        </div>
+                    </div>
+                </li>
+
+            {else}
+
+                {* INLINE category navigation *}
+
+                {foreach $categories as $cat}
+                    {if count($cat.childs)}
+                        <li class="collapsible">
+                            <a href="{$cat.url}" class="chevron down">{$cat.name}</a>
+                            <div class="flyout">
+                                <div class="container">
+                                    {wa_print_tree tree=$cat.childs unfolded=true collapsible_class='collapsible' class="menu-v" elem ='<a href=":url" title=":name">:name</a>'}
+                                </div>
+                            </div>
+                        </li>
+                    {else}
+                        <li>
+                            <a href="{$cat.url}">{$cat.name}</a>
+                        </li>
+                    {/if}
+                {/foreach}
+
             {/if}
+
+            {if $tagcloud}
+
+                {* TAGS *}
+
+                <li class="collapsible">
+                    <a href="javascript:void(0);" class="chevron down">[`Tags`]</a>
+                    <div class="flyout">
+                        <div class="container">
+                            <div class="tags block align-center">
+                                {foreach $tagcloud as $tag}
+                                    <a href="{$wa_app_url}tag/{$tag.uri_name}/" style="font-size: {$tag.size}%; opacity: {$tag.opacity}">{$tag.name|escape}</a>
+                                {/foreach}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {/if}
+
+            {if $_hook_frontend_sidebar_section}
+
+                {* PLUGINS @ frontend_nav *}
+
+                {foreach $frontend_nav as $_key => $_}
+                    <li class="collapsible">
+                        <a href="javascript:void(0);" onClick="return false" class="chevron down">
+                            {if substr($_key, -7) == '-plugin'}{$wa->pluginName(substr($_key, 0, -7))}{else}[`More`]{/if}
+                        </a>
+                        <div class="flyout">
+                            <div class="container">
+                                {$_}
+                            </div>
+                        </div>
+                    </li>
+                {/foreach}
+                {foreach $frontend_nav_aux as $_key => $_}
+                    <li class="collapsible">
+                        <a href="javascript:void(0);" onClick="return false" class="chevron down">
+                            {if substr($_key, -7) == '-plugin'}{$wa->pluginName(substr($_key, 0, -7))}{else}[`More`]{/if}
+                        </a>
+                        <div class="flyout">
+                            <div class="container">
+                                {$_}
+                            </div>
+                        </div>
+                    </li>
+                {/foreach}
+
+
+            {/if}
+
+        {/if}
+
+
+        {* PAGES *}
+
+        {foreach $shop_pages as $page}
+            <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
         {/foreach}
+
 
     </ul>
+
+    <!-- product search -->
+    <form method="get" action="{$wa->getUrl('shop/frontend/search')}" class="search wa-flex-fill">
+        <div class="search-wrapper">
+            <input id="search" type="search" name="query" {if !empty($query)}value="{$query}"{/if} placeholder="[s`Find products`]">
+            <button type="submit">
+                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                    <use xlink:href="#img-find"></use>
+                </svg>
+            </button>
+            {* <span class="search-sample">{sprintf('[`E.g. %s`]', '<a href="'|cat:$wa_app_url:"search/?query=productname":'">productname</a>')} *}
+        </div>
+    </form>
+
 {/if}

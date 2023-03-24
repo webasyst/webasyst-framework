@@ -1,0 +1,183 @@
+<h1 class="category-name">
+    {$category.name|escape}
+</h1>
+
+<!-- description -->
+{if $category.description}
+    <p class="category-description">{$category.description}</p>
+{/if}
+
+<!-- plugin hook: 'frontend_category' -->
+{* @event frontend_category.%plugin_id% *}
+{foreach $frontend_category as $_}{$_}{/foreach}
+
+<!-- subcategories -->
+{if $category.subcategories}
+    <ul class="sub-links row">
+        {foreach $category.subcategories as $sc}
+            <li><a class="button bg-gray font-weight-normal" href="{$sc.url}">{$sc.name|escape}</a></li>
+        {/foreach}
+    </ul>
+{/if}
+
+{if !empty($category.params.enable_sorting)}
+    <!-- sorting -->
+    {$sort_fields = [
+    'name' => _w('Name'),
+    'price' => _w('Price'),
+    'total_sales' => _w('Bestsellers'),
+    'rating' => _w('Customer rating'),
+    'create_datetime'=>_w('Date added'),
+    'stock' => _w('In stock')]}
+
+    {if !isset($active_sort)}
+        {$active_sort = $wa->get('sort', 'create_datetime')}
+    {/if}
+    <ul class="sorting row gap8">
+        <li>[`Sort by`]:</li>
+        {if !empty($category) && !$category.sort_products}
+            <li {if !$active_sort}class="selected"{/if}>
+                {$wa->shop->sortUrl("new", "[`New & Popular`]", $active_sort)}
+            </li>
+        {/if}
+        {foreach $sort_fields as $sort => $name}
+            <li{if $active_sort == $sort} class="selected"{/if}>{$wa->shop->sortUrl($sort, $name, $active_sort)}</li>
+            {if $wa->get('sort') == $sort}{$wa->title( $wa->title()|cat:' — '|cat:$name)}{/if}
+        {/foreach}
+    </ul>
+{/if}
+
+<div class="row gap20{if !empty($filters)} cols2 cols1-mobile cols1-tablet{/if}">
+    <!-- filtering by product features -->
+    {if !empty($filters)}
+        <div class="col w3">
+            {if waRequest::isXMLHttpRequest() && waRequest::get('page', 1) == 1}
+                <link href="{$wa_static_url}wa-content/css/jquery-ui/base/jquery.ui.slider.css" rel="stylesheet" type="text/css">
+                <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery-ui/jquery.ui.core.min.js?v{$wa->version(true)}"></script>
+                <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js?v{$wa->version(true)}"></script>
+                <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js?v{$wa->version(true)}"></script>
+                <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery-ui/jquery.ui.slider.min.js?v{$wa->version(true)}"></script>
+            {/if}
+            <div class="filters leadbox{if !empty($theme_settings.ajax_filters)} ajax{/if}">
+                <div class="filters-toggle-wrapper">
+                    <a class="filters-toggle-link" id="filters-toggle-link" href="javascript:void(0);" data-show-text="[`Show Filters`]" data-hide-text="[`Hide Filters`]">[`Show Filters`]</a>
+                </div>
+                <form class="filters-form-wrapper" method="get" action="{$wa->currentUrl(0,1)}" data-loading="{$wa_parent_theme_url}img/loading16.gif">
+                    {foreach $filters as $fid => $filter}
+                        <div class="filter-param">
+                            {if $fid == 'price'}
+                                {$c = $wa->shop->currency(true)}
+                                <h5>[`Price`]</h5>
+                                <div class="slider">
+                                    [`from`] <input type="text" class="min" name="price_min" {if $wa->get('price_min')}value="{(int)$wa->get('price_min')}"{/if} placeholder="{floor($filter.min)}">
+                                    [`to`] <input type="text" class="max" name="price_max" {if $wa->get('price_max')}value="{(int)$wa->get('price_max')}"{/if} placeholder="{ceil($filter.max)}"> {$c.sign}
+                                </div>
+                            {else}
+                                <h5>{$filter.name|escape}</h5>
+                                {if $filter.type == 'boolean'}
+                                    <label><input type="radio" name="{$filter.code}"{if $wa->get($filter.code)} checked{/if} value="1"> [`Yes`]</label>
+                                    <label><input type="radio" name="{$filter.code}"{if $wa->get($filter.code) === '0'} checked{/if} value="0"> [`No`]</label>
+                                    <label><input type="radio" name="{$filter.code}"{if $wa->get($filter.code, '') === ''} checked{/if} value=""> [`Any`]</label>
+
+                                {elseif $filter.type == "range.date"}
+                                    <div class="s-filter-item s-range-date-item" id="js-filter-{$filter.id|escape}" data-min="{$filter.min}" data-max="{$filter.max}">
+                                        <div class="s-datepicker-wrapper">
+                                            <span class="s-label">[`from`]</span>
+                                            <div class="s-fields">
+                                                <input class="js-datepicker" type="text" value="{if !empty($_v.min)}{$_v.min|wa_date}{/if}" placeholder="{$filter.min|wa_date}">
+                                                <input name="{$filter.code}[min]" type="hidden" value="{if !empty($_v.min)}{$_v.min}{/if}">
+                                            </div>
+                                        </div>
+                                        <div class="s-datepicker-wrapper">
+                                            <span class="s-label">[`to`]</span>
+                                            <div class="s-fields">
+                                                <input class="js-datepicker" type="text" value="{if !empty($_v.max)}{$_v.max|wa_date}{/if}" placeholder="{$filter.max|wa_date}">
+                                                <input name="{$filter.code}[max]" type="hidden" value="{if !empty($_v.max)}{$_v.max}{/if}">
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                            ( function($) {
+                                                var $filter = $("#js-filter-{$filter.id|escape}");
+                                                $filter.find(".js-datepicker").each( function() { initDatepicker( $(this) ); });
+
+                                                function initDatepicker($datepicker) {
+                                                    var $altField = $datepicker.parent().find("input[type='hidden']");
+                                                    $datepicker.datepicker({
+                                                        altField: $altField,
+                                                        altFormat: "yy-mm-dd",
+                                                        minDate: formatDate($filter.data("min")),
+                                                        maxDate: formatDate($filter.data("max")),
+                                                        changeMonth: true,
+                                                        changeYear: true
+                                                    });
+
+                                                    $datepicker.on("change", function() {
+                                                        var value = $datepicker.val();
+                                                        if (!value) {
+                                                            $altField.val("");
+                                                        }
+                                                    });
+
+                                                    function formatDate(date_string) {
+                                                        var date_array = date_string.split("-");
+                                                        var year = date_array[0],
+                                                            mount = date_array[1] - 1,
+                                                            day = date_array[2];
+                                                        return new Date(year, mount, day);
+                                                    }
+                                                }
+                                            })(jQuery);
+                                        </script>
+                                    </div>
+                                {elseif isset($filter.min)}
+                                    {$_v = $wa->get($filter.code)}
+                                    <div class="slider">
+                                        [`from`] <input type="text" class="min" name="{$filter.code}[min]" placeholder="{$filter.min}" {if !empty($_v.min)}value="{$_v.min}"{/if}>
+                                        [`to`] <input type="text" class="max" name="{$filter.code}[max]" placeholder="{$filter.max}" {if !empty($_v.max)}value="{$_v.max}"{/if}>
+                                        {if !empty($filter.unit)}
+                                            {$filter.unit.title}
+                                            {if $filter.unit.value != $filter.base_unit.value}<input type="hidden" name="{$filter.code}[unit]" value="{$filter.unit.value}">{/if}
+                                        {/if}
+                                    </div>
+                                {else}
+                                    {foreach $filter.values as $v_id => $v}
+                                        <label>
+                                            <input type="checkbox" name="{$filter.code}[]" {if in_array($v_id, (array)$wa->get($filter.code, array()))}checked{/if} value="{$v_id}"> {$v}
+                                        </label>
+                                    {/foreach}
+                                {/if}
+                            {/if}
+                        </div>
+                    {/foreach}
+                    {if $wa->get('sort')}<input type="hidden" name="sort" value="{$wa->get('sort')|escape}">{/if}
+                    {if $wa->get('order')}<input type="hidden" name="order" value="{$wa->get('order')|escape}">{/if}
+                    <input type="submit" class="gray" value="[`Filter products`]">
+                </form>
+            </div>
+        </div>
+    {/if}
+
+    <div id="product-list" class="col{if !empty($filters)} w9{else} w12{/if}">
+        {if !$products}
+            {$page = waRequest::get('page', 1, 'int')}
+            {$_message = _w("This category does not contain any products.")}
+            {if $page > 1}
+                {$_message = sprintf(
+                _w('No products on this page. <a href="%s">Continue viewing products of this category</a>.'),
+                $wa->getUrl('shop/category', ['category_url' => $category.full_url])
+                )}
+            {elseif !empty($filters)}
+                {$_message = _w("No products were found.")}
+            {/if}
+
+            {$_message}
+        {else}
+            {include file='list-thumbs.html' sorting=!empty($category.params.enable_sorting) has_sidebar=(!empty($filters))}
+            {*
+            or use the line below to change product list view
+            {include file='list-table.html' sorting=!empty($category.params.enable_sorting)}
+            *}
+        {/if}
+    </div>
+</div>

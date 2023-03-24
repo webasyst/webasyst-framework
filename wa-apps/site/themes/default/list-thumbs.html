@@ -1,0 +1,112 @@
+{$_cart_url = $wa->getUrl('shop/frontend/order')}
+
+<!-- products thumbnail list view -->
+
+{if $wa->shop->cart->total() > 0}{$add2cart_label = _wd('shop', 'Add to cart')}{else}{$add2cart_label = _wd('shop', 'Buy')}{/if}
+
+<ul class="thumbs product-list row cols{if $has_sidebar}4{else}5{/if} cols2-mobile cols3-tablet gap20">
+{if !empty($theme_settings.list_features)}
+    {$features = $wa->shop->features($products)}
+{/if}
+{foreach $products as $p}
+    {$available = $wa->shop->settings('ignore_stock_count') || $p.count === null || $p.count > 0}
+
+    {if !empty($p.skus) && !empty($p.skus[$p.sku_id])}
+        {$sku = $p.skus[$p.sku_id]}
+        {if empty($sku.available) && (count($p.skus) === 1)}{$available = false}{/if}
+    {/if}
+
+    <li class="wa-flex wa-flex-column col{if $has_sidebar} w3{/if}" itemscope itemtype ="http://schema.org/Product">
+        <a href="{$p.frontend_url}" title="{$p.name}" class="wa-mb-8 text-center">
+            <div class="image">
+                <div class="badge-wrapper">
+                    {$badge_html = $wa->shop->badgeHtml($p.badge)}
+                    {if $badge_html}
+                        <div class="corner bottom left">{$badge_html}</div>
+                    {/if}
+                    {if $wa->shop->config('enable_2x')}
+                        {$wa->shop->productImgHtml($p, '255', ['itemprop' => 'image', 'alt' => $p.name, 'default' => "`$wa_theme_url`img/dummy200.png", 'srcset' => "`$wa->shop->productImgUrl($p, '255@2x')` 2x"])}
+                    {else}
+                        {$wa->shop->productImgHtml($p, '177', ['itemprop' => 'image', 'alt' => $p.name, 'default' => "`$wa_theme_url`img/dummy200.png"])}
+                    {/if}
+                </div>
+            </div>
+        </a>
+
+        <div class="pricing wa-flex wa-flex-wrap justify-content-between align-items-center wa-mb-16">
+            <span class="price nowrap">{shop_currency_html($p.price)}</span>
+            {if $available && $p.compare_price > 0}
+                <span class="compare-at-price nowrap"> {shop_currency_html($p.compare_price)}</span>
+            {/if}
+            <meta itemprop="price" content="{shop_currency($p.price, null, null, 0)}">
+            <meta itemprop="priceCurrency" content="{$wa->shop->currency()}">
+        </div>
+
+        <a href="{$p.frontend_url}" title="{$p.name}">
+            <h5 class="{if !$p.summary}wa-mb-4{/if}"><span itemprop="name">{$p.name}</span></h5>
+            {if $p.summary}<span itemprop="description" class="summary">{strip_tags($p.summary)|truncate:100}</span>{/if}
+        </a>
+
+        {if !empty($p.features)}
+            <ul class="features">
+                {foreach $p.features as $f_code => $f_value}
+                    <li{if $features[$f_code].type == 'divider'} class="divider"{/if}>
+                    <span class="name">
+                        {$features[$f_code].name|escape}
+                    </span>
+                    <span class="value{if $features[$f_code].type == 'color'} is-color{/if}" itemprop="{$f_code|escape}">
+                        {if is_array($f_value)}
+                            {if $features[$f_code].type == 'color'}
+                                {implode(' ', $f_value)}
+                            {else}
+                                {implode(', ', $f_value)}
+                            {/if}
+                        {else}
+                            {$f_value}
+                        {/if}
+                    </span>
+                    </li>
+                {/foreach}
+            </ul>
+        {/if}
+        {if $p.rating > 0}
+            <span class="rating nowrap wa-mt-8">{$wa->shop->ratingHtml($p.rating, 16)}</span>
+        {/if}
+        <div itemprop="offers" class="offers wa-mt-auto wa-pt-20" itemscope itemtype="http://schema.org/Offer">
+            {if $available}
+                <form class="purchase addtocart" {if $p.sku_count > 1}data-url="{$p.frontend_url}{if strpos($p.frontend_url, '?')}&{else}?{/if}cart=1"{/if} method="post" action="{$wa->getUrl('shop/frontendCart/add')}">
+                    <input type="hidden" name="product_id" value="{$p.id}">
+                    <div class="wa-flex align-items-center">
+                        <button type="submit">{$add2cart_label}</button>
+                        <i class="adding2cart"></i>
+                        {if !empty($theme_settings.compare_products)}<a data-product="{$p.id}" class="compare" href="#" title="[`Compare`]">
+                            <svg class="compare compare-from-list{if $wa->shop->inComparison($p.id)} active{/if}" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                <use xlink:href="#img-comparison"></use>
+                            </svg>
+                            </a>{/if}
+                        <span class="added2cart" style="display: none;">{sprintf('[`%s is now <a href="%s"><strong>in your shopping cart</strong></a>`]', $p.name, $_cart_url)}</span>
+                    </div>
+                </form>
+                <link itemprop="availability" href="http://schema.org/InStock" />
+            {else}
+                <div class="out-of-stock">
+                    <strong>
+                        {if $wa->shop->settings('ignore_stock_count')}
+                            {_wd('shop', 'Pre-order only')}
+                        {else}
+                            {_wd('shop', 'Out of stock')}
+                        {/if}
+                    </strong>
+                </div>
+                <link itemprop="availability" href="http://schema.org/OutOfStock" />
+            {/if}
+        </div>
+    </li>
+{/foreach}
+</ul>
+
+{if isset($pages_count) && $pages_count > 1}
+<div class="block {if $theme_settings.pagination == 'lazyloading'}lazyloading-paging{else}paging-nav{/if}"  data-times="2" data-link-text="[`Load more`]" data-loading-str="[`Loading...`]">
+    {wa_pagination total=$pages_count attrs=['class' => "menu-h"]}
+</div>
+{/if}

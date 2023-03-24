@@ -1,6 +1,50 @@
 {* HINT: for the rest of footer links, please see index.html <!-- FOOTER --> section *}
 
-<div class="poweredby" role="complementary">
-    <span class="dots" title="Webasyst"></span>
-    [`We are using <a href="http://www.webasyst.com/">Webasyst</a>`]
+<div{if count($currencies) == 1} class="poweredby"{/if} role="complementary">
+    [`<a href="http://www.shop-script.com/">Ecommerce software</a> by Webasyst`]
 </div>
+<!-- plugin hook: 'frontend_footer' -->
+{* @event frontend_footer.%plugin_id% *}
+{foreach $frontend_footer as $_}{$_}{/foreach}
+
+{if count($currencies) > 1 || !empty($theme_settings.language_toggle)}
+    <aside class="currency-toggle">
+        {if count($currencies) > 1}
+            <select id="currency">
+                {$currency = $wa->shop->currency()}
+                {foreach $currencies as $c_code => $c}
+                    <option value="{$c_code}" {if $c_code == $currency} selected{/if}>{$c.title}</option>
+                {/foreach}
+            </select>
+            <script>
+                $("#currency").change(function () {
+                    var url = location.href;
+                    if (url.indexOf('?') == -1) {
+                        url += '?';
+                    } else {
+                        url += '&';
+                    }
+                    location.href = url + 'currency=' + $(this).val();
+                });
+            </script>
+        {/if}
+        {if !empty($theme_settings.language_toggle)}
+            <select id="language">
+                {foreach waLocale::getAll('name') as $language => $lang_name}
+                    <option value="{$language}" {if $wa->locale() == $language} selected{/if}>{$lang_name|escape}</option>
+                {/foreach}
+            </select>
+            <script>
+                $("#language").change(function () {
+                    let url = location.href;
+                    if (url.indexOf('?') == -1) {
+                        url += '?';
+                    } else {
+                        url += '&';
+                    }
+                    location.href = url + 'locale=' + $(this).val();
+                });
+            </script>
+        {/if}
+    </aside>
+{/if}

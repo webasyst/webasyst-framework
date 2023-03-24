@@ -1,0 +1,59 @@
+{$wa->globals("hideCart", true)}
+
+<style>
+    html, body, .content, main.maincontent { background: #fff !important; }
+    .cart, .checkout-header { display: none; }
+    .checkout-step { box-shadow: none; }
+
+    .checkout .checkout-result { margin: 100px 0; text-align: center; }
+    .checkout .checkout-result a { text-decoration: none; }
+    .checkout .checkout-result .s-image-wrapper { margin: 0 0 20px; }
+    .checkout .checkout-result .s-image-wrapper img { vertical-align: top; width: 100%; max-height: 160px; }
+    .checkout .checkout-result .s-header { margin: 0; font-size: 36px; line-height: 1.472222222222222em; font-weight: bold; color: #000; }
+    .checkout .checkout-result .s-description { margin: 20px 0 0; }
+    .checkout .checkout-result .s-plugin-wrapper { margin: 30px 0 0; }
+    .checkout .checkout-result .s-actions-wrapper { margin: 30px 0 0; color: #006bd8; }
+</style>
+
+<div class="checkout-result success">
+    <div class="s-image-wrapper">
+        <img src="{$wa_theme_url}img/svg/order/cart_success.svg" alt="[`Your shopping cart is empty.`]">
+    </div>
+
+    <h1 class="s-header">
+        {if !empty($payment_success) && !empty($theme_settings["checkout_payment_success_title"])}
+            {$theme_settings["checkout_payment_success_title"]}
+
+        {elseif !empty($thankyou_header)}
+            {$thankyou_header}
+
+        {else}
+            [`Thank you!`]
+        {/if}
+    </h1>
+
+    <div class="s-description">
+        {if !empty($payment_success) && !empty($theme_settings["checkout_payment_success_description"])}
+            {$theme_settings["checkout_payment_success_description"]}
+
+        {elseif !empty($thankyou_content)}
+            {$thankyou_content|replace:'$order_id':"<a href=\"`$my_order_url`\" class=\"s-order-number\">`$order.id`</a>"}
+
+        {else}
+            [`We successfully accepted your order, and will contact you asap.`] [`Your order number is `] <a href="{$wa->getUrl('shop/frontend/myOrder', ['id' => $order._id])}">{$order.id}</a>.
+        {/if}
+    </div>
+
+    {if !empty($payment)}
+        <div class="s-plugin-wrapper">{$payment}</div>
+    {/if}
+
+    <p class="s-actions-wrapper">
+        <a href="{$wa_app_url}">&larr; [`Go to home page`]</a>
+    </p>
+
+    {if !empty($frontend_checkout)}
+        {* @event frontend_checkout.%plugin_id% *}
+        {foreach $frontend_checkout as $_}{$_}{/foreach}
+    {/if}
+</div>

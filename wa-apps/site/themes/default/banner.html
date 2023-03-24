@@ -1,1 +1,17 @@
-{* LEGACY; banner.html template was deprecated in Default 3.0.0 *}
+<!-- product search -->
+<form method="get" action="{$wa->getUrl('shop/frontend/search')}" class="search">
+    <div class="search-wrapper">
+        <input id="search" type="search" name="query" {if !empty($query)}value="{$query}"{/if} placeholder="[s`Find products`]">
+        <button type="submit">
+            <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                <use xlink:href="#img-person"></use>
+            </svg>
+        </button>
+        {* <span class="search-sample">{sprintf('[`E.g. %s`]', '<a href="'|cat:$wa_app_url:"search/?query=productname":'">productname</a>')} *}
+    </div>
+</form>
+
+<!-- checkout navigation -->
+{if $action == 'checkout'}
+    <h3><a href="{$wa_app_url}">{$wa->shop->settings("name")}</a></h3>
+{/if}

@@ -1,0 +1,67 @@
+<article>
+
+    <h1>{$page.title|escape}</h1>
+
+    <!-- product page navigation -->
+    <nav>
+        <ul class="product-topbar js-product-topbar">
+            <li>
+                <a href="{$wa->shop->productUrl($product)}">
+                    [`Overview`]
+                </a>
+            </li>
+            <li>
+                <a href="{$wa->shop->productUrl($product, 'reviews')}">[`Reviews`]</a> <span class="wa-ml-4 wa-mr-8 hint">{$reviews_total_count}</span>
+                {if !empty($product.rating) && $product.rating > 0}
+                    <!-- rating -->
+                    <span class="rating nowrap wa-mb-4" title="{sprintf('[`Average user rating: %s / 5`]', $product.rating)}" {if !empty($reviews_total_count)}itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating"{/if}>
+                        {$wa->shop->ratingHtml($product.rating, 16)}
+                        {if !empty($reviews_total_count)}
+                            <meta itemprop="ratingValue" content = "{$product.rating}">
+                            <meta itemprop="reviewCount" content = "{$reviews_total_count}">
+                        {/if}
+                    </span>
+                {/if}
+            </li>
+
+            {foreach $product.pages as $p}
+                <li{if $page.id == $p.id} class="selected"{/if}>
+                    <a href="{$wa->shop->productUrl($product, 'page', ['page_url' => $p.url])}">{$p.name|escape}</a>
+                </li>
+            {/foreach}
+
+
+            <!-- plugin hook: 'frontend_product.menu' -->
+            {* @event frontend_product.%plugin_id%.menu *}
+            {foreach $frontend_product as $_}{$_.menu}{/foreach}
+            {if $theme_settings.compare_products}
+                {$compare = $wa->shop->inComparison($product.id)}
+                <li class="compare">
+                    <div class="wa-flex align-items-center">
+                        <!-- compare -->
+                        <a {if $compare}style="display:none"{/if} class="compare-add inline-link" data-product="{$product.id}" href="#" title="[`Add to comparison table`]">
+                            <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="16" width="8" height="3" rx="1" transform="rotate(-90 0 16)" fill="currentColor"/>
+                                <rect x="6" y="16" width="16" height="3" rx="1" transform="rotate(-90 6 16)" fill="currentColor"/>
+                                <rect x="12" y="16" width="13" height="3" rx="1" transform="rotate(-90 12 16)" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a {if !$compare}style="display:none"{/if} class="compare-remove inline-link" data-product="{$product.id}" href="#" title="[`Remove from comparison table`]">
+                            <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="16" width="8" height="3" rx="1" transform="rotate(-90 0 16)" fill="currentColor"/>
+                                <rect x="6" y="16" width="16" height="3" rx="1" transform="rotate(-90 6 16)" fill="currentColor"/>
+                                <rect x="12" y="16" width="13" height="3" rx="1" transform="rotate(-90 12 16)" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a id="compare-link" class="wa-ml-8" {if count($compare) lt 2}style="display:none"{/if} rel="nofollow" href="{$wa->getUrl('/frontend/compare/', ['id' => implode(',', $compare) ])}" class="bold">[`Compare`] <span class="count">{count($compare)}</span></a>
+                    </div>
+                </li>
+            {/if}
+        </ul>
+    </nav>
+
+    <div class="product-info product-info--wrapper">
+        {$page.content}
+    </div>
+
+</article>

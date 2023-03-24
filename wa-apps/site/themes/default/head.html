@@ -1,1 +1,40 @@
-<!-- put your Site app-only custom <head> tag instructions here -->
+<!-- shop app css -->
+<link href="{$wa_active_theme_url}default.shop.css?v{$wa_theme_version}" rel="stylesheet">
+<link href="{$wa_active_theme_url}css/order.css?v={$wa_theme_version}" rel="stylesheet">
+<link href="{$wa_active_theme_url}bxslider/jquery.bxslider.css?v{$wa_theme_version}" rel="stylesheet" />
+<link href="{$wa_active_theme_url}jquerycountdowntimer/css/jquery.countdownTimer.css" rel="stylesheet">
+
+<!-- js -->
+<script src="{$wa_app_static_url}js/lazy.load.js?v{$wa->version()}"></script>
+<script src="{$wa_active_theme_url}bxslider/jquery.bxslider.min.js?v{$wa_theme_version}"></script>
+<script src="{$wa_active_theme_url}jquerycountdowntimer/jquery.countdownTimer.min.js?v={$wa->version(true)}"></script>
+<script src="{$wa_static_url}wa-content/js/jquery-plugins/jquery.cookie.js?v{$wa->version(true)}"></script>
+<script src="{$wa_active_theme_url}default.shop.js?v{$wa_theme_version}"></script>
+<script src="{$wa_active_theme_url}js/quantity.js?v={$wa_theme_version}"></script>
+
+{if !empty($filters)}
+    <link href="{$wa_static_url}wa-content/css/jquery-ui/base/jquery.ui.all.css?v={$wa->version(true)}" rel="stylesheet" />
+    <script src="{$wa_static_url}wa-content/js/jquery-ui/jquery.ui.core.min.js?v{$wa->version(true)}"></script>
+    <script src="{$wa_static_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js?v{$wa->version(true)}"></script>
+    <script src="{$wa_static_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js?v{$wa->version(true)}"></script>
+    <script src="{$wa_static_url}wa-content/js/jquery-ui/jquery.ui.slider.min.js?v{$wa->version(true)}"></script>
+    {foreach $filters as $_filter}
+        {if !empty($_filter.type) && $_filter.type === "range.date"}
+            {$_lang = substr($wa->locale(), 0, 2)}
+            <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js?v={$wa->version(true)}"></script>
+            {if $_lang !== "en"}
+                <script src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
+            {/if}
+            {break}
+        {/if}
+    {/foreach}
+{/if}
+
+{if !empty($nofollow)}
+    <!-- "nofollow" for pages not to be indexed, e.g. customer account -->
+    <meta name="robots" content="noindex,nofollow" />
+{/if}
+
+<!-- plugin hook: 'frontend_head' -->
+{* @event frontend_head.%plugin_id% *}
+{foreach $frontend_head as $_}{$_}{/foreach}

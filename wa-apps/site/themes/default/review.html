@@ -1,0 +1,107 @@
+{* one review output *}
+
+{if !empty($ajax_append)}<li data-id={$review.id} data-parent-id="{$review.parent_id}">{/if}
+
+<figure class="review" itemprop="review" itemscope itemtype="http://schema.org/Review">
+    <div class="summary wa-mb-20">
+        <div class="row gap6 align-items-center wa-mb-20">
+            <img class="image" src="{if isset($review.author.id) > 0}{$review.author.photo_url_50}{else}/wa-content/img/userpic.svg{/if}" alt="">
+            {if ifempty($review.author.is_user) > 0}
+                <span class="staff">{$wa->shop->settings('name')}</span>
+            {/if}
+            {if empty($review.site)}
+                <span class="username" itemprop="author">{$review.author.name}</span>
+            {else}
+                <a href="{$review.site}" class="username" itemprop="author">{$review.author.name}</a>
+            {/if}
+            <span class="date" title="{$review.datetime|wa_datetime}">{$review.datetime|wa_datetime:"humandatetime"}</span>
+            <meta itemprop="itemReviewed" content="{$product.name|escape}">
+            <meta itemprop="datePublished" content="{$review.datetime|date_format:'Y-m-d'}">
+            <meta itemprop="author" content="{$review.author.name|default:"author"}">
+        </div>
+
+        {if !$review.parent_id && !empty($review.rate)}
+            <div class="wa-mb-20" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+                {$rate = round($review.rate)}
+                <meta itemprop="worstRating" content = "1">
+                <meta itemprop="ratingValue" content="{$rate}">
+                <meta itemprop="bestRating" content = "5">
+                {$wa->shop->ratingHtml($rate, 16)}
+            </div>
+        {/if}
+
+        <h6 class="wa-mb-0">
+            <span itemprop="name">{if $review.title}{$review.title}{/if}</span>
+        </h6>
+
+    </div>
+    {if $review.text}
+        <p itemprop="description">{$review.text}</p>
+    {/if}
+
+    {strip}
+    {if !empty($review.images)}
+        <div class="s-images-list">
+            {foreach $review.images as $_image}
+                <a class="s-image-wrapper js-show-image" href="{$_image.url_0|escape}" title="{$_image.description|escape}" target="_blank">
+                    <img class="s-image" src="{$_image.url_2|escape}" alt="{$_image.description|escape}">
+                </a>
+            {/foreach}
+        </div>
+    {/if}
+    {/strip}
+
+    {if $reply_allowed}
+        <div class="actions">
+            <a href="{if isset($reply_link)}{$reply_link}{else}#{/if}" class="review-reply inline-link"><b><i>[`reply`]</i></b></a>
+        </div>
+    {/if}
+
+    <script>
+        ( function($) {
+            var $document = $(document),
+                $review = $(".s-review-wrapper[data-id=\"" + {$review.id|escape} + "\"]");
+
+            $review.on("click", ".js-show-image", function(event) {
+                event.preventDefault();
+
+                var $image = $(this),
+                    images = [];
+
+                $review.find(".js-show-image").each(function () {
+                    var $_image = $(this);
+                    images.push({
+                        href: $_image.attr("href"),
+                        title: escape($_image.attr("title"))
+                    });
+                });
+
+                var k = $image.prevAll('.js-show-image').length;
+                if (k) {
+                    images = images.slice(k).concat(images.slice(0, k));
+                }
+
+                $.swipebox(images, {
+                    useSVG : false,
+                    hideBarsDelay: false,
+                    afterOpen: function() {
+                        $document.on("scroll", closeSwipe);
+                        function closeSwipe() {
+                            var $closeButton = $("#swipebox-close");
+                            if ($closeButton.length) {
+                                $closeButton.trigger("click");
+                            }
+                            $document.off("scroll", closeSwipe);
+                        }
+                    }
+                });
+
+                function escape(string) {
+                    return $("<div />").text(string).html();
+                }
+            });
+        })(jQuery);
+    </script>
+</figure>
+
+{if !empty($ajax_append)}<ul class="reviews-branch"></ul></li>{/if}

@@ -1,0 +1,129 @@
+{if !empty($pin_required)}
+    <h1>
+        [`Order`] {$encoded_order_id}
+    </h1>
+
+    <form action="" method="post">
+        {if $wrong_pin}
+            <p style="color:red">[`PIN is not valid`]</p>
+        {/if}
+        <p>[`Please enter a 4-digit PIN that you received with your order receipt by email.`]</p>
+        <div>
+            <input type="text" name="pin">
+        </div>
+        <div>
+            <input type="submit" value="[`View order`]">
+        </div>
+    </form>
+{else}
+    <h1>
+        [`Order`] {$order.id_str}
+        <span class="order-status" style="{$order.state->getStyle(1)}">
+            {$order.state->getName()}
+        </span>
+    </h1>
+    <p class="gray">{$order.create_datetime|wa_date:'humandatetime'}</p>
+
+    <!-- shipping -->
+    <h3>[`Shipping`]
+        {if $order.shipping_name}
+            &mdash; <strong>{$order.shipping_name}</strong>
+        {/if}
+    </h3>
+
+    <!-- shipping plugin output -->
+    {if !empty($order.params.tracking_number)}
+        [`Shipment tracking number`]: {$order.params.tracking_number}
+        <br />
+    {/if}
+    {if !empty($tracking) && $order.state->getId() != 'completed'}
+        <div class="plugin">
+            {$tracking}
+        </div>
+    {/if}
+
+    <p>
+        {$contact.name|escape}<br>
+        {if $shipping_address}
+            {$shipping_address}
+        {/if}
+    </p>
+
+    <!-- billing -->
+    <h3>[`Payment`]
+        {if $order.payment_name}
+            &mdash; <strong>{$order.payment_name}</strong>
+        {/if}
+    </h3>
+    
+    <!-- payment plugin output -->
+    {if !empty($payment)}
+        <div class="plugin">
+            {$payment}
+        </div>
+    {/if}
+    
+    <p>
+        {$contact.name|escape}<br>
+        {if $billing_address}
+            {$billing_address}
+        {/if}
+    </p>
+
+    {if !empty($order.comment)}
+        <h3>[`Comment`]</h3>
+        <p>
+            {$order.comment|escape}<br>
+        </p>
+    {/if}
+
+    <!-- order content and total -->
+    <table class="table">
+        <tr>
+            <th></th>
+            <th class="align-right">[`Quantity`]</th>
+            <th class="align-right">[`Total`]</th>
+        </tr>
+        {foreach $order.items as $item}
+            <tr{if $item.type == 'service'} class="service"{/if}>
+                <td>{if $item.type == 'service'}+ {/if}{$item.name}
+                    {if $item.type == 'product' && !empty($item.download_link)}<a href="{$item.download_link}"><strong>[`Download`]</strong></a>{/if}</td>
+                <td class="align-right"><span class="gray">{wa_currency_html($item.price, $order.currency)} x</span> {$item.quantity}</td>
+                <td class="align-right">{wa_currency_html($item.price * $item.quantity, $order.currency)}</td>
+            </tr>
+        {/foreach}
+        <tr class="no-border thin">
+            <td colspan="2" class="align-right">[`Subtotal`]</td>
+            <td class="align-right">{wa_currency_html($subtotal, $order.currency)}</td>
+        </tr>
+        <tr class="no-border thin">
+            <td colspan="2" class="align-right">[`Discount`]</td>
+            <td class="align-right">&minus; {wa_currency_html($order.discount, $order.currency)}</td>
+        </tr>
+        <tr class="no-border thin">
+            <td colspan="2" class="align-right">
+                [`Shipping`]
+                {if !empty($order.params.shipping_name)}
+                    (<strong>{$order.params.shipping_name}</strong>)
+                {/if}
+            </td>
+            <td class="align-right">{wa_currency_html($order.shipping, $order.currency)}</td>
+        </tr>
+        {if $order.tax > 0}
+            <tr class="no-border thin">
+                <td colspan="2" class="align-right">[`Tax`]</td>
+                <td class="align-right">{wa_currency_html($order.tax, $order.currency)}</td>
+            </tr>
+        {/if}
+        <tr class="no-border thin large">
+            <td colspan="2" class="align-right"><b>[`Total`]</b></td>
+            <td class="align-right bold">{wa_currency_html($order.total, $order.currency)}</td>
+        </tr>
+    </table>
+{/if}
+
+{$wa->globals('isMyAccount', true)}
+
+<!-- plugin hook: 'frontend_my_order' -->
+{* @event frontend_my_order.%plugin_id% *}
+{foreach $frontend_my_order as $_}{$_}{/foreach}
