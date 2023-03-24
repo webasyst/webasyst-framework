@@ -26,8 +26,6 @@
 
     </div>
 
-    <div class="clear-both"></div>
-
     <form action="" enctype="multipart/form-data" method="post"{if empty($form->errors)} style="display: none;"{/if} id="wa-my-info-edit-wrapper">
         <div class="wa-form">
 
@@ -41,13 +39,10 @@
             </div>
         </div>
     </form>
-
-    <div class="clear-both"></div>
 </div>
 
 {$auth_adapters = $wa->authAdapters(true)}
 {if $auth_adapters}
-    <div class="clear-both"></div>
     <div class="wa-auth-adapters wa-connect">
         <h3>[s`Connected accounts`]</h3>
     

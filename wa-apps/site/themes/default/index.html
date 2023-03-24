@@ -3,6 +3,8 @@
 
 {$html_class_array = []}
 {$_color_scheme_class = 'color_scheme_'|cat:str_replace('img/themesettings/','',str_replace('.png','',$theme_settings.color_scheme))}
+{$_color_scheme = str_replace('img/themesettings/','',str_replace('.png','',$theme_settings.color_scheme))}
+{$_scheme_colors = ['white' => '#fff','yellow' => '#fb0','green' => '#6fb541','blue' => '#4e81cc','purple' => '#9a81b3','gray' => '#9c9c9c','pink' => '#e871b1','cyan' => '#3ac1bf','lime' => '#b5ce10','red' => '#cf2219']}
 
 {if $theme_settings.color_scheme}{$html_class_array[] = $_color_scheme_class}{/if}
 {if $theme_settings.font_size}{$html_class_array[] = $theme_settings.font_size}{/if}
@@ -10,11 +12,7 @@
 {if $wa->globals('isMyAccount')}{$html_class_array[] = 'my'}{/if}
 
 {if $wa->shop}
-    {if method_exists($wa->shop, 'checkout')}
-        {$_cart_url = $wa->shop->checkout()->cartUrl()}
-    {else}
-        {$_cart_url = $wa->getUrl('shop/frontend/cart')}
-    {/if}
+    {$_cart_url = $wa->getUrl('shop/frontend/order')}
 {/if}
 
 {$_is_order_page = $wa->globals("isOrderPage")}
@@ -23,20 +21,24 @@
 {/if}
 
 {/strip}
-<html{if !empty($html_class_array)} class="{join(' ', $html_class_array)}"{/if}>
+<html{if !empty($html_class_array)} class="{join(' ', $html_class_array)}"{/if} lang="{if $wa->locale()}{$wa->locale()}{else}en{/if}">
 
 {$_head_prefix = $wa->globals("headPrefix")}
 
 <head {if !empty($_head_prefix)}prefix="{$_head_prefix}"{/if}>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
-    <meta http-equiv="x-ua-compatible" content="IE=edge">
 
     <title>{$wa->title()|escape}</title>
     <meta name="keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="description" content="{$wa->meta('description')|escape}" />
+    {if $theme_settings['header_customcolor']}
+        <meta name="theme-color" content="{$theme_settings['header_customcolor']|escape}">
+    {/if}
 
-    {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
+    {if !empty($canonical)}
+        <link rel="canonical" href="{$canonical}"/>
+    {/if}
     <link rel="icon" href="/favicon.ico"/>
     <link rel="shortcut icon" href="/favicon.ico"/>
     {if $wa->blog}
@@ -48,22 +50,23 @@
     <!-- css -->
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
     {$wa->css()} {* links active plugins CSS *}
-    {if $theme_settings.font_family|strstr:'_google_'}
-        {if $theme_settings.font_family|strstr:'fira'}{$_real_font_name = 'Fira+Sans:400,500,700,400italic,500italic,700italic'}{/if}
-        {if $theme_settings.font_family|strstr:'opensans'}{$_real_font_name = 'Open+Sans:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family|strstr:'ptsans'}{$_real_font_name = 'PT+Sans:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family|strstr:'ptserif'}{$_real_font_name = 'PT+Serif:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family|strstr:'ptsansandserif'}{$_real_font_name = 'PT+Sans+Caption:400,700|PT+Serif:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family|strstr:'roboto'}{$_real_font_name = 'Roboto:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family|strstr:'lora'}{$_real_font_name = 'Lora:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family|strstr:'ubuntu'}{$_real_font_name = 'Ubuntu:400,700,700italic,400italic'}{/if}
+    {if !empty($theme_settings.font_family) && ($theme_settings.font_family != 'Trebuchet MS' || $theme_settings.font_family != 'Verdana' || $theme_settings.font_family != 'Georgia, Times')}
+        {if $theme_settings.font_family == 'Fira Sans'}{$_real_font_name = 'Fira+Sans:400,500,700,400italic,500italic,700italic'}{/if}
+        {if $theme_settings.font_family == 'Open Sans'}{$_real_font_name = 'Open+Sans:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family == 'PT Sans'}{$_real_font_name = 'PT+Sans:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family == 'PT Serif'}{$_real_font_name = 'PT+Serif:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family == 'PT Sans Caption'}{$_real_font_name = 'PT+Sans+Caption:400,700|PT+Serif:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family == 'Roboto'}{$_real_font_name = 'Roboto:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family == 'Lora'}{$_real_font_name = 'Lora:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family == 'Ubuntu'}{$_real_font_name = 'Ubuntu:400,700,700italic,400italic'}{/if}
         <link href='https://fonts.googleapis.com/css?family={$_real_font_name}&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
     {/if}
 
     <!-- js -->
-    <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.11.1.min.js" ></script>
-    <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-    <script type="text/javascript" src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
+    <script src="{$wa_static_url}wa-content/js/jquery/jquery-1.11.1.min.js?v={$wa->version(true)}"></script>
+    <script src="{$wa_static_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js?v={$wa->version(true)}"></script>
+    <script src="{$wa_theme_url}js/waTheme.js?v={$wa_theme_version}"></script>
+    <script src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
 
     {$wa->js()} {* links active plugins JS *}
 
@@ -73,24 +76,67 @@
 
     <!-- custom colors -->
     <style>
-        {if $theme_settings.color_text} html, body { color: {$theme_settings.color_text}; } {/if}
-        {if $theme_settings.color_links} a { color: {$theme_settings.color_links}; } {/if}
-        {if $theme_settings.color_links_visited} a:visited { color: {$theme_settings.color_links_visited}; } {/if}
-        {if $theme_settings.color_links_hover} a:hover { color: {$theme_settings.color_links_hover}; } {/if}
-        {if $theme_settings.color_hint}
-            .hint,
-            .breadcrumbs,
-            .breadcrumbs a,
-            .breadcrumbs span.rarr,
-            table.features tr.divider td,
-            .bestsellers .bestsellers-header,
-            ul.thumbs li span.summary,
-            .review .summary,
-            .review .summary .date,
-            ul.albums li .count,
-            .album-note,
-            .credentials .username, .credentials .username a { color: {$theme_settings.color_hint}; }
+        html {
+        {if $theme_settings.font_family}
+            --font-family: '{$theme_settings.font_family}', sans-serif;
         {/if}
+        {if $theme_settings.font_size}
+            --font-size: {$theme_settings.font_size};
+        {/if}
+        {if $theme_settings.color_text}
+            --text-color: {$theme_settings.color_text};
+        {/if}
+        {if $theme_settings.color_hint}
+            --hint-color: {$theme_settings.color_hint};
+        {/if}
+        {if $theme_settings.color_links}
+            --link-color: {$theme_settings.color_links};
+        {/if}
+        {if $theme_settings.color_links_hover}
+            --link-hover-color: {$theme_settings.color_links_hover};
+        {/if}
+        {if $theme_settings.color_links_visited}
+            --link-visited-color: {$theme_settings.color_links_visited};
+        {/if}
+        {if $theme_settings.header_scheme|strstr:'white.'}
+            --header-bg-color:                  #fff;
+            --header-link-color:               var(--gray1);
+            --header-link-hover-color:         var(--black);
+            --header-apps-link-color:          var(--gray3);
+            --header-apps-link-selected-color: var(--black);
+        {/if}
+        {if $theme_settings.header_scheme|strstr:'whiteandgray.'}
+            --header-bg-color: #eee;
+            --header-link-color:               var(--gray1);
+            --header-link-hover-color:         var(--black);
+            --header-apps-link-color:          var(--gray3);
+            --header-apps-link-selected-color: var(--black);
+        {/if}
+        {if $theme_settings.header_customcolor}
+            --header-bg-color: {$theme_settings.header_customcolor};
+        {/if}
+        {if $theme_settings.header_customcolor_links}
+            --header-link-color: {$theme_settings.header_customcolor_links};
+        {/if}
+
+        {if empty($theme_settings.color_custom)}
+            --header-menu-bg-color: {$_scheme_colors[$_color_scheme]};
+            {if $_color_scheme != 'white' && $_color_scheme != 'yellow'}
+                --header-menu-pages-link-color:    var(--white)
+            {/if}
+        {/if}
+
+        {if $theme_settings.color_custom}
+            --header-menu-bg-color: {$theme_settings.color_custom};
+        {/if}
+        {if $theme_settings.color_custom_links}
+            --header-menu-link-color: {$theme_settings.color_custom_links};
+        {/if}
+
+        }
+
+
+
         {if $theme_settings.header_customcolor_links}
             header h2 a, header h2 a:hover,
             header .apps li a, header .apps li a:hover,
@@ -112,82 +158,69 @@
         {if trim($theme_settings.style_custom)}{$theme_settings.style_custom}{/if}
     </style>
 
-    <!--[if lt IE 9]>
-    <script>
-    document.createElement('header');
-    document.createElement('nav');
-    document.createElement('section');
-    document.createElement('article');
-    document.createElement('aside');
-    document.createElement('footer');
-    document.createElement('figure');
-    document.createElement('hgroup');
-    document.createElement('menu');
-    </script>
-    <![endif]-->
-
 </head>
+
 <body>
-    <header class="globalheader" style="{if $theme_settings.color_custom}background-color: {$theme_settings.color_custom};{/if}{if $theme_settings.header_custom_image}background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');{/if}">
+    <header class="globalheader"{if $theme_settings.header_custom_image} style="background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');"{/if}>
 
         {if count($wa->apps())>0 || $wa->isAuthEnabled()}
 
             <!-- GLOBAL NAVIGATION -->
-            <div id="globalnav" class="{if $theme_settings.header_scheme|strstr:'white'}light{if $theme_settings.header_scheme|strstr:'andgray'} andgray{/if}{/if}"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};"{/if}>
+            <div id="globalnav"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};"{/if}>
                 <div class="container">
-
-                    <div class="wa-flex-box full-line">
-                        <nav class="column wa-flex-box middle" style="flex: 1;">
-                            {if $theme_settings.header_sitename || $theme_settings.logo}
-                                <h2>
-                                    <a href="{$wa_url}">
-                                        {if $theme_settings.logo}
-                                            <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
-                                            <span>{$wa->accountName()}</span>
-                                        {else}
-                                            {$wa->accountName()}
-                                        {/if}
-                                    </a>
-                                </h2>
-                            {/if}
-
-                            {strip}
-                            <ul class="apps">
-                                {$_links = []}
-                                {if $theme_settings.header_links == 'site-pages'}
-                                    {if $wa->site}{$_links = $wa->site->pages()}{/if}
-                                {elseif $theme_settings.header_links == 'shop-pages'}
-                                    {if $wa->shop}{$_links = $wa->shop->pages()}{/if}
-                                {elseif $theme_settings.header_links == 'blog-pages'}
-                                    {if $wa->blog}{$_links = $wa->blog->pages()}{/if}
-                                {elseif $theme_settings.header_links == 'photos-pages'}
-                                    {if $wa->photos}{$_links = $wa->photos->pages()}{/if}
-                                {elseif $theme_settings.header_links == 'hub-pages'}
-                                    {if $wa->hub}{$_links = $wa->hub->pages()}{/if}
-                                {elseif $theme_settings.header_links != 'none'}
-                                    {$_links = $wa->apps()}
-                                {/if}
-                                {foreach $_links as $a}
-                                    {if !($a.url == $wa_url && $a.name == $wa->accountName())}
-                                        <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                    <div class="globalnav-bar wa-flex align-items-center space-3">
+                        {if $theme_settings.header_sitename || $theme_settings.logo}
+                            <h2>
+                                <a href="{$wa_url}">
+                                    {if $theme_settings.logo}
+                                        <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
+                                        <span>{$wa->accountName()}</span>
+                                    {else}
+                                        {$wa->accountName()}
                                     {/if}
-                                {/foreach}
-                            </ul>
+                                </a>
+                            </h2>
+                        {/if}
+                        <nav class="wa-flex wa-flex-fill overflow-hidden">
+                            {strip}
+                                <ul class="apps">
+                                    {$_links = []}
+                                    {if $theme_settings.header_links == 'site-pages'}
+                                        {if $wa->site}{$_links = $wa->site->pages()}{/if}
+                                    {elseif $theme_settings.header_links == 'shop-pages'}
+                                        {if $wa->shop}{$_links = $wa->shop->pages()}{/if}
+                                    {elseif $theme_settings.header_links == 'blog-pages'}
+                                        {if $wa->blog}{$_links = $wa->blog->pages()}{/if}
+                                    {elseif $theme_settings.header_links == 'photos-pages'}
+                                        {if $wa->photos}{$_links = $wa->photos->pages()}{/if}
+                                    {elseif $theme_settings.header_links == 'hub-pages'}
+                                        {if $wa->hub}{$_links = $wa->hub->pages()}{/if}
+                                    {elseif $theme_settings.header_links != 'none'}
+                                        {$_links = $wa->apps()}
+                                    {/if}
+                                    {foreach $_links as $a}
+                                        {if !($a.url == $wa_url && $a.name == $wa->accountName())}
+                                            <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                                        {/if}
+                                    {/foreach}
+                                </ul>
                             {/strip}
-
-                            <div class="clear-both"></div>
                         </nav>
 
-                        <div class="column wa-flex-box middle">
+                        <div class="wa-flex wa-ml-auto">
                             {$_hide_cart = $wa->globals("hideCart")}
                             {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
-                              && !empty($theme_settings.show_cart) && empty($_hide_cart)}
+                            && !empty($theme_settings.show_cart) && empty($_hide_cart)}
                                 <!-- cart -->
                                 {$cart_total = $wa->shop->cart->total()}
-                                <div id="cart" class="cart{if !$cart_total} empty{/if}">
+                                <div id="cart" class="cart wa-flex{if !$cart_total} empty{/if}">
+                                    <div class="container">
                                     <a href="{$_cart_url}" class="cart-summary">
-                                        <i class="cart-icon"></i>
-                                        <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                                        <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                            <use xlink:href="#img-cart"></use>
+                                        </svg>
+                                        <span class="wa-mr-8 wa-ml-4">[s`Cart`]</span>
+                                        <strong class="s-badge s-badge-rounded cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
                                     </a>
                                     <div id="cart-content">
                                         {* <div class="cart-just-added">
@@ -197,78 +230,84 @@
                                     <a href="{$_cart_url}" class="cart-to-checkout" style="display: none;">
                                         [s`View cart`]
                                     </a>
-                                </div>
 
-                                {strip}
-                                {capture assign="_loading_template"}
-                                    <div class="s-loading-section">
-                                        <div class="s-loading-content">
-                                            <i class="icon16 loading"></i>
-                                        </div>
+                                    {strip}
+                                        {capture assign="_loading_template"}
+                                            <div class="s-loading-section">
+                                                <div class="s-loading-content">
+                                                    <i class="icon16 loading"></i>
+                                                </div>
+                                            </div>
+                                        {/capture}
+                                    {/strip}
+
+                                    <script>
+                                        ( function($) {
+                                            var is_loading = false;
+                                            $("#cart").on("click", function() {
+                                                if (!is_loading) {
+                                                    is_loading = true;
+                                                    $("body").append({$_loading_template|json_encode});
+                                                }
+                                            });
+                                        })(jQuery);
+                                    </script>
                                     </div>
-                                {/capture}
-                                {/strip}
-
-                                <script>
-                                    ( function($) {
-                                        var is_loading = false;
-                                        $("#cart").on("click", function() {
-                                            if (!is_loading) {
-                                                is_loading = true;
-                                                $("body").append({$_loading_template|json_encode});
-                                            }
-                                        });
-                                    })(jQuery);
-                                </script>
+                                </div>
                             {/if}
 
                             {if $wa->isAuthEnabled()}
                                 <!-- user auth -->
                                 {strip}
-                                <ul class="auth" id="js-header-auth-wrapper">
-                                    {if $wa->user()->isAuth()}
-                                        {if $wa->myUrl()}
-                                            <li{if $wa->globals('isMyAccount')} class="bold"{/if}>
-                                                <a href="{$wa->myUrl()}" class="not-visited"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i> <strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></a>
-                                            </li>
+                                    <ul class="auth wa-flex align-items-center space-05" id="js-header-auth-wrapper">
+                                        {if $wa->user()->isAuth()}
+                                            {if $wa->myUrl()}
+                                                <li>
+                                                    <a href="{$wa->myUrl()}"><i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i></a>
+                                                </li>
+                                                <li{if $wa->globals('isMyAccount')} class="bold"{/if}>
+                                                    <a href="{$wa->myUrl()}">{$wa->user('firstname')|default:'[`My account`]'}</a>
+                                                </li>
+                                            {else}
+                                                <li><strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></li>
+                                            {/if}
+                                            <li><a href="?logout" class="auth-logout">[s`Log out`]</a></li>
                                         {else}
-                                            <li><strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></li>
+                                            <li>
+                                                <a href="{$wa->loginUrl()}" class="not-visited text-white">
+                                                    <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                                        <use xlink:href="#img-person"></use>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{$wa->loginUrl()}" class="not-visited text-gray">[s`Log in`]</a>
+                                            </li>
+                                            {*<li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>*}
                                         {/if}
-                                        <li><a href="?logout" class="not-visited">[s`Log out`]</a></li>
-                                    {else}
-                                        <li><a href="{$wa->loginUrl()}" class="not-visited">[s`Log in`]</a></li>
-                                        <li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>
-                                    {/if}
-                                </ul>
+                                    </ul>
                                 {/strip}
                             {/if}
-
-                            <button id="mobile-nav-toggle"></button>
-
-                            <div class="clear-both"></div>
                         </div>
+                        <button id="mobile-nav-toggle"></button>
                     </div>
-
                 </div>
             </div>
-
         {/if}
 
+        {if empty ($_is_order_page)}
         <!-- APP NAVIGATION -->
-        <div class="container appnav" id="header-container"{if $theme_settings.header_scheme|strstr:'andgray'} style="border-top: 1px solid transparent;"{/if}>
+        <div class="container appnav wa-flex justify-content-between align-items-center" id="header-container"{if $theme_settings.header_scheme|strstr:'andgray'} style="border-top: 1px solid transparent;"{/if}>
             {if $wa->globals('isMyAccount')}
 
                 {* focused personal accounts navigation *}
                 {$wa->myNav('pages')}
 
             {else}
-
                 {include file="`$wa_active_theme_path`/header.html" inline}
-
             {/if}
-            <div class="clear-both"></div>
         </div>
-
+        {/if}
     </header>
 
     <!-- APP CONTENT -->
@@ -280,39 +319,104 @@
 
     <!-- FOOTER -->
     <footer class="globalfooter">
+        {if !empty($theme_settings.footer_subscribe_form_use) && $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
+            <div class="mailer-subscribe">
+                <div class="container">
+                    <section class="s-subscribe-section row cols1-mobile" id="js-subscribe-section">
+                        {if !empty($theme_settings.footer_subscribe_form_title)}
+                            <p class="col w5 s-subscribe-section--title wa-mb-4 wa-pl-4">{$theme_settings.footer_subscribe_form_title}</p>
+                        {/if}
+                        <form class="col w7">
+                            <div class="row">
+                                <input class="wa-flex-fill wa-mr-16 wa-mt-4 js-email-field" type="email" name="email" placeholder="your@email.here" required>
+                                <button class="text-white js-submit-button wa-mt-4" type="submit">[s`Subscribe`]</button>
+                            </div>
+                            <div class="s-hidden">{$wa->captcha(['app_id'=>'mailer'])}</div>
+                        </form>
+
+                        <p class="js-success-message" style="display:none">
+                            <i>[s`Thank you! We’ll keep you posted.`]</i>
+                        </p>
+                        <script>
+                            ( function($) {
+                                new SubscribeSection({
+                                    $wrapper: $("#js-subscribe-section"),
+                                    request_uri: "{$wa->getUrl('mailer/frontend/subscribe')}"
+                                })
+                            })(jQuery);
+                        </script>
+                    </section>
+                    {if !empty($theme_settings.footer_subscribe_personal_data)}
+                        <div class="s-subscribe-personal-data wa-mt-24">{$theme_settings.footer_subscribe_personal_data}</div>
+                    {/if}
+                </div>
+            </div>
+        {/if}
         <div class="container">
-
             {if !empty($theme_settings.footer_links)}
+            <div class="row gap20 cols4 cols1-mobile cols2-tablet">
 
-                <div class="footer-block contact-us">
-
+                <div class="footer-block contact-us col w3">
                     <div class="social">
-                        {if $wa->blog && $rss}<a href="{$rss}" title="[s`RSS`]"><i class="icon24 rss"></i></a>{/if}
-                        {if !empty($theme_settings.facebook)}<a href="{$theme_settings.facebook}" title="[s`Facebook`]"><i class="icon24 facebook"></i></a>{/if}
-                        {if !empty($theme_settings.twitter)}<a href="{$theme_settings.twitter}" title="[s`Twitter`]"><i class="icon24 twitter"></i></a>{/if}
-                        {if !empty($theme_settings.vk)}<a href="{$theme_settings.vk}" title="[s`VK`]"><i class="icon24 vk"></i></a>{/if}
-                        {if !empty($theme_settings.instagram)}<a href="{$theme_settings.instagram}" title="[s`Instagram`]"><i class="icon24 instagram"></i></a>{/if}
-                        {if !empty($theme_settings.youtube)}<a href="{$theme_settings.youtube}" title="[s`Youtube`]"><i class="icon24 youtube"></i></a>{/if}
+                        {if $wa->blog && $rss}
+                            <a class="wa-mb-0" href="{$rss}" title="[s`RSS`]">
+                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                    <use xlink:href="#img-rss"></use>
+                                </svg>
+                            </a>
+                        {/if}
+                        {if !empty($theme_settings.facebook)}
+                            <a class="wa-mb-0" href="{$theme_settings.facebook}" title="[s`Facebook`]">
+                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                    <use xlink:href="#img-facebook"></use>
+                                </svg>
+                            </a>
+                        {/if}
+                        {if !empty($theme_settings.twitter)}
+                            <a class="wa-mb-0" href="{$theme_settings.twitter}" title="[s`Twitter`]">
+                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                    <use xlink:href="#img-twitter"></use>
+                                </svg>
+                            </a>
+                        {/if}
+                        {if !empty($theme_settings.vk)}
+                            <a class="wa-mb-0" href="{$theme_settings.vk}" title="[s`VK`]">
+                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                    <use xlink:href="#img-vk"></use>
+                                </svg>
+                            </a>
+                        {/if}
+                        {if !empty($theme_settings.instagram)}
+                            <a class="wa-mb-0" href="{$theme_settings.instagram}" title="[s`Instagram`]">
+                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                    <use xlink:href="#img-instagram"></use>
+                                </svg>
+                            </a>
+                        {/if}
+                        {if !empty($theme_settings.youtube)}
+                            <a class="wa-mb-0" href="{$theme_settings.youtube}" title="[s`Youtube`]">
+                                <svg width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                    <use xlink:href="#img-youtube"></use>
+                                </svg>
+                            </a>
+                        {/if}
                     </div>
 
                     {if $wa->shop}
-                        <a href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a>
-                        <strong>{$wa->shop->settings('phone')}</strong>
+                        <p class="wa-flex align-items-center wa-mb-8">[`Phone`]: <a class="wa-ml-4 wa-mb-0" href="tel:{$wa->shop->settings('phone')|replace:[' ', '(', ')', '-']:''}">{$wa->shop->settings('phone')}</a></p>
+                        <p class="wa-flex align-items-center wa-mb-16">Email: <a class="wa-ml-4 wa-mb-0" href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a></p>
                     {/if}
-
                 </div>
 
-
                 {if $wa->shop}
-                    <div class="footer-block">
+                    <div class="footer-block col w3">
                         <a href="{$wa->getUrl('shop/frontend')}" class="top">[s`Shop`]</a>
                         <a href="{$_cart_url}">[s`Cart`]</a>
-                        <a href="{$wa->getUrl('shop/frontend/checkout')}">[s`Checkout`]</a>
                     </div>
                 {/if}
 
                 {if $wa->photos}
-                    <div class="footer-block">
+                    <div class="footer-block col w3">
                         <a href="{$wa->getUrl('photos/frontend')}" class="top">[s`Photos`]</a>
                         <a href="{$wa->getUrl('photos/frontend')}">[s`Photostream`]</a>
                         <a href="{$wa->getUrl('photos/frontend')}favorites/">[s`Favorites`]</a>
@@ -320,7 +424,7 @@
                 {/if}
 
                 {if $wa->blog}
-                    <div class="footer-block">
+                    <div class="footer-block col w3">
                         <a href="{$wa->getUrl('blog/frontend')}" class="top">[s`Blog`]</a>
                         <a href="{$wa->blog->rssUrl()}">[s`RSS`]</a>
                         {$blogs = $wa->blog->blogs()}
@@ -330,63 +434,29 @@
                     </div>
                 {/if}
 
-                {if !empty($theme_settings.footer_subscribe_form_use) && $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
-                    <div class="footer-block mailer-subscribe">
-                        {if !empty($theme_settings.footer_subscribe_form_title)}
-                            <a href="javascript:void(0);" class="top">{$theme_settings.footer_subscribe_form_title}</a>
-                        {/if}
-
-                        <section class="s-subscribe-section" id="js-subscribe-section">
-                            <form>
-                                <div class="line">
-                                    <input class="js-email-field" type="email" name="email" placeholder="your@email.here" required>
-                                    <input class="small js-submit-button" type="submit" value="[s`Subscribe`]">
-                                </div>
-                                <div class="s-hidden">{$wa->captcha(['app_id'=>'mailer'])}</div>
-                            </form>
-
-                            <p class="js-success-message" style="display:none">
-                                <i>[s`Thank you! We’ll keep you posted.`]</i>
-                            </p>
-
-                            {if !empty($theme_settings.footer_subscribe_personal_data)}
-                                <div class="s-form-desc">{$theme_settings.footer_subscribe_personal_data}</div>
-                            {/if}
-
-                            <script>
-                                ( function($) {
-                                    new SubscribeSection({
-                                        $wrapper: $("#js-subscribe-section"),
-                                        request_uri: "{$wa->getUrl('mailer/frontend/subscribe')}"
-                                    })
-                                })(jQuery);
-                            </script>
-                        </section>
-
-                    </div>
-                {/if}
+            </div>
             {/if}
 
-            <div class="clear-both"></div>
 
             {if !empty($theme_settings.footer_note)}
-                <p class="hint footer-note">
+                <p class="footer-note">
                     {$theme_settings.footer_note}
                 </p>
             {/if}
 
         </div>
 
-        <div class="container">
-            <div class="appfooter">
-                <div class="copyright">
-                    &copy; {time()|wa_datetime:"Y"}
-                    <a href="{$wa_url}">{$wa->accountName()}</a>
+        <div class="appfooter">
+            <div class="container">
+                <div class="row gap16 justify-content-between align-items-center">
+                    <div class="copyright">
+                        &copy; {time()|wa_datetime:"Y"}
+                        <a href="{$wa_url}">{$wa->accountName()}</a>
+                    </div>
+                    {include file="`$wa_active_theme_path`/footer.html" inline}
                 </div>
-                {include file="`$wa_active_theme_path`/footer.html" inline}
 
-                {if !empty($theme_settings.footer_notice)}
-                    <div style="clear: both"></div>
+                {if empty($theme_settings.footer_notice)}
                     <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
                 {/if}
             </div>
@@ -398,5 +468,75 @@
     {if $theme_settings.admin_sidebar}
         {if $wa->user()->isAdmin()}{include file="admin-sidebar.html" inline}{/if}
     {/if}
+
+    <svg display="none">
+        <defs>
+            <g id="img-close">
+                <path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 24C19.5 24 24 19.5 24 14C24 8.5 19.5 4 14 4C8.5 4 4 8.5 4 14C4 19.5 8.5 24 14 24Z"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.17 16.8299L16.83 11.1699"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.83 16.8299L11.17 11.1699"/>
+            </g>
+            <g id="img-star-5">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M7.5 0L9.7042 4.46619L14.6329 5.18237L11.0665 8.65881L11.9084 13.5676L7.5 11.25L3.09161 13.5676L3.93354 8.65881L0.367076 5.18237L5.2958 4.46619L7.5 0Z"/>
+            </g>
+            <g id="img-rss">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" fill-rule="evenodd" d="M6.24256 6.06711C6.17996 6.1034 6.09868 6.18658 6.06193 6.25199C5.99602 6.36924 5.99521 6.39034 6.00384 7.7768C6.0124 9.15027 6.01412 9.18477 6.07837 9.27093C6.21546 9.45478 6.28856 9.47378 6.97107 9.503C10.0733 9.63584 12.8849 10.8906 15.0611 13.1136C17.1822 15.2802 18.3646 18.0056 18.494 21.0259C18.5232 21.7084 18.5422 21.7815 18.726 21.9186C18.8122 21.9828 18.8467 21.9846 20.2202 21.9931C21.6085 22.0018 21.6276 22.001 21.7455 21.9347C21.8112 21.8978 21.8947 21.8147 21.9311 21.7499C22.0089 21.6114 22.0154 21.3961 21.9658 20.6088C21.833 18.5053 21.3417 16.6269 20.4373 14.7655C20.0638 13.9969 19.8412 13.6068 19.385 12.9217C18.7924 12.0316 18.3166 11.4482 17.529 10.6459C16.7241 9.8261 16.0104 9.23455 15.0753 8.61192C14.3901 8.15575 14.0001 7.93312 13.2315 7.55971C11.3701 6.65528 9.49166 6.16393 7.38814 6.03118C6.60647 5.98186 6.37712 5.98905 6.24256 6.06711ZM6.25378 11.643C6.19737 11.6722 6.12003 11.7398 6.0819 11.7932C6.01312 11.8897 6.01252 11.9009 6.00415 13.2967C5.99621 14.6202 5.99915 14.7094 6.05421 14.8124C6.16021 15.0106 6.259 15.0515 6.69082 15.0758C8.41238 15.1727 9.85913 15.8056 11.0253 16.9717C12.1914 18.1378 12.8242 19.5846 12.9212 21.3061C12.9455 21.7378 12.9865 21.8371 13.1841 21.9421C13.2853 21.9959 13.3897 22 14.6638 22C16.1787 22 16.1758 22.0003 16.3181 21.8008C16.3835 21.7092 16.3877 21.6722 16.3856 21.2031C16.379 19.7442 15.9305 18.0826 15.1791 16.7343C14.7072 15.8873 14.2287 15.2615 13.4821 14.5149C12.9063 13.9391 12.5148 13.6135 11.9346 13.2276C10.4354 12.2306 8.66498 11.6636 6.87198 11.6064C6.4265 11.5921 6.34237 11.5971 6.25378 11.643ZM7.89584 17.4676C7.03464 17.6245 6.35422 18.2364 6.08627 19.0948C5.9818 19.4296 5.9818 20.0078 6.08627 20.3426C6.18565 20.6609 6.30669 20.891 6.50316 21.1349C6.80507 21.5097 7.18067 21.7628 7.65434 21.9107C7.98913 22.0152 8.56739 22.0152 8.90218 21.9107C9.67994 21.6679 10.2306 21.1177 10.4701 20.3437C10.5748 20.0054 10.5751 19.4279 10.4707 19.0937C10.2299 18.3224 9.68088 17.7697 8.9189 17.5314C8.67436 17.4549 8.14622 17.422 7.89584 17.4676Z" clip-rule="evenodd"/>
+            </g>
+            <g id="img-vk">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M23.7359 18.1369C23.1783 17.2566 22.5026 16.4605 21.7287 15.7718C20.6543 14.7509 20.6543 14.7509 21.7287 13.3556L22.3867 12.5049C24.0524 10.2759 24.094 9.53574 23.9441 9.10186C23.7026 8.42126 22.6948 8.50633 22.5449 8.52335H19.7215C19.5008 8.49251 19.2762 8.53422 19.0802 8.64245C18.8898 8.77273 18.7396 8.95568 18.6471 9.16992C18.1308 10.5737 16.7149 13.177 16.1486 13.4237C15.9673 12.7798 15.9275 12.1029 16.032 11.4414C16.1236 10.0462 16.2235 8.46379 15.0659 8.17454C14.5943 8.05919 14.1095 8.01053 13.625 8.02991C12.7535 7.94346 11.8739 8.04491 11.0432 8.32767C10.7183 8.48932 10.2853 8.89768 10.3436 9.28902C10.3669 9.3863 10.417 9.47476 10.4878 9.54406C10.5585 9.61336 10.6472 9.66064 10.7433 9.68037C10.9572 9.69513 11.1585 9.78888 11.3097 9.9441C11.6045 11.1046 11.6045 12.3227 11.3097 13.4832C10.76 13.3131 9.40243 10.8374 8.81111 9.29753C8.73051 9.09771 8.60155 8.92207 8.43632 8.78708C8.23006 8.64357 7.99291 8.5531 7.74505 8.52335H4.99663C4.67815 8.5302 4.37427 8.66106 4.14711 8.88917C4.06574 9.02274 4.01652 9.17411 4.00349 9.33086C3.99046 9.48762 4.01399 9.6453 4.07215 9.79097C4.16377 9.99515 6.2709 14.8359 8.71949 17.4477C9.35051 18.1715 10.132 18.7419 11.0067 19.1173C11.8814 19.4926 12.8272 19.6634 13.7749 19.6172C14.4377 19.6211 15.0991 19.5555 15.7488 19.4215C15.9922 19.0827 16.1102 18.6667 16.0819 18.2474C16.0819 17.6349 16.1652 17.3967 16.4234 17.3542C16.6816 17.3116 17.1813 18.0092 17.4395 18.307C17.784 18.7549 18.1812 19.1578 18.6222 19.5066C19.0221 19.8068 19.5005 19.9786 19.9964 20H22.7198C22.9493 19.9931 23.174 19.9319 23.3763 19.8212C23.5787 19.7104 23.7531 19.5532 23.8858 19.3619C23.9766 19.1641 24.0107 18.9441 23.9842 18.7273C23.9577 18.5105 23.8716 18.3058 23.7359 18.1369Z"/>
+            </g>
+            <g id="img-twitter">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M22.454 8.6792C23.3504 8.14329 24.0212 7.29944 24.341 6.3052C23.4986 6.805 22.577 7.15708 21.616 7.3462C20.2836 5.93673 18.1725 5.59373 16.4624 6.50886C14.7523 7.42399 13.8665 9.37069 14.3 11.2612C10.8496 11.088 7.63497 9.45812 5.456 6.7772C4.31884 8.73862 4.89995 11.246 6.784 12.5072C6.10271 12.4853 5.43653 12.3008 4.841 11.9692C4.841 11.9872 4.841 12.0052 4.841 12.0232C4.84139 14.0664 6.28137 15.8263 8.284 16.2312C7.65206 16.4031 6.98921 16.4284 6.346 16.3052C6.9092 18.0525 8.51955 19.2495 10.355 19.2852C8.83483 20.4783 6.95748 21.1254 5.025 21.1222C4.68247 21.1227 4.34021 21.103 4 21.0632C5.96239 22.3242 8.24637 22.9936 10.579 22.9912C13.8242 23.0135 16.943 21.7341 19.2377 19.4392C21.5324 17.1443 22.8116 14.0254 22.789 10.7802C22.789 10.5942 22.7847 10.4092 22.776 10.2252C23.6165 9.6178 24.3418 8.86535 24.918 8.0032C24.135 8.35026 23.3045 8.57812 22.454 8.6792Z"/>
+            </g>
+            <g id="img-facebook">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M4 13.9986C4.00116 18.918 7.5784 23.1067 12.437 23.8776V16.8886H9.9V13.9986H12.44V11.7986C12.3265 10.7562 12.6825 9.71722 13.4116 8.96356C14.1408 8.2099 15.1674 7.81964 16.213 7.89863C16.9635 7.91075 17.7122 7.97759 18.453 8.09863V10.5576H17.189C16.7538 10.5006 16.3164 10.6443 15.9998 10.9483C15.6832 11.2522 15.5218 11.6835 15.561 12.1206V13.9986H18.332L17.889 16.8896H15.561V23.8776C20.8155 23.0472 24.5001 18.2484 23.9455 12.9577C23.3909 7.667 18.7913 3.73656 13.4788 4.0138C8.16636 4.29105 4.00084 8.67893 4 13.9986Z"/>
+            </g>
+            <g id="img-instagram">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M17.7774 5H10.2316C6.95397 5 5 6.953 5 10.229V17.762C5 21.047 6.95397 23 10.2316 23H17.7684C21.046 23 23 21.047 23 17.771V10.229C23.009 6.953 21.055 5 17.7774 5ZM14.0045 17.492C12.0775 17.492 10.5107 15.926 10.5107 14C10.5107 12.074 12.0775 10.508 14.0045 10.508C15.9314 10.508 17.4982 12.074 17.4982 14C17.4982 15.926 15.9314 17.492 14.0045 17.492ZM19.3351 9.392C19.2901 9.5 19.2271 9.599 19.146 9.689C19.056 9.77 18.957 9.833 18.8489 9.878C18.7408 9.923 18.6238 9.95 18.5067 9.95C18.2636 9.95 18.0385 9.86 17.8674 9.689C17.7864 9.599 17.7233 9.5 17.6783 9.392C17.6333 9.284 17.6063 9.167 17.6063 9.05C17.6063 8.933 17.6333 8.816 17.6783 8.708C17.7233 8.591 17.7864 8.501 17.8674 8.411C18.0745 8.204 18.3897 8.105 18.6778 8.168C18.7408 8.177 18.7949 8.195 18.8489 8.222C18.9029 8.24 18.957 8.267 19.011 8.303C19.056 8.33 19.101 8.375 19.146 8.411C19.2271 8.501 19.2901 8.591 19.3351 8.708C19.3802 8.816 19.4072 8.933 19.4072 9.05C19.4072 9.167 19.3802 9.284 19.3351 9.392Z"/>
+            </g>
+            <g id="img-youtube">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M25.199 11.362A2.412 2.412 0 0 0 23.5 9.654C22.004 9.25 16 9.25 16 9.25s-6.004 0-7.501.404A2.412 2.412 0 0 0 6.8 11.362c-.4 1.508-.4 4.652-.4 4.652s0 3.144.401 4.651a2.378 2.378 0 0 0 1.698 1.681c1.497.404 7.501.404 7.501.404s6.004 0 7.501-.404a2.377 2.377 0 0 0 1.698-1.681c.401-1.507.401-4.651.401-4.651s0-3.145-.401-4.652Zm-11.163 7.506v-5.71l5.019 2.856-5.019 2.854Z"/>
+            </g>
+            <g id="img-dropndownarrow">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M8.20744 11C8.41292 10.9941 8.60078 10.9178 8.75342 10.7534L13.2153 6.18591C13.3444 6.05675 13.4149 5.89237 13.4149 5.69863C13.4149 5.31115 13.1096 5 12.7221 5C12.5342 5 12.3523 5.07632 12.2172 5.21135L8.21331 9.32681L4.19765 5.21135C4.06262 5.08219 3.8865 5 3.69276 5C3.30528 5 3 5.31115 3 5.69863C3 5.89237 3.07045 6.05675 3.19961 6.18591L7.66732 10.7534C7.82583 10.9178 8.00196 11 8.20744 11Z"/>
+            </g>
+            <g id="img-cart">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M10.7393 18.6553H20.9697C21.3828 18.6553 21.7607 18.3301 21.7607 17.8643C21.7607 17.4072 21.3828 17.082 20.9697 17.082H10.9414C10.5195 17.082 10.2559 16.792 10.1943 16.3438L10.0625 15.4297H21.04C22.3848 15.4297 23.0967 14.6123 23.29 13.2764L23.9492 8.87305C23.9668 8.75879 23.9844 8.60938 23.9844 8.5127C23.9844 7.99414 23.624 7.64258 23.0176 7.64258H8.92871L8.79688 6.69336C8.68262 5.92871 8.375 5.54199 7.39941 5.54199H4.38477C3.94531 5.54199 3.55859 5.92871 3.55859 6.37695C3.55859 6.83398 3.94531 7.2207 4.38477 7.2207H7.13574L8.49805 16.5195C8.69141 17.8467 9.39453 18.6553 10.7393 18.6553ZM22.1562 9.21582L21.6025 13.1182C21.5322 13.5664 21.2949 13.8477 20.8643 13.8477L9.83398 13.8564L9.15723 9.21582H22.1562ZM11.46 23.0674C12.3125 23.0674 12.998 22.3818 12.998 21.5293C12.998 20.6768 12.3125 19.9912 11.46 19.9912C10.6074 19.9912 9.92188 20.6768 9.92188 21.5293C9.92188 22.3818 10.6074 23.0674 11.46 23.0674ZM19.5811 23.0674C20.4336 23.0674 21.1104 22.3818 21.1104 21.5293C21.1104 20.6768 20.4336 19.9912 19.5811 19.9912C18.7285 19.9912 18.0342 20.6768 18.0342 21.5293C18.0342 22.3818 18.7285 23.0674 19.5811 23.0674Z"/>
+            </g>
+            <g id="img-person">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M13.9912 22.7422C18.9746 22.7422 23.0879 18.6289 23.0879 13.6543C23.0879 8.67969 18.9658 4.56641 13.9824 4.56641C9.00781 4.56641 4.90332 8.67969 4.90332 13.6543C4.90332 18.6289 9.0166 22.7422 13.9912 22.7422ZM13.9912 16.6953C11.5127 16.6953 9.58789 17.583 8.65625 18.6025C7.46094 17.3105 6.73145 15.5703 6.73145 13.6543C6.73145 9.62012 9.95703 6.38574 13.9824 6.38574C18.0166 6.38574 21.2598 9.62012 21.2686 13.6543C21.2686 15.5703 20.5391 17.3105 19.335 18.6113C18.4033 17.583 16.4785 16.6953 13.9912 16.6953ZM13.9912 15.2539C15.6963 15.2715 17.0234 13.8125 17.0234 11.9316C17.0234 10.1562 15.6875 8.6709 13.9912 8.6709C12.3037 8.6709 10.959 10.1562 10.9678 11.9316C10.9766 13.8125 12.2949 15.2451 13.9912 15.2539Z"/>
+            </g>
+            <g id="img-find">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M12.5322 19.0332C13.9297 19.0332 15.2393 18.6113 16.3291 17.8906L20.1787 21.749C20.4336 21.9951 20.7588 22.1182 21.1104 22.1182C21.8398 22.1182 22.376 21.5469 22.376 20.8262C22.376 20.4922 22.2617 20.167 22.0156 19.9209L18.1924 16.0801C18.9834 14.9551 19.4492 13.5928 19.4492 12.1162C19.4492 8.31055 16.3379 5.19922 12.5322 5.19922C8.73535 5.19922 5.61523 8.31055 5.61523 12.1162C5.61523 15.9219 8.72656 19.0332 12.5322 19.0332ZM12.5322 17.1875C9.74609 17.1875 7.46094 14.9023 7.46094 12.1162C7.46094 9.33008 9.74609 7.04492 12.5322 7.04492C15.3184 7.04492 17.6035 9.33008 17.6035 12.1162C17.6035 14.9023 15.3184 17.1875 12.5322 17.1875Z"/>
+            </g>
+            <g id="img-comparison">
+                <rect xmlns="http://www.w3.org/2000/svg" width="8" height="3" x="6" y="22" fill="currentColor" rx="1" transform="rotate(-90 6 22)"/><rect xmlns="http://www.w3.org/2000/svg" width="16" height="3" x="12" y="22" fill="currentColor" rx="1" transform="rotate(-90 12 22)"/><rect xmlns="http://www.w3.org/2000/svg" width="13" height="3" x="18" y="22" fill="currentColor" rx="1" transform="rotate(-90 18 22)"/>
+            </g>
+            <g id="img-arrowright">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M22.3145 13.6455C22.3145 13.373 22.2002 13.1094 21.998 12.916L16.2236 7.1416C15.9951 6.92188 15.7578 6.8252 15.5117 6.8252C14.9492 6.8252 14.5449 7.2207 14.5449 7.75684C14.5449 8.03809 14.6592 8.27539 14.835 8.45117L16.8125 10.4551L19.3613 12.7842L17.3223 12.6611H6.66992C6.08105 12.6611 5.67676 13.0654 5.67676 13.6455C5.67676 14.2168 6.08105 14.6211 6.66992 14.6211H17.3223L19.3613 14.498L16.8125 16.8271L14.835 18.8311C14.6592 19.0068 14.5449 19.2441 14.5449 19.5254C14.5449 20.0615 14.9492 20.457 15.5117 20.457C15.7578 20.457 15.9951 20.3604 16.2061 20.1582L21.998 14.3662C22.2002 14.1729 22.3145 13.9092 22.3145 13.6455Z"/>
+            </g>
+            <g id="img-heart">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M5.09668 11.1846C5.09668 14.9375 8.25195 18.6465 13.1562 21.8105C13.4287 21.9863 13.7627 22.1621 13.9912 22.1621C14.2197 22.1621 14.5537 21.9863 14.8262 21.8105C19.7393 18.6465 22.8857 14.9375 22.8857 11.1846C22.8857 7.94141 20.6445 5.69141 17.7705 5.69141C16.0918 5.69141 14.7822 6.45605 13.9912 7.61621C13.2178 6.46484 11.8994 5.69141 10.2207 5.69141C7.33789 5.69141 5.09668 7.94141 5.09668 11.1846ZM6.90723 11.1758C6.90723 8.96094 8.36621 7.45801 10.3262 7.45801C11.9082 7.45801 12.7959 8.41602 13.3496 9.25098C13.5957 9.61133 13.7627 9.72559 13.9912 9.72559C14.2285 9.72559 14.3779 9.60254 14.6328 9.25098C15.2305 8.43359 16.083 7.45801 17.6562 7.45801C19.625 7.45801 21.084 8.96094 21.084 11.1758C21.084 14.2695 17.8672 17.6973 14.1582 20.1582C14.0791 20.2109 14.0264 20.2461 13.9912 20.2461C13.9561 20.2461 13.9033 20.2109 13.833 20.1582C10.124 17.6973 6.90723 14.2695 6.90723 11.1758Z"/>
+            </g>
+            <g id="img-point">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" fill-rule="evenodd" d="M26.5997 6.06992C21.4436 6.59986 16.9985 10.0804 15.3075 14.9116C14.8761 16.1439 14.7004 17.1389 14.6519 18.6249C14.6018 20.1565 14.7455 21.226 15.2281 22.9125C16.1674 26.1957 18.3603 30.5622 21.3703 35.1424C21.7783 35.7633 22.1122 36.3017 22.1122 36.3388C22.1122 36.3759 21.6864 36.4532 21.1659 36.5105C17.9856 36.861 14.9506 37.6243 12.986 38.568C10.9664 39.538 10 40.6664 10 42.0544C10 43.4415 10.9787 44.5851 12.986 45.5437C19.8442 48.8188 36.1558 48.8188 43.014 45.5437C45.0213 44.5851 46 43.4415 46 42.0544C46 40.6664 45.0336 39.538 43.014 38.568C41.0494 37.6243 38.0144 36.861 34.8341 36.5105C34.3137 36.4532 33.8879 36.3759 33.8879 36.3388C33.8879 36.3017 34.2217 35.7633 34.6297 35.1424C37.6397 30.5622 39.8326 26.1957 40.7719 22.9125C41.2545 21.226 41.3982 20.1565 41.3481 18.6249C41.2641 16.0543 40.5919 13.9896 39.1412 11.8459C36.4206 7.82585 31.5116 5.56501 26.5997 6.06992ZM29.7664 8.77962C32.0933 9.13704 34.5343 10.48 36.0779 12.252C37.8932 14.336 38.7608 16.7309 38.6541 19.3636C38.5339 22.3277 36.8717 26.3904 33.5669 31.7975C32.0863 34.2198 28.2046 39.7996 28 39.7996C27.9023 39.7996 25.5857 36.6077 24.3664 34.7932C22.385 31.8447 21.0894 29.6499 19.8124 27.0784C17.2893 21.9979 16.7705 18.9691 17.8724 15.7526C18.9589 12.581 21.5421 10.1204 24.8419 9.11398C25.2897 8.97741 25.9468 8.82738 26.3023 8.78052C26.6577 8.73357 27.0622 8.67957 27.2009 8.66045C27.5693 8.60964 29.1324 8.6822 29.7664 8.77962ZM26.7014 13.0974C24.375 13.5839 22.5144 15.3539 21.9327 17.6337C21.6882 18.5922 21.7386 20.0182 22.0498 20.9458C22.5701 22.4963 23.7443 23.8107 25.2824 24.5643C26.8838 25.3489 29.1162 25.3489 30.7176 24.5643C32.2557 23.8107 33.4299 22.4963 33.9502 20.9458C34.2614 20.0182 34.3118 18.5922 34.0673 17.6337C33.6899 16.155 32.7295 14.8187 31.4448 13.9854C30.0545 13.0835 28.3201 12.7588 26.7014 13.0974ZM28.9252 15.738C31.1547 16.3097 32.218 18.851 31.0512 20.8194C30.7362 21.3508 30.1173 21.9042 29.5398 22.1709C27.5527 23.0883 25.2927 22.1123 24.5966 20.0358C24.4005 19.4511 24.4513 18.4306 24.7084 17.7899C25.215 16.5269 26.6102 15.5977 28 15.5977C28.2082 15.5977 28.6245 15.6608 28.9252 15.738ZM24.6784 39.9022C27.132 43.2018 27.2551 43.3287 28 43.3287C28.7449 43.3287 28.868 43.2018 31.3216 39.9022C31.7729 39.2952 32.126 38.8968 32.2126 38.8968C32.5476 38.8968 34.8099 39.1536 35.7999 39.304C39.1004 39.8054 41.9401 40.7236 42.9222 41.607C43.1346 41.798 43.3084 42.0019 43.3084 42.06C43.3084 42.2611 42.5063 42.8537 41.7523 43.2099C36.825 45.5371 25.0941 46.0732 17.6121 44.313C16.2195 43.9854 15.1407 43.6317 14.2477 43.2099C13.4937 42.8537 12.6916 42.2611 12.6916 42.06C12.6916 41.8358 13.4928 41.2463 14.3185 40.863C16.0531 40.0579 19.0284 39.3766 22.3645 39.0205C24.0607 38.8396 23.82 38.7478 24.6784 39.9022Z" clip-rule="evenodd"/>
+            </g>
+            <g id="img-delivery" fill="none">
+                <path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.5633 44.25H19.25C18.587 44.25 17.9511 43.9866 17.4822 43.5178C17.0134 43.0489 16.75 42.413 16.75 41.75V31.75C16.75 31.087 17.0134 30.4511 17.4822 29.9822C17.9511 29.5134 18.587 29.25 19.25 29.25H34.25C34.913 29.25 35.5489 29.5134 36.0178 29.9822C36.4866 30.4511 36.75 31.087 36.75 31.75V40.5633"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M36.75 31.75H41.75C43.0761 31.75 44.3479 32.2768 45.2855 33.2145C46.2232 34.1521 46.75 35.4239 46.75 36.75V41.75C46.75 42.413 46.4866 43.0489 46.0178 43.5178C45.5489 43.9866 44.913 44.25 44.25 44.25H40.4367"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M37.375 46.75C39.1009 46.75 40.5 45.3509 40.5 43.625C40.5 41.8991 39.1009 40.5 37.375 40.5C35.6491 40.5 34.25 41.8991 34.25 43.625C34.25 45.3509 35.6491 46.75 37.375 46.75Z"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M23.625 46.75C25.3509 46.75 26.75 45.3509 26.75 43.625C26.75 41.8991 25.3509 40.5 23.625 40.5C21.8991 40.5 20.5 41.8991 20.5 43.625C20.5 45.3509 21.8991 46.75 23.625 46.75Z"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M34.3132 44.25H26.6865"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M46.75 36.75H41.75"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.9283 31.1522C9.88435 29.135 9.3121 26.907 9.25478 24.6364C9.19745 22.3657 9.65654 20.1117 10.5974 18.0444C11.5383 15.977 12.9363 14.1504 14.6862 12.7022C16.436 11.254 18.4918 10.2221 20.6986 9.68429C22.9054 9.14652 25.2055 9.11694 27.4254 9.59777C29.6453 10.0786 31.727 11.0573 33.5135 12.46C35.2999 13.8627 36.7445 15.6528 37.7383 17.6953C38.732 19.7377 39.2489 21.9792 39.25 24.2506"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M24.25 9.25C22.2043 11.1642 20.5891 13.4916 19.5116 16.0777C18.434 18.6638 17.9188 21.4496 18 24.25"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M24.25 9.25C26.2957 11.1642 27.9109 13.4916 28.9884 16.0777C30.066 18.6638 30.5812 21.4496 30.5 24.25"/><path xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.105 19.25H38.39"/>
+            </g>
+            <g id="img-pay">
+                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M15.9735 39.5214H40.009C43.0609 39.5214 44.6361 37.9322 44.6361 34.9225V19.7333C44.6361 16.7236 43.0609 15.1484 40.009 15.1484H15.9735C12.9357 15.1484 11.3464 16.7236 11.3464 19.7333V34.9225C11.3464 37.9463 12.9357 39.5214 15.9735 39.5214ZM14.1452 19.9865C14.1452 18.6363 14.8624 17.9612 16.1563 17.9612H39.8261C41.12 17.9612 41.8373 18.6363 41.8373 19.9865V20.9991H14.1452V19.9865ZM16.1563 36.7086C14.8624 36.7086 14.1452 36.0336 14.1452 34.6834V24.3041H41.8373V34.6834C41.8373 36.0336 41.12 36.7086 39.8261 36.7086H16.1563ZM18.0691 34.163H21.5147C22.3445 34.163 22.9071 33.6145 22.9071 32.827V30.211C22.9071 29.4235 22.3445 28.875 21.5147 28.875H18.0691C17.2533 28.875 16.6908 29.4235 16.6908 30.211V32.827C16.6908 33.6145 17.2533 34.163 18.0691 34.163Z"/>
+            </g>
+        </defs>
+    </svg>
+    <script>
+        jQuery.browser = { };
+        (function () {
+            jQuery.browser.msie = false;
+            jQuery.browser.version = 0;
+            if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+                jQuery.browser.msie = true;
+                jQuery.browser.version = RegExp.$1;
+            }
+        })();
+    </script>
 </body>
 </html>
