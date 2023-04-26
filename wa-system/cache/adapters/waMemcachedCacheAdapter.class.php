@@ -32,7 +32,7 @@ class waMemcachedCacheAdapter extends waCacheAdapter
 
     public function key($key, $app_id, $group = null)
     {
-        return (isset($this->options['namespace']) ? $this->options['namespace'].'/' : '').parent::key($key, $app_id. $group);
+        return (isset($this->options['namespace']) ? $this->options['namespace'].'/' : '').parent::key($key, $app_id, $group);
     }
 
     public function get($key, $group = null)
@@ -65,12 +65,17 @@ class waMemcachedCacheAdapter extends waCacheAdapter
     public function deleteGroup($group)
     {
         $keys = $this->get($group);
+        $res = $this->delete($group);
         if ($keys) {
-            foreach ($keys as $k) {
-                $this->delete($k);
+            if (method_exists(self::$memcached, 'deleteMulti')) {
+                self::$memcached->deleteMulti($keys);
+            } else {
+                foreach ($keys as $k) {
+                    $this->delete($k);
+                }
             }
         }
-        return $this->delete($group);
+        return $res;
     }
 
     public function deleteAll()
