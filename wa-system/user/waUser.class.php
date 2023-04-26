@@ -165,7 +165,9 @@ class waUser extends waContact
 
         $sorted_apps = array();
         if ($sorted) {
-            $sort = explode(',', $this->getSettings('', 'apps'));
+            $settings = $this->getSettings('', 'apps');
+            $settings = ifempty($settings, '');
+            $sort = explode(',', $settings);
             foreach ($sort as $app_id) {
                 if (!$is_admin && (!isset($rights[$app_id]) || !$rights[$app_id])) {
                     continue;

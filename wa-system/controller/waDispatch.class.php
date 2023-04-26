@@ -150,7 +150,7 @@ class waDispatch
             if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
                 $csrf_exception_message = _ws('Anti-CSRF protection.');
 
-                if (!strlen(waRequest::post('_csrf'))) {
+                if (!strlen((string)waRequest::post('_csrf'))) {
                     $csrf_exception_message .= "\n" . _ws('This may be caused by a server error, or by a limitation on the allowed number of POST variables or their values size. Try to increase the values of “max_input_vars” and “post_max_size” parameters in PHP configuration or other similar parameters in you web server configuration.');
                 }
 
@@ -259,9 +259,15 @@ class waDispatch
 
         // One-time auth app token?
         if (!strncmp($request_url, 'link.php/', 9)) {
+
+            // Is this a link preview bot after link has been shared via modern messenger?
+            // Deny bots access to one-time-auth links.
+            $user_agent = waRequest::getUserAgent();
+            $this_is_a_bot = preg_match('~WhatsApp|TelegramBot|TwitterBot|facebookexternalhit|Facebot|vkShare|snapchat|Discordbot~i', $user_agent);
+
             $token = strtok(substr($request_url, 9), '/?');
             $token = urldecode($token);
-            if ($token) {
+            if ($token && !$this_is_a_bot) {
                 $app_token_model = new waAppTokensModel();
                 $row = $app_token_model->getById($token);
                 if ($row) {
@@ -371,7 +377,8 @@ class waDispatch
 
         $params = array();
         $app = $argv[1];
-        $class = $app.ucfirst(ifset($argv[2], 'help'))."Cli";
+        $slug = ifset($argv[2], 'help');
+        $class = $app.ucfirst($slug)."Cli";
         $argv = array_slice($argv, 3);
         while ($arg = array_shift($argv)) {
             if (mb_substr($arg, 0, 2) == '--') {
@@ -404,17 +411,28 @@ class waDispatch
 
         $successful_execution = false;
         if ($class_exists) {
-            try {
-                /** @var $cli waCliController */
-                $cli = new $class();
-                $cli->run();
-                $successful_execution = true;
-            } catch (Exception $e) {
-                $event_params['exception'] = $e;
-                if (!$e instanceof waException) {
-                    $e = new waException($e);
+            $plugin_path = wa()->getConfig()->getPluginPath($slug).'/lib/config/plugin.php';
+            $run = true;
+            if (file_exists($plugin_path)) {
+                $plugins = wa()->getConfig()->getPlugins();
+                if (!isset($plugins[$slug])) {
+                    $run = false;
+                    waLog::log(new waException("Plugin is disabled and class $class is not running"), 'cli.log');
                 }
-                waLog::log($e, 'cli.log');
+            }
+            if ($run) {
+                try {
+                    /** @var $cli waCliController */
+                    $cli = new $class();
+                    $cli->run();
+                    $successful_execution = true;
+                } catch (Exception $e) {
+                    $event_params['exception'] = $e;
+                    if (!$e instanceof waException) {
+                        $e = new waException($e);
+                    }
+                    waLog::log($e, 'cli.log');
+                }
             }
         } else {
             waLog::log(new waException("Class ".$class." not found"), 'cli.log');

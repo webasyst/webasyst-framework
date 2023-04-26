@@ -72,7 +72,7 @@
     <div class="t-content-body">
 
         <p class="t-description">
-            {if $can_manage_group || !empty($group.description)}
+            {if $can_manage_group || (!empty($group.description) && $group.description !== '[`Add group description`]')}
                 <span class="{if $can_manage_group && !(!$group.description && $_location_enabled)}editable js-desc-editable {if !$group.description}is-empty{/if}{/if}">
                     {if $group.description}
                         {$group.description|escape|nl2br}

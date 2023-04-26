@@ -1,0 +1,97 @@
+# https://swagger.io/docs/specification/about/
+openapi: 3.0.0
+
+info:
+  title: 'Installer API'
+  version: 1.0.0
+  contact:
+    name: Webasyst LLC
+
+servers:
+  - url: /api.php
+    description: Current host server
+
+paths:
+  /installer.product.install:
+    post:
+      summary: 'Устанавливает продукт.'
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/requestFormat'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+                  description: 'Идентификатор продукта.'
+              required:
+                - slug
+      responses:
+        200:
+          description: 'Код ответа об успешном статусе.'
+        400:
+          description: 'Сервер не смог понять запрос.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidResponse'
+        500:
+          description: 'Внутренняя ошибка сервера.'
+
+  /installer.product.list:
+    get:
+      summary: 'Информация о продуктах по списку.'
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: slugs
+          description: 'Список идентификаторов продуктов, через запятую. Например: shop,crm,shop/plugins/cml1c'
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: fields
+          description: 'Какие данные о каждом продукте возвращать. Список полей через запятую. Возможные значения: price,icon,tags,requirements'
+          schema:
+            type: string
+        - $ref: '#/components/parameters/requestFormat'
+      responses:
+        200:
+          description: 'Код ответа об успешном статусе.'
+
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: access_token
+  schemas:
+    invalidResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: 'Код ошибки'
+        error_description:
+          type: string
+          description: 'Описание ошибки'
+
+  parameters:
+    requestFormat:
+      name: format
+      in: query
+      description: 'Устанавливает формат ответа. Возможные значения: json (по умолчанию), xml'
+      required: false
+      schema:
+        type: string
+        enum:
+          - 'json'
+          - 'xml'
+

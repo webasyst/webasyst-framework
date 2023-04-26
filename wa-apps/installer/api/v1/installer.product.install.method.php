@@ -171,7 +171,7 @@ class installerProductInstallMethod extends waAPIMethod
                     'status' => false,
                     'details' => [
                         'error' => 'in_progress',
-                        'error_description' => _w('Update is already in progress. Please wait while previous update session is finished before starting update session again.'),
+                        'error_description' => _w('Update is already in progress. Please wait while the current update session is completed before starting a new session.'),
                     ]
                 ];
 
@@ -200,7 +200,7 @@ class installerProductInstallMethod extends waAPIMethod
         try {
             $installer = new waInstallerApps();
             $app_info = $installer->getItemInfo($slug);
-            
+
             if (!$app_info) {
                 return [
                     'status' => false,

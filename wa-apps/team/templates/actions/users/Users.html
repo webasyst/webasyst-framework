@@ -86,12 +86,10 @@
                                     {/if}
 
                                     <p class="hint custom-my-0">
-                                        [`Last seen`]
-                                        &nbsp;
                                         {if empty($user.last_datetime)}
-                                            [`never`]
+                                            {sprintf_wp('Joined %s', waDateTime::format('humandate', $user.create_datetime))}
                                         {else}
-                                            {$user.last_datetime_formatted}
+                                            [`Last seen`]&nbsp{$user.last_datetime_formatted}
                                         {/if}
                                     </p>
                                 </div>

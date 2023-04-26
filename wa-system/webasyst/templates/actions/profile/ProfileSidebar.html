@@ -13,6 +13,7 @@
                class="large bold js-sidebar-profile-dialog"
                data-dialog-header="[`Calendar`]"
                data-dialog-width="1000px"
+               data-team-calendar="[`Team calendar`]"
                data-section-id="calendar">
                 [`Calendar`]
             </a>
@@ -101,7 +102,7 @@
                     const that = this;
 
                     if (!that.section_url) {
-                        that.$content_wrapper.html('<p><i class="fas fa-times-circle text-red"></i> ${ that.error_msg }</p>');
+                        that.$content_wrapper.html(`<p><i class="fas fa-times-circle text-red"></i> ${ that.error_msg }</p>`);
                         throw new Error(that.error_msg);
                     }
 
@@ -137,4 +138,3 @@
         </script>
     {/if}
 {/if}
-

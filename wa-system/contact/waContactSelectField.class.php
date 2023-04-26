@@ -115,11 +115,11 @@ class waContactSelectFormatter  extends waContactFieldFormatter
         $result = array();
         if (is_array($data)) {
             foreach ($data as $k => $v) {
-                $result[$k] = htmlspecialchars(isset($this->options[$v]) ? $this->options[$v] : $v);
+                $result[$k] = htmlspecialchars(ifset($this->options, $v, ifset($v, '')));
             }
             $result = implode(', ', $result);
         } else {
-            $result = htmlspecialchars(isset($this->options[$data]) ? $this->options[$data] : $data);
+            $result = htmlspecialchars(ifset($this->options, $data, ifset($data, '')));
         }
         return $result;
     }

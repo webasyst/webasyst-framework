@@ -13,12 +13,15 @@ $(document).ready( function() {
             updateStateInterval: 1000,/*ms*/
             updateStateErrorInterval: 2000,/*ms*/
             timestamp:{time()},
+            product_name_template: '[`“%s”`]',
+            count_installer_dependencies: {$count_installer_dependencies},
             queue:[
             {foreach $queue_apps as $target => $item}{
                 'subject':'{$item.subject|default:"app"}',
                 'slug':'{$target}',
                 'vendor':'{$item.vendor}',
-                'edition':'{$item.edition|default:''}'
+                'edition':'{$item.edition|default:''}',
+                'id':'{$item.id|default:''}'
             }{if !$item@last}, {/if}
             {/foreach}
             ],
@@ -43,6 +46,7 @@ $(document).ready( function() {
     translate['wait'] = '[`Standing by`]';
     translate['error'] = '[`Error occurred`]';
 
+    translate['webasyst_framework_text'] = '[`Webasyst framework`]';
     {foreach $queue_apps as $slug => $item}{if !empty($item.name)}
     translate['{$slug}']='{$item.name|escape}';
     translate['{$item.slug}']='{$item.name|escape}';
@@ -57,9 +61,21 @@ $(document).ready( function() {
             <div id="update-content">
                 <div id="template-placeholder">
                     {if $queue_apps}
-                    <h3 class="flexbox middle">
-                        {_w('Installing the application','Installing applications',count($queue_apps))}
-                        {foreach $queue_apps as $item}{$item.name|string_format:'[`"%s"`]'}{if !$item@last}, {/if}{/foreach}
+                    <h3>
+                        {_w('Installing the application','Installing applications',count($queue_apps) - $count_installer_dependencies - 1)}
+                        {$installer_text_shown = false}
+                        {$product_names = []}
+                        {foreach $queue_apps as $item}
+                            {if ifset($item, 'id', null) == 'installer'}
+                                {if !$installer_text_shown}
+                                    {$product_names[] = _w('Webasyst framework')|string_format:'[`“%s”`]'}
+                                    {$installer_text_shown = true}
+                                {/if}
+                            {else}
+                                {$product_names[] = $item.name|string_format:'[`“%s”`]'}
+                            {/if}
+                        {/foreach}
+                        {implode(', ', $product_names)}
                         <div class="spinner custom-ml-8"></div>
                     </h3>
                     {/if}
@@ -112,7 +128,7 @@ $(document).ready( function() {
 
                     {{else}}
                     {{if current_state.stage_status == 'error'}}
-                    <p>[`An error occurred during installation`]</p>
+                    <p>[`An error occurred during the installation.`]</p>
                     <p>
                         <span class="icon text-red"><i class="fas fa-times-circle"></i></span>
                         <em class="state-error"><strong>{{html current_state.error}}</strong></em>
@@ -137,7 +153,7 @@ $(document).ready( function() {
                     {else}{literal}
                     <p>
                         <span class="icon text-green"><i class="fas fa-check-circle"></i></span>
-                        <em class="state-success"><strong>[`Applications were successfully installed`]</strong></em>
+                        <em class="state-success"><strong>[`Installation has been successfully completed.`]</strong></em>
                     </p>
                     {/literal}{/if}{literal}
                     {{/if}}
@@ -196,11 +212,12 @@ $(document).ready( function() {
                 {literal} -->
                 <div id="update-raw">
                     <h3>
-                        {{if apps.length>1}}
+                        {{if count_apps > 1}}
                         {/literal}{_w('Installing the application','Installing applications',2)}{literal}
                         {{else}}
                         [`Installing the application`]
-                        {{/if}} {{each(app_index, app_slug) apps}}${'[`"%s"`]'.replace(/%s/,app_slug.slug.translate())}{{if app_index < apps.length - 1}}, {{/if}}{{/each}}
+                        {{/if}}
+                        ${product_names}
                         {{if (state_class!=null)}}<i id="update-raw-state-icon" class="fas fa-{{if (state_class == 'yes')}}check-circle{{else}}spinner wa-animation-spin speed-1500 text-gray{{/if}}"></i>{{/if}}
                     </h3>
                     {{each stages}}{{if ($value) && ($value.chunk_id)}}

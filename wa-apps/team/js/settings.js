@@ -464,8 +464,7 @@ var CalendarEditDialog = ( function($) {
                 let that = this;
 
                 const color_picker = Pickr.create(that.pickr_options)
-                    .on('change', color =>  eventHandler(color))
-                    .on('changestop', (event, pickr) => pickr.hide());
+                    .on('change', color =>  eventHandler(color));
 
                 that.$wrapper.dataset['colorPicker'] = that;
 

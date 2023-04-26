@@ -38,11 +38,11 @@ abstract class installerExtrasRemoveAction extends waViewAction
         if (installerHelper::isDeveloper()) {
             switch ($this->extras_type) {
                 case 'themes':
-                    $msg = _w("Unable to delete application's themes (developer version is on)");
+                    $msg = _w("Design theme not deleted: .svn or .git folder located in the theme directory.");
                     $msg .= "\n"._w("A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file.");
                     break;
                 case 'plugins':
-                    $msg = _w("Unable to delete application's plugins (developer version is on)");
+                    $msg = _w("Plugin not deleted: .svn or .git folder located in the plugin directory.");
                     $msg .= "\n"._w("A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file.");
                     break;
                 case 'widgets':
@@ -66,8 +66,8 @@ abstract class installerExtrasRemoveAction extends waViewAction
         $extras_ids = waRequest::post('extras_id');
         try {
             /*
-             _w('Application themes not found');
-             _w('Application plugins not found');
+             _w('Themes not found');
+             _w('Plugins not found');
              */
             foreach ($extras_ids as & $info) {
                 if (!is_array($info)) {
@@ -78,6 +78,7 @@ abstract class installerExtrasRemoveAction extends waViewAction
 
             $options = array(
                 'installed' => true,
+                'status'    => true
             );
 
 
@@ -107,24 +108,30 @@ abstract class installerExtrasRemoveAction extends waViewAction
                 }
                 if (isset($app_list[$app_id])) {
                     $app = $app_list[$app_id];
-                    $installed = $this->installer->getItemInfo($slug, $options);
+                    if (isset($slug_chunks[1]) && isset($slug_chunks[2]) && isset($app[$slug_chunks[1]][$slug_chunks[2]])) {
+                        $installed = $app[$slug_chunks[1]][$slug_chunks[2]];
+                    } else {
+                        $installed = $this->installer->getItemInfo($slug, $options);
+                    }
                     if ($installed) {
                         if ($info['vendor'] == $installed['vendor']) {
                             if (!empty($installed['installed']['system'])) {
                                 /*
-                                 _w("Can not delete system application's themes \"%s\"");
-                                 _w("Can not delete system application's plugins \"%s\"");
-                                _w("Can not delete system application's widgets \"%s\"");
+                                 _w("Unable to delete theme “%s”.");
+                                 _w("Unable to delete plugin “%s”.");
+                                _w("Cannot delete system app’s widgets \"%s\"");
                                  */
 
-                                $message = "Can not delete system application's {$this->extras_type} \"%s\"";
+                                $message = "Cannot delete system app’s {$this->extras_type} \"%s\"";
                                 throw new waException(sprintf(_w($message), _wd($slug, isset($info['name']) ? $info['name'] : '???')));
                             } elseif (!empty($installed['inbuilt'])) {
                                 /*
-                                _w("Can not delete inbuilt application's widgets \"%s\"");
+                                _w("Cannot delete built-in app’s widgets \"%s\"");
                                  */
-                                $message = "Can not delete inbuilt application's {$this->extras_type} \"%s\"";
+                                $message = "Cannot delete built-in app’s {$this->extras_type} \"%s\"";
                                 throw new waException(sprintf(_w($message), _wd($slug, isset($info['name']) ? $info['name'] : '???')));
+                            } elseif ($this->extras_type == 'themes' && empty($installed['installed']['parent_theme_id'])) {
+                                $this->validateThemes($app_list, $app_id, $installed['installed']['id'], $slug);
                             }
                             $queue[] = array(
                                 'real_slug' => $slug,
@@ -169,12 +176,12 @@ abstract class installerExtrasRemoveAction extends waViewAction
                 throw new waException(_w($message));
             }
             /*
-             _w('Application plugin %s has been deleted', 'Applications plugins %s have been deleted');
-             _w('Application theme %s has been deleted', 'Applications themes %s have been deleted');
+             _w('Plugin “%s“ has been deleted.', 'Plugins “%s“ have been deleted.');
+             _w('Theme “%s“ has been deleted.', 'Themes “%s“ have been deleted.');
             _w('Application widget %s has been deleted', 'Applications widgets %s have been deleted');
              */
-            $message_singular = sprintf('Application %s %%s has been deleted', preg_replace('/s$/', '', $this->extras_type));
-            $message_plural = sprintf('Applications %s %%s have been deleted', $this->extras_type);
+            $message_singular = sprintf('App %s %%s has been deleted.', preg_replace('/s$/', '', $this->extras_type));
+            $message_plural = sprintf('App %s %%s have been deleted.', $this->extras_type);
             $message = sprintf(_w($message_singular, $message_plural, count($deleted_extras), false), implode(', ', $deleted_extras));
             $msg = installerMessage::getInstance()->raiseMessage($message);
             $this->redirect('?msg='.$msg);
@@ -184,6 +191,41 @@ abstract class installerExtrasRemoveAction extends waViewAction
             $this->redirect('?msg='.$msg);
         }
 
+    }
+
+    /**
+     * @param $apps
+     * @param $app_id
+     * @param $theme_id
+     * @param $slug
+     * @return void
+     * @throws waException
+     */
+    private function validateThemes($apps, $app_id, $theme_id, $slug)
+    {
+        $parent_theme_id = $app_id . ':' . $theme_id;
+        $app_names = [];
+        foreach ($apps as $app) {
+            if (!empty($app['themes'])) {
+                foreach ($app['themes'] as $theme) {
+                    if (isset($theme['installed']['parent_theme_id'])
+                        && $theme['installed']['parent_theme_id'] == $parent_theme_id
+                    ) {
+                        $app_names[] = sprintf_wp('“%s”', _wd($app['id'], $app['name']));
+                    }
+                }
+            }
+        }
+        if ($app_names) {
+            $message = _w('Deletion of design theme “%s” for the “%s” app is unavailable because it is selected as a parent theme for the child themes of apps %s. Before deleting this design theme, either delete all its child themes or change their parent design theme.');
+
+            throw new waException(sprintf(
+                $message,
+                _wd($slug, isset($apps[$app_id]['themes'][$theme_id]['name']) ? $apps[$app_id]['themes'][$theme_id]['name'] : '???'),
+                _wd($app_id, $apps[$app_id]['name']),
+                implode(', ', $app_names),
+            ));
+        }
     }
 
     /**

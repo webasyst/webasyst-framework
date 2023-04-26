@@ -28,6 +28,7 @@ var Profile = ( function($) {
         that.xhr = false;
         that.dialogs = [];
         that.$calendar_wrapper = null;
+        that.$calendar_date_filter = null;
         that.sidebar_drawer = null;
         that.sidebarDialog = {};
 
@@ -125,7 +126,8 @@ var Profile = ( function($) {
             backend_url: that.wa_backend_url,
             wa_url: that.wa_url,
             wa_version: that.wa_version,
-            webasyst_id_auth_url: that.webasyst_id_auth_url
+            webasyst_id_auth_url: that.webasyst_id_auth_url,
+            ui: '2.0'
         });
 
         $(document).on('wa_before_load', () => {
@@ -243,10 +245,6 @@ var Profile = ( function($) {
             },function () {
                 $(this).removeClass('cursor-pointer');
             })
-        });
-
-        that.$wrapper.find('.js-userpic').one('click', function() {
-
         });
 
         that.$wrapper.find('.js-toggle-user-info').on("click", function(event) {
@@ -413,14 +411,23 @@ var Profile = ( function($) {
             is_params_error = true;
         }
 
+        let full_calendar_link = '';
+        if (options.sectionId === 'calendar') {
+            full_calendar_link = `<a href="${that.wa_app_url}calendar/">
+                                    <span>${options.dialogTeamCalendar}</span> 
+                                    <i class="fas fa-external-link-alt fa-xs"></i>
+                                </a>`;
+        }
+
         const html = `
             <div class="dialog t-sidebar-profile-dialog">
                 <div class="dialog-background"></div>
                 <div class="dialog-body flexbox vertical" ${options.dialogWidth ? ' style="width:' + options.dialogWidth?.replace(/(<([^>]+)>)/gi, "")  +'"': "" }>
-                    <h3 class="dialog-header">${options.dialogHeader?.replace(/(<([^>]+)>)/gi, '') || ''}</h3>
+                    <div class="dialog-header flexbox"><h3>${options.dialogHeader?.replace(/(<([^>]+)>)/gi, '') || ''}</h3></div>
                     <div class="dialog-content wide"></div>
                     <div class="dialog-footer custom-mt-auto">
                         <button type="button" class="button light-gray js-close-dialog">${is_params_error ? 'Ok' : $_('Close')}</button>
+                        ${full_calendar_link}
                     </div>
                 </div>
             </div>
@@ -435,7 +442,13 @@ var Profile = ( function($) {
                     if(!that.$calendar_wrapper) {
                         that.$calendar_wrapper = $profile_sidebar_body.find('.js-calendar-html > .t-calendar-wrapper').detach();
                     }
-                    dialog.$content.empty().append(that.$calendar_wrapper)
+
+                    // if (!that.$calendar_date_filter) {
+                    //     that.$calendar_date_filter = $profile_sidebar_body.find('.js-calendar-html > .js-date-filter').detach();
+                    // }
+
+                    dialog.$content.empty().append(that.$calendar_wrapper);
+                    //dialog.$block.find('.dialog-header').append(that.$calendar_date_filter);
                     dialog.resize();
                     return;
                 }
@@ -489,6 +502,177 @@ var Profile = ( function($) {
             wrapper_style.removeProperty('opacity')
             that.sidebar_drawer.show();
         }
+    };
+
+    // `static` function, not in prototype
+    // JS for templates/actions/profile/sidebarWidgets/Access.html
+    // This loads twice with two different `$wrapper`s.
+    // One for sidebar that is always visible on wide screens.
+    // One for slide-open drawer for narrow screens.
+    // Both present in DOM but only one is visible at a time.
+    Profile.initSidebarWidgetAccess = function(opts) {
+
+        const $wrapper = opts.$wrapper,
+            wa_backend_url = opts.wa_backend_url,
+            user_id = opts.user_id,
+            loc = opts.loc,
+            $waid = $wrapper.find('.js-waid'),
+            $sent_email_ok = $waid.find('.js-sent-email-ok');
+        var is_loading = false;
+
+        // Connect own profile to WAID by auth on WA domain with email and password
+        $waid.on('click', '.js-send-email-invitation', function (e) {
+            e.preventDefault();
+
+            const $link = $(this),
+                $loading = $waid.find('.js-loading');
+
+            if (is_loading) {
+                return;
+            }
+
+            $loading.show();
+            is_loading = true;
+
+            $.post(wa_backend_url+"?module=settings&action=waIDInviteUser", { id: user_id }).done(function ({ errors, data }) {
+                if(errors) {
+                    $.waDialog.alert({
+                        title: loc.error,
+                        text: errors,
+                        button_title: loc.ok
+                    });
+                    return;
+                }
+                if (data) {
+                    $link.addClass('hidden').find('.js-text').text(loc.email_again).end()
+                        .find('.js-last-send-datetime').text(data.sent);
+                    $sent_email_ok.removeClass('hidden');
+
+                    setTimeout(() => {
+                        $link.removeClass('hidden');
+                        $sent_email_ok.addClass('hidden');
+                    }, 1500);
+                }
+            })
+            .always(function () {
+                is_loading = false;
+                $loading.hide();
+            });
+        });
+
+        // Connect another user to WAID by telling them 8-digit numeric code
+        $wrapper.on('click', '.js-connect-by-numeric-code', function(e) {
+
+            const $a = $(this),
+                  $loading = $a.find('.js-loading');
+
+            if (is_loading) {
+                return;
+            }
+
+            $loading.show();
+            is_loading = true;
+
+            var promises = [];
+
+            // Generate code using system controller
+            promises.push($.post(wa_backend_url+"?module=settings&action=waIDInviteUserByCode", { id: user_id }).then(function ({ errors, data }) {
+                if(errors) {
+                    return (new $.Deferred()).reject(errors).promise();
+                }
+                return data;
+            }, function(xhr, test_status, error_thrown) {
+                return test_status+' '+error_thrown;
+            }));
+
+            // Load dialog content from a Team controller
+            // see templates/actions/profile/ProfileWaidConnectCodeDialog.html
+            promises.push($.post("?module=profile&action=waidConnectCodeDialog", { id: user_id }).then(function (html) {
+                return html;
+            }, function(xhr, test_status, error_thrown) {
+                return (new $.Deferred()).reject(test_status+': '+error_thrown).promise();
+            }));
+
+            // When both load, show dialog
+            $.when.apply($, promises).then(function(code_info, dialog_html) {
+                $.waDialog({
+                    html: dialog_html,
+                    onOpen: function($dialog, dialog_instance) {
+                        // Code that initializes the dialog see inside dialog template
+                        $dialog.trigger('dialog_opened', [code_info, dialog_instance]);
+                    }
+                });
+            }, function(errors) {
+                $.waDialog.alert({
+                    title: loc.error,
+                    text: errors,
+                    button_title: loc.ok
+                });
+            }).always(function () {
+                is_loading = false;
+                $loading.hide();
+            });
+        });
+
+        // Connect own profile to WAID user by scanning QR code with mobile app
+        $wrapper.on('click', '.js-connect-by-qr-code', function(e) {
+
+            const $a = $(this),
+                  $loading = $a.find('.js-loading'),
+                  $code_icon = $a.find('.js-code-icon');
+
+            if (is_loading) {
+                return;
+            }
+
+            $loading.show();
+            $code_icon.hide();
+            is_loading = true;
+
+            var promises = [];
+
+            // Generate code using system controller
+            promises.push($.post(wa_backend_url+"?module=settings&action=waIDInviteUserByCode", { id: user_id, qrcode: 1 }).then(function ({ errors, data }) {
+                if(errors) {
+                    return (new $.Deferred()).reject(errors).promise();
+                }
+                return data;
+            }, function(xhr, test_status, error_thrown) {
+                return test_status+' '+error_thrown;
+            }));
+
+            // Load dialog content from a Team controller
+            // see templates/actions/profile/ProfileWaidConnectCodeDialog.html
+            promises.push($.post("?module=profile&action=waidConnectQrcodeDialog", { id: user_id }).then(function (html) {
+                return html;
+            }, function(xhr, test_status, error_thrown) {
+                return (new $.Deferred()).reject(test_status+': '+error_thrown).promise();
+            }));
+
+            // Load JS library that draws QR-codes
+            promises.push($.getScript(opts.wa_url + 'wa-content/js/qrcode/qrcode.min.js'));
+
+            // When everything loads, show dialog
+            $.when.apply($, promises).then(function(code_info, dialog_html) {
+                $.waDialog({
+                    html: dialog_html,
+                    onOpen: function($dialog, dialog_instance) {
+                        // Code that initializes the dialog see inside dialog template
+                        $dialog.trigger('dialog_opened', [code_info, dialog_instance]);
+                    }
+                });
+            }, function(errors) {
+                $.waDialog.alert({
+                    title: loc.error,
+                    text: errors,
+                    button_title: loc.ok
+                });
+            }).always(function () {
+                is_loading = false;
+                $loading.hide();
+                $code_icon.show();
+            });
+        });
     };
 
     return Profile;

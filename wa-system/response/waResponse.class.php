@@ -49,6 +49,13 @@ class waResponse
         415 => 'Unsupported Media Type',
         416 => 'Requested Range Not Satisfiable',
         417 => 'Expectation Failed',
+        422 => 'Unprocessable Entity',
+        425 => 'Too Early',
+        426 => 'Upgrade Required',
+        428 => 'Precondition Required',
+        429 => 'Too Many Requests',
+        431 => 'Request Header Fields Too Large',
+        451 => 'Unavailable For Legal Reasons',
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
         502 => 'Bad Gateway',
@@ -283,7 +290,7 @@ class waResponse
         return $this;
     }
 
-    protected function header($string, $replace = true, $http_response_code = null)
+    protected function header($string, $replace = true, $http_response_code = 0)
     {
         if (!headers_sent()) {
             header($string, $replace, $http_response_code);

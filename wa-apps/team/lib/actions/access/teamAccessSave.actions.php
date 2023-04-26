@@ -67,18 +67,33 @@ class teamAccessSaveActions extends waJsonActions
     protected function unbanAction()
     {
         $this->contact['is_user'] = $this->contact['login'] ? 1 : 0;
+        if ($this->contact['is_user']) {
+            $this->runBackendAccessHook();
+            if ($this->errors) {
+                return;
+            }
+        }
         $this->saveContact();
     }
 
     /** Turn a contact into a user. */
     protected function makeuserAction()
     {
+        $this->runBackendAccessHook();
+        if ($this->errors) {
+            return;
+        }
+        
         $this->contact['is_user'] = 1;
         $this->saveContact();
     }
 
     protected function grantAction()
     {
+        $this->runBackendAccessHook();
+        if ($this->errors) {
+            return;
+        }
         $login = $this->validatedLogin();
         $password = $this->validatedPassword();
         if (!$this->errors) {
@@ -147,6 +162,11 @@ class teamAccessSaveActions extends waJsonActions
         $login = trim(urldecode(waRequest::post('login', '', 'string_trim')));
         if (strlen($login) <= 0) {
             $this->errors[] = _w('Login is required.');
+            return null;
+        }
+
+        if (!preg_match('~^[a-z0-9@_\.\-]+$~u', strtolower($login))) {
+            $this->errors[] = _w('Invalid login name.');
             return null;
         }
 
@@ -300,6 +320,23 @@ class teamAccessSaveActions extends waJsonActions
                 $this->logAction("grant_backend_access", null, $this->id);
             } else {
                 $this->logAction("revoke_backend_access", null, $this->id);
+            }
+        }
+    }
+
+    /**
+     * @param array $event_data
+     * @return void
+     * @throws waException
+     */
+    protected function runBackendAccessHook($event_data = [])
+    {
+        $event_data['action'] = $this->action;
+        $event_data['contact'] = $this->contact;
+        $user_save_backend_access_event = wa()->event('user_save_backend_access', $event_data);
+        foreach ($user_save_backend_access_event as $message) {
+            if ($message) {
+                $this->errors[] = $message;
             }
         }
     }

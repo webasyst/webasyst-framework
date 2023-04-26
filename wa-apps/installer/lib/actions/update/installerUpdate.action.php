@@ -30,10 +30,10 @@ class installerUpdateAction extends waViewAction
             $items = installerHelper::getUpdates();
             $counter = installerHelper::getUpdatesCounter(null);
             if (isset($items['installer'])) {
-                $items['installer']['name'] = _w('Webasyst Framework');
+                $items['installer']['name'] = _w('Webasyst framework');
             };
             if (isset($items['webasyst'])) {
-                $items['webasyst']['name'] = _w('Webasyst Framework');
+                $items['webasyst']['name'] = _w('Webasyst framework');
             }
         };
         $this->safeCall($do_logic, $messages);

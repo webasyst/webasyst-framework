@@ -5,6 +5,13 @@
  * wa-config/apps/webasyst/ProfileTabs.html
  *}
 
+{if is_profile_sidebar}
+{foreach $tabs as $tab_id => $tab}
+{if !empty($tab.html) && empty($tab.url) && $tab.id != 'info'}
+<div class="hidden js-tab-content-{$tab_id|escape}">{$tab.html}</div>
+{/if}
+{/foreach}
+{else}
 <ul class="t-profile-tabs tabs overflow-arrows" id="t-profile-tabs-{$uniqid}">
     {foreach $tabs as $tab_id => $tab}
         <li class="t-tab {if $selected_tab == $tab_id}selected{/if}" data-tab-id="{$tab_id|escape}">
@@ -214,3 +221,4 @@
 
 });
 </script>
+{/if}

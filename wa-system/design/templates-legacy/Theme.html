@@ -1,5 +1,5 @@
 {$_is_trial = $theme.type === waTheme::TRIAL}
-<script src="{$wa_url}wa-content/js/jquery-wa/design/theme.settings.js?v{$wa->version()}"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/design/legacy/theme.settings.js?v{$wa->version()}"></script>
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design/theme.settings.css?{$wa->version()}">
 {function name="_renderThemeSetting" _setting_var=_setting_var _setting=[]}
 {$_h_level = $_setting.level}
@@ -343,7 +343,7 @@
                 <ul class="menu-v with-icons">
                     <li>
                         <b><i class="icon16 split"></i>{$theme.id}</b>
-                        <span class="hint"><br>{sprintf('[s`This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>).`]', $theme.id)}</span>
+                        <span class="hint"><br>{sprintf('[s`This design theme was either cloned from another, original, theme or was manually uploaded as an archive. It cannot be updated via the Installer app or reverted to an original version because there is no installed original theme with the same ID <strong>%s</strong>.`]', $theme.id)}</span>
                     </li>
                 </ul>
             </div>
@@ -355,7 +355,7 @@
             <ul class="menu-v with-icons">
                 {if !empty($settings.items)}
                     {* Export theme settings *}
-                    <li><a href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}"><i class="icon16 import"></i>[s`Export theme settings`]</a></li>
+                    <li><a class="js-export-theme-settings" href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}"><i class="icon16 import"></i>[s`Export theme settings`]</a><span class="hidden js-export-error hint flexbox"><span class="js-export-error-caption" style="color: red;"></span></span></li>
                     {* Import theme settings *}
                     <li><a class="js-import-theme-settings" href="#"><i class="icon16 export"></i>[s`Import theme settings`]</a></li>
                 {/if}
@@ -556,7 +556,7 @@
                     <a id="theme-start-using" href="#" class="button green">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
                     {if !empty($preview_url)}
                         [s`or`]
-                        <span class="nowrap"><a class="wa-theme-preview" target="_blank" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
+                        <span class="nowrap"><a class="wa-theme-preview" data-theme-id="{$theme.id|escape}" target="_blank" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
                     {/if}
                 </p>
             {/if}
@@ -646,8 +646,10 @@
             $wrapper: $("#{$id}"),
             theme_id: {$theme.id|json_encode},
             theme_routes: {$theme_routes|json_encode},
+            has_child_themes: !{empty($child_themes)|json_encode},
             design_url: {$design_url|json_encode},
-            locale: {$_locale|json_encode}
+            locale: {$_locale|json_encode},
+            wa_url: {$wa_url|json_encode}
         });
     })(jQuery);
 </script>

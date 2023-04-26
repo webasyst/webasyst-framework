@@ -3,7 +3,7 @@
         {* ICON *}
         {if $item_type eq 'app' &&  !empty($item.icons.48)}
         <div class="i-assets-col-icon">
-            <img src="{$wa_url}{$item.icons.48|default:$item.icons.16}" alt="{$item.name|default:$item_id|escape}">
+            <img src="{$item.icons.48|default:$item.icons.16}" alt="{$item.name|default:$item_id|escape}">
         </div>
         {else}
             &nbsp;
@@ -52,8 +52,10 @@
                     <span class="js-update-tooltip">([`beta version`]) <i class="fas fa-info-circle"></i></span>
 
                     <div class="wa-tooltip-template" id="update-beta-notice">
-                        [`Beta test notice`]
+                        [`<p><b>Software product update available for testing purposes, which has not been reviewed by Webasyst.</b></p><p>The beta version will remain available in the updates list, even after its installation, until the developer publishes the product update in the Installer or disables the beta testing option for this product.</p>`]
                     </div>
+                {else if !empty($item.update_datetime)}
+                    <span class="custom-ml-12 hint">{$item.update_datetime|wa_date:'humandate'}</span>
                 {/if}
 
                 {if !empty($item.installed.version)}
@@ -113,18 +115,18 @@
                 {* not allowed to install the app, i.e. expired *}
                 <p class="small state-error custom-mb-8">[`License is either expired or not valid for this installation`]</p>
                 {if $item_type eq 'app'}
-                    {$link="app/`$item.id`"}
+                    {$link="app/{$item.id|escape}"}
                 {elseif $item_type eq 'theme'}
-                    {$link="theme/`$item.id`"}
+                    {$link="theme/{$item.id|escape}"}
                 {elseif $item_type eq 'widget'}
-                    {$link="widget/`$item.app`/`$item.id`"}
+                    {$link="widget/`$item.app`/{$item.id|escape}"}
                 {elseif $item_type eq 'plugin'}
                     {if strpos($item.slug,'wa-plugins/') === 0}
                         {$_plugins_slug = str_replace('wa-plugins/','',$item.slug|escape)}
                         {$_plugins_slug = str_replace('plugins/','',$_plugins_slug)}
                         {$link = "plugin/{$_plugins_slug}"}
                     {else}
-                        {$link = "plugin/{$item.app|default:''}/{$item.id|escape}/"}
+                        {$link = "plugin/{$item.app|default:''}/{$item.id|escape}"}
                     {/if}
                 {/if}
 

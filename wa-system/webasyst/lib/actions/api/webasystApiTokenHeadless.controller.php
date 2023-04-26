@@ -41,7 +41,7 @@ class webasystApiTokenHeadlessController extends waController
         if (!$contact) {
             $this->response([
                 'error' => 'invalid_grant',
-                'error_description' => 'No backend user is linked with this Webasyst ID',
+                'error_description' => _ws('No backend user is linked with this Webasyst ID.'),
             ], 403);
             return;
         }
@@ -95,8 +95,11 @@ class webasystApiTokenHeadlessController extends waController
                 $format = 'JSON';
             }
         }
-
-        wa()->getResponse()->setStatus($status_code)->sendHeaders();
+        $content_type = ($format === 'XML') ? 'application/xml' : 'application/json';
+        wa()->getResponse()
+            ->addHeader('Content-Type', $content_type)
+            ->setStatus($status_code)
+            ->sendHeaders();
         die(waAPIDecorator::factory($format)->decorate($response));
     }
 

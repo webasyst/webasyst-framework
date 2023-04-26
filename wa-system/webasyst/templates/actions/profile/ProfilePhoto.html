@@ -364,6 +364,8 @@
                             cropBoxResizable: false,
                             minCropBoxWidth: 96,
                             minCropBoxHeight: 96,
+                            rotatable: true,
+                            checkOrientation: true,
                             ready: function(event) {
                                 that.$editZoomOut.on('click', () => {
                                     this.cropper.zoom(-0.1);

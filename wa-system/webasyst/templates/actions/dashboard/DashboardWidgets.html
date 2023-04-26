@@ -3,6 +3,11 @@
 <div class="d-widgets-block">
     {* LOAD RESOURCES *}
     <script src="{$wa_url}wa-content/js/d3/d3.min.js"></script>
+
+    <div class="empty-widgets-wrapper {if empty($widgets)}is-shown{/if}" id="empty-widgets-wrapper">
+        [`Your dashboard is empty. Add widgets by clicking “Edit widgets” button at the top.`]
+    </div>
+
     <div id="d-widgets-block">
         {foreach $widgets as $block => $block_widgets}
             {foreach $block_widgets as $w}
@@ -43,10 +48,6 @@
         <div class="widget-group-wrapper js-nested-sortable js-empty-group"></div>
     </div>
 
-    <div class="empty-widgets-wrapper {if empty($widgets)}is-shown{/if}" id="empty-widgets-wrapper">
-        [`Your dashboard is empty. Add widgets by clicking “Edit widgets” button at the top.`]
-    </div>
-
     <div id="widgets-list-wrapper" data-backend-url="{$wa_backend_url|escape}"></div>
 
     {* HIDDEN LOADING SCREEN *}
@@ -69,6 +70,7 @@
     .widget-drag {
        opacity: 1 !important;
         background: rgba(0,0,0,0.06);
+        overflow: hidden;
     }
     .widget-chosen:not(.widget-drag) {
         cursor: move;

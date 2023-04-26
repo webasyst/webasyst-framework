@@ -332,17 +332,13 @@ class waContactsCollection
                                         if (isset($v['last_datetime']) && $v['last_datetime'] && $v['last_datetime'] != '0000-00-00 00:00:00') {
                                             // Were active in the last 5 minutes?
                                             if (time() - strtotime($v['last_datetime']) < $timeout) {
-                                                // Make sure user didn't log out
-                                                if (isset($contact_ids_map[$v['id']])) {
-                                                    $v['_online_status'] = 'online';
+                                                $v['_online_status'] = 'online';
 
-                                                    // Mark as idle if idle_since record exists & is older than 60 sec
-                                                    if (isset($contacts_idle[$v['id']]) && 
-                                                        time() - strtotime($contacts_idle[$v['id']]['value']) > 60
-                                                    ) {
-                                                        $v['_online_status'] = 'idle';
-                                                    }
-
+                                                // Mark as idle if idle_since record exists & is older than 60 sec
+                                                if (isset($contacts_idle[$v['id']]) && 
+                                                    time() - strtotime($contacts_idle[$v['id']]['value']) > 60
+                                                ) {
+                                                    $v['_online_status'] = 'idle';
                                                 }
                                             }
                                         }

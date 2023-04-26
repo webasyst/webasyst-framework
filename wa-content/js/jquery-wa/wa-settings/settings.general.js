@@ -23,6 +23,7 @@ const WASettingsGeneral = ( function($) {
             that.$logo_text_input = that.$form.find('.js-logo-text');
             that.$change_bgcolor_btn = that.$text_logo_block.find('.js-switch-color');
             that.$switch_two_line = that.$form.find('.js-switch-two-line');
+            that.$two_line_field = that.$form.find('#two-line-field');
             that.$custom_colors = that.$form.find('.js-custom-colors');
 
             that.$logo_type_toggle = that.$form.find(".js-logo-type-toggle");
@@ -119,9 +120,10 @@ const WASettingsGeneral = ( function($) {
 
             that.$switch_two_line.waSwitch({
                 change: function(active) {
+                    that.$two_line_field.val(active ? '1' : '0');
                     if (!active) {
                         that.logo_text = that.logo_text.replace(/\n/gm,"")
-                    }else if(active && that.logo_text.length > 3){
+                    } else if (active && that.logo_text.length > 3) {
                         that.logo_text = that.insertChar(that.logo_text, '\n', 2)
                     }
                     that.$logo_text_area.text(that.logo_text).toggleClass('two-lines', active)

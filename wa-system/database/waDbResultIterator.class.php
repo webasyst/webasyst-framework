@@ -46,7 +46,7 @@ class waDbResultIterator implements Iterator
         $this->result = $result;
         $this->adapter = $adapter;
     }
-    
+
     public function __destruct()
     {
         $this->free();
@@ -55,8 +55,10 @@ class waDbResultIterator implements Iterator
     /**
      * Returns current element
      *
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->current;
@@ -67,6 +69,7 @@ class waDbResultIterator implements Iterator
      *
      * @return int
      */
+    #[ReturnTypeWillChange]
     public function key()
     {
         if ($this->key >= $this->count()) {
@@ -81,6 +84,7 @@ class waDbResultIterator implements Iterator
      *
      * @return array
      */
+    #[ReturnTypeWillChange]
     public function next()
     {
         $this->key++;
@@ -90,8 +94,9 @@ class waDbResultIterator implements Iterator
 
     /**
      * Reset key
-     * @return mixed|null
+     * @return void
      */
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         $this->current = null;
@@ -99,7 +104,6 @@ class waDbResultIterator implements Iterator
         if ($this->count()) {
             $this->seek(0);
         }
-        return $this->current;
     }
 
     /**
@@ -113,6 +117,7 @@ class waDbResultIterator implements Iterator
      *
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function valid()
     {
         if (!$this->count()) {

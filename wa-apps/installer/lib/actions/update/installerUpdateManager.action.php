@@ -26,7 +26,7 @@ class installerUpdateManagerAction extends waViewAction
     {
         $this->is_install = (bool)waRequest::request('install', false);
         $this->is_trial = (bool)waRequest::request('trial', false);
-        $url = parse_url($r = waRequest::server('HTTP_REFERER'), PHP_URL_QUERY);
+        $url = parse_url($r = waRequest::server('HTTP_REFERER', ''), PHP_URL_QUERY);
         if (preg_match('/(^|&)module=(update|apps|plugins|widgets)($|&)/', $url, $matches)) {
             $this->module = $matches[2];
         }
@@ -85,6 +85,7 @@ class installerUpdateManagerAction extends waViewAction
                     waInstallerApps::ACTION_UPDATE,
                 );
 
+                $count_installer_dependencies = 0;
                 foreach ($items as $app_id => $info) {
                     if (!empty($info['download_url'])
                         && !empty($info['applicable'])
@@ -95,9 +96,10 @@ class installerUpdateManagerAction extends waViewAction
                             foreach ($info['download_url'] as $target => $url) {
                                 $_info = $info;
                                 $_info['download_url'] = $url;
-                                $_info['name'] = _w('Webasyst Framework').' ('.$target.')';
+                                $_info['name'] = _w('Webasyst framework').' ('.$target.')';
                                 $this->add($target, $_info);
                                 $queue_apps[$target] = $_info;
+                                $count_installer_dependencies++;
                                 unset($_info);
                             }
                         } else {
@@ -179,6 +181,7 @@ class installerUpdateManagerAction extends waViewAction
 
                 $this->view->assign('action', 'update');
                 $this->view->assign('queue_apps', $queue_apps);
+                $this->view->assign('count_installer_dependencies', $count_installer_dependencies);
                 $this->view->assign('install', !empty($this->is_install) ? 'install' : '');
                 $this->view->assign('trial', !empty($this->is_trial) ? 'trial' : '');
                 $this->view->assign('title', _w('Updates'));
@@ -194,7 +197,7 @@ class installerUpdateManagerAction extends waViewAction
                 waUtils::varExportToFile($this->urls, $path);
 
             } else {
-                $msg = _w('Update is already in progress. Please wait while previous update session is finished before starting update session again.');
+                $msg = _w('Update is already in progress. Please wait while the current update session is completed before starting a new session.');
                 $this->redirect(array(
                     'module' => $this->module,
                     'msg'    => installerMessage::getInstance()->raiseMessage($msg, installerMessage::R_FAIL),

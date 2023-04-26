@@ -651,7 +651,7 @@ window.ProfileAccessTab = function(o) { "use strict";
     function initWebasystIDUnbindAuth() {
         $('.js-webasyst-id-unbind-auth').on('click', function (e) {
             e.preventDefault();
-            $('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth', {id: contact_id});
+            $(document).trigger('wa_waid_unbind_auth', {id: contact_id});
         });
     }
 
@@ -698,17 +698,20 @@ window.ProfileAccessTab = function(o) { "use strict";
             return;
         }
 
-        $('#open-customize-groups').click(function(e) {
+        $('#open-customize-groups').on('click', function(e) {
             e.preventDefault();
+            $(this).hide();
             $('#form-customize-groups').toggle();
         });
-        $('#cancel-customize-groups').click(function(e) {
+
+        $('#cancel-customize-groups').on('click', function(e) {
             e.preventDefault();
-            var form = $('#form-customize-groups').hide();
+            const form = $('#form-customize-groups').hide();
+            $('#open-customize-groups').show();
             form.find('.loading').hide();
             form.find('.state-error-hint').remove();
-            return false;
         });
+
         $form.submit(function() {
             var form = $(this);
             form.find('.state-error-hint').remove();
@@ -814,6 +817,7 @@ window.ProfileAccessTab = function(o) { "use strict";
         var $login_input = $form.find('.c-login-input');
 
         $form.submit(function () {
+            $('.dialog-footer .js-close-dialog').prop('disabled', true);
             $form.find('input.state-error').removeClass('error');
             $form.find('.state-error-hint').remove();
             var new_login = $.trim($login_input.val());
@@ -840,8 +844,11 @@ window.ProfileAccessTab = function(o) { "use strict";
                         } catch (e) {
                         }
                     }
+                    const new_url = window.location.href.replace(login, new_login);
                     login = new_login;
+                    window.location.assign(new_url);
                 } else if (r.status === 'fail') {
+                    $('.dialog-footer .js-close-dialog').prop('disabled', false);
                     $form.find('input[type="submit"]').parent().prepend($('<p class="state-error-hint custom-mt-4 custom-mb-8">'+r.errors.join("\n<br>\n")+'</p>'));
                 }
             }, 'json');
@@ -933,13 +940,10 @@ window.ProfileAccessTab = function(o) { "use strict";
 
             $.waDialog.confirm({
                 title: `<i class="fas fa-exclamation-triangle smaller state-error"></i> ${$link_block.data('alert')}`,
-                success_button_title: 'Ok',
+                success_button_title: loc['blockUser'] || 'Ok',
                 success_button_class: 'danger',
                 cancel_button_title: loc["cancel"],
                 cancel_button_class: 'light-gray',
-                onOpen($dialog, dialog){
-                    console.log($dialog, dialog)
-                },
                 onSuccess(){
                     var $textarea = $block_form.find('.js-block-user-reason'),
                         text = $.trim($textarea.val());
@@ -976,7 +980,7 @@ window.ProfileAccessTab = function(o) { "use strict";
 
             $.waDialog.confirm({
                 title: `<i class="fas fa-exclamation-triangle smaller state-error"></i> ${$link_unblock.data('alert')}`,
-                success_button_title: 'Ok',
+                success_button_title: loc['unblockUser'] || 'Ok',
                 success_button_class: 'danger',
                 cancel_button_title: loc["cancel"],
                 cancel_button_class: 'light-gray',

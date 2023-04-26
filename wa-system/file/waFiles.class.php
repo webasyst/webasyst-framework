@@ -566,15 +566,14 @@ class waFiles
 
             //SSL
             if (!empty($options['verify'])) {
-                $context_params['ssl']['verify_peer'] = true;
-                $context_params['ssl']['verify_peer_name'] = true;
-                $context_params['ssl']['allow_self_signed'] = false;
+                $ssl_context_params['verify_peer']       = true;
+                $ssl_context_params['verify_peer_name']  = true;
+                $ssl_context_params['allow_self_signed'] = false;
                 if (is_string($options['verify'])) {
                     if (!file_exists($options['verify'])) {
                         throw new RuntimeException("SSL CA bundle not found: {$options['verify']}");
                     }
-                    $context_params['ssl']['cafile'] = $options['verify'];
-
+                    $ssl_context_params['cafile'] = $options['verify'];
                 } else {
                     // PHP 5.6 or greater will find the system cert by default. When
                     // < 5.6, try load it
@@ -584,11 +583,11 @@ class waFiles
                     }
                 }
             } else {
-                $context_params['ssl']['verify_peer'] = false;
-                $context_params['ssl']['verify_peer_name'] = false;
+                $ssl_context_params['verify_peer']      = false;
+                $ssl_context_params['verify_peer_name'] = false;
             }
 
-            $context = stream_context_create(array('http' => $context_params,));
+            $context = stream_context_create(array('http' => $context_params, 'ssl' => $ssl_context_params));
         }
         return $context;
     }
@@ -876,7 +875,12 @@ class waFiles
      */
     public static function protect($path)
     {
-        self::write($path.'/.htaccess', "Deny from all\n");
+        if ($path && is_dir($path) && is_writable($path)) {
+            $htaccess_path = $path.'/.htaccess';
+            if (!file_exists($htaccess_path)) {
+                self::write($htaccess_path, "Deny from all\n");
+            }
+        }
     }
 
     /**

@@ -435,10 +435,14 @@ var Sidebar = ( function($) {
         }
     };
 
-    Sidebar.prototype.reload = function() {
+    Sidebar.prototype.reload = function(background) {
         var that = this,
             app_url = that.app_url,
             sidebar_uri = app_url + "?module=sidebar";
+
+        if (background) {
+            sidebar_uri += '&background_process=1'
+        }
 
         clearTimeout(that.timer);
 
@@ -648,7 +652,7 @@ var Sidebar = ( function($) {
 
         that.timer = setTimeout( function() {
             if ( $.contains(document, that.$wrapper[0]) ) {
-                that.reload();
+                that.reload(true);
             }
         }, time);
     };

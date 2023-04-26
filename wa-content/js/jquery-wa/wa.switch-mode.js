@@ -17,6 +17,7 @@ new class ThemeMode {
 
     bindEvents() {
         document.addEventListener('DOMContentLoaded', this.iterateButtons.bind(this));
+        document.addEventListener('DOMContentLoaded', this.toggleTheme.bind(this));
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.setTheme.bind(this));
         this.eventChange = new Event('wa-theme-change');
     }
@@ -32,6 +33,12 @@ new class ThemeMode {
         event.preventDefault();
         const theme = event.target.closest('span').dataset.waThemeMode;
         this.setThemeManually(theme);
+    }
+
+    toggleTheme() {
+        document.querySelector('[data-wa-mode-toggle]')?.addEventListener('click', () =>
+            this.setThemeManually((localStorage.getItem(this.ls_var_name) === 'light') ? 'dark' : 'light')
+        )
     }
 
     getSystemTheme() {

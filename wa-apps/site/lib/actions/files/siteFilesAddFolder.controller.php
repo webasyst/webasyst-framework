@@ -13,11 +13,11 @@ class siteFilesAddFolderController extends waJsonController
 
         if (file_exists($path)) {
             if (!is_writable($path)) {
-                $this->errors = sprintf(_w("Folder could not bet created due to the insufficient file write permissions for the %s folder."), $p);
+                $this->errors = sprintf(_w("Folder could not be created due to insufficient file write permissions for folder %s."), $p);
             } elseif (@mkdir($path.'/'.$folder)) {
                 $this->response = htmlspecialchars($folder);
             } else {
-                $this->errors = _w("An unkown error occured when attempting to create a folder.");
+                $this->errors = _w("An unknown error occurred when attempting to create a folder.");
             }
         }
     }

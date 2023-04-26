@@ -2,6 +2,8 @@
 
 class installerHelper
 {
+    const PRODUCTS_CACHE_TTL = 3600; // 1 hour
+
     /**
      *
      * @var waAppSettingsModel
@@ -435,5 +437,217 @@ class installerHelper
             }
         }
         return $license;
+    }
+
+    /**
+     * @param $app_id
+     * @param $plugin_id
+     * @param $status
+     * @return array|bool|string
+     * @throws waException
+     */
+    public static function pluginSetStatus($app_id, $plugin_id, $status = false)
+    {
+        return self::assetSetStatus($app_id, $plugin_id, $status);
+    }
+
+    /**
+     * @param $app_id
+     * @param $status
+     * @return array|bool|string
+     * @throws waException
+     */
+    public static function appSetStatus($app_id, $status = false)
+    {
+        return self::assetSetStatus($app_id, null, $status);
+    }
+
+    /**
+     * @return array of three elements: app_id, ext_id and type (app|plugin|theme|widget|payment|shipping|sms)
+     * @since 2.7.0
+     */
+    public static function parseSlug($slug)
+    {
+        $parts = explode('/', $slug, 4);
+
+        // app?
+        if (count($parts) == 1) {
+            return [$slug, null, 'app'];
+        }
+
+        if (count($parts) == 3) {
+
+            // app plugin, theme, or widget?
+            // system-wide widgets inside wa-widgets directory
+            // go here, too, e.g.: webasyst/widgets/currencyquotes
+            if ($parts[1] == 'plugins') {
+                return [$parts[0], $parts[2], 'plugin'];
+            } else if ($parts[1] == 'widgets') {
+                return [$parts[0], $parts[2], 'widget'];
+            } else if ($parts[1] == 'themes') {
+                return [$parts[0], $parts[2], 'theme'];
+            }
+
+            // system plugin: payment, shipping, or sms?
+            if ($parts[0] == 'wa-plugins') {
+                if ($parts[1] == 'payment' || $parts[1] == 'shipping' || $parts[1] == 'sms') {
+                    return ['webasyst', $parts[2], $parts[1]];
+                }
+            }
+
+        }
+
+        // Unsupported type of slug
+        return [null, null, 'unsupported'];
+    }
+
+    /**`
+     * @param $app_id
+     * @param $plugin_id
+     * @param $status
+     * @return array|bool|string
+     * @throws waException
+     */
+    private static function assetSetStatus($app_id, $plugin_id, $status = false)
+    {
+        if (waConfig::get('is_template')) {
+            return '';
+        }
+
+        $apps = wa()->getApps();
+        if (empty($app_id) || empty($plugin_id)) {
+            if (
+                empty($app_id)
+                || empty($apps[$app_id]) && !file_exists("wa-apps/$app_id/lib/config/app.php")
+            ) {
+                throw new waException('Asset not found');
+            }
+        }
+
+        $old_app_id = wa()->getApp();
+        wa('installer', true);
+
+        try {
+            $result = true;
+            $installer = new waInstallerApps();
+            if (empty($plugin_id)) {
+                $installer->updateAppConfig($app_id, $status);
+            } else {
+                $installer->updateAppPluginsConfig($app_id, $plugin_id, $status);
+            }
+
+            (new waLogModel())->add(
+                ($status === true ? 'item_enable' : 'item_disable'),
+                [
+                    'type' => 'plugins',
+                    'id'   => sprintf('%s/%s', $app_id, $plugin_id),
+                    'ip'   => waRequest::getIp(),
+                ]
+            );
+
+            $errors = installerHelper::flushCache();
+            if ($errors) {
+                $result = $errors;
+            }
+        } catch (Exception $ex) {
+            $result = $ex->getMessage();
+        }
+
+        wa($old_app_id, true);
+        return $result;
+    }
+
+    /**
+     * @param array $array_of_slugs
+     * @param array $fields
+     * @param bool $force_renew
+     * @return array
+     */
+    public static function getStoreProductsData(array $array_of_slugs, array $fields, $force_renew = false)
+    {
+        $fields = self::filterFields($fields);
+        $cache_id = self::getCacheId($array_of_slugs, $fields, 'products');
+        $params = [
+            'slugs' => $array_of_slugs,
+            'fields' => $fields,
+        ];
+        return self::getProductsData($params, $cache_id, (bool)$force_renew);
+    }
+
+    /**
+     * @param array $array_of_ext_id
+     * @param array $fields
+     * @param bool $force_renew
+     * @return array
+     */
+    public static function getStoreThemesData(array $array_of_ext_id, array $fields, $force_renew = false)
+    {
+        $fields = self::filterFields($fields);
+        $cache_id = self::getCacheId($array_of_ext_id, $fields, 'themes');
+        $params = [
+            'themes' => $array_of_ext_id,
+            'fields' => $fields,
+        ];
+        return self::getProductsData($params, $cache_id, (bool)$force_renew);
+    }
+
+    /**
+     * @param array $params
+     * @param string $cache_id
+     * @param bool $force_renew
+     */
+    protected static function getProductsData($params, $cache_id, $force_renew)
+    {
+        $cache = new waVarExportCache($cache_id, self::PRODUCTS_CACHE_TTL, wa()->getConfig()->getApplication());
+        $cache_data = $cache->get();
+        $products = isset($cache_data['data']) ? $cache_data['data'] : [];
+        if (!$cache->isCached() || time() - ifempty($cache_data, 'timestamp', 0) >= self::PRODUCTS_CACHE_TTL || $force_renew) {
+            $params['locale'] = wa()->getLocale();
+            $init_url = self::getInstaller()->getInstallerProductsUrl();
+            $init_url .= '?' . http_build_query($params);
+            $net_options = array(
+                'timeout' => 7,
+                'format' => waNet::FORMAT_JSON,
+            );
+
+            try {
+                $net = new waNet($net_options);
+                $result = $net->query($init_url);
+            } catch (waException $e) {
+                return [];
+            }
+
+            if (isset($result['data']) && is_array($result['data'])) {
+                $cache->set([
+                    'data' => $result['data'],
+                    'timestamp' => time()
+                ]);
+                $products = $result['data'];
+            }
+        }
+
+        return $products;
+    }
+
+    /**
+     * @param array $slugs
+     * @param array $fields
+     * @param string $prefix
+     * @return string
+     */
+    protected static function getCacheId($slugs, $fields, $prefix)
+    {
+        sort($slugs);
+        sort($fields);
+        return $prefix . '_' . md5(implode(',', $slugs) . ':' . implode(',', $fields));
+    }
+
+    /**
+     * @param array $fields
+     * @return array
+     */
+    protected static function filterFields($fields)
+    {
+        return array_intersect(['name', 'icon', 'price', 'tags'], $fields);
     }
 }

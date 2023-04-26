@@ -822,6 +822,13 @@
             }
 
             $('#content').trigger('photos_list_load');
+
+            const $highlighted = $('#photo-list').find('li.highlighted');
+            if ($highlighted.length) {
+                $('.i-product-review-widget-wrappper').show();
+            } else {
+                $('.i-product-review-widget-wrappper').hide();
+            }
         },
 
         loadPhoto: function (id) {
@@ -878,9 +885,11 @@
                 $photo.removeClass('contain');
             }
 
-            $photo.removeClass('fade-in').addClass('fade-in');
-            $photo.on('animationend', function() {
-                $photo.removeClass('fade-in');
+            $photo.on('load', function() {
+                $(this).addClass('fade-in');
+                $(this).on('animationend', function() {
+                    $(this).removeClass('fade-in');
+                });
             });
 
             $.photos.setNextPhotoLink();
@@ -975,6 +984,8 @@
                         $.photos.setAlbum(data.album);
                     }
 
+                    $.photos.updateViewPhoto(data, false);
+
                     const isFirst = () => data.photo_stream.photos[0].id === id;
                     const isLast = () => data.photo_stream.photos[data.photo_stream.photos.length - 1].id === id;
                     $.photos.hooks_manager.trigger('afterLoadPhoto', { first: isFirst(), last: isLast() });
@@ -1027,15 +1038,14 @@
                 hash: $.photos.hash
             });
 
-            setTimeout(() => {
-                $.photos.initPhotoWidgets({
-                    photo,
-                    stack,
-                    exif,
-                    photo_stream,
-                    hash: $.photos.hash
-                });
-            }, 0)
+            $.photos.initPhotoWidgets({
+                photo,
+                stack,
+                exif,
+                photo_stream,
+                hash: $.photos.hash
+            });
+
             if ($.photos.anchor) {
                 $.photos.goToAnchor($.photos.anchor);
                 $.photos.anchor = '';
@@ -1112,9 +1122,11 @@
                         const is_prevInStack = $.photos.photo_stack_cache.getPrev(photo);
                         const is_nextInStack = $.photos.photo_stack_cache.getNext(photo);
                         if (is_prevInStack || is_nextInStack) {
-                            $photo.removeClass('fade-in').addClass('fade-in');
-                            $photo.on('animationend', function() {
-                                $photo.removeClass('fade-in');
+                            $photo.on('load', function() {
+                                $(this).addClass('fade-in');
+                                $(this).on('animationend', function() {
+                                    $(this).removeClass('fade-in');
+                                });
                             });
                         }
                     }
@@ -1286,9 +1298,11 @@
                     }
 
                     if (preload || prevPreload) {
-                        $photo.removeClass('fade-in').addClass('fade-in');
-                        $photo.on('animationend', function() {
-                            $photo.removeClass('fade-in');
+                        $photo.on('load', function() {
+                            $(this).addClass('fade-in');
+                            $(this).on('animationend', function() {
+                                $(this).removeClass('fade-in');
+                            });
                         });
                     }
 
@@ -1633,17 +1647,29 @@
 
             tags_input.data('current_value', tags_input.val());
 
+            const pop_tags = $('#photos-photo-popular-tags');
+            if (!pop_tags.data('inited')) {
+                pop_tags.off('click.photos', 'a').
+                on('click.photos', 'a', function() {
+                    var name = $(this).text();
+                    var tags_input = $('#photo-tags')
+                    tags_input.removeTag(name);
+                    tags_input.addTag(name);
+                }).data('inited', true);
+            }
+
             var onUserChange = function () {
                 if (tags_input.data('current_value') === tags_input.val()) {
                     return;
                 }
                 tags_input.data('current_value', tags_input.val());
-                $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saving')).fadeIn('slow');
+
+                $('#photo-save-tags-status').html('<p class="state-success"><i class="fas fa-check-circle custom-mr-4"></i>'+$_('Saving')+'</p>').fadeIn('slow');
                 $.photos.assignTags({
                     photo_id: $.photos.getPhotoId(),
-                    tags: $('#photo-tags').val(),
+                    tags: tags_input.val(),
                     fn: function() {
-                        $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saved')).fadeOut('slow');
+                        $('#photo-save-tags-status').html('<p class="state-success"><i class="fas fa-check-circle custom-mr-4"></i>'+$_('Saved')+'</p>').fadeOut('slow');
                     },
                     onDeniedExist: function() {
                         alert($_("You don't have sufficient access rights"));
@@ -1739,12 +1765,13 @@
         },
 
         renderMap: function(lat, lng, title) {
-            var that = this,
-                map_options = that.options.map_options || {},
-                render = function () {};    // map renderer
+            const that = this;
+            const map_options = that.options.map_options || {};
+            let render = function () {};    // map renderer
+            const $photoMap = $('#photo-map');
 
             if (!lat || !lng) {
-                $('#photo-map').hide();
+                $photoMap.hide();
                 return;
             }
 
@@ -1754,11 +1781,11 @@
                     window.initPhotosGoogleMap = function () {
 
                         if (!(window.google)) {
-                            $('#photo-map').hide();
+                            $photoMap.hide();
                             return;
                         }
 
-                        $('#photo-map').show();
+                        $photoMap.show();
                         var latLng = new google.maps.LatLng(lat, lng),
                             options = {
                                 zoom: 11,
@@ -1792,12 +1819,12 @@
                     var initYandexMap = function() {
 
                         if (!(window.ymaps)) {
-                            $('#photo-map').hide();
+                            $photoMap.hide();
                             return;
                         }
 
                         ymaps.ready(function () {
-                            $('#photo-map').show();
+                            $photoMap.show();
                             var coords = [lat, lng];
                             var map = new ymaps.Map('photo-map', {
                                 center: coords,
@@ -1828,7 +1855,7 @@
                 };
             } else {
                 render = function() {
-                    $('#photo-map').hide();
+                    $photoMap.hide();
                 }
             }
 
@@ -2037,7 +2064,8 @@
         },
 
         updatePhotoTags: function(tags) {
-            var tags_input = $('#photo-tags');
+            const tags_input = $('.js-photos-tags');
+
             tags_input.data('current_value', tags_input.val());
             if (typeof tags !== 'undefined') {
                 if (typeof tags === 'object' && tags) {
@@ -2066,39 +2094,39 @@
         },
 
         initPhotoToolbar: function(data) {
-            setTimeout(() => {
-                let $toolbar = $('#p-toolbar');
-                if ($toolbar.length) {
-                    $toolbar.html(tmpl('template-photo-toolbar', data)).addClass('rendered').closest('#wa-header').addClass('has-toolbar');
-                    $('.js-toolbar-close').on('click', function() {
-                        $(this).closest('#wa-header').removeClass('has-toolbar').find('#p-toolbar').remove();
-                    })
-                    $(document).on('keyup', event => {
-                        const key = event.which || event.keyCode || 0;
-                        if (key === 27) {
-                            let $toolbar = $('#wa-header').find('#p-toolbar');
-                            const isDialogOpened = $('.dialog-opened').length;
-                            if ($toolbar.length && !isDialogOpened) {
-                                let $toolbar_close = $('.js-toolbar-close'),
-                                    hash = $toolbar_close.attr('href');
+            let $toolbar = $('#p-toolbar');
+            $toolbar.html(tmpl('template-photo-toolbar', data)).addClass('rendered');
+            $toolbar.closest('#wa-header').addClass('has-toolbar');
+            $.photos.menu.init('photo');
 
-                                $toolbar_close.trigger('click');
-                                $.wa.setHash(hash)
-                            }
-                        }
-                    })
+            $('.js-toolbar-close').on('click', function() {
+                $(this).closest('#wa-header').removeClass('has-toolbar').find('#p-toolbar').remove();
+            });
+
+            $(document).on('keyup', event => {
+                const key = event.which || event.keyCode || 0;
+                if (key === 27) {
+                    let $toolbar = $('#wa-header').find('#p-toolbar');
+                    const isDialogOpened = $('.dialog-opened').length;
+                    if ($toolbar.length && !isDialogOpened) {
+                        let $toolbar_close = $('.js-toolbar-close'),
+                            hash = $toolbar_close.attr('href');
+
+                        $toolbar_close.trigger('click');
+                        $.wa.setHash(hash)
+                    }
                 }
-                $.photos.menu.init('photo');
+            })
 
-                $.photos.updateViewPhotoMenu(($.isArray(data.stack) && data.stack.length), data.photo.edit_rights);
+            $.photos.menu.init('photo');
 
-                $(".js-p-toolbar-dropdown").waDropdown({
-                    hover: true,
-                    update_title: false,
-                    items: ".menu > li > a",
-                });
+            $.photos.updateViewPhotoMenu(($.isArray(data.stack) && data.stack.length), data.photo.edit_rights);
 
-            }, 0)
+            $(".js-p-toolbar-dropdown").waDropdown({
+                hover: true,
+                update_title: false,
+                items: ".menu > li > a",
+            });
         },
 
         renderPhotoBlock: function(data) {
@@ -2978,11 +3006,13 @@
 
         hotkey_manager: (function() {
             function arrowsHandlerDown(e) {
-                var target_type = e.target.type,
-                    code = e.keyCode;
+                const target_type = e.target.type;
+                const code = e.keyCode;
+                const isDialogOpened = $('.dialog-opened').length;
+
                 if ( arrowsHandlerDown.hold ||
                      target_type == 'text' || target_type == 'textarea' ||
-                     (code != 37 && code != 39)
+                     (code != 37 && code != 39) || isDialogOpened
                    )
                 {
                     return;
@@ -3135,10 +3165,10 @@
                     $(".lazyloading-wrapper .lazyloading-link").hide();
                     $.post(
                         '?module=photo&action=loadList',
-                        { offset : offset, hash: $.photos.hash },
+                        { offset : offset, hash: decodeURI($.photos.hash) },
                         function (r) {
                             // if hash has changed already than ignore
-                            if (r.data.hash != $.photos.hash) {
+                            if (r.data.hash != decodeURI($.photos.hash)) {
                                 return;
                             }
                             var target = $("#photo-list");

@@ -28,7 +28,7 @@ class photosBackendLocAction extends waViewAction
             'Plugins', //_w('Plugins')
             'Settings', //_w('Settings')
             'add a tag', //_w('add a tag'),
-            'Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only.', //_w('Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only.'),
+            'Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only.', //_w('Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only.'),
             'Close', //_w('Close'),
             'Stop upload', //_w('Stop upload'),
             'Edit title...', //_w('Edit title...'),

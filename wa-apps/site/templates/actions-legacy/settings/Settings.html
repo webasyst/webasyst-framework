@@ -22,11 +22,9 @@
 <div class="block s-grey-toolbar">
     <div class="float-right">
         <ul class="menu-h">
-            {if empty($domain_alias)}
             <!-- plugin hook: 'backend_settings.action_button_li' -->
             {* @event backend_settings.%plugin_id%.action_button_li *}
             {foreach $backend_settings as $_}{ifset($_.action_button_li)}{/foreach}
-            {/if}
             <li><a id="s-delete" href="#"><i class="icon16 delete"></i>[`Delete entire website`]</a></li>
         </ul>
     </div>
@@ -45,7 +43,7 @@
                         <strong>http://</strong><input type="text" class="bold" name="url" value="{waIdna::dec($domain|escape)}" /><br />
                         <span class="hint">
                             [`A valid URL pointing to this Webasyst installation.`]<br />
-                            [`E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL.`]<br />
+                            [`E.g., <em>domain.com</em> if Webasyst is installed in the root folder of domain.com, or <em>domain.com/wa</em> if Webasyst is installed in the /wa/ subfolder of domain.com. Do not add slash / at the end of the URL.`]<br />
                             <strong>[`IMPORTANT`]:</strong> [`The URL entered must point to the root of this Webasyst framework installation.`]
                         </span>
                     </div>
@@ -56,7 +54,7 @@
                         <input id="s-domain-title" type="checkbox" {if !$title}checked="checked"{/if} /> <label for="s-domain-title">[`Matches domain name`]</label>
                         <div {if !$title}style="display:none"{/if}>
                             <input type="text" class="bold" name="title" value="{$title|escape}" /><br />
-                            <span class="hint">[`Site alias used within site selection menu (at the top left corner), and as the anchor name in frontend's <em>$wa->apps()</em> navigation menu array.`]</span>
+                            <span class="hint">[`Site alias displayed in the site selection menu (in the top left corner) and used as the anchor name in the <em>$wa->apps()</em> navigation menu array in the frontend.`]</span>
                         </div>
                     </div>
                 </div>
@@ -86,13 +84,13 @@
                     <div class="name">
                         <strong>&#123;$wa-&gt;apps()&#125; [`menu`]</strong>
                         <br />
-                        <span class="hint"> [`The array defining core website navigation menu`]</span>
+                        <span class="hint"> [`Array defining the core website navigation menu`]</span>
                     </div>
                     <div class="value no-shift">
-                        <input type="radio" name="wa_apps_type" {if !$domain_apps_type}checked{/if} id="waapps-auto" value="0" /><label for="waapps-auto"> [`All settled apps`] <span class="hint">[`Automatically define navigation menu according to the routing rules`]</span></label>
+                        <input type="radio" name="wa_apps_type" {if !$domain_apps_type}checked{/if} id="waapps-auto" value="0" /><label for="waapps-auto"> [`All settled apps`] <span class="hint">[`Automatically define the navigation menu according to the routing rules`]</span></label>
                     </div>
                     <div class="value">
-                        <input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" /><label for="waapps-select"> [`Setup manually`]</label>
+                        <input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" /><label for="waapps-select"> [`Set up manually`]</label>
                         <div {if !$domain_apps_type}style="display:none"{/if}>
                             <table id="s-wa-apps" class="zebra s-settings-apps">
                                 {foreach $domain_apps as $row}
@@ -112,7 +110,7 @@
                                 </tr>
                                 {/foreach}
                             </table>
-                            <div style="display:none; float: right;"><em class="hint">[`When done editing, click “Save” to apply changes.`]</em></div>
+                            <div style="display:none; float: right;"><em class="hint">[`When you have finished editing, click “Save” to apply changes.`]</em></div>
                             <a href="#" class="inline-link" id="s-apps-add"><i class="icon16 add"></i>
                                <b><i>[`Add link`]</i></b>
                             </a>
@@ -171,11 +169,11 @@
                                $(this).parent().children('a').click();
                             });
                         </script>
-                        <span class="hint">[`Background is for customizing your Site app backend, which is useful when you have multiple websites powered by the single Webasyst installation. Selected background will not be shown in the frontend.`]</span>
+                        <span class="hint">[`Background can be changed to customize your Site app backend, which is useful when you have several websites powered by one Webasyst installation. The selected background will not be displayed in the frontend.`]</span>
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name">[`Custom head JS`]</div>
+                    <div class="name">[`Custom JavaScript code within &lt;head&gt;`]</div>
                     <div class="value">
                         [`Google Analytics Property ID`]:
                         <input type="text" name="google_analytics[code]" value="{$google_analytics.code|escape}">
@@ -184,11 +182,11 @@
                             <input type="checkbox" name="google_analytics[universal]" value="1" {if !empty($google_analytics.universal)}checked{/if}> [`Universal Analytics`]
                         </label>
                         <br />
-                        <span class="hint">[`E.g. <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme before the closing &lt;/head&gt; tag.`]</span>
+                        <span class="hint">[`E.g., <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag.`]</span>
                         <br /><br />
                     </div>
                     <div class="value no-shift">
-                        [`Additional JS code to be added before the closing &lt;/head&gt; tag:`]<br />
+                        [`Additional JavaScript code to be added before the closing &lt;/head&gt; tag:`]<br />
                         <textarea name="head_js" placeholder="&lt;script&gt;&lt;/script&gt;">{$head_js|escape}</textarea><br />
                         <span class="hint">
                             &lt;/head&gt;
@@ -249,11 +247,13 @@
                     </div>
                 </div>
             </div>
+            {/if}
 
             <!-- plugin hook: 'backend_settings.section' -->
             {* @event backend_settings.%plugin_id%.section *}
             {foreach $backend_settings as $_}{ifset($_.section)}{/foreach}
 
+            {if empty($domain_alias)}
             <div class="field-group">
                 <div class="field">
                     <div class="name">[`Authorization`]</div>
@@ -421,7 +421,7 @@
                 return false;
             }
         });
-        
+
         function deleteSite() {
             $.post('?module=settings&action=delete', "domain_id={$domain_id}", function (response) {
                 if (response.status == 'ok') {
@@ -440,10 +440,10 @@
                 }
             }, "json");
         }
-        
+
         return false;
     });
-    
+
     // CDN
     var $cdn_wrapper = $('.js-cdn-wrapper'),
         $cnd_list = $cdn_wrapper.find('.js-cdn-list'),
@@ -451,20 +451,20 @@
         cdn_template = {_renderCdnItem|json_encode};
 
     switchCdnRemoveIcon();
-    
+
     $add_cdn.on('click', function (e) {
         e.preventDefault();
         addCdnInput();
     });
-    
+
     $cdn_wrapper.on('click', '.js-cdn-remove', function (e) {
         var $item = $(this).parent('.js-cdn');
         removeCdnInput($item);
     });
-    
+
     function switchCdnRemoveIcon() {
         var $items = $cdn_wrapper.find('.js-cdn');
-        
+
         if ($items.length > 1) {
             $items.each(function (i, item) {
                 var $item = $(item);
@@ -477,13 +477,13 @@
             });
         }
     }
-    
+
     function addCdnInput() {
         var $item = $(cdn_template);
         $cnd_list.append($item);
         switchCdnRemoveIcon();
     }
-    
+
     function removeCdnInput($item) {
         $item.remove();
         switchCdnRemoveIcon();

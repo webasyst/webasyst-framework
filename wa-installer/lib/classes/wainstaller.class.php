@@ -305,6 +305,25 @@ class waInstaller
                     throw new Exception("Invalid resume state {$resume}");
                     break;
             }
+
+            foreach ($update_list as &$update) {
+                $update['info'] = null;
+                if (function_exists('wa')) {
+                    $path = $update['target'].'lib/config/';
+                    if ($update['subject'] === 'app') {
+                        $path .= 'app.php';
+                        if (file_exists($path)) {
+                            $update['info'] = include $path;
+                        }
+                    } elseif ($update['subject'] === 'app_plugins') {
+                        $path .= 'plugin.php';
+                        $slugs = explode('/', $update['slug']);
+                        if ($slugs[2] === 'plugins' && file_exists($path)) {
+                            $update['info'] = include $path;
+                        }
+                    }
+                }
+            }
             //$this->current_stage = 'update_'.self::STATE_COMPLETE;
             //$this->current_chunk_id = 'total';
             //$this->setState();
@@ -1343,7 +1362,12 @@ class waInstaller
                                     $this->cleanupPath($path.'/'.$current_path, $skip_directory);
                                 } else {
                                     if (!@unlink(self::$root_path.$path.'/'.$current_path)) {
-                                        throw new Exception("Error on unlink file {$path}/{$current_path}");
+                                        $warning_message = "Error on unlink file {$path}/{$current_path}";
+                                        if (strpos($path, 'wa-cache/') === 0) {
+                                            $this->writeLog($warning_message);
+                                        } else {
+                                            throw new Exception($warning_message);
+                                        }
                                     }
                                 }
                             }
@@ -1492,11 +1516,11 @@ class waInstaller
 
             );
         }
-        if (strpos($this->current_stage, '_') === false) {
+        if (strpos((string) $this->current_stage, '_') === false) {
             $stage_name = 'unknown';
             $stage_status = self::STAGE_NONE;
         } else {
-            list($stage_name, $stage_status) = explode('_', $this->current_stage, 2);
+            list($stage_name, $stage_status) = explode('_', (string) $this->current_stage, 2);
         }
 
         $default = array(
@@ -1631,7 +1655,7 @@ class waInstaller
 
     private function getFullStateCallback(&$val, $key)
     {
-        $val = preg_match("/^-?\d+(\.|,)\d+$/", $val) ? intval($val) : $val;
+        $val = preg_match("/^-?\d+(\.|,)\d+$/", (string) $val) ? intval($val) : $val;
     }
 
     private function skipPath($path)

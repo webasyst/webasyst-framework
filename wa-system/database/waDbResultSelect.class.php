@@ -34,8 +34,10 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Get Itterator
      *
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
      * @return waDbResultIterator
      */
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         $this->iterator->rewind();
@@ -156,12 +158,11 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Rewind iterator
      *
-     * @return waDbResultSelect
+     * @return void
      */
     public function rewind()
     {
         $this->getIterator()->rewind();
-        return $this;
     }
 
     /**

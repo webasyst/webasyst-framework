@@ -1,14 +1,24 @@
 {strip}
+{$invite_html = ''}
+<!-- plugin hook: 'frontend_invite_user' -->
+{* @event frontend_invite_user.%app_id% *}
+{foreach $frontend_invite_user as $html}
+    {if $html}
+        {$invite_html = $html}
+    {/if}
+{/foreach}
 <div class="t-dialog-wrapper is-full-screen t-invite-user-dialog">
     <div class="t-dialog-background"></div>
     <div class="t-dialog-block">
-        <form method="post" id="t-invite-user-form">
+        <form method="post" id="t-invite-user-form" autocomplete="off">
             <header class="t-dialog-header">
                 <h1>[`Invite new user`]</h1>
             </header>
 
             <div class="t-dialog-content">
-
+                {if $invite_html}
+                    {$invite_html}
+                {else}
                 <div class="fields form" style="float: none;">
                     <div class="field-group">
                         <div class="field">
@@ -16,7 +26,7 @@
                             <div class="value">
 
                                 <div class="t-input-wrapper">
-                                    <input class="long bold large" type="text" name="email" placeholder="[`name@company.com`]">
+                                    <input class="long bold large" type="text" name="email" placeholder="[`name@company.com`]" autocomplete="new-password">
                                 </div>
                                 <p class="hint">[`Enter an email address to send the new user an invitation with sign-in instructions.`]</p>
 
@@ -35,7 +45,7 @@
                                 <div class="name">[`Login`]</div>
                                 <div class="value">
                                     <div class="t-input-wrapper">
-                                        <input type="text" name="login">
+                                        <input type="text" name="login" autocomplete="new-password">
                                     </div>
                                 </div>
                             </div>
@@ -45,7 +55,7 @@
                                 </div>
                                 <div class="value">
                                     <div class="t-input-wrapper">
-                                        <input type="password" name="password">
+                                        <input type="password" name="password" autocomplete="new-password">
                                     </div>
                                 </div>
                             </div>
@@ -55,7 +65,7 @@
                                 </div>
                                 <div class="value">
                                     <div class="t-input-wrapper">
-                                        <input type="password" name="password_confirm">
+                                        <input type="password" name="password_confirm" autocomplete="new-password">
                                     </div>
                                 </div>
                             </div>
@@ -106,14 +116,16 @@
                         </div>
                     </div>
                 </div>
-
+                {/if}
 
             </div>
 
             <footer class="t-dialog-footer">
                 <div class="t-actions">
-                    <input type="submit" class="button green t-button js-submit-button" value="[`Send`]">
-                    <span style="margin: 0 4px;">[`or`]</span>
+                    {if !$invite_html}
+                        <input type="submit" class="button green t-button js-submit-button" value="[`Send`]">
+                        <span style="margin: 0 4px;">[`or`]</span>
+                    {/if}
                     <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
                 </div>
             </footer>
@@ -176,6 +188,10 @@
                 $.each(result.errors, function(key, value) {
                     var $div = null;
                     if ($.isArray(value)) {
+                        if (value[1] == "general") {
+                            $('.t-actions').append('<p class="errormsg">'+value[0]+'</p>');
+                            return;
+                        }
                         $div = $form.find('[name="' + value[1] + '"]').addClass('error').parent('.t-input-wrapper');
                         value = value[0];
                     } else {

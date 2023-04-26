@@ -36,7 +36,8 @@
             <span class="highlighted">.highlighted</span>,
             <span class="highlighted green">.highlighted.green</span>,
             <span class="highlighted pink">.highlighted.pink</span>,
-            <span class="highlighted blue">.highlighted.blue</span>.
+            <span class="highlighted blue">.highlighted.blue</span>,
+            <span class="highlighted orange">.highlighted.orange</span>.
         </li>
         <li><code>.black</code> — <span class="black"><b>контрастное выделение</b> ярким темным цветом</span> (в светлой теме) и ярким светлым (в темной) — хорошо сочетается с жирным начертанием,</li>
         <li><code>.link</code> — выделение отдельного текста в виде <span class="link">контентной ссылки</span> (синим — в светлой теме и желтым — в темной),</li>
@@ -60,11 +61,13 @@
         <li><code>.nowrap</code> — неразрывный текст (white-space: nowrap),</li>
         <li style="width: 30%;"><code>.break-all</code> — <span class="break-all">слова в тексте могут быть разбиты в любом месте, лишь бы поместиться в контейнер (word-break: break-all)</span>,</li>
         <li style="width: 30%;"><code>.break-word</code> — <span class="break-word">разбиение текста будет выполняться с сохранением целых слов (word-break: break-word)</span>.</li>
+        <li style="width: 90%;"><p><code>.text-ellipsis</code> — текст будет размещаться в одну строку до максимальной заданной ширины, а все, что не помещается, будет обрезаться многоточием.</p></li>
     </ul>
 
     <p>Блоки и изображения:</p>
     <ul>
         <li><code>.blank</code> — делает блок или контейнер «чистым листом» (белым в светлом режиме, близким к черному — в темном),</li>
+        <li><code>.not-blank</code> — заполнение чуть «приглушенным» базовым фоном <code>var(--background-color)</code>,</li>
         <li><code>.dark-mode-inverted</code> — в темном режиме содержимое блока или изображения будет инвертировано (mix-blend-mode: screen).</li>
     </ul>
 
@@ -138,11 +141,6 @@
         <li><code>.tablet-only</code> — только на планшетах (display: block при ширине экрана от 761px до 1024px),</li>
         <li><code>.desktop-only</code> — только на десктопах (display: block при ширине экрана >= 1025px),</li>
         <li><code>.desktop-and-tablet-only</code> — на планшетах и десктопах, но не на телефонах.</li>
-    </ul>
-
-    <p>Скроллбар:</p>
-    <ul>
-        <li><code>.hide-scrollbar</code> — визуально скрывает скроллбар, но оставляет возможность совершать прокрутку</li>
     </ul>
 
     <p>Z-index:</p>

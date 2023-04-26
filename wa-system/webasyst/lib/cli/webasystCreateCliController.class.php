@@ -16,7 +16,7 @@ abstract class webasystCreateCliController extends waCliController
             $errors = $this->verifyParams($params);
             if ($errors) {
                 print "ERROR:\n";
-                print implode("\n", $errors);
+                print implode("\n", $errors) . PHP_EOL;
             } else {
                 try {
                     $this->initPath();

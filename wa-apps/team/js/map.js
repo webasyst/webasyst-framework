@@ -40,20 +40,24 @@ var TeamMap = (function ($) {
     };
 
     TeamMap.prototype.googleRender = function (lat, lng) {
-        var that = this;
+        const that = this;
+
         that.map_info = that.map_info || {};
-        var latLng = new google.maps.LatLng(lat, lng);
+        const latLng = new google.maps.LatLng(lat, lng);
+
         if (!that.map_info.map) {
-            var options = {
+            const options = {
                 zoom: 12,
                 center: latLng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             };
             that.map_info.map = new google.maps.Map(that.$map.get(0), options);
         }
+
         if (that.map_info.marker) {
             that.map_info.marker.setMap(null);
         }
+
         that.map_info.marker = new google.maps.Marker({
             position: latLng,
             map: that.map_info.map
@@ -63,7 +67,7 @@ var TeamMap = (function ($) {
         TeamMap.google_error_html = TeamMap.google_error_html || '';
         setTimeout(function () {
             if (that.$map.find('.gm-err-container').length) {
-                var $err = that.$map.find('.gm-err-container');
+                const $err = that.$map.find('.gm-err-container');
                 $err.find('.gm-err-message').last().after('<div class="gm-err-message">' + $.team.locales.map_check_your_key + '</div>');
                 TeamMap.google_error_html = that.$map.find('.gm-err-container').parent().html();
             } else if (!that.$map.find('.gm-style').length) {
@@ -81,30 +85,35 @@ var TeamMap = (function ($) {
     };
 
     TeamMap.prototype.yandexRender = function (lat, lng) {
-        var that = this;
+        const that = this;
+
         that.map_info = that.map_info || {};
-        var coords = [ lat, lng ];
+        const coords = [ lat, lng ];
+
         if (!that.map_info.map) {
-            var options = {
+            const options = {
                 zoom: 12,
                 center: coords,
                 controls: [
                     'zoomControl',
                     'fullscreenControl'
-                ]
+                ],
             };
             that.map_info.map = new ymaps.Map(that.$map.get(0), options);
         }
+
         if (that.map_info.marker) {
             that.map_info.map.geoObjects.remove(that.map_info.marker);
         }
-        that.map_info.marker = new ymaps.Placemark(coords);
+
+        that.map_info.marker = new ymaps.Placemark(coords, null, { preset: 'islands#redDotIcon' });
         that.map_info.map.geoObjects.add(that.map_info.marker);
         that.map_info.map.setCenter(coords);
     };
 
     TeamMap.prototype.geocode = function (query, success, fail) {
-        var that = this;
+        const that = this;
+
         switch (that.provider) {
             case 'google':
                 return that.googleGeocode(query, success, fail);
@@ -121,16 +130,17 @@ var TeamMap = (function ($) {
     };
 
     TeamMap.prototype.googleGeocode = function (query, success, fail) {
-        var geocoder = new google.maps.Geocoder();
-        var was_res = false,
-            too_late = false;
+        const geocoder = new google.maps.Geocoder();
+        let was_res = false;
+        let too_late = false;
+
         geocoder.geocode( { 'address': query }, function(results, status) {
             was_res = true;
             if (too_late) {
                 return;
             }
             if (status == google.maps.GeocoderStatus.OK) {
-                var latLng = results[0].geometry.location;
+                const latLng = results[0].geometry.location;
                 success(latLng.lat(), latLng.lng());
             } else {
                 fail && fail();
@@ -148,7 +158,7 @@ var TeamMap = (function ($) {
         ymaps.geocode(query, {
             results: 1
         }).then(function (res) {
-            var found = 1;
+            let found = 1;
             if (res.metaData && res.metaData.geocoder && ('found' in res.metaData.geocoder)) {
                 found = res.metaData.geocoder.found;
             }
@@ -156,8 +166,8 @@ var TeamMap = (function ($) {
                 fail();
                 return;
             }
-            var firstGeoObject = res.geoObjects.get(0);
-            var coords = firstGeoObject.geometry.getCoordinates();
+            const firstGeoObject = res.geoObjects.get(0);
+            const coords = firstGeoObject.geometry.getCoordinates();
             success(coords[0], coords[1]);
         }, function (err) {
             fail(err);

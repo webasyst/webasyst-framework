@@ -17,7 +17,7 @@ class waWebasystIDAccessTokenManager
      * @param array $params
      *  All these keys is required
      *      string      $params['issuer']     - issuer (who release token)
-     *      int         $params['contact_id'] - ID of contact for whom release token
+     *      int         $params['contact_id'] - ID of contact for whom release token OR -1 for service-to-service communicartion token
      *      string      $params['client_id']  - String ID of client for whom release token, contact must be "related" with this client
      *      int         $params['ttl']        - ttl of token in seconds
      *      string[]    $params['scopes']     - list of scopes access to which will be allowed by this access token
@@ -40,7 +40,7 @@ class waWebasystIDAccessTokenManager
             return null;
         }
 
-        if (!isset($params['contact_id']) || !wa_is_int($params['contact_id']) || $params['contact_id'] <= 0) {
+        if (!isset($params['contact_id']) || !wa_is_int($params['contact_id']) || $params['contact_id'] < -1) {
             return null;
         }
 
@@ -82,6 +82,22 @@ class waWebasystIDAccessTokenManager
             // extra payload
             'email' => isset($params['email']) && is_string($params['email']) ? $params['email'] : '',
         ];
+
+        if (isset($params['phone']) && is_string($params['phone'])) {
+            $payload['phone'] = $params['phone'];
+        }
+
+        if (isset($params['two_fa_mode']) && is_string($params['two_fa_mode'])) {
+            $payload['two_fa_mode'] = $params['two_fa_mode'];
+        }
+
+        if (isset($params['two_fa_time']) && is_string($params['two_fa_time'])) {
+            $payload['two_fa_time'] = $params['two_fa_time'];
+        }
+
+        if (!empty(ifempty($params['aux_info']))) {
+            $payload['aux_info'] = json_encode($params['aux_info']);
+        }
 
         $header_str = json_encode($header);
         $header_str = waUtils::urlSafeBase64Encode($header_str);
@@ -132,7 +148,7 @@ class waWebasystIDAccessTokenManager
             if (!is_array($sub)) {
                 $sub = [];
             }
-            if (isset($sub['contact_id']) && wa_is_int($sub['contact_id']) && $sub['contact_id'] > 0) {
+            if (isset($sub['contact_id']) && wa_is_int($sub['contact_id']) && $sub['contact_id'] >= -1) {
                 $info['contact_id'] = intval($sub['contact_id']);
             }
             if (isset($sub['client_id']) && is_string($sub['client_id'])) {
@@ -151,11 +167,32 @@ class waWebasystIDAccessTokenManager
             $info['scopes'] = $scopes;
         }
 
-        $info['scopes'][] = 'profile';
-        $info['scopes'] = array_unique($info['scopes']);
+        if ($sub['contact_id'] > 0) {
+            $info['scopes'][] = 'profile';
+            $info['scopes'] = array_unique($info['scopes']);
+        }
 
         if (isset($payload['email']) && is_string($payload['email'])) {
             $info['email'] = $payload['email'];
+        }
+
+        if (isset($payload['phone']) && is_string($payload['phone'])) {
+            $info['phone'] = $payload['phone'];
+        }
+
+        if (isset($payload['two_fa_mode']) && is_string($payload['two_fa_mode'])) {
+            $info['two_fa_mode'] = $payload['two_fa_mode'];
+        }
+
+        if (isset($payload['two_fa_time']) && is_string($payload['two_fa_time'])) {
+            $info['two_fa_time'] = $payload['two_fa_time'];
+        }
+
+        if (isset($payload['aux_info']) && is_string($payload['aux_info'])) {
+            $aux_info = json_decode($payload['aux_info'], true);
+            if (is_array($aux_info)) {
+                $info['aux_info'] = $aux_info;
+            }
         }
 
         return $info;
@@ -203,9 +240,10 @@ class waWebasystIDAccessTokenManager
     /**
      * Check token expiration
      * @param string $token
+     * @param string $grace_interval 
      * @return bool
      */
-    public function isTokenExpired($token)
+    public function isTokenExpired($token, $grace_interval = null)
     {
         $payload = $this->extractPayload($token);
         if (!$payload) {
@@ -214,7 +252,10 @@ class waWebasystIDAccessTokenManager
         if (!isset($payload['exp']) || !wa_is_int($payload['exp']) || $payload['exp'] <= 0) {
             return true;
         }
-        return intval($payload['exp']) < $this->getNowTime();
+        if (!wa_is_int($grace_interval) || $grace_interval < 0) {
+            $grace_interval = 0;
+        }
+        return intval($payload['exp']) < ($this->getNowTime() - intval($grace_interval));
     }
 
     /**

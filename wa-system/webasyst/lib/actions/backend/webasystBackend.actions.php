@@ -8,7 +8,7 @@ class webasystBackendActions extends waViewActions
     {
         $app_settings_model = new waAppSettingsModel();
         $this->view->assign('header_items', $this->getHeaderItems());
-        $this->view->assign('company_name', htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8'));
+        $this->view->assign('company_name', htmlspecialchars($app_settings_model->get('webasyst', 'name', _ws('My company')), ENT_QUOTES, 'utf-8'));
         $this->view->assign('backend_url', $this->getConfig()->getBackendUrl(true));
         $this->view->assign('public_dashboards', $this->getPublicDashboards());
         $this->view->assign('counts', wa()->getStorage()->read('apps-count'));
@@ -93,16 +93,30 @@ class webasystBackendActions extends waViewActions
         $activity_load_more = $count == 50;
 
         $this->view->assign('datetime_group', '');
+
+        $today_users = (new webasystTodayUsers())->getGroups();
+        if ($today_users) {
+            $this->view->assign('datetime_group', $activity_action->getDatetimeGroup(date('Y-m-d')));
+        }
+
+        $row = reset($activity);
+        $last_datetime_activity = isset($row['datetime']) ? $row['datetime'] : '';
+
+        $no_today_activity = true;
+        if (date('Y-m-d', strtotime($last_datetime_activity)) === date('Y-m-d')) {
+            $no_today_activity = false;
+        }
+
         if ($activity && waRequest::isXMLHttpRequest()) {
-            $row = reset($activity);
-            $this->view->assign('datetime_group', $activity_action->getDatetimeGroup($row['datetime']));
+            $no_today_activity = true;
+            $this->view->assign('datetime_group', $activity_action->getDatetimeGroup($last_datetime_activity));
         }
 
         $is_admin = wa()->getUser()->isAdmin('webasyst');
 
         $this->view->assign([
             'current_app'        => wa()->getApp(),
-            'today_users'        => (new webasystTodayUsers())->getGroups(),
+            'today_users'        => $today_users,
             'logo'               => (new webasystLogoSettings())->get(),
             'counts'             => wa()->getStorage()->read('apps-count'),
             'root_url'           => wa()->getRootUrl(),
@@ -117,7 +131,12 @@ class webasystBackendActions extends waViewActions
             'notifications'      => $this->getAnnouncements(),
             'request_uri'        => waRequest::server('REQUEST_URI'),
             'show_tutorial'      => !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'),
-            'public_dashboards'  => $this->getPublicDashboards()
+            'public_dashboards'  => $this->getPublicDashboards(),
+            'no_today_activity'  => $no_today_activity,
+            'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
+            'webasyst_id_auth_banner'  => $this->getWebasystIDAuthBanner(),
+            'show_connection_banner'   => $this->showConnectionBanner(),
+            'current_domain'     => $this->getCurrentDomain(),
         ]);
     }
 
@@ -219,5 +238,9 @@ class webasystBackendActions extends waViewActions
 
         return $public_dashboards;
     }
-}
 
+    protected function getCurrentDomain() {
+        $domain = wa()->getConfig()->getDomain();
+        return waIdna::dec($domain);
+    }
+}

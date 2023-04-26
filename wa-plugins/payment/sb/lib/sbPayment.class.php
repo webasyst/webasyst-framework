@@ -468,7 +468,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $transaction = end($related_transactions);
         $orderNumber = $transaction_raw_data['orderNumber'];
         $order_number_parts = explode('_', $orderNumber);
-        $transaction_data += array(
+        $transaction_data = array_merge($transaction_data, array(
             'native_id'   => $transaction['native_id'],
             'order_id'    => $transaction_raw_data['order_id'],
             'customer_id' => $transaction['customer_id'],
@@ -477,7 +477,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'currency_id' => $transaction['currency_id'],
             'result'      => 1,
             'part_number' => !empty($order_number_parts[3]) ? (int)$order_number_parts[3] : 0,
-        );
+        ));
 
         $view_data = &$transaction_data['view_data'];
 
@@ -822,13 +822,25 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     }
 
                     if (isset($transaction['callback_method']) && $transaction['callback_method'] != self::CALLBACK_NOTIFY) {
-                        // When we know API callbacks are enabled and they work,
-                        // do not try to perform app action when user comes back to store page.
-                        // This action is better performed during API callback.
-                        if ($this->getSettings('api_callbacks_enabled') && !$this->isApiCallbackRequest($request)) {
+
+                        $log_why_ignore_and_notify = null;
+                        $is_api_callback_request = $this->isApiCallbackRequest($request);
+
+                        if ($is_api_callback_request && 'bindingCreated' == ifset($request, 'operation', 'unknown')) {
+                            // Operation = bindingCreated should not trigger payment action in app.
+                            // Switch it to NOTIFY instead.
+                            $log_why_ignore_and_notify = 'Ignore operation = bindingCreated';
+                        } else if ($this->getSettings('api_callbacks_enabled') && !$is_api_callback_request) {
+                            // When we know API callbacks are enabled and they work,
+                            // do not try to perform app action when user comes back to store page.
+                            // This action is better performed during API callback.
+                            $log_why_ignore_and_notify = 'Ignore browser-based order notification because API callbacks are enabled';
+                        }
+
+                        if ($log_why_ignore_and_notify) {
                             static::log($this->id, [
                                 'method'                => __METHOD__,
-                                'message'               => 'Ignore browser-based order notification because API callbacks are enabled',
+                                'message'               => $log_why_ignore_and_notify,
                                 'order_id'              => $order_id,
                                 'old_type'              => $transaction['type'],
                                 'old_result'            => $transaction['result'],
@@ -1553,12 +1565,14 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
             }
             $data = array(
-                'name'     => $order_data->shipping_name,
-                'total'    => $order_data->shipping,
-                'price'    => $order_data->shipping,
-                'quantity' => 1,
-                'tax_rate' => $order_data->shipping_tax_rate,
-                'type'     => 'shipping',
+                'name'            => $order_data->shipping_name,
+                'total'           => $order_data->shipping,
+                'price'           => $order_data->shipping,
+                'quantity'        => 1,
+                'stock_unit'      => 'шт.',
+                'stock_unit_code' => '796',
+                'tax_rate'        => $order_data->shipping_tax_rate,
+                'type'            => 'shipping',
             );
             $items[] = $this->formalizeItemData($data, $order_data);
         }
@@ -1591,12 +1605,27 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     $items[] = $this->formalizeItemData($item_data, $order_data);
                 }
             }
-        };
+        }
 
+        $sum = 0;
         // Never send zero-quantity item to API
         foreach ($items as $i => $item) {
             if (empty($item['quantity']['value'])) {
                 unset($items[$i]);
+                continue;
+            }
+            $sum += (int)$item['itemAmount'];
+        }
+
+        // solving rounding problems
+        $difference = number_format($order_data->total, 2, '', '') - $sum;
+        if (abs($difference) == 1) {
+            foreach ($items as $i => $item) {
+                if ($item['itemAmount'] > 1 && $item['quantity']['value'] == 1) {
+                    $items[$i]['itemAmount'] += $difference;
+                    $items[$i]['itemPrice'] += $difference;
+                    break;
+                }
             }
         }
 
@@ -1675,11 +1704,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'positionId'   => $position_id,
             'name'         => mb_substr($data['name'], 0, 100),
             'quantity'     => array(
-                'value'   => (int)$data['quantity'],
-                'measure' => 'шт.',
+                'measure' => $this->getMeasure($data),
             ),
             'itemAmount'   => number_format($data['total'], 2, '', ''),
-            'itemPrice'    => number_format($data['price'], 2, '', ''),
             'itemCurrency' => $this->getCurrencyISO4217Code($order_data['currency']),
             'itemCode'     => $item_code,
             'tax'          => array(
@@ -1687,6 +1714,15 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 'taxSum'  => number_format($tax_sum, 2, '', ''),
             ),
         );
+
+        $quantity = explode('.', (string)$data['quantity']);
+        if (!empty($quantity[1])) {
+            $item_data['quantity']['value'] = 1;
+            $item_data['itemPrice'] = $item_data['itemAmount'];
+        } else {
+            $item_data['quantity']['value'] = (int)$data['quantity'];
+            $item_data['itemPrice'] = number_format($data['price'], 2, '', '');
+        }
 
 
         // Credit dont work for ФФД 1.05
@@ -2312,5 +2348,83 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         throw new waPaymentException('Invalid signature');
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    private function getMeasure($data)
+    {
+        if ($this->ffd_version === '1.2') {
+            $okei_code = ifset($data, 'stock_unit_code', '796');
+            $measure = $this->measureMatch($okei_code);
+        } else {
+            $unit = ifset($data, 'stock_unit', 'шт.');
+            $measure = mb_substr($unit, 0, 20);
+        }
+
+        return $measure;
+    }
+
+    /**
+     * https://classifikators.ru/okei
+     * https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:register_cart#quantity
+     * @param $okei_code
+     * @return int
+     */
+    private function measureMatch($okei_code)
+    {
+        /** основные значения (в ФФД 1.2) */
+        $okei_sb_measure = [
+            '163'  => 10,  // Грамм
+            '166'  => 11,  // Килограмм
+            '168'  => 12,  // Тонна
+            '004'  => 20,  // Сантиметр
+            '04'   => 20,
+            '4'    => 20,
+            '005'  => 21,  // Дециметр
+            '05'   => 21,
+            '5'    => 21,
+            '006'  => 22,  // Метр
+            '06'   => 22,
+            '6'    => 22,
+            '051'  => 30,  // Квадратный сантиметр
+            '51'   => 30,
+            '053'  => 31,  // Квадратный дециметр
+            '53'   => 31,
+            '055'  => 32,  // Квадратный метр
+            '55'   => 32,
+            '111'  => 40,  // Миллилитр
+            '112'  => 41,  // Литр
+            '113'  => 42,  // Кубический метр
+            '245'  => 50,  // Киловатт час
+            '233'  => 51,  // Гигакалория
+            '359'  => 70,  // Сутки (день)
+            '356'  => 71,  // Час
+            '355'  => 72,  // Минута
+            '354'  => 73,  // Секунда
+            '256'  => 80,  // Килобайт
+            '257'  => 81,  // Мегабайт
+            '2553' => 82,  // Гигабайт
+            '2554' => 83   // Терабайт
+        ];
+
+        /** дополнительные значения (поштучно или единицами) */
+        $okei_sb_measure += [
+            '616' => 0,   // Бобина
+            '625' => 0,   // Лист
+            '704' => 0,   // Набор
+            '715' => 0,   // Пара (2 шт.)
+            '728' => 0,   // Пачка
+            '736' => 0,   // Рулон
+            '778' => 0,   // Упаковка
+            '796' => 0,   // Штука
+            '812' => 0,   // Ящик
+            '868' => 0,   // Бутылка
+            '*'   => 255  // Иная мера измерения
+        ];
+
+        return (int) ifset($okei_sb_measure, $okei_code, $okei_sb_measure['*']);
     }
 }

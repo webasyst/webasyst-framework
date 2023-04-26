@@ -1,15 +1,26 @@
+{$is_system_profile = $is_system_profile|default:false}
 {$_user_id = $wa->user("id")}
 {$_is_admin = $wa->user()->isAdmin($wa->app())}
 {$_is_system_admin = $wa->user()->isAdmin()}
 {$_is_my_profile = ( !empty($user.id) && $user.id == $_user_id )}
-{$_group_id = (preg_match('!^group\/\d+$!i', $context)) ? substr($context, 6) : '' }
-{$_context_type = (!empty($_group_id)) ? 'group' : ((substr($context, 0, 7) === 'search/') ? 'search' : $context)}
-
+{if $is_system_profile}
+    {$_context_type = false}
+    {$invite = false}
+    {$backend_profile = []}
+    {$groups = []}
+    {$user_name_formatted = ''}
+    {$wa_app_static_url = $wa_app_static_url|replace:'webasyst':'team'}
+    {$is_own_profile = $_is_my_profile}
+    {$contacts = []}
+{else}
+    {$_group_id = (preg_match('!^group\/\d+$!i', $context)) ? substr($context, 6) : '' }
+    {$_context_type = (!empty($_group_id)) ? 'group' : ((substr($context, 0, 7) === 'search/') ? 'search' : $context)}
+{/if}
 {$cover_thumbnails = $cover_thumbnails|default:[]}
 
 {$cover_thumbnails_limit = 8}
 
-<div class="content hide-scrollbar">
+<div class="content">
 <div class="t-profile-page" id="t_profile_page">
     {include file="./ProfileSidebar.inc.html"}
     <div class="t-profile flexbox vertical{if !$wa->isMobile()} bordered-right bordered-left{/if}">
@@ -150,9 +161,6 @@
                             </p>
                         {/if}
 
-                        {* Used for trigger event in ProfileAccess.html *}
-                        <span class="js-webasyst-id-unbind-auth hidden"></span>
-
                         {if $user.is_user > 0}
                             {if $groups}
                             <div class="custom-mt-8 small">
@@ -176,18 +184,18 @@
                         {if $user.is_user < 0}
                             <p class="grey custom-mt-4">[`Access is switched off`]</p>
                         {elseif $invite}
-                            <p class="italic small custom-my-0">[`User invitation was sent.`]</p>
+                            <p class="italic small custom-my-0">{sprintf('[`Invitation link is valid through %s`]', $invite.expire_datetime|wa_datetime:'humandatetime')}</p>
                             {if teamHelper::hasRights('add_users')}
                                 {if !empty($user.email)}
                                     <a href="javascript:void(0)" class="js-invite small nowrap custom-mr-16" data-type="email" data-email="{$user.email[0].value|escape}">
                                         <i class="fas fa-envelope"></i> [`Send again`]
                                     </a>
                                     <a href="javascript:void(0)" class="js-invite small nowrap" data-type="link">
-                                        <i class="fas fa-link text-gray"></i> [`Link to invitation`]
+                                        <i class="fas fa-link text-gray"></i> [`Copy link`]
                                     </a>
                                 {else}
                                     <a href="javascript:void(0)" class="js-invite small nowrap" data-type="link">
-                                        <i class="fas fa-link text-gray"></i> [`Link to invitation`]
+                                        <i class="fas fa-link text-gray"></i> [`Copy link`]
                                     </a>
                                 {/if}
                             {/if}
@@ -205,7 +213,7 @@
                             <button type="button"
                                     class="button light-gray rounded edit-link custom-mr-0 nowrap desktop-and-tablet-only"
                                     title="[`Contacts`]">
-                                <i class="fas fa-pen text-blue"></i> [`Contacts`]
+                                <i class="fas fa-pen text-blue"></i> [`Edit`]
                             </button>
                             {if $_is_my_profile || $_is_system_admin}
                                 <button type="button"
@@ -377,27 +385,17 @@
                                     const $map = $('#map');
                                     const map = new TeamMap($map, '{$geocoding.type}');
 
-                                    map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
+                                    map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if isset($profile_editor.data.fieldValues.address[0].data.street)}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap, errorMsg);
 
                                     function renderMap(lat, lng) {
                                         map.render(lat, lng);
                                     }
+
+                                    function errorMsg(error) {
+                                        $map.closest('.t-profile-block_map').remove();
+                                    }
                                 }
                             </script>
-                        </div>
-                    </div>
-                    {/if}
-
-                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && !empty($geocoding.type) && empty($geocoding.key)}
-                    <div class="t-profile-block t-profile-block_map">
-                        <i class="fas fa-map-marker-alt text-light-gray t-profile-block__icon"></i>
-
-                        <div class="t-profile-block__value text-gray">
-                            [`карта недоступна`]
-                        </div>
-
-                        <div class="hint">
-                            {sprintf('[`укажите API-ключ в <a href="%s" class="link">настройках</a>.`]', "`$wa_backend_url`webasyst/settings/")}
                         </div>
                     </div>
                     {/if}
@@ -443,18 +441,20 @@
             <div class="drawer-block t-profile-drawer" style="background-color:var(--background-color)">
                 <div class="drawer-content">
                     {include file="./sidebarWidgets/Access.html" inline}
-                    {include file="./sidebarWidgets/Stats.html" is_drawer=true assign=stats_html}
-                    {$wa->contactProfileSidebar($user.id, [
-                        'is_profile_sidebar' => true,
-                        'is_profile_drawer' => true,
-                        'html' => [
-                            'stats' => $stats_html
-                        ]
-                    ])}
+                    {if !$is_system_profile}
+                        {include file="./sidebarWidgets/Stats.html" is_drawer=true assign=stats_html}
+                        {$wa->contactProfileSidebar($user.id, [
+                            'is_profile_sidebar' => true,
+                            'is_profile_drawer' => true,
+                            'html' => [
+                                'stats' => $stats_html
+                            ]
+                        ])}
 
-                    {$wa->contactProfileTabs($user.id, [
-                        'is_profile_sidebar' => true
-                    ])}
+                        {$wa->contactProfileTabs($user.id, [
+                            'is_profile_sidebar' => true
+                        ])}
+                    {/if}
                 </div>
             </div>
         </div>
@@ -464,7 +464,7 @@
 <script>
 
     {$_profile_object_options = [
-        'photo_dialog_url'          => "`$wa_backend_url`?module=profile&action=photo&id=`$user.id`",
+        'photo_dialog_url'          => "`$wa_backend_url`?module=profile&action=photo&id=`$user.id`&ui=2.0",
         'upload_cover_dialog_url'   => "`$wa_app_url`?module=profile&action=coverUploadDialog&id=`$user.id`",
         'wa_backend_url'            => $wa_backend_url,
         'is_own_profile'            => $is_own_profile,
@@ -514,6 +514,8 @@
             "Close": "[`Close`]",
             "Auto": "[`Auto`]",
             "Contact info": "[`Contact info`]",
+
+            "code_dialog_text": {sprintf_wp("Share the code below with <strong>%s</strong>. Entering the code in a Webasyst mobile app in the ‘Add account’ screen will automatically connect the app to <code>%s</code>.", $user_name_formatted, str_replace(['http://','https://'], '', $wa->domainUrl()))|json_encode}
         });
 
         $.team.profile = new Profile($.extend({$_profile_object_options|json_encode}, {
@@ -590,11 +592,11 @@
                 }, 1500);
             });
         });
-
-        $.get('{$wa_app_url|json_encode}?module=profile&action=activity&user_id={$user.id|json_encode}', function(response) {
-            $('.t-profile-user-info-activity').append(response)
-        });
-
+        {if !$is_system_profile}
+            $.get('{$wa_app_url|json_encode}?module=profile&action=activity&user_id={$user.id|json_encode}', function(response) {
+                $('.t-profile-user-info-activity').append(response)
+            });
+        {/if}
         const $tooltip_wrapper = document.querySelector('.t-profile');
         $(".wa-tooltip").waTooltip({
             appendTo: $tooltip_wrapper,

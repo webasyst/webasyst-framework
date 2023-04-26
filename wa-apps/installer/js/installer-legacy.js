@@ -456,10 +456,24 @@ String.prototype.translate = function () {
                         html = $(target).html();
                         try {
                             $(target).empty();
+                            var installer_text_shown = false,
+                                product_names = [],
+                                that = this;
+                            $(this.options.queue).each(function (app_index, app_slug) {
+                                if (app_slug.id === 'installer') {
+                                    if (!installer_text_shown) {
+                                        product_names.push(that.options.product_name_template.replace(/%s/, 'webasyst_framework_text'.translate()));
+                                        installer_text_shown = true;
+                                    }
+                                } else {
+                                    product_names.push(that.options.product_name_template.replace(/%s/, app_slug.slug.translate()));
+                                }
+                            });
                             $.tmpl('application-update-raw', {
                                 stages: state,
-                                apps: this.options.queue,
-                                state_class: state_class
+                                count_apps: this.options.queue.length - this.options.count_installer_dependencies - 1,
+                                state_class: state_class,
+                                product_names: product_names.join(', ')
                             }).appendTo(target);
                         } catch (e) {
                             console.error('Error while parse template ', e);
@@ -616,6 +630,9 @@ String.prototype.translate = function () {
                                 case 'ok' :
                                     if (typeof(success_handler) === 'function') {
                                         success_handler(data.data);
+                                    }
+                                    if (data.data.redirect) {
+                                        location.href = data.data.redirect;
                                     }
                                     break;
                                 default :

@@ -31,6 +31,10 @@ class waImageImagick extends waImage
             if (!extension_loaded('imagick') || !class_exists('Imagick')) {
                 throw new waException(_ws('ImageMagick is not installed.'));
             }
+            /** для PHP ниже 7.1.0 */
+            if (!defined('IMAGETYPE_WEBP')) {
+                define('IMAGETYPE_WEBP', 18);
+            }
         }
         return $checked = true;
     }
@@ -61,20 +65,16 @@ class waImageImagick extends waImage
             }
         }
         else {
-            if ($this->im->resizeImage($width, $height, Imagick::FILTER_CUBIC, 0.5))
-            {
-                $this->width = $this->im->getImageWidth();
-                $this->height = $this->im->getImageHeight();
+            if ($this->im->resizeImage($width, $height, Imagick::FILTER_CUBIC, 0.5)) {
+                $this->updateInfo();
             }
         }
     }
 
     protected function _crop($width, $height, $offset_x, $offset_y)
     {
-        if ($this->im->cropImage($width, $height, $offset_x, $offset_y))
-        {
-            $this->width = $this->im->getImageWidth();
-            $this->height = $this->im->getImageHeight();
+        if ($this->im->cropImage($width, $height, $offset_x, $offset_y)) {
+            $this->updateInfo();
 
             return true;
         }
@@ -84,15 +84,23 @@ class waImageImagick extends waImage
 
     protected function _rotate($degrees)
     {
-        if ($this->im->rotateImage(new ImagickPixel, $degrees))
-        {
-            $this->width = $this->im->getImageWidth();
-            $this->height = $this->im->getImageHeight();
+        if ($this->im->rotateImage(new ImagickPixel, $degrees)) {
+            $this->updateInfo();
 
             return true;
         }
 
         return false;
+    }
+
+    protected function updateInfo($image = null)
+    {
+        if ($image) {
+            $this->im->destroy();
+            $this->im = $image;
+        }
+        $this->width = $this->im->getImageWidth();
+        $this->height = $this->im->getImageHeight();
     }
 
     protected function _sharpen($amount)
@@ -102,10 +110,8 @@ class waImageImagick extends waImage
 
         $amount = ($amount * 13.0) / 100;
 
-        if ($this->im->sharpenImage(0, $amount))
-        {
-            $this->width = $this->im->getImageWidth();
-            $this->height = $this->im->getImageHeight();
+        if ($this->im->sharpenImage(0, $amount)) {
+            $this->updateInfo();
 
             return true;
         }
@@ -117,6 +123,18 @@ class waImageImagick extends waImage
     {
         $extension = pathinfo($file, PATHINFO_EXTENSION);
         $type = $this->_save_function($extension, $quality);
+
+        // Check if this image is PNG, GIF or WEBP, then set if Transparent
+        if (
+            in_array($extension, ['jpg','jpeg'])
+            && ($this->type == IMAGETYPE_PNG || $this->type == IMAGETYPE_GIF || $this->type == IMAGETYPE_WEBP)
+        ) {
+            $output = new Imagick();
+            $output->newImage($this->width, $this->height, new ImagickPixel('white'));
+            $output->compositeImage($this->im, Imagick::COMPOSITE_OVER, 0, 0);
+            $this->updateInfo($output);
+        }
+
         $this->im->setImageCompressionQuality($quality);
         $this->im->stripImage();
         if ($this->im->getNumberImages() > 1 && $extension == "gif") {
@@ -146,7 +164,7 @@ class waImageImagick extends waImage
         return $this->im->getImageBlob();
     }
 
-    protected function _save_function($extension, & $quality)
+    protected function _save_function($extension, &$quality)
     {
         switch (strtolower($extension))
         {
@@ -165,7 +183,14 @@ class waImageImagick extends waImage
             case 'png':
                 $type = IMAGETYPE_PNG;
                 $this->im->setImageFormat('png');
-            break;
+                break;
+            case 'webp':
+                $type = IMAGETYPE_WEBP;
+                $this->im->setImageFormat('webp');
+                if ($quality == 100) {
+                    $this->im->setOption('webp:lossless', 'true');
+                }
+                break;
             default:
                 throw new waException(_ws(sprintf('Installed ImageMagick does not support %s images', $extension)));
             break;

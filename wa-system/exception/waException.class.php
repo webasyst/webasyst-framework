@@ -151,8 +151,12 @@ class waException extends Exception
             $url = '/';
         }
 
-        // Never show exception details in production
-        $message = '';
+        if ($env == 'backend') {
+            $message = nl2br(htmlspecialchars($this->getMessage(), self::$htmlspecialchars_mode, 'utf-8'));
+        } else {
+            // Never show exception details in production
+            $message = '';
+        }
 
         $file = $code = $this->getCode();
         if (!$code || !file_exists(dirname(__FILE__).'/data/'.$code.'.php')) {
@@ -256,7 +260,7 @@ HTML;
         }
 
         // CLI-friendly error message
-        if (($wa && $wa->getEnv() == 'cli') || (!$wa && php_sapi_name() == 'cli')) {
+        if (($wa && $wa->getEnv() == 'cli') || ((!$wa || defined('WA_TEST_ENVIRONMENT')) && php_sapi_name() == 'cli')) {
             return $this->toStringCli($wa, $additional_info);
         }
 

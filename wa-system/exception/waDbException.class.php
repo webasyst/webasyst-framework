@@ -13,10 +13,12 @@
  */
 class waDbException extends waException
 {
+    public $real_message;
+
     public function __construct($message = '', $code = 500, $previous = null)
     {
-        $new_message = $message;
-        if (!waSystemConfig::isDebug()) {
+        $this->real_message = $new_message = $message;
+        if (!waSystemConfig::isDebug() && !defined('WA_TEST_ENVIRONMENT')) {
             $new_message = "Database error. See log for details.";
         }
         parent::__construct($new_message, $code, $previous);

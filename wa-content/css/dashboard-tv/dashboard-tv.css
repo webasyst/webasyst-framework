@@ -118,9 +118,9 @@ body .highlighted {
   border: solid transparent;
   border-width: 10px 0 0 10px;
   box-sizing: border-box;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 1rem;
+  -moz-border-radius: 1rem;
+  border-radius: 1rem;
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container {
   position: absolute;
@@ -136,9 +136,9 @@ body .highlighted {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
+  -webkit-border-radius: 1rem;
+  -moz-border-radius: 1rem;
+  border-radius: 1rem;
   background: #181818;
   color: #eee;
 }

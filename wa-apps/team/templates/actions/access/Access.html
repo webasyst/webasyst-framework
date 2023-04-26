@@ -55,9 +55,11 @@
         <div class="t-apps-list blank">
             <div class="t-apps-list-wrapper bordered-bottom smaller gray">
             {foreach $apps as $app}
-                <div class="t-app-item bordered-right" id="t-app-{$app.id}">
-                    <img class="t-app-image icon size-32" src="{$wa_url}{$app.icon.48}" alt="{$app.name|escape}" >
-                    <span class="t-app-name custom-mt-8">{$app.name|escape}</span>
+                <div class="t-app-item{if !$app@last} bordered-right{/if}" id="t-app-{$app.id}">
+                    <div class="t-app-item-wrapper">
+                        <img class="t-app-image icon size-32" src="{$wa_url}{$app.icon.48}" alt="{$app.name|escape}" >
+                        <span class="t-app-name custom-mt-8">{$app.name|escape}</span>
+                    </div>
                 </div>
             {/foreach}
             </div>

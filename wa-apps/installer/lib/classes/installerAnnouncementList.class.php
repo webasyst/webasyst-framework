@@ -15,6 +15,11 @@ class installerAnnouncementList
      */
     const PLACE_NOTIFICATION = 'notification';
 
+    /**
+     * App-specific promotion places via app hooks.
+     */
+    const PLACE_PROMOTION = 'promotion';
+
     public function withFilteredByApp($app_id)
     {
         if ($app_id) {
@@ -36,6 +41,31 @@ class installerAnnouncementList
             $list = $this->selectList();
             return $this->groupByPlace($list);
         });
+    }
+
+    /**
+     * Get list of promotions to show in app-specific places via app hooks.
+     * @return array $announcements
+     *      string      $announcements[<key>]['html']
+     *      bool        $announcements[<key>]['always_open']
+     *      string|null $announcements[<key>]['app_id']
+     *      bool|null   $announcements[<key>]['ui1.3']
+     *      bool|null   $announcements[<key>]['ui2.0']
+     */
+    public function getPromotionList($ui_version, $promotion_id=null)
+    {
+        $list = $this->getList();
+        $promotions = ifset($list, self::PLACE_PROMOTION, []);
+
+        if ($promotion_id !== null) {
+            $promotions = array_intersect_key([$promotion_id=>1], $promotions);
+        }
+
+        $promotions = array_filter($promotions, function($p) use ($ui_version) {
+            return !empty($p['ui'.$ui_version]);
+        });
+
+        return $promotions;
     }
 
     public function getTopHeaderList()
@@ -62,6 +92,7 @@ class installerAnnouncementList
         $result = [
             self::PLACE_HEADER_TOP => [],
             self::PLACE_NOTIFICATION => [],
+            self::PLACE_PROMOTION => [],
         ];
         foreach ($list as $key => $announcement) {
 
@@ -127,7 +158,7 @@ class installerAnnouncementList
         $where = join(' AND ', $where);
 
         $sql = "
-            SELECT a.name, a.value 
+            SELECT a.name, a.value
                 FROM {$wasm->getTableName()} a
                 LEFT JOIN {$wcsm->getTableName()} c ON c.name=a.name AND c.app_id='installer' AND c.contact_id = :contact_id
             WHERE {$where}

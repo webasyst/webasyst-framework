@@ -26,14 +26,16 @@
                             {if !$is_user_bound_to_webasyst_id}disabled="disabled"{/if}>
 
                 <div class="s-force-description">
-                    <strong><i class="icon16 ws waid-green"></i> [s`Use only sign-in option with Webasyst ID — <span class="s-green">recommended</span>`]</strong>
+                    <strong><i class="icon16 ws waid-green"></i> 
+                        {sprintf(_ws('Use only sign-in option with Webasyst ID — <span class="%s">recommended</span>'), 's-green')}
+                    </strong>
                     <span class="js-force-save-status s-force-save-status"><i class="icon16 yes"></i> [s`Saved`]</span>
                 </div>
             </div>
             <div class="hint">[s`When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation. Newly added users will get connected to Webasyst ID right away.`]</div>
         </div>
 
-        {if $not_connected_users}
+        {if $not_connected_users && $block_show}
             <div class="field-group s-waid-not-connected-users-block">
                 <h2><em>
                     [s`Pending upgrade to Webasyst ID`]
@@ -86,9 +88,9 @@
                                             </a>
                                         {else}
                                             {if !$user.waid_invite_datetime}
-                                                {$_link_text = '[s`Email upgrade instructions`]'}
+                                                {$_link_text = '[s`Send sign-in instructions by email`]'}
                                             {else}
-                                                {$_link_text = '[s`Email again`]'}
+                                                {$_link_text = '[s`Re-send`]'}
                                             {/if}
                                             <a href="javascript:void(0)" class="js-send-email-invitation nowrap" data-id="{$user.id}">
                                                 <i class="icon16 email"></i> <span class="js-text">{$_link_text}</span> <i class="icon16 loading js-loading" style="display: none;"></i>
@@ -110,7 +112,7 @@
                 </table>
             </div>
         {/if}
-        {if $connected_users}
+        {if $connected_users && $block_show}
             <div class="field-group">
                 <h2>
                     [s`Successfully upgraded to Webasyst ID`]
@@ -140,7 +142,17 @@
                                 <a href="{$user.link}">{$user.name|escape}</a>
                             </td>
                             <td>
-                                <a href="{$user.link}" class="bold nowrap"><i class="icon16 ws waid-green"></i>{$user.webasyst_id|escape}</a>
+                                <a href="{$user.link}" class="bold nowrap">
+                                    <i class="icon16 ws waid-green"></i>
+                                    <span class="flexbox flexbox-inline vertical">
+                                        {if (!empty($user.webasyst_id['email']))}
+                                            <span>{$user.webasyst_id['email']|escape}</span>
+                                        {/if}
+                                        {if (!empty($user.webasyst_id['phone']))}
+                                            <span>{$user.webasyst_id['phone']|escape}</span>
+                                        {/if}
+                                    </span>
+                                </a>
                             </td>
                             <td class="nowrap">{$user.waid_create_datetime|wa_date:'humandatetime'}</td>
                             <td class="nowrap">{$user.waid_login_datetime|wa_date:'humandatetime'}</td>

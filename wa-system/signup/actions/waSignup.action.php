@@ -884,6 +884,17 @@ class waSignupAction extends waViewAction
             }
         }
 
+        /** проверка ФИО на содержание URL */
+        foreach ($data as $_f => $_val) {
+            if (
+                in_array($_f, ['lastname', 'firstname', 'middlename'])
+                && !empty($_val)
+                && preg_match('~(https?://|www\.)~', $_val)
+            ) {
+                $errors[$_f] = _ws('Names must not contain URLs.');
+            }
+        }
+
         // Check formal validity of email
         if ($email_field_presented && !empty($data['email'])) {
             if (!$this->isEmailValid($data['email'])) {
@@ -1062,7 +1073,7 @@ class waSignupAction extends waViewAction
 
         // $auth is NOT always instanceof waAuth, but lookupByLoginFields method only exists for waAuth
         if ($auth instanceof waAuth) {
-            $contacts = $auth->lookupByLoginFields($data);
+            $contacts = $auth->lookupByLoginFields($data, null, 'with_banned');
             foreach ($contacts as $field_id => $contact) {
                 $errors[$field_id] = sprintf(_ws('User with the same “%s” field value is already registered.'), $this->getFieldCaption($field_id));
             }

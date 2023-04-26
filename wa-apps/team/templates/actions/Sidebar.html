@@ -19,13 +19,13 @@
     {if teamHelper::hasRights('add_users')}
         <div class="sidebar-header box custom-pt-20">
             <button class="button full-width align-center" id="t-new-user-link">
-                <i class="fas fa-user-plus fa-w-20 custom-mr-4"></i>&nbsp;<span class="s-title small">[`Invite`]</span>
+                <i class="fas fa-user-plus fa-w-20 custom-mr-4"></i> <span class="s-title small">[`Add user`]</span>
             </button>
         </div>
     {/if}
     {/if}
 
-    <div class="sidebar-body hide-scrollbar t-sidebar-block" id="t-sidebar">
+    <div class="sidebar-body t-sidebar-block" id="t-sidebar">
         {* main nav *}
         <ul class="menu mobile-friendly custom-my-8">
             <li class="{if $module == 'users' && !$action}selected{/if}" id="all-users-sidebar-link">
@@ -149,6 +149,15 @@
                         <span class="count js-count">{$inactive_count}</span>
                         <i class="fas fa-ban"></i>
                         <span>[`Inactive users`]</span>
+                    </a>
+                </li>
+            {/if}
+            {if teamHelper::hasRights() && !empty($noaccess_count)}
+                <li data-inactive-item>
+                    <a href="{$wa_app_url}no-access/">
+                        <span class="count js-count">{$noaccess_count}</span>
+                        <i class="fas fa-eye-slash"></i>
+                        <span>[`Without access`]</span>
                     </a>
                 </li>
             {/if}

@@ -12,6 +12,8 @@ class teamAutocompleteController extends waController
             $type = waRequest::post('type', 'user', waRequest::TYPE_STRING_TRIM);
             if ($type == 'user') {
                 $data = self::usersAutocomplete($q);
+            } else if ($type == 'contact') {
+                $data = self::contactsAutocomplete($q);
             }
             if ($data) {
                 $data = $this->formatData($data, $type);
@@ -33,9 +35,14 @@ class teamAutocompleteController extends waController
         return $data;
     }
 
-    public static function usersAutocomplete($q, $limit = null)
+    public static function usersAutocomplete($q, $limit = null, $only_users = true)
     {
         $m = new waModel();
+
+        $only_users_sql = '';
+        if ($only_users) {
+            $only_users_sql = ' AND (login IS NOT NULL AND c.is_user<>0)';
+        }
 
         // The plan is: try queries one by one (starting with fast ones),
         // until we find 5 rows total.
@@ -44,13 +51,13 @@ class teamAutocompleteController extends waController
         // Name starts with requested string
         $sqls[] = "SELECT c.id, c.name, c.login, c.firstname, c.middlename, c.lastname, c.photo
                    FROM wa_contact AS c
-                   WHERE c.name LIKE '".$m->escape($q, 'like')."%' AND (login IS NOT NULL AND c.is_user<>0)
+                   WHERE c.name LIKE '".$m->escape($q, 'like')."%' {$only_users_sql}
                    LIMIT {LIMIT}";
 
         // Login starts with requested string
         $sqls[] = "SELECT c.id, c.name, c.login, c.firstname, c.middlename, c.lastname, c.photo
                    FROM wa_contact AS c
-                   WHERE c.login LIKE '".$m->escape($q, 'like')."%' AND (login IS NOT NULL AND c.is_user<>0)
+                   WHERE c.login LIKE '".$m->escape($q, 'like')."%' {$only_users_sql}
                    LIMIT {LIMIT}";
 
         // Email starts with requested string
@@ -58,7 +65,7 @@ class teamAutocompleteController extends waController
                    FROM wa_contact AS c
                        JOIN wa_contact_emails AS e
                            ON e.contact_id=c.id
-                   WHERE e.email LIKE '".$m->escape($q, 'like')."%' AND (login IS NOT NULL AND c.is_user<>0)
+                   WHERE e.email LIKE '".$m->escape($q, 'like')."%' {$only_users_sql}
                    LIMIT {LIMIT}";
 
         // Phone contains requested string
@@ -68,20 +75,20 @@ class teamAutocompleteController extends waController
                        FROM wa_contact AS c
                            JOIN wa_contact_data AS d
                                ON d.contact_id=c.id AND d.field='phone'
-                       WHERE d.value LIKE '%".$m->escape($dq, 'like')."%' AND (login IS NOT NULL AND c.is_user<>0)
+                       WHERE d.value LIKE '%".$m->escape($dq, 'like')."%' {$only_users_sql}
                        LIMIT {LIMIT}";
         }
 
         // Name contains requested string
         $sqls[] = "SELECT c.id, c.name, c.login, c.firstname, c.middlename, c.lastname, c.photo
                    FROM wa_contact AS c
-                   WHERE c.name LIKE '_%".$m->escape($q, 'like')."%' AND (login IS NOT NULL AND c.is_user<>0)
+                   WHERE c.name LIKE '_%".$m->escape($q, 'like')."%' {$only_users_sql}
                    LIMIT {LIMIT}";
 
         // Login contains requested string
         $sqls[] = "SELECT c.id, c.name, c.login, c.firstname, c.middlename, c.lastname, c.photo
                    FROM wa_contact AS c
-                   WHERE c.login LIKE '_%".$m->escape($q, 'like')."%' AND (login IS NOT NULL AND c.is_user<>0)
+                   WHERE c.login LIKE '_%".$m->escape($q, 'like')."%' {$only_users_sql}
                    LIMIT {LIMIT}";
 
         // Email contains requested string
@@ -89,7 +96,7 @@ class teamAutocompleteController extends waController
                    FROM wa_contact AS c
                        JOIN wa_contact_emails AS e
                            ON e.contact_id=c.id
-                   WHERE e.email LIKE '_%".$m->escape($q, 'like')."%' AND (login IS NOT NULL AND c.is_user<>0)
+                   WHERE e.email LIKE '_%".$m->escape($q, 'like')."%' {$only_users_sql}
                    LIMIT {LIMIT}";
 
         $limit = $limit !== null ? $limit : self::$limit;
@@ -107,8 +114,8 @@ class teamAutocompleteController extends waController
                     $name = self::prepare($c['name'], $term_safe);
                     $email = self::prepare(ifset($c['email'], ''), $term_safe);
                     $phone = self::prepare(ifset($c['phone'], ''), $term_safe);
-                    $phone && $phone = '<i class="icon16 phone"></i>'.$phone;
-                    $email && $email = '<i class="icon16 email"></i>'.$email;
+                    $phone && $phone = '<i class="fas fa-phone custom-ml-8 custom-mr-4 text-light-gray"></i>'.$phone;
+                    $email && $email = '<i class="fas fa-envelope custom-ml-8 custom-mr-4 text-light-gray"></i>'.$email;
                     $result[$c['id']] = array(
                         'id'        => $c['id'],
 //                        'value'     => $c['id'],
@@ -116,6 +123,11 @@ class teamAutocompleteController extends waController
                         'login'     => $c['login'],
                         'photo_url' => waContact::getPhotoUrl($c['id'], $c['photo'], 96),
                         'label'     => implode(' ', array_filter(array($name, $email, $phone))),
+                        'firstname'  => ifset($c['firstname'], ''),
+                        'middlename' => ifset($c['middlename'], ''),
+                        'lastname'   => ifset($c['lastname'], ''),
+                        'email'      => ifset($c['email'], ''),
+                        'phone'      => ifset($c['phone'], ''),
                     );
                     if (count($result) >= $limit) {
                         break 2;
@@ -126,11 +138,51 @@ class teamAutocompleteController extends waController
 
         foreach ($result as &$c) {
             $contact = new waContact($c['id']);
-            $c['label'] = "<i class='icon16 userpic20' style='background-image: url(\"".$contact->getPhoto(20)."\");'></i>".$c['label'];
+            $c['label'] = "<i class='valign-bottom userpic userpic20 custom-mr-12' style='background-image: url(\"".$contact->getPhoto(20)."\");'></i>".$c['label'];
         }
         unset($c);
 
         return array_values($result);
+    }
+
+    protected static function contactsAutocomplete($q, $limit = null)
+    {
+        $result = self::usersAutocomplete($q, $limit, false);
+        if (!$result) {
+            return [];
+        }
+
+        $ids = array_column($result, 'id');
+
+        $collection = new waContactsCollection('id/'.join(',', $ids));
+        $contacts = $collection->getContacts('id,is_user,phone,email');
+
+        foreach($result as &$c) {
+            $id = $c['id'];
+            $data = ifset($contacts, $id, []);
+            $c['is_user'] = ifset($data, 'is_user', 0);
+            if (empty($c['email']) && !empty($data['email'])) {
+                $c['email'] = reset($data['email']);
+            }
+            if (empty($c['phone']) && !empty($data['phone'])) {
+                $phone = reset($data['phone']);
+                if (!empty($phone['value'])) {
+                    $c['phone'] = self::formatNumber($phone['value']);
+                }
+            }
+        }
+        unset($c);
+
+        return $result;
+    }
+
+    // Helper for contactsAutocomplete()
+    protected static function formatNumber($number)
+    {
+        class_exists('waContactPhoneField');
+        $formatter = new waContactPhoneFormatter();
+        $number = str_replace(str_split("+-() \n\t"), '', $number);
+        return $formatter->format($number);
     }
 
     // Helper for usersAutocomplete()

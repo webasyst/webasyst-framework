@@ -61,6 +61,10 @@ class waLogModel extends waModel
             $where_string .= ' AND l.id > '.(int)$where['min_id'];
             unset($where['min_id']);
         }
+        if (!empty($where['min_datetime']) && strtotime($where['min_datetime']) !== false) {
+            $where_string .= " AND l.datetime > '{$where['min_datetime']}'";
+            unset($where['min_datetime']);
+        }
         $where = array_intersect_key($where, $this->getMetadata());
         if ($where) {
             $where_string .= ' AND ('.$this->getWhereByField($where).')';

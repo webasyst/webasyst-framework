@@ -57,7 +57,7 @@
         },
 
         /* Open dialog to confirm contact deletion */
-        confirmContactDelete: function(contact_ids) {
+        confirmContactDelete: function(contact_ids, reloadPage) {
             $.post('?module=users&action=prepareDelete', { id: contact_ids }, function(html) {
                 $.waDialog({
                     html,
@@ -70,11 +70,22 @@
                         if (allowed_ids) {
                             $delete_button.on('click', function() {
                                 let btn_text = $delete_button.text();
+                                let delete_forever_value = $dialog.find('[name="delete_forever"]:checked').attr('value');
                                 $delete_button.attr('disabled', true).html(`${btn_text} <i class="fas fa-spin fa-spinner wa-animation-spin speed-1000"></i>`);
 
-                                $.post('?module=users&action=delete', { id: allowed_ids }, function(){
+                                $.post('?module=users&action=delete', {
+                                    delete_forever: delete_forever_value,
+                                    id: allowed_ids
+                                }, function() {
                                     dialog.close();
-                                    $.team.content.load($.team.app_url);
+                                    $.team.sidebar.reload();
+
+                                    if (!reloadPage) {
+                                        $.team.content.load($.team.app_url);
+                                        return;
+                                    }
+
+                                    $.team.content.reload();
                                 }).always(function () {
                                     $delete_button.attr('disabled', false).html(btn_text);
                                 });
@@ -94,7 +105,7 @@
             setTimeout(run, $.team.is_debug ? 100 : delay / 2);
 
             function run() {
-                $.post($.team.app_url + "?module=calendarExternal&action=sync")
+                $.post($.team.app_url + "?module=calendarExternal&action=sync&background_process=1")
                     .always(function () {
                         xhr = null;
                         timer = setTimeout(run, delay);
@@ -586,23 +597,19 @@ var TeamEditable = ( function($) {
     TeamEditable.prototype.initClass = function() {
         const that = this;
 
-        const defaultText = that.$wrapper.data('default-text') || '';
-        $.extend(that.options, {
-            defaultText
-        });
-
         that.bindEvents();
     };
 
     TeamEditable.prototype.bindEvents = function() {
         const that = this;
 
-        that.$wrapper.on('keypress', $.proxy(that.checkValue, that));
+        that.$wrapper.on('keydown', $.proxy(that.checkPressEnter, that));
         that.$wrapper.on('focus', $.proxy(that.enableEditor, that));
         that.$wrapper.on('blur', $.proxy(that.disableEditor, that));
+        that.$wrapper.on('paste', $.proxy(that.clearHtml, that));
     }
 
-    TeamEditable.prototype.checkValue = function(event) {
+    TeamEditable.prototype.checkPressEnter = function(event) {
         const that = this;
 
         if (event.keyCode !== 13) {
@@ -625,10 +632,6 @@ var TeamEditable = ( function($) {
         that.cacheText();
 
         that.$wrapper.addClass('editable-highlight');
-
-        if (that.$wrapper.text() === that.options.defaultText) {
-            that.$wrapper.text('');
-        }
     }
 
     TeamEditable.prototype.disableEditor = function() {
@@ -636,18 +639,24 @@ var TeamEditable = ( function($) {
 
         that.$wrapper.removeClass('editable-highlight');
 
-        if (that.$wrapper.text() === '') {
-            that.$wrapper.addClass('gray italic');
-            that.$wrapper.text(that.options.defaultText);
-        } else {
-            that.$wrapper.removeClass('gray italic');
-        }
-
         if (that.$wrapper.text() === that.cachedText) {
             return;
         }
 
         that.save();
+    }
+
+    TeamEditable.prototype.clearHtml = function(event) {
+        event.preventDefault();
+
+        let text = event.originalEvent.clipboardData.getData('text/plain');
+        text = text.replace(/<[^>]*>?/gm, '');
+
+        if (document.queryCommandSupported('insertText')) {
+            document.execCommand('insertText', false, text);
+        } else {
+            document.execCommand('paste', false, text);
+        }
     }
 
     TeamEditable.prototype.save = function() {

@@ -155,7 +155,7 @@ class waCurrency
         self::$format_data['locale']['id'] = $locale_id;
         self::$format_data['currency'] = $currency;
         $pattern = '/%([0-9]?\.?[0-9]?)([iw!kt]*)({[n|f|c|s|h][0-9]?})?/i';
-        $result = preg_replace_callback($pattern, array('self', 'replaceCallback'), $format);
+        $result = preg_replace_callback($pattern, array('waCurrency', 'replaceCallback'), $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
         }
@@ -179,7 +179,7 @@ class waCurrency
             $precision = min($precision, $currency['precision']);
         }
 
-        return round((float)str_replace(',', '.', $n), $precision);
+        return round((float)str_replace(',', '.', ifset($n, '')), $precision);
     }
 
     private static function replaceCallback($matches)
@@ -223,6 +223,7 @@ class waCurrency
             // 'i' format option: floor() $n to $precision.
             // When not present then round() is used.
             // 'w' option implies 'i'
+            $n = ($n === null ? 0 : $n);
             if (strstr($format_lower, 'i') !== false || strstr($format_lower, 'w') !== false) {
                 $n = round($n, $precision + 2);
                 $n = floor($n * pow(10, $precision)) / ((float) pow(10, $precision));

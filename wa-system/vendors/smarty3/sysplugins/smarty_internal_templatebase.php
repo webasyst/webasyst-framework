@@ -34,7 +34,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data {
     public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null, $display = false, $merge_tpl_vars = true, $no_output_filter = false)
     {
         $advanced_security = wa()->getConfig()->systemOption('advanced_security');
-        if (preg_match('~^\Astring:{1,}~', $template) && $advanced_security) {
+        if (!empty($template) && preg_match('~^\Astring:{1,}~', $template) && $advanced_security) {
             $this->dumpLog($template);
         }
         if ($template === null && $this instanceof $this->template_class) {

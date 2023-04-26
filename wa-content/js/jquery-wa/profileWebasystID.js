@@ -9,6 +9,7 @@ var ProfileWebasystID = ( function($) {
         that.wa_url = options.wa_url || '';
         that.wa_version = options.wa_version || '';
         that.webasyst_id_auth_url = options.webasyst_id_auth_url || '';
+        that.ui = options.ui || '';
 
         // INIT
         that.init();
@@ -71,7 +72,7 @@ var ProfileWebasystID = ( function($) {
         var that = this,
             wa_app_url = that.backend_url + 'webasyst/',
             contact_id = that.user.id || 0,
-            url = wa_app_url + '?module=profile&action=waidUnbindConfirm';
+            url = wa_app_url + '?module=profile&action=waidUnbindConfirm' + (that.ui ? '&ui=' + that.ui : '');
 
         var onUnbind = function() {
             var sources = [{

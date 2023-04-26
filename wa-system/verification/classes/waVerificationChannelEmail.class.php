@@ -427,7 +427,8 @@ class waVerificationChannelEmail extends waVerificationChannel
         }
 
         try {
-            $m = new waMailMessage($subject, $body);
+            $m = new waMailMessage($subject);
+            $m->setBody($body);
             $m->setTo($recipient['email'], isset($recipient['name']) ? $recipient['name'] : null);
             $from = $this->getAddress();
             if ($from) {
@@ -866,7 +867,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         if ($asset_name === waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_HASH || $asset_name === waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_HASH) {
             return $input_secret === $asset_secret;
         } else {
-            return waContact::getPasswordHash($input_secret) === $asset_secret;
+            return waContact::verifyPasswordHash($input_secret, $asset_secret);
         }
     }
 

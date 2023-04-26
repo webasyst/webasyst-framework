@@ -31,17 +31,22 @@ class teamUsersInviteformAction extends waViewAction
             }
         }
 
+        list($is_waid_forced, $is_waid_enabled) = $this->getWaidStatus();
+
+        $event_data = compact('groups', 'locations');
         $this->view->assign(array(
+            'frontend_invite_user' => wa()->event('frontend_invite_user', $event_data),
             'groups'    => $groups,
             'locations' => $locations,
             'access_types' => teamHelper::getAccessTypes(),
-            'is_waid_forced' => $this->isBackendAuthForced()
+            'is_waid_forced' => $is_waid_forced,
+            'is_waid_enabled' => $is_waid_enabled,
         ));
     }
 
-    protected function isBackendAuthForced()
+    protected function getWaidStatus()
     {
         $cm = new waWebasystIDClientManager();
-        return $cm->isBackendAuthForced();
+        return [$cm->isBackendAuthForced(), $cm->isConnected()];
     }
 }

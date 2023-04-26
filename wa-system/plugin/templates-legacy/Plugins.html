@@ -410,7 +410,7 @@
                 url: '?module=plugins&action=sort',
                 data: {
                     slug: $(ui.item).attr('id').replace(/^plugin-/, ''),
-                    pos: $(ui.item).index()-2
+                    pos: $(ui.item).index(){if !empty($installer)} - 1{if !empty($plugins)} - 1{/if}{/if}
                 },
                 success: function (data, textStatus, jqXHR) {
                     if (!data || !data.status || data.status != "ok") {

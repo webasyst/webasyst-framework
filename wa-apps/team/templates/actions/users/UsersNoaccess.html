@@ -1,0 +1,58 @@
+{strip}
+
+<div class="t-users-page article break-word" id="t-users-page">
+    <div class="t-content-body article-body">
+        <header class="t-content-header custom-mb-20">
+            <h1>[`Users with no access to Webasyst`]</h1>
+        </header>
+
+        {*
+        <div class="t-info-notice-wrapper alert custom-mb-32" style="display: none;">
+            <div class="flexbox">
+                <div class="wide small">[`This is a list of users who do not have access to your Webasyst backend.`]</div>
+                <a href="#" class="t-info-notice-toggle alert-close" data-disable-routing><i class="fas fa-times"></i></a>
+            </div>
+        </div>
+        *}
+
+        {if !empty($contacts)}
+            {include file="./Users.inc.html" contacts=$contacts list_context="inactive"}
+        {else}
+            <p class="t-description">[`No inactive users.`]</p>
+        {/if}
+    </div>
+</div>
+
+{/strip}
+
+<script>(function($) { "use strict";
+
+    $.team.setTitle({_w('Users with no access to Webasyst backend')|json_encode});
+    $.team.sidebar.updateCount('{$wa_app_url}inactive/', {count($contacts)});
+
+    new UserList({
+        $wrapper: $(".js-users-list")
+    });
+
+    function initInfoBlock() {
+        var $info_block = $("#t-users-page .t-info-notice-wrapper"),
+            storage = new $.store(),
+            key = "team/noaccess_users_notice_hide";
+
+        if (storage.get(key)) {
+            $info_block.hide();
+        } else {
+            $info_block.show();
+        }
+
+        $info_block.find(".t-info-notice-toggle").on("click", function (e) {
+            e.preventDefault();
+
+            storage.set(key, 1);
+            $info_block.hide();
+        });
+    }
+
+    initInfoBlock();
+
+})(jQuery);</script>

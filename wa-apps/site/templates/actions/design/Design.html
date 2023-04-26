@@ -15,9 +15,9 @@
 		<li><a class="s-page-delete" href="#"><i class="icon16 delete"></i>[`Delete`]</a></li>
 	</ul></div>
 	{/if}
-	<h4>{$file.id|escape}</h4>								
-	<span id="s-desc" class="hint">{$file.description|escape}</span>			
-		
+	<h4>{$file.id|escape}</h4>
+	<span id="s-desc" class="hint">{$file.description|escape}</span>
+
 	{if !empty($file.custom)}
 	<div id="s-page-settings" style="{if $file.id}display: none; {/if}height:130px">
 		<div class="fields form">
@@ -27,7 +27,7 @@
 				</div>
 				<div class="value">
 					<input name="file" type="text" class="bold" value="{$file.id|escape}" />
-					<br /><span class="hint">[`File should have one of the allowed extensions: .html, .css, .js`]</span>
+					<br /><span class="hint">[`A file’s name must have one of the allowed extensions: .html, .css, .js.`]</span>
 				</div>
 			</div>
 			<div class="field">
@@ -41,8 +41,8 @@
 			</div>
 		</div>
 	</div>
-	{/if}		
-	</div>	
+	{/if}
+	</div>
 	<div class="s-editor-core-wrapper">
 		<textarea id="content" data-type="{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{/if}" name="content">{if !empty($content)}{$content|escape}{/if}</textarea>
 	</div>

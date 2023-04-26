@@ -91,7 +91,7 @@
 
             function run() {
                 console.log('send sync request');
-                $.post($.team.app_url + "?module=calendarExternal&action=sync")
+                $.post($.team.app_url + "?module=calendarExternal&action=sync&background_process=1")
                     .always(function () {
                         xhr = null;
                         timer = setTimeout(run, delay);

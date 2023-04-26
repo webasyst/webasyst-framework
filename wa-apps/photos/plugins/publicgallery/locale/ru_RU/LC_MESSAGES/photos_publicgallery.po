@@ -8,235 +8,154 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n"
-"%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.6.10\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/backend/BackendRatesDistribution.html:30
 msgid "User votes"
 msgstr "Оценки пользователей"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/backend/BackendRatesDistribution.html:46
 msgid "Close"
 msgstr "Закрыть"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendImageUpload.html:9
 msgid "Stop upload"
 msgstr "Прервать"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendImageUpload.html:15
 msgid "Files uploaded with errors"
 msgstr "Произошла ошибка во время загрузки файлов"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendImageUpload.html:50
-msgid ""
-"Failed to upload. Most probably, there were not enough memory to create "
-"thumbnails."
-msgstr ""
-"Ошибки при загрузке. Вероятно, недостаточно памяти для формирования эскизов "
-"изображений."
+msgid "Failed to upload. Most probably, there were not enough memory to create thumbnails."
+msgstr "Ошибки при загрузке. Вероятно, недостаточно памяти для формирования эскизов изображений."
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:235
 msgid "My uploads"
 msgstr "Мои фотографии"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendMyphotos.html:44
-msgid ""
-"To upload a photo, either <a href=\"#\">sign up</a> or authorize using one "
-"of services listed below"
-msgstr ""
-"Для загрузки фотографий <a href=\"#\">зарегистрируйтесь</a> или "
-"авторизуйтесь с помощью одного из сервисов, перечисленных ниже."
+msgid "To upload a photo, either <a href=\"#\">sign up</a> or authorize using one of services listed below"
+msgstr "Для загрузки фотографий <a href=\"#\">зарегистрируйтесь</a> или авторизуйтесь с помощью одного из сервисов, перечисленных ниже."
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendMyphotos.html:57
 msgid "Upload images"
 msgstr "Выберите фотографии для загрузки"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendMyphotos.html:58
 msgid "or drag them here to start upload"
 msgstr "или перетащите фотографии сюда"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:65
 msgid "Photo has been declined by the administrator"
 msgstr "Фотография была отклонена администратором"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:251
 msgid "Pending moderation"
 msgstr "На модерации"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendPhotos.html:41
 msgid "Show more photos"
 msgstr "Показать еще"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendPhotos.html:47
 msgid "Loading"
 msgstr "Загрузка"
 
-#: /wa-apps/photos/plugins/publicgallery/js/jquery.fileupload-ui.js:111
 msgid "Empty result"
 msgstr "Пустой ответ"
 
-#: /wa-apps/photos/plugins/publicgallery/js/jquery.fileupload-ui.js:135
 msgid "Upload complete! <a href=\"#\">Reload page</a> to view your photos."
-msgstr ""
-"Загрузка завершена! <a href=\"#\">Перезагрузите страницу</a>, чтобы увидеть "
-"фотографии."
+msgstr "Загрузка завершена! <a href=\"#\">Перезагрузите страницу</a>, чтобы увидеть фотографии."
 
-#: /wa-apps/photos/plugins/publicgallery/js/jquery.fileupload-ui.js:366
-msgid "Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only."
-msgstr "Допускаются только файлы с расширениями .gif, .jpg, .jpeg, .png"
+msgid "Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only."
+msgstr "Допускаются только файлы с расширениями *.gif, *.jpg, *.jpeg, *.png, *.webp"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/actions/backend/photosPublicgalleryPluginBackendModeration.controller.php:12
 msgid "Unknown photo"
 msgstr "Неизвестный формат фотографии"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:21
 msgid "Minimal photo size (px)"
 msgstr "Минимально допустимый размер фотографии (в пикселях)"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:22
-msgid ""
-"Limits the minimum width and height for photos uploaded in the frontend (in "
-"pixels)"
-msgstr ""
-"Устанавливает ограничение на минимальную ширину и высоту фотографий, которые "
-"принимаются к загрузке во фронтенде приложения"
+msgid "Limits the minimum width and height for photos uploaded in the frontend (in pixels)"
+msgstr "Устанавливает ограничение на минимальную ширину и высоту фотографий, которые принимаются к загрузке во фронтенде приложения"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:27
 msgid "Maximum photo size (px)"
 msgstr "Максимально допустимый размер фотографии (в пикселях)"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:28
-msgid ""
-"Limits the maximum width and height for photos uploaded in the frontend (in "
-"pixels)"
-msgstr ""
-"Устанавливает ограничение на максимальную ширину и высоту фотографий, "
-"которые принимаются к загрузке во фронтенде приложения"
+msgid "Limits the maximum width and height for photos uploaded in the frontend (in pixels)"
+msgstr "Устанавливает ограничение на максимальную ширину и высоту фотографий, которые принимаются к загрузке во фронтенде приложения"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:5
 msgid "Assign tags on upload"
 msgstr "Назначить теги"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:6
-msgid ""
-"Automatically assign listed tags for all photos uploaded in the frontend"
-msgstr ""
-"Перечисленные теги будут автоматически назначены на все фотографии, которые "
-"пользователи загружают во фронтенде приложения"
+msgid "Automatically assign listed tags for all photos uploaded in the frontend"
+msgstr "Перечисленные теги будут автоматически назначены на все фотографии, которые пользователи загружают во фронтенде приложения"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:11
 msgid "Moderation"
 msgstr "Модерация"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:12
-msgid ""
-"Define if photos uploaded in the frontend needs to be moderated in the "
-"backend or not. In case moderation is disabled, all photos will "
-"automatically appear in the frontend after upload"
-msgstr ""
-"Настройка определяет должны ли фотографии, загружаемые пользователями во "
-"фронтенде, проходить обязательную модерацию перед публикацией. При "
-"выключении модерации фотографии автоматически будут попадать в общий поток."
+msgid "Define if photos uploaded in the frontend needs to be moderated in the backend or not. In case moderation is disabled, all photos will automatically appear in the frontend after upload"
+msgstr "Настройка определяет должны ли фотографии, загружаемые пользователями во фронтенде, проходить обязательную модерацию перед публикацией. При выключении модерации фотографии автоматически будут попадать в общий поток."
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:16
 msgid "Yes"
 msgstr "Да"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:17
 msgid "No"
 msgstr "Нет"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:52
 msgid "Rate"
 msgstr "Оценка"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:214
 msgid "cancel my vote"
 msgstr "очистить мою оценку"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:253
 msgid "Declined"
 msgstr "Отклоненные"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:123
 msgid "Approve photo"
 msgstr "Опубликовать"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:197
 msgid "Decline"
 msgstr "Отклонить"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:196
 msgid "Approve"
 msgstr "Опубликовать"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:60
 msgid "Rate this photo:"
 msgstr "Оцените фотографию:"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:226
 msgid "My vote: "
 msgstr "Моя оценка:"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendMyphotos.html:45
-msgid ""
-"To upload a photo, either <a href=\"%s\">sign up</a> or authorize using one "
-"of the services listed below."
-msgstr ""
-"Для загрузки фотографий <a href=\"%s\">зарегистрируйтесь</a> или "
-"авторизуйтесь с помощью одного из сервисов, перечисленных ниже."
+msgid "To upload a photo, either <a href=\"%s\">sign up</a> or authorize using one of the services listed below."
+msgstr "Для загрузки фотографий <a href=\"%s\">зарегистрируйтесь</a> или авторизуйтесь с помощью одного из сервисов, перечисленных ниже."
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendMyphotos.html:54
-msgid ""
-"To upload a photo, either <a href=\"%s\">create an account</a> or <a href="
-"\"%s\">sign in</a> as a registered user."
-msgstr ""
-"Для загрузки фотографий <a href=\"%s\">зарегистрируйтесь</a> или <a href=\"%s"
-"\">авторизуйтесь</a>."
+msgid "To upload a photo, either <a href=\"%s\">create an account</a> or <a href=\"%s\">sign in</a> as a registered user."
+msgstr "Для загрузки фотографий <a href=\"%s\">зарегистрируйтесь</a> или <a href=\"%s\">авторизуйтесь</a>."
 
-#: /wa-apps/photos/plugins/publicgallery/lib/actions/photosPublicgalleryPluginVote.controller.php:8
 msgid "Please sign in to be able to vote for photos"
 msgstr "Авторизуйтесь, чтобы проголосовать за фотографию"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/actions/photosPublicgalleryPluginVote.controller.php:14
 msgid "You may not vote for your own photos"
 msgstr "Вы не можете голосовать за свои фотографии"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:21
 msgid "Self photo voting"
 msgstr "Голосование за свои фото"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/settings.php:22
 msgid "Author can vote for self uploaded photos"
 msgstr "Автор фотографий может оставлять голоса за свои фотографии"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/plugin.php:4
 msgid "Public Gallery"
 msgstr "Фотогалерея"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/config/plugin.php:5
 msgid "Enables the ability to upload and vote for photos in the app frontend"
-msgstr ""
-"Включает возможность загрузки фотографий в фронтенде и коллективного "
-"голосования за фотографии"
+msgstr "Включает возможность загрузки фотографий в фронтенде и коллективного голосования за фотографии"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:40
 msgid "%d vote"
 msgid_plural "%d votes"
 msgstr[0] "%d оценка"
 msgstr[1] "%d оценки"
 msgstr[2] "%d оценок"
 
-#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendImageUpload.html:18
 msgid "Photos have been successfully uploaded"
 msgstr "Фотографии успешно загружены"
 
-#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:230
 msgid "My vote:"
 msgstr "Моя оценка:"
+
+msgid "Please %ssign in%s to be able to vote for photos."
+msgstr "Пожалуйста, %sвойдите%s, чтобы голосовать за фотографии."

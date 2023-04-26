@@ -1,7 +1,7 @@
 <div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
     {if !empty($notifications)}
         {foreach $notifications as $n}
-            <div class="alert wa-notification">
+            <div class="alert wa-notification js-wa-announcement" data-id="{$n.id}">
                 <div class="wa-notification-header wa-gradient-overlay-medium">
                     <div class="flexbox middle space-8">
                         {$_info = $n.app}
@@ -16,12 +16,15 @@
                         <i class="icon size-20" style="background: url('{$root_url}{if !empty($_info.icon.24)}{$_info.icon.24}{else}{$_info.img}{/if}{$_version}'); background-size: 20px 20px;"></i>
                         <strong class="nowrap uppercase wide">{$_info.name|escape}</strong>
                         <span class="nowrap">{waDateTime::format('humandatetime', $n.datetime)}</span>
-                        <a data-app-id="{$n.app_id}" href="javascript:void(0);" class="alert-close js-announcement-close" title="[s`Close`]"><i class="fas fa-times"></i></a>
+                        <a href="javascript:void(0);" class="alert-close js-announcement-hide" title="[s`Close`]"><i class="fas fa-times"></i></a>
                     </div>
                 </div>
                 <div class="wa-notification-body">
                     {$n.text}
                 </div>
+                {if $n.app_id !== 'installer'}
+                    <a data-app-id="{$n.app_id}" href="javascript:void(0);" class="custom-ml-16 custom-py-4 hint js-announcement-close flexbox" title="[s`Close`]">[s`Mark as read`]</a>
+                {/if}
             </div>
         {/foreach}
     {else}

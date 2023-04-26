@@ -78,6 +78,8 @@ class waAPIController
             wa()->getFrontController()->execute(null, 'api', 'revoke');
         } elseif ($request_url == 'api.php/token-headless') {
             wa()->getFrontController()->execute(null, 'api', 'tokenHeadless');
+        } elseif ($request_url == 'api.php/profile-update') {
+            wa()->getFrontController()->execute(null, 'api', 'profileUpdate');
         } elseif ($request_url === 'api.php') {
             $this->execute(waRequest::get('app'), waRequest::get('method'));
         } else {
@@ -146,8 +148,11 @@ class waAPIController
     protected function hasAppAccess($app)
     {
         $user = wa()->getUser();
+        if ($user->get('is_user') <= 0) {
+            return false;
+        }
         if ($app === 'webasyst') {
-            return $user->get('is_user') > 0;
+            return true;
         }
         return $user->getRights($app, 'backend') > 0;
     }
@@ -173,7 +178,7 @@ class waAPIController
 
         $tokens_model = new waApiTokensModel();
         $data = $tokens_model->getById($token);
-        if (!$data) {
+        if (!$data || $data['token'] != $token) {
             throw new waAPIException('invalid_token', 'Invalid access token', 401);
         }
         if ($data['expires'] && (strtotime($data['expires']) < time())) {
@@ -185,6 +190,16 @@ class waAPIController
 
         // auth user
         wa()->setUser(new waApiAuthUser($data['contact_id']));
+        wa()->setLocale(wa()->getUser()->getLocale());
+
+        // Update user last activity time
+        $time = wa()->getUser()->get('last_datetime');
+        if ($time && time() - strtotime($time) > 30) {
+            $contact_model = new waContactModel();
+            $contact_model->updateById($data['contact_id'], [
+                'last_datetime' => date('Y-m-d H:i:s'),
+            ]);
+        }
 
         return $data;
     }

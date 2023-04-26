@@ -27,11 +27,11 @@
                     {$_count = $counts[$_id]}
                 {/if}
             {/if}
-            <a href="{$_item_url}">
+            <a href="{$_item_url}" title="{$_info.name|ifempty}">
                 {if isset($_info.img)}
                     <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{if !empty($_info.icon.96)}{$_info.icon.96}{else}{$_info.img}{/if}{$_version}" alt="">
                 {/if}
-                <span>{$_info.name|ifempty}</span>
+                <span class="nowrap">{$_info.name|ifempty}</span>
                 {if $_count}
                     <span class="badge{* wa-1.3-legacy-class *} indicator{* /wa-1.3-legacy-class *}">{$_count}</span>
                 {/if}
@@ -51,6 +51,14 @@
     function toggleDashboardItems(){
       const grid = $('.js-dashboard-grid');
 
+      if (!grid.length) {
+          return;
+      }
+
+      if (grid[0].getBoundingClientRect().bottom < 0) {
+          return;
+      }
+
       const gridItems = grid.find('li');
       const itemsWidth = grid.find('li').outerWidth();
       const colCounter = Math.floor((grid.outerWidth())/itemsWidth);
@@ -58,9 +66,9 @@
 
       let rowsToShow;
       if ($(window).width() < 1400) {
-        rowsToShow = 3;
+        rowsToShow = 5;
       } else {
-        rowsToShow = 4;
+        rowsToShow = 6;
       }
 
       const itemsToShow = rowsToShow * colCounter;

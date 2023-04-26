@@ -1,5 +1,6 @@
-<div class="s-sidebar-wrapper sidebar-body hide-scrollbar" id="js-sidebar-wrapper">
-    <ul class="menu">
+<div class="s-sidebar-wrapper sidebar-body" id="js-sidebar-wrapper">
+  <div class="box">
+    <ul class="menu large">
         {$icons = [
             'general' => 'fa-sliders-h',
             'field' => 'fa-layer-group',
@@ -16,7 +17,7 @@
             'db' => 'fa-database'
         ]}
         {foreach $items as $_id => $item}
-            <li data-id="{$_id}">
+            <li data-id="{$_id}" class="rounded">
                 <a href="{$item.url}">
                     {if $_id === 'waid'}
                        <svg class="svg-inline--fa fa-w-16" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16">
@@ -30,4 +31,5 @@
             </li>
         {/foreach}
     </ul>
+  </div>
 </div>

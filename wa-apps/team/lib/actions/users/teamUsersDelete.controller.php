@@ -8,6 +8,7 @@ class teamUsersDeleteController extends waJsonController
     {
         $ids_string = waRequest::post('id', '', 'string');
         $contact_ids = explode(',', $ids_string);
+        $delete_forever_mode = !!waRequest::request('delete_forever');
 
         // Make sure user have seen the PrepareDelete confirmation
         if ($ids_string != wa()->getStorage()->get('team_allowed_deletion_ids')) {
@@ -35,22 +36,56 @@ class teamUsersDeleteController extends waJsonController
         // Revoke user access before deletion
         foreach ($user_ids as $user_id) {
             waUser::revokeUser($user_id);
+            if (!$delete_forever_mode) {
+                $this->logAction("revoke_backend_access", null, $user_id);
+            }
         }
 
-        $cnt = count($contact_ids);
+        // Unbind user from Webasyst ID (do it only if only one user is deleting)
+        if (count($user_ids) === 1) {
+            $this->revokeWebasystIdUserConnection($user_ids[0]);
+        }
+
         $contact_model = new waContactModel();
-        if ($cnt > 30) {
-            $log_params = $cnt;
+        if ($delete_forever_mode) {
+            $cnt = count($contact_ids);
+            if ($cnt > 30) {
+                $log_params = $cnt;
+            } else {
+                // contact names
+                $log_params = $contact_model->getName($contact_ids);
+            }
+
+            // Bye bye...
+            $contact_model->delete($contact_ids); // also throws a contacts.delete event
+
+            $this->response['deleted'] = $cnt;
+            $this->response['message'] = sprintf(_w("%d contact has been deleted", "%d contacts have been deleted", $this->response['deleted']), $this->response['deleted']);
+            $this->logAction('contact_delete', $log_params);
         } else {
-            // contact names
-            $log_params = $contact_model->getName($contact_ids);
+            $contact_model->updateById($contact_ids, [
+                'is_staff' => 0,
+                'is_user' => 0,
+            ]);
+            $this->response['deleted'] = count($contact_ids);
+            $this->response['message'] = sprintf(_w("revoked access from %d contact", "revoked access from %d contacts", $this->response['deleted']), $this->response['deleted']);
+        }
+    }
+
+    protected function revokeWebasystIdUserConnection($user_id)
+    {
+        $m = new waWebasystIDClientManager();
+        if (!$m->isConnected()) {
+            return;
         }
 
-        // Bye bye...
-        $contact_model->delete($contact_ids); // also throws a contacts.delete event
+        $cwm = new waContactWaidModel();
+        $data = $cwm->get($user_id);
+        if (empty($data)) {
+            return;
+        }
 
-        $this->response['deleted'] = $cnt;
-        $this->response['message'] = sprintf(_w("%d contact has been deleted", "%d contacts have been deleted", $this->response['deleted']), $this->response['deleted']);
-        $this->logAction('contact_delete', $log_params);
+        $api = new waWebasystIDApi();
+        $api->deleteUser($user_id);
     }
 }

@@ -70,6 +70,7 @@ Usage: php wa.php {$action} slug [parameters...] [tables...]
 Slug examples:
     myapp
     someapp/myplugin
+    wa-plugins/shipping/myplugin
 
 Optional parameters:
     [tables...]             Space-separated list of table names to be updated.
@@ -184,7 +185,7 @@ HELP;
                 $type = $matches[2];
                 $app_id = $matches[1].$matches[2];
                 $plugin_id = $matches[3];
-                $path = wa()->getConfig()->getPath('plugins', $type.'/'.$plugin_id.'/lib/config/db.php');
+                $path = wa()->getConfig()->getPath('plugins').'/'.$type.'/'.$plugin_id.'/lib/config/db.php';
             } else {
                 list($app_id, $plugin_id) = explode('/', $app_id, 2);
                 $path = wa()->getConfig()->getAppsPath($app_id, 'plugins/'.$plugin_id.'/lib/config/db.php');

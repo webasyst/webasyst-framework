@@ -5,7 +5,7 @@
   <div class="article-body">
     <h1 class="s-page-title">[s`General settings`]</h1>
         <form action="?module=settingsGeneralSave" enctype="multipart/form-data" class="fields">
-            <div class="fields-group">
+            <div class="fields-group blank">
                 {* COMPANY NAME *}
                 <div class="field">
                     <div class="name for-input">
@@ -69,14 +69,15 @@
                                            name="logo[text][value]" value="{$logo.text.value|escape}"
                                            id="config-logo-text" autocomplete="off">
                                     <span class="hint">{sprintf('[`%s characters`]', '1-4')}</span>
-                                    <label>
-                                    <span class="switch middle smaller js-switch-two-line" id="two_line_text">
-                                        <input type="hidden" name="logo[two_lines]" value="0">
-                                        <input type="checkbox" id="two-line-text" name="logo[two_lines]"
-                                               value="1"{if $logo.two_lines} checked="checked"{/if}>
-                                    </span>
-                                        <span class="small">[`Larger font, two lines`]</span>
-                                    </label>
+
+                                    <div class="switch-with-text">
+                                        <span class="switch middle smaller js-switch-two-line" id="two_line_text">
+                                            <input type="hidden" name="logo[two_lines]" id="two-line-field" value="{$logo.two_lines}">
+                                            <input type="checkbox" name="" id="fake-two-line" {if $logo.two_lines}checked{/if}>
+                                        </span>
+                                        <label for="fake-two-line"><span class="small">[`Larger font, two lines`]</span></label>
+                                    </div>
+
                                 </div>
                                 <div class="color-picker">
                                     <button type="button" class="color-picker-button js-color-picker-button" data-background="gradient1" style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color:{$logo.text.color|escape|default:$logo.text.default_color}">
@@ -271,13 +272,35 @@
                 <div class="field">
                     <div class="name for-checkbox">[s`For developers`]</div>
                     <div class="value">
-                        <label>
+                        <div class="switch-with-text">
                             <span class="switch middle smaller shift-3" id="debug">
                                 <input type="checkbox" name="config[debug]" value="1"{if isset($config.debug) && $config.debug} checked="checked"{/if} id="config-debug-checkbox">
                             </span>
-                            [s`Developer mode`]
-                        </label>
+                            <label for="config-debug-checkbox">[s`Developer mode`]</label>
+                        </div>
                         <p class="hint">[s`Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development.`]</p>
+                    </div>
+                </div>
+
+                {* UI version select *}
+                <div class="field custom-my-24">
+                    <div class="name for-checkbox">[s`Default UI mode`]</div>
+                    <div class="value">
+                        <label>
+                            <span class="wa-radio">
+                                <input type="radio"{if isset($config.ui) && $config.ui === '2.0'} checked{/if} name="config[ui]" value="2.0">
+                                <span></span>
+                            </span>
+                            2.0 ([s`new`])
+                        </label>
+                        <br>
+                        <label class="custom-mr-8">
+                            <span class="wa-radio">
+                                <input type="radio"{if !isset($config.ui) || $config.ui === '1.3'} checked{/if} name="config[ui]" value="1.3">
+                                <span></span>
+                            </span>
+                            1.3 ([s`old`])
+                        </label>
                     </div>
                 </div>
 

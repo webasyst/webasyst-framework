@@ -36,16 +36,20 @@
                 <div class="s-currency-quote">
                     <div class="s-currency-quote-info">
                         <span class="heading">USD</span>
-                        <span class="highlighted{if $quotes.USD.diff >= 0} bg-green{else} bg-red{/if}" title="Изменение курса по сравнению с предыдущим днем">{$quotes.USD.diff_str|default:'&mdash;'}</span>
+                        {if isset($quotes.USD.diff)}
+                            <span class="highlighted{if $quotes.USD.diff >= 0} bg-green{else} bg-red{/if}" title="Изменение курса по сравнению с предыдущим днем">{$quotes.USD.diff_str|default:'&mdash;'}</span>
+                        {/if}
                     </div>
-                    <div class="quote" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.USD.val|default:'&mdash;'}</div>
+                    <div class="quote js-format-currency js-format-currency-view" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.USD.val|default:'&mdash;'}</div>
                 </div>
                 <div class="s-currency-quote">
                     <div class="s-currency-quote-info">
                         <span class="heading">EUR</span>
-                        <span class="highlighted{if $quotes.EUR.diff >= 0} bg-green{else} bg-red{/if}" title="Изменение курса по сравнению с предыдущим днем">{$quotes.EUR.diff_str|default:'&mdash;'}</span>
+                        {if isset($quotes.EUR.diff)}
+                            <span class="highlighted{if $quotes.EUR.diff >= 0} bg-green{else} bg-red{/if}" title="Изменение курса по сравнению с предыдущим днем">{$quotes.EUR.diff_str|default:'&mdash;'}</span>
+                        {/if}
                     </div>
-                    <div class="quote" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.EUR.val|default:'&mdash;'}</div>
+                    <div class="quote js-format-currency js-format-currency-view" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.EUR.val|default:'&mdash;'}</div>
                 </div>
             {else}
                 <span class="state-error">Нет данных за последние 10 дней.</span>
@@ -93,6 +97,23 @@
             }
         });
 
+        const currentWidget = document.querySelector('#currency-quotes-{$info["id"]}');
+        const currencyValues = currentWidget.querySelectorAll('.js-format-currency');
+        for(let value of currencyValues) {
+            var num = Number(value.textContent.replace(',','.'));
+            if (isNaN(num)) {
+                continue;
+            }
+            value.textContent = num.toLocaleString(navigator.language, {
+                minimumFractionDigits: 4
+            });
+
+            if (value.classList.contains('js-format-currency-view')) {
+                const currencyParts = value.textContent.split(/(\d+)/);
+                value.innerHTML = currencyParts[1] + currencyParts[2] + '<span class="small">' + currencyParts[3] + '</span>';
+            }
+        }
+
     });</script>
     {/if}
 {else}
@@ -110,17 +131,17 @@
                     <span class="hint">{sprintf("Показываются данные на %s", $date|wa_date)}</span>
                 {/if}
                 <div class="s-currency-quote">
-                    <h2 class="quote" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.USD.val|default:'&mdash;'}</h2>
+                    <h2 class="quote js-format-currency js-format-currency-view" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.USD.val|default:'&mdash;'}</h2>
                     <h4>
                         <span class="heading">USD</span>
-                        <span class="highlighted" title="Изменение курса по сравнению с предыдущим днем">{$quotes.USD.diff_str|default:'&mdash;'}</span>
+                        <span class="highlighted js-format-currency" title="Изменение курса по сравнению с предыдущим днем">{$quotes.USD.diff_str|default:'&mdash;'}</span>
                     </h4>
                 </div>
                 <div class="s-currency-quote">
-                    <h2 class="quote" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.EUR.val|default:'&mdash;'}</h2>
+                    <h2 class="quote js-format-currency js-format-currency-view" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.EUR.val|default:'&mdash;'}</h2>
                     <h4>
                         <span class="heading">EUR</span>
-                        <span class="highlighted" title="Изменение курса по сравнению с предыдущим днем">{$quotes.EUR.diff_str|default:'&mdash;'}</span>
+                        <span class="highlighted js-format-currency" title="Изменение курса по сравнению с предыдущим днем">{$quotes.EUR.diff_str|default:'&mdash;'}</span>
                     </h4>
                 </div>
             {else}
@@ -181,6 +202,18 @@
                         }, 500);
                     }
                 });
+
+                const currencyValues = document.querySelectorAll('.js-format-currency');
+                for(let value of currencyValues) {
+                    value.textContent = Number(value.textContent.replace(',','.')).toLocaleString(navigator.language, {
+                        minimumFractionDigits: 4
+                    });
+
+                    if (value.classList.contains('js-format-currency-view')) {
+                        const currencyParts = value.textContent.split(/(\d+)/);
+                        value.innerHTML = currencyParts[1] + currencyParts[2] + '<span class="small">' + currencyParts[3] + '</span>';
+                    }
+                }
 
             });</script>
     {/if}

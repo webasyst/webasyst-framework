@@ -1,33 +1,81 @@
-{strip}
 <div class="dialog t-invite-user-dialog" id="t-invite-user-dialog">
+    {$invite_html = ''}
+    <!-- plugin hook: 'frontend_invite_user' -->
+    {* @event frontend_invite_user.%app_id% *}
+    {foreach $frontend_invite_user as $html}
+        {if $html}
+            {$invite_html = $html}
+        {/if}
+    {/foreach}
     <div class="dialog-background"></div>
-    <form class="dialog-body" method="post" id="t-invite-user-form">
-        <h3 class="dialog-header">[`Invite new user`]</h3>
+    <form class="dialog-body min-width" method="post" id="t-invite-user-form" autocomplete="off">
+        <div class="dialog-header flexbox middle full-width">
+            <h3 class="custom-m-0">[`Add user`]</h3>
+            <a href="javascript:void(0)" class="custom-ml-16 gray js-contact-link" data-value="1">
+                <i class="fas fa-user-check custom-mr-4"></i>
+                [`Link with existing contact`]
+            </a>
+        </div>
         <div class="dialog-content">
-            <div class="fields">
-                <div class="fields-group">
-                    <div class="toggle rounded js-invite-type">
-                        <span class="selected" data-type="email"><i class="fas fa-envelope"></i> [`By email`]</span>
-                        <span data-type="link"><i class="fas fa-link"></i> [`By link`]</span>
-                        {if !$is_waid_forced}
-                        <span data-type="login"><i class="fas fa-key"></i> [`Enter login name & password`]</span>
-                        {/if}
-                    </div>
+            <p class="small gray js-user-autocomplete hidden">
+                [`A new user will be created from an existing contact managed by some of the apps installed in your Webasyst.`]
+            </p>
+            <div class="flexbox middle js-user-autocomplete hidden custom-mt-12 custom-mb-32">
+                <div class="state-with-inner-icon left wide custom-mr-8">
+                    <i class="icon fas fa-search"></i>
+                    <input type="text" class="js-autocomplete full-width" placeholder="[`Search contacts`]">
+                    <div class="js-user-autocomplete-error state-caution-hint" style="position:absolute;bottom:-1.5em;left:0;"></div>
                 </div>
-                <div class="fields-group js-by-email">
-                    <p class="small by-login-hint hidden">[`Enter a login name and a password for this user without sending an invitation.`]</p>
+                <button class="button outlined light-gray custom-mr-0 js-contact-link" data-value="0">[`Cancel`]</button>
+                <input type="hidden" name="contact_id">
+            </div>
+            <div class="flexbox js-autocompleted-user custom-mt-12 custom-mb-32 hidden">
+                <img data-src="/wa-content/img/userpic.svg" src="/wa-content/img/userpic.svg" class="userpic userpic-48 js-user-autocomplete-photo custom-mr-12">
+                <div class="flexbox vertical">
+                    <div class="custom-mb-4">
+                        <span class="js-user-autocomplete-name bold custom-mb-4"></span>
+                        <a href="javascript:void(0)" class="text-red custom-ml-4 js-contact-link" data-value="0" data-userblock">
+                            <i class="fas fa-times-circle text-gray"></i>
+                        </a>
+                    </div>
+                    <span class="js-user-autocomplete-email hint custom-mb-4"></span>
+                    <span class="js-user-autocomplete-phone hint"></span>
+                </div>
+            </div>
+
+            {if $invite_html}
+                {$invite_html}
+            {else}
+            <div class="fields">
+                <div class="toggle rounded js-invite-type">
+                    <span class="selected" data-type="email"><i class="fas fa-envelope"></i> [`By email`]</span>
+                    <span data-type="link"><i class="fas fa-link"></i> [`By link`]</span>
+                    {if !empty($is_waid_enabled)}
+                        <span data-type="code"><i class="fas fa-mobile-alt"></i> [`By code`]</span>
+                    {/if}
+                    {if !$is_waid_forced}
+                    <span data-type="login"><i class="fas fa-key"></i> [`Login & password`]</span>
+                    {/if}
+                    <span data-type="nobackend"><i class="fas fa-eye-slash"></i> [`Without access`]</span>
+                </div>
+
+                <div class="js-by-email">
+
+                    <p class="small by-email-hint js-by-email-hint custom-mt-24"><strong>[`Invite by email.`]</strong> [`Send the new user an email with a private one-time invitation link to join your team on Webasyst.`]</p>
+                    <p class="small by-login-hint js-by-login-hint hidden custom-mt-24"><strong>[`Add manually.`]</strong> [`Enter a login name and a password for this user without sending an invitation.`]</p>
+
                     <div class="field">
-                        <div class="name for-input">[`Email`]</div>
                         <div class="value">
-                            <input class="long bold" type="text" name="email" placeholder="[`name@company.com`]">
-                            <p class="hint by-email-hint">[`Enter an email address to send the new user an invitation with sign-in instructions.`]</p>
+                            <input class="long bold" type="text" name="email" autocomplete="new-password" placeholder="[`Email`]">
+                            <p class="hint by-email-hint js-by-email-hint">[`User email where an invitation link will be sent.`]</p>
+                            <p class="hint by-login-hint hidden js-by-login-hint">[`User email for notifications and recovering a forgotten password.`]</p>
                         </div>
                     </div>
-                    <div class="t-create-user-credentials hidden">
+                    <div class="t-create-user-credentials custom-mt-24 hidden">
                         <div class="field">
                             <div class="name for-input">[`Login`]</div>
                             <div class="value">
-                                <input type="text" name="login">
+                                <input type="text" name="login" autocomplete="new-password">
                             </div>
                         </div>
                         <div class="field">
@@ -35,7 +83,7 @@
                                 [`Password`]
                             </div>
                             <div class="value">
-                                <input type="password" name="password">
+                                <input type="password" name="password" autocomplete="new-password">
                             </div>
                         </div>
                         <div class="field">
@@ -43,84 +91,146 @@
                                 [`Confirm password`]
                             </div>
                             <div class="value">
-                                <input type="password" name="password_confirm">
+                                <input type="password" name="password_confirm" autocomplete="new-password">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="fields-group custom-mt-24 js-by-link hidden">
-                    <div class="field">
+                <div class="custom-mt-24 js-by-link hidden">
+
+                    <p class="small by-link-hint custom-mt-24"><strong>[`Invite by link.`]</strong> [`Generate a private one-time invitation link and send it to the new user via your favorite messaging app.`]</p>
+
+                    <div class="field js-c-group">
                         <div class="value">
-                            <input class="short bold custom-mr-8 custom-mt-8" type="text" name="firstname" placeholder="[`First name`]">
-                            <input class="short bold custom-mt-8" type="text" name="lastname" placeholder="[`Last name`]">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="value">
+                            <input class="short bold custom-mr-8 custom-mt-8" type="text" name="firstname" placeholder="[`First name`]" autocomplete="new-password">
+                            <input class="short bold custom-mt-8" type="text" name="lastname" placeholder="[`Last name`]" autocomplete="new-password">
                             <p class="hint">[`If neither first name nor last name are specified then the invitation date will be used as a temporary name.`]</p>
                         </div>
                     </div>
                 </div>
-                <div class="t-groups-wrapper custom-mt-32">
-                    <div class="fields-group">
-                        {if $groups}
-                            <div class="field">
-                                <div class="name custom-pt-0">[`Groups`]</div>
-                                <div class="value">
-                                    <ul class="small">
-                                        {foreach $groups as $_g}
-                                            <li data-group-id="{$_g.id}">
-                                                <label>
-                                                    <span class="wa-checkbox">
-                                                        <input type="checkbox" name="groups[{$_g.id}]">
-                                                        <span>
-                                                            <span class="icon">
-                                                                <i class="fas fa-check"></i>
-                                                            </span>
-                                                        </span>
-                                                    </span>
-                                                    &nbsp;{$_g.name|escape}
-                                                </label>
-                                            </li>
-                                        {/foreach}
-                                    </ul>
-                                </div>
-                            </div>
-                        {/if}
-                    </div>
 
-                    <div class="fields-group">
-                        {if $locations}
-                            <div class="field">
-                                <div class="name custom-pt-0">[`Locations`]</div>
-                                <div class="value">
-                                    <ul class="small">
-                                        {foreach $locations as $_g}
-                                            <li data-group-id="{$_g.id}">
-                                                <label>
-                                                    <span class="wa-checkbox">
-                                                        <input type="checkbox" name="groups[{$_g.id}]">
-                                                        <span>
-                                                            <span class="icon">
-                                                                <i class="fas fa-check"></i>
-                                                            </span>
+                {if !empty($is_waid_enabled)}
+                <div class="custom-mt-24 js-by-code hidden">
+                    <p class="small">{sprintf_wp(
+                        '<strong>Invite via a mobile app.</strong> The code generated below is to be used in any Webasyst mobile app in the ‘Add account’ screen to grant access to <code>%s</code>:',
+                        str_replace(['http://','https://'], '', $wa->domainUrl())
+                        )}</p>
+                    <div class="field">
+                        <div class="value">
+                            <div class="flexbox vertical middle">
+                                <p class="largest bold custom-mb-16 js-get-code-input" style="pointer-events:none;padding:0.75rem 1rem;background:var(--background-color);border-radius:0.5rem;letter-spacing:5px;"><span style="color:var(--gray);">XXXX XXXX</span></p>
+                                <button type="button" class="button green outlined rounded js-get-code hidden">
+                                    [`Get the code`]
+                                    <span class="hidden js-loading-indicator">...&nbsp;
+                                        <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>
+                                    </span>
+                                </button>
+                                <button type="button" class="button outlined rounded js-copy-code hidden">
+                                    <i class="fas fa-copy custom-mr-4"></i>
+                                    [`Copy the code`]
+                                    <span class="hidden js-loading-indicator">...&nbsp;
+                                        <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>
+                                    </span>
+                                </button>
+                                <button type="button" class="button green outlined rounded js-update-code hidden">
+                                    <i class="fas fa-redo custom-mr-4"></i> [`Refresh`]
+                                </button>
+                                <span class="js-code-timer custom-mt-32 bold larger hidden"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/if}
+
+                <div class="custom-mt-24 js-by-nobackend hidden">
+                    <p class="small">
+                        [`<strong>Add a team member with no access to Webasyst.</strong> The user won’t be able to access your Webasyst backend, but all other Webasyst users will be able to see the new user profile information in the Team app.`]
+                    </p>
+                    <p class="small hidden js-contact-name-info"><em>[`Once saved, <strong class="js-contact-name"></strong> will be visible in the Team app too.`]</em></p>
+                </div>
+
+                <div class="t-groups-wrapper custom-mt-32 js-groups">
+                    {if $groups}
+                        <div class="field">
+                            <div class="name custom-pt-0">[`Groups`]</div>
+                            <div class="value">
+                                <ul class="small">
+                                    {foreach $groups as $_g}
+                                        <li data-group-id="{$_g.id}">
+                                            <label>
+                                                <span class="wa-checkbox">
+                                                    <input type="checkbox" name="groups[{$_g.id}]">
+                                                    <span>
+                                                        <span class="icon">
+                                                            <i class="fas fa-check"></i>
                                                         </span>
                                                     </span>
-                                                    &nbsp;{$_g.name|escape}
-                                                </label>
-                                            </li>
-                                        {/foreach}
-                                    </ul>
+                                                </span>
+                                                &nbsp;{$_g.name|escape}
+                                            </label>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+                        </div>
+                    {/if}
+
+                    {if $locations}
+                        <div class="field">
+                            <div class="name custom-pt-0">[`Locations`]</div>
+                            <div class="value">
+                                <ul class="small">
+                                    {foreach $locations as $_g}
+                                        <li data-group-id="{$_g.id}">
+                                            <label>
+                                                <span class="wa-checkbox">
+                                                    <input type="checkbox" name="groups[{$_g.id}]">
+                                                    <span>
+                                                        <span class="icon">
+                                                            <i class="fas fa-check"></i>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                                &nbsp;{$_g.name|escape}
+                                            </label>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+                        </div>
+                    {/if}
+                </div>
+
+                <div class="t-groups-wrapper custom-mt-32 js-c-group">
+                    {$fields = teamUsersNewUserController::getAdditionalContactDataFieldsList()}
+
+                    <a href="javascript:void(0);" class="flexbox small inline middle js-ext-info-toggle">
+                        [`Add basic contact information`]
+                        <i class="custom-ml-4 fas fa-caret-down"></i>
+                    </a>
+
+                    <div class="js-ext-info hidden">
+                        <p class="small custom-mt-12">
+                            [`Prefill user’s basic contact information. Once signed in for the first time, the user will be happy to start with a non-empty profile.`]
+                        </p>
+                        <div class="fields">
+                            {foreach $fields as $field}
+                            <div class="field">
+                                <div class="name">{$field.name}</div>
+                                <div class="value">
+                                    <input type="text" name="c[{$field.id}]">
                                 </div>
                             </div>
-                        {/if}
+                            {/foreach}
+                        </div>
                     </div>
                 </div>
             </div>
+            {/if}
         </div>
         <footer class="dialog-footer fields">
-            {if $groups || $locations}
+            {if !$invite_html && ($groups || $locations)}
             <div class="field t-apps-list-wrapper custom-my-16 invisible">
                 <div class="name">[`The user will access`]</div>
                 <div class="value js-swiper-groups swiper-container">
@@ -187,225 +297,549 @@
             </div>
             {/if}
             <div class="action-buttons">
-                <div class="flexbox middle js-by-link hidden">
-                    <input type="text" class="wide short js-invite-link text-gray hidden">
-                    <button type="button" class="button outlined js-get-link"><i class="fas fa-link"></i> [`Create link`]</button>
-                    <button type="button" class="button js-copy-link hidden"><i class="fas fa-copy"></i> <span class="desktop-and-tablet-only">[`Copy`]</span></button>
-                    <button type="button" class="button light-gray js-close-dialog">[`Cancel`]</button>
-                </div>
-                <input type="submit" class="button js-submit-button js-by-email" value="[`Send`]">
-                <button type="button" class="button light-gray js-close-dialog js-by-email">[`Cancel`]</button>
+                {if !$invite_html}
+                    <button type="submit" class="button js-submit-button js-by-email">[`Send invitation`]</button>
+                    <button type="button" class="button light-gray js-close-dialog js-by-email">[`Close`]</button>
+
+                    <div class="flexbox middle js-by-link hidden">
+                        <input type="text" class="wide short js-invite-link text-gray hidden">
+                        <button type="button" class="button outlined js-get-link">
+                            <i class="fas fa-link"></i> [`Create link`]<span class="hidden js-loading-indicator">...&nbsp;
+                                <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>
+                            </span>
+                        </button>
+                        <button type="button" class="button js-copy-link hidden"><i class="fas fa-copy"></i> <span class="desktop-and-tablet-only">[`Copy`]</span></button>
+                        <button type="button" class="button light-gray js-close-dialog">[`Close`]</button>
+                    </div>
+
+                    {if !empty($is_waid_enabled)}
+                    <div class="flexbox middle js-by-code hidden">
+                        <button type="button" class="button outlined js-get-code-footer">
+                            <i class="fas fa-hashtag"></i>
+                            [`Get the code`]
+                            <span class="hidden js-loading-indicator">...&nbsp;
+                                <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>
+                            </span>
+                        </button>
+                        <button type="button" class="button light-gray js-close-dialog">[`Close`]</button>
+                        <a href="https://www.webasyst.{if $wa->locale() == 'ru_RU'}ru{else}com{/if}/mobile/" class="custom-ml-auto small bold" target="_blank">[`Browse Webasyst mobile apps`] <i class="fas fa-external-link-alt small opacity-50"></i></a>
+                    </div>
+                    {/if}
+
+                    <button type="submit" class="button js-submit-button js-by-nobackend hidden">[`Add user`]</button>
+                    <button type="button" class="button light-gray js-close-dialog js-by-nobackend hidden">[`Close`]</button>
+                {/if}
             </div>
         </footer>
     </form>
-</div>
-{/strip}
-<script>
-    (function ($) {
-        "use strict";
+    <script>
+        (function ($) {
+            "use strict";
 
-        const dialog = $('#t-invite-user-dialog').data('dialog'),
-            $dialog = dialog.$wrapper,
-            locales = {
-                "get_link": {_w("Create link")|json_encode},
-                "make_invite": {_w('Creating an<span class="desktop-and-tablet-only"> invitation</span>')|json_encode},
-                "copy": {_w("Copy")|json_encode},
-                "copied": {_w("Copied")|json_encode},
-                "add": {_w("Add")|json_encode},
-                "send": {_w("Send")|json_encode},
-                "done": '[`Done`]'
-            },
-            $form = $dialog.find('form'),
-            $button = $form.find(".js-submit-button"),
-            $groups_wrapper = $form.find('.t-groups-wrapper'),
-            $login_hint = $form.find('.js-by-login-hint');
+            const dialog = $('#t-invite-user-dialog').data('dialog'),
+                $dialog = dialog.$wrapper,
+                locales = {
+                    "get_link": {_w("Create link")|json_encode},
+                    "make_invite": {_w('Creating an<span class="desktop-and-tablet-only"> invitation</span>')|json_encode},
+                    "copy": {_w("Copy")|json_encode},
+                    "copied": {_w("Copied")|json_encode},
+                    "add_user": {_w("Add user")|json_encode},
+                    "send_invitation": {_w("Send invitation")|json_encode},
+                    "done": '[`Done`]',
+                    "team_user": '[`%s is in the team already`]',
+                },
+                $form = $dialog.find('form'),
+                $button = $form.find(".js-submit-button"),
+                $groups_wrapper = $form.find('.t-groups-wrapper'),
+                $login_hint = $form.find('.js-by-login-hint'),
+                $email_hint = $form.find('.js-by-email-hint');
 
-        let form_action = "?module=users&action=invite";
+            var form_action = "?module=users&action=invite";
 
-        const apps_group_slider = new Swiper('.js-swiper-groups', {
-            roundLengths: true,
-            slideClass: 't-access-app',
-            height: 48,
-            slidesPerView: 'auto',
-            slidesOffsetBefore: 28,
-            slidesOffsetAfter: 28,
-            spaceBetween: 5,
-            navigation: {
-                nextEl: ".t-user-groups-nav.right",
-                prevEl: ".t-user-groups-nav.left",
-            },
-            mousewheel: true
-        });
-
-        $(".t-dialog-app-icon").waTooltip();
-
-        $form.on('keyup change', '.state-error', function () {
-            $(this)
-                .removeClass('state-error')
-                .parent()
-                .find(".state-error-hint").remove();
-        });
-
-        $form.on('click', '[name^="groups"]', function () {
-            let group_id = this.closest('li').dataset.groupId,
-                $checked = $groups_wrapper.find(':checked'),
-                has_checked = $checked.length,
-                $apps_group_wrapper = $form.find('.t-apps-list-wrapper'),
-                $apps_group = $apps_group_wrapper.find('.swiper-wrapper'),
-                $tooltips = $apps_group.find('.wa-tooltip-template');
-
-            $apps_group_wrapper.toggleClass('invisible', !has_checked)
-
-            dialog.resize();
-
-            if(has_checked) {
-                $tooltips.each(function () {
-                    let $tooltip = this,
-                        $group_tooltip = $($tooltip).find(`[data-group-id="${ group_id }"]`),
-                        $group_parent = $group_tooltip.closest('li'),
-                        access_name = '',
-                        checked_group_access = { },
-                        no_access = false;
-
-                    $checked.each(function () {
-                        const group_id = this.closest('li').dataset.groupId,
-                            tooltip_data = $tooltip.querySelector(`[data-group-id="${ group_id }"]`).dataset;
-                        checked_group_access[tooltip_data.accessId] = tooltip_data.accessName;
-                    })
-
-                    if ('full' in checked_group_access) {
-                        access_name = checked_group_access["full"];
-                    }else if('limited' in checked_group_access){
-                        access_name = checked_group_access["limited"];
-                    }else if('no' in checked_group_access){
-                        no_access = true;
-                        access_name = checked_group_access["no"];
-                    }
-
-                    $group_parent.toggleClass('hidden', no_access);
-                    $group_parent.find('.t-dialog-app-icon')[0]._tippy.setContent(access_name);
-                });
-
-                let apps_count = apps_group_slider.$wrapperEl.find(`.${ apps_group_slider.params.slideClass }:not(.hidden)`).length,
-                    apps_fit = (apps_count < 7);
-
-                if (apps_count) {
-                    apps_group_slider.navigation.nextEl.classList.toggle('hidden', apps_fit)
-                    apps_group_slider.navigation.prevEl.classList.toggle('hidden', apps_fit)
-                    apps_group_slider.params.slidesOffsetBefore = 0;
-                    if (apps_fit) {
-                        apps_group_slider.params.slidesOffsetBefore = 0;
-                        apps_group_slider.params.slidesOffsetAfter = 0;
-                    }else{
-                        apps_group_slider.params.slidesOffsetBefore = 28;
-                        apps_group_slider.params.slidesOffsetAfter = 28;
-                    }
-                    apps_group_slider.update();
-                    apps_group_slider.slideTo(0);
-                }else{
-                    $apps_group_wrapper.addClass('invisible');
-                    dialog.resize();
-                }
-            }
-        });
-
-        $(".js-invite-type").waToggle({
-            change: function (event, target)  {
-                const $by_email = document.querySelectorAll('.js-by-email'),
-                    $by_link = document.querySelectorAll('.js-by-link');
-
-                Array.from($by_email).forEach(item => item.classList.toggle('hidden', (target.dataset.type !== 'email' && target.dataset.type !== 'login')))
-                Array.from($by_link).forEach(item => item.classList.toggle('hidden', target.dataset.type !== 'link'))
-
-                let is_login = (target.dataset.type === 'login');
-                $form.find('.t-create-user-credentials').toggleClass('hidden', !is_login).find(':input').attr('disabled', !is_login);
-                $button.val(is_login ? locales["add"] : locales["send"]);
-                $by_email[0].classList.toggle('is-by-login', is_login);
-
-                $login_hint.toggleClass('hidden', !is_login)
-
-                if (is_login) {
-                    form_action = "?module=users&action=create";
-                }
-
-                dialog.resize();
-            }
-        });
-
-        $form.submit(function (e) {
-            e.preventDefault();
-
-            $form.find('.state-error-hint').remove();
-            $form.find('.state-error').removeClass('state-error');
-
-            $.post(form_action, $form.serialize(), function (result) {
-                if (result.status === 'ok') {
-                    // close dialog
-                    dialog.close();
-                    // reload sidebar
-                    $.team.sidebar.reload();
-                    // reload content
-                    if (result.data.contact_url) {
-                        $.team.content.load(result.data.contact_url);
-                    }
-                } else {
-                    $.each(result.errors, function (key, value) {
-                        let $input;
-                        if ($.isArray(value)) {
-                            $input = $form.find('[name="' + value[1] + '"]').addClass('state-error');
-                            value = value[0];
-                        } else {
-                            $input = $form.find('[name="email"]').addClass('state-error');
-                        }
-
-                        $input.after($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
-                    });
-                }
-            }, 'json');
-
-        });
-
-        // Get Link
-        $('.js-get-link').on('click', function () {
-            const $get_link = $(this);
-            $get_link.html(`<i class="fas fa-link"></i> ${ locales.make_invite }... <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>`)
-
-            $.post($.team.app_url + '?module=users&action=createInvitation', $form.serialize(), function(response) {
-                if(response.status === 'ok') {
-                    $('.js-close-dialog:first').toggleClass('light-gray gray').text(locales.done)
-                    $get_link.remove()
-                    $('.js-invite-link').val(`${ response.data.invitation_link }`).toggleClass('hidden')
-                    $('.js-copy-link').toggleClass('hidden')
-                    // reload sidebar
-                    $.team.sidebar.reload();
-                }else{
-                    $.each(response.errors, function (key, value) {
-                        $form.find(`[name="${ key }"]`)
-                        .addClass('state-error')
-                        .parent()
-                        .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
-                    });
-                }
-            }, 'json').always( function() {
-                $get_link.html(`<i class="fas fa-link"></i> ${ locales.get_link }`)
+            const apps_group_slider = new Swiper('.js-swiper-groups', {
+                roundLengths: true,
+                slideClass: 't-access-app',
+                height: 48,
+                slidesPerView: 'auto',
+                slidesOffsetBefore: 28,
+                slidesOffsetAfter: 28,
+                spaceBetween: 5,
+                navigation: {
+                    nextEl: ".t-user-groups-nav.right",
+                    prevEl: ".t-user-groups-nav.left",
+                },
+                mousewheel: true
             });
 
-        })
-        // Copy link
-        $('.js-copy-link').on('click', function () {
-            let $invite_link = document.querySelector('.js-invite-link'),
-                $btn = $(this);
+            newUserAutocomplete();
 
-            $invite_link.select();
-            $invite_link.setSelectionRange(0, 99999);
+            $(".t-dialog-app-icon").waTooltip();
 
-            document.execCommand("copy");
-            $btn.addClass('green').html(`<i class="fas fa-check"></i> <span class="desktop-and-tablet-only">${ locales.copied }</span>`)
-            setTimeout(()=>{
-                $btn.removeClass('green').html(`<i class="fas fa-copy"></i> <span class="desktop-and-tablet-only">${ locales.copy }</span>`)
-            }, 1500)
+            $form.on('keyup change', '.state-error', function () {
+                $(this)
+                    .removeClass('state-error')
+                    .parent()
+                    .find(".state-error-hint").remove();
+            });
 
-        })
+            $form.on('click', '[name^="groups"]', function () {
+                let group_id = this.closest('li').dataset.groupId,
+                    $checked = $groups_wrapper.find(':checked'),
+                    has_checked = $checked.length,
+                    $apps_group_wrapper = $form.find('.t-apps-list-wrapper'),
+                    $apps_group = $apps_group_wrapper.find('.swiper-wrapper'),
+                    $tooltips = $apps_group.find('.wa-tooltip-template');
 
-    })(jQuery);
-</script>
+                $apps_group_wrapper.toggleClass('invisible', !has_checked)
+
+                dialog.resize();
+
+                if(has_checked) {
+                    $tooltips.each(function () {
+                        let $tooltip = this,
+                            $group_tooltip = $($tooltip).find(`[data-group-id="${ group_id }"]`),
+                            $group_parent = $group_tooltip.closest('li'),
+                            access_name = '',
+                            checked_group_access = { },
+                            no_access = false;
+
+                        $checked.each(function () {
+                            const group_id = this.closest('li').dataset.groupId,
+                                tooltip_data = $tooltip.querySelector(`[data-group-id="${ group_id }"]`).dataset;
+                            checked_group_access[tooltip_data.accessId] = tooltip_data.accessName;
+                        })
+
+                        if ('full' in checked_group_access) {
+                            access_name = checked_group_access["full"];
+                        }else if('limited' in checked_group_access){
+                            access_name = checked_group_access["limited"];
+                        }else if('no' in checked_group_access){
+                            no_access = true;
+                            access_name = checked_group_access["no"];
+                        }
+
+                        $group_parent.toggleClass('hidden', no_access);
+                        $group_parent.find('.t-dialog-app-icon')[0]._tippy.setContent(access_name);
+                    });
+
+                    let apps_count = apps_group_slider.$wrapperEl.find(`.${ apps_group_slider.params.slideClass }:not(.hidden)`).length,
+                        apps_fit = (apps_count < 7);
+
+                    if (apps_count) {
+                        apps_group_slider.navigation.nextEl.classList.toggle('hidden', apps_fit)
+                        apps_group_slider.navigation.prevEl.classList.toggle('hidden', apps_fit)
+                        apps_group_slider.params.slidesOffsetBefore = 0;
+                        if (apps_fit) {
+                            apps_group_slider.params.slidesOffsetBefore = 0;
+                            apps_group_slider.params.slidesOffsetAfter = 0;
+                        }else{
+                            apps_group_slider.params.slidesOffsetBefore = 28;
+                            apps_group_slider.params.slidesOffsetAfter = 28;
+                        }
+                        apps_group_slider.update();
+                        apps_group_slider.slideTo(0);
+                    }else{
+                        $apps_group_wrapper.addClass('invisible');
+                        dialog.resize();
+                    }
+                }
+            });
+
+            $(".js-invite-type").waToggle({
+                change: function (event, target)  {
+                    const $by_email = $dialog.find('.js-by-email')
+                    const $by_link = $dialog.find('.js-by-link')
+                    const $by_code = $dialog.find('.js-by-code')
+                    const $by_nobackend = $dialog.find('.js-by-nobackend')
+
+                    $by_email.toggleClass('hidden', (target.dataset.type !== 'email' && target.dataset.type !== 'login'));
+                    $by_link.toggleClass('hidden', (target.dataset.type !== 'link'));
+                    $by_code.toggleClass('hidden', (target.dataset.type !== 'code'));
+                    $by_nobackend.toggleClass('hidden', (target.dataset.type !== 'nobackend'));
+
+                    let is_login = (target.dataset.type === 'login');
+                    let is_nobackend = (target.dataset.type === 'nobackend');
+                    $form.find('.t-create-user-credentials').toggleClass('hidden', !is_login).find(':input').attr('disabled', !is_login);
+                    $button.text(is_login ? locales["add_user"] : locales["send_invitation"]);
+                    $by_email[0].classList.toggle('is-by-login', is_login);
+                    $login_hint.toggleClass('hidden', !is_login);
+                    $email_hint.toggleClass('hidden', is_login);
+
+                    form_action = "?module=users&action=invite";
+                    if (is_login) {
+                        form_action = "?module=users&action=create";
+                        $dialog.find('[name="email"]').closest('.field').toggleClass('hidden', !($('.js-autocompleted-user').hasClass('hidden')));
+                    }
+
+                    if (target.dataset.type === 'email') {
+                        $dialog.find('[name="email"]').closest('.field').toggleClass('hidden', false);
+                    }
+
+                    const is_by_code = (target.dataset.type === 'code');
+                    $dialog.find('.js-groups').toggleClass('hidden', is_by_code);
+                    updateExtInfoForm();
+
+                    if (is_nobackend){
+                        $button.text(locales["add_user"]);
+                        $form.find('.t-apps-list-wrapper').toggleClass('invisible', true)
+                        $form.find('.js-groups [type="checkbox"]').attr('checked', false).prop('checked', false);
+                        form_action = "?module=users&action=createNobackend";
+                    }
+                    $dialog.find('.js-groups').toggleClass('hidden', is_nobackend)
+                    $dialog.find('.js-ext-info').toggleClass('hidden', !is_nobackend);
+                    $dialog.find('.js-ext-info > p').toggleClass('hidden', is_nobackend);
+                    $dialog.find('.js-ext-info-toggle').toggleClass('hidden', is_nobackend);
+
+                    dialog.resize();
+                }
+            });
+
+            updateExtInfoForm();
+
+            function updateExtInfoForm() {
+                const selected_type = $('.js-invite-type .selected[data-type]').data('type');
+                const $ext_info = $dialog.find('.js-ext-info')
+                $ext_info.find('[name*="firstname"], [name*="lastname"]').attr('disabled', selected_type === 'link');
+                $ext_info.find('[name*="email"]').attr('disabled', selected_type === 'email' || selected_type === 'login');
+            }
+
+            $form.submit(function (e) {
+                e.preventDefault();
+
+                $form.find('.state-error-hint').remove();
+                $form.find('.state-error').removeClass('state-error');
+
+                $button.append('<i class="fas fa-spinner fa-spin custom-ml-4 js-state-loading-spinner"></i>');
+                $button.prop('disabled', true);
+
+                $.post(form_action, $form.serialize(), function (result) {
+                    $button.find('.js-state-loading-spinner').remove();
+                    $button.prop('disabled', false);
+
+                    if (result.status === 'ok') {
+                        // close dialog
+                        dialog.close();
+                        // reload sidebar
+                        $.team.sidebar.reload();
+                        // reload content
+                        if (result.data.contact_url) {
+                            $.team.content.load(result.data.contact_url);
+                        }
+                    } else {
+                        $.each(result.errors, function (key, value) {
+                            let $input;
+                            if ($.isArray(value)) {
+                                if (value[1] == "general") {
+                                    $('.action-buttons').append('<p class="state-error-hint">'+value[0]+'</p>');
+                                    return;
+                                }
+                                $input = $form.find('[name="' + value[1] + '"]').addClass('state-error');
+                                value = value[0];
+                            } else {
+                                $input = $form.find('[name="email"]').addClass('state-error');
+                            }
+
+                            $input.after($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                        });
+                    }
+                }, 'json');
+
+            });
+
+            // Get Link
+            $dialog.find('.js-get-link').on('click', function () {
+                $form.find('.state-error-hint').remove();
+                $form.find('.state-error').removeClass('state-error');
+
+                const $submit_button = $(this)
+
+                $submit_button.find('.js-loading-indicator').removeClass('hidden');
+
+                var controller_url = $.team.app_url + '?module=users&action=createInvitation';
+
+                $.post(controller_url, $form.serialize(), response => {
+                    if(response.status === 'ok') {
+                        $('.js-close-dialog:first')
+                            .toggleClass('light-gray gray')
+                            .text(locales.done)
+                            .on('click', () => {
+                                if (response.data?.contact_url) {
+                                    $.team.content.load(response.data?.contact_url);
+                                }
+                            })
+                        $submit_button.remove()
+                        $('.js-invite-link').val(response.data.invitation_link).toggleClass('hidden');
+                        $('.js-copy-link').toggleClass('hidden')
+                        // reload sidebar
+                        $.team.sidebar.reload();
+                    } else {
+                        $.each(response.errors, function (key, value) {
+                            if (key == "general") {
+                                $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                            } else {
+                                var $input = $form.find(`[name="${ key }"]`);
+                                if ($input.length) {
+                                    $input
+                                        .addClass('state-error')
+                                        .parent()
+                                        .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                                } else {
+                                    $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                                }
+                            }
+                        });
+                    }
+                }, 'json')
+                    .always(() => $submit_button.find('.js-loading-indicator').addClass('hidden'));
+            })
+            // Copy link
+            $dialog.find('.js-copy-link').on('click', function () {
+                let $invite_link = document.querySelector('.js-invite-link'),
+                    $btn = $(this);
+
+                $invite_link.select();
+                $invite_link.setSelectionRange(0, 99999);
+
+                document.execCommand("copy");
+                $btn.addClass('green').html(`<i class="fas fa-check"></i> <span class="desktop-and-tablet-only">${ locales.copied }</span>`)
+                setTimeout(()=>{
+                    $btn.removeClass('green').html(`<i class="fas fa-copy"></i> <span class="desktop-and-tablet-only">${ locales.copy }</span>`)
+                }, 1500)
+            })
+            // Get Code
+            $dialog.find('.js-get-code, .js-update-code').on('click', function (e, context) {
+                $form.find('.state-error-hint').remove();
+                $form.find('.state-error').removeClass('state-error');
+                const $submit_button = $(context ?? this)
+                const $copy_button = $('.js-copy-code')
+                const $code_timer = $('.js-code-timer')
+                const $code_timer_info = $('.js-code-timer-info')
+                const is_update = $submit_button.hasClass('js-update-code')
+                const controller_url = $.team.app_url + '?module=users&action=createInvitation&by_code=1';
+
+                $submit_button.find('.js-loading-indicator').removeClass('hidden');
+
+                $.post(controller_url, $form.serialize(), response => {
+                    if(response.status === 'ok') {
+                        const invitation_code = response.data.invitation_code
+                        const middleChar = Math.floor(invitation_code.length / 2);
+
+                        $submit_button.addClass('hidden')
+                        $copy_button.removeClass('hidden');
+
+                        $('.js-get-code-input')
+                            .empty()
+                            .text(invitation_code.substring(0, middleChar) + ' ' + invitation_code.substring(middleChar, invitation_code.length))
+                            .data('code', invitation_code);
+
+                        if ($code_timer_info.length) {
+                            $code_timer_info.remove()
+                        }
+
+                        const countdown = setInterval(() => {
+                            const distance = (response.data.invitation_expire * 1000) - Date.now();
+                            const seconds = Math.floor((distance / 1000) % 60);
+                            const minutes = Math.floor((distance / 1000 / 60) % 60);
+
+                            $code_timer.text(`${ ("0" + minutes).slice(-2) }:${ ("0" + seconds).slice(-2) }`);
+
+                            if (distance <= 0) {
+                                clearInterval(countdown);
+
+                                if ($('.js-code-timer-info').length) {
+                                    $('.js-code-timer-info').remove()
+                                }
+
+                                $code_timer
+                                    .text('00:00')
+                                    .after('<span class="js-code-timer-info text-orange">[`The code has expired.`]</span>');
+
+                                $('.js-get-code-input').empty().html('<span style="color:var(--gray);">XXXX XXXX</span>')
+
+                                $copy_button.addClass('hidden');
+
+                                if (is_update) {
+                                    $submit_button.removeClass('hidden');
+                                }else{
+                                    $('.js-update-code').removeClass('hidden');
+                                }
+                            }
+                        }, 1000);
+
+                        $code_timer
+                            .removeClass('hidden')
+                            .after('<span class="js-code-timer-info text-gray small">[`The code will expire shortly.`]</span>');
+                    } else {
+                        $.each(response.errors, function (key, value) {
+                            if (key == "general") {
+                                $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                            } else {
+                                var $input = $form.find(`[name="${ key }"]`);
+                                if ($input.length) {
+                                    $input
+                                        .addClass('state-error')
+                                        .parent()
+                                        .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                                } else {
+                                    $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                                }
+                            }
+                        });
+                    }
+                }, 'json')
+                    .always(() => $submit_button.find('.js-loading-indicator').addClass('hidden'));
+            });
+
+            $dialog.find('.js-get-code-footer').on('click', function () {
+                $dialog.find('.js-get-code').trigger('click', this);
+            });
+
+            $dialog.find('.js-copy-code').on('click', async function () {
+                let $code_input_val = $('.js-get-code-input').data('code'),
+                    $btn = $(this);
+                try {
+                    await $.wa.copyToClipboard($code_input_val);
+
+                    $btn.addClass('green').html(`<i class="fas fa-check"></i> ${ locales.copied }`)
+                    setTimeout(()=>{
+                        $btn.removeClass('green').html(`<i class="fas fa-copy"></i> ${ locales.copy }`)
+                    }, 1500)
+                }catch (e) {
+                    console.error(e)
+                }
+            })
+
+            // Toggle visibility of additional contact info form
+            $dialog.find('.js-ext-info-toggle').on('click', function () {
+                $dialog.find('.js-ext-info').toggleClass('hidden');
+                dialog.resize();
+            })
+
+            // Update values of disabled fields in additional contact info form when user changes values in fields above the form
+            const ext_fields = $dialog.find('.js-ext-info').find('[name*="firstname"],[name*="lastname"],[name*="email"]');
+            $dialog.find('.js-by-link').find('[name="firstname"],[name="lastname"]').on('input', function () {
+                const name = $(this).attr('name');
+                ext_fields.filter('[name*="'+name+'"]').val($(this).val())
+            });
+            $dialog.find('.js-by-email').find('[name="email"]').on('input', function () {
+                const name = $(this).attr('name');
+                ext_fields.filter('[name*="'+name+'"]').val($(this).val());
+            });
+
+            function newUserAutocomplete() {
+                $('.js-autocomplete').autocomplete({
+                    source: getSource,
+                    minLength: 2,
+                    open: function() {
+                        $('.js-user-autocomplete-error').text('');
+                    },
+                    focus: function(event, ui) {
+                        if (ui.item.is_user === '1') {
+                            return false;
+                        }
+
+                        $(this).val(ui.item.name);
+                        return false;
+                    },
+                    select: function( event, ui ) {
+                        if (ui.item.is_user === '1') {
+                            $('.js-user-autocomplete-error').text(locales.team_user.replace('%s', ui.item.name));
+
+                            return false;
+                        } else {
+                            $('.js-user-autocomplete-error').text('');
+                        }
+
+                        if (ui.item.id) {
+                            for(const item in ui.item) {
+                                $dialog.find(`[name="c[${ item }]"]`)
+                                    .val(ui.item[item])
+                                    .attr({
+                                        'disabled': true,
+                                        'data-found-contact': '1',
+                                    })
+                            }
+
+                            $('.js-user-autocomplete-name').text(ui.item.name);
+                            $('.js-contact-name').text(ui.item.name);
+                            if (ui.item.email) {
+                                $('.js-user-autocomplete-email').text(ui.item.email)
+                                $dialog.find(`[name="email"]`).val(ui.item.email);
+                            }
+                            if (ui.item.phone) {
+                                $('.js-user-autocomplete-phone').text(ui.item.phone)
+                            }
+                            if (ui.item.photo_url) {
+                                $('.js-user-autocomplete-photo').attr('src', ui.item.photo_url)
+                            }
+
+                            $('[name="contact_id"]').val(ui.item.id)
+
+                            $('.js-user-autocomplete').toggleClass('hidden', true);
+                            $('.js-autocompleted-user').toggleClass('hidden', false);
+                            $('.js-c-group').toggleClass('hidden', true);
+                            $('.js-contact-name-info').toggleClass('hidden', false);
+                            $dialog.find('.js-by-email.is-by-login [name="email"]').closest('.field').toggleClass('hidden', true);
+                        }
+
+                        $('.js-autocomplete').val("");
+                        return false;
+                    }
+                });
+
+                function getSource( request, response ) {
+                    const href = $.team.app_url + "?module=autocomplete",
+                        data = {
+                            term: request.term,
+                            type: 'contact'
+                        };
+
+                    $.post(href, data, (data) => response( data ), "json");
+                }
+
+                $dialog.find('.js-contact-link').on('click', function(e) {
+                    e.preventDefault();
+                    const value = this.dataset.value;
+                    const is_userblock = this.hasAttribute('data-userblock');
+
+                    $dialog.find('.js-autocompleted-user').addClass('hidden');
+
+                    $dialog.find('.js-user-autocomplete').removeClass('hidden');
+
+                    $dialog.find('[name="contact_id"]').val('')
+                    $dialog.find(`[name="email"]`).val('');
+
+                    const $photo = $dialog.find('.js-user-autocomplete-photo');
+                    $photo.attr('src', $photo.data('src'));
+
+                    $dialog.find('.js-user-autocomplete-name').text('')
+                    $dialog.find('.js-user-autocomplete-email').text('')
+                    $dialog.find('.js-user-autocomplete-phone').text('')
+                    $dialog.find('.js-user-autocomplete-error').text('');
+
+                    $dialog.find('[data-found-contact="1"]')
+                        .val('')
+                        .attr({
+                            'disabled': false,
+                            'data-found-contact': '0',
+                        })
+
+                    if (value == 1) {
+                        $('.js-autocomplete').focus();
+                    }else{
+                        $('.js-autocomplete').val('');
+                        $dialog.find('.js-autocompleted-user').addClass('hidden');
+                        $dialog.find('.js-user-autocomplete').addClass('hidden');
+                        $dialog.find('.js-contact-name-info').addClass('hidden');
+                    }
+
+                    $dialog.find('.js-c-group').toggleClass('hidden', is_userblock);
+                    $dialog.find('.js-by-email.is-by-login [name="email"]').closest('.field').toggleClass('hidden', is_userblock);
+                })
+            }
+        })(jQuery);
+    </script>
+</div>
+<style>
+    .t-invite-user-dialog p { line-height: 1.5; }
+</style>

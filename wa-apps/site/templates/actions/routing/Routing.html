@@ -51,7 +51,7 @@
             	<div class="block double-padded align-center hint">
             		<br />
             		<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />
-            		[`Select route to manage its settings`]
+            		[`Select a route to manage its settings`]
             		<div class="clear"></div>
             	</div>
             </div>
@@ -67,7 +67,7 @@ $.wa.site.updateIncorrectRouting({$routing_errors.incorrect_ids|json_encode});
 function site_routing_full()
 {
     $("#s-route-params").html('<div class="block double-padded align-center hint"><br />' +
-            '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select route to manage its settings`]' +
+            '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select a route to manage its settings`]' +
             '<div class="clear"></div></div>'
     ).animate({ 'margin-left': '75%'}, 'slow');
     $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');

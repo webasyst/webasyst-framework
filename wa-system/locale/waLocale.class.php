@@ -60,7 +60,7 @@ class waLocale
 
     public static function getString($id)
     {
-        return ifset(self::$strings[$id]);
+        return ifset(self::$strings, $id, null);
     }
 
     /**
@@ -133,6 +133,9 @@ class waLocale
      */
     public static function load($locale, $locale_path, $domain, $textdomain = true)
     {
+        if (empty($locale) || empty($locale_path)) {
+            return;
+        }
         if (!self::$locale || $textdomain) {
             self::$locale = $locale;
         }
@@ -463,7 +466,7 @@ function _wd($domain, $msgid1, $msgid2 = null, $n = null, $sprintf = true)
 }
 
 /**
- * Translate string in domain of current active plugin, if any.
+ * Translate string in domain of current active theme or plugin, if any.
  * Otherwise fall back to _w()
  *
  * @param string $msgid1
@@ -478,26 +481,48 @@ function _wp($msgid1, $msgid2 = null, $n = null, $sprintf = true)
     $result = $msgid1;
     $domain = null;
 
-    //get by themes
+    // Get by themes
     $themes = wa()->getActiveThemes();
-    while ($themes && $result === $msgid1) {
-        $domain = array_pop($themes);
-        $result = _wd($domain, $msgid1, $msgid2, $n, $sprintf);
+    if ($themes) {
+        if ($msgid2 === null) {
+            // localization via string in theme.xml
+            $str = waLocale::getString($msgid1);
+            if ($str) {
+                return $str;
+            }
+        }
+        // gettext localization in themes
+        while ($themes && ($result === $msgid1 || $result == $msgid2)) {
+            $domain = array_pop($themes);
+            $result = _wd($domain, $msgid1, $msgid2, $n, false);
+        }
     }
 
     // Get by plugins
-    if ($result === $msgid1 && $domain = wa()->getActiveLocaleDomain()) {
-        $result = _wd($domain, $msgid1, $msgid2, $n, $sprintf);
+    if ($result === $msgid1) {
+        $domain = wa()->getActiveLocaleDomain();
+        if ($domain) {
+            $result = _wd($domain, $msgid1, $msgid2, $n, false);
+        }
     }
 
     // Get by apps
     if (!$domain || $result === $msgid1) {
-        $result = _w($msgid1, $msgid2, $n, $sprintf);
+        $result = _w($msgid1, $msgid2, $n, false);
+        // condition from _w function
+        if ($n === 'm' || $n === 'f') {
+            $sprintf = false;
+        }
     }
 
     // Get by system
     if ($result === $msgid1) {
-        $result = _ws($msgid1, $msgid2, $n, $sprintf);
+        $result = _ws($msgid1, $msgid2, $n, false);
     }
-    return $result;
+
+    if ($sprintf && strpos($result, '%') !== false && $msgid2 !== null) {
+        return sprintf($result, $n);
+    } else {
+        return $result;
+    }
 }

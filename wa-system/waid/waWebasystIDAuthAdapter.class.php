@@ -197,7 +197,7 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
     public function getRedirectUri()
     {
         $auth_url = $this->getAuthCodeUrl();
-        if (wa()->getUser()->getId() > 0) {
+        if (!empty($auth_url) && wa()->getUser()->getId() > 0) {
             $user_info = $this->getUserInfo();
             $user_info_str = waUtils::urlSafeBase64Encode(json_encode($user_info));
             $auth_url .= '&info=' . $user_info_str;

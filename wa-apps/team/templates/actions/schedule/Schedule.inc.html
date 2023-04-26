@@ -28,19 +28,51 @@
 {/if}
 
 {if !empty($data)}
+    {* DATE PICKER *}
+    {*
+    <div class="t-date-filter_ t-header-item custom-ml-auto custom-mx-auto-mobile custom-mx-auto-tablet custom-mb-16-tablet custom-mb-16-mobile flexbox middle js-date-filter" id="t-date-filter">
+        {$_set_year = date('Y', strtotime($period_start))}
+        {$_start_year = date('Y', strtotime('-5 years'))}
+        {$_end_year = date('Y', strtotime('5 years'))}
+        {if $_set_year > $_end_year}
+            {$_end_year = $_set_year}
+        {elseif $_set_year < $_start_year}
+            {$_start_year = $_set_year}
+        {/if}
+        {$_months = waDateTime::getMonthNames()}
+
+        <button type="button" class="nobutton t-arrow left" title="[`Previous month`]">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="wa-select solid custom-mr-8">
+            <select name="month" class="month">
+                {foreach $_months as $_m}
+                    <option value="{$_m@iteration}" {if date('n', strtotime($period_start)) == $_m@iteration}selected{/if}>{$_m}</option>
+                {/foreach}
+            </select>
+        </div>
+        <div class="wa-select solid">
+            <select name="year" class="year">
+                {for $_year=$_start_year to $_end_year}
+                    <option value="{$_year}" {if $_year == $_set_year}selected{/if}>{$_year}</option>
+                {/for}
+            </select>
+        </div>
+        <button type="button" class="nobutton t-arrow right" title="[`Next month`]">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+*}
     <div class="t-calendar-wrapper">
 
         {if empty($hide_labels)}
             <div class="t-labels-wrapper">
                 <table>
                     <tr>
-                        <td class="t-column">[`Mon`]</td>
-                        <td class="t-column">[`Tue`]</td>
-                        <td class="t-column">[`Wed`]</td>
-                        <td class="t-column">[`Thu`]</td>
-                        <td class="t-column">[`Fri`]</td>
-                        <td class="t-column">[`Sat`]</td>
-                        <td class="t-column">[`Sun`]</td>
+                        {$_weekday_names = waDateTime::getWeekdayNames('ucfirst', false)}
+                        {foreach $_weekday_names as $_weekday_name}
+                            <td class="t-column">{$_weekday_name}</td>
+                        {/foreach}
                     </tr>
                 </table>
             </div>

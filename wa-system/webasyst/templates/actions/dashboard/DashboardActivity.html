@@ -1,75 +1,10 @@
 {$_group = $datetime_group|default:''}
-{$_activity_datetime = $activity[0]['datetime']|default:0}
-
-{$today = "[`Today`]"}
-{if (!$_group || $_group == $today) && strtotime($_activity_datetime) >= strtotime(date('Y-m-d'))}
-    <div class="activity-divider today h3 1">{$today}</div>
-{/if}
-
-{$users_birthdays = $today_users.birthday|default:[]}
-{$users_statuses = $today_users.status|default:[]}
-
-{if $users_birthdays}
-    <div class="users-group">
-    {foreach $users_birthdays.contacts as $contact}
-        {if $contact@index == 4}
-            <span class="userpic userpic48 outlined" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3));">
-                <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
-            </span>
-            {break}
-        {/if}
-        <span class="userpic userpic48 outlined" data-wa-tooltip-content="[`Birthday`]">
-            <img src="{$contact.photo_url_48}" alt="{$contact.formatted_name|escape}">
-            {if $contact@last || $contact@index < 4}
-                <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
-            {/if}
-        </span>
-    {/foreach}
-    </div>
-{/if}
-
-{if $users_statuses}
-    <div class="users-group">
-        {foreach $users_statuses as $status}
-            {if $status@index == 4}
-                <span class="userpic userpic48 outlined" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3));">
-                    <span class="userstatus"></span>
-                </span>
-                {break}
-            {/if}
-            <span class="userpic userpic48 outlined" data-wa-tooltip-content="{$status.statuses[1].calendar.name|escape}">
-                <img src="{$status.photo_url_48}" alt="{$status.formatted_name|escape}">
-                {if $status@last || $status@index < 4}
-                    <span class="userstatus" style="background-color: {$status.statuses[1].calendar.bg_color}"></span>
-                {/if}
-            </span>
-        {/foreach}
-    </div>
-{/if}
-
-{if $users_birthdays || $users_statuses}
-<hr class="custom-mt-16">
-{/if}
-
-{if strtotime($_activity_datetime) < strtotime(date('Y-m-d'))}
-    <div class="activity-divider today h3 2">{$today}</div>
-    <div class="activity-item activity-empty-today">
-        <div class="item-content-wrapper">
-            <div class="inline-content">
-                [`No activity today yet.`]
-            </div>
-        </div>
-    </div>
-{/if}
-
-{if $_group && $_group != $today}
-    <div class="activity-divider h3">{$_group}</div>
-{/if}
 
 {foreach $activity as $activity_item}
     {$app_name = $activity_item.app.name}
     {$app_color = ifset($activity_item.app.sash_color, "#aaa")}
-    {if $activity_item.datetime_group != $_group && $activity_item.datetime_group != $today}
+
+    {if $activity_item.datetime_group != $_group }
         <div class="activity-divider h3">{$activity_item.datetime_group}</div>
     {/if}
     {$_group=$activity_item.datetime_group}
@@ -82,10 +17,10 @@
         {/if}
         <div class="item-content-wrapper">
             <div class="inline-content small">
-                <a class="activity-username" href="{$wa_backend_url}contacts/#/contact/{$activity_item.contact_id}">{$activity_item.contact_name|escape}</a>
+                <a class="activity-username" href="{$wa_backend_url}contacts/#/contact/{$activity_item.contact_id}">{$activity_item.contact_name|default: ''|escape}</a>
                 <span class="activity-action gray">{$activity_item.action_name|escape}</span>
                 {if !empty($activity_item.params_html)}
-                    {$activity_item.params_html}
+                    {$activity_item.params_html|replace:'&nbsp;':' '}
                 {/if}
             </div>
             <span class="badge small" style="background: {$app_color}; font-weight: normal;">{$app_name}</span>
@@ -96,7 +31,7 @@
 
 {if !empty($activity_load_more)}
     <div class="activity-divider show-more-activity-wrapper is-loading">
-        <a class="d-load-more-activity inline-link" id="d-load-more-activity" href="javascript:void(0);"><b><i>[`Load more`]</i></b></a>
-        <i class="fas fa-spinner fa-pulse fa-lg" title="Loading"></i>
+        <a class="d-load-more-activity inline-link small button light-gray rounded" id="d-load-more-activity" href="javascript:void(0);">[`Load more`]</a>
+        <i class="d-load-more-animation fas fa-spinner fa-pulse wa-animation-spin speed-1000 fa-lg" title="Loading"></i>
     </div>
 {/if}

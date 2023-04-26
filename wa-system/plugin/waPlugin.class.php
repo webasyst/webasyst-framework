@@ -73,84 +73,118 @@ class waPlugin
         return $version;
     }
 
+    /**
+     * @return array
+     */
+    public function getInfo()
+    {
+        return $this->info;
+    }
+
     protected function checkUpdates()
     {
-        $app_settings_model = new waAppSettingsModel();
+        $is_from_template = waConfig::get('is_template');
+        $disable_exception_log = waConfig::get('disable_exception_log');
+        waConfig::set('is_template', null);
+
+        $locking_model = $app_settings_model = new waAppSettingsModel();
         $time = $app_settings_model->get(array($this->app_id, $this->id), 'update_time');
-        if (!$time) {
-            try {
-                $this->install();
-            } catch (Exception $e) {
-                waLog::log($e->getMessage());
-                throw $e;
-            }
-            $ignore_all = true;
-        } else {
-            $ignore_all = false;
-        }
 
-        $is_debug = waSystemConfig::isDebug();
+        try {
+            if (!$time) {
+                $is_first_launch = true;
 
-        if (!$is_debug) {
-            $cache = new waVarExportCache('updates', -1, $this->app_id.".".$this->id);
-            if ($cache->isCached() && $cache->get() <= $time) {
-                return;
-            }
-        }
-        $path = $this->path.'/lib/updates';
-        $cache_database_dir = wa()->getConfig()->getPath('cache').'/db';
-        if (file_exists($path)) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
-            $files = array();
-            foreach ($iterator as $file) {
-                /**
-                 * @var SplFileInfo $file
-                 */
-                if ($file->isFile() && preg_match('/^[0-9]+\.php$/', $file->getFilename())) {
-                    $t = substr($file->getFilename(), 0, -4);
-                    if ($t > $time) {
-                        $files[$t] = $file->getPathname();
-                    }
-                }
-            }
-            ksort($files);
-            if (!$is_debug && !empty($cache)) {
-                // get last time
-                if ($files) {
-                    $keys = array_keys($files);
-                    $cache->set(end($keys));
-                } else {
-                    $cache->set($time ? $time : 1);
-                }
-            }
-            $is_from_template = waConfig::get('is_template');
-            waConfig::set('is_template', null);
-            waConfig::get('disable_exception_log', true);
-            foreach ($files as $t => $file) {
+                // To avoid running install.php multiple times in parallel, obtain a named lock
+                // and then read update_time again because it might have changed in another thread
+                $locking_model->exec("SELECT GET_LOCK(?, -1)", ["wa_init_plugin_{$this->app_id}_{$this->id}"]);
+                $app_settings_model->clearCache(array($this->app_id, $this->id));
+                $time = $app_settings_model->get(array($this->app_id, $this->id), 'update_time', null);
+
                 try {
-                    if (!$ignore_all) {
-                        $this->includeUpdate($file);
-                        waFiles::delete($cache_database_dir);
-                        $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+                    if (!$time) {
+                        waConfig::set('disable_exception_log', true);
+                        $this->install();
+                    } else {
+                        // All work has already been done in another thread.
+                        return;
                     }
                 } catch (Exception $e) {
-                    waLog::log("Error running update of plugin {$this->app_id}.{$this->id}: {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                    waConfig::get('disable_exception_log', false);
-                    waConfig::set('is_template', $is_from_template);
-                    throw new waException(sprintf(_ws('Error running update of plugin %s.%s: %s'), $this->app_id, $this->id, $file), 500, $e);
+                    waLog::log("Error installing plugin ".$this->app_id.".".$this->id." at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                    throw $e;
+                }
+            } else {
+                $is_first_launch = false;
+            }
+
+            $is_debug = waSystemConfig::isDebug();
+
+            if (!$is_debug) {
+                $cache = new waVarExportCache('updates', -1, $this->app_id.".".$this->id);
+                if ($cache->isCached() && $cache->get() <= $time) {
+                    return;
                 }
             }
-            waConfig::get('disable_exception_log', false);
-            waConfig::set('is_template', $is_from_template);
-        } else {
-            $t = 1;
-        }
+            $path = $this->path.'/lib/updates';
+            $cache_database_dir = wa()->getConfig()->getPath('cache').'/db';
+            if (file_exists($path)) {
+                $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+                $files = array();
+                foreach ($iterator as $file) {
+                    /**
+                     * @var SplFileInfo $file
+                     */
+                    if ($file->isFile() && preg_match('/^[0-9]+\.php$/', $file->getFilename())) {
+                        $t = substr($file->getFilename(), 0, -4);
+                        if ($t > $time) {
+                            $files[$t] = $file->getPathname();
+                        }
+                    }
+                }
 
-        if ($ignore_all) {
-            if (!isset($t) || !$t) {
+                if ($files && !$is_first_launch) {
+                    // To avoid running meta-updates in parallel, obtain a named lock
+                    // and then read update_time again because it might have changed in another thread
+                    $locking_model->exec("SELECT GET_LOCK(?, -1)", ["wa_init_plugin_{$this->app_id}_{$this->id}"]);
+                    $app_settings_model->clearCache(array($this->app_id, $this->id));
+                    $time = $app_settings_model->get(array($this->app_id, $this->id), 'update_time', null);
+                }
+
+                ksort($files);
+                if (!$is_debug && !empty($cache)) {
+                    // get last time
+                    if ($files) {
+                        $keys = array_keys($files);
+                        $cache->set(end($keys));
+                    } else {
+                        $cache->set($time ? $time : 1);
+                    }
+                }
+                waConfig::set('disable_exception_log', true);
+                foreach ($files as $t => $file) {
+                    try {
+                        if (!$is_first_launch && $time < $t) {
+                            $this->includeUpdate($file);
+                            waFiles::delete($cache_database_dir);
+                            $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+                        }
+                    } catch (Exception $e) {
+                        waLog::log("Error running update of plugin {$this->app_id}.{$this->id}: {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                        throw new waException(sprintf(_ws('Error while running update of %s.%s plugin: %s'), $this->app_id, $this->id, $file), 500, $e);
+                    }
+                }
+            } else {
                 $t = 1;
             }
-            $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+
+            if ($is_first_launch) {
+                $app_settings_model->set(array($this->app_id, $this->id), 'update_time', ifempty($t, 1));
+            }
+        } finally {
+            waConfig::set('is_template', $is_from_template);
+            waConfig::set('disable_exception_log', $disable_exception_log);
+            if (!empty($is_first_launch) || !empty($files)) {
+                $locking_model->exec("SELECT RELEASE_LOCK(?)", ["wa_init_plugin_{$this->app_id}_{$this->id}"]);
+            }
         }
     }
 
@@ -364,9 +398,16 @@ class waPlugin
     {
         if ($this->settings === null) {
             $this->settings = self::getSettingsModel()->get($this->getSettingsKey());
+            $settings_config = $this->getSettingsConfig();
             foreach ($this->settings as $key => $value) {
                 #decode non string values
                 if (!is_numeric($value)) {
+                    if (
+                        isset($settings_config[$key]['control_type'])
+                        && in_array($settings_config[$key]['control_type'], [waHtmlControl::INPUT, waHtmlControl::TEXTAREA])
+                    ) {
+                        continue;
+                    }
                     $json = json_decode($value, true);
                     if (is_array($json)) {
                         $this->settings[$key] = $json;
@@ -374,7 +415,6 @@ class waPlugin
                 }
             }
             #merge user settings from database with raw default settings
-            $settings_config = $this->getSettingsConfig();
             if ($settings_config) {
                 foreach ($settings_config as $key => $row) {
                     if (!isset($this->settings[$key])) {
@@ -531,4 +571,12 @@ class waPlugin
         return $templates_dir . '/' . $template_path;
     }
 
+    /**
+     * @return bool
+     * @see waLicensing
+     */
+    public function isAnyPremiumFeatureEnabled()
+    {
+        return false;
+    }
 }

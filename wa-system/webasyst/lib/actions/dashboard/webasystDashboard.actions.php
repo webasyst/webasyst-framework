@@ -41,6 +41,109 @@ class webasystDashboardActions extends waActions
         $this->displayJson($response);
     }
 
+    public function widgetOrderAction()
+    {
+        $blocks = waRequest::post('blocks', [], 'array');
+        try {
+            list($updated_count, $warnings) = self::updateWidgetOrder($blocks);
+            $this->displayJson([
+                'updated_count' => $updated_count,
+            ] + (empty($warnings) ? [] : [
+                'warnings' => $warnings,
+            ]));
+        } catch (waException $e) {
+            $this->displayJson(null, [
+                $e->getMessage(),
+            ]);
+            return;
+        }
+    }
+
+    public static function updateWidgetOrder($blocks)
+    {
+        $widget_ids = call_user_func_array('array_merge', $blocks);
+        if (count($widget_ids) != count(array_flip($widget_ids))) {
+            throw new waException('bad arguments: duplicate widget id');
+        }
+        
+        $widget_model = new waWidgetModel();
+        $widgets = $widget_model->getById($widget_ids);
+        if (!$widgets) {
+            return [0, ['no widgets found in DB']]; // no widgets to sort
+        }
+        
+        // All widgets belong to the same dashboard?
+        $contact_id = false;
+        $dashboard_id = false;
+        foreach($widgets as $w) {
+            if ($dashboard_id === false) {
+                $contact_id = $w['contact_id'];
+                $dashboard_id = $w['dashboard_id'];
+            } else if ($dashboard_id !== $w['dashboard_id']) {
+                throw new waException('bad arguments: all widgets must belong to the same dashboard');
+            } else if  ($dashboard_id === null && $contact_id !== $w['contact_id']) {
+                throw new waException("bad arguments: all widgets must belong to the same contact's dashboard");
+            }
+        }
+        
+        $warnings = [];
+
+        // Any other widgets on this dashboard? Add them at the end of the list.
+        if ($dashboard_id === null) {
+            $other_widgets = $widget_model->where('dashboard_id IS NULL AND contact_id=? AND id NOT IN (?)', $contact_id, $widget_ids)->fetchAll('id');
+        } else {
+            $other_widgets = $widget_model->where('dashboard_id=? AND id NOT IN (?)', $dashboard_id, $widget_ids)->fetchAll('id');
+        }
+        if ($other_widgets) {
+            $block_with_missing_widgets = [];
+            foreach($other_widgets as $w) {
+                $block_with_missing_widgets[] = $w['id'];
+            }
+            $warnings[] = 'other widgets on this dashboard: '.join(', ', $block_with_missing_widgets);
+            $blocks['missing_widgets'] = $block_with_missing_widgets;
+            $widgets += $other_widgets;
+        }
+
+        // Update block and sort of all widgets on the dashboard
+        $block_filled = 0;
+        $sort = $block = 0;
+        $count_updated_widgets = 0;
+        foreach($blocks as $block_index => $ids) {
+            if ($block_filled > 0) {
+                $block_filled = 0;
+                $block++;
+                $sort = 0;
+            }
+            foreach ($ids as $id) {
+                $w = ifset($widgets, $id, null);
+                if (!$w) {
+                    continue;
+                }
+
+                $fill = array_product(explode('x', $w['size']));
+                if ($block_filled + $fill > 4) {
+                    $warnings[] = "splitting block #{$block_index} as it contains too many widgets";
+                    $block_filled = 0;
+                    $block++;
+                    $sort = 0;
+                }
+                
+                if ($w['sort'] != $sort || $w['block'] != $block) {
+                    $count_updated_widgets++;
+                    $widget_model->updateById($w['id'], [
+                        'block' => $block,
+                        'sort' => $sort,
+                    ]);
+                }
+                
+                $block_filled += $fill;
+                $sort++;
+            }
+        }
+
+        return [$count_updated_widgets, $warnings];
+    }
+
     public function widgetDeleteAction()
     {
         $id = waRequest::post('id');

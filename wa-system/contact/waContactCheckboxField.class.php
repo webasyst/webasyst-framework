@@ -32,7 +32,10 @@ class waContactCheckboxField extends waContactField
     public function format($data, $format = null)
     {
         $result = parent::format($data, $format);
-        $formats = explode(',', $format);
+        $formats = [];
+        if (is_string($format) && strpos($format, ',') !== false) {
+            $formats = explode(',', $format);
+        }
         if (array_intersect(['list', 'html'], $formats)) {
             return $result ? _ws('Yes') : _ws('No');
         }

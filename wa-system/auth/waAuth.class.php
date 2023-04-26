@@ -92,6 +92,12 @@ class waAuth implements waiAuth
     {
         $result = $this->_auth($params);
         if ($result !== false) {
+
+            // set session_auth and insert into wa_contact_auths
+            self::authDebugLog("contact_id={$result['id']}: auth() insertContactAuth()");
+            (new waContactAuthsModel())->insertContactAuth($result['id'], $result['token']);
+            $result['session_auth'] = true;
+
             waSystem::getInstance()->getStorage()->write('auth_user', $result);
             waSystem::getInstance()->getUser()->init();
         }
@@ -113,6 +119,23 @@ class waAuth implements waiAuth
         if (!$info) {
             $info = $this->_authByCookie();
             if ($info) {
+
+                try {
+                    // set session_auth and insert into wa_contact_auths
+                    self::authDebugLog("contact_id={$info['id']}: isAuth() insertContactAuth()");
+                    (new waContactAuthsModel())->insertContactAuth($info['id'], $info['token']);
+                    self::authDebugLog("contact_id={$info['id']}: successfull insertContactAuth()");
+                    $info['session_auth'] = true;
+                } catch (waDbException $e) {
+                    self::authDebugLog("contact_id={$info['id']}: insertContactAuth() waDbException", $e->getFullTraceAsString());
+                    if ($e->getCode() != 1146) {
+                        // When updating 2.7.1 -> 2.7.2, this can trigger before meta-update created wa_contact_auths
+                        throw $e;
+                    }
+                } catch (Exception $e) {
+                    self::authDebugLog("contact_id={$info['id']}: insertContactAuth() Exception", $e->getTraceAsString());
+                }
+
                 waSystem::getInstance()->getStorage()->write('auth_user', $info);
             }
         }
@@ -122,6 +145,34 @@ class waAuth implements waiAuth
         }
         return false;
     }
+
+    /**
+     * @param $user_info
+     * @return array
+     */
+    protected function getAuthData($user_info)
+    {
+        $session_auth = null;
+        if (isset($user_info['session_auth']))
+            $session_auth = $user_info['session_auth'];
+        else {
+            $auth_user = waSystem::getInstance()->getStorage()->read('auth_user');
+            if ($auth_user && isset($auth_user['session_auth'])) {
+                $session_auth = $auth_user['session_auth'];
+            }
+        }
+        $result = array (
+            'id' => $user_info['id'],
+            'login' => $user_info['login'],
+            'is_user' => $user_info['is_user'],
+            'token' => $this->getToken($user_info),
+            'storage_set' => time(), // used in waAuthUser->init()
+        );
+        if ($session_auth !== null)
+            $result['session_auth'] = $session_auth;  // also used in waAuthUser->init()
+        return $result;
+    }
+
 
     /**
      * @param string $email
@@ -380,7 +431,10 @@ class waAuth implements waiAuth
             } elseif ($field_id === self::LOGIN_FIELD_PHONE) {
                 $contact = $this->getByPhone($value);
             }
-            if (!$contact || $contact['is_user'] <= -1) {
+            if (
+                !$contact
+                || ($contact['is_user'] <= -1 && $lookup_type !== 'with_banned')
+            ) {
                 continue;
             }
             $result[$field_id] = $contact;
@@ -400,6 +454,7 @@ class waAuth implements waiAuth
     protected function checkBan($data)
     {
         if ($this->isArrayAccess($data) && $data['is_user'] == -1) {
+            self::authDebugLog("contact_id={$data['id']}: contact is banned");
             throw new waAuthException(_ws('Access denied.'));
         }
     }
@@ -443,6 +498,7 @@ class waAuth implements waiAuth
 
     protected function _afterAuth($user_info, $params)
     {
+        self::authDebugLog("contact_id={$user_info['id']}: _afterAuth()");
         $this->_remember($user_info, $params['remember']);
         return $this->getAuthData($user_info);
     }
@@ -686,8 +742,10 @@ class waAuth implements waiAuth
             $cookie_domain = ifset($this->options['cookie_domain'], '');
             $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, $cookie_domain, false, true);
             $response->setCookie('remember', 1);
+            self::authDebugLog("contact_id={$user_info['id']}: setting remember cookies");
         } else {
             $response->setCookie('remember', 0);
+            self::authDebugLog("contact_id={$user_info['id']}: unsetting remember cookies");
         }
     }
 
@@ -699,7 +757,7 @@ class waAuth implements waiAuth
     protected function _authByPassword($contact, $password)
     {
         $contact_password = isset($contact['password']) && is_scalar($contact['password']) ? $contact['password'] : '';
-        return strlen($contact_password) > 0 && waContact::getPasswordHash($password) === $contact_password;
+        return strlen($contact_password) > 0 && waContact::verifyPasswordHash($password, $contact_password);
     }
 
     /**
@@ -829,33 +887,24 @@ class waAuth implements waiAuth
             $response = waSystem::getInstance()->getResponse();
             $id = substr($token, 15, -15);
             $user_info = $model->getById($id);
+            if ($user_info) {
+                self::authDebugLog("contact_id={$user_info['id']}: Attempting to auth by cookie");
+            }
             $this->checkBan($user_info);
             $cookie_domain = ifset($this->options['cookie_domain'], '');
             if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user']) &&
                 $token === $this->getToken($user_info)) {
                 $response->setCookie('auth_token', $token, time() + 2592000, null, $cookie_domain, false, true);
+                self::authDebugLog("contact_id={$user_info['id']}: Successfull auth by cookie");
                 return $this->getAuthData($user_info);
             } else {
+                if (!empty($user_info['id'])) {
+                    self::authDebugLog("contact_id={$user_info['id']}: Auth by cookie rejected");
+                }
                 $response->setCookie('auth_token', null, -1, null, $cookie_domain);
             }
         }
         return false;
-    }
-
-
-    /**
-     * @param $user_info
-     * @return array
-     */
-    protected function getAuthData($user_info)
-    {
-        return array(
-            'id' => $user_info['id'],
-            'login' => $user_info['login'],
-            'is_user' => $user_info['is_user'],
-            'token' => $this->getToken($user_info),
-            'storage_set' => time(), // used in waAuthUser->init()
-        );
     }
 
     /**
@@ -1013,6 +1062,19 @@ class waAuth implements waiAuth
     private function isArrayAccess($info)
     {
         return is_array($info) || $info instanceof ArrayAccess;
+    }
+
+    public static function authDebugLog()
+    {
+        if (!defined('WA_AUTH_DEBUG') || !WA_AUTH_DEBUG) {
+            return;
+        }
+        waLog::log(join("\n", array_map(function($a) {
+            if (is_scalar($a)) {
+                return $a;
+            }
+            return wa_dump_helper($a);
+        }, func_get_args())), 'auth_debug.log');
     }
 }
 

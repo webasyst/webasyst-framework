@@ -48,6 +48,22 @@ class installerPluginsRemoveAction extends installerExtrasRemoveAction
                 $paths[] = wa()->getAppCachePath(null, $app_id); //wa-cache/apps/$app_id/
             } else {
                 $type = str_replace('wa-plugins/', '', $app_id);
+                $log_path = 'installer/remove.'.$type.$this->extras_type.'.log';
+                try {
+                    $system_plugin_instance = null;
+                    if ($type == 'payment') {
+                        $system_plugin_instance = waPayment::factory($extras_id);
+                    } elseif ($type == 'shipping') {
+                        $system_plugin_instance = waShipping::factory($extras_id);
+                    }
+                    if ($system_plugin_instance) {
+                        $system_plugin_instance->uninstall();
+                    } else {
+                        waLog::log(sprintf("System plugin %s not completely removed", $extras_id), $log_path);
+                    }
+                } catch (Exception $ex) {
+                    waLog::log($ex->getMessage(), $log_path);
+                }
                 $paths[] = wa()->getConfig()->getPath('plugins').'/'.$type.'/'.$extras_id; //wa-plugins/$type/$extras_id
                 $paths[] = wa()->getAppCachePath(null, $type.'_'.$extras_id); //wa-cache/apps/$app_id/
             }

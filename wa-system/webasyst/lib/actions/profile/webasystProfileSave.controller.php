@@ -10,24 +10,26 @@ class webasystProfileSaveController extends waJsonController
     public function execute()
     {
         $this->contact = $this->getContact();
-        $this->id = $this->contact->getId();
+        if (!$this->errors) {
+            $this->id = $this->contact->getId();
 
-        $data = $this->getData();
-        if (!$data) {
+            $data = $this->getData();
+            if (!$data) {
+                $this->response = array(
+                    'errors' => array(),
+                    'data' => array(),
+                );
+                return;
+            }
+
+            // Validate and save contact if no errors found
+            $this->save($data, $response, $errors);
+
             $this->response = array(
-               'errors' => array(),
-               'data' => array(),
+                'errors' => $errors,
+                'data' => $response,
             );
-            return;
         }
-
-        // Validate and save contact if no errors found
-        $this->save($data, $response, $errors);
-
-        $this->response = array(
-           'errors' => $errors,
-           'data' => $response,
-        );
     }
 
     protected function getData()

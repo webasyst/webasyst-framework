@@ -41,7 +41,7 @@
 </style>
 
 {capture assign="password_block"}
-    <div id="c-password-block" class="fields-group custom-mt-24" style="display:none;">
+    <div id="c-password-block" class="custom-mt-24" style="display:none;">
         <form id="c-password-form" method="post" action="{$url_change_password}">
             <div class="c-one-tab">
                 <div class="field">
@@ -81,7 +81,7 @@
 
 {capture assign="waid_block"}
     {if $is_connected_to_webasyst_id && ($contact['is_user'] == '1' || $is_bound_with_webasyst_contact)}
-        <div class="c-waid fields-group custom-mt-12">
+        <div class="c-waid custom-mt-12">
             <div class="field">
                 <div class="name">[`Sign-in with Webasyst ID`]</div>
                 <div class="value">
@@ -183,80 +183,95 @@
 {if !$is_superadmin}
 
     <div class="basic-user-fields width-100">
-        <div class="fields-group">
-            {if !$is_webasyst_id_forced}
-                <div class="field">
-                    <div class="name">[`Login`]</div>
-                    <div class="value">
-                        <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
-                    </div>
+        {if !$is_webasyst_id_forced}
+            <div class="field">
+                <div class="name">[`Login`]</div>
+                <div class="value">
+                    <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
                 </div>
-                {$password_block}
-            {/if}
-            {$waid_block}
-        </div>
+            </div>
+            {$password_block}
+        {/if}
+        {$waid_block}
     </div>
 
 {elseif $is_superadmin}
 
 <div class="c-shown-on-enabled width-100 custom-mb-24"{if $contact.is_user === '-1'} style="display:none;"{/if} id="c-available-resourses">
-    <div class="fields-group">
-        <div class="field">
-            <div class="name for-input">[`Backend`]</div>
-            <div class="value{if $gFullAccess} custom-pt-8{/if}">
-                {if $gFullAccess}
-                    <strong>[`Administrator`]</strong>
-                    <div class="hint">[`This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user.`]</div>
-                {elseif $fullAccess && !empty($own_profile)}
-                    <strong>[`Administrator`]</strong>
-                    <div class="hint">[`You cannot revoke administrative access level for yourself. Only another Administrator can do this.`]</div>
-                {else}
 
-                    {$_has_credentials = $contact.login && $contact.password}
+    <div class="field">
+        <div class="name for-input">[`Backend`]</div>
+        <div class="value{if $gFullAccess} custom-pt-8{/if}">
+            {if $gFullAccess}
+                <strong>[`Administrator`]</strong>
+                <div class="hint">[`This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user.`]</div>
+            {elseif $fullAccess && !empty($own_profile)}
+                <strong>[`Administrator`]</strong>
+                <div class="hint">[`You cannot revoke administrative access level for yourself. Only another Administrator can do this.`]</div>
+            {else}
 
-                    {*
-                        Selector not avaiable if contact without credentials and webasyst ID forced mode on
-                        Only option for contact became backend user send invitation link
-                    *}
-                    {$_selector_avaiable = !$is_webasyst_id_forced || $_has_credentials}
+                {$_has_credentials = $contact.login && $contact.password}
 
-                    {if $_selector_avaiable}
-                        <div class="wa-select small custom-mb-8">
-                            <select id="c-access-rights-toggle">
+                {*
+                    Selector not avaiable if contact without credentials and webasyst ID forced mode on
+                    Only option for contact became backend user send invitation link
+                *}
+                {$_selector_avaiable = !$is_webasyst_id_forced || $_has_credentials}
+
+                {if $_selector_avaiable}
+                    {$event_message = ''}
+                    <!-- plugin hook: 'frontend_user_backend_access' -->
+                    {* @event frontend_user_backend_access.%app_id% *}
+                    {foreach $frontend_user_backend_access as $message}
+                        {if $message}
+                            {$event_message = "`$event_message` `$message`"}
+                        {/if}
+                    {/foreach}
+                    <div class="custom-mb-8">
+                        <div class="wa-select small">
+                            <select id="c-access-rights-toggle" {if $event_message}disabled{/if}>
                                 <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
                                 <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
                                 <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
                             </select>
                         </div>
-                        <div>
-                            <span id="access-rights-toggle-confirm" style="display:none;">
-                                <a href="javascript:void(0)" class="button small custom-mb-8">[`Confirm access change`]</a>
-                                <a href="javascript:void(0)" class="cancel button light-gray small">[`Cancel`]</a>
-                            </span>
+                        {if $event_message}
+                            <div class="hint custom-mt-4">
+                                {$event_message|strip}
+                            </div>
+                        {/if}
+                    </div>
+                    <div>
+                        <span id="access-rights-toggle-confirm" style="display:none;">
+                            <a href="javascript:void(0)" class="button small custom-mb-8">[`Confirm access change`]</a>
+                            <a href="javascript:void(0)" class="cancel button light-gray small">[`Cancel`]</a>
+                        </span>
 
-                            {if !$gNoAccess}
-                                <p id="c-access-rights-hint-warning" class="state-error-hint custom-mt-4 custom-mb-0" style="display:none;"><span>[`Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user.`]</span></p>
-                            {/if}
+                        {if !$gNoAccess}
+                            <p id="c-access-rights-hint-warning" class="state-error-hint custom-mt-4 custom-mb-0" style="display:none;"><span>[`Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user.`]</span></p>
+                        {/if}
 
-                            <i class="spinner loading custom-ml-8" style="display:none;"></i>
-                            <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="fas fa-check-circle text-green"></i> [`Saved`]</span>
-                        </div>
-                    {else}
-                        <span>[`No access`]</span>
-                    {/if}
+                        <i class="spinner loading custom-ml-8" style="display:none;"></i>
+                        <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="fas fa-check-circle text-green"></i> [`Saved`]</span>
+                    </div>
+                {else}
+                    <span>[`No access`]</span>
                 {/if}
-            </div>
+            {/if}
         </div>
+    </div>
 
-        {if $invite_tokens}
-        {* Invite tokens *}
-        <div class="field">
+    {if $invite_tokens}
+    <div class="field">
+        <div class="value submit">
+            <ul>
             {foreach $invite_tokens as $_token}
-                <div class="value submit">
-                    <p class="custom-m-0">
-                        <strong>[`Invitation sent`]</strong>
-                        <span class="hint">[`Expires in`] {$_token.expires_in}</span>
-                    </p>
+                <li>
+                    <div class="custom-mb-16">
+                        <code>{$wa->url(true)}link.php/{$_token.token|urlencode}/</code>
+                        <p class="small custom-mt-8 custom-mb-4">[`Expires in`] {$_token.expires_in}</p>
+                        <p class="hint custom-mt-4">[`The user must follow the invitation link to chime in.`]</p>
+                    </div>
                     {if $_token.data}
                         {$a = json_decode($_token.data, true)}
                         {if !empty($_token.groups)}
@@ -271,14 +286,28 @@
                             </p>
                         {/if}
                     {/if}
-                </div>
+                </li>
             {/foreach}
+            </ul>
         </div>
-        {/if}
+        <script>
+            const $code = document.querySelector('code');
+            if ($code) {
+                $code.onclick = () => {
+                    const range = new Range();
+                    range.setStart($code.firstChild, 0);
+                    range.setEnd($code.firstChild, $code.firstChild.length);
+
+                    document.getSelection().removeAllRanges();
+                    document.getSelection().addRange(range);
+                }
+            }
+        </script>
     </div>
+    {/if}
 
     {if !$is_webasyst_id_forced}
-        <div id="c-credentials-block" class="fields-group custom-mt-24" style="display:none;">
+        <div id="c-credentials-block" class="custom-mt-24" style="display:none;">
             <form id="c-credentials-form" method="post" action="{$wa_app_url}?module=accessSave&action=grant&id={$contact.id}">
                 <div class="field">
                     <div class="name">[`Login`]</div>
@@ -313,7 +342,7 @@
             </form>
         </div>
 
-        <div id="c-login-block" class="fields-group custom-mt-16" style="display:none;">
+        <div id="c-login-block" class="custom-mt-16" style="display:none;">
             <form id="c-login-form" method="post" action="{$wa_app_url}?module=accessSave&action=login&id={$contact.id}">
                 <div class="field">
                     <div class="name custom-pt-0">[`Login`]</div>
@@ -345,7 +374,7 @@
 
     {$waid_block}
 
-    <div class="c-shown-on-access fields-group custom-mt-24">
+    <div class="c-shown-on-access custom-mt-24">
         <div class="field">
             <div class="name custom-pt-0">[`Belongs to groups`]</div>
             <div class="value custom-pb-16">
@@ -445,7 +474,7 @@
 
 {/if}{* if $is_superadmin *}
 
-    <div class="fields-group basic-user-fields width-100 custom-mt-0">
+    <div class="basic-user-fields width-100 custom-mt-0">
         {* Access *}
         <div class="field">
             <div class="name">[`Access`]</div>
@@ -462,14 +491,32 @@
                             >
                                 <i class="fas fa-times-circle text-red"></i> [`Block contact`]
                             </a>
+
+                            {$event_message = ''}
+                            {if $contact.is_user == '-1'}
+                                <!-- plugin hook: 'frontend_user_backend_access' -->
+                                {* @event frontend_user_backend_access.%app_id% *}
+                                {foreach $frontend_user_backend_access as $message}
+                                    {if $message}
+                                        {$event_message = "`$event_message` `$message`"}
+                                    {/if}
+                                {/foreach}
+                            {/if}
+
                             <a href="javascript:void(0)"
-                               id="c-access-link-unblock"
-                               class="c-shown-on-disabled semibold"
-                                    {if $contact.is_user != '-1'} style="display:none"{/if}
-                               data-alert="[`Enable this contact?`]"
+                                {if empty($event_message)}
+                                    id="c-access-link-unblock"
+                                    data-alert="[`Enable this contact?`]"
+                                {/if}
+                                {if $contact.is_user != '-1'} style="display:none"{/if}
+                                class="c-shown-on-disabled semibold{if !empty($event_message)} gray{/if}"
                             >
                                 [`Unblock contact`]
                             </a>
+                            {if $contact.is_user == '-1' && !empty($event_message)}
+                                <div class="hint">{$event_message|strip}</div>
+                            {/if}
+
                             <i class="fas fa-spinner fa-spin loading wa-animation-spin speed-1000" style="display:none;"></i>
                             <form class="js-block-user-reason-form custom-mt-16" style="display: none">
                                 <textarea class="js-block-user-reason small" placeholder="[`Optional comment about the reason for blocking`]"></textarea>
@@ -496,9 +543,7 @@
                                         <i class="fa fa-circle text-yellow fa-xs"></i>
                                         <span class="c-user-status-offline">
                                             [`Offline`]
-                                            {if !$contact.last_datetime}
-                                                <span class="small no-bold">([`never logged in`])</span>
-                                            {else}
+                                            {if $contact.last_datetime}
                                                 <span class="small no-bold">([`last login:`] {$contact.last_datetime|wa_date:"datetime"})</span>
                                             {/if}
                                         </span>
@@ -639,6 +684,8 @@
                     "Login is required.": "[`Login is required.`]",
                     "cancel": "[`cancel`]",
                     "Cancel": "[`Cancel`]",
+                    "blockUser": "[`Block`]",
+                    "unblockUser": "[`Unblock`]",
                     "Save": "[`Save`]",
                     "remove_ask": "[`The user will not be able to send API requests using this token.`]"
                 }

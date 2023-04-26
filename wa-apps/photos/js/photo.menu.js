@@ -6,63 +6,87 @@
         addToAlbumAction: function() {
             $.photos.confirmDialog({
                 url: '?module=dialog&action=albums&id=' + $.photos.getPhotoId(),
-                onSubmit: function (d, d_instance) {
-                    var photo_id = $.photos.photo_stream_cache.getCurrent().id;
-                    $.photos.addToAlbums({
-                        photo_id: photo_id,
-                        album_id: d.find('form').serializeArray(),
-                        copy: 0,
-                        fn: function(r) {
-                            if (r.status == 'ok') {
-                                var old_albums = r.data.old_albums || [],
-                                    album = $.photos.getAlbum(),
-                                    albums = r.data.albums;
+                onOpen($dialog, dialog) {
+                    const $dialogForm = dialog.$block.find('form');
+
+                    $dialogForm.on('submit', function(event) {
+                        event.preventDefault();
+
+                        const photo_id = $.photos.photo_stream_cache.getCurrent().id;
+                        $.photos.addToAlbums({
+                            photo_id: photo_id,
+                            album_id: d.find('form').serializeArray(),
+                            copy: 0,
+                            fn: function (r) {
+                                if (r.status !== 'ok') {
+                                    return;
+                                }
+
+                                const old_albums = r.data.old_albums || [];
+                                const album = $.photos.getAlbum();
+                                const albums = r.data.albums;
+
                                 if (album) {
-                                    for (var i = 0, n = old_albums.length; i < n; ++i) {
+                                    for (let i = 0, n = old_albums.length; i < n; ++i) {
                                         // if now we are inside the one of old albums
                                         if (album.id == old_albums[i].id) {
                                             if (!albums.length) {
-                                                $.photos.goToHash('/photo/'+photo_id);
+                                                $.photos.goToHash('/photo/' + photo_id);
                                             } else {
-                                                $.photos.goToHash('/album/'+albums[0].id+'/photo/'+photo_id);
+                                                $.photos.goToHash('/album/' + albums[0].id + '/photo/' + photo_id);
                                             }
-                                            d_instance.close();
+
+                                            dialog.close();
                                             return;
                                         }
                                     }
                                 }
-                                $('#photo-albums').html(tmpl('template-photo-albums', { albums }));
-                                d_instance.close();
+
+                                $('#photo-albums').html(tmpl('template-photo-albums', {albums}));
                             }
-                        }
+                        });
+
+                        dialog.close();
                     });
-                    return false;
                 }
             });
         },
         deletePhotoAction: function() {
             $.photos.confirmDialog({
                 url: '?module=dialog&action=confirmDeletePhoto&id=' + $.photos.getPhotoId(),
-                onSubmit: function(d) {
-                    d.trigger('close');
-                    $.photos.setCover();
-                    $.photos.deletePhotos($.photos.getPhotoId(), function() {
-                        $.photos.unsetCover();
+                onOpen($dialog, dialog) {
+                    const $dialogForm = dialog.$block.find('form');
+
+                    $dialogForm.on('submit', function(event) {
+                        event.preventDefault();
+
+                        $.photos.setCover();
+                        $.photos.deletePhotos($.photos.getPhotoId(), function() {
+                            $.photos.unsetCover();
+                        });
+
+                        dialog.close();
                     });
-                    return false;
                 }
             });
         },
         unstackAction: function() {
             $.photos.confirmDialog({
                 url: '?module=dialog&action=confirmUnstack&cnt=' + $.photos.photo_stack_cache.length(),
-                onSubmit: function(d) {
-                    d.trigger('close');
-                    var id = $.photos.photo_stream_cache.getCurrent().id;
-                    $.post('?module=stack&action=unmake&id=' + id, {}, function(response) {
-                        $.photos.goToHash($.photos.hash);
-                    }, 'json');
-                    return false;
+                onOpen($dialog, dialog) {
+                    const $dialogForm = dialog.$block.find('form');
+
+                    $dialogForm.on('submit', function(event) {
+                        event.preventDefault();
+
+                        const id = $.photos.photo_stream_cache.getCurrent().id;
+
+                        $.post('?module=stack&action=unmake&id=' + id, {}, function(response) {
+                            $.photos.goToHash($.photos.hash);
+                        }, 'json');
+
+                        dialog.close();
+                    });
                 }
             });
         },
@@ -133,7 +157,8 @@
             });
         },
 
-        onInit: function() { }
+        onInit: function() {
+        }
     });
 
     $.photos.menu.register('photo', '#share-menu', {

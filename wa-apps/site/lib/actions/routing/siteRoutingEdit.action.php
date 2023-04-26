@@ -80,7 +80,7 @@ class siteRoutingEditAction extends waViewAction
                                 $route_name = $title;
                             } else {
                                 $app_settings_model = new waAppSettingsModel();
-                                $route_name = $app_settings_model->get('webasyst', 'name', _ws('My company, LLC'));
+                                $route_name = $app_settings_model->get('webasyst', 'name', _ws('My company'));
                             }
                         } else {
                             $route_name = $app['name'];
@@ -144,7 +144,7 @@ class siteRoutingEditAction extends waViewAction
                 $result[$id] = array(
                     'name'  => ifset($info['name']),
                     'type'  => $info['type'],
-                    'value' => $this->getHTML($route_id, $info, isset($values[$id]) ? $values[$id] : null)
+                    'value' => $this->getHTML($route_id, $info, isset($values[$id]) ? $values[$id] : '')
                 );
             } else {
                 $result[] = $info;

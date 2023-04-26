@@ -35,10 +35,10 @@
             minFileSize: 1,
             // The regular expression for allowed file types, matches
             // against either file type or file name:
-            acceptFileTypes:  /\.(gif|png|jpg|jpeg)$/i,
+            acceptFileTypes:  /\.(gif|png|jpg|jpeg|webp)$/i,
             // The regular expression to define for which files a preview
             // image is shown, matched against the file type:
-            previewFileTypes: /^image\/(gif|jpeg|png)$/,
+            previewFileTypes: /^image\/(gif|jpeg|png|webp)$/,
             // The maximum file size for preview images:
             previewMaxFileSize: 5000000, // 5MB
             // The maximum width of the preview images:
@@ -363,7 +363,7 @@
             // only browsers with support for the File API report the type:
             if (!(this.options.acceptFileTypes.test(file.type) ||
                     this.options.acceptFileTypes.test(file.name))) {
-                return $_('Files with extensions *.gif, *.jpg, *.jpeg, *.png are allowed only.');
+                return $_('Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only.');
             }
             if (this.options.maxFileSize &&
                     file.size > this.options.maxFileSize) {

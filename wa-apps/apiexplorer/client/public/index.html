@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <% if (NODE_ENV === "development") { %>
+      <link href="<%= VUE_APP_WA_DEV %>/wa-content/css/wa/wa-2.0.css" rel="stylesheet">
+      <link id="wa-dark-mode" href="<%= VUE_APP_WA_DEV %>/wa-content/css/wa/wa-2.0-dark.css" rel="stylesheet" type="text/css" media="(prefers-color-scheme: dark)">
+      <link href="<%= VUE_APP_WA_DEV %>/wa-apps/apiexplorer/css/backend.css" rel="stylesheet">
+      <script defer="" src="<%= VUE_APP_WA_DEV %>/wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
+      
+      <script src="<%= VUE_APP_WA_DEV %>/wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+      <script src="<%= VUE_APP_WA_DEV %>/wa-content/js/jquery/jquery-migrate-3.3.2.min.js"></script>
+      <script src="<%= VUE_APP_WA_DEV %>/wa-content/js/jquery-wa/wa.js"></script>
+      <script>
+        window.appState = {
+          "baseUrl": "<%= VUE_APP_BASE_URL %>",
+          "rootUrl": "/",
+          "user_id": "1",
+          "development_mode": "1",
+          "locale": "<%= VUE_APP_I18N_LOCALE %>",
+          "centralUrl": "<%= VUE_APP_WA_CENTRAL %>"
+        };
+      </script>
+    <% } %>
+  </head>
+  <body>
+    <div id="wa">
+      <div id="wa-nav">
+        <div id="wa-header"></div>
+      </div>
+      <div id="app"></div>
+    </div>
+  </body>
+</html>

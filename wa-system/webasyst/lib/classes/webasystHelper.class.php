@@ -73,7 +73,7 @@ class webasystHelper
                 'url'  => $app_url.'auth/',
             ),
             'waid'          => array(
-                'name' => _w('Sign-in with Webasyst ID'),
+                'name' => _w('Webasyst ID'),
                 'url'  => $app_url.'waid/',
             ),
             'db'             => array(

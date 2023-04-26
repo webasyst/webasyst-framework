@@ -283,6 +283,7 @@ class WASettingsEmail {
                 $dkim_selector = $dkim_wrapper.find('.js-dkim-selector'),
                 $dkim_info = $item.find('.js-dkim-info'),
                 $dkim_one_string_key = $dkim_wrapper.find('.js-one-string-key'),
+                $dkim_copy = $dkim_wrapper.find('.js-copy-dkim'),
                 $dkim_host_selector = $dkim_wrapper.find('.js-dkim-host-selector'),
                 $dkim_domain_0 = $dkim_wrapper.find('.js-sender-domain-0'),
                 $dkim_domain = $dkim_wrapper.find('.js-domain'),
@@ -301,6 +302,7 @@ class WASettingsEmail {
                         $dkim_public_key.val(r.data.dkim_pub_key);
                         $dkim_selector.val(r.data.selector);
                         $dkim_one_string_key.text(r.data.one_string_key);
+                        $dkim_copy.data('dkim', 'v=DKIM1; k=rsa; t=s; p=' + r.data.one_string_key)
                         $dkim_host_selector.text(r.data.selector);
                         $dkim_domain_0.text(r.data.domain);
                         $dkim_domain.text(r.data.domain);
@@ -343,6 +345,32 @@ class WASettingsEmail {
                 $dkim_domain_0.text('');
                 $dkim_domain.text('');
             }
+
+
+            $dkim_copy.on('click', async function(){
+                const val = $(this).data('dkim');
+                try {
+                    await $.wa.copyToClipboard(val);
+
+                    $(this).animate({
+                        opacity: .3,
+                    },200,'linear',function(){
+                        $(this).animate({
+                            opacity: 1,
+                        });
+                    });
+
+                    $.wa.notify({
+                        class: 'success',
+                        content: that.locales.copied,
+                        isCloseable: false,
+                        timeout: 2000
+                    });
+                }catch (e) {
+                    console.error(e)
+                }
+            })
+
         }
     }
 
@@ -701,12 +729,13 @@ class WASettingsEmailTemplate {
                                             let field = error.field,
                                                 message = error.message;
 
-                                            let $input = $form.find('input[name="data' + field + '"]').parent();
-                                            $input.addClass('shake animated');
-                                            $input.after('<div class="js-field-error" style="color: red; margin-left: 12px;">'+ message +'</div>');
+                                            let $input = $form.find('input[name="data' + field + '"]'),
+                                                $input_parent = $input.parent();
+                                            $input_parent.addClass('shake animated');
+                                            $input.after('<p class="js-field-error state-error-hint">'+ message +'</p>');
                                             setTimeout(function(){
-                                                $input.removeClass('shake animated');
-                                                $input.next().remove();
+                                                $input_parent.removeClass('shake animated');
+                                                $input_parent.find('.js-field-error').remove();
                                             },2000);
                                         })
                                     }

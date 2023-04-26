@@ -17,7 +17,7 @@
             <div class="inline-content">
                 <span class="activity-app" style="background: {$app_color}">{$app_name}</span>
                 <span class="activity-username">
-                    <a href="{$wa_backend_url}contacts/#/contact/{$activity_item.contact_id}">{$activity_item.contact_name|escape}</a>
+                    <a href="{$wa_backend_url}contacts/#/contact/{$activity_item.contact_id}">{$activity_item.contact_name|default: ''|escape}</a>
                 </span>
                 <span class="activity-action gray">{$activity_item.action_name|escape}</span>
                 {if !empty($activity_item.params_html)}

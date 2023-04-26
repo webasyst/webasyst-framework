@@ -147,7 +147,7 @@ class waDesignActions extends waActions
             }
             $file = $theme->getFile($get_file);
             if (!$file) {
-                $get_file = preg_replace('@(\\{1,}|/{2,})@', '/', $get_file);
+                $get_file = preg_replace('@(\\{1,}|/{2,})@', '/', ifempty($get_file, ''));
                 if (!$get_file
                     ||
                     preg_match('@(^|/)\.\./@', $get_file)
@@ -257,7 +257,7 @@ class waDesignActions extends waActions
             $routing_url = wa()->getAppUrl('site');
         }
 
-        $domain = wa()->getRouting()->getDomain();
+        $same_domain = true;
         foreach ($routes as $route) {
             $theme_id = (string)ifempty($route, 'theme', 'default');
             if (!isset($themes[$theme_id])) {
@@ -270,8 +270,9 @@ class waDesignActions extends waActions
                 $themes[$route['theme_mobile']]['is_used'] = true;
             }
             $url = $route['_url'];
-            if (!$preview_url && $route['_domain'] == $domain) {
+            if (!$preview_url) {
                 $preview_url = $url;
+                $same_domain = wa()->getRouting()->getDomain() == $route['_domain'];
             }
             $route['_preview_url'] = $url;
 
@@ -285,7 +286,7 @@ class waDesignActions extends waActions
         foreach ($themes as $t_id => &$theme) {
             if (!isset($theme['preview_url'])) {
                 $theme['preview_url'] = $preview_url;
-                if ($preview_url && $theme['type'] !== waTheme::TRIAL) {
+                if ($preview_url && !$same_domain) {
                     $theme['preview_url'] .= $preview_params.$t_id;
                 }
             }
@@ -656,6 +657,7 @@ HTACCESS;
         $app_id = $this->getAppId();
         $theme_id = waRequest::get('theme');
         $parent_themes = array();
+        $all_child_themes = [];
         $apps = wa()->getApps();
         /**
          * @var waTheme $current_theme
@@ -668,6 +670,13 @@ HTACCESS;
                 foreach ($themes as $id => $theme) {
                     if (($app_id == $theme_app_id) && ($theme_id == $id)) {
                         $current_theme = $theme;
+                    }
+                    if ($theme->parent_theme_id) {
+                        $all_child_themes[$theme_app_id][$id] = [
+                            'app_name' => $app['name'],
+                            'name' => $theme->name,
+                            'parent_theme_id' => $theme->parent_theme_id
+                        ];
                     }
                     $themes_data[$id] = $theme->name;
                 }
@@ -691,13 +700,14 @@ HTACCESS;
             $routes = $this->getRoutes();
             $theme_routes = array();
             $preview_url = false;
+            $domain = wa()->getConfig()->getDomain();
             foreach ($routes as $r) {
                 if ((waRequest::get('route') == $r['_id']) && !empty($r['locale'])) {
                     $current_locale = $r['locale'];
                 }
                 if (!$preview_url && $r['app'] == $app_id) {
                     $preview_url = $r['_url'];
-                    if ($current_theme->type !== waTheme::TRIAL) {
+                    if ($r['_domain'] !== $domain) {
                         $preview_url .= '?theme_hash='.$this->getThemeHash().'&set_force_theme='.$theme_id;
                     }
                 }
@@ -745,6 +755,17 @@ HTACCESS;
                 }
                 if (($r['theme'] == $theme_id) || ($r['theme_mobile'] == $theme_id)) {
                     $theme_routes[] = $r;
+                }
+            }
+            $parent_theme_id = $app_id . ':' . $theme_id;
+            $child_themes = [];
+            if (empty($current_theme->parent_theme_id)) {
+                foreach ($all_child_themes as $child_theme_app_id => $themes) {
+                    foreach ($themes as $theme_info) {
+                        if ($theme_info['parent_theme_id'] == $parent_theme_id) {
+                            $child_themes[$child_theme_app_id] = $theme_info;
+                        }
+                    }
                 }
             }
 
@@ -837,6 +858,7 @@ HTACCESS;
                 'options'                             => $this->options,
                 'parent_themes'                       => $parent_themes,
                 'theme_routes'                        => $theme_routes,
+                'child_themes'                        => $child_themes,
                 'path'                                => waTheme::getThemesPath($app_id),
                 'cover'                               => $cover,
                 'route_url'                           => $route_url,
@@ -1096,7 +1118,7 @@ HTACCESS;
     {
         // If you add svg here, then on sites with cdn such pictures will not be loaded.
         // Design themes must use the $wa_real_theme_url variable for settings with the image type.
-        $allowed = array('jpg', 'jpeg', 'png', 'gif');
+        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'svg');
         if (!in_array(strtolower($f->extension), $allowed)) {
             $error = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             return false;
@@ -1302,6 +1324,7 @@ HTACCESS;
                     $theme = waTheme::extract($file->tmp_name);
                     $this->logAction('theme_upload', $theme->id);
                     $this->displayJson(array('theme' => $theme->id));
+                    wa()->getConfig()->clearCache();
                 } catch (Exception $e) {
                     waFiles::delete($file->tmp_name);
                     $this->displayJson(array(), $e->getMessage());

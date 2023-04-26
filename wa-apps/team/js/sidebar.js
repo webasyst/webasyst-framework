@@ -149,9 +149,13 @@ var Sidebar = ( function($) {
         }
     };
 
-    Sidebar.prototype.reload = function() {
+    Sidebar.prototype.reload = function(background) {
         const that = this;
-        const sidebar_uri = $.team.app_url + that.options.api.reload;
+        let sidebar_uri = $.team.app_url + that.options.api.reload;
+
+        if (background) {
+            sidebar_uri += '&background_process=1'
+        }
 
         clearTimeout(that.options.timer);
 
@@ -173,21 +177,10 @@ var Sidebar = ( function($) {
     Sidebar.prototype.showInviteDialog = function(event) {
         event.preventDefault();
 
-        const that = this;
-
-        if (that.inviteDialog) {
-            that.inviteDialog.show();
-            return;
-        }
-
-        const href = $.team.app_url + that.options.api.inviteDialog;
+        const href = $.team.app_url + this.options.api.inviteDialog;
         $.get(href, function(html) {
-            that.inviteDialog = $.waDialog({
-                html,
-                onClose(dialog) {
-                    dialog.hide();
-                    return false;
-                }
+            $.waDialog({
+                html
             });
         });
     };
@@ -212,6 +205,9 @@ var Sidebar = ( function($) {
         $.get(href, data, function(html) {
             that.groupDialog[groupType] = $.waDialog({
                 html,
+                onOpen($dialog, dialog) {
+                    dialog.$content.find('.js-edit-group-name').focus();
+                },
                 onClose(dialog) {
                     dialog.hide();
                     return false;
@@ -375,7 +371,7 @@ var Sidebar = ( function($) {
 
         that.options.timer = setTimeout( function() {
             if ($.contains(document, that.$wrapper[0]) ) {
-                that.reload();
+                that.reload(true);
             }
         }, time);
     };
@@ -545,11 +541,13 @@ var Sidebar = ( function($) {
         const that = this;
 
         const searchValue = $(event.target).find('.t-search-field').val();
-        const search_string = encodeURIComponent(searchValue);
-        const content_uri = `${$.team.app_url}search/${search_string}/`;
+        if (searchValue) {
+            const search_string = encodeURIComponent(searchValue);
+            const content_uri = `${$.team.app_url}search/${search_string}/`;
 
-        $.team.content.load(content_uri);
-        that.$wrapper.find('.sidebar-mobile-toggle').trigger('click');
+            $.team.content.load(content_uri);
+            that.$wrapper.find('.sidebar-mobile-toggle').trigger('click');
+        }
     };
 
     Sidebar.prototype.setSelected = function(data) {

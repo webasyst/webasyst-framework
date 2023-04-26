@@ -136,13 +136,13 @@ msgstr "Ширина по умолчанию"
 msgid "Default height"
 msgstr "Высота по умолчанию"
 
-msgid "Used only if order dimensions have not been calculated by a special plugin. If no value is specified, shipping rate and terms will not be calulated."
+msgid "Used only if order dimensions have not been calculated by a special plugin. If no value is specified, shipping rate and terms will not be calculated."
 msgstr "Используется, только если габариты заказа не были рассчитаны специальным плагином. Если значение не указано, то сроки и стоимость доставки в пункт выдачи заказов не рассчитываются."
 
 msgid "Integration settings"
 msgstr "Настройки интеграции"
 
-msgid "Upon checkout, a dellivery draft is created in your Boxberry account. Should you edit an order in your Webasyst backend, the corresponding draft is updated automatically."
+msgid "Upon checkout, a delivery draft is created in your Boxberry account. Should you edit an order in your Webasyst backend, the corresponding draft is updated automatically."
 msgstr "После оформления заказа в вашем личном кабинете Boxberry создается посылка (черновик отгрузки). В случае редактирования заказа в бекенде Webasyst этот черновик автоматически обновляется."
 
 msgid "Type of parcel delivery"
@@ -182,7 +182,7 @@ msgid "from"
 msgstr "oт"
 
 msgid "Delivery is not available for specified ZIP code."
-msgstr "Доставка для указаного индекса недоступна."
+msgstr "Доставка для указанного индекса недоступна."
 
 msgid "Courier"
 msgstr "Курьер"
@@ -229,8 +229,8 @@ msgstr "Поиск"
 msgid "Choose all"
 msgstr "Выбрать все"
 
-msgid "No region selected in country settings"
-msgstr "В настройках страны не выбран ни один регион"
+msgid "No regions are set up for this country."
+msgstr "Для этой страны регионы не настроены."
 
 msgid "Save"
 msgstr "Сохранить"
@@ -280,7 +280,7 @@ msgstr "Максимальная высота должна быть больше
 msgid "Default dimensions"
 msgstr "Габариты по умолчанию"
 
-msgid "Used in cases when package dimensions are not provided by a dedicated plugin. If these values are empty then, if no values are provided by a decicated plugin, shipping terms and rates for this shipping method will not be calculated."
+msgid "Used in cases when package dimensions are not provided by a dedicated plugin. If these values are empty then, if no values are provided by a dedicated plugin, shipping terms and rates for this shipping method will not be calculated."
 msgstr "Используется, если габариты заказа не были рассчитаны специальным плагином. Если значения не указаны, то при отсутствии значений, рассчитанных специальным плагином, сроки и стоимость доставки для этого способа доставки рассчитываться не будут."
 
 msgid "Default length must be greater than 0 and must not exceed the maximum dimensions length."

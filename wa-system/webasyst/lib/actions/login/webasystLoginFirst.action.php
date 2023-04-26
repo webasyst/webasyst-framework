@@ -51,7 +51,7 @@ class webasystLoginFirstAction extends waViewAction
             $email = waRequest::post('email');
             $email = is_scalar($email) ? (string)$email : '';
             if (strlen($email) <= 0) {
-                $errors['email'] = _ws('Email is required');
+                $errors['email'] = _ws('Enter an email address');
             } else {
                 $validator = new waEmailValidator();
                 if (!$validator->isValid($email)) {
@@ -126,7 +126,11 @@ class webasystLoginFirstAction extends waViewAction
                             }
                         }
                         if ($site) {
-                            $data[$domain][] = array('url' => '*', 'app' => 'site');
+                            $data[$domain][] = [
+                                'url' => '*',
+                                'app' => 'site',
+                                '_name' => _ws('About us')
+                            ];
                         }
                         waUtils::varExportToFile($data, $path.'/routing.php');
                     }

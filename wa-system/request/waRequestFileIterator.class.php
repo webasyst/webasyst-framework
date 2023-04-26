@@ -60,6 +60,12 @@ class waRequestFileIterator extends waRequestFile implements Iterator, Countable
         }
     }
 
+    /**
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
+     *
+     * @return int
+     */
+    #[ReturnTypeWillChange]
     public function count()
     {
         return count($this->files);
@@ -69,6 +75,7 @@ class waRequestFileIterator extends waRequestFile implements Iterator, Countable
     // Iterator interface
     //
 
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         $this->currentIndex = 0;
@@ -77,21 +84,25 @@ class waRequestFileIterator extends waRequestFile implements Iterator, Countable
     /**
      * @return waRequestFile
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->files[$this->currentIndex];
     }
 
+    #[ReturnTypeWillChange]
     public function key()
     {
         return $this->indexes[$this->currentIndex];
     }
 
+    #[ReturnTypeWillChange]
     public function next()
     {
         $this->currentIndex++;
     }
 
+    #[ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->files[$this->currentIndex]);
@@ -101,6 +112,7 @@ class waRequestFileIterator extends waRequestFile implements Iterator, Countable
      * @param string $offset
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->indexes);
@@ -110,6 +122,7 @@ class waRequestFileIterator extends waRequestFile implements Iterator, Countable
      * @param mixed $offset
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->files[array_search($offset, $this->indexes)];
@@ -120,6 +133,7 @@ class waRequestFileIterator extends waRequestFile implements Iterator, Countable
      * @param mixed $value
      * @throws waException
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if ($value instanceof waRequestFile) {
@@ -138,6 +152,7 @@ class waRequestFileIterator extends waRequestFile implements Iterator, Countable
     /**
      * @param string $offset
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $index = array_search($offset, $this->indexes);

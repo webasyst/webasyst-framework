@@ -419,6 +419,21 @@ class waEvent
             if (!empty($plugin_info[$app_id.'_settings'])) {
                 $plugin_info['custom_settings'] = $plugin_info[$app_id.'_settings'];
             }
+
+            // Translate fields in $plugin->info
+            $locale_path = wa()->getAppPath('plugins/'.$plugin_id.'/locale', $app_id);
+            if (is_dir($locale_path)) {
+                waLocale::load(wa()->getLocale(), $locale_path, $app_id.'_'.$plugin_id, false);
+            }
+
+            $plugin_info['name'] = _wd($app_id.'_'.$plugin_id, $plugin_info['name']);
+            if (isset($plugin_info['title'])) {
+                $plugin_info['title'] = _wd($app_id.'_'.$plugin_id, $plugin_info['title']);
+            }
+            if (isset($plugin_info['description'])) {
+                $plugin_info['description'] = _wd($app_id.'_'.$plugin_id, $plugin_info['description']);
+            }
+
             $plugins[$plugin_id] = $plugin_info;
         }
         return $plugins;

@@ -21,7 +21,7 @@ class waContactNameField extends waContactStringField
             $options = $this->options;
             $options['required'] = true;
             $this->options['validators'] = new waStringValidator($options, array(
-                'required' => _ws('At least one of these fields must be filled')
+                'required' => _ws('At least one of these fields must be filled in.')
             ));
         }
     }
@@ -35,7 +35,7 @@ class waContactNameField extends waContactStringField
         } else {
             $name = array();
             foreach(self::getNameOrder() as $part) {
-                if ( ($part = trim($contact[$part])) || $part === '0') {
+                if ( ($part = trim(ifset($contact, $part, ''))) || $part === '0') {
                     $name[] = $part;
                 }
             }
@@ -58,10 +58,10 @@ class waContactNameField extends waContactStringField
         if ($contact['is_company']) {
             $name = $contact['company'];
         } else {
-            $fst = trim($contact['firstname']);
-            $mdl = trim($contact['middlename']);
-            $lst = trim($contact['lastname']);
-            $cmp = trim($contact['company']);
+            $fst = trim(ifset($contact, 'firstname', ''));
+            $mdl = trim(ifset($contact, 'middlename', ''));
+            $lst = trim(ifset($contact, 'lastname', ''));
+            $cmp = trim(ifset($contact, 'company', ''));
             $eml = trim($contact->get('email', 'default'));
 
             $name = array();
@@ -195,7 +195,7 @@ class waContactNameField extends waContactStringField
         if (!$name && !empty($contact['name'])) {
             $name = $contact['name'];
         }
-        return $name;
+        return (string) $name;
     }
 
     public static function getNameOrder($clear_cache = false)

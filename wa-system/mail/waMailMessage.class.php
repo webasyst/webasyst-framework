@@ -138,7 +138,29 @@ class waMailMessage extends Swift_Message
 
     public function setBody($body, $contentType = 'text/html', $charset = null)
     {
+        if ($contentType == 'text/html') {
+            $body = $this->prepareBody($body, $charset);
+        }
         return parent::setBody($body, $contentType, $charset);
+    }
+
+    protected function prepareBody($body, $charset = null)
+    {
+        if (preg_match('/\<html|\<head|\<body/im', $body) === 0) {
+            if ($charset === null) {
+                $charset = 'utf-8';
+            }
+            return '<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=' . $charset . '">
+    </head>
+    <body>
+        ' . $body . '
+    </body>
+</html>';
+        }
+        return $body;
     }
 
     public function send()

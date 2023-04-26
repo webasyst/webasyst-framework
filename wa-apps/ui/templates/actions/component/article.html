@@ -44,6 +44,14 @@
         <button class="button gray" id="article-shadow-toggle">Добавить тень</button>
     </p>
 
+    <h3>.article<code>.wide</code> и .article<code>.wider</code></h3>
+    <p>
+        С помощью дополнительных классов <code>.article<strong>.wide</strong></code> и <code>.article<strong>.wider</strong></code> можно задать увеличенную ширину для области содержимого статьи. Полезно в случаях, когда внутри .article размещается не текстовый, а более сложный составной контент: формы, списки, колонки.
+    </p>
+    <p>
+        <button class="button light-gray" id="article-wider-toggle">Добавить .wider</button>
+    </p>
+
     <h3>.article > <code>img</code></h3>
 
     <p>У всех изображений <code>img</code> внутри <code>.article</code> есть свойство <code>max-width: 100%;  height: auto !important;</code>. Если для конкретного изображения вы явно задаете свойства ширины и высоты, то рекомендуется указывать их только с помощью <code>style="width: ...; height: ..."</code>, но не использовать <code>style="max-width: ..."</code>, иначе могут появиться ненужные полосы горизонтальной прокрутки, особенно на мобильных устройствах.
@@ -56,6 +64,9 @@
         }
         $('#article-shadow-toggle').click(function(){
             $('#wa-app-content').closest('.article').toggleClass('shadowed');
+        });
+        $('#article-wider-toggle').click(function(){
+            $('#wa-app-content').closest('.article').toggleClass('wider');
         });
 
         $('#article-header-toggle').click(function(){

@@ -369,59 +369,82 @@ class webasystBackendCheatSheetActions extends waActions
         return $all_apps_site_config;
     }
 
+    public function updateAppCacheConfig($app_id)
+    {
+        $locale = wa()->getLocale();
+        $cache_apps = new waVarExportCache('cheat_sheet_apps_'.$locale, 86400, 'webasyst/backend/cheatsheet');
+        $all_apps_site_config = $cache_apps->get('cheat_sheet_apps_'.$locale);
+
+        if ($all_apps_site_config !== null) {
+            $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+            if (file_exists($path)) {
+                wa($app_id, 1);
+                $all_apps_site_config[$app_id] = include($path);
+            }
+            $cache_apps->set($all_apps_site_config);
+        }
+    }
+
     public function getWaVars()
     {
         return array(
-            '$wa_url'                                                                      => _ws('URL of this Webasyst installation (relative)'),
-            '$wa_app_url'                                                                  => _ws('URL of the current app settlement (relative)'),
-            '$wa_backend_url'                                                              => _ws('URL to access Webasyst backend (relative)'),
-            '$wa_theme_url'                                                                => _ws('URL of the current app design theme folder (relative)'),
-            '$wa->title()'                                                                 => _ws('Title'),
-            '$wa->title("<em>title</em>")'                                                 => _ws('Assigns a new title'),
-            '$wa->accountName()'                                                           => _ws('Returns name of this Webasyst installation (name is specified in “Installer” app settings)'),
-            '$wa->apps()'                                                                  => _ws('Returns this site’s core navigation menu which is either set automatically or manually in the “Site settings” screen'),
-            '$wa->currentUrl(bool <em>$absolute</em>)'                                     => _ws('Returns current page URL (either absolute or relative)'),
-            '$wa->domainUrl()'                                                             => _ws('Returns this domain’s root URL (absolute)'),
-            '$wa->globals("<em>key</em>")'                                                 => _ws('Returns value of the global var by <em>key</em>. Global var array is initially empty, and can be used arbitrarily.'),
-            '$wa->globals("<em>key</em>", "<em>value</em>")'                               => _ws('Assigns global var a new value'),
-            '$wa->get("<em>key</em>")'                                                     => _ws('Returns GET parameter value (same as PHP $_GET["<em>key</em>"])'),
-            '$wa->isMobile()'                                                              => _ws('Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent information is used'),
-            '$wa->locale()'                                                                => _ws('Returns user locale, e.g. "en_US", "ru_RU". In case user is authorized, locale is retrieved from “Contacts” app user record, or detected automatically otherwise'),
-            '$wa->post("<em>key</em>")'                                                    => _ws('Returns POST parameter value (same as PHP $_POST["<em>key</em>"])'),
-            '$wa->server("<em>key</em>")'                                                  => _ws('Returns SERVER parameter value (same as PHP $_SERVER["KEY"])'),
-            '$wa->session("<em>key</em>")'                                                 => _ws('Returns SESSION var value (same as PHP $_SESSION["<em>key</em>"])'),
-            '$wa->snippet("<em>id</em>")'                                                  => _ws('Embeds HTML snippet by ID'),
-            '$wa->user("<em>field</em>")'                                                  => _ws('Returns authorized user data from associated record in “Contacts” app. "<em>field</em>" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized'),
-            '$wa->userAgent("<em>key</em>")'                                               => _ws('Returns User Agent info by specified “<em>key</em>” parameter:').'<br />'.
-                _ws('— <em>"platform"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;').'<br />'.
-                _ws('— <em>"isMobile"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;').'<br />'.
-                _ws('— not specified: returns entire User Agent string;').'<br />',
-            '$wa-><em>APP_ID</em>->themePath("<em>theme_id</em>")'                         => _ws('Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>'),
-            '$wa-><em>app_id</em>->themeUrl("<em>theme_id</em>")'                          => _w('Returns current URL of design theme folder by <em>app_id</em> and <em>theme_id</em>.'),
-            '$wa-><em>app_id</em>->page(<em>$id</em>)'                                     => _w('Returns data array of a page by specified <em>app_id</em> and page <em>id</em>.'),
-            '$wa-><em>app_id</em>->pages(<em>$parent_id</em>, bool <em>$with_params</em>)' => _w('Returns array of published pages set up in the app with specified <em>app_id</em>.<br><em>$parent_id</em> denotes the ID of the parent page whose subpages must be returned. If <em>0</em> is specified (default value), all app‘s pages are returned.<br><em>$with_params = false</em> means that pages are returned their without custom parameters. By default (<em>true</em>), custom parameters are returned.'),
+            '$wa_url'                                                                     => _ws('URL of this Webasyst installation (relative).'),
+            '$wa_app_url'                                                                 => _ws('URL of the current app settlement (relative).'),
+            '$wa_backend_url'                                                             => _ws('URL to access Webasyst backend (relative).'),
+            '$wa_theme_url'                                                               => _ws('URL of the current app’s design theme directory (relative).'),
+            '$wa->url(<em>$absolute</em>)'                                                => _ws('Returns a relative root URL, or absolute if the argument is set to <em>true</em>.'),
+            '$wa->title()'                                                                => _ws('Returns the current page’s title.'),
+            '$wa->title(<em>$title</em>)'                                                 => _ws('Sets a new page title.'),
+            '$wa->meta(<em>$field</em>)'                                                  => _ws('Returns the value of a page meta tag. Supported meta tag names are "<em>title</em>" (&lt;title&gt; tag), "<em>description</em>" (description meta tag), "<em>keywords</em>" (keywords meta tag); e.g., <code>{$meta_description = $wa-&gt;meta("description")}</code>.'),
+            '$wa->meta(<em>$field</em>, <em>$value</em>)'                                 => _ws('Sets a new meta tag value; e.g., <code>{$wa-&gt;meta("title", "My super page")}</code>.'),
+            '$wa->accountName()'                                                          => _ws('Returns the value of system setting “Company name”.'),
+            '$wa->apps()'                                                                 => _ws('Returns items of the current site’s navigation menu, which is either generated automatically or is set up manually in the “Site → Settings” screen.'),
+            '$wa->currentUrl(<em>$absolute</em>)'                                         => _ws('Returns current page’s relative URL, or absolute if the argument is set to <em>true</em>.'),
+            '$wa->domainUrl()'                                                            => _ws('Returns current domain’s root URL (absolute).'),
+            '$wa->globals(<em>$key</em>)'                                                 => _ws('Returns the value of a global variable.'),
+            '$wa->globals(<em>$key</em>, <em>$value</em>)'                                => _ws('Assigns a new value to a global variable.'),
+            '$wa->isMobile()'                                                             => _ws('Returns <em>true</em> or <em>false</em> depending on whether a mobile device is used.'),
+            '$wa->locale()'                                                               => _ws('Returns user’s locale; e.g., "en_US".'),
+            '$wa->get(<em>$key</em>)'                                                     => _ws('Returns a GET parameter value.'),
+            '$wa->post(<em>$key</em>)'                                                    => _ws('Returns a POST variable value.'),
+            '$wa->server(<em>$key</em>)'                                                  => _ws('Returns a server variable value.'),
+            '$wa->session(<em>$key</em>)'                                                 => _ws('Returns a session variable value.'),
+            '$wa->user(<em>$field</em>)'                                                  => _ws('Returns authorized user’s field value. If no field value is specified then a user object is returned.'),
+            '$wa->userId()'                                                               => _ws('Returns authorized user’s ID.'),
+            '$wa->userAgent(<em>$key</em>)'                                               => _ws('Returns a User-Agent field value:').'<br>'.
+                _ws('— <em>"platform"</em>: current visitor’s device platform name; e.g., <em>windows, mac, linux, ios, android, blackberry</em>;').'<br>'.
+                _ws('— <em>"isMobile"</em>: returns <em>true</em> or <em>false</em> depending on whether a mobile device (iOS, Android and similar) is used, based on the User-Agent value;').'<br>'.
+                _ws('— not specified: returns entire User Agent string;'),
+            '$wa->setting(<em>$name</em>)'                                                => _ws('Returns the value of a current app’s setting.'),
+            '$wa->setting(<em>$name</em>, <em>$default</em>)'                             => _ws('Returns the value of a current app’s setting, or a default value if the setting is empty.'),
+            '$wa->setting(<em>$name</em>, <em>$default</em>, <em>$app_id</em>)'           => _ws('Returns the value of a specified app’s setting, or a default value if the setting is empty. To get a system setting’s value, specify "webasyst" as the app ID.'),
+            '$wa->version(<em>$app_id</em>)'                                              => _ws('Returns the version number of a specified app. To get the Webasyst version, specify <em>true</em> instead of an app ID.'),
+            '$wa-><em>app_id</em>->themePath(<em>$theme_id</em>)'                         => _ws('Returns the path to the design theme directory of a specified app.'),
+            '$wa-><em>app_id</em>->themeUrl(<em>$theme_id</em>)'                          => _ws('Returns the current URL of a design theme directory of a specified app.'),
+            '$wa-><em>app_id</em>->page(<em>$id</em>)'                                    => _ws('Returns the data array of an app’s page.'),
+            '$wa-><em>app_id</em>->pages(<em>$parent_id</em>, <em>$with_params</em>)'     => _ws('Returns the array of published pages of a specified app.<br><br><em>$parent_id</em> is the ID of the parent page whose subpages must be returned. <em>0</em> means that all app’s pages must be returned.<br><br><em>$with_params</em> means whether pages must be returned with custom parameters specified in their settings.'),
         );
     }
 
     public function getSmartyVars()
     {
         return array(
-            '{$foo}'                                                => _ws('Displays a simple variable (non array/object)'),
-            '{$foo[4]}'                                             => _ws('Displays the 5th element of a zero-indexed array'),
-            '{$foo.bar}'                                            => _ws('Displays the "<em>bar</em>" key value of an array. Similar to PHP $foo["bar"]'),
-            '{$foo.$bar}'                                           => _ws('Displays variable key value of an array. Similar to PHP $foo[$bar]'),
-            '{$foo->bar}'                                           => _ws('Displays the object property named <em>bar</em>'),
-            '{$foo->bar()}'                                         => _ws('Displays the return value of object method named <em>bar()</em>'),
-            '{$foo|print_r}'                                        => _ws('Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)'),
-            '{$foo|escape}'                                         => _ws('Escapes a variable for safe display in HTML'),
-            '{$foo|wa_datetime:$format}'                            => _ws('Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>'),
-            '{$x+$y}'                                               => _ws('Outputs the sum of <em>$x</em> and <em>$y</em>'),
-            '{$foo=3*4}'                                            => _ws('Assigns variable a value'),
-            '{time()}'                                              => _ws('Direct PHP function access. E.g. <em>{time()}</em> displays the current timestamp'),
-            '{literal}...{/literal}'                                => _ws('Content between {literal} tags will not be parsed by Smarty'),
-            '{include file="..."}'                                  => _ws('Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder'),
-            '{if}...{else}...{/if}'                                 => _ws('Similar to PHP if statements'),
-            '{foreach $a as $k => $v}...{foreachelse}...{/foreach}' => _ws('{foreach} is for looping over arrays of data'),
+            '{$foo}'                                                => _ws('Displays a simple variable (non array/object).'),
+            '{$foo[4]}'                                             => _ws('Displays the 5th element of a zero-indexed array.'),
+            '{$foo.bar}'                                            => _ws('Displays the "<em>bar</em>" key value of an array. Similar to PHP $foo["bar"].'),
+            '{$foo.$bar}'                                           => _ws('Displays variable key value of an array. Similar to PHP $foo[$bar].'),
+            '{$foo->bar}'                                           => _ws('Displays the object property named <em>bar</em>.'),
+            '{$foo->bar()}'                                         => _ws('Displays the return value of object method named <em>bar()</em>.'),
+            '{$foo|print_r}'                                        => _ws('Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo).'),
+            '{$foo|escape}'                                         => _ws('Escapes a variable for safe display in HTML.'),
+            '{$foo|wa_datetime:$format}'                            => _ws('Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>.'),
+            '{$x+$y}'                                               => _ws('Outputs the sum of <em>$x</em> and <em>$y</em>.'),
+            '{$foo=3*4}'                                            => _ws('Assigns a value to a variable.'),
+            '{time()}'                                              => _ws('Direct PHP function access. E.g., <em>{time()}</em> displays the current timestamp value.'),
+            '{literal}...{/literal}'                                => _ws('Content between {literal} tags is not parsed by Smarty.'),
+            '{include file="..."}'                                  => _ws('Embeds a Smarty template from a specified file in the current content. The <em>file</em> attribute must contain the path to a file.'),
+            '{if}...{else}...{/if}'                                 => _ws('Similar to <em>if</em> statements in PHP.'),
+            '{foreach $a as $k => $v}...{foreachelse}...{/foreach}' => _ws('Looping over arrays of data.'),
         );
     }
 

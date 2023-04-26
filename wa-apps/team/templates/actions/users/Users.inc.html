@@ -129,7 +129,7 @@
                         }
                     }).observe(document.body, { childList: true});
 
-                    $.team.confirmContactDelete([this.closest('[data-contact-id]').dataset.contactId ?? 0]);
+                    $.team.confirmContactDelete([this.closest('[data-contact-id]').dataset.contactId ?? 0], true);
                 });
             {/if}
         })(jQuery);

@@ -1323,6 +1323,12 @@ abstract class waPayment extends waSystemPlugin
 
 
             $unfiltered_transactions = self::getTransactionsByFields($search);
+            foreach ($unfiltered_transactions as $_transaction_id => $_transaction) {
+                // Ignore any records whith empty native_id 
+                if (empty($_transaction['native_id'])) {
+                    unset($unfiltered_transactions[$_transaction_id]);
+                }
+            }
             $unfiltered_transactions = self::filterTransactionsByDate($unfiltered_transactions);
             $active_part_number = $this->getActivePartNumber($unfiltered_transactions);
 

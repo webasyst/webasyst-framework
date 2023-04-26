@@ -312,6 +312,7 @@ class waContactPhoneTopFormatter extends waContactPhoneFormatter
         if (is_array($data)) {
             $result = parent::format($data);
             $result = htmlspecialchars($result);
+            $result = '<a class="inline" href="tel:'.preg_replace('/[\s()-]/', "", $result).'">'.$result.'</a>';
             if (!empty($data['ext'])) {
                 $result .= " <em class='hint'>" . _ws(htmlspecialchars($data['ext'])) . "</em>";
             }

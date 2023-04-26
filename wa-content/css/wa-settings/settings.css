@@ -1214,7 +1214,6 @@
   cursor: move;
 }
 .s-field-settings-page .s-field-constructor .s-main-fields-label {
-  border-bottom: 1px solid #ccc;
   margin-bottom: 20px;
 }
 .s-field-settings-page .s-field-constructor a.star:hover i.icon16 {

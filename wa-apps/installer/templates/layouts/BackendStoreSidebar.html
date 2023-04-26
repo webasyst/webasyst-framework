@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="sidebar-body hide-scrollbar">
+    <div class="sidebar-body">
         {* Top product-type links *}
         {foreach $store_sidebar_items as $_type => $_sidebar_item}
             <ul class="menu js-installer-sidebar-menu js-installer-sidebar-nav custom-mb-24" data-type="{$_type|escape}"{if $store_sidebar_type !== $_type} style="display: none;"{/if}>
@@ -31,6 +31,14 @@
                         <a href="{$_link|escape}" data-href="{$_store_url|escape|substr:1}" class="flexbox middle js-installer-route{if $_item@index == 0} js-selected{/if}">
                             <span class="icon"><i class="{$_item.icon|escape}"></i></span>
                             <span class="semibold">{$_item.name|escape}</span>
+                        </a>
+                    </li>
+                {/foreach}
+                {foreach ifset($_sidebar_item, 'TOP', 'extra', []) as $_item}
+                    <li>
+                        <a href="{$_item.url|escape}" class="flexbox middle">
+                            <span class="icon"><i class="{$_item.icon|escape}"></i></span>
+                            <span class="semibold">{$_item.name|escape}{if !empty($_item.badge)} <i class="badge small bold rounded red">{$_item.badge}</i>{/if}</span>
                         </a>
                     </li>
                 {/foreach}
@@ -48,7 +56,7 @@
                         {$_is_active = true}
                     {/if}
                     <li{if $_is_active} class="selected"{/if}>
-                        <a href="{$_link|escape}" data-href="{$_store_url|escape}" class="flexbox middle js-installer-route">
+                        <a href="{$_link|escape}" data-href="{$_store_url|escape|substr:1}" class="flexbox middle js-installer-route">
                             {if !empty($_category.icon)}
                             <span class="icon"><i class="{$_category.icon|escape}"></i></span>
                             {/if}

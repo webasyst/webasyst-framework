@@ -62,6 +62,7 @@ class waAuthUser extends waUser
                 $session_token = (!empty($session_user['token'])) ? $session_user['token'] : null;
                 if ($session_token && ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_PASSWORD_CHECK'))) {
                     if ($auth->getToken($this) !== $session_token) {
+                        waAuth::authDebugLog("contact_id={$this->id}: token mismatch (password changed?..), logging out");
                         throw new waException('Password changed');
                     } else {
                         $auth->updateAuth($this->getCache());
@@ -72,11 +73,29 @@ class waAuthUser extends waUser
                 // We do this once in a while, or in case user data is already loaded anyway.
                 if ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_BAN_CHECK')) {
                     if ($this['is_user'] < 0) {
+                        waAuth::authDebugLog("contact_id={$this->id}: contact is banned, logging out");
                         throw new waException('Contact is banned');
                     } else {
                         $auth->updateAuth($this->getCache());
                     }
                 }
+
+                // Make sure user session is not cancelled. We check this once every two minutes.
+                if (isset($session_user['session_auth']) && session_id() && ($last_check >= 120 || defined('WA_STRICT_BAN_CHECK'))) {
+                    $contact_auth_model =  new waContactAuthsModel();
+                    $session_auth = !!$contact_auth_model->getSessionAuth($this->id);
+                    if (!$session_auth) {
+                        waAuth::authDebugLog("contact_id={$this->id}: session is cancelled, logging out");
+                        waSystem::getInstance()->getAuth()->clearAuth();
+                        header("Location: ".wa()->getConfig()->getRequestUrl(false));
+                        exit;
+                    }
+                    if ($last_check >= 120 || mt_rand(0, 10) <= 0) {
+                        waAuth::authDebugLog("contact_id={$this->id}: session is ok, moving on");
+                    }
+                    $contact_auth_model->updateLastDatetime($this->id);
+                }
+
             } catch (waException $e) {
                 // Contact is banned or deleted
                 $auth->clearAuth();
@@ -196,6 +215,10 @@ class waAuthUser extends waUser
     {
         // Update last datetime of the current user
         $this->updateLastTime('logout');
+
+        // Delete row from wa_contact_auth
+        (new waContactAuthsModel())->deleteContactAuth($this->id);
+
         // clear auth
         waSystem::getInstance()->getAuth()->clearAuth();
         $this->id = $this->data = null;

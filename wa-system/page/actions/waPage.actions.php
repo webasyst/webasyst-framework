@@ -228,11 +228,12 @@ class waPageActions extends waActions
 
                 $html .= '<li class="drag-newposition"></li>';
                 $html .= '<li class="dr" id="page-'.$page['id'].'" data-page-id="'.$page['id'].'">'.
-                    (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').
-                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'">'.$icon.
+                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'">'.
+                    (!empty($page['childs']) ? '<span class="js-expander wa-page-expander"><i class="fas fa-caret-down js-icon"></i></span>' : '').
+                    $icon.
                     '<span>'.htmlspecialchars($page['name']).
                     ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span></span>'.
-                    '<span class="count action small"><i class="fas fa-plus-circle wa-page-add"></i></span>';
+                    '<span class="count action small"><i class="fas fa-plus-circle text-green wa-page-add"></i></span>';
                 $html .= '</a>';
                 if (!empty($page['childs'])) {
                     $html .= self::printPagesTree($page, $page['childs'], $prefix_url);
@@ -678,7 +679,10 @@ class waPageActions extends waActions
     {
         $path = wa()->getDataPath('img', true);
 
-        $response = '';
+        $response_url = '';
+        $response_files = [];
+        $r = waRequest::get('r');
+        $absolute = waRequest::get('absolute');
 
         if (!is_writable($path)) {
             $p = substr($path, strlen(wa()->getDataPath('', true)));
@@ -686,12 +690,31 @@ class waPageActions extends waActions
         } else {
             $errors = array();
             $f = waRequest::file('file');
-            $f->transliterateFilename();
-            $name = $f->name;
-            if ($this->processFile($f, $path, $name, $errors)) {
-                $response = wa()->getDataUrl('img/'.$name, true, null, !!waRequest::get('absolute'));
+            if ($r === 'x') {
+                $index = 1;
+                foreach ($f as $file) {
+                    $file->transliterateFilename();
+                    $name = $file->name;
+                    if ($this->processFile($file, $path, $name, $errors)) {
+                        $response_files['file-' . $index] = [
+                            'url' => wa()->getDataUrl('img/' . $name, true, null, !!$absolute),
+                            'id' => uniqid('', true),
+                        ];
+                        $index++;
+                    }
+                    if ($errors) {
+                        $errors = implode(" \r\n", $errors);
+                        break;
+                    }
+                }
+            } else {
+                $f->transliterateFilename();
+                $name = $f->name;
+                if ($this->processFile($f, $path, $name, $errors)) {
+                    $response_url = wa()->getDataUrl('img/'.$name, true, null, !!$absolute);
+                }
+                $errors = implode(" \r\n", $errors);
             }
-            $errors = implode(" \r\n", $errors);
         }
 
         $this->getResponse()->sendHeaders();
@@ -699,16 +722,22 @@ class waPageActions extends waActions
             if ($errors) {
                 echo json_encode(array('error' => $errors));
             } else {
-                echo json_encode(array('filelink' => $response));
+                echo json_encode(array('filelink' => $response_url));
             }
-        } else if (waRequest::get('r') === '2') {
+        } elseif ($r === '2') {
             if ($errors) {
                 echo json_encode(array('error' => $errors));
             } else {
-                echo json_encode(array('url' => $response));
+                echo json_encode(array('url' => $response_url));
+            }
+        } elseif ($r === 'x') {
+            if ($errors) {
+                echo json_encode(array('error' => $errors));
+            } else {
+                echo json_encode($response_files);
             }
         } else {
-            $this->displayJson($response, $errors);
+            $this->displayJson($response_url, $errors);
         }
     }
 
@@ -738,7 +767,7 @@ class waPageActions extends waActions
 
     protected function isFileValid($f, &$errors = array())
     {
-        $allowed = array('jpg', 'jpeg', 'png', 'gif');
+        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
         if (!in_array(strtolower($f->extension), $allowed)) {
             $errors[] = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             return false;

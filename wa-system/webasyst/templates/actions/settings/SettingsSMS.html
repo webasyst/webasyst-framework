@@ -7,9 +7,9 @@
     <form action="?module=settingsSMSSave" class="fields">
     {if count($sms_adapters)}
         {foreach $sms_adapters as $i => $a}
-        <div class="s-sms-adapter fields-group">
+        <div class="s-sms-adapter fields-group blank">
             <input name="sms[{$i}][adapter]" type="hidden" value="{$a.id}">
-            <h3>{if $a.icon}<span class="icon middle size-16"><img src="{$a.icon}" alt=""></span> {/if}{$a.name}</h3>
+            <h3 class="custom-mt-0">{if $a.icon}<span class="icon middle size-16"><img src="{$a.icon}" alt=""></span> {/if}{$a.name}</h3>
             <div class="field">
                 <div class="name">{if isset($a.controls.from.title)}{$a.controls.from.title}{else}[`Sender IDs`]{/if}</div>
                 <div class="value">
@@ -52,7 +52,7 @@
         {/foreach}
     {else}
         <p>
-            {sprintf('[`To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway.<br> <a href="%s">Browse for SMS gateway plugins</a> in Installer app.`]', $wa_backend_url|cat:'installer/#/plugins/wa-plugins/sms/')}
+            {sprintf('[`To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway. <a href="%s">Browse for SMS gateway plugins</a> in Installer app.`]', $wa_backend_url|cat:'installer/store/?filters%5Bcategory%5D=plugins%3Asms&filters%5Btype%5D=plugin')}
         </p>
     {/if}
 

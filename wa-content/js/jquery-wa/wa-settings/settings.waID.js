@@ -19,6 +19,8 @@ class WASettingsWaID {
         that.oauth_modal = options.oauth_modal || false;
         that.webasyst_id_auth_url = options.webasyst_id_auth_url || '';
 
+        that.locale = options.locale || {};
+
         // INIT
         that.init();
     }
@@ -45,12 +47,36 @@ class WASettingsWaID {
 
         that.initWebasystIDHelpLink();
 
+        that.initForceAuthToggle();
         that.initReInviteLinks();
         that.initConnectYourselfLink();
 
         // run automatically invitation process
         if (that.upgrade_all) {
             that.runBulkInviting();
+        }
+    }
+
+    initForceAuthToggle() {
+        const that = this;
+        const $toggleWrapper = that.$wrapper.find('.js-force-auth-wrapper');
+        const $toggle = that.$wrapper.find('.js-force-auth-toggler');
+        const $status = that.$wrapper.find('.js-force-save-status');
+
+        $toggle.on('change', function () {
+            const url = that.wa_backend_url + "?module=settingsWaID&action=save";
+            $.post(url, $toggle.serialize())
+                .done(function () {
+                    $status.show();
+
+                    setTimeout(function () {
+                        $status.hide();
+                    }, 2000);
+                });
+        });
+
+        if ($toggle.attr('disabled')) {
+            $toggleWrapper.attr('title', that.locale.disabled_toggle_reason || '');
         }
     }
 
@@ -160,9 +186,8 @@ class WASettingsWaID {
 
         $.get('?module=settings&action=waIDConnectDialog', function (html) {
             $wrapper.append(html);
-            $wrapper.one('connected', function (e, data, dialog) {
-
-                dialog.close();
+            $('.js-waid-connect-dialog:visible').one('connected', function (e, data, dialog) {
+                dialog.dialog.close();
 
                 if (upgrade_all) {
                     $.wa.content.load(that.current_page_url + '?upgrade_all=1', true);

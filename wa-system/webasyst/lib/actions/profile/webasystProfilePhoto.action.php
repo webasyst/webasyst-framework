@@ -7,6 +7,7 @@ class webasystProfilePhotoAction extends waViewAction
     public function execute()
     {
         $id = waRequest::request('id', wa()->getUser()->getId(), 'int');
+        $ui = waRequest::request('ui', null, 'string');
         $contact = new waContact($id);
 
         // If there is a photo for this contact, show it to crop
@@ -15,6 +16,10 @@ class webasystProfilePhotoAction extends waViewAction
         if (file_exists($filename)) {
             $oldPreview = $contact->getPhoto();
             $oldImage = $contact->getPhoto('original');
+        }
+
+        if (!empty($ui) && $ui != wa()->whichUI()) {
+            waRequest::SetParam('force_ui_version', $ui);
         }
 
         $this->view->assign(array(

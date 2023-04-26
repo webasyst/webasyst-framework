@@ -1,8 +1,8 @@
 {strip}
 
 {$_active_type = ""}
-{$_inherited_group_text = '[`Access inherited from user groups`] <i class="fas fa-users"></i>'}
-{$_not_inherited_group_text = '[`Access granted for the user individually`] <i class="fas fa-user"></i>'}
+{$_inherited_group_text = '[`Access inherited from user groups.`] <i class="fas fa-users"></i>'}
+{$_not_inherited_group_text = '[`Access granted for the user individually.`] <i class="fas fa-user"></i>'}
 
 <div class="dialog t-access-dialog" id="t-access-dialog">
     <div class="dialog-background"></div>
@@ -54,9 +54,8 @@
         </header>
 
         <div class="dialog-content small">
-
             {* Limited access customization form *}
-            {if empty($access_levels.limited.is_disabled)}
+            {if !empty($access_levels.limited) && empty($access_levels.limited.is_disabled)}
                 <div class="t-limited-access-form{if empty($access_levels.limited.is_active)} hidden{/if}">
                     <form action="{$wa_app_url}?module=accessSave&action=rights&id={$contact_id}">
                         <div class="c-access-app-limited">

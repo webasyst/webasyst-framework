@@ -33,6 +33,7 @@ class waNet
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
     const METHOD_PUT = 'PUT';
+    const METHOD_PATCH = 'PATCH'; // since 2.7.0
     const METHOD_DELETE = 'DELETE';
 
     const FORMAT_JSON = 'json';
@@ -64,6 +65,7 @@ class waNet
         'proxy_port'          => null,
         'proxy_user'          => null,
         'proxy_password'      => null,
+        'proxy_type'          => null,
         'proxy_auth'          => 'basic',
         # specify custom interface
         'interface'           => null,
@@ -185,7 +187,7 @@ class waNet
                 $response = $this->runSocketContext($url, $content, $method);
                 break;
             default:
-                throw new waNetException('There no suitable network transports', 500);
+                throw new waNetException(_ws('No supported network transports are available.'), 500);
                 break;
         }
 
@@ -221,7 +223,7 @@ class waNet
      */
     protected function buildRequest(&$url, &$content, &$method)
     {
-        if ($content && $method == self::METHOD_GET) {
+        if ($content && in_array($method, [self::METHOD_GET, self::METHOD_DELETE])) {
             //
             // Unable to encode FORMAT_XML and FORMAT_JSON for METHOD_GET.
             // Have to deal with it here.
@@ -229,9 +231,11 @@ class waNet
             $format = ifempty($this->options['request_format'], $this->options['format']);
             if (in_array($format, array(self::FORMAT_XML), true)) {
                 // FORMAT_XML, METHOD_GET becomes FORMAT_XML, METHOD_POST
-                $method = self::METHOD_POST;
+                if ($method === self::METHOD_GET) {
+                    $method = self::METHOD_POST;
+                }
             } else {
-                // FORMAT_JSON, METHOD_GET becomes FORMAT_RAW, METHOD_GET
+                // FORMAT_JSON, METHOD_GET or METHOD_DELETE becomes FORMAT_RAW, METHOD_GET (METHOD_DELETE)
                 $get = is_string($content) ? $content : http_build_query($content);
                 $url .= strpos($url, '?') ? '&' : '?'.$get;
                 $content = array();
@@ -257,6 +261,8 @@ class waNet
         switch ($method) {
             case self::METHOD_POST:
             case self::METHOD_PUT:
+            case self::METHOD_PATCH:
+            case self::METHOD_DELETE:
                 $content = $this->encodeRequest($content);
                 break;
         }
@@ -514,6 +520,9 @@ class waNet
             $hint[] = 'Enable fsockopen';
         }
 
+        if (!empty($this->options['proxy_host']) && $available[self::TRANSPORT_CURL]) {
+            return self::TRANSPORT_CURL;
+        }
         foreach ($this->options['priority'] as $transport) {
             if (!empty($available[$transport])) {
                 return $transport;
@@ -704,6 +713,7 @@ class waNet
 
                 if (isset($this->options['proxy_host']) && strlen($this->options['proxy_host'])) {
                     $curl_options[CURLOPT_HTTPPROXYTUNNEL] = true;
+                    $curl_options[CURLOPT_PROXYTYPE] = (empty($this->options['proxy_type']) ? CURLPROXY_HTTP : $this->options['proxy_type']);
                     if (isset($this->options['proxy_port']) && $this->options['proxy_port']) {
                         $curl_options[CURLOPT_PROXY] = sprintf("%s:%s", $this->options['proxy_host'], $this->options['proxy_port']);
                     } else {
@@ -729,14 +739,9 @@ class waNet
                         $curl_options[CURLOPT_POSTFIELDS] = $content;
                     }
                     break;
-                case self::METHOD_PUT:
-                    $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
-                    if ($content) {
-                        $curl_options[CURLOPT_POST] = 0;
-                        $curl_options[CURLOPT_POSTFIELDS] = $content;
-                    }
-                    break;
                 case self::METHOD_DELETE:
+                case self::METHOD_PATCH:
+                case self::METHOD_PUT:
                     $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
                     if ($content) {
                         $curl_options[CURLOPT_POST] = 0;
@@ -846,7 +851,7 @@ class waNet
 
         $context_params['header'] = implode("\r\n", $headers); //5.2.10 array support
 
-        if (in_array($method, array(self::METHOD_POST, self::METHOD_PUT))) {
+        if (in_array($method, array(self::METHOD_POST, self::METHOD_PUT, self::METHOD_PATCH))) {
             $context_params += array(
                 'method'  => $method,
                 'content' => $content,
@@ -856,6 +861,8 @@ class waNet
             'follow_location' => true,//PHP >= 5.3.4
             'max_redirects'   => 5,
         );
+
+        $context_params = ['http' => $context_params];
 
         //SSL
         if (!empty($this->options['verify'])) {
@@ -881,7 +888,7 @@ class waNet
             $context_params['ssl']['verify_peer_name'] = false;
         }
 
-        return stream_context_create(array('http' => $context_params,));
+        return stream_context_create($context_params);
     }
 
     /**

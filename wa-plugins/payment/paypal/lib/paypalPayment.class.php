@@ -119,6 +119,8 @@ class paypalPayment extends waPayment implements waIPayment
             throw new waException('Unsupported currency');
         }
 
+        $total = $order->tax_included == false && $order->tax ? $order->tax + $order->total : $order->total;
+
         // adding all necessary form fields as required by PayPal
         $hidden_fields = array(
             'cmd'           => '_xclick',
@@ -127,7 +129,7 @@ class paypalPayment extends waPayment implements waIPayment
             // packing order number with other auxiliary information for unique identification of current payment method
             'item_number'   => $this->app_id.'_'.$this->merchant_id.'_'.$order->id,
             'no_shipping'   => 1,
-            'amount'        => number_format($order->total, 2, '.', ''),
+            'amount'        => number_format($total, 2, '.', ''),
             'currency_code' => $order->currency,
             // adding service URLs:
 
@@ -207,6 +209,7 @@ class paypalPayment extends waPayment implements waIPayment
 
         // sending additional request to payment gateway to receive current transaction status
         $state = $this->notifyValidate($request);
+
         /**
          * IMPORTANT! If response to status request does not contain correct signature and there is no way to verify
          * payment, then order status must not be changed.
@@ -214,34 +217,35 @@ class paypalPayment extends waPayment implements waIPayment
          * processing history.
          */
 
-        // if response to additional request to payment gateway identifies transaction as paid, then continue processing
+        $transaction_data = $this->formalizeData($request);
+
+        // checking transaction unique id
+        $is_duplicate = $this->isDuplicate($transaction_data);
+
+        if (!$is_duplicate) { // making sure there are no duplicates of this transactions
+            $callback = null;
+            $transaction_data['order_id'] = $this->order_id;
+            $transaction_data['plugin'] = $this->id;
+
+            $this->prepareData($request, $state, $transaction_data, $callback);
+
+            $raw_data = array_merge(['validation_state' => $state], $request);
+            $transaction_data = $this->saveTransaction($transaction_data, $raw_data);
+            // calling app's payment handler method for paid order
+            $result = $this->execAppCallback($callback, $transaction_data);
+            if (!empty($result['error'])) {
+                throw new waPaymentException('Forbidden (validate error): '.$result['error']);
+            }
+            /**
+             * Because request for transaction status sent to payment gateway is initiated by the plugin,
+             * extra verification is not needed.
+             * In other cases, before calling a payment handler, you must ensure that a request has been
+             * received from a reliable source by verifying request checksum, signature, etc.
+             */
+        }
+
         if ($state == 'VERIFIED') {
             // accept transaction
-            $transaction_data = $this->formalizeData($request);
-
-            // checking transaction unique id
-            $is_duplicate = $this->isDuplicate($transaction_data);
-
-            if (!$is_duplicate) { // making sure there are no duplicates of this transactions
-                $callback = null;
-                $transaction_data['order_id'] = $this->order_id;
-                $transaction_data['plugin'] = $this->id;
-
-                $this->prepareData($request, $transaction_data,$callback);
-
-                $transaction_data = $this->saveTransaction($transaction_data, $request);
-                // calling app's payment handler method for paid order
-                $result = $this->execAppCallback($callback, $transaction_data);
-                if (!empty($result['error'])) {
-                    throw new waPaymentException('Forbidden (validate error): '.$result['error']);
-                }
-                /**
-                 * Because request for transaction status sent to payment gateway is initiated by the plugin,
-                 * extra verification is not needed.
-                 * In other cases, before calling a payment handler, you must ensure that a request has been
-                 * received from a reliable source by verifying request checksum, signature, etc.
-                 */
-            }
             echo 'ok';
         } else {
             echo 'Transaction result: '.$state;
@@ -303,11 +307,17 @@ class paypalPayment extends waPayment implements waIPayment
      * @param $transaction_data
      * @param $callback
      */
-    protected function prepareData($request, &$transaction_data, &$callback)
+    protected function prepareData($request, $state, &$transaction_data, &$callback)
     {
         if (in_array($transaction_data['type'], $this->supportedOperations())) {
-            $transaction_data['state'] = self::STATE_CAPTURED;
-            $callback = self::CALLBACK_PAYMENT;
+            if ($state === 'VERIFIED') {
+                $transaction_data['state'] = self::STATE_CAPTURED;
+                $callback = self::CALLBACK_PAYMENT;
+            } else {
+                $transaction_data['state'] = self::STATE_DECLINED;
+                $transaction_data['result'] = false;
+                $callback = self::CALLBACK_DECLINE;
+            }
         } else {
             $transaction_data['view_data'] = (sprintf(_wp('Transaction type: %s'), ifset($request, 'payment_status', _wp('unknown'))));
             $callback = self::CALLBACK_NOTIFY;
@@ -439,7 +449,6 @@ class paypalPayment extends waPayment implements waIPayment
         @curl_setopt($ch, CURLOPT_USERAGENT, sprintf('Webasyst %s plugin (%s)', $this->id, $host));
         @curl_setopt($ch, CURLOPT_TIMEOUT, 120);
         @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
-        @curl_setopt($ch, CURLE_OPERATION_TIMEOUTED, 120);
 
         $response = @curl_exec($ch);
         if (curl_errno($ch) != 0) {

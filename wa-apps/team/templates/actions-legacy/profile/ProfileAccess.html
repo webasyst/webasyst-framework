@@ -64,6 +64,7 @@
 
 {capture assign="waid_block"}
     {if $is_connected_to_webasyst_id && ($contact['is_user'] == '1' || $is_bound_with_webasyst_contact)}
+    {$_is_team = (waRequest::get('app') === 'team')}
         <div class="c-waid">
             <div class="field">
                 <div class="name">[`Sign-in with Webasyst ID`]</div>
@@ -86,7 +87,7 @@
                             <a class="bold underline js-customer-center-auth" href="{$customer_center_auth_url}"><i class="icon10" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 14px 14px; background-position: 0 0;width: 14px;height: 14px; margin: 0 5px;"></i>[`Go to the Webasyst Customer Center`]</a>
                         {/if}
 
-                        {if !$is_webasyst_id_forced}
+                        {if !$is_webasyst_id_forced && $_is_team}
                             <a href="#" class="hint js-webasyst-id-unbind-auth">[`Disconnect`]</a>
                         {/if}
 
@@ -94,12 +95,13 @@
 
                         {* own profile is not connected to webasyst ID *}
 
-                        <div>[`Connect your Webasyst ID account and sign into the backend securely with no extra passwords.`] <a href="javascript:void(0);" class="underline js-webasyst-id-help-link">[`How does it work?`]</a></div>
+                        <div>[`Connect your Webasyst ID account and sign into the backend securely with no extra passwords.`] <a href="{if $_is_team}javascript:void(0);{else}{"`$wa_backend_url`webasyst/settings/waid/"}{/if}" class="underline{if $_is_team} js-webasyst-id-help-link{/if}">[`How does it work?`]</a></div>
+                        {if $_is_team}
                         <div class="waid-login">
                             <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)"><span class="icon"></span>&nbsp;{sprintf(_w('Enable sign-in with %s'), 'Webasyst ID')}</a>
                             <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[`What is Webasyst ID?`]</a>
                         </div>
-
+                        {/if}
                     {else}
 
                         {* other user's profile (not own) is connected to webasyst ID *}
@@ -157,11 +159,26 @@
                     {$_selector_avaiable = !$is_webasyst_id_forced || $_has_credentials}
 
                     {if $_selector_avaiable}
-                        <select id="c-access-rights-toggle">
+                        {$event_message = ''}
+                        <!-- plugin hook: 'frontend_user_backend_access' -->
+                        {* @event frontend_user_backend_access.%app_id% *}
+                        {foreach $frontend_user_backend_access as $message}
+                            {if $message}
+                                {$event_message = $message}
+                            {/if}
+                        {/foreach}
+                        <select id="c-access-rights-toggle" {if $event_message}disabled{/if}>
                             <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
                             <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
                             <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
                         </select>
+
+                        {if $event_message}
+                            <br>
+                            <span class="hint">
+                                {$event_message|strip}
+                            </span>
+                        {/if}
 
                         <span id="access-rights-toggle-confirm" style="display:none;">
                             <a href="javascript:void(0)" class="button yellow">[`Confirm access change`]</a>
@@ -374,14 +391,31 @@
                             >
                                 <i class="icon16 no"></i><b>[`Block contact`]</b>
                             </a>
+
+                            {$event_message = ''}
+                            {if $contact.is_user == '-1'}
+                                <!-- plugin hook: 'frontend_user_backend_access' -->
+                                {* @event frontend_user_backend_access.%app_id% *}
+                                {foreach $frontend_user_backend_access as $message}
+                                    {if $message}
+                                        {$event_message = "`$event_message` `$message`"}
+                                    {/if}
+                                {/foreach}
+                            {/if}
+
                             <a href="javascript:void(0)"
-                                id="c-access-link-unblock"
-                                class="inline-link c-shown-on-disabled"
+                                {if empty($event_message)}
+                                    id="c-access-link-unblock"
+                                    data-alert="[`Enable this contact?`]"
+                                {/if}
                                 {if $contact.is_user != '-1'} style="display:none"{/if}
-                                data-alert="[`Enable this contact?`]"
+                                class="inline-link c-shown-on-disabled{if !empty($event_message)} gray{/if}"
                             >
-                                <b>[`Unblock contact`]</b>
+                                [`Unblock contact`]
                             </a>
+                            {if $contact.is_user == '-1' && !empty($event_message)}
+                                <p class="hint">{$event_message|strip}</p>
+                            {/if}
 
                             <form class="js-block-user-reason-form" style="display: none">
                                 <br>

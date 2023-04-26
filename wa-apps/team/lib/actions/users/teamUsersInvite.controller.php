@@ -1,18 +1,32 @@
 <?php
 
 /**
- * Accepts an Email to send new user invitation to or create user right away
+ * Принимает электронное письмо или номер телефона
+ * для отправки приглашения новому пользователю
+ * или немедленного создания пользователя
  */
 class teamUsersInviteController extends teamUsersNewUserController
 {
     public function execute()
     {
-        $this->invite($this->getEmail(), $this->getGroups());
+        $this->invite($this->getEmail(), $this->getPhone(), $this->getGroups(), $this->getContactId());
     }
 
-    public function invite($email, $groups)
+    public function invite($email, $phone, $groups, $contact_id)
     {
-        $result = (new teamUserInvitingByEmail($email, ['groups' => $groups]))->invite();
+        $event_data = compact('email', 'phone', 'groups');
+        $this->runInviteUserHook($event_data);
+        if ($this->errors) {
+            return;
+        }
+        if (!empty($phone)) {
+            $result = (new teamUserInvitingByPhone($phone, ['groups' => $groups]))->invite();
+        } else {
+            $result = (new teamUserInvitingByEmail($email, [
+                'groups' => $groups,
+                'contact_id' => $contact_id,
+            ]))->invite();
+        }
 
         if (!$result['status']) {
             $this->onFailedInviting($result);
@@ -27,7 +41,7 @@ class teamUsersInviteController extends teamUsersNewUserController
             throw new waException('Something not found');
         }
 
-        $this->errors[] = $result['details']['error'];
+        $this->errors[] = ifset($result['details']['description'], $result['details']['error']);
     }
 
     protected function onSuccessInviting(array $result)
@@ -37,5 +51,26 @@ class teamUsersInviteController extends teamUsersNewUserController
             'contact_id'  => $result['details']['contact_id'],
             'contact_url' => wa()->getUrl().'id/'.$result['details']['contact_id'].'/',
         );
+
+        $contact_data = $this->getAdditionalContactData();
+        if ($contact_data) {
+            $c = new waContact($result['details']['contact_id']);
+            $c->save($contact_data);
+        }
+    }
+
+    /**
+     * @param array $event_data
+     * @return void
+     * @throws waException
+     */
+    protected function runInviteUserHook($event_data)
+    {
+        $invite_user_event = wa()->event('invite_user', $event_data);
+        foreach ($invite_user_event as $message) {
+            if ($message) {
+                $this->errors[] = [$message, 'general'];
+            }
+        }
     }
 }

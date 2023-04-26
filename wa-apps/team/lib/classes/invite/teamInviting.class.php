@@ -6,9 +6,9 @@ abstract class teamInviting
 
     public function __construct(array $options = [])
     {
-        $this->options = array_merge($options, [
+        $this->options = array_merge([
             'tokens_limit' => 5
-        ]);
+        ], $options);
 
         $this->options['tokens_limit'] = intval($this->options['tokens_limit']);
         if ($this->options['tokens_limit'] <= 1) {
@@ -137,13 +137,28 @@ abstract class teamInviting
         return $error;
     }
 
+    protected function validatePhone($phone)
+    {
+        $v = new waPhoneNumberValidator();
+        $error = null;
+        if (!$phone) {
+            $error = 'phone_required';
+        } else {
+            if (!$v->isValid($phone)) {
+                $error = 'phone_invalid';
+            }
+        }
+
+        return $error;
+    }
+
     protected function ensureTokensLimit(array $token)
     {
         $atm = new waAppTokensModel();
 
         $condition = [
             'app_id' => 'team',
-            'type' => 'user_invite',
+            'type' => ifset($token, 'type', 'user_invite'),
             'contact_id' => $token['contact_id']
         ];
 
@@ -190,9 +205,16 @@ abstract class teamInviting
             case 'contact_banned':
                 return _w('This contact was banned.');
             case 'email_required':
+            case 'phone_required':
                 return _w('This is a required field.');
             case 'email_invalid':
-                return _w('This does not look like a valid email');
+                return _w('This does not look like a valid email address.');
+            case 'phone_invalid':
+                return _w('This does not look like a valid phone number.');
+            case 'webasyst_id_required':
+                return _w('This installation is not connected to Webasyst ID.');
+            case 'contact_does_not_exist':
+                return _w('Contact does not exist.');
             default:
                 return $error;
         }

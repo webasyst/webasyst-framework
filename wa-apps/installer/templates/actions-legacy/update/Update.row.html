@@ -61,6 +61,8 @@
                 <span class="i-version">{$item.version}</span>
                 {if $item.beta_test|default:false}
                     <span class="i-beta-test small">([`beta version`])</span>
+                {else if !empty($item.update_datetime)}
+                    <span class="small" style="padding: 0 10px;">{$item.update_datetime|wa_date:'humandate'}</span>
                 {/if}
             </strong>
         {/if}
@@ -109,18 +111,18 @@
                 <p class="small red">[`License is either expired or not valid for this installation`]</p>
 
                 {if $item_type eq 'app'}
-                    {$link="app/`$item.id`"}
+                    {$link="app/{$item.id|escape}"}
                 {elseif $item_type eq 'theme'}
-                    {$link="theme/`$item.id`"}
+                    {$link="theme/{$item.id|escape}"}
                 {elseif $item_type eq 'widget'}
-                    {$link="widget/`$item.app`/`$item.id`"}
+                    {$link="widget/`$item.app`/{$item.id|escape}"}
                 {elseif $item_type eq 'plugin'}
                     {if strpos($item.slug,'wa-plugins/') === 0}
                         {$_plugins_slug = str_replace('wa-plugins/','',$item.slug|escape)}
                         {$_plugins_slug = str_replace('plugins/','',$_plugins_slug)}
                         {$link = "plugin/{$_plugins_slug}"}
                     {else}
-                        {$link = "plugin/{$item.app|default:''}/{$item.id|escape}/"}
+                        {$link = "plugin/{$item.app|default:''}/{$item.id|escape}"}
                     {/if}
                 {/if}
 

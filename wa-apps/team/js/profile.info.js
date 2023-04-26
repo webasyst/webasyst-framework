@@ -1465,7 +1465,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 }
             }
 
-            var wrapper = $('<div class="composite '+mode+' field" data-field-id="'+this.fieldData.id+'"></div>').append(contactEditor.wrapper('<span style="display:none" class="replace-with-ext"></span>', this.fieldData.name, 'hdr'));
+            var wrapper = $('<div class="composite '+mode+'" data-field-id="'+this.fieldData.id+'"></div>').append(contactEditor.wrapper('<span style="display:none" class="replace-with-ext"></span>', this.fieldData.name, 'hdr'));
 
             // For each field call its newFieldElement and add to wrapper
             for(var sfid in this.subfieldEditors) {
@@ -1569,7 +1569,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     //.append('<div class="ext"><strong><span style="display:none" class="replace-with-ext"></span></strong></div>')
                     .append('<span class="small">'+this.fieldValue.value+'</span>')
                     .append('<span style="display:none" class="replace-with-ext"></span> ')
-                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="map-link small">' + $_('map') + '</a>');
+                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="map-link small">' + $_('map') + '<i class="fas fa-external-link-alt small custom-ml-4"></i></a>');
                 return result;
             }
 
@@ -2195,8 +2195,8 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 el.addClass('edit-mode');
                 el.removeClass('view-mode');
 
-                el.find('.subname').wrapAll('<div class="subname-wrapper fields-group custom-mt-0"></div>');
-                el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper fields-group"></div>');
+                el.find('.subname').wrapAll('<div class="subname-wrapper custom-mt-0"></div>');
+                el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper"></div>');
 
                 // Save/cancel buttons
                 var buttons = this.inplaceEditorButtons(fieldsToUpdate, function(noValidationErrors) {
@@ -2311,8 +2311,15 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     'type': that.contactType,
                     'id': that.contact_id != null ? that.contact_id : 0
                 }, function(newData) {
-                    if (newData.status != 'ok') {
-                        throw new Exception('AJAX error:', newData);
+                    if (newData.status !== 'ok') {
+                        if (newData.errors.length) {
+                            showError(newData.errors['0']);
+                            return;
+                        } else {
+                            throw new Exception('AJAX error:', newData);
+                        }
+                    } else {
+                        deleteError();
                     }
 
                     var oldData = that.fieldsValues || {};
@@ -2381,6 +2388,15 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     }
 
                 }, 'json');
+            }
+
+            function showError(error) {
+                $('.buttons .loading').hide();
+                $('#validation-notice').text(error.text);
+            }
+
+            function deleteError() {
+                $('#validation-notice').text('');
             }
 
             function updateGeocoding(oldData, newData) {
@@ -2554,6 +2570,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             var cancelBtn = $('<a href="javascript:void(0)" class="cancel button light-gray js-close-dialog">'+$_('Cancel')+'</a>');
             cancelBtn.on('click', function(event) {
                 event.preventDefault();
+                $('#validation-notice').text('');
                 $('.buttons .loading').hide();
 
                 // remove topmost validation errors

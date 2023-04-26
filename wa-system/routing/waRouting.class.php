@@ -209,7 +209,10 @@ class waRouting
     public function dispatch()
     {
         $url = $this->system->getConfig()->getRequestUrl(true, true);
-        $url = urldecode($url);
+        $decoded_url = urldecode($url);
+        if (mb_check_encoding($decoded_url, 'UTF-8')) {
+            $url = $decoded_url;
+        }
         $r = $this->dispatchRoutes($this->getRoutes(), $url);
         if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
             $r2 = $this->dispatchRoutes($this->getRoutes(), $url.'/');
@@ -364,6 +367,7 @@ class waRouting
             if (($this->route && isset($this->route['module']) &&
                 (!isset($r['module']) || $r['module'] != $this->route['module']))
                 || (isset($r['redirect']) && !empty($r['disabled']))
+                || !empty($r['temporarily_off'])
             ) {
                 continue;
             }
@@ -516,8 +520,9 @@ class waRouting
                     $is_different_route_url = $domain_url && $route_url && $route['url'] != $route_url;
                     $is_different_module = isset($params['module']) && isset($route['module'])
                         && $route['module'] != $params['module'];
+                    $is_temporarily_off = !empty($route['temporarily_off']);
 
-                    if ($is_different_app || $is_different_route_url || $is_different_module) {
+                    if ($is_different_app || $is_different_route_url || $is_different_module || $is_temporarily_off) {
                         unset($routes[$domain][$i]);
                     }
                 }
@@ -535,6 +540,9 @@ class waRouting
 
         foreach ($routes as $domain => $domain_routes) {
             foreach ($domain_routes as $route) {
+                if (!empty($route['temporarily_off'])) {
+                    continue;
+                }
                 $route_score = $this->countParams($route, $params);
 
                 if (isset($params['module']) && isset($route['module'])) {

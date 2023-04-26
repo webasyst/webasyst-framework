@@ -35,6 +35,7 @@ class waGettextParser
 
         $locales = $this->entity->getLocales();
         $messages = $this->entity->getMessages();
+        $additional_messages = $this->entity->getAdditionalMessages();
 
         if (!$messages) {
             throw new waException('No messages found to save');
@@ -46,7 +47,7 @@ class waGettextParser
             $file = $this->getFile($locale);
             $gettext_data = (new waGettext($file, true))->getMessagesMetaPlurals();
 
-            $clone_msg = $this->extendBySavedData($clone_msg, $gettext_data);
+            $clone_msg = $this->extendBySavedData($clone_msg, $gettext_data, $additional_messages);
             $this->entity->preSave($clone_msg, $locale);
 
             // Get metadata for file
@@ -84,9 +85,10 @@ class waGettextParser
     /**
      * @param $new_msgs
      * @param $gettext_data
+     * @param $additional_messages
      * @return mixed
      */
-    protected function extendBySavedData($new_msgs, $gettext_data)
+    protected function extendBySavedData($new_msgs, $gettext_data, $additional_messages = [])
     {
         $old_messages = [];
 
@@ -100,13 +102,19 @@ class waGettextParser
             $saved_data = [
                 'translate'    => $translate,
                 'msgid_plural' => ifset($gettext_data, 'plurals', $saved_msgid, 'msgid_plural', false),
+                'comments' => [],
             ];
 
-            if (!isset($new_msgs[$saved_msgid])) {
-                // If the saved is not found in the new ones, add a comment
+            if (!isset($new_msgs[$saved_msgid]) && !isset($additional_messages[$saved_msgid])) {
+                // If the saved is not found in the new and additional messages, add a comment
                 $saved_data['comments'][] = 'Not found';
             } else {
-                $saved_data['comments'] = $new_msgs[$saved_msgid]['comments'];
+                if (isset($additional_messages[$saved_msgid])) {
+                    $saved_data['comments'] = $additional_messages[$saved_msgid]['comments'];
+                }
+                if (isset($new_msgs[$saved_msgid])) {
+                    $saved_data['comments'] = array_merge($saved_data['comments'], $new_msgs[$saved_msgid]['comments']);
+                }
 
                 // If old plural not find try find new plural
                 if ($saved_data['msgid_plural'] === false) {

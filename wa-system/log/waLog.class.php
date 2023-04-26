@@ -27,6 +27,10 @@ class waLog
         $file = self::$path.$file;
 
         if (!file_exists($file)) {
+            if (substr($file, -4) != '.log') {
+                // Never create new files with extension other than .log
+                $file = self::$path.'error.log';
+            }
             waFiles::create(dirname($file), true);
             touch($file);
             chmod($file, 0666);

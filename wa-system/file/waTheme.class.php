@@ -112,6 +112,8 @@ class waTheme implements ArrayAccess
     private $changed = array();
     private $readonly = false;
 
+    protected static $info_cache = array();
+
     /**
      * Get theme instance
      * @param $id
@@ -222,7 +224,13 @@ class waTheme implements ArrayAccess
     private function init($param = null)
     {
         if (empty($this->info)) {
-            $path = $this->path.'/'.self::PATH;
+            $path = realpath($this->path.'/'.self::PATH);
+
+            if (isset(self::$info_cache[$path])) {
+                $this->info = self::$info_cache[$path];
+                return ($param === null) ? true : isset($this->info[$param]);
+            }
+
             $extension = pathinfo($path, PATHINFO_EXTENSION);
             switch ($extension) {
                 case 'xml':
@@ -293,23 +301,23 @@ class waTheme implements ArrayAccess
                          * @var SimpleXMLElement $files
                          */
                         foreach ($files->children() as $file) {
-                            $path = (string)$file['path'];
-                            if (in_array(pathinfo($path, PATHINFO_EXTENSION), array('js', 'html', 'css'))) {
-                                $this->info['files'][$path] = array(
+                            $file_path = (string)$file['path'];
+                            if (in_array(pathinfo($file_path, PATHINFO_EXTENSION), array('js', 'html', 'css'))) {
+                                $this->info['files'][$file_path] = array(
                                     'custom' => isset($file['custom']) && (string)$file['custom'] ? true : false,
                                 );
                                 if (isset($file['modified']) && (string)$file['modified']) {
-                                    $this->info['files'][$path]['modified'] = true;
+                                    $this->info['files'][$file_path]['modified'] = true;
                                 }
 
-                                $this->info['files'][$path]['parent'] = isset($file['parent']) && (string)$file['parent'] ? true : false;
-                                if ($this->info['files'][$path]['parent']) {
-                                    $this->info['files'][$path]['parent_exists'] = $parent_exists;
+                                $this->info['files'][$file_path]['parent'] = isset($file['parent']) && (string)$file['parent'] ? true : false;
+                                if ($this->info['files'][$file_path]['parent']) {
+                                    $this->info['files'][$file_path]['parent_exists'] = $parent_exists;
                                 }
 
                                 foreach ($file->{'description'} as $value) {
                                     if ($value && ($locale = (string)$value['locale'])) {
-                                        $this->info['files'][$path]['description'][$locale] = (string)$value;
+                                        $this->info['files'][$file_path]['description'][$locale] = (string)$value;
                                     }
                                 }
                             }
@@ -354,6 +362,7 @@ class waTheme implements ArrayAccess
                             if (is_int($settings_group)) {
                                 $s['level'] = max(0, $settings_group);
                             } else {
+                                $settings_group = ifempty($settings_group, '');
                                 $s['level'] = strlen($settings_group) ? substr_count($settings_group, '/') + 1 : 0;
                             }
 
@@ -477,11 +486,12 @@ class waTheme implements ArrayAccess
                     $this->info = array();
                     break;
             }
+
+            if (wa()->getEnv() == 'frontend') {
+                self::$info_cache[$path] = $this->info;
+            }
         }
         return ($param === null) ? true : isset($this->info[$param]);
-
-
-        //TODO check info and construct params
     }
 
     /**
@@ -751,7 +761,7 @@ XML;
      */
     private function addLocalizedField($dom, $xpath, $context, $field, $value)
     {
-
+        $is_description = $context->nodeName == 'file' && $field == 'description';
         if (is_array($value)) {
             foreach ($value as $locale => $_value) {
                 $query = "{$field}[@locale='{$locale}']";
@@ -759,11 +769,21 @@ XML;
                     if ($_value === null) {
                         $context->removeChild($node);
                     } else {
-                        $node->nodeValue = $_value;
+                        if ($is_description) {
+                            $node->nodeValue = '';
+                            $node->appendChild(new DOMCdataSection($_value));
+                        } else {
+                            $node->nodeValue = $_value;
+                        }
                     }
 
                 } else {
-                    $node = $this->addNode($dom, $xpath, $context, $field, $_value);
+                    if ($is_description) {
+                        $node = $this->addNode($dom, $xpath, $context, $field);
+                        $node->appendChild(new DOMCdataSection($_value));
+                    } else {
+                        $node = $this->addNode($dom, $xpath, $context, $field, $_value);
+                    }
                     $node->setAttribute('locale', $locale);
                 }
 
@@ -938,7 +958,7 @@ XML;
                                     $value->nodeValue = '';
                                     $value->appendChild(new DOMCdataSection(self::prepareField(ifset($this->settings[$var]['value'], ''))));
                                 } else {
-                                    $value->nodeValue = self::prepareField(ifempty($this->settings[$var]['value'], ''));
+                                    $value->nodeValue = self::prepareField(ifset($this->settings[$var]['value'], ''));
                                 }
 
                                 if ($value->hasAttribute('locale')) {
@@ -1122,6 +1142,20 @@ XML;
 
             foreach ($params as $param => $value) {
                 $instance->{$param} = $value;
+            }
+
+            // rename localization files
+            $files = waFiles::listdir($instance->getLocalePath(), true);
+            foreach ($files as $file_path) {
+                $parent_id = preg_quote($this->id);
+                $new_id = '${1}' . preg_quote($instance->id) . '${3}';
+                $new_name = preg_replace("/(\/LC_MESSAGES\/.*)({$parent_id})(.*(\.po|\.mo))$/", $new_id, $file_path, 1, $count);
+                if ($count === 1) {
+                    $theme_path = $instance->getPath() . '/locale/';
+                    if (file_exists($theme_path . $file_path)) {
+                        rename($theme_path . $file_path, $theme_path . $new_name);
+                    }
+                }
             }
 
             $instance['system'] = false;
@@ -1817,9 +1851,12 @@ HTACCESS;
     }
 
     /**
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
+     *
      * @param mixed $offset
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         if ($this->getMethod($offset)) {
@@ -1833,6 +1870,7 @@ HTACCESS;
      * @param mixed $offset
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $value = null;
@@ -1862,6 +1900,7 @@ HTACCESS;
      * @param mixed $value
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $method_name = $this->getMethod($offset, 'set');
@@ -1901,6 +1940,7 @@ HTACCESS;
      * @param mixed $offset
      * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         if (is_null($this->info)) {
@@ -2596,10 +2636,17 @@ HTACCESS;
                 self::protect($app_id);
                 $target_path = wa()->getDataPath("themes/{$id}", true, $app_id, false);
                 waFiles::delete($target_path);
-                if ($extract_path && !$tar_object->extractModify($target_path, $extract_path)) {
-                    self::throwArchiveException('INTERNAL_ARCHIVE_ERROR');
-                } elseif (!$tar_object->extract($target_path)) {
-                    self::throwArchiveException('INTERNAL_ARCHIVE_ERROR');
+                $extract_result = null;
+                if ($extract_path) {
+                    $extract_result = $tar_object->extractModify($target_path, $extract_path);
+                    if (!$extract_result) {
+                        self::throwArchiveException('INTERNAL_ARCHIVE_ERROR');
+                    }
+                }
+                if (!$extract_result) {
+                    if (!$tar_object->extract($target_path)) {
+                        self::throwArchiveException('INTERNAL_ARCHIVE_ERROR');
+                    }
                 }
 
                 $instance = new self($id, $app_id);
@@ -2795,6 +2842,7 @@ HTACCESS;
             'bmp',
             'gif',
             'svg',
+            'webp',
         );
 
         try {
@@ -2843,6 +2891,7 @@ HTACCESS;
             foreach ($files as $file) {
                 $file_name = ifempty($file['filename']);
                 $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+                $file_ext = mb_strtolower($file_ext);
 
                 foreach ($missed_images as $i => $image) {
                     $pattern = "@(/|^)".wa_make_pattern($image, '@')."$@";

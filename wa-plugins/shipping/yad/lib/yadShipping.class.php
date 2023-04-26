@@ -98,6 +98,10 @@ class yadShipping extends waShipping
                 'method' => waNet::METHOD_DELETE,
                 'url' => 'orders/{id}',
             ),
+            'searchOrder' => array(
+                'method' => waNet::METHOD_PUT,
+                'url' => 'orders/search',
+            ),
             'confirmSenderOrders' => array(
                 'method' => waNet::METHOD_POST,
                 'url' => 'orders/submit',
@@ -1504,15 +1508,21 @@ HTML;
 
         $this->addDimensions($data);
 
-        // items are now deprecated
         foreach ($this->getItems() as $item) {
             $item_params = array(
                 'externalId' => $item['id'],
-                'name'       => $item['name'],
-                'count'      => $item['quantity'],
-                'price'      => max(0, round($item['price'] - $item['discount'])),
                 'tax'        => $this->getTaxType($item),
             );
+            $quantity = explode('.', (string)$item['quantity']);
+            if (!empty($quantity[1])) {
+                $item_params['name'] = $item['name'] . sprintf(" (%.3f %s)", $item['quantity'], $item['stock_unit']);
+                $item_params['count'] = 1;
+                $item_params['price'] = round(max(0, $item['price'] * $item['quantity'] - $item['discount'] * $item['quantity']), 2);
+            } else {
+                $item_params['name'] = $item['name'];
+                $item_params['count'] = $item['quantity'];
+                $item_params['price'] = max(0, round($item['price'] - $item['discount'], 2));
+            }
 
             if (!empty($item['weight'])) {
                 $item_params['dimensions'] = $this->getItemDimensions($item);
@@ -1589,12 +1599,13 @@ HTML;
                 $view_data = sprintf($template, $status, $this->companyId, $response, $response);
             }
 
+            $order_info = $this->apiQuery('getOrder', ['id' => $response]);
             $shipping_data = array(
                 'order_id'        => $response,
                 'status'          => 1,
                 'client_id'       => $this->client_id,
                 'view_data'       => $view_data,
-                'tracking_number' => $response,
+                'tracking_number' => !empty($order_info['deliveryServiceExternalId']) ? $order_info['deliveryServiceExternalId'] : $response,
             );
 
             return $shipping_data;
@@ -1718,8 +1729,9 @@ HTML;
                 return $this->getErrorMessage($response['violations']);
             } elseif (!empty($response['orderId'])) {
                 $shipment_date = ifempty($shipping_data['shipment_date'], date('Y-m-d', strtotime('tomorrow')));
+                $order_info = $this->apiQuery('getOrder', ['id' => $order_id]);
                 $data = array(
-                    'tracking_number' => $order_id,
+                    'tracking_number' => $order_info['deliveryServiceExternalId'],
                     'status'          => 'CREATED',
                     'shipment_date'   => $shipment_date,
                     'view_data'       => sprintf('Ожидаемая дата отгрузки заказа в службу доставки: %s.', $shipment_date),
@@ -1789,23 +1801,49 @@ HTML;
     public function tracking($tracking_id = null)
     {
         if (!empty($tracking_id)) {
-            $params = array(
-                'senderId' => $this->senderId,
-                'orders' => array(
-                    array('id' => $tracking_id)
-                )
-            );
-            try {
-                $response = $this->apiQuery('getSenderOrderStatus', $params);
-                if (isset($response[0]['status']['description']) && !empty($response[0]['status']['description'])) {
-                    return sprintf('Статус отправления: «%s».', $response[0]['status']['description']);
+            if (is_numeric($tracking_id)) {
+                return $this->getStatusMessage($tracking_id);
+            } elseif (is_string($tracking_id)) {
+                $params = [
+                    'senderIds' => [
+                        $this->senderId
+                    ],
+                    'term' => $tracking_id
+                ];
+                try {
+                    $response = $this->apiQuery('searchOrder', $params);
+                    if ($response['totalElements'] == 1 && isset($response['data'][0]['id'])) {
+                        return $this->getStatusMessage($response['data'][0]['id']);
+                    }
+                } catch (waException $e) {
+                    return 'Статус отправления: «Заказ не найден».';
                 }
-            } catch (waException $e) {
-                return 'Статус отправления: «Заказ не найден».';
             }
         }
 
         return null;
+    }
+
+    /**
+     * @param mixed $order_id
+     * @return string|void
+     */
+    private function getStatusMessage($order_id)
+    {
+        $params = array(
+            'senderId' => $this->senderId,
+            'orders' => [
+                ['id' => $order_id]
+            ]
+        );
+        try {
+            $response = $this->apiQuery('getSenderOrderStatus', $params);
+            if (isset($response[0]['status']['description']) && !empty($response[0]['status']['description'])) {
+                return sprintf('Статус отправления: «%s».', $response[0]['status']['description']);
+            }
+        } catch (waException $e) {
+            return 'Статус отправления: «Заказ не найден».';
+        }
     }
 
     // FORMS

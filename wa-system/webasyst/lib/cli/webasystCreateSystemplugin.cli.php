@@ -71,6 +71,9 @@ HELP;
         if (!in_array($this->type, $types)) {
             $errors[] = "Invalid plugin type";
         }
+        if (file_exists(wa()->getConfig()->getPath('plugins').'/'.$this->type.'/'.$this->plugin_id.'/')) {
+            $errors[] = "The system plugin directory '$this->plugin_id' already exists";
+        }
         return $errors;
     }
 

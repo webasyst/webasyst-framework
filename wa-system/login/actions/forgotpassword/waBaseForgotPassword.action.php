@@ -289,7 +289,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         $password = $data['password'];
         $password_confirm = $data['password_confirm'];
         if (strlen($password) <= 0) {
-            $errors['password'] = _ws('Password can not be empty.');
+            $errors['password'] = _ws('Password cannot be empty.');
         }
         if ($password !== $password_confirm) {
             $errors['password_confirm'] = _ws('Passwords do not match');
@@ -364,9 +364,23 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         $contact = $this->findContact($login, $auth);
 
         if (!$contact) {
+            $auth_methods = $this->auth_config->getUsedAuthMethods();
+            if (count($auth_methods) === 1) {
+                if (reset($auth_methods) === waAuthConfig::AUTH_METHOD_EMAIL) {
+                    return array(false, array(
+                        'error_code' => 'login',
+                        'error_msg'  => _ws('No user found with this email address.')
+                    ));
+                } elseif (reset($auth_methods) === waAuthConfig::AUTH_METHOD_SMS) {
+                    return array(false, array(
+                        'error_code' => 'login',
+                        'error_msg'  => _ws('No user found with this phone number.')
+                    ));
+                }
+            }
             return array(false, array(
                 'error_code' => 'login',
-                'error_msg' => _ws('No user with this login name has been found.')
+                'error_msg'  => _ws('No user found with these sign-in credentials.')
             ));
         }
 
@@ -853,7 +867,8 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         }
         $this->view->clearAllAssign();
         try {
-            $m = new waMailMessage($subject, $body);
+            $m = new waMailMessage($subject);
+            $m->setBody($body);
             $m->setTo($to);
             return (bool)$m->send();
         } catch (Exception $e) {

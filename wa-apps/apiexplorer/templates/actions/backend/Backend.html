@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$wa->appName()} &mdash; {$wa->title()}</title>
+    {* CSS *}
+    {$wa->css()}
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/app.css?v={$wa->version()}">
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/backend.css?v={$wa->version()}">
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-3.3.2.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
+    {$wa->js(true)}
+    <script>
+        window.appState = {
+          "baseUrl": "./",
+          "rootUrl": "{$wa_url}",
+          "user_id": "{$user_id}",
+          "locale": "{substr($wa->locale(), 0, 2)}",
+          "centralUrl": "{$central_url}"
+        };
+      </script>
+</head>
+<body>
+
+    <div id="wa">
+
+        {$wa->header()}
+
+        <div id="app"></div>
+        <script type="text/javascript" src="{$wa_app_static_url}js/chunk-vendors.js?v={$wa->version()}"></script>
+        <script type="text/javascript" src="{$wa_app_static_url}js/app.js?v={$wa->version()}"></script>
+
+    </div>
+
+</body>
+</html>

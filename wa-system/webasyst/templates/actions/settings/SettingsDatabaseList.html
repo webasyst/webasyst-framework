@@ -13,7 +13,7 @@
         <tbody class="js-list">
             {foreach $tables as $_table}
 
-                <tr class="js-list-item js-table" data-table="{$_table.Name}"{if $_table.Collation} data-is-mb4="{if $_table.is_mb4}1{else}0{/if}"{/if}>
+                <tr class="js-list-item js-table" data-table="{$_table.Name}"{if $_table.is_convertable} data-is-mb4="{if $_table.is_mb4}1{else}0{/if}"{/if}>
                     <td></td>
                     <td colspan="2"><b>{$_table.Name|escape}</b></td>
                     <td class="js-collation {if $_table.is_mb4}good{else}bad{/if}">{$_table.Collation|escape}</td>
@@ -23,7 +23,7 @@
 
                 {if !empty($_table.columns)}
                     {foreach $_table.columns as $_column}
-                        <tr class="js-list-item js-column" data-table="{$_table.Name}" data-column="{$_column.Field}"{if $_column.Collation} data-is-mb4="{if $_column.is_mb4}1{else}0{/if}"{/if}>
+                        <tr class="js-list-item js-column" data-table="{$_table.Name}" data-column="{$_column.Field}"{if $_column.is_convertable} data-is-mb4="{if $_column.is_mb4}1{else}0{/if}"{/if}>
                             <td></td>
                             <td></td>
                             <td>{$_column.Field|escape}</td>

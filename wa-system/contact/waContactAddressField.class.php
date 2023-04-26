@@ -43,6 +43,7 @@ class waContactAddressField extends waContactCompositeField
 
     public function format($data, $format = null, $ignore_hidden = true)
     {
+        $data = (array) $data;
         if (!isset($data['value'])) {
             $value = array();
             foreach ($this->options['fields'] as $field) {

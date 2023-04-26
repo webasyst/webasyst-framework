@@ -260,6 +260,10 @@
 
             <ul class="thumbs li250px" id="photo-list"></ul>
             <div class="lazyloading-wrapper"></div>
+
+            {if method_exists($wa->installer, 'reviewWidget')}
+            {$wa->installer->reviewWidget('app/photos')}
+            {/if}
         </div>
     {/if}
     <div id="cover" class="dialog-background" style="display:none;">

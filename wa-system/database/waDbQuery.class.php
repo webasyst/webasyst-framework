@@ -82,26 +82,22 @@ class waDbQuery
 
     public function fetchAll($key = null, $normalize = false)
     {
-        $sql = $this->getSQL();
-        return $this->model->query($sql)->fetchAll($key, $normalize);
+        return $this->query()->fetchAll($key, $normalize);
     }
 
     public function fetch()
     {
-        $sql = $this->getSQL();
-        return $this->model->query($sql)->fetch();
+        return $this->query()->fetch();
     }
 
     public function fetchAssoc()
     {
-        $sql = $this->getSQL();
-        return $this->model->query($sql)->fetchAssoc();
+        return $this->query()->fetchAssoc();
     }
 
     public function fetchField($field = false, $seek = false)
     {
-        $sql = $this->getSQL();
-        return $this->model->query($sql)->fetchField($field, $seek);
+        return $this->query()->fetchField($field, $seek);
     }
 
     protected function getSQL()
@@ -120,10 +116,19 @@ class waDbQuery
     }
 
     /**
+     * @return string
+     * @since 2.6.2
+     */
+    public function getQuery()
+    {
+        return $this->getSQL();
+    }
+
+    /**
      * @return waDbResultSelect
      */
     public function query()
     {
-        return $this->model->query($this->getSQL());
+        return $this->model->query($this->getQuery());
     }
 }

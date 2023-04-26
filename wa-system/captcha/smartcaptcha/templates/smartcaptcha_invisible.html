@@ -1,0 +1,21 @@
+<script src="https://captcha-api.yandex.ru/captcha.js?render=onload&onload=onloadFunction" defer></script>
+
+<div id="captcha-container"></div>
+
+<script>
+    function onloadFunction() {
+        if (!window.smartCaptcha) {
+            return;
+        }
+
+        window.smartCaptcha.render('captcha-container', {
+            sitekey: '{$client_key}',
+            invisible: true,
+            callback: callback,
+        });
+    }
+
+    function callback(token) {
+        console.log(token);
+    }
+</script>

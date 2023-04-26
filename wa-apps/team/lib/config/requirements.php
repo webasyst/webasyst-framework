@@ -1,7 +1,7 @@
 <?php
 return array(
     'app.installer'=>array(
-        'version'=>'latest',
-        'strict' => true,
+        'version' => 'latest', // 2.8.0
+        'strict'  => true,
     ),
 );

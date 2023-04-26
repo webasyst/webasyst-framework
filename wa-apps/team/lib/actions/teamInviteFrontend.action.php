@@ -91,7 +91,13 @@ class teamInviteFrontendAction extends waViewAction
             if (!$errors) {
 
                 $token_data = json_decode($this->params['data'], true);
-                $this->convertToBackendUser($contact_id, $token_data, $data['login'], $data['password']);
+                if ($token_data === null) {
+                    $token_data = ['full_access' => false];
+                }
+                teamHelper::convertToBackendUser($contact_id, $token_data, $data['login'], $data['password']);
+
+                // If there's a waid_invite token, notify WAID server that invite has been accepted locally
+                self::waidClientInviteAccept($contact_id);
 
                 // this method will redirect automatically
                 $this->authAsBackendUser($contact_id);
@@ -99,7 +105,7 @@ class teamInviteFrontendAction extends waViewAction
         }
 
         list($background, $stretch) = webasystLoginLayout::getBackground();
-        
+
         $token_link = waAppTokensModel::getLink($this->params['token']);
 
         $this->view->assign('stretch', $stretch);
@@ -120,6 +126,40 @@ class teamInviteFrontendAction extends waViewAction
             $this->setTemplate('templates/actions-legacy/invite/InviteFrontend.html');
         }else{
             $this->setTemplate('templates/actions/invite/InviteFrontend.html');
+        }
+    }
+
+    protected static function waidClientInviteAccept($contact_id)
+    {
+        $app_tokens_model = new waAppTokensModel();
+        $rows = $app_tokens_model->getByField([
+            'app_id' => 'team',
+            'contact_id' => $contact_id,
+            'type' => 'waid_invite',
+        ], true);
+        $api = null;
+        $contact_waid_model = null;
+        foreach($rows as $waid_invite) {
+            if (strtotime($waid_invite['expire_datetime']) < time()) {
+                continue;
+            }
+            if (!$api) {
+                $api = new waWebasystIDApi();
+            }
+            $webasyst_contact_id = $api->clientInviteAccept($waid_invite['token']);
+            if ($webasyst_contact_id) {
+                if (!$contact_waid_model) {
+                    $contact_waid_model = new waContactWaidModel();
+                }
+                $contact_waid_model->set($contact_id, $webasyst_contact_id, []);
+            }
+        }
+        if ($rows) {
+            $app_tokens_model->deleteByField([
+                'app_id' => 'team',
+                'contact_id' => $contact_id,
+                'type' => 'waid_invite',
+            ]);
         }
     }
 
@@ -187,7 +227,7 @@ class teamInviteFrontendAction extends waViewAction
         ));
 
         $token_data = json_decode($this->params['data'], true);
-        $this->convertToBackendUser($contact_id, $token_data, $login, $password);
+        teamHelper::convertToBackendUser($contact_id, $token_data, $login, $password);
 
         return true;
     }
@@ -196,44 +236,6 @@ class teamInviteFrontendAction extends waViewAction
     {
         $contact = new waContact($this->params['contact_id']);
         $contact->unbindWaid();
-    }
-
-    protected function convertToBackendUser($contact_id, array $token_data, $login, $password)
-    {
-        // For security reasons login and is_user
-        // have to be updated directly via model
-        $contact_model = new waContactModel();
-        $contact_model->updateById($contact_id, array(
-            'login' => $login,
-            'is_user' => 1,
-        ));
-
-        // Save password
-        $contact = new waContact($contact_id);
-        $contact['password'] = $password;
-        $contact->save();
-
-        // Save rights
-        if (!empty($token_data['full_access'])) {
-            $contact->setRight('webasyst', 'backend', 2);
-        } else {
-            $contact->setRight('team', 'backend', 1);
-        }
-
-        // Assign to groups
-        if (!empty($token_data['groups'])) {
-            $ugm = new waUserGroupsModel();
-            foreach ($token_data['groups'] as $gid) {
-                try {
-                    $ug = teamGroup::checkUserGroup($gid, $contact_id);
-                    $ug = $ugm->getByField($ug);
-                    if (!$ug) {
-                        $ugm->add($contact_id, $gid);
-                    }
-                } catch (waException $e) {
-                }
-            }
-        }
     }
 
     /**

@@ -75,12 +75,13 @@
  * @property array[][string]double  $items[]['width']
  * @property array[][string]double  $items[]['length']
  * @property array[][string]double  $items[]['weight']
- * @property array[][string]int     $items[]['quantity']
+ * @property array[][string]double  $items[]['quantity']
  * @property array[][string]double  $items[]['discount']
  * @property array[][string]double  $items[]['total_discount']
  * @property array[][string]double  $items[]['total']
  * @property array[][string]double  $items[]['tax_rate'] Tax rate in percent
  * @property array[][string]boolean $items[]['tax_included'] Tax is included into price
+ * @property array[][string]string  $items[]['stock_unit'] Human-readable string, quantity unit (e.g. 'pcs.' or 'kg')
  * @property array[][int][]         $items[]['product_codes'] - product code array <id:int> => <product_code_record:array>
  *      Product code item format:
  *          int      'id'
@@ -267,10 +268,13 @@ class waOrder implements ArrayAccess
     }
 
     /**
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
+     *
      * @param mixed $offset
      * @return bool
      * @internal param $offset
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         if (isset($this->alias[$offset])) {
@@ -284,6 +288,7 @@ class waOrder implements ArrayAccess
      * @param $offset
      * @return mixed|null
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (isset($this->alias[$offset])) {
@@ -315,6 +320,7 @@ class waOrder implements ArrayAccess
      * @param $value
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (isset($this->alias[$offset])) {
@@ -329,6 +335,7 @@ class waOrder implements ArrayAccess
     /**
      * @param mixed $offset
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
     }
@@ -467,5 +474,95 @@ class waOrder implements ArrayAccess
         } else {
             return null;
         }
+    }
+
+    /**
+     * Whether this order contains at least one item that has non-integer quantity.
+     * @return bool
+     */
+    public function hasFractionalQuantity()
+    {
+        $items = ifempty($this->data['items'], array());
+        foreach ($items as $item) {
+            if ($this->isFractionalQuantity($item['quantity'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function isFractionalQuantity($value)
+    {
+        return ((float)$value) != ((int)$value);
+    }
+
+    /**
+     * Whether this order contains at least one item that has units other than pieces (PCS)
+     * @return bool
+     */
+    public function hasStockUnits()
+    {
+        // Application may provide custom flag for it
+        if (isset($this->data['has_custom_stock_units'])) {
+            return !!$this->data['has_custom_stock_units'];
+        }
+
+        $items = ifempty($this->data['items'], array());
+        foreach ($items as $item) {
+            if (!empty($item['stock_unit'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * If this waOrder has at least one fractional item, then creates
+     * a copy of $this waOrder, replacing items with non-integer quantity.
+     *
+     * Otherwise, when all quantities are already integer, simply returns $this.
+     *
+     * e.g.: 'Tomatoes' x 0.65 'kg' x $1 becomes 'Tomatoes 0.65 kg' x 1 pcs x $0.65
+     *
+     * @return waOrder
+     */
+    public function repackFractionalQuantity()
+    {
+        if (!$this->hasFractionalQuantity()) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $items = $this->data['items'];
+        foreach($items as $i => $item) {
+            if ($this->isFractionalQuantity($item['quantity'])) {
+                $items[$i] = $this->repackOneItem($item);
+            }
+        }
+
+        $clone['items'] = $items;
+        return $clone;
+    }
+
+    /** Helper for repackFractionalQuantity(), override in subclasses if needed. */
+    protected function repackOneItem($item)
+    {
+        $formatted_quantity = $item['quantity'];
+        if (!empty($item['stock_unit'])) {
+            $formatted_quantity = sprintf('%s %s', $formatted_quantity, $item['stock_unit']);
+        }
+
+        $item_copy = $item;
+        $item_copy['name'] = sprintf('%s (%s)', $item_copy['name'], $formatted_quantity);
+
+        $item_copy['price'] = $item['total'];
+        $item_copy['quantity'] = 1;
+        if (isset($item['discount'])) {
+            $item_copy['discount'] = $item['total_discount'];
+        }
+
+        unset($item_copy['stock_unit']); // pieces
+
+        return $item_copy;
     }
 }

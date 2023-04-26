@@ -1,6 +1,13 @@
 {$_title = "[s`Email settings`] — {$wa->accountName(false)}"}
 {function name="_renderConfig" key=key config=[] is_template=is_template}
-    {$_transport = $config.type|default:mail}
+    {$_transport = $config.type|default:null}
+    {if $_transport === null}
+        {if PHP_MAJOR_VERSION < 8}
+            {$_transport = 'mail'}
+        {else}
+            {$_transport = 'sendmail'}
+        {/if}
+    {/if}
     {$_rand = rand()}
     {strip}
         <div class="s-item {if $is_template}js-template{else}js-item{/if}">
@@ -31,18 +38,22 @@
                     <div class="value">
                         <select class="js-transport" data-name="type">
                             {foreach $available_transports as $id => $transport}
-                                <option value="{$id|escape}"{if $_transport == $id} selected{/if}>
-                                    {if is_string($transport)}
-                                        {$transport}
-                                    {else}
-                                        {ifset($transport.name)}
-                                    {/if}
-                                </option>
+                                {if PHP_MAJOR_VERSION < 8 || $id != 'mail' || $_transport == $id}
+                                    <option value="{$id|escape}"{if $_transport == $id} selected{/if}>
+                                        {if is_string($transport)}
+                                            {$transport}
+                                        {else}
+                                            {ifset($transport.name)}
+                                        {/if}
+                                    </option>
+                                {/if}
                             {/foreach}
                         </select>
                         <br/>
                         {foreach $available_transports as $id => $transport}
-                            <span class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}; width: 50%;">{$transport.description|default:null}</span>
+                            {if PHP_MAJOR_VERSION < 8 || $id != 'mail' || $_transport == $id}
+                                <span class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}; width: 50%;">{$transport.description|default:null}</span>
+                            {/if}
                         {/foreach}
                     </div>
                 </div>
@@ -135,7 +146,7 @@
                                 <input type="checkbox" data-name="dkim" id="dkim-{$_rand}" class="js-dkim-checkbox" value="1"{if $config.dkim|default:null == 1} checked{/if}{if !$ssl_is_set || !$php_version_ok} disabled{/if} />
                                 <div class="hint js-dkim-error"></div>
                                 <div class="hint">[s`Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address.`]</div>
-                                <div class="hint bold js-dkim-needs-email" style="margin-right: 50px;{if mb_strlen($key) != 0} display: none;{/if}">[s`Enter an email address in “Sender” field to use DKIM.`]</div>
+                                <div class="hint bold js-dkim-needs-email" style="margin-right: 50px;{if is_string($key) && mb_strlen($key) != 0} display: none;{/if}">[s`Enter an email address in “Sender” field to use DKIM.`]</div>
                                 <input type="hidden" data-name="dkim_pvt_key" class="js-dkim-pvt-key" value="{ifset($config.dkim_pvt_key)|escape}" />
                                 <input type="hidden" data-name="dkim_pub_key" class="js-dkim-pub-key" value="{ifset($config.dkim_pub_key)|escape}" />
                                 <input type="hidden" data-name="dkim_selector" class="js-dkim-selector" value="{ifset($config.dkim_selector)|escape}" />
