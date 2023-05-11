@@ -103,7 +103,7 @@ class waRequestFile
         if (@is_uploaded_file($this->data['tmp_name'])) {
             return @move_uploaded_file($this->data['tmp_name'], $this->concatFullPath($dir, $name));
         } else {
-            return @rename($this->data['tmp_name'], $this->concatFullPath($dir, $name));
+            return waFiles::move($this->data['tmp_name'], $this->concatFullPath($dir, $name));
         }
     }
 
