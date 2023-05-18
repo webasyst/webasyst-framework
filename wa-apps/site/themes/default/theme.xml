@@ -482,5 +482,9 @@
       <msgid>Settings have been saved</msgid>
       <msgstr locale="ru_RU">Настройки сохранены</msgstr>
     </locale>
+    <locale>
+      <msgid><![CDATA[Powered by <a href="https://www.webasyst.com">Webasyst</a>]]></msgid>
+      <msgstr locale="ru_RU"><![CDATA[Работает на основе <a href="https://www.webasyst.ru">Webasyst</a>]]></msgstr>
+    </locale>
   </locales>
 </theme>

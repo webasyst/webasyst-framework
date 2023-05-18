@@ -181,7 +181,9 @@
                                 </a>
                             </h2>
                         {/if}
-                        <nav class="wa-flex wa-flex-fill overflow-hidden">
+                        {$_hide_cart = $wa->globals("hideCart")}
+
+                        <nav class="wa-flex wa-flex-fill overflow-hidden{if !empty($_hide_cart) && !$wa->isAuthEnabled()} wa-mr-0{/if}">
                             {strip}
                                 <ul class="apps">
                                     {$_links = []}
@@ -207,8 +209,7 @@
                             {/strip}
                         </nav>
 
-                        <div class="wa-flex wa-ml-auto">
-                            {$_hide_cart = $wa->globals("hideCart")}
+                        <div class="wa-flex wa-ml-auto wa-mr-0">
                             {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
                             && !empty($theme_settings.show_cart) && empty($_hide_cart)}
                                 <!-- cart -->
@@ -219,7 +220,7 @@
                                         <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
                                             <use xlink:href="#img-cart"></use>
                                         </svg>
-                                        <span class="wa-mr-8 wa-ml-4">[s`Cart`]</span>
+                                        <span class="wa-mr-8 wa-ml-4 h-cart-title">[s`Cart`]</span>
                                         <strong class="s-badge s-badge-rounded cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
                                     </a>
                                     <div id="cart-content">
@@ -289,7 +290,9 @@
                                 {/strip}
                             {/if}
                         </div>
-                        <button id="mobile-nav-toggle"></button>
+                        <button id="mobile-nav-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
+                        </button>
                     </div>
                 </div>
             </div>

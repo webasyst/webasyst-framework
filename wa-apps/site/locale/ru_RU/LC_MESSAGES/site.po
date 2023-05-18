@@ -427,8 +427,8 @@ msgstr "Пользовательский JavaScript-код внутри &lt;head
 msgid "Google Analytics Property ID"
 msgstr "Google Analytics Property ID"
 
-msgid "E.g., <strong>UA-123456-1</strong><br />If you are using <a href=\"https://www.google.com/analytics/\">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag."
-msgstr "Например, <strong>UA-123456-1</strong><br />Если вы используете <a href=\"https://www.google.com/analytics/\">Google Analytics</a> для отслеживания статистики посещений и конверсии вашего сайта, то вместо внедрения кода Google Analytics вручную достаточно просто ввести здесь ваш Google Analytics Property ID. Правильный код Google Analytics автоматически вставится во все темы оформления всех приложений перед закрывающим тегом &lt;/head&gt;."
+msgid "E.g., <strong>%s</strong><br />If you are using <a href=\"https://www.google.com/analytics/\">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag."
+msgstr "Например, <strong>%s</strong><br />Если вы используете <a href=\"https://www.google.com/analytics/\">Google Analytics</a> для отслеживания статистики посещений и конверсии вашего сайта, то вместо внедрения кода Google Analytics вручную достаточно просто ввести здесь ваш Google Analytics Property ID. Правильный код Google Analytics автоматически вставится во все темы оформления всех приложений перед закрывающим тегом &lt;/head&gt;."
 
 msgid "Additional JavaScript code to be added before the closing &lt;/head&gt; tag:"
 msgstr "Дополнительный JavaScript-код для вставки перед закрывающим тегом &lt;/head&gt;:"
