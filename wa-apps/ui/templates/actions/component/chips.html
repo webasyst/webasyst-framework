@@ -11,8 +11,8 @@
 [
     "name" => "Сочи",
     "url" => "javascript:void(0);",
-    "class" => "selected",
-    "icon_class" => "fas fa-church"
+    "class" => "accented",
+    "icon_class" => "fas fa-mountain custom-mr-4"
 ],
 [
     "name" => "Санкт-Петербург",
@@ -49,7 +49,7 @@
 ],
 [
     "name" => "Рио-де-Жанейро",
-    "icon_class" => "fas fa-mask",
+    "icon_class" => "fas fa-mask custom-mr-4",
     "url" => "javascript:void(0);"
 ],
 [
@@ -160,6 +160,8 @@
 
     <p>С помощью дополнительных классов <code>.chips<b>.transparent</b></code>, <code>.chips<b>.outlined</b></code>, <code>.chips<b>.rounded</b></code> (или же не на весь <code>.chips</code>, а на выборочные <code>li</code>) можно изменять стилистику отображения меню.</p>
     <p>Регулировать стилистику отображения меню рекомендуется, только <b>если это эстетически или функционально обосновано</b> в рамках вашего приложения. Например, когда для какой-то сущности в рамках приложения используется исключительно в стиле <code>.rounded</code>. Или же если все пункты меню содержат чекбоксы или радиокнопки (тут подойдут классы <code>.transparent</code> и <code>.outlined</code>). Но если на изменение оформления нет явных причин, то рекомендуется придерживаться базового вида <code>.chips</code>.</p>
+
+    <p>Акцентирование внимания на отдельном выбранном элементе рекомендуется делать с помощью <code>li<strong>.accented</strong></code> или <code>li<strong>.selected</strong></code>.</li>
 
     <div class="line">
         {_render class="transparent"}

@@ -89,7 +89,7 @@
         </li>
         <li>
             <p>Прочие ситуации, когда нужно иконку, картинку или цвет реализовать через фон. Стили <code>.icon</code> адаптированы для этого.</p>
-            <p>Класс <code>.rounded</code> на внутренний элемент сделает иконку круглой.</p>
+            <p>Класс <code>.rounded</code> на внутренний элемент сделает иконку круглой. Класс <code>.bordered</code> добавит явную границу (часто может быть полезно в комбинации с .rounded).</p>
             <p>
                 <code>&lt;span class="icon"&gt;<strong>&lt;i style="background-image: url('{$wa_url}wa-apps/ui/img/ui.svg?v={$wa->version()}');"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
                 <span class="icon"><i style="background-image: url('{$wa_url}wa-apps/ui/img/ui.svg?v={$wa->version()}');"></i></span>
@@ -97,6 +97,10 @@
             <p>
                 <code>&lt;span class="icon"&gt;<strong>&lt;i class="rounded" style="background: orangered;"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
                 <span class="icon"><i class="rounded" style="background-color: orangered;"></i></span>
+            </p>
+            <p>
+                <code>&lt;span class="icon"&gt;<strong>&lt;i class="rounded bordered" style="background: gold;"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
+                <span class="icon"><i class="rounded bordered" style="background-color: gold;"></i></span>
             </p>
             <p>Класс <code>.userpic</code> на внутренний элемент сделает иконку чуть более различимой (1.25rem&times;1.25rem ≈ 20&times;20px) и правильно расставит отступы.</p>
             <p>
