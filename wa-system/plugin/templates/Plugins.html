@@ -9,7 +9,7 @@
 
 {$plugin_names = array()}
 <div id="wa-plugins-container" class="content flexbox{if !empty($container_class)} {$container_class}{/if}">
-    <div class="sidebar flexbox width-21rem bordered-right bordered-left">
+    <div class="sidebar flexbox blank width-21rem bordered-right bordered-left">
             <div class="sidebar-body{if empty($installer)} custom-pt-16{/if}">
                 <ul class="menu js-plugin-list" id="wa-plugin-list">
                     {*if !empty($installer)}
@@ -55,10 +55,12 @@
 
             </div>
         </div>
-    <div class="article content">
+    <div class="content">
+      <div class="article wider">
         <div id="wa-plugins-content" class="article-body">
             {if !empty($plugins)||!empty($installer)}[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>{/if}
         </div>
+      </div>
     </div>
 </div>
 
@@ -220,6 +222,15 @@
             this.path.tail = null;
 
             $plugin = $(path.plugin ? ("#plugin-" + path.plugin) : '.js-plugins-list');
+
+            $('.js-plugins-list').on('click', (e) => {
+                if(this.options.path === location.hash) {
+                    return;
+                }
+                e.preventDefault();
+                $.wa.setHash(this.options.path)
+            });
+
             if (!$plugin.length) {
                 let hash = $('.js-plugin-list').find('> li:first-child > a').attr('href');
                 if (hash) {
@@ -240,8 +251,9 @@
             }
 
             $plugin.on('click', function(e) {
-                e.preventDefault();
-
+                if ($plugin.hasClass('js-plugins-list')) {
+                    e.preventDefault();
+                }
                 getContent();
             });
 

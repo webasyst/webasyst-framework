@@ -389,7 +389,7 @@ class waDispatch
                 $params[] = $arg;
                 continue;
             }
-            $params[$key] = trim(array_shift($argv));
+            $params[$key] = trim((string)array_shift($argv));
         }
         waRequest::setParam($params);
         // Load system
@@ -411,28 +411,22 @@ class waDispatch
 
         $successful_execution = false;
         if ($class_exists) {
-            $plugin_path = wa()->getConfig()->getPluginPath($slug).'/lib/config/plugin.php';
-            $run = true;
-            if (file_exists($plugin_path)) {
+            try {
+                /** @var $cli waCliController */
+                $cli = new $class();
+                $plugin_id = rtrim(str_replace('plugins/', '', $cli->getPluginRoot(), $count), '/');
                 $plugins = wa()->getConfig()->getPlugins();
-                if (!isset($plugins[$slug])) {
-                    $run = false;
-                    waLog::log(new waException("Plugin is disabled and class $class is not running"), 'cli.log');
+                if ($count && $plugin_id && !isset($plugins[$plugin_id])) {
+                    throw new waException("Plugin $plugin_id is disabled and class $class is not running");
                 }
-            }
-            if ($run) {
-                try {
-                    /** @var $cli waCliController */
-                    $cli = new $class();
-                    $cli->run();
-                    $successful_execution = true;
-                } catch (Exception $e) {
-                    $event_params['exception'] = $e;
-                    if (!$e instanceof waException) {
-                        $e = new waException($e);
-                    }
-                    waLog::log($e, 'cli.log');
+                $cli->run();
+                $successful_execution = true;
+            } catch (Exception $e) {
+                $event_params['exception'] = $e;
+                if (!$e instanceof waException) {
+                    $e = new waException($e);
                 }
+                waLog::log($e, 'cli.log');
             }
         } else {
             waLog::log(new waException("Class ".$class." not found"), 'cli.log');

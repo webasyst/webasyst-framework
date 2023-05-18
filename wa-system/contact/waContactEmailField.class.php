@@ -165,6 +165,9 @@ class waContactEmailTopFormatter extends waContactFieldFormatter
 {
     public function format($data) {
         if (is_array($data)) {
+            if (isset($data['data'])) {
+                $data = $data['data'];
+            }
             $result = htmlspecialchars($data['value']);
             $result = '<a class="inline" href="mailto:'.$result.'">'.$result.'</a>';
             if (isset($data['ext']) && $data['ext']) {

@@ -12,9 +12,19 @@ html.mobile #wa-nav #wa-header .wa-header-sitename {
   text-overflow: ellipsis;
   position: relative;
   margin-right: auto;
+  margin-left: 0.75rem;
 }
 html.mobile #wa-nav #wa-header .wa-header-sitename .h3 {
   margin-bottom: 0;
+  font-size: 1.5625rem;
+}
+html.mobile #wa-nav #wa-header .wa-corner #wa-userprofile {
+  padding-left: 1rem;
+  padding-top: 1rem;
+  padding-right: 0;
+}
+html.mobile #wa-nav #wa-header .wa-corner #wa-userprofile .dropdown-body.right {
+  right: 6px;
 }
 html.mobile #wa-nav #wa-header .wa-corner .wa-header-search-form {
   position: fixed;

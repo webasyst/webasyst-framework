@@ -73,14 +73,29 @@ class yandexMap extends waMapAdapter
         return $template . $static_link;
     }
 
+    /**
+     * https://yandex.ru/dev/yandex-apps-launch/maps/doc/concepts/yandexmaps-web.html
+     * @param $address
+     * @param $longitude
+     * @param $latitude
+     * @param int $zoom
+     * @return string
+     */
+    public function getUrlToMap($address, $longitude, $latitude, $zoom)
+    {
+        $params['z'] = (int) $zoom;
+        if (isset($longitude, $latitude)) {
+            $params['pt'] = "$longitude,$latitude";
+        } else {
+            $params['text'] = $address;
+        }
+
+        return 'https://yandex.ru/maps/?'.http_build_query($params);
+    }
+
     protected function getStaticTemplate($address)
     {
-        $params = array(
-            'text' => $address,
-            'z' => 10,
-        );
-        $url = '//yandex.ru/maps/?' . http_build_query($params);
-
+        $url = $this->getUrlToMap($address, null, null, 10);
         $link_text = _ws('Link to map');
         $yandex_id = 'yandex-static-map-link' . uniqid();
 

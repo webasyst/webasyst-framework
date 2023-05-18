@@ -948,7 +948,7 @@ HTML;
             }
             $html .= <<<HTML
     <div class='city'>
-        <input name='{$name}[city]' value='{$_value}' type='text'>
+        <input name='{$name}[city]' value='{$_value}' type='text' class='long'>
         <br>
         <span class='hint'>{$_description}</span>
     </div>
@@ -1114,14 +1114,14 @@ HTML;
 
             $default_params = array(
                 'title' => ifset($params['title_from'], _ws('from')),
-                'class' => 'short',
+                'class' => 'short shortest',
                 'value' => ifset($value['from']),
             );
             $from = waHtmlControl::getControl(waHtmlControl::INPUT, 'from', $default_params + $interval_items_params);
             if (!empty($params['minutes'])) {
                 $default_params = array(
                     'title' => '',
-                    'class' => 'short',
+                    'class' => 'short shortest',
                     'value' => sprintf('%02d', ifset($value['from_m'], 0)),
                 );
                 $from .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'from_m', $default_params + $interval_items_params);
@@ -1129,14 +1129,14 @@ HTML;
 
             $default_params = array(
                 'title' => ifset($params['title_till'], _ws('till')),
-                'class' => 'short',
+                'class' => 'short shortest',
                 'value' => ifset($value['to']),
             );
             $to = waHtmlControl::getControl(waHtmlControl::INPUT, 'to', $default_params + $interval_items_params);
             if (!empty($params['minutes'])) {
                 $default_params = array(
                     'title' => '',
-                    'class' => 'short',
+                    'class' => 'short shortest',
                     'value' => sprintf('%02d', ifset($value['to_m'], 0)),
                 );
                 $to .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'to_m', $default_params + $interval_items_params);
@@ -1183,10 +1183,10 @@ HTML;
             $days = implode($days);
             $rows[] = <<<HTML
 <tr>
-    <td>{$from}</td>
-    <td>{$to}</td>
+    <td class="nowrap">{$from}</td>
+    <td class="nowrap">{$to}</td>
     {$days}
-    <td><a class="inline-link delete-interval" href="javascript:void(0);"><i class="icon16 delete"></i></a></td>
+    <td><a class="inline-link delete-interval" href="javascript:void(0);"><i class="icon16 delete fas fa-trash-alt text-red"></i></a></td>
 
 </tr>
 HTML;
@@ -1235,7 +1235,7 @@ HTML;
         {$rows}
     <tfoot>
     <tr class="white">
-        <td colspan="2"><a class="inline-link add-interval" href="javascript:void(0);"><i class="icon16 add"></i><b><i>{$add_interval}</i></b></a></td>
+        <td colspan="2"><a class="inline-link add-interval" href="javascript:void(0);"><i class="icon16 add fas fa-plus-circle text-green custom-mr-4"></i><b><i>{$add_interval}</i></b></a></td>
         <td colspan="8">&nbsp;</td>
     </tr>
     </tfoot>

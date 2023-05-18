@@ -31,7 +31,7 @@ abstract class waOAuth2Adapter extends waAuthAdapter
         }
 
         if ($this->check_state) {
-            $state = waRequest::get('state');
+            $state = waRequest::request('state');
             $auth_state = wa()->getStorage()->get('auth_state');
             if (!$state || !$auth_state || $state !== wa()->getStorage()->get('auth_state')) {
                 // @todo: error
@@ -58,7 +58,7 @@ abstract class waOAuth2Adapter extends waAuthAdapter
 
     public function getCode()
     {
-        return waRequest::get('code');
+        return waRequest::request('code');
     }
 
     /**

@@ -52,6 +52,7 @@
                                 {$text_value = $logo.text.value|trim|escape}
                                 <div class="logo-area js-logo-area{if $two_lines} two-lines{/if}"
                                      data-background="gradient1"
+                                     data-icon="fas fa-home"
                                      style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color:{$logo.text.color|escape|default:$logo.text.default_color}">
                                     {if $text_value}
                                         {if $two_lines}

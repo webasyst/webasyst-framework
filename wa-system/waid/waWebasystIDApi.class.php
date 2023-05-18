@@ -618,7 +618,7 @@ class waWebasystIDApi
             return $result;
         }
 
-        if ($response) {
+        if ($response !== null) {
             return [
                 'status' => $status,
                 'headers' => $response_headers,

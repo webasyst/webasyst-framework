@@ -29,8 +29,27 @@ class waContactDataTextStorage extends waContactDataStorage
         if (!$this->model) {
             $this->model = new waContactDataTextModel();
         }
-        return $this->model;        
-    }    
+        return $this->model;
+    }
+
+    protected function insertDataRows($contact, $data)
+    {
+        $insert = [];
+        foreach ($data as $f => $f_rows) {
+            foreach ($f_rows as $s => $row) {
+                $insert[] = [
+                    'contact_id' => $contact->getId(),
+                    'field' => $f,
+                    'ext' => $row['ext'],
+                    'value' => $row['value'],
+                    'sort' => (int)$s,
+                ];
+            }
+        }
+
+        $this->getModel()->multipleInsert($insert);
+        return true;
+    }
 }
 
 // EOF

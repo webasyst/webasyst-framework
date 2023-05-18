@@ -465,5 +465,26 @@ class waImage
     {
         return $this->_getPixel($x, $y);
     }
+
+    public function fixImageOrientation()
+    {
+        if (!function_exists('exif_read_data') || !$this->file) {
+            return;
+        }
+        $exif_data = @exif_read_data($this->file);
+        if (!$exif_data || empty($exif_data['Orientation'])) {
+            return;
+        }
+
+        $angles = [
+            3 => '180', 4 => '180',
+            5 => '90',  6 => '90',
+            7 => '-90', 8 => '-90'
+        ];
+        $angle = ifset($angles[$exif_data['Orientation']]);
+        if ($angle) {
+            $this->rotate($angle);
+        }
+    }
 }
 

@@ -185,7 +185,7 @@
 {/strip}
 {/function}
 {$id = uniqid("wa-theme-id`$theme.id`")}
-<div class="wa-theme article" id="{$id}">
+<div class="wa-theme article wider" id="{$id}">
     <div class="article-body">
 
         {* Theme name *}
@@ -512,73 +512,72 @@
 
             {* Theme usage *}
             <div class="wa-theme-usage fields">
-                <h4>[s`About this theme`]</h4>
 
-                <h6>[s`Theme usage`]</h6>
-
-                <div class="field">
-                    <div class="name">
-                        [s`Theme ID`]
-                    </div>
-                    <div class="value">
-                        {$theme.id|escape}
-                    </div>
-                </div>
-
-                <div class="field">
-                    <div class="name">
-                        [s`Theme version`]
-                    </div>
-                    <div class="value">
-                        {$theme.version}
-                    </div>
-                </div>
-
-                {if !$_is_trial}
+                <div class="fields-group">
                     <div class="field">
                         <div class="name">
-                            [s`Theme path`]
+                            [s`Theme ID`]
                         </div>
                         <div class="value">
-                            {if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}<strong>{$theme.custom|escape}</strong>{/if}
-                            {if $theme.type ne waTheme::ORIGINAL}
-                                <p class="hint">
-                                    [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
-                                </p>
-                            {/if}
+                            {$theme.id|escape}
                         </div>
                     </div>
 
-                    {if count($theme_routes)}
+                    <div class="field">
+                        <div class="name">
+                            [s`Theme version`]
+                        </div>
+                        <div class="value">
+                            {$theme.version}
+                        </div>
+                    </div>
+
+                    {if !$_is_trial}
                         <div class="field">
                             <div class="name">
-                                [s`Theme usage`]
+                                [s`Theme path`]
                             </div>
-                            {$_theme_usages = []}
                             <div class="value">
-                                <ul>
-                                {foreach $theme_routes as $_r}
-                                    <li>
-                                        {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
-                                            {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
-                                        {/if}
-                                        <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
-                                            {$_r._domain_decoded}/{$_r.url}
-                                            <i class="fas fa-external-link-alt fa-xs"></i>
-                                        </a>
-                                    </li>
-                                {/foreach}
-                                </ul>
+                                {if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}<strong>{$theme.custom|escape}</strong>{/if}
+                                {if $theme.type ne waTheme::ORIGINAL}
+                                    <p class="hint">
+                                        [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
+                                    </p>
+                                {/if}
                             </div>
                         </div>
-                    {/if}
 
-                    {if count($theme_routes) > 1}
-                        <p class="gray small">
-                            <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
-                        </p>
+                        {if count($theme_routes)}
+                            <div class="field">
+                                <div class="name">
+                                    [s`Theme usage`]
+                                </div>
+                                {$_theme_usages = []}
+                                <div class="value">
+                                    <ul>
+                                    {foreach $theme_routes as $_r}
+                                        <li>
+                                            {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
+                                                {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
+                                            {/if}
+                                            <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
+                                                {$_r._domain_decoded}/{$_r.url}
+                                                <i class="fas fa-external-link-alt fa-xs"></i>
+                                            </a>
+                                        </li>
+                                    {/foreach}
+                                    </ul>
+                                </div>
+                            </div>
+                        {/if}
+
+                        {if count($theme_routes) > 1}
+                            <p class="gray small">
+                                <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
+                            </p>
+                        {/if}
                     {/if}
-                {/if}
+                </div>
 
                 {* Theme thumbs *}
                 {if !empty($theme.thumbs)}

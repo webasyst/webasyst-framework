@@ -42,6 +42,11 @@ abstract class waMapAdapter
         return '';
     }
 
+    public function getUrlToMap($address, $longitude, $latitude, $zoom)
+    {
+        return '';
+    }
+
     /**
      * @param $address
      * @return array <pre>

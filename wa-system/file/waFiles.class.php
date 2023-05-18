@@ -126,7 +126,12 @@ class waFiles
     public static function move($source_path, $target_path)
     {
         self::create(dirname($target_path));
-        return rename($source_path, $target_path);
+        $result = @rename($source_path, $target_path);
+        if (!$result) {
+            /* Handle rename error between different disks */
+            $result = self::copy($source_path, $target_path) && self::delete($source_path);
+        }
+        return $result;
     }
 
     /**

@@ -218,7 +218,7 @@ class installerConfig extends waAppConfig
 
         $init_url_params = array(
             'hash'   => $wa_installer->getHash(),
-            'domain' => waRequest::server('HTTP_HOST'),
+            'domain' => $this->getDomainFromRouting(),
         );
         if ($previous_hash = $wa_installer->getGenericConfig('previous_hash')) {
             $init_url_params['previous_hash'] = $previous_hash;
@@ -289,9 +289,14 @@ class installerConfig extends waAppConfig
 
         $url_params = array(
             'hash'   => $wa_installer->getHash(),
-            'domain' => waRequest::server('HTTP_HOST'),
+            'domain' => $this->getDomainFromRouting(),
             'locale' => wa()->getLocale(),
         );
+        $token_data = (new waAppSettingsModel())->get('installer', 'token_data', false);
+        if ($token_data) {
+            $token_data = waUtils::jsonDecode($token_data, true);
+            $url_params['token'] = ifset($token_data, 'token', null);
+        }
 
         $init_url = $wa_installer->getInstallerAnnounceUrl();
         $init_url .= '?'.http_build_query($url_params);
@@ -373,10 +378,15 @@ class installerConfig extends waAppConfig
 
             $init_url_params = array(
                 'hash' => $wa_installer->getHash(),
-                'domain' => waRequest::server('HTTP_HOST'),
+                'domain' => $this->getDomainFromRouting(),
             );
             if ($previous_hash = $wa_installer->getGenericConfig('previous_hash')) {
                 $init_url_params['previous_hash'] = $previous_hash;
+            }
+            $token_data = (new waAppSettingsModel())->get('installer', 'token_data', false);
+            if ($token_data) {
+                $token_data = waUtils::jsonDecode($token_data, true);
+                $init_url_params['token'] = ifset($token_data, 'token', null);
             }
 
             $init_url = $wa_installer->getInstallerLicenseUrl();
@@ -392,6 +402,26 @@ class installerConfig extends waAppConfig
 
             return $res;
         }
+    }
+
+    /** @since 2.9.0 */
+    public function getDomainFromRouting()
+    {
+        $d = waRequest::server('HTTP_HOST');
+        if ($d) {
+            return $d;
+        }
+
+        $domains = wa()->getRouting()->getDomains();
+        foreach($domains as $d) {
+            $d = explode('/', $d, 2)[0];
+            if ($d !== 'localhost') {
+                return $d;
+            } else {
+                $res = 'localhost';
+            }
+        }
+        return ifset($res, null);
     }
 
     protected function getLocale() {

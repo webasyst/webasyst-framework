@@ -210,6 +210,10 @@ and (orientation : portrait) {
 
 }
 
+.is-wa2 #wa-design-container .fields-group {
+    background: var(--background-color-blank);
+}
+
 .is-wa2 #wa-theme-list .themes a {
     color: var(--accent-color) !important;
 }
