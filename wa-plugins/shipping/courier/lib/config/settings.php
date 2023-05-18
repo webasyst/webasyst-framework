@@ -78,6 +78,7 @@ return array(
     ),
     'customer_interval'   => array(
         'title'          =>/*_wp*/('Preferred delivery time & working schedule'),
+        'description'    =>/*_wp*/('For each delivery time interval, select the days on which it must be available to customers.'),
         'control_type'   => 'DeliveryIntervalControl',
         'minutes'        => true,
         'extra_holidays' => true,
@@ -92,7 +93,7 @@ return array(
     'extra_holidays'      => array(
         'value'        => '',
         'title'        => /*_wp*/('Extra days off'),
-        'description'  => '<i class="icon16 color" style="background-color: #FCC !important;"></i>'.
+        'description'  => '<i class="icon16 color fas fa-circle" style="background-color: #FCC !important;color: #FCC;border-radius: 50%;"></i> '.
             '<style>td.courier-ui-datepicker-selected-holiday a { background-color: #FCC !important;}</style>' . _wp('Extra days off'),
         'description_date' => /*_wp*/('Select dates of extra days off and enable at least one checkbox in “Extra days off” column of the “Delivery intervals” table. Delivery intervals are valid for all extra days off.<br>Extra days off are taken into account only if “Specified time in hours” option is selected for “Delivery time” setting.'),
         'control_type' => waHtmlControl::DATETIME,
@@ -105,7 +106,7 @@ return array(
     'extra_workdays'      => array(
         'value'        => '',
         'title'        => /*_wp*/('Extra workdays'),
-        'description'  => '<i class="icon16 color" style="background-color: #CFC !important;"></i>'.
+        'description'  => '<i class="icon16 color fas fa-circle" style="background-color: #CFC !important;color: #CFC;border-radius: 50%;"></i> '.
             '<style>td.courier-ui-datepicker-selected-workday a { background-color: #CFC !important;}</style>' . _wp('Extra workdays'),
         'description_date' => /*_wp*/('Select dates of extra workdays and enable at least one checkbox in “Extra workdays” column of the “Delivery intervals” table. Delivery intervals are valid for all extra workdays.<br>Extra workdays are taken into account only if “Specified time in hours” option is selected for “Delivery time” setting.'),
         'control_type' => waHtmlControl::DATETIME,

@@ -52,6 +52,9 @@
                         <span class="gray">{$item.sku|escape}</span>
                         <span class="gray">&times;</span>
                         <span class="large bold">{$item.quantity}</span>
+                        {if !empty($item.stock_unit)}
+                            <span>{$item.stock_unit|escape}</span>
+                        {/if}
                     </li>
                 {/foreach}
             </ul>
