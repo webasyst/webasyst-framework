@@ -305,6 +305,9 @@ var WAThemeSettings = ( function($) {
                     $submit.on('click', function (e) {
                         e.preventDefault();
                         let data = $dialog.serialize();
+                        if (!data) {
+                            data = $dialog.find('form').serialize();
+                        }
                         $.post(href, data, function (response) {
                             if (response.status == 'ok') {
                                 location.reload();
