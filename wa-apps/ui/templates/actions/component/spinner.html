@@ -101,7 +101,9 @@
     </div>
 </div>
 <script>
-  if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
-    prettyPrint();
-  }
+    $.wa_ui.title.set({$_title|json_encode});
+
+    if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+        prettyPrint();
+    }
 </script>

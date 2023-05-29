@@ -1,3 +1,6 @@
+{$_title = "Шпаргалка"}
+{$wa->title($_title)}
+
 <h1>Шпаргалка <code>1.3</code> &rarr; <code>2.0</code></h1>
 
 <p>Краткий список того, с чем почти наверняка столкнется разработчик приложения Webasyst при проверке своего приложения в новом окружении <code>wa-2.0.css</code>:</p>
@@ -6,7 +9,7 @@
     <li>Скорее всего, «поползет» общий лейаут. Это из-за перехода <code>#wa-app</code>, <code>.sidebar</code> и <code>.content</code> на <code>display: flex;</code>. Попробуйте для начала поставить на проблемный блок (контейнер) <code>display: block;</code>. А затем переводите <code><a href="{$wa_app_url}component/sidebar/">.sidebar / .content</a></code> в своем приложении на режим flexbox.</li>
     <li><code>.menu-v</code> надо заменить на <code><a href="{$wa_app_url}component/menu/">.menu</a></code>.</li>
     <li><code>.menu-h</code> надо заменить на <code><a href="{$wa_app_url}component/chips/">.chips</a></code>.</li>
-    <li>Иконки <code>.icon16</code> нужно заменить на <a href="{$wa_app_url}component/icon/">векторные иконки-глифы</a> Font Awesome либо на свои — с классом <code>.icon</code>. Старые спрайты более не поддерживаются.</li>
+    <li>Иконки <code>.icon10</code> и <code>.icon16</code> нужно заменить на <a href="{$wa_app_url}component/icon/">векторные иконки-глифы</a> Font Awesome либо на свои — с классом <code>.icon</code>. Старые спрайты более не поддерживаются.</li>
     <li><code>.userpic20</code> нужно заменить на <code><a href="{$wa_app_url}component/userpic/">.userpic</a></code>.</li>
     <li>Класса <code>.block</code> больше нет, так как все отступы заложены в основных элементах оформления и контента (внутри разных меню и т. д.), чтобы не возникало недопонимание, какие отступы где нужно делать. Теперь их и не надо делать — они уже есть в каждом компоненте! Если все же нужно создать блок с произвольным контентом, используйте <code>.box</code>. Для общего блока <code>.content</code> — либо <code><a href="{$wa_app_url}component/article/">.article</a></code>, либо <code><a href="{$wa_app_url}component/box/">.box.contentbox</a></code>.</li>
     <li><code>.left200px</code> и <code>.left300px</code> у сайдбара нужно заменить на <code>.width-XX</code> согласно <a href="{$wa_app_url}component/sidebar/">документации</a>.</li>
@@ -18,6 +21,13 @@
     <li><code>.indicator</code> переименован в <code>.badge</code>.</li>
     <li><code>.profile</code> больше нет. Используйте <code><a href="{$wa_app_url}component/flexbox/">.flexbox</a></code> или <code><a href="{$wa_app_url}component/list/">.list</a></code>.</li>
     <li>Спиннер загрузки <code>.icon16.loading</code> больше не поддерживается ни в каком виде. Для индикатора процесса загрузки контента используйте <code><a href="{$wa_app_url}component/skeleton/">.skeleton</a></code> (рекомендуется), <code><a href="{$wa_app_url}component/loading/">.waLoading()</a></code> или <code><a href="{$wa_app_url}component/spinner/">.spinner</a></code>.</li>
-    <li>Подключать <code>wa-content/js/jquery-wa/wa.core.js</code>, <code>wa-content/js/jquery-wa/wa.dialog.js</code>, <code>wa-content/js/dialog/dialog.js</code> больше не нужно.<br> Для работы всех JS-компонентов дизайн-системы Websyst 2 подключайте один единственный файл — <code>wa-content/js/jquery-wa/wa.js</code>.</li>
+    <li>Подключать <code>wa-content/js/jquery-wa/wa.core.js</code>, <code>wa-content/js/jquery-wa/wa.dialog.js</code>, <code>wa-content/js/dialog/dialog.js</code> больше не нужно.<br> Для работы всех JS-компонентов дизайн-системы Webasyst 2 подключайте один единственный файл — <code>wa-content/js/jquery-wa/wa.js</code>.</li>
+    <li>Использование старого класса <code>.errormsg</code> нужно заменить на новые <code>.state-error</code> или <code>.state-caution</code> <a href="{$wa_app_url}component/misc/">в зависимости от ситуации</a>.</li>
+    <li>Классы <code>.float-left</code> и <code>.float-right</code> больше не работают — вместо них нужно использовать другую верстку, например, с применением класса <code><a href="{$wa_app_url}component/flexbox/">.flexbox</a></code>.</li>
+    <li>Если в JavaScript-коде продукта используются вызовы <code>.waDialog()</code>, придется переписать их с учетом <a href="{$wa_app_url}component/dialog/">новых требований</a> и обновить HTML-верстку диалогов.</li>
     <li><em>Список будет пополняться.</em></li>
 </ol>
+
+<script>
+    $.wa_ui.title.set({$_title|json_encode});
+</script>

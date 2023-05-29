@@ -2,7 +2,7 @@
 {$wa->title($_title)}
 
 {function name="_render_icon"}
-<!-- в базовом варианте юзерпик-иконка будет смасштабирована до 20х20px -->
+<!-- в базовом варианте юзерпик-иконка будет масштабирована до 20х20px -->
 <span class="icon userpic" style="background-image: url('{$wa_url}wa-content/img/userpic.svg');"></span>
 
 <!-- можно использовать модификаторы размера иконок .icon -->
@@ -188,7 +188,7 @@
     <div class="line">
         <h3>.icon<code>.userpic</code></h3>
         <p>В рамках произвольного текстового контента рекомендуется оформлять юзерпики в виде иконок <code>.icon.userpic</code>, чтобы все было <span class="icon userpic" style="background-image: url('{$wa_url}wa-content/img/userpic.svg');"></span> ровно и <span class="icon userpic" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></span> красиво.</p>
-        <p>Для управления вертикальной позацией относительно окружения используйте модификаторы <code>.baseline</code> и <code>.top</code>.</p>
+        <p>Для управления вертикальной позицией относительно окружения используйте модификаторы <code>.baseline</code> и <code>.top</code>.</p>
         <div class="u-example">{_render_icon}</div>
         <div class="line">
             <pre class="prettyprint">{_render_icon|escape}</pre>
