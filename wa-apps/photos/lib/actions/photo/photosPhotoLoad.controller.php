@@ -17,7 +17,6 @@ class photosPhotoLoadController extends waJsonController
         $id = waRequest::post('id', 0, waRequest::TYPE_INT);
         $in_stack = waRequest::post('in_stack', 0, waRequest::TYPE_INT);
         $hash = waRequest::post('hash', null, waRequest::TYPE_STRING_TRIM);
-        $hash = urldecode($hash);
 
         // get photo
         $this->photo_model = new photosPhotoModel();
@@ -118,6 +117,7 @@ class photosPhotoLoadController extends waJsonController
         $this->response['hooks'] = $hooks;
 
         if ($hash !== null) {
+            $hash = urldecode($hash);
             $collection = new photosCollection($hash);
             if (strstr($hash, 'rate>0') !== false) {
                 $collection->orderBy('p.rate DESC, p.id');

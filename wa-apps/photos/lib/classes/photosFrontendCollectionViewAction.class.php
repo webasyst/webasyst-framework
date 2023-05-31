@@ -75,7 +75,7 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
         $total_count = $collection->count();
 
         $this->view->assign('photos_per_page', $this->photos_per_page);
-        $this->view->assign('pages_count', floor($total_count / $this->photos_per_page) + 1);
+        $this->view->assign('pages_count', ceil($total_count / $this->photos_per_page));
         $this->view->assign('total_photos_count', $total_count);
         $this->view->assign('offset', $this->offset);
         $this->view->assign('photos', $photos);

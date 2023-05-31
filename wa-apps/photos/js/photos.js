@@ -2365,7 +2365,7 @@
 
         restoreOriginal: function (element) {
             if (element.id === 'restore-original') {
-                if (confirm($_('This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?'))) {
+                if (confirm($_('This will reset all changes you applied to the image after upload and will restore the original image. Are you sure?'))) {
                     $.photos.setCover(true);
                     let waLoading = $.waLoading(),
                         $wrapper = $("body"),

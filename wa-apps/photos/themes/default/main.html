@@ -11,14 +11,12 @@
         <div class="breadcrumbs" itemprop="breadcrumb">
             {foreach $breadcrumbs as $breadcrumb}
                 {if $breadcrumb}
-                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="chevron right"></span>
                 {/if}
             {/foreach}
         </div>
     {/if}
 
     {$content}
-    
-    <div class="clear-both"></div>
-    
+
 </article>

@@ -27,8 +27,8 @@ $(function() {
             if (handler.wookmarkInstance) {
                 handler.wookmarkInstance.clear();
             }
-            handler = $('li', list).addClass('wookmark').fadeIn('slow');
-            handler.wookmark(options);
+            //handler = $('li', list).addClass('wookmark').fadeIn('slow');
+            //handler.wookmark(options);
         }
 
         list.bind('append_photo_list', function() {

@@ -124,7 +124,7 @@ class photosSettingsAction extends waViewAction
         foreach (array('save_quality', 'save_quality_2x') as $k) {
             $settings[$k] = waRequest::post($k, '', waRequest::TYPE_STRING_TRIM);
 
-            if ($settings[$k] == '') {
+            if ($settings[$k] === '') {
                 $settings[$k] = ($k == 'save_quality_2x') ? 70 : 90;
             } else {
                 $settings[$k] = (float) $settings[$k];

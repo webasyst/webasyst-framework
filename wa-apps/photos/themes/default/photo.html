@@ -31,12 +31,10 @@
             <!-- stream navigation -->
             {$photo_stream}
         </div>
-        <div class="clear-both"></div>
     </nav>
-   
 </section>
 
-<div>
+<div class="p-photo-details">
 
     <!-- photo info -->
     <h4 id="photo-name" itemprop="name">{$photo.name}</h4>
@@ -74,8 +72,6 @@
 
     {* @event frontend_photo.%plugin_id%.content *}
     {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.content)}{$item.content}{/if}{/foreach}
-    
-    <div class="clear-both"></div>
     
     <div id="photo-hook-bottom">
         {* @event frontend_photo.%plugin_id%.bottom *}

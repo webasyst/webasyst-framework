@@ -450,7 +450,7 @@
             // only browsers with support for the File API report the type:
             if (!(this.options.acceptFileTypes.test(file.type) ||
                     this.options.acceptFileTypes.test(file.name))) {
-                return $_('Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only.');
+                return $_('Only files with name extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed.');
             }
             if (this.options.maxFileSize &&
                     file.size > this.options.maxFileSize) {

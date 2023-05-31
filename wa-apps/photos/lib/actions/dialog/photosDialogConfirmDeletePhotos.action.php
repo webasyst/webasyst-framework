@@ -11,7 +11,7 @@ class photosDialogConfirmDeletePhotosAction extends photosDialogConfirmViewActio
     {
         $photos_count = waRequest::get('cnt', 0, waRequest::TYPE_INT);
         if (!$photos_count) {
-            throw new waException(_w('Not choosen any photos'));
+            throw new waException(_w('Not photos selected.'));
         }
         $this->view->assign('photos_count', $photos_count);
     }

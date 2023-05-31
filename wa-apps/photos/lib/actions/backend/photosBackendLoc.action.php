@@ -18,7 +18,7 @@ class photosBackendLocAction extends waViewAction
             'Choose rate', //_w('Choose rate')
             'add description', //_w('add description')
             'Private photo', //_w('Private photo')
-            'Are you sure to delete photo?', //_w('Are you sure to delete photo?')
+            'Are you sure to delete this photo?', //_w('Are you sure to delete this photo?')
             'Save', //_w('Save')
             'Photo downloaded by', //_w('Photo downloaded by')
             'Next →', //_w('Next →')
@@ -28,11 +28,11 @@ class photosBackendLocAction extends waViewAction
             'Plugins', //_w('Plugins')
             'Settings', //_w('Settings')
             'add a tag', //_w('add a tag'),
-            'Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only.', //_w('Files with extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed only.'),
+            'Only files with name extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed.', //_w('Only files with name extensions *.gif, *.jpg, *.jpeg, *.png, *.webp are allowed.'),
             'Close', //_w('Close'),
             'Stop upload', //_w('Stop upload'),
             'Edit title...', //_w('Edit title...'),
-            'Failed to upload. Most probably, there were not enough memory to create thumbnails.', //_w('Failed to upload. Most probably, there were not enough memory to create thumbnails.')
+            'Failed to upload. Perhaps there was not enough memory to create image thumbnails.', //_w('Failed to upload. Perhaps there was not enough memory to create image thumbnails.')
             'Upload photos (%d)',//_w('Upload photos (%d)')
             'Delete',//_w('Delete')
             'Click “Save” button below to apply this change.',//_w('Click “Save” button below to apply this change.')
@@ -42,7 +42,7 @@ class photosBackendLocAction extends waViewAction
             'Saved', //_w('Saved')
             'Pages', // _w('Pages')
             'Empty result', //_w('Empty result')
-            'This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?',//_w('This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?')
+            'This will reset all changes you applied to the image after upload and will restore the original image. Are you sure?',//_w('This will reset all changes you applied to the image after upload and will restore the original image. Are you sure?')
         ) as $s) {
             $strings[$s] = _w($s);
         }

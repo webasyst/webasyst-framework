@@ -598,7 +598,7 @@ class photosCollection
 
         if ($check_album) {
             $url = self::frontendAlbumHashToUrl($hash);
-            if (strlen($url)) {
+            if (is_string($url) && strlen($url)) {
                 $link_options = $options;
                 unset($link_options['check_album']);
                 return photosFrontendAlbum::getLink($url, $link_options);

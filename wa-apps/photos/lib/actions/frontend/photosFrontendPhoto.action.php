@@ -120,6 +120,9 @@ class photosFrontendPhotoAction extends photosFrontendViewAction
         if (!$photo) {
             $this->private_hash = photosPhotoModel::parsePrivateUrl($url);
             $photo = $this->photo_model->getByField('hash', $this->private_hash);
+            if (!isset($photo)) {
+                return $photo;
+            }
             $parent = $this->photo_model->getStackParent($photo);
             $this->hash = photosPhotoModel::getPrivateHash($parent ? $parent : $photo);
         }

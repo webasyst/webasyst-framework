@@ -12,7 +12,7 @@
                     <div class="field-group">
                         <div class="field" id="thumpnail-size">
                             <div class="name">
-                                [`Thumbnails to be created when photo is uploaded`]
+                                [`Image thumbnails created during photo upload`]
                             </div>
                             <div class="value">
                                 {if !empty($settings.sizes)}
@@ -90,13 +90,13 @@
                             <div class="value no-shift">
                                 <label>
                                     <input type="checkbox" name="thumbs_on_demand" id="allow_gen_thumbs_on_demand" value="1" {if !empty($settings.thumbs_on_demand)}checked{/if}> [`Allow on demand generation of custom-sized thumbnails`]<br>
-                                    <span class="hint">[`If enabled, frontend design theme can request Photos app to create custom-sized photo thumbnails on fly (any size in addition to the listed above, including cropped versions)`]</span>
+                                    <span class="hint">[`If enabled, frontend design theme can request Photos app to create custom-sized photo thumbnails on the fly (the thumbnail size is contained in the image URL).`]</span>
                                 </label>
                             </div>
                             <div class="value" id="max_available_size_control" {if !$settings.thumbs_on_demand}style="display:none;"{/if}>
                                 [`Max thumbnail size`]<br>
                                 <input type="text" name="max_size" value="{$settings.max_size}" size="4" class="small-int"> [`px`]<br>
-                                <span class="hint">[`Limits the maximum thumbnail size that can be created on demand. Must not be less than 970 px.`]</span>
+                                <span class="hint">[`Limits the maximum size of thumbnails which can be created on demand. Must not be less than 970 px.`]</span>
                             </div>
                     </div>
 
@@ -115,13 +115,13 @@
                                 [`Thumbnail quality`]
                             </div>
                             <div class="value">
-                                <input type="input" name="save_quality" value="{if !empty($settings.save_quality)}{str_replace(',', '.', $settings.save_quality)}{/if}"><br>
+                                <input type="input" name="save_quality" value="{if isset($settings.save_quality) && $settings.save_quality !== ''}{str_replace(',', '.', $settings.save_quality)}{/if}"><br>
                                 <span class="hint">[`JPEG compression quality for photo thumbnails. From 0 (min quality, min file size) to 100 (max quality, max file size). 90 is recommended.`]</span>
                             </div>
 
                         </div>
                     </div>
-                            
+
                     <h6 class="heading">[`Originals`]</h6>
                     <div class="field-group">
                         <div class="field">
@@ -129,9 +129,9 @@
                                 [`Originals`]
                             </div>
                             <div class="value no-shift">
-                                <label><input type="checkbox" name="save_original" value="1" {if !empty($settings.save_original)}checked{/if}> [`Backup photo originals`]</label>
+                                <label><input type="checkbox" name="save_original" value="1" {if !empty($settings.save_original)}checked{/if}> [`Back up original photos`]</label>
                                 <br>
-                                <span class="hint">[`When enabled, every uploaded image file is automatically backed up and stored independently from photo full size version, which is modified when you edit it, e.g. rotate, apply watermarks or image visual effects. Originals are never updated. Pros: you have backups of all uploaded images. Cons: almost twice more disk space is required for storing original images than for storing only full size versions and thumbnails.`]</span>
+                                <span class="hint">[`When enabled, every uploaded image file is automatically backed up and stored independently of the photo's full-size version, which is modified when you edit it; e.g., rotate, apply watermarks or image visual effects. Original images are never updated. Pros: you have backups of all uploaded images. Cons: almost twice as much disk space is required to store original images in addition to full-size versions and thumbnails.`]</span>
                             </div>
 
                         </div>
@@ -154,7 +154,7 @@
                                 [`Thumbnail quality @2x`]
                             </div>
                             <div class="value">
-                                <input type="input" name="save_quality_2x" value="{if !empty($settings.save_quality_2x)}{str_replace(',', '.', $settings.save_quality_2x)}{/if}"><br>
+                                <input type="input" name="save_quality_2x" value="{if isset($settings.save_quality_2x) && $settings.save_quality_2x !== ''}{str_replace(',', '.', $settings.save_quality_2x)}{/if}"><br>
                                 <span class="hint">[`JPEG compression quality for photo thumbnails. From 0 (min quality, min file size) to 100 (max quality, max file size). 70 is recommended.`]</span>
                             </div>
                         </div>
