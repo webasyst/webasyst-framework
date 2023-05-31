@@ -10,6 +10,9 @@ return array(
         'value' => '',
     ),
     'TESTMODE'                 => array(),
+    'without_certificate'      => array(
+        'value' => '',
+    ),
     'sessionTimeoutSecs'       => array(
         'value' => '24',
     ),

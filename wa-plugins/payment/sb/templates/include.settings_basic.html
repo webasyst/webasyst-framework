@@ -45,9 +45,22 @@
         <label for="{$prefix}TESTMODE">Тестовый режим</label>
     </div>
     <div class="value">
-        <input type="checkbox" name="{$namespace}[TESTMODE]" value="1" {if ifset($settings, 'TESTMODE', '')}checked{/if}>
+        <input id="{$prefix}TESTMODE" type="checkbox" name="{$namespace}[TESTMODE]" value="1" {if ifset($settings, 'TESTMODE', '')}checked{/if}>
         <br>
         <span class="hint">Использует тестовый шлюз 3dsec.sberbank.ru и отключает автоматическое перенаправление покупателя на страницу оплаты. <br> Для выполнения тестового платежа нужно перейти на сайт «Сбербанка» с помощью кнопки.</span>
+    </div>
+</div>
+
+<div class="field">
+    <div class="name">
+        <label for="{$prefix}without_certificate">Не проверять сертификат</label>
+    </div>
+    <div class="value">
+        <input id="{$prefix}without_certificate" type="checkbox" name="{$namespace}[without_certificate]" value="1" {if ifset($settings, 'without_certificate', '')}checked{/if}>
+        <br>
+        <span class="hint">Включите для <em>временного</em> устранения проблем при оплате заказов, связанных с ошибками подключения к серверам «Сбербанка».</span>
+        <br>
+        <span class="hint">Выключите эту настройку <em>после установки <a href="https://www.gosuslugi.ru/tls">корневого сертификата Минцифры</a></em> на вашем хостинге.</span>
     </div>
 </div>
 
@@ -56,7 +69,7 @@
         <label for="{$prefix}api_callbacks_enabled">Исправлять обновление статусов платежей</label>
     </div>
     <div class="value">
-        <input type="checkbox" name="{$namespace}[api_callbacks_enabled]" value="1" {if ifset($settings, 'api_callbacks_enabled', '')}checked{/if}>
+        <input id="{$prefix}api_callbacks_enabled" type="checkbox" name="{$namespace}[api_callbacks_enabled]" value="1" {if ifset($settings, 'api_callbacks_enabled', '')}checked{/if}>
         <br>
         <span class="hint">Включите, если у вас возникают проблемы при автоматическом обновлении статусов платежей и вы настроили получение callback-уведомлений от серверов банка.</span>
     </div>
