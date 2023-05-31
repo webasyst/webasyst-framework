@@ -5,7 +5,7 @@ return array(
     'icon'        => 'img/payonline16.png',
     'logo'        => 'img/payonline.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.2.2',
+    'version'     => '1.3.0',
     'locale'      => array('ru_RU',),
     'type'        => waPayment::TYPE_ONLINE,
     'discount'    => true,
