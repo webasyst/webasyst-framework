@@ -69,4 +69,7 @@ return array(
     'notification_name' => array(
         'value' => '',
     ),
+    'timeout' => array(
+        'value' => '900',
+    ),
 );

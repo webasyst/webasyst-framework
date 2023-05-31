@@ -10,6 +10,8 @@ class boxberryShippingGetSettings
      */
     protected $bxb = null;
 
+    protected $errors = null;
+
     /**
      * boxberryShippingGetSettings constructor.
      * @param boxberryShipping $bxb
@@ -73,6 +75,8 @@ class boxberryShippingGetSettings
             'point_modes'           => $this->getPointModes(),
             'courier_modes'         => $this->getCourierModes(),
             'issuance_options'      => $this->getIssuanceOptions(),
+            'timeout_options'       => $this->getTimeoutOptions(),
+            'errors'                => $this->errors,
         ));
 
         $path = $this->bxb->getPluginPath();
@@ -157,8 +161,10 @@ class boxberryShippingGetSettings
      */
     public function getAllPointsForParcels()
     {
-        $handbook_manager = new boxberryShippingHandbookPointsForParcels($this->getApiManager(), [], $this->bxb);
+        $api_manager = $this->getApiManager();
+        $handbook_manager = new boxberryShippingHandbookPointsForParcels($api_manager, [], $this->bxb);
         $points = $handbook_manager->getHandbook();
+        $this->errors = $api_manager->getErrors();
 
         return $points;
     }
@@ -232,5 +238,30 @@ class boxberryShippingGetSettings
                 'title' => $this->bxb->_w('Delivery of a parcel part'),
             ),
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function getTimeoutOptions()
+    {
+        return [
+            [
+                'value' => '900',
+                'title' => $this->bxb->_w('15 minutes')
+            ],
+            [
+                'value' => '1800',
+                'title' => $this->bxb->_w('30 minutes')
+            ],
+            [
+                'value' => '3600',
+                'title' => $this->bxb->_w('60 minutes')
+            ],
+            [
+                'value' => '10800',
+                'title' => $this->bxb->_w('180 minutes')
+            ],
+        ];
     }
 }
