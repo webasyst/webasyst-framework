@@ -19,7 +19,7 @@
         {/if}
 
         <meta itemprop="commentTime" content="{$comment.datetime|date_format:'Y-m-d\TH:i'}">
-        <span class="hint date" title="{$comment.datetime|wa_datetime}" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
+        <span class="date" title="{$comment.datetime|wa_datetime}" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
     </div>
 
     {* @event prepare_comments_frontend.%plugin_id%.before *}

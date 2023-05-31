@@ -28,10 +28,10 @@
             {else }
                 <span class="username">{$post.user.name}</span>
             {/if}
-            <span class="hint date">{$post.datetime|wa_datetime:"humandate"}</span>
+            <span class="date">{$post.datetime|wa_datetime:"humandate"}</span>
             {if $show_comments && $post.comments_allowed}
                 {if !empty($post.comment_count)}
-                    <a href="{$post.link}#comments" class="small">
+                    <a href="{$post.link}#comments">
                         {_w('%d comment','%d comments',$post.comment_count)}
                     </a>
                 {else}
@@ -55,7 +55,7 @@
         <div class="text">
             {$post.text}
             {if $post.cutted}
-                <a href="{$post.link}">{$post.cut_link_label|default:'[`Continue reading →`]'}</a>
+                <a class="button bg-gray font-weight-normal wa-flex justify-content-center" href="{$post.link}">{$post.cut_link_label|default:'[`Continue reading →`]'}</a>
             {/if}
         </div>
 

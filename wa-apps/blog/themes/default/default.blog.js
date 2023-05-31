@@ -12,7 +12,7 @@ $(function(){
     };
 
     var form_refresh = function(empty) {
-    
+
         //comment form submit refresh
         var form = $('.comment-form');
         form.find('.errormsg').remove();
@@ -24,8 +24,8 @@ $(function(){
         }
     };
 
-    $('.comment-reply').live('click', function(){
-    
+    $('.comment-reply').on('click', function(){
+
         // reply to a comment
         var item = $(this).parents('.comment');
         var id = item.length?parseInt($(item).attr('id').replace(/^[\D]+/,'')):0;
@@ -35,8 +35,8 @@ $(function(){
         return false;
     });
 
-    $('.comment-form input:submit').click(function(){
-    
+    $('.comment-form :submit').click(function(){
+
         //save comment
         var button = $(this);
         button.attr('disabled', true).next().show();
@@ -53,7 +53,7 @@ $(function(){
                 return;
             }
             if ( response.status && response.status == 'ok' && response.data) {
-            
+
                 // saved
                 var template = $(response.data.template);
                 var count_str = response.data.count_str;
@@ -74,16 +74,16 @@ $(function(){
 
                 if ( response.data.comment_id )
                     $('#comment-' + response.data.comment_id).addClass('new');
-                    
+
                 $('.not-comment').remove();
                 $('.comment').removeClass('in-reply-to');
                 $('.comment-count').show().html(count_str);
 
                 template.trigger('plugin.comment_add');
                 form_refresh(true);
-                
+
             } else if( response.status && response.status == 'fail' ) {
-            
+
                 // error
                 form_refresh();
                 var errors = response.errors;

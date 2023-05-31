@@ -1,19 +1,10 @@
-<!-- search -->
-<form method="get" action="{$wa_app_url}" class="search">
-    <div class="search-wrapper">
-        <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
-        <button type="submit"></button>
-    </div>
-    <div class="clear-both"></div>
-</form>
-
 <ul class="pages">
 
     {foreach $wa->blog->blogs() as $blog}
         <li class="{if $wa->globals('blog_id') eq $blog.id && empty($is_search)}selected{/if}">
             <a href="{$blog.link}">{$blog.name}</a>
         </li>
-    {foreachelse}
+        {foreachelse}
         <li>
             <a href="{$wa->blog->url()}">[`All posts`]</a>
         </li>
@@ -25,7 +16,19 @@
             <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
         {/foreach}
     {/if}
-    
+
 </ul>
+
+<!-- search -->
+<form method="get" action="{$wa_app_url}" class="search wa-flex-fill">
+    <div class="search-wrapper">
+        <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
+        <button type="submit">
+            <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                <use xlink:href="#img-find"></use>
+            </svg>
+        </button>
+    </div>
+</form>
 
 
