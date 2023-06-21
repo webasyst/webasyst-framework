@@ -711,7 +711,7 @@ abstract class waPayment extends waSystemPlugin
     {
         $rec = '#'.self::getLogRequestId()."\n";
         $module_id = strtolower($module_id);
-        if (!preg_match('@^[a-z][a-z0-9]+$@', $module_id)) {
+        if (!preg_match('@^[a-z][a-z0-9_]+$@', $module_id)) {
             $rec .= 'Invalid module_id: '.$module_id."\n";
             $module_id = 'general';
         }

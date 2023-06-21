@@ -73,7 +73,7 @@
         {/if}
     </td>
 
-    <td class="nowrap align-right small"{if empty($app.enabled) && in_array($item_type,['plugin','widget', 'theme'])} style="visibility: hidden"{/if}>
+    <td class="nowrap align-right small"{if empty($app.enabled) && in_array($item_type,['plugin','widget', 'theme']) && empty($app.virtual)} style="visibility: hidden"{/if}>
        {if
         empty($item.virtual)
         &&

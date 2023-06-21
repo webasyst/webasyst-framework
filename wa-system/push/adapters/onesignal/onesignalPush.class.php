@@ -121,12 +121,18 @@ class onesignalPush extends waPushAdapter
         $subscriber_list = $this->getSubscriberListByField('id', $id);
         $request_data['subscriber_list'] = $subscriber_list;
 
+        $result = [];
         foreach ($subscriber_list as $app_id => $user_ids) {
             $push_data = $request_data;
             $push_data['app_id'] = $app_id;
-            $push_data['include_player_ids'] = $user_ids;
-            $this->request('notifications', $push_data, waNet::METHOD_POST);
+            $user_ids = array_filter($user_ids);
+            if ($user_ids) {
+                $push_data['include_player_ids'] = $user_ids;
+                $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
+            }
         }
+
+        return $result;
     }
 
     public function sendByContact($contact_id, $data)
@@ -139,8 +145,11 @@ class onesignalPush extends waPushAdapter
         foreach ($subscriber_list as $app_id => $user_ids) {
             $push_data = $request_data;
             $push_data['app_id'] = $app_id;
-            $push_data['include_player_ids'] = $user_ids;
-            $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
+            $user_ids = array_filter($user_ids);
+            if ($user_ids) {
+                $push_data['include_player_ids'] = $user_ids;
+                $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
+            }
         }
 
         return $result;

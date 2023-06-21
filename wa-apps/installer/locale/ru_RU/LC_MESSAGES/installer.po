@@ -543,3 +543,6 @@ msgid_plural "App themes %s have been deleted."
 msgstr[0] "Тема дизайна %s удалена."
 msgstr[1] "Темы дизайна %s удалены."
 msgstr[2] "Темы дизайна %s удалены."
+
+msgid "%s not installed"
+msgstr "Приложение %s не установлено"

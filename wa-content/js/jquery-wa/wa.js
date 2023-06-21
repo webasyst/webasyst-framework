@@ -927,7 +927,7 @@
             if (that.options.items) {
                 that.initChange(that.options.items);
             } else if(that.options.hide) {
-                that.$menu.on("click touchend", function() {
+                that.$menu.on("click", function() {
                     that.hide();
                 });
             }
@@ -1015,7 +1015,7 @@
 
             that.$active = that.$menu.find(selector + "." + active_class);
 
-            that.$wrapper.on("click touchend", selector, onChange);
+            that.$wrapper.on("click", selector, onChange);
 
             function onChange(event) {
                 event.preventDefault();

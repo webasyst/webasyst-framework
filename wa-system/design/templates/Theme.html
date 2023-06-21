@@ -22,12 +22,9 @@
 
             {* Group divider tooltip *}
             {if !empty($_setting.tooltip)}
-                <div class="wa-tooltip">
-                    <i class="fas fa-info-circle fa-xs divider-tooltip-{$_setting.level}"></i>
-                    <div class="wa-tooltip-content">
-                        {$_setting.tooltip}
-                    </div>
-                </div>
+            <span class="custom-ml-4" data-wa-tooltip-content="{$_setting.tooltip}">
+                <i class="fas fa-info-circle fa-xs divider-tooltip-{$_setting.level}"></i>
+            </span>
             {/if}
 
             {* Group divider settings *}
@@ -60,12 +57,9 @@
                 {/if}
 
                 {if !empty($_setting.tooltip)}
-                    <div class="wa-tooltip">
+                    <span class="custom-ml-4" data-wa-tooltip-content="{$_setting.tooltip}">
                         <i class="fas fa-info-circle fa-xs"></i>
-                        <div class="wa-tooltip-content">
-                            {$_setting.tooltip}
-                        </div>
-                    </div>
+                    </span>
                 {/if}
             </div>
             <div class="value{if in_array($_setting.control_type, ['select', 'radio', 'checkbox', 'file'])} no-shift{/if}">
@@ -201,7 +195,7 @@
 
             {if ($theme_routes || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
                 {* Search settings *}
-                <div class="search-setting-wrapper custom-mb-24">
+                <div class="search-setting-wrapper custom-mb-24 custom-mr-8">
                     <div class="state-with-inner-icon left width-100">
                         <span class="icon"><i class="fas fa-search"></i></span>
                         <input type="search" class="js-search-setting width-100" autocomplete="off" placeholder="[s`Find setting`]" />
@@ -721,6 +715,8 @@
             }
         });
 
+
+        $('#theme-settings [data-wa-tooltip-content]').waTooltip();
     })(jQuery);
 </script>
 

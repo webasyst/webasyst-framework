@@ -27,7 +27,7 @@ class installerUpdateManagerAction extends waViewAction
         $this->is_install = (bool)waRequest::request('install', false);
         $this->is_trial = (bool)waRequest::request('trial', false);
         $url = parse_url($r = waRequest::server('HTTP_REFERER', ''), PHP_URL_QUERY);
-        if (preg_match('/(^|&)module=(update|apps|plugins|widgets)($|&)/', $url, $matches)) {
+        if (is_string($url) && preg_match('/(^|&)module=(update|apps|plugins|widgets)($|&)/', $url, $matches)) {
             $this->module = $matches[2];
         }
 

@@ -222,7 +222,8 @@
         var options = {
             'id': 'wa-design-content',
             'type': "{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{else}html{/if}",
-            'prefix': 'wa-design-'
+            'prefix': 'wa-design-',
+            'save_button': 'bb_submit'
         };
 
         var element = $('#' + options.id);

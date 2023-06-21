@@ -6,7 +6,7 @@
     <div class="article width-100">
         <div class="article-body flexbox middle space-16 custom-py-0">
     {/if}
-        <input form="{$form_id}" type="submit" class="button green js-bb-submit"{if !$form_id} disabled{/if} value="[s`Save`]" />
+        <input id="bb_submit" form="{$form_id}" type="submit" class="button green js-bb-submit"{if !$form_id} disabled{/if} value="[s`Save`]" />
         {if !$form_id}<span class="state-error">[`Empty <code>form_id</code> parameter.`]</span>{/if}
         <em class="hint">Ctrl + S</em>
         <span id="wa-editor-status" class="custom-ml-24" style="display: none"></span>

@@ -45,6 +45,19 @@ class DurableTar extends Archive_Tar implements Serializable
         $this->resumeOffset = $resumeOffset;
     }
 
+    public function __serialize()
+    {
+        return [
+            'tarSize'      => $this->tarSize,
+            'resumeOffset' => $this->resumeOffset,
+        ];
+    }
+
+    public function __unserialize($data)
+    {
+
+    }
+
     public function serialize()
     {
         $data = array(

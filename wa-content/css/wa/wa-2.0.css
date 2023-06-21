@@ -547,8 +547,13 @@ mark.orange, .highlighted.orange { background: var(--highlighted-orange); }
     0% { --scrollbar-color: rgba(0,0,0,.15); }
     100% { --scrollbar-color: transparent; }
 }
-::-webkit-scrollbar { background: transparent; width: .625rem; }
-::-webkit-scrollbar-thumb { background: var(--scrollbar-color); border-radius: .375rem; }
+
+/* Not Safari */
+@supports (-webkit-tap-highlight-color: inherit) {
+  ::-webkit-scrollbar { background: transparent; width: .625rem; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-color); border-radius: .375rem; }
+}
+
 .hide-scrollbar, .sidebar { overflow-y: auto; animation-name: var(--sb-fade-out); animation-timing-function: ease-in-out; animation-duration: .5s; animation-fill-mode: forwards; }
 .hide-scrollbar:hover, .sidebar:hover { animation-name: var(--sb-fade-in); animation-timing-function: ease-in-out; animation-duration: .5s; animation-fill-mode: forwards; }
 
@@ -734,6 +739,8 @@ input.state-success, textarea.state-success, select.state-success, .wa-select.st
 .wa-select.state-success { box-shadow: inset 0 0 0 0.125em var(--green); }
 input.state-caution, textarea.state-caution, select.state-caution, .wa-select.state-caution { border-color: var(--orange) !important; }
 .wa-select.state-caution { box-shadow: inset 0 0 0 0.125em var(--orange); }
+.state-valid:valid, .state-both:valid { font-weight: 500; color: var(--green); border-color: var(--green) !important; }
+.state-invalid:invalid, .state-both:invalid { font-weight: 500; color: var(--red); border-color: var(--red) !important; }
 
 @media screen and (max-width: 760px) { /* mobile */
 
@@ -859,7 +866,6 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 #wa-header .wa-notification > .wa-notification-body-empty { padding: 1.25rem 1rem; font-size: 0.9375rem; text-align: center; }
 #wa-header .wa-notifications-bell .badge { font-size: 0.75rem; position: absolute; top: -0.5rem; right: -.375rem; padding: 0.125rem; }
 
-.wa-cheatsheet-dropdown { }
 .wa-cheatsheet-dropdown .wa-cheatsheet-dropdown-content { padding: 20px; width: 760px; min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden; }
 .wa-cheatsheet-dropdown .wa-cheatsheet-dropdown-content .fields { display: flex; flex-direction: column; justify-content: flex-start; }
 .wa-cheatsheet-dropdown .wa-cheatsheet-dropdown-content .field { margin: 0; }
@@ -872,6 +878,7 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 .wa-cheatsheet-dropdown ul.tabs li a { position: relative; }
 .wa-cheatsheet-dropdown .fields .field > .name { width: 40% !important; word-wrap: break-word; }
 .wa-cheatsheet-dropdown ul { height: auto; display: block; }
+.wa-cheatsheet-dropdown-content ul.bordered { border: none; padding: 0 0.15rem; }
 
 @media screen and (max-width: 760px) { /* mobile */
 
@@ -889,7 +896,7 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
     #wa-nav.wa-nav-unfolded #wa-header #wa-header-content-area #wa-applist ul li a .wa-app-name { font-size: .9rem; line-height: 1.05em; text-align: center; padding-bottom: 0.75rem; margin: 0; white-space: normal; }
     #wa-nav.wa-nav-unfolded #wa-header #wa-header-content-area #wa-applist ul li.selected a .wa-app-name { font-weight: bold; }
     #wa-nav.wa-nav-unfolded #wa-header #wa-header-content-area #wa-applist ul li a .badge { display: block; right: auto; font-size: 0.875rem; }
-    #wa-nav #wa-header #wa-header-user-area { position: relative; margin: 0; height: 4rem; background: var(--background-color-wa-header); padding-left: 1rem; flex-direction: row-reverse; }
+    #wa-nav #wa-header #wa-header-user-area { position: relative; margin: 0; height: 4rem; background: var(--background-color-wa-header); padding: 0 1rem; flex-direction: row-reverse; }
     #wa-nav #wa-header #wa-header-user-area::after { content: ''; background: linear-gradient(90deg, var(--background-color-wa-header-transparent) 0%, var(--background-color-wa-header) 100%); position: absolute; top: 0; left: -1.5rem; width: 1.5rem; height: 100%; z-index: 1001; }
     #wa-nav #wa-header #wa-header-user-area .wa-header-search-form { position: fixed; transform: translateY(0); width: 100%; max-height: 4rem; left: 0; top: 0; background: #fff; padding: 1rem; display: flex; box-sizing: border-box; z-index: -1; transition: all 300ms; }
     #wa-nav #wa-header #wa-header-user-area .wa-header-search-form.active { transform: translateY(4rem); box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.1); }
@@ -897,6 +904,7 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
     #wa-nav #wa-header #wa-header-user-area .wa-header-search-form button { right: 1.75em; }
     #wa-nav #wa-header #wa-header-user-area .wa-toggle-apps { margin-right: 0rem; }
     #wa-nav #wa-header #wa-header-user-area #wa-userprofile { padding: 0.375rem 0 0 0; }
+    #wa-nav #wa-header #wa-header-user-area #wa-userprofile a { padding: 0; }
 
     #wa-nav #wa-header #wa-notifications-dropdown,
     #wa-nav #wa-header #wa2ui-dropdown,
@@ -2367,10 +2375,9 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
 
 .ui-autocomplete.ui-menu { background: var(--background-color-blank) !important; border: none !important; box-shadow: 0 0.5rem 1rem -0.5rem var(--dialog-shadow-color); font-size: .9em; }
 .ui-autocomplete.ui-menu > .ui-menu-item { color: var(--menu-link-color) !important; }
-.ui-autocomplete.ui-menu > .ui-menu-item:nth-child(odd) { background: var(--background-color-zebra-row-odd); }
-.ui-autocomplete.ui-menu > .ui-menu-item:nth-child(odd):hover { background: var(--background-color-zebra-row-odd-hover); }
+.ui-autocomplete.ui-menu > .ui-menu-item:hover { background: var(--background-color-zebra-row-odd-hover); }
 .ui-autocomplete.ui-menu > .ui-menu-item a { color: var(--text-color-link); padding: 0.5em 1em; }
-.ui-autocomplete.ui-menu > .ui-menu-item a.ui-state-hover { background: var(--background-color-zebra-row-odd-hover); border: 0; margin: 0;  }
+.ui-autocomplete.ui-menu > .ui-menu-item a.ui-state-focus { background: var(--background-color-zebra-row-odd-hover); border: 0; margin: 0;  }
 .ui-autocomplete.ui-menu .ui-menu-item-wrapper { padding: 0.5rem 1rem !important; }
 .ui-autocomplete.ui-menu .ui-menu-item-wrapper.ui-state-active { background: var(--accent-color) !important; border: none !important; margin: 0 !important; }
 

@@ -264,12 +264,17 @@ class waDateTime
         if (!$locale) {
             $locale = wa()->getLocale();
         }
-        if (!$timezone) {
-            /** @var DateTimeZone $timezone */
-            $timezone = wa()->getUser()->getTimezone(true);
-        }
-        if (!$timezone instanceof DateTimeZone) {
-            $timezone = new DateTimeZone($timezone);
+        if ($timezone == 'server') {
+            // same as date_default_timezone_get()
+            $timezone = null;
+        } else {
+            if (!$timezone) {
+                /** @var DateTimeZone $timezone */
+                $timezone = wa()->getUser()->getTimezone(true);
+            }
+            if (!$timezone instanceof DateTimeZone) {
+                $timezone = new DateTimeZone($timezone);
+            }
         }
         waLocale::loadByDomain("webasyst", $locale);
 

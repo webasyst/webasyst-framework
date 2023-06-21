@@ -293,6 +293,15 @@ and (orientation : portrait) {
     margin-left: -13rem;
 }
 
+.is-wa2 #wa-design-container ul.menu-v {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+
+.is-wa2 #theme-settings .wa-radio {
+  margin-right: 0.3rem;
+}
+
 .is-wa2 .skeleton {
     display: flex;
     flex-wrap: wrap;

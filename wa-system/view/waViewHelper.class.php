@@ -1522,6 +1522,11 @@ HTML;
                     continue;
                 }
 
+                // Do not show tabs that can break contact tab
+                if (!empty($link['html']) && preg_match('~</body></html>$~', str_replace(["\n", "\t", " "], '', $link['html']))) {
+                    $link['html'] = '<pre>'.htmlspecialchars($link['html']).'</pre>';
+                }
+
                 $links[$link['id']] = $link + array(
                         'url'   => '',
                         'title' => '',

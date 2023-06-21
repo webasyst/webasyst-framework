@@ -110,7 +110,7 @@
                     if ((xhr.status === 403) || (xhr.status === 404)) {
                         var text = $(xhr.responseText);
                         if (text.find('.dialog-content').length) {
-                            text = $('<div class="block double-padded"></div>').append(text.find('.dialog-content *'));
+                            text = $('<div class="block double-padded"></div>').append(text.find('.dialog-content'));
 
                         } else {
                             text = $('<div class="block double-padded"></div>').append(text.find(':not(style)'));
