@@ -93,7 +93,7 @@ class blogConfig extends waAppConfig
 
         $user = waSystem::getInstance()->getUser();
         $user_id = $user->getId();
-        $type = explode(':',$user->getSettings($app, 'type_items_count'));
+        $type = explode(':', (string)$user->getSettings($app, 'type_items_count'));
         $type = array_filter(array_map('trim',$type),'strlen');
         if (!$type) {
             $type = array('posts','comments_to_my_post','overdue');
