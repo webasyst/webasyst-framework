@@ -585,7 +585,7 @@ abstract class waSystemPlugin
         $settings_config = $this->config();
         foreach ($settings_config as $name => $row) {
             if (!isset($settings[$name])) {
-                switch (preg_replace('@\s.*$@', '', ifset($row['control_type']))) {
+                switch (preg_replace('@\s.*$@', '', ifset($row['control_type'], ''))) {
                     case waHtmlControl::CHECKBOX:
                         $settings[$name] = false;
                         break;
