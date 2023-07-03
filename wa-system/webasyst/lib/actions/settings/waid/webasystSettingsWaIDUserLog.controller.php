@@ -15,13 +15,13 @@ class webasystSettingsWaIDUserLogController extends waJsonController
             $offset = $page * $limit;
             $contact_waid = new waContactWaidModel();
             $user_logs = $contact_waid->query(
-                "SELECT * FROM wa_log 
+                "SELECT * FROM wa_log
                 WHERE contact_id = :user_id AND action IN ('login', 'waid_auth')
                 ORDER BY id DESC LIMIT $offset,$limit",
                 ['user_id' => $user_id]
             )->fetchAll();
         } else {
-            $this->response['errors'] = [_w('Пользователь не найден')];
+            $this->response['errors'] = [_ws('User not found.')];
         }
 
         $this->response['next'] = count($user_logs) === self::LIMIT;

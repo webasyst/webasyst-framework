@@ -347,7 +347,7 @@
                                 data = data.data || { };
                                 next = data.next || false;
                                 if (typeof data.errors !== 'undefined') {
-                                    html = '<tr><td colspan="4">Ошибка</td></tr>';
+                                    html = '<tr><td colspan="4">{_ws('Error')|escape}</td></tr>';
                                 } else {
                                     for (let indx in data.data) {
                                         html += '<tr><td class="nowrap">'+ data.data[indx]['datetime'] + '</td><td class="align-center">';

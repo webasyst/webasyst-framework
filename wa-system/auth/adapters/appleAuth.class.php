@@ -37,24 +37,24 @@ class appleAuth extends waOAuth2Adapter
         return [
             'client_id' => _ws('Client ID')
                 .'<br><span class="hint">'.
-                    _ws('The identifier (App ID or Services ID) for your app')
+                    _ws('Identifier (App ID or Services ID)')
                 .'</span>',
 
 /*
-            'apple_team_id' => _ws('Team ID')
+            'apple_team_id' => ws('Team ID')
                 .'<br><span class="hint">'.
-                    _ws('10-character Team ID associated with your developer account')
+                    ws('10-character Team ID associated with your developer account')
                 .'</span>',
 
-            'apple_key_id' => _ws('Key ID')
+            'apple_key_id' => ws('Key ID')
                 .'<br><span class="hint">'.
-                    _ws('10-character key identifier generated for the Sign in with Apple private key associated with your developer account')
+                    ws('10-character key identifier generated for the Sign in with Apple private key associated with your developer account')
                 .'</span>',
 
             // first line of the file starts with -----BEGIN PRIVATE KEY-----
-            'private_key' => _ws('Private Key')
+            'private_key' => ws('Private Key')
                 .'<br><span class="hint">'.
-                    _ws('File path to a .p8 file containing private key used to sign JSON Web Tokens')
+                    ws('File path to a .p8 file containing private key used to sign JSON Web Tokens')
                 .'</span>',
 */
         ];

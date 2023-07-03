@@ -8,7 +8,6 @@
  * @copyright Webasyst LLC
  * @package Webasyst
  */
-@property --scrollbar-color { syntax: "<color>"; inherits: true; initial-value: transparent }
 
 html {
     /* test hsl colors */
@@ -183,9 +182,6 @@ html {
     --timing-slow:                            1s;
     --timing-slowest:                        1.5s;
 
-    --sb-fade-in: sbFadeIn;
-    --sb-fade-out: sbFadeOut;
-    --scrollbar-color: rgba(0,0,0,.15);
 }
 
 /* start dark mode styles */
@@ -326,9 +322,6 @@ html[data-theme='dark'] {
     --notification-background-color:          #151e29;
     --notification-background-blurred-color:  rgba(0, 0, 0, 0.85);
 
-    --sb-fade-in: sbFadeInDark;
-    --sb-fade-out: sbFadeOutDark;
-    --scrollbar-color: rgba(255,255,255,.15);
 }
 html[data-theme='dark'] img.dark-mode-inverted { filter: invert(100%) hue-rotate(180deg); mix-blend-mode: screen;}
 html[data-theme='dark'] .button.black { box-shadow: 0 2px 10px -2px rgba(255, 255, 255, 0.34); }
@@ -530,32 +523,6 @@ mark.orange, .highlighted.orange { background: var(--highlighted-orange); }
 .bordered-right { border-right: 1px solid var(--border-color-soft); }
 .bordered-bottom { border-bottom: 1px solid var(--border-color-soft); }
 .bordered-none { border: 0 none; }
-
-@keyframes sbFadeInDark {
-    0% { --scrollbar-color: transparent; }
-    100% { --scrollbar-color: rgba(255,255,255,.15); }
-}
-@keyframes sbFadeOutDark {
-    0% { --scrollbar-color: rgba(255,255,255,.15); }
-    100% { --scrollbar-color: transparent; }
-}
-@keyframes sbFadeIn {
-    0% { --scrollbar-color: transparent; }
-    100% { --scrollbar-color: rgba(0,0,0,.15); }
-}
-@keyframes sbFadeOut {
-    0% { --scrollbar-color: rgba(0,0,0,.15); }
-    100% { --scrollbar-color: transparent; }
-}
-
-/* Not Safari */
-@supports (-webkit-tap-highlight-color: inherit) {
-  ::-webkit-scrollbar { background: transparent; width: .625rem; }
-  ::-webkit-scrollbar-thumb { background: var(--scrollbar-color); border-radius: .375rem; }
-}
-
-.hide-scrollbar, .sidebar { overflow-y: auto; animation-name: var(--sb-fade-out); animation-timing-function: ease-in-out; animation-duration: .5s; animation-fill-mode: forwards; }
-.hide-scrollbar:hover, .sidebar:hover { animation-name: var(--sb-fade-in); animation-timing-function: ease-in-out; animation-duration: .5s; animation-fill-mode: forwards; }
 
 .cursor-pointer:not(:disabled):not(.disabled) { cursor: pointer; }
 
@@ -1014,6 +981,13 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 
 .sidebar > .sidebar-header.shadowed { box-shadow: 0 1rem 2rem -1rem rgba(0,0,0,0.15); }
 .sidebar > .sidebar-footer.shadowed { box-shadow: 0 -1rem 2rem -1rem rgba(0,0,0,0.15); }
+
+.sidebar::-webkit-scrollbar,
+.sidebar-body::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar { display: none; width: 0; }
+.sidebar,
+.sidebar-body,
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-color: transparent transparent; scrollbar-width: none; }
 
 .content { flex: 1 !important; position: relative; }
 

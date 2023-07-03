@@ -13,14 +13,15 @@ class yandexAuth extends waOAuth2Adapter
 
     public function getRedirectUri()
     {
-        return "https://oauth.yandex.ru/authorize?response_type=code&client_id=".$this->app_id;
+        $url = $this->getCallbackUrl();
+        return 'https://oauth.yandex.ru/authorize?response_type=code&client_id='.$this->app_id.'&redirect_uri='.urlencode($url);
     }
 
     public function getControls()
     {
         return array(
-            'app_id'     => _ws('Yandex app ID'),
-            'app_secret' => _ws('Yandex app secret'),
+            'app_id'     => _ws('Client ID'),
+            'app_secret' => _ws('Client secret'),
         );
     }
 

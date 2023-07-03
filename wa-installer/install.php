@@ -802,7 +802,8 @@ HTACCESS;
         </div>
     </div>
     <input type="hidden" name="config[mod_rewrite]" value="{$mod_rewrite}" id="input_mod_rewrite">
-    <input type="hidden" name="config[default_host_domain]" value="{default_host_domain}" id="default_host_domain">
+    <input type="hidden" name="config[default_host_domain]" value="{$default_host_domain}" id="default_host_domain">
+    <input type="hidden" name="config[ui]" value="2.0">
 </div>
 <p class="clear-left i-hint">{$wa_locale->_('If you do not know what should be entered here, please contact your hosting provider technical support.')}</p>
 HTML;

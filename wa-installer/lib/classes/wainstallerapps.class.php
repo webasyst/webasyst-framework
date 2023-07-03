@@ -1993,7 +1993,8 @@ class waInstallerApps
     {
         $default = array(
             'debug'         => false,
-            'identity_hash' => md5(__FILE__.(function_exists('php_uname') ? php_uname() : '').phpversion().rand(0, time())),
+            'identity_hash' => md5(mt_rand().__FILE__.(function_exists('php_uname') ? php_uname() : '').phpversion().mt_rand()),
+            'ui' => '2.0',
         );
         $current = self::getConfig(self::CONFIG_GENERIC);
         if (isset($config['identity_hash'])) {
@@ -2034,15 +2035,13 @@ class waInstallerApps
     {
         self::init();
         $allowed_options = array(
-            'mod_rewrite',
-            'debug',
-            'license_key',
+            'mod_rewrite' => true,
+            'debug' => true,
+            'license_key' => true,
+            'default_host_domain' => true,
+            'ui' => true,
         );
-        foreach ($options as $id => $option) {
-            if (!in_array($id, $allowed_options, true)) {
-                unset($options[$id]);
-            }
-        }
+        $options = array_intersect_key($options, $allowed_options);
         if ($options) {
             self::updateGenericConfig($options);
         }
