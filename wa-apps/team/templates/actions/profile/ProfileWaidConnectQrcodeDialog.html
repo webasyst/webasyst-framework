@@ -10,7 +10,7 @@
         <div class="dialog-content">
             <div class="flexbox vertical middle">
                 <h2>[`Scan the QR code`]</h2>
-                <p class="custom-mt-0 align-center">[`Open any of the Webasyst mobile apps and scan the code below on the ‘Sign in with QR code’ screen:`]</p>
+                <p class="custom-mt-0 align-center">[`Open any of the Webasyst mobile apps and scan the code below on the “Sign in with QR code” screen:`]</p>
                 <p class="align-center" style="position: relative;display: grid;place-items: center;">
                     <span class="js-place-for-code"></span>
                     <button type="button" class="button green circle largest js-update-code hidden" style="position:absolute;inset:auto;">
@@ -47,7 +47,7 @@
         $place.css({
             'padding': '15px',
             'background-color': '#fff'
-        })
+        }).attr('title', '');
         $dialog.find('.js-update-code').on('click', updateCodeInfo)
 
         dialog.resize()

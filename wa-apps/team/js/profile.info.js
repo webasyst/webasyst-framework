@@ -1555,21 +1555,11 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if(!this.fieldValue.value) {
                     return null;
                 }
-                var map_url = '';
-                if (typeof this.fieldValue.for_map === 'string') {
-                    map_url = this.fieldValue.for_map;
-                } else {
-                    if (this.fieldValue.for_map.coords) {
-                        map_url = this.fieldValue.for_map.coords;
-                    } else {
-                        map_url = this.fieldValue.for_map.with_street;
-                    }
-                }
+                var map_url = this.fieldValue.for_map.map_url || '';
                 result = $('<div class="address-field width-100-mobile"></div>')
-                    //.append('<div class="ext"><strong><span style="display:none" class="replace-with-ext"></span></strong></div>')
                     .append('<span class="small">'+this.fieldValue.value+'</span>')
                     .append('<span style="display:none" class="replace-with-ext"></span> ')
-                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="map-link small">' + $_('map') + '<i class="fas fa-external-link-alt small custom-ml-4"></i></a>');
+                    .append('<a target="_blank" href="'+ map_url +'" class="map-link small">' + $_('map') + '<i class="fas fa-external-link-alt small custom-ml-4"></i></a>');
                 return result;
             }
 
@@ -1950,7 +1940,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             if (this.currentMode == 'edit') {
                 this.domElement.find('input.val').attr('checked', !!this.fieldValue);
             } else {
-                this.domElement.find('.val').text(this.fieldValue ? 'Yes' : 'No');
+                this.domElement.find('.val').text(this.fieldValue ? $_('Yes') : $_('No'));
             }
         },
 
@@ -1971,7 +1961,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     result.find('.val').removeAttr('checked');
                 }
             } else {
-                result = $('<span class="val small"></span>').text(this.fieldValue ? 'Yes' : 'No');
+                result = $('<span class="val small"></span>').text(this.fieldValue ? $_('Yes') : $_('No'));
             }
             return result;
         }
@@ -2196,7 +2186,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 el.removeClass('view-mode');
 
                 el.find('.subname').wrapAll('<div class="subname-wrapper custom-mt-0"></div>');
-                el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper"></div>');
+                el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper custom-mt-16"></div>');
 
                 // Save/cancel buttons
                 var buttons = this.inplaceEditorButtons(fieldsToUpdate, function(noValidationErrors) {

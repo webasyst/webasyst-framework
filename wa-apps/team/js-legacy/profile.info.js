@@ -1591,21 +1591,12 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if(!this.fieldValue.value) {
                     return null;
                 }
-                var map_url = '';
-                if (typeof this.fieldValue.for_map === 'string') {
-                    map_url = this.fieldValue.for_map;
-                } else {
-                    if (this.fieldValue.for_map.coords) {
-                        map_url = this.fieldValue.for_map.coords;
-                    } else {
-                        map_url = this.fieldValue.for_map.with_street;
-                    }
-                }
+                var map_url = this.fieldValue.for_map.map_url || '';
                 result = $('<div class="address-field"></div>')
                     //.append('<div class="ext"><strong><span style="display:none" class="replace-with-ext"></span></strong></div>')
                     .append(this.fieldValue.value)
                     .append('<span style="display:none" class="replace-with-ext"></span> ')
-                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="small map-link">' + $_('map') + '</a>');
+                    .append('<a target="_blank" href="'+ map_url +'" class="small map-link">' + $_('map') + '</a>');
                 return result;
             }
 

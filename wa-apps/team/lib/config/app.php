@@ -2,7 +2,7 @@
 return array(
     'name'       => 'Team',
     'icon'       => 'img/team.svg',
-    'version'    => '2.2.0',
+    'version'    => '2.2.1',
     'vendor'     => 'webasyst',
     'sash_color' => '#f0dc03',
     'system'     => true,

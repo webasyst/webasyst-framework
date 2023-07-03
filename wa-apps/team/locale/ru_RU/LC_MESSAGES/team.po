@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -317,7 +317,7 @@ msgid "Birthday"
 msgstr "День рождения"
 
 msgid "deleted contact_id="
-msgstr "удаленнный contact_id="
+msgstr "удаленный contact_id="
 
 msgid "granted backend access rights"
 msgstr "предоставил права доступа в бекенд"
@@ -799,8 +799,8 @@ msgstr "Настроить"
 msgid "unlink"
 msgstr "отключить"
 
-msgid "No external calendars connected"
-msgstr "Не подключен ни один внешний календарь"
+msgid "No external calendars are connected."
+msgstr "Не подключен ни один внешний календарь."
 
 msgid "Add external calendar"
 msgstr "Добавить внешний календарь"
@@ -1717,7 +1717,7 @@ msgstr "Войти на телефоне по QR"
 msgid "Scan the QR code"
 msgstr "Отсканируйте QR-код"
 
-msgid "Open any of the Webasyst mobile apps and scan the code below on the ‘Sign in with QR code’ screen:"
+msgid "Open any of the Webasyst mobile apps and scan the code below on the “Sign in with QR code” screen:"
 msgstr "Откройте любое мобильное приложение из экосистемы Webasyst и отсканируйте этот код на экране «Войти по QR-коду»:"
 
 msgid "Mobile app code"
@@ -1812,3 +1812,9 @@ msgstr[2] "отключил доступ для %d контактов"
 
 msgid "Contact does not exist."
 msgstr "Контакт не существует."
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"

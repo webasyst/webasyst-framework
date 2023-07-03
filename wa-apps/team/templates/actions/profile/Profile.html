@@ -265,7 +265,11 @@
                         </div>
 
                         <div class="t-profile-block__type">
-                            {if $email.ext}{$email.ext|escape} {/if}[`email`]
+                            {if isset($contactFields['email']['ext'][$email['ext']])}
+                                {$contactFields['email']['ext'][$email['ext']]|escape}
+                            {elseif $email.ext}
+                                {$email.ext|escape}
+                            {/if}[`email`]
                         </div>
                     </div>
                     {/foreach}
@@ -286,18 +290,28 @@
                     {/if}
 
                     {if !empty($user.phone)}
-                    {foreach $user.phone as $phone}
+                    {foreach $user.phone as $key => $phone}
                     <div class="t-profile-block">
                         <a href="tel:{$phone.value}" class="t-profile-block__icon">
                             <i class="fas fa-phone-alt text-green"></i>
                         </a>
 
                         <div class="t-profile-block__value">
-                            <a href="tel:{$phone.value}" title="{$phone.value}" class="t-profile-block__value-link">{$phone.value|escape}</a>
+                            <a href="tel:{$phone.value}" title="{$phone.value}" class="t-profile-block__value-link">
+                                {if isset($fieldValues['phone'][$key]['value'])}
+                                    {$fieldValues['phone'][$key]['value']|escape}
+                                {else}
+                                    {$phone.value|escape}
+                                {/if}
+                            </a>
                         </div>
 
                         <div class="t-profile-block__type">
-                            {if $phone.ext}{$phone.ext|escape} {/if}[`phone`]
+                            {if isset($contactFields['phone']['ext'][$phone['ext']])}
+                                {$contactFields['phone']['ext'][$phone['ext']]|escape}
+                            {elseif $phone.ext}
+                                {$phone.ext|escape}
+                            {/if}[`phone`]
                         </div>
                     </div>
                     {/foreach}
@@ -352,7 +366,11 @@
                         </div>
 
                         <div class="t-profile-block__type">
-                            {$im.ext|escape|default:"[`other`]"}
+                            {if isset($contactFields['im']['ext'][$im['ext']])}
+                                {$contactFields['im']['ext'][$im['ext']]|escape}
+                            {else}
+                                {$im.ext|escape|default:"[`other`]"}
+                            {/if}
                         </div>
                     </div>
                     {/foreach}
@@ -494,6 +512,8 @@
             "&lt;no name&gt;": "[`&lt;no name&gt;`]",  // empty name of a checklist option
             "&lt;none&gt;": "[`&lt;none&gt;`]",   // no checklist options, e.g. no categories or groups
             "no name": "[`no name`]",        // contact name
+            "Yes": "[`Yes`]",
+            "No": "[`No`]",
 
             "January": "[`January`]",
             "February": "[`February`]",

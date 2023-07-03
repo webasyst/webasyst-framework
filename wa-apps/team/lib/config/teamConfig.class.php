@@ -139,6 +139,9 @@ class teamConfig extends waAppConfig
             // bind this user with WAID provided and give simple API code response.
             //
             $token_data = json_decode($data['data'], true);
+            if (!is_array($token_data)) {
+                $token_data = [];
+            }
             $login = waUtils::getRandomHexString(12);
             $password = waContact::generatePassword();
             teamHelper::convertToBackendUser($contact['id'], $token_data, $login, $password);

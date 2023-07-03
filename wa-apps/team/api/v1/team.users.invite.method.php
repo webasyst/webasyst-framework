@@ -7,6 +7,7 @@ class teamUsersInviteMethod extends waAPIMethod
     public function execute()
     {
         $invitation_type = $this->post('type');
+        $groups = waRequest::post('groups', [], waRequest::TYPE_ARRAY_TRIM);
         if ($invitation_type === 'code') {
             $contact_data = array_filter([
                 'email' => $this->getEmail(false),
@@ -15,6 +16,7 @@ class teamUsersInviteMethod extends waAPIMethod
 
             $result = (new teamUserInviting($contact_data, [
                 'generate_waid_code' => true,
+                'groups' => $groups,
             ]))->createInvitation();
 
             $result_fields = [
@@ -25,13 +27,13 @@ class teamUsersInviteMethod extends waAPIMethod
         } else {
             $phone = $this->getPhone();
             if (!empty($phone)) {
-                $result = (new teamUserInvitingByPhone($phone))->createInvitation();
+                $result = (new teamUserInvitingByPhone($phone, ['groups' => $groups]))->createInvitation();
             } else {
                 $email = $this->getEmail();
                 if ($this->needSend()) {
-                    $result = (new teamUserInvitingByEmail($email))->invite();
+                    $result = (new teamUserInvitingByEmail($email, ['groups' => $groups]))->invite();
                 } else {
-                    $result = (new teamUserInvitingByEmail($email))->createInvitation();
+                    $result = (new teamUserInvitingByEmail($email, ['groups' => $groups]))->createInvitation();
                 }
             }
             if ($result['status']) {
