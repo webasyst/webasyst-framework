@@ -478,8 +478,7 @@ ul.tree ul a { padding: 3px 6px; font-size: 90%; }
 .wa-form .wa-field .wa-value input[type="email"],
 .wa-form .wa-field .wa-value input[type="password"] { width: 30%; min-width: 260px; margin: 0;}
 .wa-form .wa-field .wa-value textarea { min-width: 300px; height: 70px; }
-.wa-form .wa-field .wa-value input.wa-captcha-input { width: 100px; min-width: 0; }
-.wa-form .wa-field .wa-value label { display: block; }
+.wa-form .wa-field .wa-value input.wa-captcha-input, .wa-subscribe-form .wa-captcha .wa-captcha-input { min-width: 73px !important; }
 .wa-form .wa-field .wa-value .wa-captcha img { margin-left: 0; }
 .wa-form .wa-field .wa-value .errormsg { margin-left: 0; }
 .wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
@@ -487,19 +486,24 @@ ul.tree ul a { padding: 3px 6px; font-size: 90%; }
 .wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; }
 .wa-form .wa-field .wa-value p span { color: #777; font-size: 0.9em; display: block; }
 .wa-form .wa-field .wa-value p i.icon16 { float: left; left: -20px; margin-top: 2px; position: absolute; }
-.wa-form .wa-field .wa-value p input { display: block; margin-bottom: 2px; }
-.wa-form .wa-field .wa-value p input[type="radio"],
-.wa-form .wa-field .wa-value p input[type="checkbox"] { display: inline; }
+.wa-form .wa-field .wa-value label, .wa-form .wa-field .wa-value p input { display: block; margin-bottom: 5px; }
+.wa-form .wa-field .wa-value p input[type="radio"], .wa-form .wa-field .wa-value p input[type="checkbox"] { display: inline-block; }
 .wa-form .wa-field .wa-value p .field.wa-required span:after { content: " *"; color: #faa; }
 .wa-form .wa-field.wa-required .wa-name:after { content: " *"; color: #faa; }
+.wa-form .wa-field .wa-value select { border-radius: .7em; padding: 0.85em 2.25em 0.85em 0.75em; line-height: 1; text-overflow: ellipsis;}
 .wa-signup-form .wa-form .wa-field.wa-field-email .wa-value input { min-width: 300px; }
 .wa-signup-form .wa-form .wa-field.wa-field-password .wa-value input,
 .wa-signup-form .wa-form .wa-field.wa-field-password_confirm .wa-value input { min-width: 200px; width: 200px; }
+form .wa-form .wa-field.fld_type_checkbox { display: flex; flex-direction: row-reverse; align-items: center; justify-content: flex-end; }
+form .wa-form .wa-field.fld_type_checkbox .wa-value { margin-top: 0; margin-right: 3px; }
+form .wa-form .wa-value .h-agreement-checkbox-wrapper input[type=checkbox] { position: static; }
+form .wa-form .wa-value .h-agreement-checkbox-wrapper .h-agreement-checkbox-html-label { display: inline; margin-left: 10px; }
 
+.wa-field .wa-captcha-img { margin-top: -2px; }
 .wa-captcha { padding: 7px 0 10px; }
 .wa-captcha p { margin: 0 !important; }
 .wa-captcha strong { font-size: 1.2em; }
-.wa-captcha p img { float: left !important; margin-right: 10px; }
+.wa-captcha p img { float: left !important; }
 .wa-captcha .wa-captcha-refresh { font-size: 0.8em; text-decoration: underline; color: var(--gray3); }
 .wa-captcha .wa-captcha-input { display: inline !important; margin-left: 10px; }
 .wa-captcha .errormsg { display: inline-block; margin-left: 10px; display: block \9; float: left \9; }
@@ -611,9 +615,9 @@ header #globalnav .globalnav-bar { height: 48px; }
 ------------------------- */
 
 header .search { margin-left: 20px; }
-header .search [type="search"] { height: 48px; background-color: var(--gray6); color: var(--header-search-input-color); border-radius: 64px; padding: 0 32px 0 16px;}
-header .search [type="search"]:focus,
-header .search [type="search"]:hover { background-color: var(--gray5); }
+header .search [type="search"], .search [type="search"] { height: 48px; background-color: var(--gray6); color: var(--header-search-input-color); border-radius: 64px; padding: 0 32px 0 16px;}
+header .search [type="search"]:focus, .search [type="search"]:focus,
+header .search [type="search"]:hover, .search [type="search"]:hover { background-color: var(--gray5); }
 
 header .pages { padding: 0; margin: 0; }
 header .pages li { display: inline-block; list-style: none; }
@@ -1134,6 +1138,8 @@ html.my .sidebar { display: none; }
         --h5-size: 1rem;
         --h6-size: 1rem;
     }
+
+    .attach { flex-direction: column !important; }
 }
 
 /* TABLET
@@ -1149,3 +1155,45 @@ html.my .sidebar { display: none; }
         --h6-size: 1rem;
     }
 }
+
+.attach {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  width: fit-content;
+  margin-bottom: 0.5rem;
+}
+.attach .remove-attach {
+  font-weight: 700;
+  padding: 7px;
+  margin-left: auto;
+}
+.attach [type=file] {
+  cursor: pointer;
+  position: relative;
+  width: 290px;
+  background-color: transparent;
+  padding: 15px 10px 15px 20px;
+  border: 2px dashed var(--gray5);
+  -webkit-transition: 200ms background linear;
+  -moz-transition: 200ms background linear;
+  transition: 200ms background linear;
+  border-radius: 10px;
+  color: var(--link-color);
+  box-sizing: border-box;
+}
+.attach::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 15px;
+  background-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20id%3D%22Capa_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%0A%09%20width%3D%22612.675px%22%20height%3D%22612.675px%22%20viewBox%3D%220%200%20612.675%20612.675%22%20style%3D%22enable-background%3Anew%200%200%20612.675%20612.675%3B%22%0A%09%20xml%3Aspace%3D%22preserve%22%3E%0A%3Cg%3E%0A%0A%09%09%09%3Cpath%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22%23777%22%20d%3D%22M581.209%2C223.007L269.839%2C530.92c-51.592%2C51.024-135.247%2C51.024-186.839%2C0c-51.592-51.023-51.592-133.737%2C0-184.761%20L363.248%2C69.04c34.402-34.009%2C90.15-34.009%2C124.553%2C0c34.402%2C34.008%2C34.402%2C89.166%2C0%2C123.174l-280.249%2C277.12%20c-17.19%2C17.016-45.075%2C17.016-62.287%2C0c-17.19-16.993-17.19-44.571%2C0-61.587L394.37%2C161.42l-31.144-30.793L114.144%2C376.975%20c-34.402%2C34.009-34.402%2C89.166%2C0%2C123.174c34.402%2C34.009%2C90.15%2C34.009%2C124.552%2C0l280.249-277.12%20c51.592-51.023%2C51.592-133.737%2C0-184.761c-51.593-51.023-135.247-51.023-186.839%2C0L36.285%2C330.784l1.072%2C1.071%20c-53.736%2C68.323-49.012%2C167.091%2C14.5%2C229.88c63.512%2C62.79%2C163.35%2C67.492%2C232.46%2C14.325l1.072%2C1.072l326.942-323.31%20L581.209%2C223.007z%22%2F%3E%0A%09%09%3C%2Fg%3E%0A%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 100%;
+  background-size: contain;
+}
+.attach [type=file].is-highlighted { background: #fafadf75; }
+.attach [type=file]::-webkit-file-upload-button,
+.attach [type=file]::file-selector-button { visibility: hidden; width: 0; }
