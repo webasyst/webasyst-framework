@@ -1,7 +1,26 @@
 <script type="text/javascript" src="{$wa_url}wa-plugins/shipping/sd/js/settings.js?{$wa->version(true)}"></script>
 <link rel="stylesheet" href="{$wa_url}wa-plugins/shipping/sd/css/sd.css?{$wa->version(true)}">
+<style>
+    .is-wa2 .shipping-sd-settings { --font-size-small: 87.5%; --font-size-smaller: 75%; }
 
-<div id="js-shipping-sd-settings">
+    .is-wa2 .shipping-sd-settings .field .value:not(:first-child) { display: block; }
+
+    .is-wa2 .shipping-sd-settings .sd-add-date *, .is-wa2 .sd-add-date * { font-style: normal; font-weight: normal;  }
+
+    .is-wa2 .shipping-sd-settings table { font-size: var(--font-size-small); white-space: nowrap; }
+    .is-wa2 .shipping-sd-settings table th { font-size: 100%; }
+    .is-wa2 .shipping-sd-settings .white td { background: var(--background-color-blank) !important; }
+
+    .is-wa2 .shipping-sd-settings .input.shortest { width: 2.5em; }
+
+    @media screen and (max-width: 1390px) {
+        .is-wa2 .shipping-sd-settings table { font-size: var(--font-size-smaller); }
+    }
+</style>
+<script>
+    $('.article:first').addClass('wide');
+</script>
+<div id="js-shipping-sd-settings" class="shipping-sd-settings">
     {*BASIC SETTINGS*}
     {include file='./include.settings_basic_settings.html' inline}
 
