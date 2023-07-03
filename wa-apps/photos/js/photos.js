@@ -560,7 +560,7 @@
                 }
             });
 
-            $('#photo-list .js-description div, .js-description-editable').on('click', function() {
+            $('#photo-list').on('click', '.js-description div, .js-description-editable', function() {
                 var self = $(this),
                     height = $(this).height(),
                     placeholder = $_('add description');
@@ -2369,12 +2369,13 @@
                     $.photos.setCover(true);
                     let waLoading = $.waLoading(),
                         $wrapper = $("body"),
-                        locked_class = "is-locked";
+                        locked_class = "is-locked",
+                        id = $.photos.getPhotoId();
 
                     waLoading.show();
                     waLoading.animate(10000, 95, false);
                     $wrapper.addClass(locked_class);
-                    $.post('?module=photo&action=restore', {id: $.photos.getPhotoId()}, function (r) {
+                    $.post('?module=photo&action=restore', {id: id}, function (r) {
                         if (r.status == 'ok') {
                             var photo = r.data.photo;
                             if (photo.parent_id == 0) {
