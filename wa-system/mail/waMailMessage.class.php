@@ -144,8 +144,14 @@ class waMailMessage extends Swift_Message
         return parent::setBody($body, $contentType, $charset);
     }
 
-    protected function prepareBody($body, $charset = null)
+    /**
+     * @param string|null $body
+     * @param string|null $charset
+     * @return string
+     */
+    protected function prepareBody(?string $body, ?string $charset = null): string
     {
+        $body = (string)$body;
         if (preg_match('/\<html|\<head|\<body/im', $body) === 0) {
             if ($charset === null) {
                 $charset = 'utf-8';
