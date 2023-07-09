@@ -34,7 +34,7 @@ class blogViewHelper extends waAppViewHelper
             foreach ($this->avaialable_blogs as &$item) {
                 $item['name'] = htmlspecialchars($item['name'], ENT_QUOTES, 'utf-8');
                 if (!is_array($item['link'])) {
-                    $item['link'] = htmlspecialchars($item['link'], ENT_QUOTES, 'utf-8');
+                    $item['link'] = htmlspecialchars((string)$item['link'], ENT_QUOTES, 'utf-8');
                 } else {
                     foreach ($item['link'] as &$l) {
                         $l = htmlspecialchars($l, ENT_QUOTES, 'utf-8');
