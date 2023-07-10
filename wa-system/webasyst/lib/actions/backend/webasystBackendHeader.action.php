@@ -161,6 +161,7 @@ class webasystBackendHeaderAction extends waViewAction
             'show_connection_banner'  => $this->showConnectionBanner(),
             'current_domain'  => $this->getCurrentDomain(),
             'app_info'        => $app_info,
+            'frontend_links'  => $this->getFrontendLinks(),
             'custom_params'   => $this->params['custom']
         ]);
 
@@ -173,4 +174,29 @@ class webasystBackendHeaderAction extends waViewAction
         return waIdna::dec($domain);
     }
 
+    protected function getFrontendLinks()
+    {
+        $result = [];
+        $routing = wa()->getRouting();
+        $domains = $routing->getDomains();
+        $current_domain = wa()->getConfig()->getDomain();
+        foreach($domains as $domain) {
+            if ($current_domain === $domain && waRequest::isHttps()) {
+                $protocol = 'https://';
+            } else {
+                $protocol = 'http://';
+            }
+            $routes = $routing->getRoutes($domain);
+            $app_by_url = waUtils::getFieldValues($routes, 'app', 'url');
+            if (isset($app_by_url['*'])) {
+                $result[$domain] = $protocol.rtrim($domain, '/').'/';
+            } else {
+                $url = array_search('site', $app_by_url);
+                if ($url) {
+                    $result[$domain] = $protocol.rtrim($domain, '/').'/'.rtrim($url, '*');
+                }
+            }
+        }
+        return $result;
+    }
 }

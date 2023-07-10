@@ -99,7 +99,7 @@
             {* user quick action tools *}
 
             {if $custom_params.aux || $header_user_area.aux}
-                <div class="wa-header-custom-aux-content">
+                {capture assign="_header_custom_aux_content"}
                     {* custom params injection: inject custom user content *}
                     {$custom_params.aux}
 
@@ -107,7 +107,12 @@
                     {foreach $header_user_area.aux as $_aux_content}
                         {$_aux_content}
                     {/foreach}
-                </div>
+                {/capture}
+                {if trim($_header_custom_aux_content)}
+                    <div class="wa-header-custom-aux-content">
+                        {$_header_custom_aux_content}
+                    </div>
+                {/if}
             {/if}
 
 
@@ -122,8 +127,31 @@
             {/if}
 
             {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard}
-                {if $wa->user()->getRights('installer', 'backend')}
-                    <a href="{$backend_url}installer/store/?filters[type]=app"class="button light-gray rounded nowrap"><i class="fas fa-plus-circle"></i> <span>[s`Apps`]</span></a>
+                {if !empty($frontend_links)}
+                    {if count($frontend_links) == 1}
+                        <a href="{reset($frontend_links)|escape}" class="button light-gray rounded nowrap" target="_blank">
+                            <i class="fas fa-external-link-alt text-gray"></i> <span>[s`Site`]</span>
+                        </a>
+                    {else}
+                        <div class="dropdown" id="wa-frontend-links">
+                            <span class="dropdown-toggle without-arrow">
+                                <span class="button light-gray rounded nowrap">
+                                    <i class="fas fa-external-link-alt text-gray"></i> <span>[s`Site`]</span> <i class="fas fa-chevron-down fa-xs text-light-gray"></i>
+                                </span>
+                            </span>
+                            <div class="dropdown-body right">
+                                <ul class="menu">
+                                    {foreach $frontend_links as $domain => $link}
+                                    <li>
+                                        <a href="{$link|escape}" target="_blank">
+                                            <span>{$domain|escape}</span>
+                                        </a>
+                                    </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+                        </div>
+                    {/if}
                 {/if}
                 <div class="dashboard-customize">
                     <a href="javascript:void(0);"
@@ -259,6 +287,13 @@
             {/if}
             const $userprofile = $("#wa-userprofile");
             $userprofile.waDropdown(userprofile_options);
+
+            /* Frontend links */
+            $("#wa-frontend-links").waDropdown({
+                {if $wa->isMobile()}
+                    hover: false
+                {/if}
+            });
 
             $userprofile.on('click', 'a', function () {
                 $(this).off('click');
