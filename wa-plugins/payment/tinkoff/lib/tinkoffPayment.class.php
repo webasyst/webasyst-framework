@@ -175,12 +175,14 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
 
         ksort($args);
-        foreach ($args as &$arg) {
+        foreach ($args as $k => &$arg) {
             if (is_bool($arg)) {
                 $arg = $arg ? 'true' : 'false';
+            } else if (!is_scalar($arg)) {
+                unset($args[$k]);
             }
-            unset($arg);
         }
+        unset($arg);
 
         $expected_token = hash('sha256', implode('', $args));
 
@@ -789,7 +791,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 break;
 
             case 'CONFIRMED':
-                if ($parent_transaction) {
+                if ($parent_transaction && $parent_transaction['type'] == self::OPERATION_AUTH_ONLY) {
                     $transaction_data['type'] = self::OPERATION_CAPTURE;
                 } else {
                     $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
