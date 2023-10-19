@@ -142,7 +142,7 @@ class waAPIController
          * @var waAPIMethod $method
          */
         $method = new $class_name();
-        $this->response($method->getResponse());
+        $this->response($method->getResponse(), $method->getStatusCode());
     }
 
     protected function hasAppAccess($app)

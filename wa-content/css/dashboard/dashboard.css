@@ -522,15 +522,6 @@
   width: calc(50% - 0.8rem);
   height: calc(50% - 0.8rem);
 }
-#wa-app .content .wa-dashboard-page #wa_widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper.widget-1x1:first-child::before,
-#wa-app .content #dashboard-wrapper #wa_widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper.widget-1x1:first-child::before {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 100%;
-  width: calc(100% + 1.6rem);
-  content: '';
-}
 #wa-app .content .wa-dashboard-page #wa_widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper.widget-1x1 .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper,
 #wa-app .content #dashboard-wrapper #wa_widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper.widget-1x1 .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper {
   left: 0.625rem !important;
@@ -1629,7 +1620,7 @@
   width: 100%;
   height: 100%;
   background-color: var(--dialog-background-color);
-  border-radius: 0.5rem;
+  border-radius: 0.95rem;
   content: "";
 }
 .is-custom-edit-mode .widget-group-wrapper .widget-inner-container .widget-block {

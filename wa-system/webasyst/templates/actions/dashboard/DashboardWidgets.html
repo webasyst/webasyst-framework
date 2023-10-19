@@ -69,14 +69,19 @@
     }
     .widget-drag {
        opacity: 1 !important;
-        background: rgba(0,0,0,0.06);
+       background: rgba(0,0,0,0.06);
         overflow: hidden;
+        border-radius: 1rem;
     }
     .widget-chosen:not(.widget-drag) {
         cursor: move;
     }
     .widget-drag .widget-controls-wrapper {
         display: none !important;
+    }
+
+    .sortable-fallback {
+        background: var(--background-color-blank)
     }
 
     @keyframes zoomIn {

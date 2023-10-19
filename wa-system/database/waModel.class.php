@@ -943,11 +943,15 @@ class waModel
      */
     public function getById($value)
     {
-        $all = !is_array($this->id) && is_array($value);
-        if (!is_array($this->id)) {
-            return $this->getByField($this->id, $value, $all ? $this->id : false);
+        if (is_array($this->id)) {
+            $value = $this->remapIds($value);
+            $all = (bool)array_filter($value, function($v) {
+                return is_array($v);
+            });
+            return $this->getByField($value, $all ? $this->id : false);
         } else {
-            return $this->getByField($this->remapIds($value), $all ? $this->id : false);
+            $all = is_array($value);
+            return $this->getByField($this->id, $value, $all ? $this->id : false);
         }
     }
 

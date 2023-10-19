@@ -43,6 +43,7 @@ const WidgetSort = ( function($) {
                 filter: '.is-removed, .js-empty-group, .size-controls-wrapper, .settings-control-wrapper, .delete-control-wrapper',
                 delay: 200,
                 delayOnTouchOnly: true,
+                forceFallback: true,
                 fallbackOnBody: true,
                 removeCloneOnHide: false,
                 onAdd(event) {

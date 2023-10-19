@@ -33,7 +33,7 @@ class waWebasystIDSiteAuth extends waWebasystIDAuthAdapter
         if (!$error && !$code) {
             $request_url = $this->getHealthyRedirectUri();
             if (!$request_url) {
-                throw new waWebasystIDException(_w('Webasyst ID auth endpoint is not available'));
+                throw new waWebasystIDException(_ws('Webasyst ID authentication endpoint is not available'));
             }
             wa()->getResponse()->redirect($request_url);
         }

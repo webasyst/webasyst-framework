@@ -61,8 +61,13 @@ class waContactAddressField extends waContactCompositeField
                         if (!in_array($f_id, array('country', 'region', 'zip', 'street', 'city'))) {
                             $tmp = $field->getName().' '.$tmp;
                         }
-                        $value[] = $tmp;
+                        $value[$f_id] = $tmp;
                     }
+                }
+            }
+            if ($format === 'short') {
+                if (count($value) > 1) {
+                    unset($value['country']);
                 }
             }
             $data['value'] = implode(", ", array_filter($value, 'strlen'));

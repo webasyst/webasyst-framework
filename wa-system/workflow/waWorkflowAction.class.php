@@ -89,7 +89,7 @@ class waWorkflowAction extends waWorkflowEntity
 
     /**
      * @param string $template suffix to add to template basename
-     * @return string template file basename for this action. Can be overriden in subclasses.
+     * @return string template file basename for this action. Can be overridden in subclasses.
      */
     protected function getTemplateBasename($template='')
     {

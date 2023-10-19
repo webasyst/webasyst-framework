@@ -91,7 +91,7 @@ abstract class waView
     abstract public function getVars($name = null);
 
     /**
-     * Execute prepare render temaplate.
+     * Execute prepare render template.
      *
      * @return waView
      * @throws waException
@@ -190,7 +190,7 @@ abstract class waView
     }
 
     /**
-     * Set template directory and global valiables.
+     * Set template directory and global variables.
      *
      * @param waTheme $theme Instance of theme object
      * @param string $template Path to template or resource string specifying template

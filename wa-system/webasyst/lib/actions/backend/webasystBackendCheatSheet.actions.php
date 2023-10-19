@@ -27,7 +27,7 @@
  * There are 3 ways to connect to the template:
     1) Directly request the "Button" - /webasyst?module=backendCheatSheet&action=button
     2) Directly request the Cheat Sheet body - /webasyst?module=backendCheatSheet&action=cheatSheet
-    3) Calling the getCheetSheetButton method from waView - {$wa->getCheatSheetButton()}.
+    3) Calling the getCheatSheetButton method from waView - {$wa->getCheatSheetButton()}.
  *
  * Options:
  * 1) 'name' - Attention! Name 'webasyst' reserved. The name by which your cheat sheet will be available in the $.cheatsheet array. It will generate identifiers on the page.
@@ -83,8 +83,6 @@ class webasystBackendCheatSheetActions extends waActions
         $only_plugin = waRequest::request('only_plugin', 0, waRequest::TYPE_INT);
         $custom_template = waRequest::request('custom_template', null, waRequest::TYPE_STRING);
 
-        $template = null;
-
         if (empty($only_plugin) || (int)$only_plugin === 0) {
             $assign = array(
                 'vars'        => $this->getVars(),
@@ -106,6 +104,7 @@ class webasystBackendCheatSheetActions extends waActions
         }
 
         //Set plugin template to cheat sheet
+        $template = null;
         if ($app && $plugin_id && $custom_template) {
             $custom_template_path = wa($app)->getConfig()->getPluginPath($plugin_id).'/templates/cheatSheet.html';
 
@@ -116,7 +115,7 @@ class webasystBackendCheatSheetActions extends waActions
         }
 
         // set default template for this action, otherwise will be used custom template ($custom_template_path)
-        if (!$template) {
+        if (!$template && !$this->template) {
             $this->setTemplate('Help.html', true);
         }
 

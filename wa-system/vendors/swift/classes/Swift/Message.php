@@ -55,11 +55,12 @@ class Swift_Message extends Swift_Mime_SimpleMessage
                 ->lookup('properties.charset');
         }
         $this->setSubject($subject);
-        $this->setBody($body);
-        $this->setCharset($charset);
         if ($contentType) {
-            $this->setContentType($contentType);
+            $this->setBody($body, $contentType);
+        } else {
+            $this->setBody($body);
         }
+        $this->setCharset($charset);
     }
 
     /**

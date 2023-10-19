@@ -78,7 +78,7 @@ class waOAuthController extends waViewController
                 throw new waException('Unable to finish auth process.');
             }
 
-            // Person identified. Now properly authorise them as local waContact,
+            // Person identified. Now properly authorize them as local waContact,
             // possibly creating new waContact from data provided.
             $result = $this->afterAuth($auth_response_data);
 
@@ -87,7 +87,7 @@ class waOAuthController extends waViewController
             $this->displayAuth($result);
         } catch (waWebasystIDAccessDeniedAuthException $e) {
             $this->cleanup();
-            // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish proccess)
+            // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish process)
             $this->displayAuth([]);
         } catch (waWebasystIDAuthException $e) {
             $this->cleanup();
@@ -158,7 +158,7 @@ class waOAuthController extends waViewController
             'provider_id' => $provider_id,
             'result' => $result
         ];
-        
+
         $this->executeAction(new webasystOAuthAction($params));
     }
 

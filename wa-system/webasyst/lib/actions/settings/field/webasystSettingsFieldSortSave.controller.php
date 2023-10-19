@@ -1,6 +1,6 @@
 <?php
 
-// TODO: Change extands class
+// TODO: Change extends class
 class webasystSettingsFieldSortSaveController extends webasystSettingsJsonController
 {
     public function execute()

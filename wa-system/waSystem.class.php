@@ -731,7 +731,7 @@ class waSystem
         $info = wa()->getAppInfo($app_id);
 
         if (!empty($force_version) && $force_version === ifset($info['forcible_ui'])) {
-            // special case when forced version is not mentioned as supported ui, 
+            // special case when forced version is not mentioned as supported ui,
             // but de facto is supported for force_ui_version case only (forcible_ui app info field)
             return $force_version;
         }
@@ -919,18 +919,18 @@ class waSystem
                         if (isset($app_info['icon'])) {
                             if (is_array($app_info['icon'])) {
                                 foreach ($app_info['icon'] as $size => $url) {
-                                    $app_info['icon'][$size] = 'wa-apps/'.$app.'/'.$url;
+                                    $app_info['icon'][$size] = ltrim($this->getAppStaticUrl($app).$url, '/');
                                 }
                             } else {
                                 $app_info['icon'] = array(
-                                    48 => 'wa-apps/'.$app.'/'.$app_info['icon']
+                                    48 => ltrim($this->getAppStaticUrl($app).$app_info['icon'], '/')
                                 );
                             }
                         } else {
                             $app_info['icon'] = array();
                         }
                         if (isset($app_info['img'])) {
-                            $app_info['img'] = 'wa-apps/'.$app.'/'.$app_info['img'];
+                            $app_info['img'] = ltrim($this->getAppStaticUrl($app).$app_info['img'], '/');
                         } elseif (isset($app_info['icon'][48])) {
                             $app_info['img'] = $app_info['icon'][48];
                         }
@@ -951,20 +951,20 @@ class waSystem
                                 if (isset($params['name'])) {
                                     $params['name'] = _wd($app, $params['name']);
                                 }
-                                $path_to_app = ($app == 'webasyst') ? 'wa-content' : 'wa-apps/'.$app;
+                                $path_to_app = ($app == 'webasyst') ? 'wa-content'.'/' : ltrim($this->getAppStaticUrl($app), '/');
                                 if (isset($params['icon'])) {
                                     if (is_array($params['icon'])) {
                                         foreach ($params['icon'] as $size => $url) {
-                                            $params['icon'][$size] = $path_to_app.'/'.$url;
+                                            $params['icon'][$size] = $path_to_app.$url;
                                         }
                                     } else {
                                         $params['icon'] = array(
-                                            48 => $path_to_app.'/'.$params['icon'],
+                                            48 => $path_to_app.$params['icon'],
                                         );
                                     }
                                 }
                                 if (isset($params['img'])) {
-                                    $params['img'] = $path_to_app.'/'.$params['img'];
+                                    $params['img'] = $path_to_app.$params['img'];
                                 } elseif (isset($params['icon'][48])) {
                                     $params['img'] = $params['icon'][48];
                                 }
@@ -1196,7 +1196,18 @@ class waSystem
             $app = $this->getApp();
         }
         $url = $this->config->getRootUrl($absolute);
-        return $url.'wa-apps/'.$app.'/';
+
+        $app_path = $this->getAppPath(null, $app);
+
+        $base = waConfig::get('wa_path_root');
+
+        if (strpos($app_path, $base) === 0) {
+            $app_path = ltrim(substr($app_path, strlen($base) + 1).'/', '/');
+        } else {
+            $app_path = 'wa-apps/'.$app.'/';
+        }
+
+        return $url.$app_path;
     }
 
     /**

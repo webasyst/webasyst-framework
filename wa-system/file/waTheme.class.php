@@ -1671,7 +1671,7 @@ HTACCESS;
 
     public function getVendor()
     {
-        return $this->init('vendor') ? $this->info['vendor'] : 'unknow';
+        return $this->init('vendor') ? $this->info['vendor'] : 'unknown';
     }
 
     public function setDescription($name)
@@ -2563,6 +2563,7 @@ HTACCESS;
                     }
                 }
 
+                // There not need use wa_path_apps
 
                 $wa_path = "wa-apps/{$app_id}/themes/{$id}";
                 $wa_pattern = wa_make_pattern($wa_path, '@');

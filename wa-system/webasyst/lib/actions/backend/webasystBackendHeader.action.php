@@ -91,7 +91,7 @@ class webasystBackendHeaderAction extends waViewAction
                 if ($ui_version === '1.3' && !empty($header['header_middle'])) {
                     $header_bottom[] = $header['header_middle'];
                 }
-                if ($ui_version === '1.3' && !empty($header['header_bottom'])) {
+                if (!empty($header['header_bottom'])) {
                     $header_bottom[] = $header['header_bottom'];
                 }
 
@@ -189,11 +189,11 @@ class webasystBackendHeaderAction extends waViewAction
             $routes = $routing->getRoutes($domain);
             $app_by_url = waUtils::getFieldValues($routes, 'app', 'url');
             if (isset($app_by_url['*'])) {
-                $result[$domain] = $protocol.rtrim($domain, '/').'/';
+                $result[waIdna::dec($domain)] = $protocol.rtrim($domain, '/').'/';
             } else {
                 $url = array_search('site', $app_by_url);
                 if ($url) {
-                    $result[$domain] = $protocol.rtrim($domain, '/').'/'.rtrim($url, '*');
+                    $result[waIdna::dec($domain)] = $protocol.rtrim($domain, '/').'/'.rtrim($url, '*');
                 }
             }
         }

@@ -111,7 +111,7 @@ class waAuthUser extends waUser
 
     public function updateLastPage()
     {
-        if (waRequest::isXMLHttpRequest() || !$this->id || wa()->getEnv() !== 'backend' || waRequest::method() == 'post') {
+        if (waRequest::isXMLHttpRequest() || !$this->id || wa()->getEnv() !== 'backend' || waRequest::method() == 'post' || waRequest::param('skip_update_last_page', false)) {
             return;
         }
         $page = wa()->getRequest()->server('REQUEST_URI');

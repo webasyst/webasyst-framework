@@ -1961,7 +1961,7 @@ ul.breadcrumbs > li * > a { color: inherit; }
 @media screen and (min-width: 761px) { /* non-mobile */
 
     .fields:not(.vertical) .field { display: table; width: 100%; table-layout: fixed; }
-    .fields:not(.vertical) .field > *:not(script, style) { display: table-cell; vertical-align: top; }
+    .fields:not(.vertical) .field > *:not(script, style, link) { display: table-cell; vertical-align: top; }
     .fields:not(.vertical) .field > *.middle { vertical-align: middle; }
     .fields:not(.vertical) .field > .name { width: 150px; padding-right: 1rem; }
     .fields:not(.vertical) .field > .value .wide { width: 100%; box-sizing: border-box; }

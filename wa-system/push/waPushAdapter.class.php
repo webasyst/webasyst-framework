@@ -232,4 +232,42 @@ abstract class waPushAdapter
         }
         return $push_subscribers_model;
     }
+
+    // Normalize subscriber data before save
+    abstract protected function normalizeSubscriberData($data);
+    
+    public function addSubscriber($data, $scope = null)
+    {
+        $data = $this->normalizeSubscriberData($data);
+        $subscriber = array(
+            'provider_id'     => $this->getId(),
+            'domain'          => waRequest::server('HTTP_HOST'),
+            'create_datetime' => date("Y-m-d H:i:s"),
+            'contact_id'      => wa()->getUser()->getId(),
+            'scope'           => $scope,
+            'subscriber_data' => is_array($data) ? json_encode($data) : $data,
+        );
+
+        $psm = $this->getPushSubscribersModel();
+        $data_for_search = $subscriber;
+        unset($data_for_search['domain'], $data_for_search['create_datetime']);
+        if ($psm->getByField($data_for_search)) {
+            return false;
+        }
+        $psm->insert($subscriber);
+        return true;
+    }
+
+    public function deleteSubscriber($data)
+    {
+        $data = $this->normalizeSubscriberData($data);
+        $data_for_search = array(
+            'provider_id'     => $this->getId(),
+            'contact_id'      => wa()->getUser()->getId(),
+            'subscriber_data' => is_array($data) ? json_encode($data) : $data,
+        );
+
+        $psm = $this->getPushSubscribersModel();
+        return $psm->deleteByField($data_for_search);
+    }
 }

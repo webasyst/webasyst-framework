@@ -10,7 +10,7 @@ class waUploadJsonController extends waJsonController
 
         if (!is_writable($this->path)) {
             $p = substr($this->path, strlen(wa()->getDataPath('', true)));
-            $this->errors = sprintf(_w("File could not be saved due to insufficient write permissions for the %s folder."), $p);
+            $this->errors = sprintf(_ws("File could not be saved due to insufficient write permissions for the %s directory."), $p);
         } else {
             $this->errors = array();
             $this->process();
@@ -39,7 +39,7 @@ class waUploadJsonController extends waJsonController
             }
         }
         if (in_array(strtolower($ext), array('php', 'phtml', 'htaccess', 'phar'))) {
-            $this->errors[] = sprintf(_w("Files with extension .%s are not allowed for upload due to the security considerations."), $ext);
+            $this->errors[] = sprintf(_ws("Files with the .%s extension are not allowed to upload due to security considerations."), $ext);
             return false;
         }
         return true;
@@ -56,12 +56,12 @@ class waUploadJsonController extends waJsonController
                 return false;
             }
             if (!$this->save($f)) {
-                $this->errors[] = sprintf(_w('Failed to upload file %s.'), $f->name);
+                $this->errors[] = sprintf(_ws('Failed to upload file %s.'), $f->name);
                 return false;
             }
             return true;
         } else {
-            $this->errors[] = sprintf(_w('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
+            $this->errors[] = sprintf(_ws('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
             return false;
         }
     }

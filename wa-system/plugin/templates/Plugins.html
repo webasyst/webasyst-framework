@@ -49,24 +49,24 @@
                 {if $wa->user()->getRights('installer') && $wa->app() != 'shop'}
                     <div class="box custom-mt-0">
                         {*<a href="{$wa_backend_url}installer/store/app/{$wa->app()}/plugins/" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>*}
-                        <a href="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>
+                        <a href="{$plugins_hash}/" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>
                     </div>
                 {/if}
 
             </div>
         </div>
     <div class="content">
-      <div class="article wider">
-        <div id="wa-plugins-content" class="article-body">
-            {if !empty($plugins)||!empty($installer)}[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>{/if}
+        <div class="article wider">
+            <div id="wa-plugins-content" class="article-body">
+                {if !empty($plugins)||!empty($installer)}[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>{/if}
+            </div>
         </div>
-      </div>
     </div>
 </div>
 
 <script type="text/javascript">
 (function ($) {
-    var plugins_title = {_w('Plugins')|json_encode};
+    var plugins_title = {_ws('Plugins')|json_encode};
 
     $.plugins = {
         options: {
@@ -222,19 +222,10 @@
             this.path.tail = null;
 
             $plugin = $(path.plugin ? ("#plugin-" + path.plugin) : '.js-plugins-list');
-
-            $('.js-plugins-list').on('click', (e) => {
-                if(this.options.path === location.hash) {
-                    return;
-                }
-                e.preventDefault();
-                $.wa.setHash(this.options.path)
-            });
-
             if (!$plugin.length) {
                 let hash = $('.js-plugin-list').find('> li:first-child > a').attr('href');
                 if (hash) {
-                    $.wa.setHash(hash)
+                    $.wa.setHash(hash);
                 }
                 return;
             }
@@ -250,53 +241,40 @@
                 this.xhr.abort();
             }
 
-            $plugin.on('click', function(e) {
-                if ($plugin.hasClass('js-plugins-list')) {
-                    e.preventDefault();
-                }
-                getContent();
-            });
-
             $content.html(this.options.loading);
             var self = this;
-
-            getContent();
-
-            function getContent() {
-              this.xhr = $.ajax({
+            this.xhr = $.ajax({
                 url: url,
                 success: function (data) {
-                  self.xhr = null;
-                  if (self.path.plugin == path.plugin) {
+                    self.xhr = null;
+                    if (self.path.plugin == path.plugin) {
+                        $content.html(data);
+                        // update title
+                        if (self.path.plugin) {
+                            document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
+                        } else {
+                            document.title = plugins_title + self.options.title_suffix;
+                        }
 
-                    $content.html(data);
-                    // update title
-                    if (self.path.plugin) {
-                      document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
-                    } else {
-                      document.title = plugins_title + self.options.title_suffix;
+                        self.$menu.find('li.selected').removeClass('selected');
+                        var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
+                        self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
+
+                        $(document).trigger('wa_loaded');
+
+                        if (!self.options.useIframeTransport) {
+                            $('#plugins-settings-form').submit(function () {
+                                self.saveHandlerAjax(this);
+                                return false;
+                            });
+                        } else {
+                            $('#plugins-settings-form').submit(function () {
+                                self.saveHandlerIframe(this);
+                            });
+                        }
                     }
-
-                    self.$menu.find('li.selected').removeClass('selected');
-                    var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
-                    self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
-
-                    $(document).trigger('wa_loaded');
-
-                    if (!self.options.useIframeTransport) {
-                      $('#plugins-settings-form').submit(function () {
-                        self.saveHandlerAjax(this);
-                        return false;
-                      });
-                    } else {
-                      $('#plugins-settings-form').submit(function () {
-                        self.saveHandlerIframe(this);
-                      });
-                    }
-                  }
                 }
-              });
-            }
+            });
         },
 
         saveHandlerIframe: function (form) {
@@ -467,7 +445,7 @@
     });
 
     {if empty($is_ajax)}
-        $('.js-plugin-list a').on('click', function  () {
+        $('.js-plugin-list a, .js-plugins-list').on('click', function  () {
             $.plugins.dispatch($(this).attr('href'), true);
             return false;
         });

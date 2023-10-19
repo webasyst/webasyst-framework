@@ -583,7 +583,7 @@ HTACCESS;
         if (file_exists($path)) {
             $routes = include($path);
             if (!is_writable($path)) {
-                $this->displayJson(array(), sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the file "%s".'), 'wa-config/routing.php'));
+                $this->displayJson(array(), sprintf(_ws('Settings could not be saved due to insufficient write permissions for file %s.'), 'wa-config/routing.php'));
                 return;
             }
         } else {
@@ -873,7 +873,7 @@ HTACCESS;
      * Convert flat list of theme settings into hierarchical tree structure
      * based on group divider levels.
      *
-     * Each group_divider is allowed to have several "normal" settings at the begining
+     * Each group_divider is allowed to have several "normal" settings at the beginning
      * of its child 'items' array, and then may have several child group_dividers.
      * It is never allowed to alternate between group_dividers and "normal" settings.
      *
@@ -964,7 +964,7 @@ HTACCESS;
             );
         }
 
-        // Extract items from the begining of $dividers_list
+        // Extract items from the beginning of $dividers_list
         // until they fit into our $item (i.e. belong under the $needed_level)
         // As soon as we meet something <= $needed_level, this loop stops.
         do {
@@ -1097,13 +1097,13 @@ HTACCESS;
             }
             $path = str_replace('*', $f->extension, $path);
             if (!$f->moveTo($path)) {
-                $error = sprintf(_w('Failed to upload file %s.'), $f->name);
+                $error = sprintf(_ws('Failed to upload file %s.'), $f->name);
                 return false;
             }
             return true;
         } else {
             if ($f->name) {
-                $error = sprintf(_w('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
+                $error = sprintf(_ws('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
             }
             return false;
         }
@@ -1390,7 +1390,7 @@ HTACCESS;
     }
 
     /**
-     * Get default dir of lagacy templates of these actions
+     * Get default dir of legacy templates of these actions
      * @inheritDoc
      */
     protected function getLegacyTemplateDir()

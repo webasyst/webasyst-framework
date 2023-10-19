@@ -641,7 +641,7 @@ class waAppConfig extends SystemConfig
      */
     public function getAppPath($path = null)
     {
-        return $this->getRootPath().DIRECTORY_SEPARATOR.'wa-apps'.DIRECTORY_SEPARATOR.$this->application.($path ? DIRECTORY_SEPARATOR.$path : '');
+        return  waConfig::get('wa_path_apps').DIRECTORY_SEPARATOR.$this->application.($path ? DIRECTORY_SEPARATOR.$path : '');
     }
 
     /**
@@ -868,7 +868,7 @@ class waAppConfig extends SystemConfig
                         if ($this->application == 'webasyst') {
                             $widget_info['img'] = 'wa-widgets/' . $widget_id . '/' . $widget_info['img'];
                         } else {
-                            $widget_info['img'] = 'wa-apps/' . $this->application . '/widgets/' . $widget_id . '/' . $widget_info['img'];
+                            $widget_info['img'] = ltrim(wa()->getAppStaticUrl($this->application).'widgets/' . $widget_id . '/' . $widget_info['img'], '/');
                         }
                     }
                     $this->widgets[$widget_id] = $widget_info;
@@ -932,7 +932,7 @@ class waAppConfig extends SystemConfig
                         $plugin_info['id'] = $plugin_id;
                         $plugin_info['app_id'] = $this->application;
                         if (isset($plugin_info['img'])) {
-                            $plugin_info['img'] = 'wa-apps/'.$this->application.'/plugins/'.$plugin_id.'/'.$plugin_info['img'];
+                            $plugin_info['img'] = ltrim(wa()->getAppStaticUrl($this->application).'plugins/'.$plugin_id.'/'.$plugin_info['img'], '/');
                         }
                         if (isset($plugin_info['rights']) && $plugin_info['rights']) {
                             if (!isset($plugin_info['handlers']['rights.config'])) {
@@ -1054,7 +1054,7 @@ class waAppConfig extends SystemConfig
     public function throwFrontControllerDispatchException()
     {
         // Called when route is not found in backend routing, see waFrontController.
-        // Overriden in webasystConfig because of backend dashboard logic.
+        // Overridden in webasystConfig because of backend dashboard logic.
         throw new waException('Page not found', 404);
     }
 

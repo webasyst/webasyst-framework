@@ -172,7 +172,7 @@ class waArrayObjectDiff extends waArrayObject
      * Ensures that all instances of waArrayObjectDiff in $this->rec_data
      * use sub-arrays of $this->persistent as their persistent storages.
      *
-     * This invarians allows to merge(), restore() and diff() sub-arrays safely.
+     * This invariant allows to merge(), restore() and diff() sub-arrays safely.
      * @return $this
      */
     public function restorePersistentInvariant()

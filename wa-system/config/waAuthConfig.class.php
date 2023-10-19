@@ -612,7 +612,7 @@ abstract class waAuthConfig
      * Array of fields by which we can log in
      * Consume by waAuth
      * @see waAuth
-     * @return string[] Array of waAuth::LOGIN_FIELD_* constact
+     * @return string[] Array of waAuth::LOGIN_FIELD_* contact
      */
     public function getLoginFieldIds()
     {

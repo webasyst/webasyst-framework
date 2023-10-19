@@ -326,7 +326,7 @@ class waContact implements ArrayAccess
         }
 
         // Do not allow to read password hash from Smarty templates.
-        // But we still allow to check _existance_ of password.
+        // But we still allow to check _existence_ of password.
         if (waConfig::get('is_template') && $field_id == 'password') {
             $result = waContactFields::getStorage()->get($this, 'password');
             if ($result) {
@@ -401,8 +401,9 @@ class waContact implements ArrayAccess
 
             // 'default' format: a simple string
             if ($format === 'default' || (is_array($format) && in_array('default', $format))) {
-                // for multi fields return value of the first copy
                 if ($field->isMulti()) {
+                    // for multi fields return value of the first copy
+                    $result = array_values($result);
                     if (!$result) {
                         return '';
                     } elseif (is_array($result[0])) {
@@ -410,9 +411,8 @@ class waContact implements ArrayAccess
                     } else {
                         return $result[0];
                     }
-                }
-                // for non-multi fields return field value
-                else {
+                } else {
+                    // for non-multi fields return field value
                     return is_array($result) ? ifset($result['value']) : $result;
                 }
             }
@@ -448,7 +448,7 @@ class waContact implements ArrayAccess
                         }
                     }
 
-                    // email happend to be empty - now will try phone
+                    // email happened to be empty - now will try phone
 
                     $phones = $this->get('phone', 'value');
                     $phones = waUtils::toStrArray($phones);
@@ -617,6 +617,7 @@ class waContact implements ArrayAccess
         $this->data['name'] = $this->get('name');
         $errors = array();
         foreach ($this->data as $field => $value) {
+            /** @var waContactField $f */
             if ($f = waContactFields::get($field, $this['is_company'] ? 'company' : 'person')) {
                 if ($f->isMulti() && !is_array($value)) {
                     $value = array($value);
@@ -1214,7 +1215,7 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Returns information about whether a user has full (adminstrative) access rights to all installed apps or only one
+     * Returns information about whether a user has full (administrative) access rights to all installed apps or only one
      * specified app.
      *
      * @param string $app_id App id. If not specified, access rights for all installed apps are verified.
@@ -1524,7 +1525,7 @@ class waContact implements ArrayAccess
                                 $map_url = $data_for_map[$k]['with_street'];
                             }
                         }
-                        $v .= ' <a target="_blank" href="//maps.google.com/maps?q=' . urlencode($map_url) . '&z=15" class="small underline map-link">' . _w('map') . '</a>';
+                        $v .= ' <a target="_blank" href="//maps.google.com/maps?q=' . urlencode($map_url) . '&z=15" class="small underline map-link">' . _ws('map') . '</a>';
                         $v = '<div data-subfield-index='.$k.'>'.$v.'</div>';
                     }
                     unset($v);

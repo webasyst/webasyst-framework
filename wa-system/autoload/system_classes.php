@@ -183,6 +183,7 @@ return array(
     'waUtils'                           => 'util/waUtils.class.php',
 
     'waDateValidator'                   => 'validator/waDateValidator.class.php',
+    'waDateIsoValidator'                => 'validator/waDateIsoValidator.class.php',
     'waEmailValidator'                  => 'validator/waEmailValidator.class.php',
     'waLoginValidator'                  => 'validator/waLoginValidator.class.php',
     'waNumberValidator'                 => 'validator/waNumberValidator.class.php',

@@ -913,7 +913,7 @@ HTML;
     $progress .= <<<HTML
         </div>
         <input type="submit" value="{$next}" class="button {$color}" id="wa-installer-submit">
-        <a href="{$wa_locale->_('install_quide_url')}" target="_blank" class="wa-help-link">
+        <a href="{$wa_locale->_('install_guide_url')}" target="_blank" class="wa-help-link">
             <span>{$wa_locale->_('Installation Guide')}</span> <i class="icon10 new-window"></i>
         </a>
     </div>

@@ -41,7 +41,7 @@ class waWebasystIDWAAuthController extends waViewController
 
         } catch (waWebasystIDException $e) {
             if ($e instanceof waWebasystIDAccessDeniedAuthException && !$this->auth->isBackendAuth()) {
-                // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish proccess)
+                // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish process)
                 $this->displayAuth(['type' => 'access_denied']);
             } else {
                 $this->displayError($e->getMessage());
@@ -459,7 +459,7 @@ class waWebasystIDWAAuthController extends waViewController
                 'status' => false,
                 'details' => [
                     'error_code' => 'not_bound',
-                    'error_message' => _w('Not bound yet'),
+                    'error_message' => _ws('Not bound yet'),
                     'webasyst_contact_info' => $webasyst_contact_info,
                 ]
             ];
@@ -473,7 +473,7 @@ class waWebasystIDWAAuthController extends waViewController
                 'status' => false,
                 'details' => [
                     'error_code' => 'access_denied',
-                    'error_message' => _w("Access denied")
+                    'error_message' => _ws("Access denied")
                 ]
             ];
         }
@@ -633,7 +633,7 @@ class waWebasystIDWAAuthController extends waViewController
             try {
                 $contact->setPhoto($path);
             } catch (Exception $exception) {
-                
+
             }
 
         }

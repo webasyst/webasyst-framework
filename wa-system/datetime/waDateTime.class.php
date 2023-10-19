@@ -143,7 +143,7 @@ class waDateTime
      *     month name in lowercase, character 'f' should be used.
      * @param int|string|null $time Unix timestamp. If not specified, current timestamp is used.
      * @param string|null $timezone Time zone identifier. If not specified, the time zone is determined automatically.
-     * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user's locale is determined automatically.
      * @return string
      * @throws waException
      */
@@ -255,7 +255,7 @@ class waDateTime
      *     - 'timestamp': returns date/time in format 'U'
      * @param string|null $time Unix timestamp. If not specified, current timestamp is used.
      * @param string|null $timezone Time zone identifier. If not specified, the time zone is determined automatically.
-     * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user's locale is determined automatically.
      * @return string
      * @throws waException
      */
@@ -343,7 +343,7 @@ class waDateTime
      *     - format strings acceptable for PHP function date, or one of the identifiers corresponding to pre-defined
      *       time formatting strings supported by method format().
      * @see self::format()
-     * @param string|null $locale Locale identifier. If not specifed, current user locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user locale is determined automatically.
      * @return string
      * @throws waException
      */
@@ -466,7 +466,7 @@ class waDateTime
      * @see self::format()
      * @param string $string Date/time value string formatted to match the format identifier specified in $format parameter.
      * @param string|null $timezone Time zone identifier. If not specified, current time zone is determined automatically.
-     * @param string|null $locale Locale identifier. If not specifed, current user locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user locale is determined automatically.
      * @return string
      * @throws waException
      */

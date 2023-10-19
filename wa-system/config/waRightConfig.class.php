@@ -16,7 +16,7 @@
 /**
  * An interface between application and contacts app to allow access rights management.
  *
- * To allow custom access configuration for an app, add a 'rights' => true to /lib/confid/app.php
+ * To allow custom access configuration for an app, add a 'rights' => true to /lib/config/app.php
  * Then create /lib/appnameRightsConfig.class.php with appnameRightConfig class that extends waRightConfig.
  * Instance of this class will be used to get HTML for access control form for current app.
  *
@@ -473,11 +473,11 @@ HTML;
                         $tr = self.parents("table.c-access-app tr"),
                         $form = $tr.closest("form"),
                         is_checked = !!($tr.find("input[type=\"checkbox\"]:checked").length);
-                    
+
                     $tr.find(".js-access-type-own").toggleClass("hidden", !is_checked);
                     $tr.find(".js-access-type-group").toggleClass("hidden", is_checked);
                     $tr[0].toggleAttribute("data-state-changed");
-                    
+
                     if($form.find("tr[data-state-changed]").length){
                         $form.trigger("wa.change");
                     }
@@ -493,7 +493,7 @@ HTML;
                         $tr = $self.closest("tr"),
                         group_value = parseInt($tr.find("input.g-value").val(), 10),
                         personal_value = parseInt($self.val(), 10);
-                    
+
                     let init_value = Array.from(options).find(item => item.hasAttribute("selected"))?.value;
                     if(!init_value){
                         init_value = $tr.find(`[name="${this.name}"]`).eq(0).val()

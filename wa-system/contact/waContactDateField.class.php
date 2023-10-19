@@ -36,6 +36,9 @@ class waContactDateField extends waContactField
         if (!isset($this->options['formats']['locale'])) {
             $this->options['formats']['locale'] = $this->options['formats']['js'];
         }
+        if (empty($this->options['validators'])) {
+            $this->options['validators'] = new waDateValidator($this->options, array('required' => _ws('This field is required')));
+        }
 
         parent::init();
     }
@@ -46,6 +49,18 @@ class waContactDateField extends waContactField
             $data = '';
         }
         return parent::format($data, $format);
+    }
+
+    public function validate($data, $contact_id = null)
+    {
+        /** @var waValidator $validator */
+        $validator = ifset($this->options, 'validators', null);
+        if ($validator) {
+            $validator->isValid($data);
+            return implode("\n", $validator->getErrors());
+        }
+
+        return parent::validate($data, $contact_id);
     }
 }
 

@@ -672,7 +672,7 @@ class waPageActions extends waActions
         if ($result) {
             $this->logAction('page_move', $page_id);
         }
-        $this->displayJson($result, $result ? null: _w('Database error'));
+        $this->displayJson($result, $result ? null: _ws('Database error'));
     }
 
     public function uploadimageAction()
@@ -686,7 +686,7 @@ class waPageActions extends waActions
 
         if (!is_writable($path)) {
             $p = substr($path, strlen(wa()->getDataPath('', true)));
-            $errors = sprintf(_w("File could not be saved due to insufficient write permissions for the %s folder."), $p);
+            $errors = sprintf(_ws("File could not be saved due to insufficient write permissions for the %s directory."), $p);
         } else {
             $errors = array();
             $f = waRequest::file('file');
@@ -755,12 +755,12 @@ class waPageActions extends waActions
                 return false;
             }
             if (!$this->saveFile($f, $path, $name)) {
-                $errors[] = sprintf(_w('Failed to upload file %s.'), $f->name);
+                $errors[] = sprintf(_ws('Failed to upload file %s.'), $f->name);
                 return false;
             }
             return true;
         } else {
-            $errors[] = sprintf(_w('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
+            $errors[] = sprintf(_ws('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
             return false;
         }
     }

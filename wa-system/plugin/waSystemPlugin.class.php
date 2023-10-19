@@ -418,7 +418,7 @@ abstract class waSystemPlugin
      * see `waShipping::factory()` and `waPayment::factory()` instead.
      *
      * @param string $id plugin class id
-     * @param int $key application-defined unique identifier to distuinguish between plugin entities
+     * @param int $key application-defined unique identifier to distinguish between plugin entities
      * @param string $type plugin type (i.e. shipping or payment)
      * @return waSystemPlugin
      * @throws waException

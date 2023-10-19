@@ -56,7 +56,7 @@ class waPluginsActions extends waActions
                 $params['control_wrapper'] = '<div class="name">%s</div><div class="value">%s %s</div>';
 
                 $settings_controls = $plugin->getControls($params);
-                $this->getResponse()->setTitle(_w(sprintf('Plugin %s settings', $plugin->getName())));
+                $this->getResponse()->setTitle(sprintf_wp('Plugin “%s” settings', $plugin->getName()));
 
                 $vars['plugin_info'] = $plugins[$plugin_id];
 
@@ -98,7 +98,7 @@ class waPluginsActions extends waActions
                 $settings[$name] = $file;
             }
             $response = (array)$plugin->saveSettings($settings);
-            $response['message'] = _w('Saved');
+            $response['message'] = _ws('Saved');
             $this->displayJson($response);
         } catch (Exception $e) {
             $this->displayJson(array(), $e->getMessage());

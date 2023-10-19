@@ -248,7 +248,7 @@ abstract class waShipping extends waSystemPlugin
     }
 
     /**
-     * Get package param setted via setParams() or getRates
+     * Get package param set via setParams() or getRates
      * @param string $property
      * @return mixed|null
      */
@@ -803,7 +803,7 @@ abstract class waShipping extends waSystemPlugin
         $country_model = new waCountryModel();
         $country = $country_model->get($iso3code);
         if (!$country) {
-            throw new waException($this->_w("Unknown country: ").$iso3code);
+            throw new waException($this->_w("Unknown country:") . ' ' . $iso3code);
         }
         return strtoupper($country['iso2letter']);
     }
@@ -916,7 +916,7 @@ HTML;
 
         $html .= <<<HTML
     <div class='empty'{$_style}>
-        <p class='small'>{$plugin->_w("Shipping will be restricted to the selected country")}</p>
+        <p class='small'>{$plugin->_w("Shipping will be restricted to the selected country.")}</p>
         <input name='{$name}[region]' value='' type='hidden'{$_disabled}>
     </div>
     <div class='not-empty'{$_style}>

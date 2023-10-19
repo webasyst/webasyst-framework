@@ -8,9 +8,9 @@
     var loc = {
         httpPermissionRequest: {
             enable: true,
-            modalTitle: {_w("Thanks for subscribing")|json_encode},
-            modalMessage: {_w("You're now subscribed to notifications. You can unsubscribe at any time.")|json_encode},
-            modalButtonText: {_w("Finish Subscribing!")|json_encode}
+            modalTitle: {_ws("Thanks for subscribing!")|json_encode},
+            modalMessage: {_ws("You are now subscribed to receive notifications. You can unsubscribe at any time.")|json_encode},
+            modalButtonText: {_ws("Complete subscription")|json_encode}
         }
     };
 

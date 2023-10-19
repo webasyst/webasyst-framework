@@ -892,7 +892,7 @@ HTML;
                     } else {
                         $params['title'] .= ':'.$sub_field_id;
                         $control[$id]['title'] = $this->getControlTitle($params);
-                        $control[$id]['control'] .= sprintf('<span class="error">%s<span>', _w('Contact field not found'));
+                        $control[$id]['control'] .= sprintf('<span class="error">%s<span>', _ws('Contact field not found'));
                     }
                 } else {
                     $control[$id]['control'] = $contact_field->getHTML($params, $attrs);
@@ -903,7 +903,7 @@ HTML;
 
                 $params['title'] = $field_id;
                 $control[$id]['title'] = $this->getControlTitle($params);
-                $control[$id]['control'] .= sprintf('<span class="error">%s<span>', _w('Contact field not found'));
+                $control[$id]['control'] .= sprintf('<span class="error">%s<span>', _ws('Contact field not found'));
             }
             ++$id;
         }

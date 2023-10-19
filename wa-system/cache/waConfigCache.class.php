@@ -158,7 +158,7 @@ class waConfigCache
             return false;
         }
 
-        // remove root path from the begining of the key
+        // remove root path from the beginning of the key
         return mb_substr($file, mb_strlen($root_path));
     }
 }

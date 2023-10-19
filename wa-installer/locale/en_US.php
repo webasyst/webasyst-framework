@@ -65,7 +65,7 @@ return array(
     => 'Remember this address. You will use it to log in to your Webasyst backend.',
     'Installation Guide'
     => 'Installation guide',
-    'install_quide_url'
+    'install_guide_url'
     => 'https://www.webasyst.com/developers/docs/installation/',
     'Extracting Webasyst archive...'
     => 'Extracting Webasyst archive...',
@@ -160,7 +160,7 @@ return array(
     => 'User-friendly URLs will be supported',
     'Check archives and files checksum'
     => 'Validation of Webasyst system file and app archive checksum',
-    'Check folder rights for install&amp;update'
+    'Check folder rights for installation &amp; updates'
     => 'Minimal file and folder access rights required for installing Webasyst updates and new apps',
     'Get updates information from update servers'
     => 'Required for retrieving information about software updates from the Webasyst server',

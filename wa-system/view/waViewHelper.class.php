@@ -50,7 +50,7 @@ class waViewHelper
      * @param array $options
      *      array  $options['custom']               some custom data for injecting into webasyst header
      *      string $options['custom']['content']    html content that will be shown in header
-     *      string $options['custom']['user']       html content that will be shown inside user aread
+     *      string $options['custom']['user']       html content that will be shown inside user area
      *
      * @return string
      */
@@ -86,7 +86,7 @@ class waViewHelper
         }
 
         $icon = ltrim($icon, '/');
-        $prefix = 'wa-apps/' . $app_id . '/';
+        $prefix = wa()->getAppStaticUrl($app_id);
         $prefix_len = strlen($prefix);
 
         if (substr($icon, 0, $prefix_len) === $prefix) {
@@ -1468,7 +1468,8 @@ HTML;
     public function getContactTabs($id)
     {
         $id = (int)$id;
-        if (!$id || wa()->getEnv() !== 'backend') {
+        $env = wa()->getEnv();
+        if (!$id || !in_array($env, ['backend', 'api'])) {
             return array();
         }
 
@@ -1481,8 +1482,7 @@ HTML;
         // Force current UI version before trigger event
         $old_forced_ui_version = waRequest::param('force_ui_version', null, waRequest::TYPE_STRING_TRIM);
         waRequest::setParam('force_ui_version', $this->whichUI());
-
-        // Tabs of 'Team' app should always be on the left
+        waRequest::setParam('profile_tab_counter_inside', (waRequest::param('profile_tab_counter_inside') === null && $env !== 'api'));
         $event_result = wa()->event(array('contacts', 'profile.tab'), $id);
 
         waRequest::setParam('force_ui_version', $old_forced_ui_version);
@@ -1532,6 +1532,7 @@ HTML;
                         'title' => '',
                         'count' => '',
                         'html'  => '',
+                        'app_id' => $plugin_app_id,
                     );
             }
         }

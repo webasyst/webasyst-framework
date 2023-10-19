@@ -41,6 +41,16 @@ class waLog
         $result = false;
         $fd = fopen($file, 'a');
         if (flock($fd, LOCK_EX)) {
+            if (is_object($message)) {
+                try {
+                    $message = (string) $message;
+                } catch (Throwable $e) {
+                    $message = (array) $message;
+                }
+            }
+            if (is_array($message)) {
+                $message = wa_dump_helper($message);
+            }
             $result = fwrite($fd, PHP_EOL.date('Y-m-d H:i:s').' '.waRequest::getIp().PHP_EOL.$message.PHP_EOL);
             fflush($fd);
             flock($fd, LOCK_UN);

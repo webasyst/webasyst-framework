@@ -11,18 +11,18 @@ var WAThemeSettings = ( function($) {
         that.$message = that.$wrapper.find('#theme-settings-message');
         that.$theme_navigation = that.$wrapper.find('.js-theme-navigation');
         that.$expand_collapse_all = that.$theme_navigation.find('.js-expand-collapse-all');
-        that.$search_input = that.$theme_navigation.find('.js-search-setting');
+        that.$search_input = that.$wrapper.find('.js-search-setting');
         that.$anchors = that.$theme_navigation.find('.js-anchors');
         that.$divider_list = that.$wrapper.find('.js-divider-list');
         that.$settings_list = that.$wrapper.find('.js-settings-list');
         that.$global_dividers = that.$settings_list.find('.js-theme-setting-divider[data-divider-level="1"]');
         that.$other_blocks = that.$wrapper.find('.js-theme-other-data');
+        that.$bottombar = $('.bottombar');
 
         that.$button = that.$wrapper.find('.js-bb-submit');
         if(!that.$button.length) {
             that.$button = that.$wrapper.parent().find('.js-bb-submit');
         }
-        that.$search_input = that.$wrapper.find('.js-search-setting');
 
         // VARS
         that.theme_id = options["theme_id"];
@@ -587,12 +587,13 @@ var WAThemeSettings = ( function($) {
                 $settings_list.find('.js-search-item').show();
                 $theme_settings_list.find('.selected > a').trigger('click');
                 $theme_settings_list.find('a').show();
-
+                that.$bottombar.hide();
                 return;
             }
 
             if (small_query) {
                 $result_min_symbol.show();
+                that.$bottombar.hide();
                 return;
             }
 
@@ -651,8 +652,10 @@ var WAThemeSettings = ( function($) {
                 })
 
                 $result_label.show();
+                that.$bottombar.show();
             } else {
                 $no_result_label.show();
+                that.$bottombar.hide();
             }
         }
     };

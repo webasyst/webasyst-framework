@@ -90,7 +90,7 @@ class waLocaleParseEntityTheme extends waLocaleParseEntity
      */
     public function getThemePath()
     {
-        return $this->getRootPath().'/wa-apps/'.$this->getAppID().'/themes/'.$this->getThemeID();
+        return waConfig::get('wa_path_apps').'/'.$this->getAppID().'/themes/'.$this->getThemeID();
     }
 
     /**

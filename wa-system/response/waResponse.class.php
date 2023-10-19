@@ -427,7 +427,7 @@ class waResponse
      */
     protected function isNotModified304()
     {
-        // Handle behaviour of headers: If-Modified-Since / Last-Modified / 304 Not Modified status.
+        // Handle behavior of headers: If-Modified-Since / Last-Modified / 304 Not Modified status.
         $last_modified = $this->getHeader('Last-Modified');
         if ($last_modified) {
             $if_modified_since = false;

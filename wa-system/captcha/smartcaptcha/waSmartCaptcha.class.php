@@ -42,14 +42,14 @@ class waSmartCaptcha extends waAbstractCaptcha
         if (empty($client_key)) {
             return sprintf(
                 '<span style="color: red">%s. %s</span>',
-                _w('Ошибка'),
-                _w('Ключ клиента не задан.')
+                _ws('Error'),
+                _ws('Client key not specified.')
             );
         } elseif (empty($server_key)) {
             return sprintf(
                 '<span style="color: red">%s. %s</span>',
-                _w('Ошибка'),
-                _w('Ключ сервера не задан')
+                _ws('Error'),
+                _ws('Server key not specified.')
             );
         }
 

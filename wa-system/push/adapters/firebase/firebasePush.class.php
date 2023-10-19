@@ -57,6 +57,31 @@ class firebasePush extends waPushAdapter
         return $view->fetch($template);
     }
 
+/*
+    public function getInitData()
+    {
+        $is_enabled = $this->isEnabled();
+        if (!$is_enabled) {
+            return null;
+        }
+
+        return [ ['key' => 'messagingSenderId', 'value' => $this->getSettings(self::SENDER_ID)] ];
+    }
+*/
+
+    protected function normalizeSubscriberData($data)
+    {
+        if (!is_array($data) || 
+            !ifset($data['firebase_client_token'])
+        ) {
+            throw new waException('Invalid subscriber data');
+        }
+        return [
+            'sender_id' => $this->getSettings(self::SENDER_ID),
+            'token' => $data['firebase_client_token'],
+        ];
+    }
+
     //
     // Dispatch actions
     //
@@ -161,12 +186,14 @@ class firebasePush extends waPushAdapter
         );
         $rows = $this->getPushSubscribersModel()->getByField($fields, 'id');
 
-        $sender_id = $this->getSettings(self::SENDER_ID);
+        $scope_app = wa()->getApp();
+        //$sender_id = $this->getSettings(self::SENDER_ID);
         $subscriber_list = array();
         foreach ($rows as $row) {
-            if (!empty($row['subscriber_data'])) {
+            $scope = $row['scope'];
+            if (!empty($row['subscriber_data']) && (empty($scope) || in_array($scope_app, explode(',', $scope)))) {
                 $subscriber_data = json_decode($row['subscriber_data'], true);
-                if (!empty($subscriber_data) && $sender_id == $subscriber_data[self::SENDER_ID]) {
+                if (!empty($subscriber_data)) { // && $sender_id == $subscriber_data[self::SENDER_ID]
                     $subscriber_list[] = (string)$subscriber_data['token'];
                 }
             }
@@ -202,9 +229,13 @@ class firebasePush extends waPushAdapter
             ),
         );
 
-        if (!empty($data['image_url'])) {
+        if (ifset($data['image_url'])) {
             $request_data['data']['image'] = (string)$data['image_url'];
             $request_data['data']['icon'] = (string)$data['image_url'];
+        }
+
+        if (ifset($data['data']) && is_array($data['data'])) {
+            $request_data['meta'] = $data['data'];
         }
 
         return $request_data;
@@ -223,7 +254,7 @@ class firebasePush extends waPushAdapter
             $content = !empty($request_data) ? json_encode($request_data) : null;
             $res = $this->getNet()->query($url, $content, $request_method);
             if ($is_debug) {
-                waLog::dump([$url, $content, $request_method, $res], 'push/firebase_request.log');
+                waLog::dump([$url, $content, $request_data, $request_method, $res], 'push/firebase_request.log');
             }
         } catch (Exception $e) {
             $log = array(

@@ -120,7 +120,14 @@ class installerAnnouncementList
     {
         $announcements = [];
         foreach ($this->buildSelect($keys) as $row) {
-            $announcements[$row['name']] = $this->unserializeAnnouncement($row['value']);
+            $a = $this->unserializeAnnouncement($row['value']);
+            if (isset($a['expire'])) {
+                $expire = new DateTime($a['expire'], new DateTimeZone('UTC'));
+                if ($expire <= new DateTime()) {
+                    continue;
+                }
+            }
+            $announcements[$row['name']] = $a;
         }
 
         if (isset($this->filters['app_id'])) {

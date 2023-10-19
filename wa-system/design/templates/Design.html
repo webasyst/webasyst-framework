@@ -248,6 +248,11 @@
         $theme_preview_link = $('.js-tabs-menu .wa-theme-preview'),
         $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
 
+    const current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
+
+        let $bottombar = $('.bottombar');
+
+
     async function postData(url, data) {
         const response = await fetch(url, {
             method: 'POST',
@@ -307,14 +312,12 @@
 
     /* Switch theme settings menu */
     $theme_settings_section.on('click', '.js-theme-settings-list a', function (e, id) {
-
         let $self = $(this),
             $li = $self.parent(),
             $theme_info_section = $('.js-theme-info-section'),
             menu_id = $self.data('divider-id'),
             $settings_section = $('.js-settings-list'),
-            $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`),
-            $bottombar = $('.bottombar');
+            $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`);
 
         let hash = waDesignHash(location.hash)
         if (hash.length) {
@@ -327,19 +330,40 @@
 
         $li.addClass('selected').siblings().removeClass('selected');
 
-        if(menu_id >= 0) {
+        if (!$bottombar.length) {
+            $bottombar = $('.bottombar');
+        }
+
+        $(document).on('wa_design_loaded', function () {
+            $bottombar = $('.bottombar');
+            if (menu_id >= 0) {
+                $bottombar.show();
+            } else {
+                $bottombar.hide();
+            }
+        })
+
+        if (menu_id >= 0) {
             $theme_info_section.hide();
             $settings_section.show();
             $settings_section_selected.addClass('selected').siblings().removeClass('selected');
             $bottombar.show();
-        }else{
+            sessionStorage.setItem('wa_design_menu_id', menu_id);
+        } else {
             $settings_section.hide();
             $theme_info_section.show();
             $bottombar.hide();
+            sessionStorage.removeItem('wa_design_menu_id');
         }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     })
+
+    if (current_menu_id) {
+        $(document).on('wa_design_loaded', function () {
+        	$theme_settings_section.find('a[data-divider-id='+current_menu_id+']').trigger('click');
+        })
+    }
 
     /**
      * TODO Remove when Site app will be ready for WA2
@@ -362,6 +386,8 @@
                 .addClass('article width-100 flexbox middle space-16')
                 .find('[type="submit"]')
                 .attr('form', '#s-settings-form');
+
+            $bottombar = $design_container_bottombar;
         }
     }
 

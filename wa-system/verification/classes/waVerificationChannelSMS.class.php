@@ -166,7 +166,7 @@ class waVerificationChannelSMS extends waVerificationChannel
      *
      *        Otherwise 'details' has keys:
      *
-     *          - string   'error'      - string identificator of error - VERIFY_ERROR_* const
+     *          - string   'error'      - string identifier of error - VERIFY_ERROR_* const
      *          - int|null 'tries'      - total count of already made tries. Can be NULL in case if code is already dead or not exist
      *          - int      'rest_tries' - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
      *                                    But this value is NULL when 'tries' is NULL (in case if code is already dead or not exist)
@@ -185,7 +185,7 @@ class waVerificationChannelSMS extends waVerificationChannel
 
     protected function isSecretEquals($input_secret, $asset_secret, $asset_name)
     {
-        return waContact::verifyPasswordHash($input_secret, $asset_secret); 
+        return waContact::verifyPasswordHash($input_secret, $asset_secret);
     }
 
 
@@ -487,7 +487,7 @@ class waVerificationChannelSMS extends waVerificationChannel
      *
      *        Otherwise 'details' has keys:
      *
-     *          - string   'error'      - string identificator of error - VERIFY_ERROR_* const
+     *          - string   'error'      - string identifier of error - VERIFY_ERROR_* const
      *          - int|null 'tries'      - total count of already made tries. Can be NULL in case if code is already dead or not exist
      *          - int      'rest_tries' - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
      *                                    But this value is NULL when 'tries' is NULL (in case if code is already dead or not exist)

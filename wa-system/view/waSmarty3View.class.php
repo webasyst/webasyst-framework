@@ -143,7 +143,7 @@ class waSmarty3View extends waView
         try {
             $result = $this->smarty->fetch($template, $cache_id);
             $this->resetTemplateAndTheme($is_template);
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             $this->resetTemplateAndTheme($is_template);
             throw $ex;
         }

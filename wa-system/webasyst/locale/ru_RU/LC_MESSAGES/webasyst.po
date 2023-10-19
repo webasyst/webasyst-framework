@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WebAsyst\n"
+"Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-06-30 09:55+0300\n"
+"PO-Revision-Date: 2023-10-19 10:27+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -4888,14 +4888,8 @@ msgstr "Установить значение"
 msgid "Default fixed value:"
 msgstr "Фиксированное значение:"
 
-msgid "Enter available options for %s depending on it’s parent field value."
+msgid "Enter available options for “%s” depending on its parent field’s value."
 msgstr "Заполните списки значений поля «%s» в зависимости от значения его родительского поля."
-
-msgid "https://www.shop-script.com/help/46/conditional-contact-fields/"
-msgstr "https://support.webasyst.ru/shop-script/7/conditional-contact-fields/"
-
-msgid "Get help"
-msgstr "Помощь"
 
 msgid "<strong>IF</strong> parent field"
 msgstr "<strong>IF</strong> родительское поле"
@@ -4953,6 +4947,9 @@ msgstr "Обязательное поле"
 
 msgid "Only English alphanumeric, hyphen and underline symbols are allowed"
 msgstr "Разрешены только латинские буквы, дефисы и символы подчеркивания."
+
+msgid "ID must contain no more than 32 characters"
+msgstr "ID должно содержать не более 32 символов."
 
 msgid "This ID is already in use"
 msgstr "Этот ID уже используется."
@@ -6688,7 +6685,7 @@ msgstr "Календарь команды"
 msgid "<strong>More profile and account authentication features are available in the Team app.</strong> Contact your Webasyst admin for access."
 msgstr "<strong>В приложении «Команда» есть дополнительные полезные функции управления профилем и авторизацией.</strong> Обратитесь к администратору Webasyst по поводу доступа."
 
-msgid "Fill-in default region list"
+msgid "Fill in default region list"
 msgstr "Заполнить список из справочника"
 
 msgid "The country is not in the list."
@@ -6717,3 +6714,105 @@ msgstr "Не удалось подключиться к API Webasyst."
 
 msgid "Identifier (App ID or Services ID)"
 msgstr "Идентификатор (App ID или Services ID)"
+
+msgid "deleted contact %s"
+msgstr "удаленный контакт %s"
+
+msgid "Not bound yet"
+msgstr "Еще не связан"
+
+msgid "Client not connected"
+msgstr "Клиент не подключен"
+
+msgid "Unknown connection error"
+msgstr "Неизвестная ошибка соединения"
+
+msgid "Unexpected response from API"
+msgstr "Неожиданный ответ от API"
+
+msgid "Webasyst ID authentication endpoint is not available"
+msgstr "Точка аутентификации Webasyst ID недоступна"
+
+msgid "Not connected with a Webasyst ID contact"
+msgstr "Не соединен с контактом Webasyst ID"
+
+msgid "Failed to upload file %s."
+msgstr "Не удалось загрузить файл %s."
+
+msgid "File could not be saved due to insufficient write permissions for the %s directory."
+msgstr "Не удалось сохранить файл из-за недостаточных прав доступа на запись для директории %s."
+
+msgid "Files with the .%s extension are not allowed to upload due to security considerations."
+msgstr "Файлы с расширением .%s не допускается загружать из соображений обеспечения безопасности."
+
+msgid "Database error"
+msgstr "Ошибка базы данных"
+
+msgid "Thanks for subscribing!"
+msgstr "Спасибо за подписку!"
+
+msgid "You are now subscribed to receive notifications. You can unsubscribe at any time."
+msgstr "Теперь вы подписаны на получение уведомлений. Вы можете отписаться в любое время."
+
+msgid "Complete subscription"
+msgstr "Завершить подписку"
+
+msgid "Old token"
+msgstr "Старый токен"
+
+msgid "Plugin “%s” settings"
+msgstr "Настройки плагина «%s»"
+
+msgid "Contact field not found"
+msgstr "Поле контакта не найдено"
+
+msgid "Unknown country:"
+msgstr "Неизвестная страна:"
+
+msgid "Unknown currency:"
+msgstr "Неизвестная валюта:"
+
+msgid "Table not found"
+msgstr "Таблица не найдена"
+
+msgid "Column not found"
+msgstr "Столбец не найден"
+
+msgid "The column is not a string"
+msgstr "Столбец не является строковым"
+
+msgid "PHP"
+msgstr "PHP"
+
+msgid "GD (recommended)"
+msgstr "GD (рекомендуется)"
+
+msgid "Imagick"
+msgstr "Imagick"
+
+msgid "Unknown action"
+msgstr "Неизвестное действие"
+
+msgid "Token not transferred"
+msgstr "Токен не передан"
+
+msgid "Not found"
+msgstr "Не найдено"
+
+msgid "Client key not specified."
+msgstr "Ключ клиента не задан."
+
+msgid "Server key not specified."
+msgstr "Ключ сервера не задан."
+
+msgid "Settings could not be saved due to insufficient write permissions for file %s."
+msgstr "Не удалось сохранить настройки из-за недостаточных прав на запись для файла %s."
+
+msgid "map"
+msgstr "карта"
+
+msgid "The current value is not among the available ones."
+msgstr "Текущее значение отсутствует среди доступных."
+
+msgid "Shipping will be restricted to the selected country."
+msgstr "Доставка будет ограничена выбранной страной."

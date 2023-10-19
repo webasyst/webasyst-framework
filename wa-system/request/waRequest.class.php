@@ -32,7 +32,7 @@ class waRequest
     const METHOD_TRACE = 'trace';
     const METHOD_PATCH = 'patch';
 
-    // overriden in unit tests
+    // overridden in unit tests
     protected static $env_vars = array();
 
     protected static $params = array();
@@ -396,7 +396,7 @@ class waRequest
         // The result is that when REMOTE_ADDR is one of listed IPs, getIp() is allowed to look
         // into header-based sources such as HTTP_X_FORWARDED_FOR.
         //
-        // The default behaviour in case 'trusted_proxies' is not set is to trust any request
+        // The default behavior in case 'trusted_proxies' is not set is to trust any request
         // to provide IP via headers.
         //
 

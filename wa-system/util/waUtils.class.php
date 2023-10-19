@@ -108,7 +108,7 @@ class waUtils
      * @param array  $array Array of associative sub-arrays.
      * @param mixed  $field Key of sub-arrays' items by whose values sub-arrays will be grouped.
      * @param string $type Type of grouping: 'collect', 'first', or 'last':
-     * - 'collect': sub-arrays of the original array, containing equal values of the key specified in $field parameter, are gruoped into sub-arrays of the resulting array; the values of the specified $field are used as the keys of the resulting array.
+     * - 'collect': sub-arrays of the original array, containing equal values of the key specified in $field parameter, are grouped into sub-arrays of the resulting array; the values of the specified $field are used as the keys of the resulting array.
      * - 'first': only the first sub-array of each group of sub-arrays with the same values of the specified $field is added to the resulting array.
      * - 'last': only the last sub-array of each group of sub-arrays with the same values of the specified $field is added to the resulting array.
      * @return array

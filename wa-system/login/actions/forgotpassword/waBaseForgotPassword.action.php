@@ -89,7 +89,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
      */
     protected function notFound()
     {
-        throw new waException(_w('Page not found'), 404);
+        throw new waException(_ws('Page not found'), 404);
     }
 
     /**

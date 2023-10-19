@@ -201,11 +201,11 @@ class waUser extends waContact
         $ugm = new waUserGroupsModel();
         $ugm->delete($id);
 
-        // Access rigths
+        // Access rights
         $right_model = new waContactRightsModel();
         $right_model->deleteByField('group_id', -$id);
 
-        // Custom application access rigths
+        // Custom application access rights
         foreach(wa()->getApps() as $aid => $app) {
             if (isset($app['rights']) && $app['rights']) {
                 $app_config = SystemConfig::getAppConfig($aid);

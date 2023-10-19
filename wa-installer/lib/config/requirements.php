@@ -16,7 +16,7 @@ return array(
         'strict'      => false,
     ),
     'php.ctype'                      => array(
-        'description' => 'String type function',
+        'description' => 'String type functions',
         'strict'      => true,
     ),
     'php.json'                      => array(
@@ -33,7 +33,7 @@ return array(
         'value'  => 1,
     ),
     'phpini.mbstring.func_overload' => array(
-        'description' => 'Smarty properly work',
+        'description' => 'Correct Smarty functioning',
         'strict'      => true,
         'value'       => '<2',
     ),
@@ -58,7 +58,7 @@ return array(
             'wa-content',
             'wa-cache',
         ),
-        'description' => 'Check folder rights for install&amp;update',
+        'description' => 'Check folder rights for installation &amp; updates',
         'strict'      => true,
     ),
     'server.mod_rewrite'            => array(

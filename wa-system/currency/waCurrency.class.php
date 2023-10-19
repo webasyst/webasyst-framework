@@ -124,7 +124,7 @@ class waCurrency
      *       not specified, then the numerical format is used by default.
      *     - Currency sign or name. To add it to the formatted amount value, specify one of the following identifiers in
      *       curly brackets:
-     *         {n}: full cyrrency name; e.g., "dollar"
+     *         {n}: full currency name; e.g., "dollar"
      *         {s}: brief currency name or sign; e.g., "$"
      *         {f}: name of the fractional currency unit; e.g., "cent/cents"
      *         {c}: currency code; e.g., "USD".
@@ -428,7 +428,7 @@ class waCurrency
     /**
      * Returns the list of all available currencies.
      *
-     * @param string|bool $type Currency data item id specified in currency cofiguration file in wa-system/currency/data/:
+     * @param string|bool $type Currency data item id specified in currency configuration file in wa-system/currency/data/:
      *     - 'all': this value (or true), returns all currency data items
      *     - 'code': currency ISO3 code
      *     - 'sign': currency symbol

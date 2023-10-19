@@ -283,7 +283,7 @@ class waContactsCollection
         //
         if ($ids && $this->post_fields) {
             // $fill[table][field] = null
-            // needed for all rows to always contain all apropriate keys
+            // needed for all rows to always contain all appropriate keys
             // in case when we're asked to load all fields from that table
             $fill = array_fill_keys(array_keys($this->post_fields), array());
             foreach (waContactFields::getAll('enabled') as $fid => $field) {
@@ -335,7 +335,7 @@ class waContactsCollection
                                                 $v['_online_status'] = 'online';
 
                                                 // Mark as idle if idle_since record exists & is older than 60 sec
-                                                if (isset($contacts_idle[$v['id']]) && 
+                                                if (isset($contacts_idle[$v['id']]) &&
                                                     time() - strtotime($contacts_idle[$v['id']]['value']) > 60
                                                 ) {
                                                     $v['_online_status'] = 'idle';
@@ -452,17 +452,19 @@ class waContactsCollection
                 }
 
                 $data_fields = array_unique($fields);
-
-                foreach ($data_fields as $k => $field_id) {
-                    $f = waContactFields::get($field_id);
+                for ($i = count($data_fields) - 1; $i >= 0; $i--) {
+                    if (empty($data_fields[$i])) {
+                        continue;
+                    }
+                    $f = waContactFields::get($data_fields[$i]);
                     if ($f && $f instanceof waContactCompositeField) {
-                        unset($data_fields[$k]);
+                        unset($data_fields[$i]);
                         $data_fields = array_merge($data_fields, $f->getField());
                     }
                 }
+                $data_fields = array_unique($data_fields);
 
                 $model = $this->getModel($table);
-
                 $post_data = $model->getData($ids, $data_fields);
                 foreach ($post_data as $contact_id => $contact_data) {
                     foreach ($contact_data as $field_id => $value) {
@@ -1010,6 +1012,8 @@ class waContactsCollection
                     $values[] = "'".$model->escape($v)."'";
                 }
                 return ' IN ('.implode(',', $values).')';
+            case '?=':
+                return ' IS '.$model->escape($value);
             case "==":
             case "=";
             default:
@@ -1368,7 +1372,7 @@ class waContactsCollection
     {
         $operations = array(
             '$=', '^=', '*=', '==', '!=', '>=', '<=', '=', '>', '<',
-            '@=', '@$=', '@^=', '@*='
+            '@=', '@$=', '@^=', '@*=', '?='
         );
 
         if ($ret_type === 'regexp') {

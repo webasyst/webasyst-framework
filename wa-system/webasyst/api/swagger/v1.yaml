@@ -1,0 +1,233 @@
+# validate https://editor.swagger.io/
+openapi: 3.0.0
+info:
+  title: 'Webasyst Framework API'
+  version: 1.0.0
+servers:
+  - url: /api.php
+    description: Current host server
+
+paths:
+  /webasyst.getInfo:
+    get:
+      security:
+        - BearerAuth: [ ]
+      summary: Get common account info
+      responses:
+        200:
+          description: Returns call record URL.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Account name
+                  backend_url:
+                    type: string
+                    format: uri
+                    description: URL to the Webasyst backend
+                    example: https://vasya.com/webasyst/
+                  logo:
+                    type: object
+                    description: Account logo data
+                    properties:
+                      mode:
+                        type: string
+                        enum:
+                          - gradient
+                          - image
+                      text:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                          default_value:
+                            type: string
+                          color:
+                            type: string
+                          default_color:
+                            type: string
+                      two_lines:
+                        type: boolean
+                      gradient:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                            description: hex code of color (without \#)
+                          to:
+                            type: string
+                            description: hex code of color (without \#)
+                          angle:
+                            type: integer
+        403:
+          description: Access denied to the CRM app or this API method.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+  /webasyst.push.data:
+    get:
+      security:
+        - BearerAuth: [ ]
+      summary: Get push provider config data
+      responses:
+        200:
+          description: Returns push provider config data.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - provider
+                properties:
+                  provider:
+                    type: string
+                    enum:
+                      - none
+                      - onesignal
+                      - firebase
+                      - pushcrew
+                    description: |
+                      Configured push service provider. Possible values:
+                      + onesignal: OneSignal
+                      + firebase: Firebase
+                      + pushcrew: PushCrew
+        403:
+          description: Access denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        404:
+          description: Note not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Internal server error.
+  /webasyst.push.enable:
+    post:
+      security:
+        - BearerAuth: [ ]
+      summary: Enable push notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required:
+                    - firebase_client_token
+                  properties:
+                    firebase_client_token:
+                      type: string
+                      description: Firebase Client Registration Token
+                    scope:
+                      type: string
+                      description: Push notification scope. Optional. Contains app_id list delimited by comma.
+                - type: object
+                  required:
+                    - onesignal_app_id
+                    - onesignal_player_id
+                  properties:
+                    onesignal_app_id:
+                      type: string
+                      description: OneSignal Application ID
+                    onesignal_player_id:
+                      type: string
+                      description: OneSignal Client ID
+                    scope:
+                      type: string
+                      description: Push notification scope. Optional. Contains app_id list delimited by comma.
+      responses:
+        204:
+          description: OK
+        403:
+          description: Access denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        400:
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Internal server error.
+  /webasyst.push.disable:
+    post:
+      security:
+        - BearerAuth: [ ]
+      summary: Switch off push notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required:
+                    - firebase_client_token
+                  properties:
+                    firebase_client_token:
+                      type: string
+                      description: Firebase Client Registration Token
+                - type: object
+                  required:
+                    - onesignal_app_id
+                    - onesignal_player_id
+                  properties:
+                    onesignal_app_id:
+                      type: string
+                      description: OneSignal Application ID
+                    onesignal_player_id:
+                      type: string
+                      description: OneSignal Client ID
+      responses:
+        204:
+          description: OK
+        403:
+          description: Access denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        400:
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Internal server error.
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: access_token
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    errorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code
+        error_description:
+          type: string
+          description: Error description

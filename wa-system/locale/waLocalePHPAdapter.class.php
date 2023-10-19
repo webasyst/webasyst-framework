@@ -47,7 +47,22 @@ class waLocalePHPAdapter implements waiLocaleAdapter
         }
 
         if (isset(self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']) && self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']) {
-            self::$cache[$locale][$domain]['meta']['f'] = wa_lambda('$n', self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']);
+            if (empty(self::$cache[$locale][$domain]['meta']['f'])) {
+                $body = self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural'];
+                if (self::isSafeExpression($body)) {
+                    try {
+                        self::$cache[$locale][$domain]['meta']['f'] = wa_lambda('$n', $body);
+                    } catch (Throwable $e) {
+                    }
+                }
+                if (!isset(self::$cache[$locale][$domain]['meta']['f'])) {
+                    if ($locale == 'ru_RU') {
+                        self::$cache[$locale][$domain]['meta']['f'] = [$this, 'defaultPluralFormsRu'];
+                    } else {
+                        self::$cache[$locale][$domain]['meta']['f'] = wa_lambda('$n', 'return $n == 1 ? 0 : 1;');
+                    }
+                }
+            }
         }
 
         if ($textdomain) {
@@ -61,6 +76,45 @@ class waLocalePHPAdapter implements waiLocaleAdapter
 
         if (file_exists($locale_file)) {
             self::$loaded_domains[$domain][$locale] = $locale_file;
+        }
+    }
+
+    /**
+     * Check body of a function to contain a dangerous expression a?b:c?d:e
+     * PHP 8+ will immediately die with a fatal error if it encounters something like that during eval().
+     * This does not throw an error and can not be caught. So, we have to check
+     * expression inside Plural-Forms to be safe against that.
+     */
+    protected function isSafeExpression($body)
+    {
+        if (substr_count($body, '?') < 2) {
+            return true;
+        }
+        // Remove everything except symbols ?:()
+        $body = preg_replace('~[^\(\)\:\?]~', '', $body);
+        // Remove () from the result until there's no such pairs
+        while (false !== strpos($body, '()')) {
+            $body = str_replace('()', '', $body);
+        }
+        // Look for a pair of ? that has no brackets between them
+        if (preg_match('~\\?[^\\?\\(\\)]+\\?~', $body, $m)) {
+            return false;
+        }
+        return true;
+    }
+
+    public function defaultPluralFormsRu($n) {
+        $dd = $n % 100;
+        if ($dd >= 5 && $dd <= 20) {
+            return 2;
+        }
+        $d = $n % 10;
+        if ($d == 1) {
+            return 0;
+        } else if ($d >= 2 && $d <= 4) {
+            return 1;
+        } else {
+            return 2;
         }
     }
 

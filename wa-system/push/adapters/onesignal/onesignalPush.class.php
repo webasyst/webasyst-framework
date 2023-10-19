@@ -61,7 +61,22 @@ class onesignalPush extends waPushAdapter
         $template = wa()->getConfig()->getRootPath().'/wa-system/push/adapters/onesignal/init.js';
         return $view->fetch($template);
     }
+/*
+    public function getInitData()
+    {
+        $is_enabled = $this->isEnabled();
+        if (!$is_enabled) {
+            return null;
+        }
 
+        $app = $this->getAppByDomain();
+        return [
+            [ 'key' => 'appId', 'value' => $app['id'] ],
+            [ 'key' => 'subdomainName', 'value' => $app['chrome_web_sub_domain'] ],
+            [ 'key' => 'path', 'value' => $this->getActionUrl() ],
+        ];
+    }
+*/
     protected function initControls()
     {
         $api_token = $this->getSettings(self::API_TOKEN);
@@ -108,6 +123,20 @@ class onesignalPush extends waPushAdapter
             'control_type' => waHtmlControl::INPUT,
             'description'  => $description,
         );
+    }
+
+    protected function normalizeSubscriberData($data)
+    {
+        if (!is_array($data) || 
+            !ifset($data['onesignal_app_id']) ||
+            !ifset($data['onesignal_player_id'])
+        ) {
+            throw new waException('Invalid subscriber data');
+        }
+        return [
+            'api_app_id' => $data['onesignal_app_id'],
+            'api_user_id' => $data['onesignal_player_id'],
+        ];
     }
 
     //
@@ -189,9 +218,11 @@ class onesignalPush extends waPushAdapter
         );
         $rows = $this->getPushSubscribersModel()->getByField($fields, 'id');
 
+        $scope_app = wa()->getApp();
         $subscriber_list = array();
         foreach ($rows as $row) {
-            if (!empty($row['subscriber_data'])) {
+            $scope = $row['scope'];
+            if (!empty($row['subscriber_data']) && (empty($scope) || in_array($scope_app, explode(',', $scope)))) {
                 $subscriber_data = json_decode($row['subscriber_data'], true);
                 if (!empty($subscriber_data)) {
                     $subscriber_list[] = $subscriber_data;

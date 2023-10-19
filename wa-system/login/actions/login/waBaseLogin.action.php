@@ -40,7 +40,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      */
     public function execute()
     {
-        wa()->getResponse()->setTitle(_w('Login'));
+        wa()->getResponse()->setTitle(_ws('Login'));
 
         if (wa()->getRequest()->request('send_onetime_password')) {
             $this->trySendOnetimePassword();

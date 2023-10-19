@@ -77,7 +77,7 @@ class waContactSelectField extends waContactField
         $value = isset($params['value']) ? $params['value'] : '';
         $html = '<select '.$attrs.' name="'.$this->getHTMLName($params).'"><option value=""></option>';
         foreach ($this->getOptions() as $k => $v) {
-            $html .= '<option'.(strlen($value) > 0 && $k == $value ? ' selected="selected"' : '').' value="'.$k.'">'.htmlspecialchars($v).'</option>';
+            $html .= '<option'.(strlen($value) > 0 && $k == $value ? ' selected="selected"' : '').' value="'.htmlspecialchars($k).'">'.htmlspecialchars($v).'</option>';
         }
         $html .= '</select>';
         return $html;
@@ -95,7 +95,15 @@ class waContactSelectField extends waContactField
             ));
         }
 
-        return parent::validate($data, $contact_id);
+        $errors = parent::validate($data, $contact_id);
+        if (!empty($data) && !$errors) {
+            $options = $this->getOptions();
+            if (!isset($options[$data])) {
+                $errors = _ws('The current value is not among the available ones.');
+            }
+        }
+
+        return $errors;
     }
 
     public function getFormatter($format)

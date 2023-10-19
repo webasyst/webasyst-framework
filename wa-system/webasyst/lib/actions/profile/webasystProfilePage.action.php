@@ -29,6 +29,13 @@ class webasystProfilePageAction extends waViewAction
         $can_edit = $this->canEdit($user['id']);
         $this->getContactInfo($can_edit, $user);
 
+        if (wa()->appExists('team')) {
+            $profile_template_path = wa()->getAppPath('templates/actions/profile/Profile.html', 'team');
+        } else {
+            $profile_template_path = wa()->getAppPath('templates/actions-legacy/profile/ProfilePage.html', 'webasyst');
+            //$profile_template_path = wa()->getAppPath('templates/actions/profile/ProfilePage.html', 'webasyst');
+        }
+
         $this->view->assign(array(
             'backend_personal_profile' => $backend_personal_profile,
             'top' => $params['top'],
@@ -40,7 +47,7 @@ class webasystProfilePageAction extends waViewAction
             'is_bound_with_webasyst_contact'   => $this->isBoundWithWebasystContact(),
             'user_settings' => (new waContactSettingsModel())->get($user['id'], 'webasyst'),
             'can_edit' => $can_edit,
-            'profile_template_path' => wa()->appExists('team') ?  'wa-apps/team/templates/actions/profile/Profile.html' : 'wa-system/webasyst/templates/actions-legacy/profile/ProfilePage.html',
+            'profile_template_path' => $profile_template_path,
         ));
     }
 
