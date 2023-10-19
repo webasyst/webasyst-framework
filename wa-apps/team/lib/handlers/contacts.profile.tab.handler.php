@@ -3,8 +3,7 @@ class teamContactsProfileTabHandler extends waEventHandler
 {
     public function execute(&$params)
     {
-        $contact_id = $params;
-        $contact = new waContact($contact_id);
+        $contact_id = (is_array($params) ? ifset($params, 'id', 0) : $params);
 
         $is_superadmin = wa()->getUser()->isAdmin();
         $is_own_profile = wa()->getUser()->getId() == $contact_id;

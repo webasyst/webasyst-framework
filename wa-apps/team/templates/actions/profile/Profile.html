@@ -292,12 +292,12 @@
                     {if !empty($user.phone)}
                     {foreach $user.phone as $key => $phone}
                     <div class="t-profile-block">
-                        <a href="tel:{$phone.value}" class="t-profile-block__icon">
+                        <a href="tel:{$phone.value|escape}" class="t-profile-block__icon">
                             <i class="fas fa-phone-alt text-green"></i>
                         </a>
 
                         <div class="t-profile-block__value">
-                            <a href="tel:{$phone.value}" title="{$phone.value}" class="t-profile-block__value-link">
+                            <a href="tel:{$phone.value|escape}" title="{$phone.value|escape}" class="t-profile-block__value-link">
                                 {if isset($fieldValues['phone'][$key]['value'])}
                                     {$fieldValues['phone'][$key]['value']|escape}
                                 {else}
