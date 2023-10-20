@@ -3,6 +3,7 @@
 class teamUserInvitingByEmail extends teamInviting
 {
     protected $email;
+    protected $contact = null;
     protected $options = [];
 
     /**
@@ -15,6 +16,10 @@ class teamUserInvitingByEmail extends teamInviting
     public function __construct($email, array $options = [])
     {
         $this->email = $email;
+        if (!empty($options['contact_id'])) {
+            $this->contact = new waContact((int) $options['contact_id']);
+        }
+
         parent::__construct($options);
     }
 
@@ -34,6 +39,20 @@ class teamUserInvitingByEmail extends teamInviting
      */
     public function invite()
     {
+        if ($this->contact) {
+            try {
+                $this->contact['is_user']; // load contact data and throw waException if contact does not exist
+                if (!$this->email) {
+                    $this->email = $this->contact->get('email', 'default');
+                } else {
+                    // Note that we deliberately don't save $this->email into $this->contact.
+                    // $this->email is only a channel to send invitation through.
+                }
+            } catch (waException $e) {
+                return $this->fail('contact_does_not_exist');
+            }
+        }
+
         $result = $this->createInvitationToken();
         if (!$result['status']) {
             return $result;
@@ -93,7 +112,11 @@ class teamUserInvitingByEmail extends teamInviting
             return $this->fail($error);
         }
 
-        $contact_info = $this->findUserByEmail($email);
+        if ($this->contact) {
+            $contact_info = $this->contact->getCache();
+        } else {
+            $contact_info = $this->findUserByEmail($email);
+        }
         $result = $this->validateContact($contact_info);
         if (!$result['status']) {
             return $result;

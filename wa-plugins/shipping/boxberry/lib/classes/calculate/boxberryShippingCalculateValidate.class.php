@@ -68,7 +68,7 @@ class boxberryShippingCalculateValidate
     {
         $country = $this->bxb->getAddress('country');
         $region = $this->bxb->getAddress('region');
-        $city = trim(mb_strtolower($this->bxb->getAddress('city')));
+        $city = trim(mb_strtolower((string)$this->bxb->getAddress('city')));
 
         $settings_countries = $this->bxb->getSettings('countries');
         $settings_regions = $this->bxb->getSettings('regions');

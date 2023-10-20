@@ -248,7 +248,7 @@ abstract class waShipping extends waSystemPlugin
     }
 
     /**
-     * Get package param setted via setParams() or getRates
+     * Get package param set via setParams() or getRates
      * @param string $property
      * @return mixed|null
      */
@@ -803,7 +803,7 @@ abstract class waShipping extends waSystemPlugin
         $country_model = new waCountryModel();
         $country = $country_model->get($iso3code);
         if (!$country) {
-            throw new waException($this->_w("Unknown country: ").$iso3code);
+            throw new waException($this->_w("Unknown country:") . ' ' . $iso3code);
         }
         return strtoupper($country['iso2letter']);
     }
@@ -916,7 +916,7 @@ HTML;
 
         $html .= <<<HTML
     <div class='empty'{$_style}>
-        <p class='small'>{$plugin->_w("Shipping will be restricted to the selected country")}</p>
+        <p class='small'>{$plugin->_w("Shipping will be restricted to the selected country.")}</p>
         <input name='{$name}[region]' value='' type='hidden'{$_disabled}>
     </div>
     <div class='not-empty'{$_style}>
@@ -948,7 +948,7 @@ HTML;
             }
             $html .= <<<HTML
     <div class='city'>
-        <input name='{$name}[city]' value='{$_value}' type='text'>
+        <input name='{$name}[city]' value='{$_value}' type='text' class='long'>
         <br>
         <span class='hint'>{$_description}</span>
     </div>
@@ -1114,14 +1114,14 @@ HTML;
 
             $default_params = array(
                 'title' => ifset($params['title_from'], _ws('from')),
-                'class' => 'short',
+                'class' => 'short shortest',
                 'value' => ifset($value['from']),
             );
             $from = waHtmlControl::getControl(waHtmlControl::INPUT, 'from', $default_params + $interval_items_params);
             if (!empty($params['minutes'])) {
                 $default_params = array(
                     'title' => '',
-                    'class' => 'short',
+                    'class' => 'short shortest',
                     'value' => sprintf('%02d', ifset($value['from_m'], 0)),
                 );
                 $from .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'from_m', $default_params + $interval_items_params);
@@ -1129,14 +1129,14 @@ HTML;
 
             $default_params = array(
                 'title' => ifset($params['title_till'], _ws('till')),
-                'class' => 'short',
+                'class' => 'short shortest',
                 'value' => ifset($value['to']),
             );
             $to = waHtmlControl::getControl(waHtmlControl::INPUT, 'to', $default_params + $interval_items_params);
             if (!empty($params['minutes'])) {
                 $default_params = array(
                     'title' => '',
-                    'class' => 'short',
+                    'class' => 'short shortest',
                     'value' => sprintf('%02d', ifset($value['to_m'], 0)),
                 );
                 $to .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'to_m', $default_params + $interval_items_params);
@@ -1183,10 +1183,10 @@ HTML;
             $days = implode($days);
             $rows[] = <<<HTML
 <tr>
-    <td>{$from}</td>
-    <td>{$to}</td>
+    <td class="nowrap">{$from}</td>
+    <td class="nowrap">{$to}</td>
     {$days}
-    <td><a class="inline-link delete-interval" href="javascript:void(0);"><i class="icon16 delete"></i></a></td>
+    <td><a class="inline-link delete-interval" href="javascript:void(0);"><i class="icon16 delete fas fa-trash-alt text-red"></i></a></td>
 
 </tr>
 HTML;
@@ -1235,7 +1235,7 @@ HTML;
         {$rows}
     <tfoot>
     <tr class="white">
-        <td colspan="2"><a class="inline-link add-interval" href="javascript:void(0);"><i class="icon16 add"></i><b><i>{$add_interval}</i></b></a></td>
+        <td colspan="2"><a class="inline-link add-interval" href="javascript:void(0);"><i class="icon16 add fas fa-plus-circle text-green custom-mr-4"></i><b><i>{$add_interval}</i></b></a></td>
         <td colspan="8">&nbsp;</td>
     </tr>
     </tfoot>
@@ -1703,7 +1703,7 @@ HTML;
     {
         $rec = '#'.self::getLogRequestId()."\n";
         $module_id = strtolower($module_id);
-        if (!preg_match('@^[a-z][a-z0-9]+$@', $module_id)) {
+        if (!preg_match('@^[a-z][a-z0-9_]+$@', $module_id)) {
             $rec .= 'Invalid module_id: '.$module_id."\n";
             $module_id = 'general';
         }

@@ -8,11 +8,11 @@ return array(
             'items' => array(
                 0 => array(
                     'name' => _w('Without /album/'),
-                    'description' => _w("<br>Photo URLs: with prefix 'photo' <strong>/photo/photo_url/</strong>, e.g. /photo/DSC_2051/<br>Album URLs: without prefix 'album' <strong>/&lt;full_path_to_album&gt;/</strong>, e.g. /travel/france/2010/"),
+                    'description' => _w("<br>Photo URLs: with the 'photo' prefix <strong>/photo/photo_url/</strong>; e.g., /photo/DSC_2051/<br>Album URLs: without the 'album' prefix <strong>/&lt;full_path_to_album&gt;/</strong>; e.g., /travel/france/2010/"),
                 ),
                 1 => array(
                     'name' => _w('With /album/'),
-                    'description' => _w("<br>Photo URLs: without prefix 'photo' <strong>/photo_url/</strong>, e.g. /DSC_2051/<br>Album URLs: with prefix 'album' <strong>/album/&lt;full_path_to_album&gt;/</strong>, e.g. /album/travel/france/2010/")
+                    'description' => _w("<br>Photo URLs: without the 'photo' prefix <strong>/photo_url/</strong>; e.g., /DSC_2051/<br>Album URLs: with the 'album' prefix <strong>/album/&lt;full_path_to_album&gt;/</strong>; e.g., /album/travel/france/2010/")
                 ),
             )
         ),
@@ -83,7 +83,7 @@ return array(
             '$photo.stack_count' => '',
             '$photo.sort' => '',
             '$photo.photo_url' => '',
-            '$album' => _w('Conditional! Available only if current context of photo is album. Below are describe keys of this param'),
+            '$album' => _w('Conditional! Available only if current context of photo is album. Below are described available keys of this parameter.'),
             '$album.id' => '',
             '$album.parent_id' => '',
             '$album.type' => '',
@@ -101,10 +101,10 @@ return array(
             '$album.CUSTOM_PARAM' => _w('The way to use album custom parameters which can be set for every individual album in its settings (<em>key=value</em> format)'),
             '$next_photo_url' => _w('URL of next photo in the photo stream'),
             '$photo_stream' => _w('Rendered photo stream navigation widget'),
-            '$albums' => _w("Rendered HTML block of links to albums which current photo belongs to"),
+            '$albums' => _w("Rendered HTML block of links to albums containing the current photo"),
             '$tags' => _w('Rendered HTML block of current photo tags'),
             '$exif' => _w('Rendered HTML block of current photo EXIF data'),
-            '$author' => _w("Rendered HTML block of current photo author info"),
+            '$author' => _w("Rendered HTML block of the current photo’s author info"),
         ),
         'search.html' => array(
             '$title' => ''
@@ -125,7 +125,7 @@ return array(
             '$wa->photos->albums([<em>return_html</em>, [<em>custom_params</em>]])' => _w('Returns the entire album tree as an array (<em>return_html = false</em>) or as an pre-rendered HTML (<em>return_html = true</em>). <em>custom_params = true</em> will include album custom parameters into the output.'),
             '$wa->photos->childAlbums([<em>parent_album_id</em>])' => _w('Returns sub albums by <em>parent_album_id</em>. If <em>parent_album_id</em> is empty, root albums will be returned.'),
             '$wa->photos->photo(<em>photo_id</em>[,<em>size</em>])' => _w('Returns photo by id (<em>photo_id</em>) as an array with the following keys: (<em>"id"</em>, <em>"name"</em>, <em>"description"</em>, <em>"ext"</em>, <em>"size"</em>, <em>"type"</em>, <em>"rate"</em>, <em>"width"</em>, <em>"height"</em>, <em>"contact_id"</em>, <em>"upload_datetime"</em>, <em>"edit_datetime"</em>, <em>"status"</em>, <em>"hash"</em>, <em>"url"</em>, <em>"parent_id"</em>, <em>"stack_count"</em>, <em>"sort"</em>, <em>"thumb_%size%"</em>). Optional <em>size</em> parameter can be used to fetch particular thumbnail size, which must be provided either in pixels or as one of the predefined values: <em>"big"</em> for 970, <em>"middle"</em> for 750, <em>"thumbs"</em> for 300x0, <em>"crop"</em> for 96x96.'),
-            '$wa->photos->photos(<em>search_conditions</em>[,<em>size</em>[, <em>limit</em>]])' => _w('Returns photo list array by search criteria, e.g. <em>"tag/vacations"</em>, <em>"album/12"</em>, <em>"id/1,5,7"</em>. <em>size</em> parameter indicates thumbnail size. <em>limit</em> parameter is MySQL-like: can be either a number (max number of photos to be returned) or a pair of offset, limit (start from and the max number of records to be returned)'),
+            '$wa->photos->photos(<em>search_conditions</em>[,<em>size</em>[, <em>limit</em>]])' => _w('Returns a photo list array by search criteria; e.g., <em>"tag/vacations"</em>, <em>"album/12"</em>, <em>"id/1,5,7"</em>. <em>size</em> parameter indicates thumbnail size. The <em>limit</em> parameter is similar to that used in SQL: it can be either a number (max number of photos to be returned) or a pair of offset and limit (start from and the max number of records to be returned).'),
             '$wa->photos->tags()' => _w('Returns entire tag list as an array with the following structure: (<em>"id"</em>, <em>"name"</em>, <em>"count"</em>, <em>"size"</em>, <em>"opacity"</em>)'),
             '$wa->photos->themePath("<em>theme_id</em>")' => _ws('Returns path to theme folder by <em>theme_id</em>'),
         ),

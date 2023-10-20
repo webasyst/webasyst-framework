@@ -15,6 +15,7 @@ var WASettingsRegions = ( function($) {
         // VARS
         that.country_iso3letter = options.country_iso3letter;
         that.locales = options.locales;
+        that.wa_url = options.wa_url;
 
         // DYNAMIC VARS
         that.is_locked = false;
@@ -75,6 +76,33 @@ var WASettingsRegions = ( function($) {
 
             $(this).parents('tr').before(empty_row);
             empty_row.siblings('.empty-stub').hide();
+        });
+
+        // заполнить регионы из справочника
+        $table.on('click', '.js-fill-regions-link', function () {
+            let link = this;
+            let select_country = that.$form.find('.js-country-selector').val();
+
+            $.getScript(that.wa_url +'wa-content/js/jquery-wa/countries.js', function () {
+                // variable country_list in countries.js
+                if (select_country && country_list && country_list.hasOwnProperty(select_country)) {
+                    let empty_row = $table.find('.js-template-new').clone().removeClass('hidden').removeClass('js-template-new');
+                    $table.find('.empty-stub').hide();
+                    $(link).hide();
+                    for (let region of country_list[select_country]) {
+                        let reg = empty_row.clone();
+                        reg.find('[name="region_codes[]"]').val(region[0]);
+                        reg.find('[name="region_names[]"]').val(region[1]);
+                        if (region[2]) {
+                            reg.find('[name="region_centers[]"]').val(region[2]);
+                        }
+                        $('.js-add-region-link').parents('tr').before(reg);
+                    }
+                    that.$button.addClass('yellow');
+                } else if (!country_list.hasOwnProperty(select_country)) {
+                    alert(that.locales['country_is_not_list']);
+                }
+            });
         });
     };
 

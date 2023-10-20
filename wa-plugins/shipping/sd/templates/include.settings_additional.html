@@ -1,4 +1,4 @@
-<div class="field-group">
+<div class="field-group custom-m-0">
     <div class="field">
         <div class="name"></div>
         <div class="value"><h3>{$obj->_w('Additional info')}</h3></div>
@@ -27,7 +27,19 @@
             {$obj->_w('Upload a photo')}
         </div>
         <div class="value">
-            <input type="file" name="{$namespace}[photo]" class="js-upload-image">
+            {if $wa->whichUI() === '1.3'}
+                <input type="file" name="{$namespace}[photo]" class="js-upload-image">
+            {else}
+                <div id="file-upload">
+                    <div class="upload">
+                        <label class="link">
+                            <i class="fas fa-file-upload"></i>
+                            <span>[`Choose file`]</span>
+                            <input type="file" name="{$namespace}[photo]" class="js-upload-image">
+                        </label>
+                    </div>
+                </div>
+            {/if}
         </div>
     </div>
 
@@ -44,8 +56,8 @@
                                 <img src="{$photo['uri']}">
                                 <input type="hidden" name="{$namespace}[photos][{$photo@iteration}][uri]" value="{$photo['uri']|escape}" class="js-sd-image-uri">
                             </a>
-                            <a class="js-sd-image-delete" href="javascript:void(0);">
-                                <i class="icon16 delete"></i>{$obj->_w('remove')}
+                            <a class="js-sd-image-delete flexbox middle space-4 small" href="javascript:void(0);">
+                                <i class="icon16 delete fas fa-trash-alt fa-sm text-red custom-pt-4"></i>{$obj->_w('remove')}
                             </a>
                         </li>
                     {/foreach}
@@ -61,8 +73,8 @@
             <img src="%s">
             <input type="hidden" name="{$namespace}[photos][]" value="%s">
         </a>
-        <a class="js-sd-image-delete" href="javascript:void(0);">
-            <i class="icon16 delete"></i>{$obj->_w('remove')}
+        <a class="js-sd-image-delete flexbox middle space-4 small" href="javascript:void(0);">
+            <i class="icon16 delete fas fa-trash-alt fa-sm text-red custom-pt-4"></i>{$obj->_w('remove')}
         </a>
     </li>
 {/capture}

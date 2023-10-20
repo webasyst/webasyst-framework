@@ -161,9 +161,6 @@
                             </p>
                         {/if}
 
-                        {* Used for trigger event in ProfileAccess.html *}
-                        <span class="js-webasyst-id-unbind-auth hidden"></span>
-
                         {if $user.is_user > 0}
                             {if $groups}
                             <div class="custom-mt-8 small">
@@ -187,18 +184,18 @@
                         {if $user.is_user < 0}
                             <p class="grey custom-mt-4">[`Access is switched off`]</p>
                         {elseif $invite}
-                            <p class="italic small custom-my-0">[`User invitation was sent.`]</p>
+                            <p class="italic small custom-my-0">{sprintf('[`Invitation link is valid through %s`]', $invite.expire_datetime|wa_datetime:'humandatetime')}</p>
                             {if teamHelper::hasRights('add_users')}
                                 {if !empty($user.email)}
                                     <a href="javascript:void(0)" class="js-invite small nowrap custom-mr-16" data-type="email" data-email="{$user.email[0].value|escape}">
                                         <i class="fas fa-envelope"></i> [`Send again`]
                                     </a>
                                     <a href="javascript:void(0)" class="js-invite small nowrap" data-type="link">
-                                        <i class="fas fa-link text-gray"></i> [`Link to invitation`]
+                                        <i class="fas fa-link text-gray"></i> [`Copy link`]
                                     </a>
                                 {else}
                                     <a href="javascript:void(0)" class="js-invite small nowrap" data-type="link">
-                                        <i class="fas fa-link text-gray"></i> [`Link to invitation`]
+                                        <i class="fas fa-link text-gray"></i> [`Copy link`]
                                     </a>
                                 {/if}
                             {/if}
@@ -268,7 +265,11 @@
                         </div>
 
                         <div class="t-profile-block__type">
-                            {if $email.ext}{$email.ext|escape} {/if}[`email`]
+                            {if isset($contactFields['email']['ext'][$email['ext']])}
+                                {$contactFields['email']['ext'][$email['ext']]|escape}
+                            {elseif $email.ext}
+                                {$email.ext|escape}
+                            {/if}[`email`]
                         </div>
                     </div>
                     {/foreach}
@@ -289,18 +290,28 @@
                     {/if}
 
                     {if !empty($user.phone)}
-                    {foreach $user.phone as $phone}
+                    {foreach $user.phone as $key => $phone}
                     <div class="t-profile-block">
-                        <a href="tel:{$phone.value}" class="t-profile-block__icon">
+                        <a href="tel:{$phone.value|escape}" class="t-profile-block__icon">
                             <i class="fas fa-phone-alt text-green"></i>
                         </a>
 
                         <div class="t-profile-block__value">
-                            <a href="tel:{$phone.value}" title="{$phone.value}" class="t-profile-block__value-link">{$phone.value|escape}</a>
+                            <a href="tel:{$phone.value|escape}" title="{$phone.value|escape}" class="t-profile-block__value-link">
+                                {if isset($fieldValues['phone'][$key]['value'])}
+                                    {$fieldValues['phone'][$key]['value']|escape}
+                                {else}
+                                    {$phone.value|escape}
+                                {/if}
+                            </a>
                         </div>
 
                         <div class="t-profile-block__type">
-                            {if $phone.ext}{$phone.ext|escape} {/if}[`phone`]
+                            {if isset($contactFields['phone']['ext'][$phone['ext']])}
+                                {$contactFields['phone']['ext'][$phone['ext']]|escape}
+                            {elseif $phone.ext}
+                                {$phone.ext|escape}
+                            {/if}[`phone`]
                         </div>
                     </div>
                     {/foreach}
@@ -355,7 +366,11 @@
                         </div>
 
                         <div class="t-profile-block__type">
-                            {$im.ext|escape|default:"[`other`]"}
+                            {if isset($contactFields['im']['ext'][$im['ext']])}
+                                {$contactFields['im']['ext'][$im['ext']]|escape}
+                            {else}
+                                {$im.ext|escape|default:"[`other`]"}
+                            {/if}
                         </div>
                     </div>
                     {/foreach}
@@ -388,7 +403,7 @@
                                     const $map = $('#map');
                                     const map = new TeamMap($map, '{$geocoding.type}');
 
-                                    map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap, errorMsg);
+                                    map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if isset($profile_editor.data.fieldValues.address[0].data.street)}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap, errorMsg);
 
                                     function renderMap(lat, lng) {
                                         map.render(lat, lng);
@@ -467,7 +482,7 @@
 <script>
 
     {$_profile_object_options = [
-        'photo_dialog_url'          => "`$wa_backend_url`?module=profile&action=photo&id=`$user.id`",
+        'photo_dialog_url'          => "`$wa_backend_url`?module=profile&action=photo&id=`$user.id`&ui=2.0",
         'upload_cover_dialog_url'   => "`$wa_app_url`?module=profile&action=coverUploadDialog&id=`$user.id`",
         'wa_backend_url'            => $wa_backend_url,
         'is_own_profile'            => $is_own_profile,
@@ -497,6 +512,8 @@
             "&lt;no name&gt;": "[`&lt;no name&gt;`]",  // empty name of a checklist option
             "&lt;none&gt;": "[`&lt;none&gt;`]",   // no checklist options, e.g. no categories or groups
             "no name": "[`no name`]",        // contact name
+            "Yes": "[`Yes`]",
+            "No": "[`No`]",
 
             "January": "[`January`]",
             "February": "[`February`]",
@@ -517,6 +534,8 @@
             "Close": "[`Close`]",
             "Auto": "[`Auto`]",
             "Contact info": "[`Contact info`]",
+
+            "code_dialog_text": {sprintf_wp("Share the code below with <strong>%s</strong>. Entering the code in a Webasyst mobile app in the ‘Add account’ screen will automatically connect the app to <code>%s</code>.", $user_name_formatted, str_replace(['http://','https://'], '', $wa->domainUrl()))|json_encode}
         });
 
         $.team.profile = new Profile($.extend({$_profile_object_options|json_encode}, {

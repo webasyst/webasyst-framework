@@ -164,7 +164,7 @@ class waImageImagick extends waImage
         return $this->im->getImageBlob();
     }
 
-    protected function _save_function($extension, & $quality)
+    protected function _save_function($extension, &$quality)
     {
         switch (strtolower($extension))
         {
@@ -187,6 +187,9 @@ class waImageImagick extends waImage
             case 'webp':
                 $type = IMAGETYPE_WEBP;
                 $this->im->setImageFormat('webp');
+                if ($quality == 100) {
+                    $this->im->setOption('webp:lossless', 'true');
+                }
                 break;
             default:
                 throw new waException(_ws(sprintf('Installed ImageMagick does not support %s images', $extension)));

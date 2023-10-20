@@ -57,7 +57,7 @@ class waWorkflow
     }
 
     /**
-     * Function to be overriden in subclasses.
+     * Function to be overridden in subclasses.
      * Returns all possible states as an array(id => value).
      * Value can either be a class name or an array('classname' => ..., 'options' => array(...))
      * @return array
@@ -71,7 +71,7 @@ class waWorkflow
     }
 
     /**
-     * Function to be overriden in subclasses.
+     * Function to be overridden in subclasses.
      * Returns all possible actions as an array(id => value).
      * Value can either be a class name or an array('classname' => ..., 'options' => array(...))
      * @return array
@@ -86,7 +86,7 @@ class waWorkflow
 
     /**
       * Default state for new requests and requests that lost their state for some emergency reason.
-      * To be overriden in subclasses.
+      * To be overridden in subclasses.
       * @param array $params implementation-specific
       * @return int state_id
       */

@@ -41,6 +41,7 @@ class waLocaleParseEntityWebasyst extends waLocaleParseEntity
     {
         return [
             self::WEBASYST_SYSTEM_PATTERN,
+            self::WEBASYST_DEFAULT_PATTERN,
         ];
     }
 

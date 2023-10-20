@@ -28,32 +28,39 @@ class waDateValidator extends waValidator
      */
     public function isValid($value, $more_current = true)
     {
+        $value = is_scalar($value) ? trim($value) : $value;
+        if (empty($value)) {
+            if (!parent::isValid($value)) {
+                return false;
+            }
+            $value = array_fill_keys(['year', 'month', 'day'], null);
+        }
         parent::isValid($value);
         if (is_array($value)) {
             $error = null;
             $year = null;
-            if (!empty($value['year'])) {
+            if (isset($value['year'])) {
                 $year = $value['year'];
                 if ($year < 1 || ($more_current && $year > date('Y')) || !is_numeric($year) || floor($year) != $year) {
                     $error = $this->getMessage('incorrect_date');
                 }
-            };
+            }
 
             $month = null;
-            if (!empty($value['month'])) {
+            if (isset($value['month'])) {
                 $month = $value['month'];
-                if ($month < 1 || $month > 12) {
+                if ($month < 1 || $month > 12 || !is_numeric($month)) {
                     $error = $this->getMessage('incorrect_date');
                 }
-            };
+            }
 
             $day = null;
-            if (!empty($value['day'])) {
+            if (isset($value['day'])) {
                 $day = $value['day'];
-                if ($day < 1) {
+                if ($day < 1 || $day > 31 || !is_numeric($day)) {
                     $error = $this->getMessage('incorrect_date');
                 }
-            };
+            }
 
             if ($day && $month) {
                 // February
@@ -85,23 +92,29 @@ class waDateValidator extends waValidator
             }
 
         } else {
-            $value = is_scalar($value) ? (string)$value : '';
-            if (strlen($value) <= 0) {
-                return false;
-            }
-
             $time = strtotime($value . ' 00:00:00');
+            $date_parse = date_parse($value);
             if (!$time) {
                 $this->setError($this->getMessage('incorrect_date'));
             } else {
-                return $this->isValid(
-                    array(
-                        "year" => date("Y", $time),
-                        "month" => date("m", $time),
-                        "day" => date("d", $time)
-                    ),
-                    $more_current
-                );
+                $data_1 = [
+                    'year'  => date('Y', $time),
+                    'month' => date('m', $time),
+                    'day'   => date('d', $time)
+                ];
+                $data_2 = array_intersect_key($date_parse, array_fill_keys(['year', 'month', 'day'], ''));
+                if ($data_1['year'] == $data_2['year']) {
+                    /** check 29 feb, 31 apr, jun, sep, nov */
+                    if (
+                        $data_1['day'] != $data_2['day']
+                        || $data_1['month'] != $data_2['month']
+                    ) {
+                        $this->setError($this->getMessage('incorrect_date'));
+                        return false;
+                    }
+                }
+
+                return $this->isValid($data_1, $more_current);
             }
         }
         return $this->getErrors() ? false : true;

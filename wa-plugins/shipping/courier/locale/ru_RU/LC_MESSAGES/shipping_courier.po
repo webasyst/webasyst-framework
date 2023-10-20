@@ -130,6 +130,9 @@ msgstr "Желаемое время доставки"
 msgid "Preferred delivery time & working schedule"
 msgstr "Желаемое время доставки и график работы"
 
+msgid "For each delivery time interval, select the days on which it must be available to customers."
+msgstr "Для каждого интервала времени доставки выберите дни, в которые он должен быть доступен клиентам."
+
 msgid "Online map settings are available in <a href=\"%s\">Settings</a> app."
 msgstr "Настройки онлайн-карт доступы в приложении «<a href=\"%s\">Настройки</a>»."
 

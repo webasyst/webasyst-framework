@@ -60,6 +60,23 @@ class pushcrewPush extends waPushAdapter
         $template = wa()->getConfig()->getRootPath().'/wa-system/push/adapters/pushcrew/init.js';
         return $view->fetch($template);
     }
+/*
+    public function getInitData()
+    {
+        $is_enabled = $this->isEnabled();
+        if (!$is_enabled) {
+            return null;
+        }
+
+        return [ ['key' => 'account_id', 'value' => $this->getSettings(self::API_ACCOUNT_ID)] ];
+    }
+*/
+
+    protected function normalizeSubscriberData($data)
+    {
+        // TODO: надо сделать
+        return $data;
+    }
 
     //
     // Senders

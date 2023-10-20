@@ -1,7 +1,7 @@
 <?php
 /**
  * Implements smart multidimensional key => value storage that can be accessed both by array access
- * and by field acces interfaces, including modification of deep layers.
+ * and by field access interfaces, including modification of deep layers.
  *
  * $a = new waArrayObject();
  *
@@ -17,7 +17,7 @@
  * $a->e = array('r' => array('t' => 3));
  * echo $a->e->r->t; // == 3
  */
-class waArrayObject implements ArrayAccess, IteratorAggregate, Countable 
+class waArrayObject implements ArrayAccess, IteratorAggregate, Countable
 {
     /**
      * Convert native arrays and stdObjects to waArrayObject.
@@ -40,7 +40,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Append all key => value pairs from given Traversabel to $this
+     * Append all key => value pairs from given Traversable to $this
      * @param array $data
      * @return $this
      */
@@ -53,6 +53,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /** @return int number of key => value pairs in this array */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->removeStubs()->rec_data);
@@ -165,21 +166,25 @@ class waArrayObject implements ArrayAccess, IteratorAggregate, Countable
     // Array access interface (copied from field access)
     //
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->__get($offset);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $data)
     {
         $this->__set($offset, $data);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->__isset($offset);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->__unset($offset);
@@ -189,6 +194,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate, Countable
     // IteratorAggregate interface
     //
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->rec_data);

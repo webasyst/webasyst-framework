@@ -38,7 +38,7 @@
                                     <div class="hint p-privacy-settings" {if $photo.status == 1 || isset($rights[0])}style="display: none;"{/if}>
                                         <br><br>
                                         {if !empty($groups)}
-                                            [`Select user groups you want to have see this album`]:
+                                            [`Select user groups which you want to have access to this album:`]
                                             <div class="block">
                                                 {foreach from=$groups item=group key=group_id}
                                                     <label for="manage-album-group-{$group_id}"><input id="manage-album-group-{$group_id}" name="groups[]" value="{$group_id}" type="checkbox" {if isset($rights[0]) || isset($rights[$group_id])}checked{/if} {if isset($rights[0])}disabled{/if}> <span>{$group.name|escape}</span></label><br>
@@ -47,7 +47,7 @@
                                             <em>[`Uncheck all groups to make this album visible to you only.`]</em>
                                         {else}
                                             <input type="hidden" name="groups[]" value="0" {if isset($rights[0])}disabled{/if} >
-                                            <em>[`There are no user groups thus you cant't manage access to photos`]</em>
+                                            <em>[`No user groups have been set up; therefore, you can’t manage access to photos.`]</em>
                                         {/if}
                                     </div>
                                 </label>

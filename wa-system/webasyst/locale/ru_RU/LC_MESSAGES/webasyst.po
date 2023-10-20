@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WebAsyst\n"
+"Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-11-08 15:43+0300\n"
+"PO-Revision-Date: 2023-10-19 10:27+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -203,7 +203,7 @@ msgid "February"
 msgid_plural "February"
 msgstr[0] "Февраль"
 msgstr[1] "Февраля"
-msgstr[2] "Января"
+msgstr[2] "Февраль"
 
 msgid "March"
 msgid_plural "March"
@@ -1522,8 +1522,8 @@ msgstr "Дубликаты недопустимы для этого поля."
 msgid "This field is required."
 msgstr "Это поле обязательное."
 
-msgid "At least one of these fields must be filled"
-msgstr "Хотя бы одно из этих полей должно быть заполнено"
+msgid "At least one of these fields must be filled in."
+msgstr "Хотя бы одно из этих полей должно быть заполнено."
 
 msgid "Password recovery instructions have been sent to your email address."
 msgstr "Инструкции по восстановлению пароля были отправлены на ваш электронный адрес."
@@ -3325,122 +3325,122 @@ msgstr "Укажите email-адрес"
 msgid "An error occurred while attempting to send your request. Please try again in a minute."
 msgstr "Во время отправки произошла ошибка. Попробуйте позже."
 
-msgid "URL of this Webasyst installation (relative)"
-msgstr "URL установки Webasyst (относительный)"
+msgid "URL of this Webasyst installation (relative)."
+msgstr "URL установки Webasyst (относительный)."
 
-msgid "URL of the current app settlement (relative)"
-msgstr "URL текущего поселения приложения (относительный)"
+msgid "URL of the current app settlement (relative)."
+msgstr "URL текущего поселения приложения (относительный)."
 
-msgid "URL to access Webasyst backend (relative)"
-msgstr "URL доступа к бекенду Webasyst (относительный)"
+msgid "URL to access Webasyst backend (relative)."
+msgstr "URL бекенда Webasyst (относительный)."
 
-msgid "URL of the current app design theme folder (relative)"
-msgstr "URL папки с файлами текущей темы оформления (относительный)"
+msgid "URL of the current app’s design theme directory (relative)."
+msgstr "URL директории с файлами текущей темы дизайна (относительный)."
 
-msgid "Returns current page URL (either absolute or relative)"
-msgstr "Возвращает URL текущей страницы (абсолютный либо относительный)"
+msgid "Returns current page’s relative URL, or absolute if the argument is set to <em>true</em>."
+msgstr "Возвращает относительный URL текущей страницы, или абсолютный, если указать значение аргумента <em>true</em>."
 
-msgid "Returns this domain’s root URL (absolute)"
-msgstr "Возвращает корневой URL этого домена (абсолютный)"
+msgid "Returns current domain’s root URL (absolute)."
+msgstr "Возвращает корневой URL текущего домена (абсолютный)."
 
-msgid "Returns value of the global var by <em>key</em>. Global var array is initially empty, and can be used arbitrarily."
-msgstr "Возвращает значение глобальной переменной по ключу <em>key</em>. Массив глобальных переменных изначально пуст и может использоваться произвольным образом"
+msgid "Returns the value of a global variable."
+msgstr "Возвращает значение глобальной переменной."
 
-msgid "Assigns global var a new value"
-msgstr "Присваивает новое значение глобальной переменной"
+msgid "Assigns a new value to a global variable."
+msgstr "Присваивает новое значение глобальной переменной."
 
-msgid "Assigns a new title"
-msgstr "Устанавливает новый заголовок"
+msgid "Sets a new page title."
+msgstr "Устанавливает новый заголовок страницы."
 
-msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
-msgstr "Возвращает значение GET-параметра (аналогично $_GET[\"<em>key</em>\"] в PHP)"
+msgid "Returns a GET parameter value."
+msgstr "Возвращает значение GET-параметра."
 
-msgid "Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent information is used"
-msgstr "Возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство (iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип версии сайта (мобильный или стандартный), отсутствует, то используется информация из заголовков User-Agent"
+msgid "Returns <em>true</em> or <em>false</em> depending on whether a mobile device is used."
+msgstr "Возвращает <em>true</em> или <em>false</em> в зависимости от того, используется ли мобильное устройство."
 
-msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
-msgstr "Возвращает значение POST-параметра (аналогично $_POST[\"<em>key</em>\"] в PHP)"
+msgid "Returns a POST variable value."
+msgstr "Возвращает значение переменной POST-запроса."
 
-msgid "Returns SERVER parameter value (same as PHP $_SERVER[\"KEY\"])"
-msgstr "Возвращает значение параметра массива SERVER (аналогично $_SERVER[\"<em>key</em>\"] в PHP)"
+msgid "Returns a server variable value."
+msgstr "Возвращает значение серверной переменной."
 
-msgid "Returns SESSION var value (same as PHP $_SESSION[\"<em>key</em>\"])"
-msgstr "Возвращает значение переменной сессии SESSION (аналогично $_SESSION[\"<em>key</em>\"] в PHP)"
+msgid "Returns a session variable value."
+msgstr "Возвращает значение переменной сессии."
 
 msgid "Embeds HTML block by ID"
 msgstr "Отображает содержимое блока по его идентификатору"
 
-msgid "Returns authorized user data from associated record in “Contacts” app. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized"
-msgstr "Возвращает массив с данными авторизованного пользователя из соответствующей записи приложения «Контакты». Если указан необязательный параметр <code>'field'</code> , то возвращается содержимое конкретного поля записи о контакте. Функция принимает любые параметры, подходящие для метода <code><a href=\"http://www.webasyst.ru/developers/docs/basics/classes/waContact#method-get\" target=\"_blank\">get()</a></code> системного класса <code>waContact</code>. Если пользователь не авторизован, функция возвращает <code>false</code>"
+msgid "Returns authorized user’s field value. If no field value is specified then a user object is returned."
+msgstr "Возвращает значение указанного свойства авторизованного пользователя. Если обозначение свойства не указано, то метод возвращает объект пользователя."
 
-msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
-msgstr "Возвращает информацию User-Agent по указанному параметру <em>key</em>:"
+msgid "Returns a User-Agent field value:"
+msgstr "Возвращает значение свойства User-Agent:"
 
-msgid "— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;"
-msgstr "— <em>\"isMobile\"</em>: основываясь на содержимом заголовков User-Agent, возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство (iPhone, Android и пр.) или нет;"
+msgid "— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> depending on whether a mobile device (iOS, Android and similar) is used, based on the User-Agent value;"
+msgstr "— <em>\"isMobile\"</em>: основываясь на содержимом заголовков User-Agent, возвращает <em>true</em> или <em>false</em> в зависимости от того, используется ли в данный момент мобильное устройство (iPhone, Android и пр.);"
 
 msgid "— not specified: returns entire User Agent string;"
 msgstr "— не указано: возвращает всю строку User-Agent"
 
-msgid "Displays a simple variable (non array/object)"
-msgstr "Отображает переменную (не подходит для массивов и объектов)"
+msgid "Displays a simple variable (non array/object)."
+msgstr "Отображает переменную (не подходит для массивов и объектов)."
 
-msgid "Displays the 5th element of a zero-indexed array"
-msgstr "Отображает 5-й элемент массива, считая с нулевого индекса"
+msgid "Displays the 5th element of a zero-indexed array."
+msgstr "Отображает 5-й элемент массива, считая с нулевого индекса."
 
-msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]"
-msgstr "Отображает значение элемента массива с переменным ключом. Аналогично использованию $foo[$bar] в PHP"
+msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]."
+msgstr "Отображает значение элемента массива с переменным ключом. Аналогично использованию $foo[$bar] в PHP."
 
-msgid "Displays the object property named <em>bar</em>"
-msgstr "Отображает свойство объекта с именем <em>bar</em>"
+msgid "Displays the object property named <em>bar</em>."
+msgstr "Отображает свойство объекта с именем <em>bar</em>."
 
-msgid "Displays the return value of object method named <em>bar()</em>"
-msgstr "Отображает значение, возвращаемое методом объекта с именем <em>bar()</em>"
+msgid "Displays the return value of object method named <em>bar()</em>."
+msgstr "Отображает значение, возвращаемое методом объекта с именем <em>bar()</em>."
 
-msgid "Escapes a variable for safe display in HTML"
-msgstr "Экранирует переменную для безопасного отображения в HTML-коде"
+msgid "Escapes a variable for safe display in HTML."
+msgstr "Экранирует переменную для безопасного отображения в HTML-коде."
 
-msgid "Outputs the sum of <em>$x</em> and <em>$y</em>"
-msgstr "Отображает сумму <em>$x</em> и <em>$y</em>"
+msgid "Outputs the sum of <em>$x</em> and <em>$y</em>."
+msgstr "Отображает сумму <em>$x</em> и <em>$y</em>."
 
-msgid "Assigns variable a value"
-msgstr "Присваивает значение переменной"
+msgid "Assigns a value to a variable."
+msgstr "Присваивает значение переменной."
 
-msgid "Content between {literal} tags will not be parsed by Smarty"
-msgstr "Текст между тегами {literal} не обрабатывается Smarty"
+msgid "Content between {literal} tags is not parsed by Smarty."
+msgstr "Содержимое между тегами {literal} не обрабатывается Smarty."
 
-msgid "Similar to PHP if statements"
-msgstr "Аналогично конструкции if в PHP"
+msgid "Similar to <em>if</em> statements in PHP."
+msgstr "Аналогично конструкции <em>if</em> в PHP."
 
-msgid "{foreach} is for looping over arrays of data"
-msgstr "Используется для перебора элементов в массивах данных"
+msgid "Looping over arrays of data."
+msgstr "Перебор элементов в массивах данных."
 
-msgid "Returns name of this Webasyst installation (name is specified in “Installer” app settings)"
-msgstr "Возвращает название данной установки Webasyst, указанное в настройках приложения «Инсталлер»"
+msgid "Returns the value of system setting “Company name”."
+msgstr "Возвращает значение системной настройки «Название компании»."
 
-msgid "Returns this site’s core navigation menu which is either set automatically or manually in the “Site settings” screen"
-msgstr "Возвращает основное меню навигации этого сайта, сформированное автоматически или настроенное вручную в настройках сайта"
+msgid "Returns items of the current site’s navigation menu, which is either generated automatically or is set up manually in the “Site → Settings” screen."
+msgstr "Возвращает элементы главного меню этого сайта, сформированное автоматически или настроенное вручную в разделе «Сайт → Настройки»."
 
-msgid "Returns user locale, e.g. \"en_US\", \"ru_RU\". In case user is authorized, locale is retrieved from “Contacts” app user record, or detected automatically otherwise"
-msgstr "Возвращает языковую локаль пользователя, например, en_US, ru_RU. Если пользователь авторизован, информация о локали извлекается из приложения «Контакты»; в противном случае определяется автоматически."
+msgid "Returns user’s locale; e.g., \"en_US\"."
+msgstr "Возвращает языковую локаль пользователя, например, \"en_US\"."
 
-msgid "— <em>\"platform\"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;"
+msgid "— <em>\"platform\"</em>: current visitor’s device platform name; e.g., <em>windows, mac, linux, ios, android, blackberry</em>;"
 msgstr "— <em>platform</em>: название системной платформы устройства пользователя, например, <em>windows, mac, linux, ios, android, blackberry</em>;"
 
-msgid "Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo[\"bar\"]"
-msgstr "Отображает значение ключа массива «<em>bar</em>» аналогично $foo[\"bar\"] в PHP."
+msgid "Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo[\"bar\"]."
+msgstr "Отображает значение ключа массива \"<em>bar</em>\" аналогично $foo[\"bar\"] в PHP."
 
-msgid "Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>"
+msgid "Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>."
 msgstr "Отображает время <em>$var</em> в удобном для чтения виде. Доступные значения <em>$format</em>: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>."
 
-msgid "Direct PHP function access. E.g. <em>{time()}</em> displays the current timestamp"
+msgid "Direct PHP function access. E.g., <em>{time()}</em> displays the current timestamp value."
 msgstr "Прямой доступ к функциям PHP. Например, <em>{time()}</em> отображает текущую метку времени UNIX."
 
-msgid "Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder"
-msgstr "Внедряет шаблон Smarty в текущее содержимое. Атрибут <em>file</em> указывает на имя файла шаблона в папке используемой темы оформления."
+msgid "Embeds a Smarty template from a specified file in the current content. The <em>file</em> attribute must contain the path to a file."
+msgstr "Внедряет шаблон Smarty из указанного файла в текущее содержимое. Атрибут <em>file</em> должен содержать путь к файлу."
 
-msgid "Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)"
-msgstr "Отображает подробную информацию о структуре переменной, массива или объекта. Работает аналогично функции PHP var_dump($foo)"
+msgid "Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)."
+msgstr "Отображает подробную информацию о структуре переменной, массива или объекта. Работает аналогично функции PHP var_dump($foo)."
 
 msgid "Thank you for signing up!"
 msgstr "Вы успешно зарегистрировались!"
@@ -3466,8 +3466,8 @@ msgstr "Эта тема дизайна использует эскизы изо�
 msgid "Embeds HTML snippet by ID"
 msgstr "Добавляет HTML-блок по ID"
 
-msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
-msgstr "Возвращает путь к папке темы дизайна по <em>theme_id</em> и <em>APP_ID</em>"
+msgid "Returns the path to the design theme directory of a specified app."
+msgstr "Возвращает путь к директории темы дизайна указанного приложения."
 
 msgid "Returns path to theme folder by <em>theme_id</em>"
 msgstr "Возвращает путь к папке темы дизайна по <em>theme_id</em>"
@@ -4420,7 +4420,7 @@ msgstr "Тип капчи"
 msgid "Invisible mode"
 msgstr "Невидимый режим"
 
-msgid "Get site key and secret for your website"
+msgid "Get values for your website"
 msgstr "Получить значения для своего сайта"
 
 msgid "Website address"
@@ -4888,14 +4888,8 @@ msgstr "Установить значение"
 msgid "Default fixed value:"
 msgstr "Фиксированное значение:"
 
-msgid "Enter available options for %s depending on it’s parent field value."
+msgid "Enter available options for “%s” depending on its parent field’s value."
 msgstr "Заполните списки значений поля «%s» в зависимости от значения его родительского поля."
-
-msgid "https://www.shop-script.com/help/46/conditional-contact-fields/"
-msgstr "https://support.webasyst.ru/shop-script/7/conditional-contact-fields/"
-
-msgid "Get help"
-msgstr "Помощь"
 
 msgid "<strong>IF</strong> parent field"
 msgstr "<strong>IF</strong> родительское поле"
@@ -4953,6 +4947,9 @@ msgstr "Обязательное поле"
 
 msgid "Only English alphanumeric, hyphen and underline symbols are allowed"
 msgstr "Разрешены только латинские буквы, дефисы и символы подчеркивания."
+
+msgid "ID must contain no more than 32 characters"
+msgstr "ID должно содержать не более 32 символов."
 
 msgid "This ID is already in use"
 msgstr "Этот ID уже используется."
@@ -6601,6 +6598,12 @@ msgstr "Последний вход с двухфакторной авториз
 msgid "No backend user is linked with this Webasyst ID."
 msgstr "Нет пользователя бекенда, связанного с этим Webasyst ID."
 
+msgid "Log"
+msgstr "Журнал"
+
+msgid "Auth log"
+msgstr "Журнал авторизации"
+
 msgid "No user found with this email address."
 msgstr "Пользователь с этим email-адресом не найден."
 
@@ -6630,3 +6633,186 @@ msgstr "Введите свой номер телефона."
 
 msgid "A design theme’s localization string key is the same as an app’s localization string key."
 msgstr "Ключ из файла локализации темы дизайна совпадает с ключом в файле локализации приложения."
+
+msgid "Returns a relative root URL, or absolute if the argument is set to <em>true</em>."
+msgstr "Возвращает относительный корневой URL, либо абсолютный, если указать аргумент <em>true</em>."
+
+msgid "Returns the value of a page meta tag. Supported meta tag names are \"<em>title</em>\" (&lt;title&gt; tag), \"<em>description</em>\" (description meta tag), \"<em>keywords</em>\" (keywords meta tag); e.g., <code>{$meta_description = $wa-&gt;meta(\"description\")}</code>."
+msgstr "Возвращает значение метатега страницы. Поддерживаемые обозначения метатегов: \"<em>title</em>\" (тег &lt;title&gt;), \"<em>description</em>\" (метатег description), \"<em>keywords</em>\" (метатег keywords), например: <code>{$meta_description = $wa-&gt;meta(\"description\")}</code>."
+
+msgid "Sets a new meta tag value; e.g., <code>{$wa-&gt;meta(\"title\", \"My super page\")}</code>."
+msgstr "Устанавливает новое значение метатега страницы, например: <code>{$wa-&gt;meta(\"title\", \"Моя новая страница\")}</code>."
+
+msgid "Returns authorized user’s ID."
+msgstr "Возвращает ID авторизованного пользователя."
+
+msgid "Returns the value of a current app’s setting."
+msgstr "Возвращает значение настройки текущего приложения."
+
+msgid "Returns the value of a current app’s setting, or a default value if the setting is empty."
+msgstr "Возвращает значение настройки текущего приложения или значение по умолчанию, если настройка пуста."
+
+msgid "Returns the value of a specified app’s setting, or a default value if the setting is empty. To get a system setting’s value, specify \"webasyst\" as the app ID."
+msgstr "Возвращает значение настройки указанного приложения или значение по умолчанию, если настройка пуста. Чтобы получить значение системной настройки, укажите \"webasyst\" в качестве ID приложения."
+
+msgid "Returns the version number of a specified app. To get the Webasyst version, specify <em>true</em> instead of an app ID."
+msgstr "Возвращает номер версии указанного приложения. Чтобы получить версию Webasyst, укажите <em>true</em> вместо ID приложения."
+
+msgid "Returns the current URL of a design theme directory of a specified app."
+msgstr "Возвращает текущий URL директории темы дизайна указанного приложения."
+
+msgid "Returns the data array of an app’s page."
+msgstr "Возвращает массив данных страницы приложения."
+
+msgid "Returns the array of published pages of a specified app.<br><br><em>$parent_id</em> is the ID of the parent page whose subpages must be returned. <em>0</em> means that all app’s pages must be returned.<br><br><em>$with_params</em> means whether pages must be returned with custom parameters specified in their settings."
+msgstr "Возвращает массив данных опубликованных страниц указанного приложения.<br><br><em>$parent_id</em> — ID родительской страницы, чьи вложенные страницы нужно получить. <em>0</em> означает, что нужно получить свойства всех страниц приложения.<br><br><em>$with_params</em> означает, нужно ли получить свойства страниц с дополнительными параметрами, сохраненные в их настройках."
+
+msgid "Returns the current page’s title."
+msgstr "Возвращает текущий заголовок страницы."
+
+msgid "Yandex SmartCaptcha"
+msgstr ""
+
+msgid "Client key"
+msgstr "Ключ клиента"
+
+msgid "https://cloud.yandex.com/en/services/smartcaptcha"
+msgstr "https://cloud.yandex.ru/services/smartcaptcha"
+
+msgid "Team calendar"
+msgstr "Календарь команды"
+
+msgid "<strong>More profile and account authentication features are available in the Team app.</strong> Contact your Webasyst admin for access."
+msgstr "<strong>В приложении «Команда» есть дополнительные полезные функции управления профилем и авторизацией.</strong> Обратитесь к администратору Webasyst по поводу доступа."
+
+msgid "Fill in default region list"
+msgstr "Заполнить список из справочника"
+
+msgid "The country is not in the list."
+msgstr "Страны нет в списке."
+
+msgid "User-Agent"
+msgstr ""
+
+msgid "Last sign-in with Webasyst ID: %s"
+msgstr "Последний вход с Webasyst ID: %s"
+
+msgid "Last 2FA verification: %s"
+msgstr "Последнее подтверждение с 2FA: %s"
+
+msgid "The user has Webasyst ID two-factor authentication protection enabled! Last 2FA code verification: <b>%s</b>."
+msgstr "У пользователя включена двухфакторная защита аутентификации Webasyst ID! Последнее подтверждение кодом 2FA: <b>%s</b>."
+
+msgid "Two-factor authentication is not enabled! In security concerns, it is highly recommended that the user enable 2FA in his Webasyst ID profile: %s."
+msgstr "Двухфакторная аутентификация не включена! Из соображений безопасности настоятельно рекомендуется, чтобы пользователь включил 2FA в своем профиле Webasyst ID: %s."
+
+msgid "Can be used only for yourself."
+msgstr "Можно использовать только для себя."
+
+msgid "Unable to connect to Webasyst API."
+msgstr "Не удалось подключиться к API Webasyst."
+
+msgid "Identifier (App ID or Services ID)"
+msgstr "Идентификатор (App ID или Services ID)"
+
+msgid "deleted contact %s"
+msgstr "удаленный контакт %s"
+
+msgid "Not bound yet"
+msgstr "Еще не связан"
+
+msgid "Client not connected"
+msgstr "Клиент не подключен"
+
+msgid "Unknown connection error"
+msgstr "Неизвестная ошибка соединения"
+
+msgid "Unexpected response from API"
+msgstr "Неожиданный ответ от API"
+
+msgid "Webasyst ID authentication endpoint is not available"
+msgstr "Точка аутентификации Webasyst ID недоступна"
+
+msgid "Not connected with a Webasyst ID contact"
+msgstr "Не соединен с контактом Webasyst ID"
+
+msgid "Failed to upload file %s."
+msgstr "Не удалось загрузить файл %s."
+
+msgid "File could not be saved due to insufficient write permissions for the %s directory."
+msgstr "Не удалось сохранить файл из-за недостаточных прав доступа на запись для директории %s."
+
+msgid "Files with the .%s extension are not allowed to upload due to security considerations."
+msgstr "Файлы с расширением .%s не допускается загружать из соображений обеспечения безопасности."
+
+msgid "Database error"
+msgstr "Ошибка базы данных"
+
+msgid "Thanks for subscribing!"
+msgstr "Спасибо за подписку!"
+
+msgid "You are now subscribed to receive notifications. You can unsubscribe at any time."
+msgstr "Теперь вы подписаны на получение уведомлений. Вы можете отписаться в любое время."
+
+msgid "Complete subscription"
+msgstr "Завершить подписку"
+
+msgid "Old token"
+msgstr "Старый токен"
+
+msgid "Plugin “%s” settings"
+msgstr "Настройки плагина «%s»"
+
+msgid "Contact field not found"
+msgstr "Поле контакта не найдено"
+
+msgid "Unknown country:"
+msgstr "Неизвестная страна:"
+
+msgid "Unknown currency:"
+msgstr "Неизвестная валюта:"
+
+msgid "Table not found"
+msgstr "Таблица не найдена"
+
+msgid "Column not found"
+msgstr "Столбец не найден"
+
+msgid "The column is not a string"
+msgstr "Столбец не является строковым"
+
+msgid "PHP"
+msgstr "PHP"
+
+msgid "GD (recommended)"
+msgstr "GD (рекомендуется)"
+
+msgid "Imagick"
+msgstr "Imagick"
+
+msgid "Unknown action"
+msgstr "Неизвестное действие"
+
+msgid "Token not transferred"
+msgstr "Токен не передан"
+
+msgid "Not found"
+msgstr "Не найдено"
+
+msgid "Client key not specified."
+msgstr "Ключ клиента не задан."
+
+msgid "Server key not specified."
+msgstr "Ключ сервера не задан."
+
+msgid "Settings could not be saved due to insufficient write permissions for file %s."
+msgstr "Не удалось сохранить настройки из-за недостаточных прав на запись для файла %s."
+
+msgid "map"
+msgstr "карта"
+
+msgid "The current value is not among the available ones."
+msgstr "Текущее значение отсутствует среди доступных."
+
+msgid "Shipping will be restricted to the selected country."
+msgstr "Доставка будет ограничена выбранной страной."

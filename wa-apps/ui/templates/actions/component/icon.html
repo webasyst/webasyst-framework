@@ -67,12 +67,12 @@
 
     <h3>Индивидуальные иконки <code>span.icon</code></h3>
 
-    <p>Компонент <code>.icon</code> предназначен для ситуаций, когда необходимо вставить свою <em>индивидуальную</em> иконку (например, в <code>&lt;svg&gt;</code> формате или <code>&lt;img&gt;</code>). Помещенная внутрь контейнера <code>span.icon</code>, иконка будет стилистически оформлена в соотетствие с текущий кеглем.</p>
+    <p>Компонент <code>.icon</code> предназначен для ситуаций, когда необходимо вставить свою <em>индивидуальную</em> иконку (например, в <code>&lt;svg&gt;</code> формате или <code>&lt;img&gt;</code>). Помещенная внутрь контейнера <code>span.icon</code>, иконка будет стилистически оформлена в соответствие с текущий кеглем.</p>
     <p>Этот класс — необязательный, т. е. все подряд иконки не нужно оборачивать в <code>.icon</code>. Так, иконки <strong>Font Awesome в <code>span.icon</code> оборачивать не нужно</strong> в связи с разными свойствами геометрии иконок (Font Awesome имеет максимальную ширину 1.25rem, а индивидуальная иконка <code>.icon</code> всегда считается квадратной с размерами 1x1rem).</p>
     <p>Типовые ситуации применения <code>.icon</code>:</p>
     <ul>
         <li>
-            <p><code>svg</code> без дополнительных стилей может сломать вёрстку, при использовании с <code>.icon</code> она будет находиться внутри конейнера с нормальными размерами.</p>
+            <p><code>svg</code> без дополнительных стилей может сломать вёрстку, при использовании с <code>.icon</code> она будет находиться внутри контейнера с нормальными размерами.</p>
             <p>
                 <code>&lt;span class="icon"&gt;<strong>&lt;svg&gt;</strong>&lt;/span&gt;</code>
                 <span class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#edit"></use></svg></span>
@@ -89,7 +89,7 @@
         </li>
         <li>
             <p>Прочие ситуации, когда нужно иконку, картинку или цвет реализовать через фон. Стили <code>.icon</code> адаптированы для этого.</p>
-            <p>Класс <code>.rounded</code> на внутренний элемент сделает иконку круглой.</p>
+            <p>Класс <code>.rounded</code> на внутренний элемент сделает иконку круглой. Класс <code>.bordered</code> добавит явную границу (часто может быть полезно в комбинации с .rounded).</p>
             <p>
                 <code>&lt;span class="icon"&gt;<strong>&lt;i style="background-image: url('{$wa_url}wa-apps/ui/img/ui.svg?v={$wa->version()}');"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
                 <span class="icon"><i style="background-image: url('{$wa_url}wa-apps/ui/img/ui.svg?v={$wa->version()}');"></i></span>
@@ -97,6 +97,10 @@
             <p>
                 <code>&lt;span class="icon"&gt;<strong>&lt;i class="rounded" style="background: orangered;"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
                 <span class="icon"><i class="rounded" style="background-color: orangered;"></i></span>
+            </p>
+            <p>
+                <code>&lt;span class="icon"&gt;<strong>&lt;i class="rounded bordered" style="background: gold;"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
+                <span class="icon"><i class="rounded bordered" style="background-color: gold;"></i></span>
             </p>
             <p>Класс <code>.userpic</code> на внутренний элемент сделает иконку чуть более различимой (1.25rem&times;1.25rem ≈ 20&times;20px) и правильно расставит отступы.</p>
             <p>
@@ -123,7 +127,7 @@ css-background:
 
 
     <h3>span.icon<code>.space-16</code></h3>
-    <p>Изначально <code>.icon</code> — это квадратный контейнет с размерами 1x1rem. Размерами контейнера можно управлять, используя дополнительный класс <code>.size-<strong>xx</strong></code>, где xx — число, обозначающее размер в пикселях при условии 1rem = 16px (при изменении размера rem иконки масштабируются аналогичным образом).</p>
+    <p>Изначально <code>.icon</code> — это квадратный контейнер с размерами 1x1rem. Размерами контейнера можно управлять, используя дополнительный класс <code>.size-<strong>xx</strong></code>, где xx — число, обозначающее размер в пикселях при условии 1rem = 16px (при изменении размера rem иконки масштабируются аналогичным образом).</p>
     <p class="inlinebox space-10">
         {strip}
         {foreach [10,12,14,16,18,20,22,24,26,28,30] as $_size}
@@ -145,7 +149,7 @@ css-background:
 
     <div class="line">
         <h3>.icon<code>.userpic</code></h3>
-        <p>Ниже показаны примеры, когда <a href="{$wa_app_url}component/userpic/">.userpic</a> сделан на основе <code>.icon</code>. По умолчанию такой <code>.userpic</code> имеет смещение относительно текста. Для управления вертикальной позацией относительно окружения используйте модификаторы <code>.baseline</code>, <code>.top</code></p>
+        <p>Ниже показаны примеры, когда <a href="{$wa_app_url}component/userpic/">.userpic</a> сделан на основе <code>.icon</code>. По умолчанию такой <code>.userpic</code> имеет смещение относительно текста. Для управления вертикальной позицией относительно окружения используйте модификаторы <code>.baseline</code>, <code>.top</code></p>
         <div class="u-example">{_render_icon}</div>
         <div class="line">
             <pre class="prettyprint">{_render_icon|escape}</pre>

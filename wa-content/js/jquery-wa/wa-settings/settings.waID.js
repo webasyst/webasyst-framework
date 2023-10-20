@@ -186,9 +186,8 @@ class WASettingsWaID {
 
         $.get('?module=settings&action=waIDConnectDialog', function (html) {
             $wrapper.append(html);
-            $wrapper.one('connected', function (e, data, dialog) {
-
-                dialog.close();
+            $('.js-waid-connect-dialog:visible').one('connected', function (e, data, dialog) {
+                dialog.dialog.close();
 
                 if (upgrade_all) {
                     $.wa.content.load(that.current_page_url + '?upgrade_all=1', true);

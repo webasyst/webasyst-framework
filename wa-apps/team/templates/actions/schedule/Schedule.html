@@ -78,9 +78,15 @@
                     </span>
                     <span class="custom-ml-{if !$selected_user.id && !empty($selected_user.photo_url_16)}8{else}4{/if}">{$selected_user.name|escape}</span>
                 </a>
+                {$_user_id = $wa->user("id")}
+                {$_current_user = $users[$_user_id]}
+
+                {$_users = array_merge(array_slice($users, 0, 1), ['current' => $_current_user], array_slice($users, 1))}
+
                 <div class="dropdown-body">
                     <ul class="menu">
-                        {foreach $users as $_u}
+                        {foreach $_users as $_u_id => $_u}
+                            {if $_u_id != 'current' && $_u.id == $_user_id}{continue}{/if}
                             <li class="t-menu-item {if $selected_user.id == $_u.id}selected{/if}">
                                 <a href="{teamHelper::getUrl('user', $_u.id)}">
                                     <span class="icon">

@@ -1,0 +1,167 @@
+<div class="dialog" id="t-waid-connect-code-dialog" style="line-height: 1.5;">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+
+        {*
+        <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        <header class="dialog-header"></header>
+        *}
+
+        <div class="dialog-content">
+            <div class="flexbox vertical middle">
+                <h2>[`Mobile app code`]</h2>
+                <p class="custom-mt-0 align-center js-dialog-text"></p>
+                <p class="largest bold custom-mr-0 custom-my-16 js-get-code-input" style="pointer-events:none;padding:0.75rem 1rem;background:var(--background-color);border-radius:0.5rem;letter-spacing:5px;"><span style="color:var(--gray);">XXXX XXXX</span></p>
+                <button type="button" class="button outlined rounded js-copy-code custom-m-0">
+                    <i class="fas fa-copy custom-mr-4"></i>
+                    [`Copy the code`]
+                    <span class="hidden js-loading-indicator">...&nbsp;
+                        <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>
+                    </span>
+                </button>
+                <button type="button" class="button green outlined rounded js-update-code hidden custom-m-0">
+                    <i class="fas fa-redo custom-mr-4"></i> [`Refresh`]
+                </button>
+                <span class="js-code-timer custom-mt-32 bold larger hidden"></span>
+            </div>
+        </div>
+
+        <footer class="dialog-footer flexbox middle">
+            <button type="button" class="button light-gray js-close-dialog ">[`Close`]</button>
+            <a href="https://www.webasyst.{if $wa->locale() == 'ru_RU'}ru{else}com{/if}/mobile/" class="custom-ml-auto bold" target="_blank">[`Browse Webasyst mobile apps`] <i class="fas fa-external-link-alt small opacity-50"></i></a>
+        </footer>
+    </div>
+</div>
+<script>(function() { "use strict";
+    const user_id =  $.team.profile.user.id
+    const locales = {
+        "copy": {_w("Copy")|json_encode},
+        "copied": {_w("Copied")|json_encode},
+        "done": '[`Done`]'
+    }
+
+    const $copy_button = $('.js-copy-code')
+    const $update_button = $('.js-update-code')
+    const $code_timer = $('.js-code-timer')
+    const controller_url = $.team.profile.wa_backend_url + '?module=settings&action=waIDInviteUserByCode';
+
+    var $dialog = $('#t-waid-connect-code-dialog');
+
+   $dialog.find('.js-dialog-text').html($.wa.locale.code_dialog_text)
+
+    // Event is triggered in team/js/profile.js, initSidebarWidgetAccess, waDialog onOpen
+    $dialog.on('dialog_opened', function(event, code_info, dialog_instance) {
+        printCodeInfo(code_info);
+
+        $dialog.find('.js-update-code').on('click', updateCodeInfo)
+    });
+
+    $dialog.find('.js-copy-code').on('click', async function () {
+        let $code_input_val = $('.js-get-code-input').data('code'),
+            $btn = $(this);
+        try {
+            await toClipboard($code_input_val);
+
+            $btn.addClass('green').html(`<i class="fas fa-check"></i> ${ locales.copied }`)
+            setTimeout(()=>{
+                $btn.removeClass('green').html(`<i class="fas fa-copy"></i> ${ locales.copy }`)
+            }, 1500)
+        }catch (e) {
+            console.error(e)
+        }
+    })
+
+    const toClipboard = text => {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            } else {
+                const textArea = document.createElement("textarea");
+
+                textArea.value = text;
+                textArea.style.position = "absolute";
+                textArea.style.opacity = '0';
+
+                document.body.appendChild(textArea);
+                textArea.select();
+                return new Promise((res, rej) => {
+                    document.execCommand('copy') ? res() : rej();
+                    textArea.remove();
+                });
+            }
+        }
+
+    const updateCodeInfo = () => {
+        $.post(controller_url, { id: user_id }, response => {
+            if(response.status === 'ok') {
+                printCodeInfo(response.data);
+            } else {
+                $.each(response.errors, function (key, value) {
+                    if (key == "general") {
+                        $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                    } else {
+                        var $input = $form.find(`[name="${ key }"]`);
+                        if ($input.length) {
+                            $input
+                                .addClass('state-error')
+                                .parent()
+                                .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                        } else {
+                            $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                        }
+                    }
+                });
+            }
+        }, 'json')
+            .always(() => $update_button.find('.js-loading-indicator').addClass('hidden'));
+    }
+
+    const printCodeInfo = code_info => {
+        const invitation_code = code_info.code
+        const middleChar = Math.floor(invitation_code.length / 2);
+
+        $update_button.find('.js-loading-indicator').removeClass('hidden');
+
+        $update_button.addClass('hidden')
+        $copy_button.removeClass('hidden');
+
+        $('.js-get-code-input')
+            .empty()
+            .text(invitation_code.substring(0, middleChar) + ' ' + invitation_code.substring(middleChar, invitation_code.length))
+            .data('code', invitation_code);
+
+        if ($('.js-code-timer-info').length) {
+            $('.js-code-timer-info').remove()
+        }
+
+        const countdown = setInterval(() => {
+            const distance = (code_info.expire * 1000) - Date.now();
+            const seconds = Math.floor((distance / 1000) % 60);
+            const minutes = Math.floor((distance / 1000 / 60) % 60);
+
+            $code_timer.text(`${ ("0" + minutes).slice(-2) }:${ ("0" + seconds).slice(-2) }`);
+
+            if (distance <= 0) {
+                clearInterval(countdown);
+
+                if ($('.js-code-timer-info').length) {
+                    $('.js-code-timer-info').remove()
+                }
+
+                $code_timer
+                    .text('00:00')
+                    .after('<span class="js-code-timer-info text-orange">[`The code has expired.`]</span>');
+
+                $('.js-get-code-input').empty().html('<span style="color:var(--gray);">XXXX XXXX</span>')
+
+                $copy_button.addClass('hidden');
+                $update_button.removeClass('hidden');
+            }
+        }, 1000);
+
+        $code_timer
+            .removeClass('hidden')
+            .after('<span class="js-code-timer-info small text-gray">[`The code will expire shortly.`]</span>');
+
+    }
+
+})();</script>

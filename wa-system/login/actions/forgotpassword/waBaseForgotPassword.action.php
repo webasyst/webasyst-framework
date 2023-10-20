@@ -89,7 +89,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
      */
     protected function notFound()
     {
-        throw new waException(_w('Page not found'), 404);
+        throw new waException(_ws('Page not found'), 404);
     }
 
     /**
@@ -867,7 +867,8 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         }
         $this->view->clearAllAssign();
         try {
-            $m = new waMailMessage($subject, $body);
+            $m = new waMailMessage($subject);
+            $m->setBody($body);
             $m->setTo($to);
             return (bool)$m->send();
         } catch (Exception $e) {

@@ -327,9 +327,9 @@ class waSystemConfig
     public function getAppsPath($app, $path = null)
     {
         if ($app == 'webasyst') {
-            return $this->getRootPath().DIRECTORY_SEPARATOR.'wa-system'.DIRECTORY_SEPARATOR.$app.($path ? DIRECTORY_SEPARATOR.$path : '');
+            return waConfig::get('wa_path_system').DIRECTORY_SEPARATOR.$app.($path ? DIRECTORY_SEPARATOR.$path : '');
         } else {
-            return $this->getRootPath().DIRECTORY_SEPARATOR.'wa-apps'.DIRECTORY_SEPARATOR.$app.($path ? DIRECTORY_SEPARATOR.$path : '');
+            return waConfig::get('wa_path_apps').DIRECTORY_SEPARATOR.$app.($path ? DIRECTORY_SEPARATOR.$path : '');
         }
     }
 
@@ -497,14 +497,14 @@ class waSystemConfig
         }
 
         if ($application === 'webasyst') {
-            require_once($root_path.'/wa-system/webasyst/lib/config/webasystConfig.class.php');
+            require_once( waConfig::get('wa_path_system').'/webasyst/lib/config/webasystConfig.class.php');
             return new webasystConfig($environment, $root_path);
         }
 
-        if (file_exists($file = $root_path.'/wa-apps/'.$application.'/lib/config/'.$class_name.'.class.php')) {
+        if (file_exists($file = waConfig::get('wa_path_apps').'/'.$application.'/lib/config/'.$class_name.'.class.php')) {
             require_once($file);
             return new $class_name($environment, $root_path, $application, $locale);
-        } elseif (file_exists($file = $root_path.'/wa-apps/'.$application.'/lib/config/app.php')) {
+        } elseif (file_exists($file = waConfig::get('wa_path_apps').'/'.$application.'/lib/config/app.php')) {
             return new waAppConfig($environment, $root_path, $application, $locale);
         } else {
             throw new waException(sprintf('Application "%s" does not exist.', $application));

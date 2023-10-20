@@ -1,0 +1,127 @@
+<div class="dialog" id="t-waid-connect-code-dialog" style="line-height: 1.5;">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+
+        {*
+        <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        <header class="dialog-header"></header>
+        *}
+
+        <div class="dialog-content">
+            <div class="flexbox vertical middle">
+                <h2>[`Scan the QR code`]</h2>
+                <p class="custom-mt-0 align-center">[`Open any of the Webasyst mobile apps and scan the code below on the “Sign in with QR code” screen:`]</p>
+                <p class="align-center" style="position: relative;display: grid;place-items: center;">
+                    <span class="js-place-for-code"></span>
+                    <button type="button" class="button green circle largest js-update-code hidden" style="position:absolute;inset:auto;">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </p>
+                <span class="js-code-timer custom-mt-32 bold largest hidden"></span>
+            </div>
+        </div>
+
+        <footer class="dialog-footer flexbox middle">
+            <button type="button" class="button light-gray js-close-dialog ">[`Close`]</button>
+            <a href="https://www.webasyst.{if $wa->locale() == 'ru_RU'}ru{else}com{/if}/mobile/" class="custom-ml-auto bold" target="_blank">[`Browse Webasyst mobile apps`] <i class="fas fa-external-link-alt small opacity-50"></i></a>
+        </footer>
+    </div>
+</div>
+<script>(function() { "use strict";
+    const user_id =  $.team.profile.user.id
+    const locales = {
+        "copy": {_w("Copy")|json_encode},
+        "copied": {_w("Copied")|json_encode},
+        "done": '[`Done`]'
+    }
+
+    var $dialog = $('#t-waid-connect-code-dialog');
+    const $update_button = $('.js-update-code')
+    const $code_timer = $('.js-code-timer')
+    const $place = $dialog.find('.js-place-for-code')
+    const controller_url = $.team.profile.wa_backend_url + '?module=settings&action=waIDInviteUserByCode';
+
+    // Event is triggered in team/js/profile.js, initSidebarWidgetAccess, waDialog onOpen
+    $dialog.on('dialog_opened', function(event, code_info, dialog) {
+        printCodeInfo(code_info);
+        $place.css({
+            'padding': '15px',
+            'background-color': '#fff'
+        }).attr('title', '');
+        $dialog.find('.js-update-code').on('click', updateCodeInfo)
+
+        dialog.resize()
+    });
+
+
+        const updateCodeInfo = () => {
+            $.post(controller_url, { id: user_id, qrcode: 1 }, response => {
+                if(response.status === 'ok') {
+                    printCodeInfo(response.data);
+                } else {
+                    $.each(response.errors, function (key, value) {
+                        if (key == "general") {
+                            $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                        } else {
+                            var $input = $form.find(`[name="${ key }"]`);
+                            if ($input.length) {
+                                $input
+                                    .addClass('state-error')
+                                    .parent()
+                                    .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                            } else {
+                                $('.action-buttons').append('<p class="state-error-hint">'+value+'</p>');
+                            }
+                        }
+                    });
+                }
+            }, 'json');
+        }
+
+        const printCodeInfo = code_info => {
+            $update_button.addClass('hidden')
+            $place.empty().removeClass('opacity-20')
+
+            new QRCode($place.get(0), {
+                text: code_info.code,
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#ffffff"
+            });
+
+            if ($('.js-code-timer-info').length) {
+                $('.js-code-timer-info').remove()
+            }
+
+            const countdown = setInterval(() => {
+                const distance = (code_info.expire * 1000) - Date.now();
+                const seconds = Math.floor((distance / 1000) % 60);
+                const minutes = Math.floor((distance / 1000 / 60) % 60);
+
+                $code_timer.text(`${ ("0" + minutes).slice(-2) }:${ ("0" + seconds).slice(-2) }`);
+
+                if (distance <= 0) {
+                    clearInterval(countdown);
+
+                    if ($('.js-code-timer-info').length) {
+                        $('.js-code-timer-info').remove()
+                    }
+
+                    $code_timer
+                        .text('00:00')
+                        .after('<span class="js-code-timer-info text-orange">[`The code has expired.`]</span>');
+
+                    $update_button.removeClass('hidden');
+                    $place.addClass('opacity-20')
+
+                }
+            }, 1000);
+
+            $code_timer
+                .removeClass('hidden')
+                .after('<span class="js-code-timer-info small text-gray">[`The code will expire shortly.`]</span>');
+
+        }
+
+})();</script>

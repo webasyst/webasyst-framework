@@ -180,11 +180,17 @@
                         [`Google Analytics Property ID`]:
                         <input type="text" name="google_analytics[code]" value="{$google_analytics.code|escape}">
                         &nbsp;
-                        <label class="small">
-                            <input type="checkbox" name="google_analytics[universal]" value="1" {if !empty($google_analytics.universal)}checked{/if}> [`Universal Analytics`]
-                        </label>
+                        <select name="google_analytics[universal]" class="js-ga-select">
+                            <option value="1" data-hint="UA-123456-1" {if !empty($google_analytics.universal)}selected{/if}>[`Universal Analytics`]</option>
+                            <option value="0" data-hint="G-FJBLKODBA0" {if empty($google_analytics.universal)}selected{/if}>[`Google Analytics 4`]</option>
+                        </select>
                         <br />
-                        <span class="hint">[`E.g., <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag.`]</span>
+                        {if !empty($google_analytics.universal)}
+                            {$code_hint = 'UA-123456-1'}
+                        {else}
+                            {$code_hint = 'G-FJBLKODBA0'}
+                        {/if}
+                        <span class="hint ga-hint">{sprintf('[`E.g., <strong>%s</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag.`]', $code_hint)}</span>
                         <br /><br />
                     </div>
                     <div class="value no-shift">
@@ -279,6 +285,11 @@
 </div>
 </div>
 <script type="text/javascript">
+
+    $('.js-ga-select').change(function () {
+        $('.ga-hint strong').text($(this).find('option:selected').data('hint'));
+        $('input[name="google_analytics[code]"]').focus();
+    });
 
     // Disabled ssl checkbox
     if (window.location.protocol.replace(':', '') != 'https') {

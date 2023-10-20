@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -427,8 +427,8 @@ msgstr "Пользовательский JavaScript-код внутри &lt;head
 msgid "Google Analytics Property ID"
 msgstr "Google Analytics Property ID"
 
-msgid "E.g., <strong>UA-123456-1</strong><br />If you are using <a href=\"https://www.google.com/analytics/\">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag."
-msgstr "Например, <strong>UA-123456-1</strong><br />Если вы используете <a href=\"https://www.google.com/analytics/\">Google Analytics</a> для отслеживания статистики посещений и конверсии вашего сайта, то вместо внедрения кода Google Analytics вручную достаточно просто ввести здесь ваш Google Analytics Property ID. Правильный код Google Analytics автоматически вставится во все темы оформления всех приложений перед закрывающим тегом &lt;/head&gt;."
+msgid "E.g., <strong>%s</strong><br />If you are using <a href=\"https://www.google.com/analytics/\">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag."
+msgstr "Например, <strong>%s</strong><br />Если вы используете <a href=\"https://www.google.com/analytics/\">Google Analytics</a> для отслеживания статистики посещений и конверсии вашего сайта, то вместо внедрения кода Google Analytics вручную достаточно просто ввести здесь ваш Google Analytics Property ID. Правильный код Google Analytics автоматически вставится во все темы оформления всех приложений перед закрывающим тегом &lt;/head&gt;."
 
 msgid "Additional JavaScript code to be added before the closing &lt;/head&gt; tag:"
 msgstr "Дополнительный JavaScript-код для вставки перед закрывающим тегом &lt;/head&gt;:"
@@ -1029,3 +1029,6 @@ msgstr "Недопустимое значение: %s."
 
 msgid "The [%s] app is disabled."
 msgstr "Приложение [%s] отключено."
+
+msgid "Google Analytics 4"
+msgstr "Google Analytics 4"

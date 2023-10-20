@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -303,3 +303,21 @@ msgstr "Используется, если плагин не получил ин
 
 msgid "Must be greater than 4 g and must not exceed the maximum weight value."
 msgstr "Должен быть больше 4 г и меньше или равно значению максимального веса."
+
+msgid "Disable the plugin in case of errors on the Boxberry server"
+msgstr "Отключать плагин при возникновении ошибок на сервере Boxberry"
+
+msgid "The plugin will be disabled for the selected period of time if errors are detected."
+msgstr "Плагин прекратит работу на выбранное время при возникновении ошибок."
+
+msgid "15 minutes"
+msgstr "15 минут"
+
+msgid "30 minutes"
+msgstr "30 минут"
+
+msgid "60 minutes"
+msgstr "60 минут"
+
+msgid "180 minutes"
+msgstr "180 минут"

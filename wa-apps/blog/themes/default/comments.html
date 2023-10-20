@@ -1,11 +1,11 @@
-<script type="text/javascript">
+<script>
 $(document).ready(function() {
     var provider_list = $('#user-auth-provider');
-    
+
     provider_list.find('a').click(function () {
         var self = $(this);
         var provider = self.parents('li:first').attr('data-provider');
-        
+
         if (provider != 'guest' && provider != 'signup') {
             var left = (screen.width-600)/2;
             var top = (screen.height-400)/2;
@@ -13,12 +13,26 @@ $(document).ready(function() {
             return false;
         }
     })
+
+    $('.js-comment0').on('click', function (e) {
+        e.preventDefault();
+        const target = $(this.hash);
+        if (target.length) {
+            window.scroll({
+                top: target.offset().top,
+                left: 0,
+                behavior: 'smooth'
+            });
+        }
+    })
 });
 </script>
 
-<section class="comments" itemscope itemtype="http://schema.org/UserComments">
-    <a name="comments"></a>
+<section id="comments" class="comments" itemscope itemtype="http://schema.org/UserComments">
+    <div class="wa-flex align-items-center justify-content-between wa-mb-20">
         <h3 class="comment-count" {if $post.comment_count == 0}style="display: none;"{/if}>{_w('%d comment','%d comments',$post.comment_count)}</h3>
+        <a href="#comment0" class="button bg-gray font-weight-normal js-comment0">[`Add comment`]</a>
+    </div>
 
         {if $post.comment_count == 0}
             <ul>
@@ -62,8 +76,7 @@ $(document).ready(function() {
 
 </section>
 
-<section class="comment-form">
-    <a name="comment0"></a>
+<section class="comment-form" id="comment0">
     <form action="{$post.comment_link}" method="post">
         <h4>[`Add comment`]</h4>
         {$current_user_id=$wa->userId()}

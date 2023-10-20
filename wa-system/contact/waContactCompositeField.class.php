@@ -106,8 +106,8 @@ class waContactCompositeField extends waContactField
 
         $found = true;
 
-        if (strpos($format, ',')) {
-            // when formats are delimeted by comma, use the first one that exists
+        if (strpos((string) $format, ',')) {
+            // when formats are delimited by comma, use the first one that exists
             $found = false;
             foreach(explode(',', $format) as $format) {
                 if ($format == 'value' || $format == 'html' || $this->getFormatter($format)) {
@@ -333,7 +333,7 @@ class waContactCompositeField extends waContactField
         $params_subfield['composite_value'] = $data;
 
         // When subfield values do not exist in 'data', take them from 'value'
-        // This trigers e.g. when taking values from POST
+        // This triggers e.g. when taking values from POST
         if (is_array($data) && is_array($value)) {
             $data += $value;
         }
@@ -351,7 +351,7 @@ class waContactCompositeField extends waContactField
         foreach ($this->options['fields'] as $field) {
             $params_subfield['id'] = $field->getId();
             $params_subfield['parent'] = $params['id'];
-            $params_subfield['value'] = ifset($data, $field->getId(), null);
+            $params_subfield['value'] = ifset($data, $field->getId(), '');
 
             if (!strlen($params_subfield['value'])) {
                 $default_value = $field->getParameter('value');

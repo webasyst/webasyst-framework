@@ -302,7 +302,7 @@ class teamHelper
         }
 
         // Assign to groups
-        if (!empty($token_data['groups'])) {
+        if (!empty($token_data['groups']) && is_array($token_data['groups'])) {
             $ugm = new waUserGroupsModel();
             foreach ($token_data['groups'] as $gid) {
                 try {

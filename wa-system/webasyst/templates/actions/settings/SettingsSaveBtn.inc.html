@@ -1,12 +1,11 @@
 {$page_is = $settings_page|default:''}
-<div class="fields-group">
-    <div class="field">
-        <div class="value submit js-footer-actions">
-            <button type="submit" class="button js-submit-button">[s`Save`]</button>
-            <span class="hidden">
-                <span>[s`or`]</span>
-                <a href="{$wa_app_url}webasyst/settings/{if $page_is}{$page_is}/{/if}" class="js-cancel">[s`cancel`]</a>
-            </span>
-        </div>
+<div class="bottombar sticky custom-mt-20">
+  <div class="custom-px-20 custom-py-16 not-blank">
+    <div class="value submit js-footer-actions">
+        <button type="submit" class="button green js-submit-button">[s`Save`]</button>
+        <span class="hidden">
+            <a href="{$wa_app_url}webasyst/settings/{if $page_is}{$page_is}/{/if}" class="button light-gray js-cancel">[s`Cancel`]</a>
+        </span>
     </div>
+  </div>
 </div>

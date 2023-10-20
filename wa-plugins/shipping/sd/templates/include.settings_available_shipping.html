@@ -17,7 +17,7 @@
                 {/foreach}
             </select>
             <br>
-            <span class="errormsg js-sd-country-errormsg" style="display: none">{$obj->_w('Please select a country.')}</span>
+            <span class="errormsg state-error-hint js-sd-country-errormsg" style="display: none">{$obj->_w('Please select a country.')}</span>
         </div>
     </div>
 
@@ -50,7 +50,7 @@
             {$obj->_w('Localities')}
         </div>
         <div class="value">
-            <input name="{$namespace}[city]" value="{$settings.city|default:''|escape}" type="text">
+            <input class="long" name="{$namespace}[city]" value="{$settings.city|default:''|escape}" type="text">
 
             <p class="hint">{$obj->_w('Separate localities with a comma')}</p>
         </div>

@@ -143,7 +143,7 @@ class waDateTime
      *     month name in lowercase, character 'f' should be used.
      * @param int|string|null $time Unix timestamp. If not specified, current timestamp is used.
      * @param string|null $timezone Time zone identifier. If not specified, the time zone is determined automatically.
-     * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user's locale is determined automatically.
      * @return string
      * @throws waException
      */
@@ -153,6 +153,7 @@ class waDateTime
             $time = date('Y-m-d H:i:s', $time);
         }
         try {
+            $time = ifempty($time, '');
             $date_time = new DateTime($time);
             if ($timezone) {
                 if (!$timezone instanceof DateTimeZone) {
@@ -254,7 +255,7 @@ class waDateTime
      *     - 'timestamp': returns date/time in format 'U'
      * @param string|null $time Unix timestamp. If not specified, current timestamp is used.
      * @param string|null $timezone Time zone identifier. If not specified, the time zone is determined automatically.
-     * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user's locale is determined automatically.
      * @return string
      * @throws waException
      */
@@ -263,12 +264,17 @@ class waDateTime
         if (!$locale) {
             $locale = wa()->getLocale();
         }
-        if (!$timezone) {
-            /** @var DateTimeZone $timezone */
-            $timezone = wa()->getUser()->getTimezone(true);
-        }
-        if (!$timezone instanceof DateTimeZone) {
-            $timezone = new DateTimeZone($timezone);
+        if ($timezone == 'server') {
+            // same as date_default_timezone_get()
+            $timezone = null;
+        } else {
+            if (!$timezone) {
+                /** @var DateTimeZone $timezone */
+                $timezone = wa()->getUser()->getTimezone(true);
+            }
+            if (!$timezone instanceof DateTimeZone) {
+                $timezone = new DateTimeZone($timezone);
+            }
         }
         waLocale::loadByDomain("webasyst", $locale);
 
@@ -337,7 +343,7 @@ class waDateTime
      *     - format strings acceptable for PHP function date, or one of the identifiers corresponding to pre-defined
      *       time formatting strings supported by method format().
      * @see self::format()
-     * @param string|null $locale Locale identifier. If not specifed, current user locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user locale is determined automatically.
      * @return string
      * @throws waException
      */
@@ -460,7 +466,7 @@ class waDateTime
      * @see self::format()
      * @param string $string Date/time value string formatted to match the format identifier specified in $format parameter.
      * @param string|null $timezone Time zone identifier. If not specified, current time zone is determined automatically.
-     * @param string|null $locale Locale identifier. If not specifed, current user locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user locale is determined automatically.
      * @return string
      * @throws waException
      */
@@ -489,6 +495,7 @@ class waDateTime
             $info[$k] = $values[$i];
         }
 
+        $date_format = empty(array_diff_key($info, array_flip(['Y', 'm', 'd'])));
         if (!isset($info['s'])) {
             $info['s'] = '00';
         }
@@ -508,7 +515,7 @@ class waDateTime
                 $info['d'] = str_pad($info['j'], 2, "0", STR_PAD_LEFT);
             }
         }
-        if ($format == 'date' || $format == 'humandate') {
+        if ($format == 'date' || $format == 'humandate' || $date_format) {
             $result = $info['Y']."-".$info['m']."-".$info['d'];
             $result_format = "Y-m-d";
         } elseif ($format == 'time' || $format == 'fulltime') {

@@ -1,5 +1,5 @@
 {$_is_trial = $theme.type === waTheme::TRIAL}
-<script src="{$wa_url}wa-content/js/jquery-wa/design/theme.settings.js?v{$wa->version()}"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/design/legacy/theme.settings.js?v{$wa->version()}"></script>
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design/theme.settings.css?{$wa->version()}">
 {function name="_renderThemeSetting" _setting_var=_setting_var _setting=[]}
 {$_h_level = $_setting.level}
@@ -556,7 +556,7 @@
                     <a id="theme-start-using" href="#" class="button green">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
                     {if !empty($preview_url)}
                         [s`or`]
-                        <span class="nowrap"><a class="wa-theme-preview" target="_blank" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
+                        <span class="nowrap"><a class="wa-theme-preview" data-theme-id="{$theme.id|escape}" target="_blank" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
                     {/if}
                 </p>
             {/if}

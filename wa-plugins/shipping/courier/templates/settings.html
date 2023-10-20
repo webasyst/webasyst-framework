@@ -1,4 +1,32 @@
 <div id="courier-pickup-settings">
+    <style>
+        .is-wa2 { --font-size-small: 87.5%; --font-size-smaller: 75%; }
+
+        .is-wa2 .field .value:not(:first-child) { display: block; }
+
+        .is-wa2 .ui-datepicker-multi-3 { font-size: var(--font-size-small);margin: 0.5em 0 -1.5em 0;  }
+
+        .is-wa2 .white td { background: var(--background-color-blank) !important; }
+
+        .is-wa2 .add-rate *, .is-wa2 .add-interval * { font-style: normal; font-weight: normal;  }
+
+        .is-wa2 [type=radio]:not(.not-styled) { margin-top: 0.25em; }
+
+        .is-wa2 table { font-size: var(--font-size-small); }
+        .is-wa2 table th { font-size: 100%; }
+
+        .is-wa2 .input.shortest { width: 2.5em; }
+
+        @media screen and (max-width: 1300px) {
+            .is-wa2 .fields-group:last-child > .field > div.name { display: block; }
+            .is-wa2 .ui-datepicker-multi-3 { font-size: var(--font-size-smaller); }
+            .is-wa2 table { font-size: var(--font-size-smaller); }
+            .is-wa2 input.short.numerical { width: 7em; }
+        }
+    </style>
+    <script>
+        $('.article:first').addClass('wider');
+    </script>
     <div class="field-group">
         <div class="field">
             <div class="name"><label for="{$namespace|escape}[rate_zone][country]">{$p->_w('Shipping region')}</label></div>
@@ -12,8 +40,9 @@
             </div>
         </div>
         <div class="field">
+            <div class="name"></div>
             <div class="value region">
-                <i class="icon16 loading" style="display:none; margin-left: -23px;"></i>
+                <i class="icon16 loading fas fa-spinner wa-animation-spin" style="display:none; margin-left: -23px;"></i>
                 {if empty($regions)}
                     <p class="small">
                         [`Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country.`]
@@ -35,11 +64,11 @@
 
         <div class="field">
             <div class="name">
-    
+
             </div>
             <div class="value">
-                <label>{$p->_w('Locality name')}: <input name="{$namespace|escape}[rate_zone][city]" value="{ifset($values.rate_zone.city)}" type="text"></label>
-    
+                <label>{$p->_w('Locality name')}: <input name="{$namespace|escape}[rate_zone][city]" value="{ifset($values.rate_zone.city)}" type="text" class="long"></label>
+
                 <p class="hint">{$p->_w('If courier shipping is provided only within specific localities, enter the locality names separated by comma so that customer is not be prompted to enter a locality name when this shipping option is selected; a locality name will be automatically fetched as you specify it here. If this field is left blank, a customer will be prompted to enter a locality name.')}</p>
             </div>
             <br><br>
@@ -49,12 +78,12 @@
             <div class="name">{$p->_w('Address fields management')}</div>
             <div class="value">
                 <input name="{$namespace|escape}[required_fields]" type="hidden" value="">
-                <label><input name="{$namespace|escape}[required_fields]"  type="checkbox" value="1" {if !empty($values.required_fields)} checked="checked"{/if}>{$p->_w('Use plugin‘s default fields only')}</label>
+                <label><input name="{$namespace|escape}[required_fields]"  type="checkbox" value="1" {if !empty($values.required_fields)} checked="checked"{/if}> {$p->_w('Use plugin‘s default fields only')}</label>
                 <p class="hint">{$p->_w('Enable this option for the plugin to require from a client <em>mandatory</em> completion of the fields only, which are selected below in setting “Default address fields”.<br>Disable it to make the plugin <em>optionally</em> request only address fields defined by app settings (the app must request all address fields required for selected shipping method).')}</p>
                 <br>
             </div>
         </div>
-    
+
         <div class="field">
             <div class="name">{$p->_w('Default address fields')}</div>
             <div class="value"><label><input type="checkbox" name="{$namespace|escape}[contact_fields][country]" value="country" {if !empty($values.contact_fields.country)||!empty($values.rate_zone.country)} checked="checked"{/if} {if !empty($values.rate_zone.country)} disabled="disabled"{/if}>&nbsp;[s`Country`]</label></div>
@@ -111,7 +140,7 @@
                 {if $_string_subfield_count == 0}
                     <div>
                         {$_link_url = "{$webasyst_app_url}settings/field/"}
-                        <i class="icon16 exclamation"></i>
+                        <i class="icon16 exclamation fas fa-exclamation-triangle text-yellow"></i>
                         {sprintf($p->_w('Add extra subfields of “<em>Text (input)</em>” type for the “Address” field via <a href="%s">Settings</a> app to enable these additional address fields.'), $_link_url)}
                     </div>
                 {/if}
@@ -165,9 +194,10 @@
                 </label>
             </div>
         </div>
-    
-    
+
+
         <div class="field">
+            <div class="name"></div>
             <div class="value">
                 <select name="{$namespace|escape}[currency]" title="">
                     {foreach $currencies as $currency}
@@ -181,6 +211,7 @@
         </div>
 
         <div class="field">
+            <div class="name"></div>
             <div class="value">
                 <table class="zebra">
                     <thead>
@@ -202,7 +233,7 @@
                     <tr class="white">
                         <td colspan="3">
                             <a class="add-rate inline-link" href="#">
-                                <i class="icon16 add"></i> <b><i>{$p->_w('Add rate')}</i></b>
+                                <i class="icon16 add fas fa-plus-circle text-green custom-mr-4"></i><b><i>{$p->_w('Add rate')}</i></b>
                             </a>
                         </td>
                         <td>
@@ -215,7 +246,7 @@
                     {foreach $values.rate as $rate}
                         <tr class="rate">
                             <td class="min-width">&gt;</td>
-                            <td title="{$p->_w('Shipment amount')}">
+                            <td class="nowrap" title="{$p->_w('Shipment amount')}">
                                 <input type="text"
                                        value="{$rate.limit|escape}"
                                        class="refreshable input short numerical"
@@ -245,7 +276,7 @@
                             </td>
                             <td>
                                 <a class="delete-rate" href="#">
-                                    <i class="icon16 delete"></i>
+                                    <i class="icon16 delete fas fa-trash-alt text-red"></i>
                                 </a>
                             </td>
                         </tr>
@@ -255,7 +286,7 @@
                 <br><br>
             </div>
         </div>
-    
+
         <div class="field">
             <div class="name">
                 {$p->_w('Weight dimension unit')}

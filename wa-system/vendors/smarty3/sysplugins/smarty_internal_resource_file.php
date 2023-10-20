@@ -16,6 +16,7 @@
  * @package Smarty
  * @subpackage TemplateResources
  */
+#[\AllowDynamicProperties]
 class Smarty_Internal_Resource_File extends Smarty_Resource {
 
     /**

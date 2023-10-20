@@ -208,30 +208,33 @@
                                 </div>
                             </div>
                         </div>
-                        {if !empty($params)}
-                            {foreach $params as $p}
-                                {if is_array($p)}
-                                    {if $p.type == 'hidden'}
-                                        {$p.value}
+                        <div class="field-group">
+                            {if !empty($params)}
+                                {foreach $params as $p}
+                                    {if is_array($p)}
+                                        {if $p.type == 'hidden'}
+                                            {$p.value}
+                                        {else}
+                                            <div class="field">
+                                                <div class="name">{$p.name|escape}</div>
+                                                <div class="value">{$p.value}</div>
+                                            </div>
+                                        {/if}
                                     {else}
-                                        <div class="field">
-                                            <div class="name">{$p.name|escape}</div>
-                                            <div class="value">{$p.value}</div>
-                                        </div>
+                                        <h5 class="heading clear-both"><br>{$p}<br><br></h5>
                                     {/if}
-                                {else}
-                                    <h5 class="heading clear-both"><br>{$p}<br><br></h5>
-                                {/if}
-                            {/foreach}
-                        {/if}
-                        <div class="field">
-                            <div class="name">[`Custom parameters`]</div>
-                            <div class="value">
-                        <textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
+                                {/foreach}
+                            {/if}
+                        </div>
+                        <div class="field-group">
+                            <div class="field">
+                                <div class="name">[`Custom parameters`]</div>
+                                <div class="value">
+                                    <textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled')) && substr($key, 0, 1) != '_' && !isset($params[$key]) && is_scalar($value)}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
 
-                            {/if}{/foreach}</textarea>
-                                <br />
-                                <span class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param("key")&#125;</em>. Each key=value pair must be specified on a separate line.`] <a href="[`https://developers.webasyst.com/docs/templates/design-themes/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
+                                {/if}{/foreach}</textarea>
+                                    <p class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param("key")&#125;</em>. Each key=value pair must be specified on a separate line.`] <a href="[`https://developers.webasyst.com/docs/templates/design-themes/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></p>
+                                </div>
                             </div>
                         </div>
                     {elseif $app_id === ':text'}

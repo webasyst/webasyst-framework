@@ -1,47 +1,49 @@
 <div class="dialog" id="choose-albums">
     <div class="dialog-background"></div>
-    <form method="post" action="" class="dialog-body">
-        <header class="dialog-header">
-            <h3>{if $photo}{$photo.name|escape}{else}[`Add to album`] <span class="gray">(0)</span>{/if}</h3>
-        </header>
-        <div class="dialog-content">
-            {if !empty($albums)}
+    <div class="dialog-body">
+        <form method="post" action="">
+            <header class="dialog-header">
+                <h3>{if $photo}{$photo.name|escape}{else}[`Add to album`] <span class="gray">(0)</span>{/if}</h3>
+            </header>
+            <div class="dialog-content">
+                {if !empty($albums)}
 
-                {function choose_albums_menu parent=0 padding=0}
-                        <ul class="menu">
-                    {foreach $albums as $album}
-                        {if $album.parent_id == $parent}
-                            <li>
-                                <div class="item" style="padding-left:{$padding}rem">
-                                    <i class="fas fa-{if $album.type eq photosAlbumModel::TYPE_STATIC}images{else}filter{/if}"></i>
-                                    <label>
-                                        <span class="wa-checkbox">
-                                            <input name="album_id[]" type="checkbox" value="{$album.id}" {if isset($photo_albums[$album.id])}checked="checked"{/if} id="choose-albums-checkbox-{$album.id}" {if $album.type neq photosAlbumModel::TYPE_STATIC} disabled="disabled"{/if}>
-                                            <span>
-                                                <span class="icon">
-                                                    <i class="fas fa-check"></i>
+                    {function choose_albums_menu parent=0 padding=0}
+                            <ul class="menu">
+                        {foreach $albums as $album}
+                            {if $album.parent_id == $parent}
+                                <li>
+                                    <div class="item" style="padding-left:{$padding}rem">
+                                        <i class="fas fa-{if $album.type eq photosAlbumModel::TYPE_STATIC}images{else}filter{/if}"></i>
+                                        <label>
+                                            <span class="wa-checkbox">
+                                                <input name="album_id[]" type="checkbox" value="{$album.id}" {if isset($photo_albums[$album.id])}checked="checked"{/if} id="choose-albums-checkbox-{$album.id}" {if $album.type neq photosAlbumModel::TYPE_STATIC} disabled="disabled"{/if}>
+                                                <span>
+                                                    <span class="icon">
+                                                        <i class="fas fa-check"></i>
+                                                    </span>
                                                 </span>
                                             </span>
-                                        </span>
-                                        {$album.name|escape}
-                                    </label>
-                                </div>
-                            {call choose_albums_menu parent=$album.id padding=1}
-                            </li>
-                        {/if}
-                    {/foreach}
-                        </ul>
-                {/function}
+                                            {$album.name|escape}
+                                        </label>
+                                    </div>
+                                {call choose_albums_menu parent=$album.id padding=1}
+                                </li>
+                            {/if}
+                        {/foreach}
+                            </ul>
+                    {/function}
 
-                {call choose_albums_menu}
+                    {call choose_albums_menu}
 
-            {else}
-                [`No one album exists`]
-            {/if}
-        </div>
-        <div class="dialog-footer">
-            <input class="button" type="submit" value="[`Save`]">
-            <a class="button light-gray js-close-dialog" href="#">[`Cancel`]</a>
-        </div>
-    </form>
+                {else}
+                    [`No albums added.`]
+                {/if}
+            </div>
+            <div class="dialog-footer">
+                <input class="button" type="submit" value="[`Save`]">
+                <a class="button light-gray js-close-dialog" href="#">[`Cancel`]</a>
+            </div>
+        </form>
+    </div>
 </div>

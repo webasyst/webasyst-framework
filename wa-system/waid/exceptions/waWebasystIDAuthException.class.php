@@ -3,6 +3,6 @@
 /**
  * Class waWebasystIDAuthException
  *
- * Exception from waWebasustIDAuth adapter
+ * Exception from waWebasystIDAuth adapter
  */
 class waWebasystIDAuthException extends waWebasystIDException {}

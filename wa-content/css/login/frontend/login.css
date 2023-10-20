@@ -364,7 +364,8 @@
   width: 12px;
   height: 11px;
 }
-.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value input[type=text] {
+.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value input[type=text],
+.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value input[type=number]{
   width: 80px;
   min-width: 80px;
   display: inline-block;

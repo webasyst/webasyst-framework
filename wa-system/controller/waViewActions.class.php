@@ -20,7 +20,7 @@ abstract class waViewActions extends waController
     protected $template;
 
     /**
-     * @depecated
+     * @deprecated
      * Use getTemplateDir to set directory of your templates
      * @see getTemplateDir
      * @var string

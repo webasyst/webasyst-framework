@@ -61,11 +61,13 @@
         <li><code>.nowrap</code> — неразрывный текст (white-space: nowrap),</li>
         <li style="width: 30%;"><code>.break-all</code> — <span class="break-all">слова в тексте могут быть разбиты в любом месте, лишь бы поместиться в контейнер (word-break: break-all)</span>,</li>
         <li style="width: 30%;"><code>.break-word</code> — <span class="break-word">разбиение текста будет выполняться с сохранением целых слов (word-break: break-word)</span>.</li>
+        <li style="width: 90%;"><p><code>.text-ellipsis</code> — текст будет размещаться в одну строку до максимальной заданной ширины, а все, что не помещается, будет обрезаться многоточием.</p></li>
     </ul>
 
     <p>Блоки и изображения:</p>
     <ul>
         <li><code>.blank</code> — делает блок или контейнер «чистым листом» (белым в светлом режиме, близким к черному — в темном),</li>
+        <li><code>.not-blank</code> — заполнение чуть «приглушенным» базовым фоном <code>var(--background-color)</code>,</li>
         <li><code>.dark-mode-inverted</code> — в темном режиме содержимое блока или изображения будет инвертировано (mix-blend-mode: screen).</li>
     </ul>
 
@@ -196,12 +198,38 @@
     </ul>
     <p>Перечисленные классы предназначены для (пере)определения фонового цвета элемента путем установки свойства <code>background-color</code>.</p>
 
-    <p>CSS анимация:</p>
-    <ul>
-        <li><code>.wa-animation-swing</code></li>
-        <li><code>.wa-animation-spin</code></li>
+    <p>Цвет текста:</p>
+    <ul class="desktop-and-tablet-only">
+        <li class="width-40 flexbox"><code>.text-blue</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-blue">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-red</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-red">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-green</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-green">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-yellow</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-yellow">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-orange</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-orange">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-purple</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-purple">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-brown</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-brown">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-pink</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-pink">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-white</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-white bg-light-gray">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-black</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-black">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-gray</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-gray">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-light-gray</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-light-gray">текст <i class="fas fa-check"></i></span></li>
+        <li class="width-40 flexbox"><code>.text-dark-gray</code> — <span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-dark-gray">текст <i class="fas fa-check"></i></span></li>
     </ul>
-    <p>Для «оживления» элементов интерфейса можно использовать системные классы</p>
+    <ul class="mobile-only">
+        <li class="flexbox custom-m-4"><code>.text-blue</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-blue">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-red</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-red">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-green</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-green">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-yellow</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-yellow">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-orange</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-orange">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-purple</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-purple">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-brown</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-brown">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-pink</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-pink">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-white</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-white bg-light-gray">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-black</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-black">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-gray</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-gray">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-light-gray</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-light-gray">текст <i class="fas fa-check"></i></span></li>
+        <li class="flexbox custom-m-4"><code>.text-dark-gray</code><span style="width: 5rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto align-center middle text-dark-gray">текст <i class="fas fa-check"></i></span></li>
+    </ul>
+    <p>Эти классы (пере)определяют цвет текстового элемента (или SVG-иконки) путем установки свойства <code>color</code>.</p>
 
     <script>
         $.wa_ui.title.set({$_title|json_encode});

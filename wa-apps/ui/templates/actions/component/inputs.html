@@ -24,7 +24,7 @@
     <br><br>
 <input type="text" disabled="disabled" placeholder=":disabled">
     <br><br>
-<input type="email" placeholder="input[type='email']"> <button class="button solid orange"><span>Check Availability</span></button>
+<input type="email" placeholder="input[type='email']"> <button class="button orange"><span>Check Availability</span></button>
     <br><br>
 <input type="number" placeholder="[type='number'] or .number">
     <br><br>
@@ -36,7 +36,7 @@
     <br><br>
 <input type="text" class="large" placeholder=".large"> <button class="large red">Almost here</button>
     <br><br>
-<input type="text" class="larger" placeholder=".larger"> <button class="larger solid button green"><span>Hey Jerry</span></button>
+<input type="text" class="larger" placeholder=".larger"> <button class="larger button green"><span>Hey Jerry</span></button>
     <br><br>
 <input type="text" class="largest" placeholder=".largest"> <button class="largest purple">Send it!</button>
     <br><br>
@@ -86,20 +86,20 @@
 </form>
 {/function}
 
-{function name="_render_solid"}
-<input type="text" class="bold solid" placeholder=".bold"> <button>OK</button>
+{function name="_render_outlined"}
+<input type="text" class="bold outlined" placeholder=".bold"> <button>OK</button>
     <br><br>
-<input type="text" class="long solid" placeholder=".long">
+<input type="text" class="long outlined" placeholder=".long">
     <br><br>
-<input type="email" placeholder="input[type='email']" class="solid"> <button class="button solid orange"><span>Check Availability</span></button>
+<input type="email" placeholder="input[type='email']" class="outlined"> <button class="button outlined orange"><span>Check Availability</span></button>
     <br><br>
-<textarea placeholder="textarea" class="solid"></textarea>
+<textarea placeholder="textarea" class="outlined"></textarea>
     <br>
-<input type="text" class="largest solid" placeholder=".largest"> <button class="largest purple">I’m sold!</button>
+<input type="text" class="largest outlined" placeholder=".largest"> <button class="largest purple">I’m sold!</button>
     <br><br>
 <div class="state-with-inner-icon left" style="font-size: 2rem;">
     <span class="icon"><i class="fas fa-envelope"></i></span>
-    <input type="email" placeholder="Email" class="solid">
+    <input type="email" placeholder="Email" class="outlined">
 </div>
 {/function}
 
@@ -168,14 +168,14 @@
         <pre class="prettyprint">{_render_i2s|escape}</pre>
     </div>
 
-    <h3><code>.solid</code></h3>
-    <p>Для <code>input</code> и <code>textarea</code> поддерживается дополнительный визуальный режим отображения <code>.solid</code> — без обводки и со сплошной внутренней заливкой. Используйте этот режим исходя из эстетических соображений и для соответствия внешнего элемента интерфейсу вашего приложения.</p>
-    <p>В рамках одной формы ввода данных рекомендуется использовать только один из вариантов отображений: либо обычный, либо <code>.solid</code>. Не смешивайте их друг с другом.</p>
+    <h3><code>.outlined</code></h3>
+    <p>Для <code>input</code> и <code>textarea</code> поддерживается дополнительный визуальный режим отображения <code>.outlined</code> — с обводкой. Используйте этот режим исходя из эстетических соображений и для соответствия внешнего элемента интерфейсу вашего приложения.</p>
+    <p>В рамках одной формы ввода данных рекомендуется использовать только один из вариантов отображений: либо обычный, либо <code>.outlined</code>. Не смешивайте их друг с другом.</p>
     <div class="line">
-        {_render_solid}
+        {_render_outlined}
     </div>
     <div class="line">
-        <pre class="prettyprint">{_render_solid|escape}</pre>
+        <pre class="prettyprint">{_render_outlined|escape}</pre>
     </div>
 
     <h3><code>.state-error</code>, <code>.state-success</code>, <code>.state-caution</code></h3>

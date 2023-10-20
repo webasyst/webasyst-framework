@@ -63,7 +63,7 @@
 <script type="text/javascript">
 (function ($) {
 
-    var plugins_title = {_w('Plugins')|json_encode};
+    var plugins_title = {_ws('Plugins')|json_encode};
 
     $.plugins = {
         options: {
@@ -107,7 +107,7 @@
                     if ((xhr.status === 403) || (xhr.status === 404)) {
                         var text = $(xhr.responseText);
                         if (text.find('.dialog-content').length) {
-                            text = $('<div class="block double-padded"></div>').append(text.find('.dialog-content *'));
+                            text = $('<div class="block double-padded"></div>').append(text.find('.dialog-content'));
 
                         } else {
                             text = $('<div class="block double-padded"></div>').append(text.find(':not(style)'));
@@ -410,7 +410,7 @@
                 url: '?module=plugins&action=sort',
                 data: {
                     slug: $(ui.item).attr('id').replace(/^plugin-/, ''),
-                    pos: $(ui.item).index()-2
+                    pos: $(ui.item).index(){if !empty($installer)} - 1{if !empty($plugins)} - 1{/if}{/if}
                 },
                 success: function (data, textStatus, jqXHR) {
                     if (!data || !data.status || data.status != "ok") {

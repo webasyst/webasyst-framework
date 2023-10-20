@@ -1193,7 +1193,7 @@ window.showAccessDialog = function($access, app_id, contact_id, is_attach, is_fr
     // Close all dialogs if exist
     $access.trigger('close');
 
-    $.post($.team.app_url + "?module=access&action=dialog", {
+    $.post($.team.app_url + "?module=access&action=dialog&ui=1.3", {
         user_id: contact_id,
         app_id: app_id
     }, function(response) {

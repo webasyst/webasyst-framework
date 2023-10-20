@@ -9,7 +9,7 @@
 
 {$plugin_names = array()}
 <div id="wa-plugins-container" class="content flexbox{if !empty($container_class)} {$container_class}{/if}">
-    <div class="sidebar flexbox width-21rem bordered-right bordered-left">
+    <div class="sidebar flexbox blank width-21rem bordered-right bordered-left">
             <div class="sidebar-body{if empty($installer)} custom-pt-16{/if}">
                 <ul class="menu js-plugin-list" id="wa-plugin-list">
                     {*if !empty($installer)}
@@ -46,25 +46,27 @@
                     </div>
                 {/if}
 
-                {if $wa->user()->getRights('installer')}
+                {if $wa->user()->getRights('installer') && $wa->app() != 'shop'}
                     <div class="box custom-mt-0">
                         {*<a href="{$wa_backend_url}installer/store/app/{$wa->app()}/plugins/" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>*}
-                        <a href="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>
+                        <a href="{$plugins_hash}/" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>
                     </div>
                 {/if}
 
             </div>
         </div>
-    <div class="article content">
-        <div id="wa-plugins-content" class="article-body">
-            {if !empty($plugins)||!empty($installer)}[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>{/if}
+    <div class="content">
+        <div class="article wider">
+            <div id="wa-plugins-content" class="article-body">
+                {if !empty($plugins)||!empty($installer)}[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>{/if}
+            </div>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
 (function ($) {
-    var plugins_title = {_w('Plugins')|json_encode};
+    var plugins_title = {_ws('Plugins')|json_encode};
 
     $.plugins = {
         options: {
@@ -108,7 +110,7 @@
                     if ((xhr.status === 403) || (xhr.status === 404)) {
                         var text = $(xhr.responseText);
                         if (text.find('.dialog-content').length) {
-                            text = $('<div class="block double-padded"></div>').append(text.find('.dialog-content *'));
+                            text = $('<div class="block double-padded"></div>').append(text.find('.dialog-content'));
 
                         } else {
                             text = $('<div class="block double-padded"></div>').append(text.find(':not(style)'));
@@ -123,12 +125,36 @@
 
                 if (this.$menu.find('> li:not(.js-plugins-list) > a').length) {
                     this.helper.loadJqUI(function() {
-                        $.plugins.$menu.sortable({
-                            containment: 'parent',
-                            distance: 5,
-                            items: '> li:not(.js-plugins-list)',
-                            tolerance: 'pointer',
-                            update: $.plugins.sortHandler
+                        Sortable.create($.plugins.$menu[0], {
+                            draggable: 'li:not(.js-plugins-list)',
+                            animation: 150,
+                            removeCloneOnHide: true,
+                            onEnd: function (evt) {
+                                const $item = $(evt.item);
+                                const { oldIndex, newIndex } = evt;
+
+                                const revertSort = () => {
+                                    $item.swap(oldIndex);
+                                };
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '?module=plugins&action=sort',
+                                    data: {
+                                        slug: $item.attr('id').replace(/^plugin-/, ''),
+                                        pos: newIndex
+                                    },
+                                    success: function (data, textStatus, jqXHR) {
+                                        if (!data || !data.status || data.status != "ok") {
+                                            revertSort();
+                                        }
+
+                                    },
+                                    error: function () {
+                                        revertSort();
+                                    }
+                                });
+                            }
                         });
                     });
                 }
@@ -199,7 +225,7 @@
             if (!$plugin.length) {
                 let hash = $('.js-plugin-list').find('> li:first-child > a').attr('href');
                 if (hash) {
-                    $.wa.setHash(hash)
+                    $.wa.setHash(hash);
                 }
                 return;
             }
@@ -215,50 +241,40 @@
                 this.xhr.abort();
             }
 
-            $plugin.on('click', function(e) {
-                e.preventDefault();
-
-                getContent();
-            });
-
             $content.html(this.options.loading);
             var self = this;
-
-            getContent();
-
-            function getContent() {
-              this.xhr = $.ajax({
+            this.xhr = $.ajax({
                 url: url,
                 success: function (data) {
-                  self.xhr = null;
-                  if (self.path.plugin == path.plugin) {
+                    self.xhr = null;
+                    if (self.path.plugin == path.plugin) {
+                        $content.html(data);
+                        // update title
+                        if (self.path.plugin) {
+                            document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
+                        } else {
+                            document.title = plugins_title + self.options.title_suffix;
+                        }
 
-                    $content.html(data);
-                    // update title
-                    if (self.path.plugin) {
-                      document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
-                    } else {
-                      document.title = plugins_title + self.options.title_suffix;
+                        self.$menu.find('li.selected').removeClass('selected');
+                        var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
+                        self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
+
+                        $(document).trigger('wa_loaded');
+
+                        if (!self.options.useIframeTransport) {
+                            $('#plugins-settings-form').submit(function () {
+                                self.saveHandlerAjax(this);
+                                return false;
+                            });
+                        } else {
+                            $('#plugins-settings-form').submit(function () {
+                                self.saveHandlerIframe(this);
+                            });
+                        }
                     }
-
-                    self.$menu.find('li.selected').removeClass('selected');
-                    var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
-                    self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
-
-                    if (!self.options.useIframeTransport) {
-                      $('#plugins-settings-form').submit(function () {
-                        self.saveHandlerAjax(this);
-                        return false;
-                      });
-                    } else {
-                      $('#plugins-settings-form').submit(function () {
-                        self.saveHandlerIframe(this);
-                      });
-                    }
-                  }
                 }
-              });
-            }
+            });
         },
 
         saveHandlerIframe: function (form) {
@@ -362,8 +378,11 @@
                 if (!$.ui || !$.ui.mouse) {
                     files.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
                 }
-                if (!$.fn.sortable) {
-                    files.push('wa-content/js/jquery-ui/jquery.ui.sortable.min.js');
+                if (typeof Sortable === "undefined") {
+                    files.push('wa-content/js/sortable/sortable.min.js');
+                }
+                if (!$().swap) {
+                    files.push('wa-content/js/jquery-plugins/jquery.swap.js');
                 }
 
                 if (files.length) {
@@ -414,25 +433,6 @@
                     $container.empty().show();
                 }, timeout);
             }
-        },
-        sortHandler: function (event, ui) {
-            var self = $.plugins;
-            $.ajax({
-                type: 'POST',
-                url: '?module=plugins&action=sort',
-                data: {
-                    slug: $(ui.item).attr('id').replace(/^plugin-/, ''),
-                    pos: $(ui.item).index()-2
-                },
-                success: function (data, textStatus, jqXHR) {
-                    if (!data || !data.status || data.status != "ok") {
-                        self.$menu.sortable('cancel');
-                    }
-                },
-                error: function () {
-                    self.$menu.sortable('cancel');
-                }
-            });
         }
     };
 
@@ -445,7 +445,7 @@
     });
 
     {if empty($is_ajax)}
-        $('.js-plugin-list a').on('click', function  () {
+        $('.js-plugin-list a, .js-plugins-list').on('click', function  () {
             $.plugins.dispatch($(this).attr('href'), true);
             return false;
         });

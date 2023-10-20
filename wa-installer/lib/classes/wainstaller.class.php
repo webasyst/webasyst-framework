@@ -310,12 +310,12 @@ class waInstaller
                 $update['info'] = null;
                 if (function_exists('wa')) {
                     $path = $update['target'].'lib/config/';
-                    if ($update['subject'] === 'app') {
+                    if (isset($update['subject']) && $update['subject'] === 'app') {
                         $path .= 'app.php';
                         if (file_exists($path)) {
                             $update['info'] = include $path;
                         }
-                    } elseif ($update['subject'] === 'app_plugins') {
+                    } elseif (isset($update['subject']) && $update['subject'] === 'app_plugins') {
                         $path .= 'plugin.php';
                         $slugs = explode('/', $update['slug']);
                         if ($slugs[2] === 'plugins' && file_exists($path)) {
@@ -341,7 +341,7 @@ class waInstaller
             return $update_list;
         } catch (Exception $ex) {
             $this->cleanupPath($update_path, true);
-            $this->writeLog($ex->getMessage(), self::LOG_WARNING, compact('update_list'));
+            $this->writeLog($ex->getMessage()."\n".$ex->getTraceAsString(), self::LOG_WARNING, compact('update_list'));
             $this->envReset();
             self::$ob_skip = true;
             throw $ex;
@@ -1211,7 +1211,7 @@ class waInstaller
                 try {
                     $this->cleanupPath($prev_backup_path);
                 } catch (Exception $ex) {
-                    $this->writeLog($ex->getMessage(), self::LOG_ERROR);
+                    $this->writeLog("Unable to delete old backup path:\n".$ex->getMessage(), self::LOG_ERROR);
                 }
             }
         } catch (Exception $ex) {
@@ -1220,8 +1220,8 @@ class waInstaller
                     $this->cleanupPath($backup_path);
                     $this->rename($prev_backup_path, $backup_path);
                 }
-            } catch (Exception $ex) {
-                $this->writeLog($ex->getMessage(), self::LOG_ERROR);
+            } catch (Exception $ex2) {
+                $this->writeLog("Unable to restore old backup path:\n".$ex2->getMessage(), self::LOG_ERROR);
             }
             throw $ex;
         }
@@ -1516,11 +1516,11 @@ class waInstaller
 
             );
         }
-        if (strpos($this->current_stage, '_') === false) {
+        if (strpos((string) $this->current_stage, '_') === false) {
             $stage_name = 'unknown';
             $stage_status = self::STAGE_NONE;
         } else {
-            list($stage_name, $stage_status) = explode('_', $this->current_stage, 2);
+            list($stage_name, $stage_status) = explode('_', (string) $this->current_stage, 2);
         }
 
         $default = array(
@@ -1655,7 +1655,7 @@ class waInstaller
 
     private function getFullStateCallback(&$val, $key)
     {
-        $val = preg_match("/^-?\d+(\.|,)\d+$/", $val) ? intval($val) : $val;
+        $val = preg_match("/^-?\d+(\.|,)\d+$/", (string) $val) ? intval($val) : $val;
     }
 
     private function skipPath($path)

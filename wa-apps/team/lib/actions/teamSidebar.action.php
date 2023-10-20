@@ -28,6 +28,7 @@ class teamSidebarAction extends waViewAction
             'online_count' => $online_count,
             'invited_count' => count(teamUsersInvitedAction::getInvited()),
             'inactive_count' => $inactive_count,
+            'noaccess_count' => $this->countNoaccessUsers(),
         ));
         if(wa('team')->whichUI('team') === '1.3'){
             $this->setTemplate('templates/actions-legacy/Sidebar.html');
@@ -44,5 +45,11 @@ class teamSidebarAction extends waViewAction
         return wa()->event('backend_sidebar', $event_params, array(
             'top_li', 'section', 'bottom_li',
         ));
+    }
+
+    protected function countNoaccessUsers()
+    {
+        $cm = new waContactModel();
+        return (int) $cm->select('COUNT(id)')->where('is_staff > 0 AND is_user = 0')->fetchField();
     }
 }

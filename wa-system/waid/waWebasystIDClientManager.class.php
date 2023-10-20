@@ -117,14 +117,14 @@ class waWebasystIDClientManager
 
         // No response from API
         if (!$response) {
-            return $this->packFailResult("unknown", _w("Unknown connect error"));
+            return $this->packFailResult("unknown", _ws("Unknown connection error"));
         }
 
         // Error from API
         if (!isset($response['status']) || $response['status'] === 'fail') {
             $errors = isset($response['errors']) && is_array($response['errors']) ? $response['errors'] : [];
             $error_code = "unknown";
-            $error_message = _w("Unknown connect error");
+            $error_message = _ws("Unknown connection error");
             if ($errors) {
                 $error_code = key($errors);
                 $error_message = $errors[$error_code];
@@ -148,7 +148,7 @@ class waWebasystIDClientManager
             'method' => __METHOD__,
             'debug' => $net->getResponseDebugInfo()
         ]);
-        return $this->packFailResult("unexpected", _w("Unexpected response from connect API"));
+        return $this->packFailResult("unexpected", _ws("Unexpected response from API"));
     }
 
     /**
@@ -185,7 +185,7 @@ class waWebasystIDClientManager
     public function disconnect()
     {
         if (!$this->isConnected()) {
-            return $this->packFailResult('not_connected', _w('Client not connected'));
+            return $this->packFailResult('not_connected', _ws('Client not connected'));
         }
 
         $options = [
@@ -220,14 +220,14 @@ class waWebasystIDClientManager
                 'method' => __METHOD__,
                 'debug' => $net->getResponseDebugInfo()
             ]);
-            return $this->packFailResult("unknown", _w("Unknown connect error"));
+            return $this->packFailResult("unknown", _ws("Unknown connection error"));
         }
 
         // Error from API
         if (!isset($response['status']) || $response['status'] === 'fail') {
             $errors = isset($response['errors']) && is_array($response['errors']) ? $response['errors'] : [];
             $error_code = "unknown";
-            $error_message = _w("Unknown connect error");
+            $error_message = _ws("Unknown connection error");
             if ($errors) {
                 $error_code = key($errors);
                 $error_message = $errors[$error_code];

@@ -165,7 +165,9 @@ class waUser extends waContact
 
         $sorted_apps = array();
         if ($sorted) {
-            $sort = explode(',', $this->getSettings('', 'apps'));
+            $settings = $this->getSettings('', 'apps');
+            $settings = ifempty($settings, '');
+            $sort = explode(',', $settings);
             foreach ($sort as $app_id) {
                 if (!$is_admin && (!isset($rights[$app_id]) || !$rights[$app_id])) {
                     continue;
@@ -199,11 +201,11 @@ class waUser extends waContact
         $ugm = new waUserGroupsModel();
         $ugm->delete($id);
 
-        // Access rigths
+        // Access rights
         $right_model = new waContactRightsModel();
         $right_model->deleteByField('group_id', -$id);
 
-        // Custom application access rigths
+        // Custom application access rights
         foreach(wa()->getApps() as $aid => $app) {
             if (isset($app['rights']) && $app['rights']) {
                 $app_config = SystemConfig::getAppConfig($aid);

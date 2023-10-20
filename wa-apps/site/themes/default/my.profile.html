@@ -14,7 +14,13 @@
         {foreach $user_info as $id => $info}
             <div class="wa-field">
                 <div class="wa-name">{$info.name}</div>
-                <div class="wa-value">{$info.value}</div>
+                <div class="wa-value">
+                    {if $info.type === 'Checkbox'}
+                        <input type="checkbox" {if $info.value}checked{/if} disabled style="font-size: 0.75em;">
+                    {else}
+                        {$info.value}
+                    {/if}
+                </div>
             </div>
         {/foreach}
 
@@ -25,8 +31,6 @@
         </div>
 
     </div>
-
-    <div class="clear-both"></div>
 
     <form action="" enctype="multipart/form-data" method="post"{if empty($form->errors)} style="display: none;"{/if} id="wa-my-info-edit-wrapper">
         <div class="wa-form">
@@ -41,16 +45,13 @@
             </div>
         </div>
     </form>
-
-    <div class="clear-both"></div>
 </div>
 
 {$auth_adapters = $wa->authAdapters(true)}
 {if $auth_adapters}
-    <div class="clear-both"></div>
     <div class="wa-auth-adapters wa-connect">
         <h3>[s`Connected accounts`]</h3>
-    
+
         {$linked_adapters = []}
         {$other_adapters = []}
         {foreach $auth_adapters as $a}
@@ -60,7 +61,7 @@
                 {$other_adapters[] = $a}
             {/if}
         {/foreach}
-    
+
         {if $linked_adapters}
             <ul>
             {foreach $linked_adapters as $a}
@@ -68,7 +69,7 @@
             {/foreach}
             </ul>
         {/if}
-    
+
         {if $other_adapters}
             <p>[s`Connect this account to your social network accounts so next time you can log in without entering your password:`]</p>
             <div class="wa-auth-adapters"><ul>
@@ -85,7 +86,7 @@
                 });
             </script>
         {/if}
-    
+
     </div>
 {/if}
 

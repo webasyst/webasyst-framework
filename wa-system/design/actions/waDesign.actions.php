@@ -147,7 +147,7 @@ class waDesignActions extends waActions
             }
             $file = $theme->getFile($get_file);
             if (!$file) {
-                $get_file = preg_replace('@(\\{1,}|/{2,})@', '/', $get_file);
+                $get_file = preg_replace('@(\\{1,}|/{2,})@', '/', ifempty($get_file, ''));
                 if (!$get_file
                     ||
                     preg_match('@(^|/)\.\./@', $get_file)
@@ -257,7 +257,7 @@ class waDesignActions extends waActions
             $routing_url = wa()->getAppUrl('site');
         }
 
-        $domain = wa()->getRouting()->getDomain();
+        $same_domain = true;
         foreach ($routes as $route) {
             $theme_id = (string)ifempty($route, 'theme', 'default');
             if (!isset($themes[$theme_id])) {
@@ -270,8 +270,9 @@ class waDesignActions extends waActions
                 $themes[$route['theme_mobile']]['is_used'] = true;
             }
             $url = $route['_url'];
-            if (!$preview_url && $route['_domain'] == $domain) {
+            if (!$preview_url) {
                 $preview_url = $url;
+                $same_domain = wa()->getRouting()->getDomain() == $route['_domain'];
             }
             $route['_preview_url'] = $url;
 
@@ -285,7 +286,7 @@ class waDesignActions extends waActions
         foreach ($themes as $t_id => &$theme) {
             if (!isset($theme['preview_url'])) {
                 $theme['preview_url'] = $preview_url;
-                if ($preview_url && $theme['type'] !== waTheme::TRIAL) {
+                if ($preview_url && !$same_domain) {
                     $theme['preview_url'] .= $preview_params.$t_id;
                 }
             }
@@ -582,7 +583,7 @@ HTACCESS;
         if (file_exists($path)) {
             $routes = include($path);
             if (!is_writable($path)) {
-                $this->displayJson(array(), sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the file "%s".'), 'wa-config/routing.php'));
+                $this->displayJson(array(), sprintf(_ws('Settings could not be saved due to insufficient write permissions for file %s.'), 'wa-config/routing.php'));
                 return;
             }
         } else {
@@ -699,13 +700,14 @@ HTACCESS;
             $routes = $this->getRoutes();
             $theme_routes = array();
             $preview_url = false;
+            $domain = wa()->getConfig()->getDomain();
             foreach ($routes as $r) {
                 if ((waRequest::get('route') == $r['_id']) && !empty($r['locale'])) {
                     $current_locale = $r['locale'];
                 }
                 if (!$preview_url && $r['app'] == $app_id) {
                     $preview_url = $r['_url'];
-                    if ($current_theme->type !== waTheme::TRIAL) {
+                    if ($r['_domain'] !== $domain) {
                         $preview_url .= '?theme_hash='.$this->getThemeHash().'&set_force_theme='.$theme_id;
                     }
                 }
@@ -871,7 +873,7 @@ HTACCESS;
      * Convert flat list of theme settings into hierarchical tree structure
      * based on group divider levels.
      *
-     * Each group_divider is allowed to have several "normal" settings at the begining
+     * Each group_divider is allowed to have several "normal" settings at the beginning
      * of its child 'items' array, and then may have several child group_dividers.
      * It is never allowed to alternate between group_dividers and "normal" settings.
      *
@@ -962,7 +964,7 @@ HTACCESS;
             );
         }
 
-        // Extract items from the begining of $dividers_list
+        // Extract items from the beginning of $dividers_list
         // until they fit into our $item (i.e. belong under the $needed_level)
         // As soon as we meet something <= $needed_level, this loop stops.
         do {
@@ -1095,13 +1097,13 @@ HTACCESS;
             }
             $path = str_replace('*', $f->extension, $path);
             if (!$f->moveTo($path)) {
-                $error = sprintf(_w('Failed to upload file %s.'), $f->name);
+                $error = sprintf(_ws('Failed to upload file %s.'), $f->name);
                 return false;
             }
             return true;
         } else {
             if ($f->name) {
-                $error = sprintf(_w('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
+                $error = sprintf(_ws('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
             }
             return false;
         }
@@ -1116,7 +1118,7 @@ HTACCESS;
     {
         // If you add svg here, then on sites with cdn such pictures will not be loaded.
         // Design themes must use the $wa_real_theme_url variable for settings with the image type.
-        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
+        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'svg');
         if (!in_array(strtolower($f->extension), $allowed)) {
             $error = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             return false;
@@ -1388,7 +1390,7 @@ HTACCESS;
     }
 
     /**
-     * Get default dir of lagacy templates of these actions
+     * Get default dir of legacy templates of these actions
      * @inheritDoc
      */
     protected function getLegacyTemplateDir()

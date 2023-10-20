@@ -234,7 +234,16 @@ class boxberryShippingApiManager
         try {
             $result = $net->query($this->url, $data, waNet::METHOD_POST);
         } catch (waException $e) {
+            if ($e->getCode() !== 401) {
+                $app_settings_model = new waAppSettingsModel();
+                $app_settings_model->set('webasyst.shipping.' . $this->bxb->getId(), 'last_error_time', time());
+                waLog::log('Plugin stopped', 'wa-plugins/shipping/boxberry/stop.log');
+            }
             $result = [];
+            $error_message = $e->getMessage();
+            try {
+                $result = waUtils::jsonDecode($error_message, true);
+            } catch (waException $exception) {}
         }
 
         $errors = $this->setErrors($result);

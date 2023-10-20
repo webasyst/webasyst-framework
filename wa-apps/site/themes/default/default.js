@@ -180,8 +180,7 @@ $(document).ready(function() {
         var is_mobile_case = MatchMedia("only screen and (max-width: 760px)");
         if (!is_mobile_case) {
             var scroll_top = $(this).scrollTop();
-            var $cart = $("#cart"),
-                $flyer = $('#cart-flyer');
+            var $cart = $("#cart");
 
             if ( scroll_top >= 55 && !$cart.hasClass( "fixed" ) && !$cart.hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
                 $cart.hide();
@@ -195,13 +194,6 @@ $(document).ready(function() {
                 }
 
                 $cart.addClass( "fixed" );
-
-                if ($flyer.length) {
-                    var _width = $flyer.width()+52;
-                    var _offset_right = $(window).width() - $flyer.offset().left - _width + 1;
-
-                    $("#cart").css({ "right": _offset_right+"px", "width": _width+"px" });
-                }
 
                 $cart.show();
                 // $cart.slideToggle(200);

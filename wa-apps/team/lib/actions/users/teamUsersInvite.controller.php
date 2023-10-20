@@ -9,10 +9,10 @@ class teamUsersInviteController extends teamUsersNewUserController
 {
     public function execute()
     {
-        $this->invite($this->getEmail(), $this->getPhone(), $this->getGroups());
+        $this->invite($this->getEmail(), $this->getPhone(), $this->getGroups(), $this->getContactId());
     }
 
-    public function invite($email, $phone, $groups)
+    public function invite($email, $phone, $groups, $contact_id)
     {
         $event_data = compact('email', 'phone', 'groups');
         $this->runInviteUserHook($event_data);
@@ -22,7 +22,10 @@ class teamUsersInviteController extends teamUsersNewUserController
         if (!empty($phone)) {
             $result = (new teamUserInvitingByPhone($phone, ['groups' => $groups]))->invite();
         } else {
-            $result = (new teamUserInvitingByEmail($email, ['groups' => $groups]))->invite();
+            $result = (new teamUserInvitingByEmail($email, [
+                'groups' => $groups,
+                'contact_id' => $contact_id,
+            ]))->invite();
         }
 
         if (!$result['status']) {
@@ -48,6 +51,12 @@ class teamUsersInviteController extends teamUsersNewUserController
             'contact_id'  => $result['details']['contact_id'],
             'contact_url' => wa()->getUrl().'id/'.$result['details']['contact_id'].'/',
         );
+
+        $contact_data = $this->getAdditionalContactData();
+        if ($contact_data) {
+            $c = new waContact($result['details']['contact_id']);
+            $c->save($contact_data);
+        }
     }
 
     /**

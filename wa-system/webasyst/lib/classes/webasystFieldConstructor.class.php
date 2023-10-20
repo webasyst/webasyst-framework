@@ -213,6 +213,15 @@ class webasystFieldConstructor
                     )
                 );
             }
+
+            /** 32 символа ограничение поля в wa_contact_data БД */
+            if (strlen($id) > 32) {
+                return [
+                    null,
+                    [['id_val' => _ws('ID must contain no more than 32 characters')]]
+                ];
+            }
+
             // field id exists
             if (null !== $this->isFieldSystem($id)) {
                 return array(

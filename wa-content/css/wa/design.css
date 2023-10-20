@@ -210,6 +210,10 @@ and (orientation : portrait) {
 
 }
 
+.is-wa2 #wa-design-container .fields-group {
+    background: var(--background-color-blank);
+}
+
 .is-wa2 #wa-theme-list .themes a {
     color: var(--accent-color) !important;
 }
@@ -287,6 +291,15 @@ and (orientation : portrait) {
 
 .is-wa2 #wa-design-container .wa-design-scroll-action {
     margin-left: -13rem;
+}
+
+.is-wa2 #wa-design-container ul.menu-v {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+
+.is-wa2 #theme-settings .wa-radio {
+  margin-right: 0.3rem;
 }
 
 .is-wa2 .skeleton {

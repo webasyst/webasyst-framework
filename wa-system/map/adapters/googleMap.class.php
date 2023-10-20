@@ -68,6 +68,26 @@ HTML;
         }
     }
 
+    /**
+     * https://developers.google.com/maps/documentation/urls/get-started?hl=ru
+     * @param $address
+     * @param $longitude
+     * @param $latitude
+     * @param int $zoom
+     * @return string
+     */
+    public function getUrlToMap($address, $longitude, $latitude, $zoom)
+    {
+        if (isset($longitude, $latitude)) {
+            $query = "$latitude,$longitude";
+        } else {
+            $query = $address;
+        }
+        $query = urlencode($query);
+
+        return "https://maps.google.com/maps?q=$query&z=$zoom";
+    }
+
     private function getStaticImg($address, $options = array())
     {
         if ($key = $this->getSettings('key')) {
@@ -81,6 +101,7 @@ HTML;
         $size = (int)$width.'x'.(int)$height;
         $url = '//maps.googleapis.com/maps/api/staticmap?center='.urlencode($address).'.&zoom='.$zoom.'&size='.$size.'&markers=color:red%7Clabel:A%7C'.urlencode($address).'&sensor=false';
         $url_with_key = $url . $key;
+        $url_to_map = $this->getUrlToMap($address, null, null, $zoom);
 
         $image_id = 'google-static-map-id'.uniqid();
 
@@ -94,7 +115,7 @@ function() {
 }
 JS;
 
-        return '<a target="_blank" href="//maps.google.com/maps?q='.urlencode($address).'&z='.$zoom.'"><img id="'. $image_id .'" src="'. $url_with_key .'" onerror="this.onerror='. $remove_bad_map .';this.src=\''. $url .'\';" /></a>';
+        return '<a target="_blank" href="'.$url_to_map.'"><img id="'. $image_id .'" src="'. $url_with_key .'" onerror="this.onerror='. $remove_bad_map .';this.src=\''. $url .'\';" /></a>';
     }
 
     protected function getByLatLng($lat, $lng, $options = array())

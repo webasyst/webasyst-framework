@@ -818,12 +818,12 @@ abstract class waContactField
                 if (is_array($error_msg)) {
                     $error_msg = implode("<br>\n", $error_msg);
                 }
-                $errors_html .= "\n".'<em class="errormsg">'.htmlspecialchars($error_msg).'</em>';
+                $errors_html .= "\n".'<em class="errormsg state-error-hint">'.htmlspecialchars($error_msg).'</em>';
             }
 
-            $attrs = preg_replace('~class="~', 'class="error ', $attrs);
-            if (false === strpos($attrs, 'class="error')) {
-                $attrs .= ' class="error"';
+            $attrs = preg_replace('~class="~', 'class="error state-error ', $attrs);
+            if (false === strpos($attrs, 'class="error state-error')) {
+                $attrs .= ' class="error state-error"';
             }
         }
 

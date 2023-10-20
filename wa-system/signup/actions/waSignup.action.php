@@ -1261,7 +1261,7 @@ class waSignupAction extends waViewAction
                 // If confirmed by SMS, than try generate password on not extended alphabet
                 $this->getGeneratedPassword(false);
             } elseif (!$need_confirm) {
-                // if confirmation is not required, but sms channel has priority (first in list), than try generate passowrd on not extended alphabet
+                // if confirmation is not required, but sms channel has priority (first in list), than try generate password on not extended alphabet
                 $channels = $this->auth_config->getVerificationChannelInstances();
                 $channel = reset($channels);
                 if ($channel->isSMS()) {
@@ -1357,7 +1357,7 @@ class waSignupAction extends waViewAction
                     $phone_transformed = !empty($details['phone_transformed']);
                     break;
                 } elseif (isset($details['timeout'])) {
-                    // Tell user about timeout error right aways - so return
+                    // Tell user about timeout error right away - so return
                     return array(self::SIGNED_UP_STATUS_FAILED, $details);
                 } else {
                     // diagnostic log print

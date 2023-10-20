@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.2
 info:
   title: 'Team API'
   version: 1.0.0
@@ -106,6 +106,15 @@ paths:
             schema:
               type: object
               properties:
+                type:
+                  type: string
+                  enum:
+                    - 'link'
+                    - 'code'
+                  description: |
+                    + Link: intite is accepted via one-time link (default). Invitation by link requires phone or email to be set.
+                    + Code: invite is accepted by a short-lived 8-digit numeric code.
+                  default: code
                 email:
                   type: string
                   format: email
@@ -116,8 +125,22 @@ paths:
                   description: New user phone
                   nullable: true
                 send:
-                  type: boolean
-                  description: Send invitation to email or phone if true. In false case return URL for invitation confirmation.
+                  type: integer
+                  enum:
+                    - 1
+                    - 0
+                  description: |
+                    + 1 - Send invitation link to email or phone
+                    + 0 - Do not send link but returns it in response
+                groups[]:
+                  type: array
+                  description: Group identifiers for new user
+                  items:
+                    type: integer
+            encoding:
+              groups[]:
+                style: form
+                explode: true
       responses:
         200:
           description: Returns result.
@@ -133,6 +156,12 @@ paths:
                     type: string
                     format: uri
                     description: URL for invitation confirmation
+                  invitation_code:
+                    type: string
+                    description: Code to accept invite with.
+                  invitation_expire:
+                    type: integer
+                    description: Timestamp when invitation expires.
         403:
           description: Access denied to the Team app or this API method.
           content:

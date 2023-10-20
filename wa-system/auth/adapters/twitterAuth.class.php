@@ -198,7 +198,7 @@ class twitterAuth extends waAuthAdapter
         }
         else {
             if ( waRequest::get('oauth_token') != $storage->get('oauth_token' ) ) {
-                throw new waAuthException(_w("Old token"));
+                throw new waAuthException(_ws("Old token"));
             }
 
             // get access token

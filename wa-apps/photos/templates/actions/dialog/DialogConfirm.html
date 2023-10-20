@@ -9,7 +9,7 @@
     {assign var="text" value='[`Photo “%s” will be deleted without the ability to restore. `]'|sprintf:$photo_name|cat:'[`Delete`]':'?'}
 {else if $type == 'unstack'}
     {assign var="title" value="[`Unstack`]"}
-    {assign var="text" value={_w('This will unstack %d photo.', 'This will unstack %d photos.', $photos_count)}|cat:'[`Are your shure?`]'}
+    {assign var="text" value={_w('This will unstack %d photo.', 'This will unstack %d photos.', $photos_count)}|cat:'[`Are you sure?`]'}
 {/if}
 {if $type|strstr:'delete' !== false}
     {assign var="button_text" value='[`Delete`]'}

@@ -233,7 +233,9 @@ class waImageGd extends waImage
             case 'webp':
                 $save = 'imagewebp';
                 $type = IMAGETYPE_WEBP;
-                $quality = 100;
+                if ($quality == 100 && version_compare(PHP_VERSION, '8.1', '>=')) {
+                    $quality = IMG_WEBP_LOSSLESS;
+                }
                 break;
             default:
                 throw new waException(sprintf(_ws('GD does not support %s images'), $extension));

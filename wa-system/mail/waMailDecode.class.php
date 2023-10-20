@@ -240,7 +240,7 @@ class waMailDecode
             }
         }
         if (preg_match('/:expr/i', $html)) {
-            // dump expressions from contibuted content
+            // dump expressions from contributed content
             $html = preg_replace("/:expression\(.*?((?>[^(.*?)]+)|(?R)).*?\)\)/i", "", $html);
 
             $pattern = "/<(.*)?:expr.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i";

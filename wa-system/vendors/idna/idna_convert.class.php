@@ -94,7 +94,7 @@ class idna_convert
      */
     public function __construct($options = false)
     {
-        $this->slast = $this->_sbase + $this->_lcount * $this->_vcount * $this->_tcount;
+        //$this->slast = $this->_sbase + $this->_lcount * $this->_vcount * $this->_tcount;
         // If parameters are given, pass these to the respective method
         if (is_array($options)) {
             $this->set_parameter($options);

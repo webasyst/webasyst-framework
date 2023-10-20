@@ -228,11 +228,12 @@ class waPageActions extends waActions
 
                 $html .= '<li class="drag-newposition"></li>';
                 $html .= '<li class="dr" id="page-'.$page['id'].'" data-page-id="'.$page['id'].'">'.
-                    (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').
-                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'">'.$icon.
+                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'">'.
+                    (!empty($page['childs']) ? '<span class="js-expander wa-page-expander"><i class="fas fa-caret-down js-icon"></i></span>' : '').
+                    $icon.
                     '<span>'.htmlspecialchars($page['name']).
                     ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span></span>'.
-                    '<span class="count action small"><i class="fas fa-plus-circle wa-page-add"></i></span>';
+                    '<span class="count action small"><i class="fas fa-plus-circle text-green wa-page-add"></i></span>';
                 $html .= '</a>';
                 if (!empty($page['childs'])) {
                     $html .= self::printPagesTree($page, $page['childs'], $prefix_url);
@@ -671,7 +672,7 @@ class waPageActions extends waActions
         if ($result) {
             $this->logAction('page_move', $page_id);
         }
-        $this->displayJson($result, $result ? null: _w('Database error'));
+        $this->displayJson($result, $result ? null: _ws('Database error'));
     }
 
     public function uploadimageAction()
@@ -685,7 +686,7 @@ class waPageActions extends waActions
 
         if (!is_writable($path)) {
             $p = substr($path, strlen(wa()->getDataPath('', true)));
-            $errors = sprintf(_w("File could not be saved due to insufficient write permissions for the %s folder."), $p);
+            $errors = sprintf(_ws("File could not be saved due to insufficient write permissions for the %s directory."), $p);
         } else {
             $errors = array();
             $f = waRequest::file('file');
@@ -754,12 +755,12 @@ class waPageActions extends waActions
                 return false;
             }
             if (!$this->saveFile($f, $path, $name)) {
-                $errors[] = sprintf(_w('Failed to upload file %s.'), $f->name);
+                $errors[] = sprintf(_ws('Failed to upload file %s.'), $f->name);
                 return false;
             }
             return true;
         } else {
-            $errors[] = sprintf(_w('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
+            $errors[] = sprintf(_ws('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
             return false;
         }
     }

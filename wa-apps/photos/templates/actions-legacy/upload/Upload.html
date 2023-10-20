@@ -37,7 +37,7 @@
                                             <i class="icon10 yes overhanging"></i>
                                             <input id="u-access-public" type="radio" name="status" value="1" checked="checked">
                                             [`Public`]
-                                            <span class="hint">[`Photos automatically appear in the public gallery`]</span>
+                                            <span class="hint">[`Photos will automatically appear in the public gallery.`]</span>
                                         </label>
                                     </div>
                                     <div class="value">
@@ -47,14 +47,14 @@
                                             <input id="u-access-private" type="radio" value="0" name="status" >
                                             [`Private`]
                                             <span class="hint">
-                                                [`Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps`].
+                                                [`Only authorized users of Webasyst Photos app can see these images. Images can be shared by sending a secure private link or can be embedded in external websites and apps.`].
                                                 <a href="#" class="inline-link p-privacy-settings-link"><b><i>[`Privacy settings`]</i></b></a>
                                             </span>
                                         </label>
                                         <div class="hint p-privacy-settings" style="display: none;">
                                             <br><br>
                                             {if !empty($groups)}
-                                                [`Select user groups you want to have access to these photos:`]
+                                                [`Select user groups which you want to have access to these photos:`]
                                                 <div class="block">
                                                     {foreach from=$groups item=g_name key=g_id}
                                                     <label for="user-group-{$g_id}"><input id="user-group-{$g_id}" name="groups[]" type="checkbox" value="{$g_id}" checked disabled> <span>{$g_name|escape}</span></label><br>
@@ -63,7 +63,7 @@
                                                 <em>[`Uncheck all groups to make photos visible to you only.`]</em>
                                             {else}
                                                 <input type="hidden" name="groups[]" value="0" disabled>
-                                                <em>[`There are no user groups thus you cant't manage access to photos`]</em>
+                                                <em>[`No user groups have been set up; therefore, you can’t manage access to photos.`]</em>
                                             {/if}
                                         </div>
                                     </div>
@@ -100,7 +100,7 @@
                                         <div id="upload-album-name-field" style="display:none; line-height: 1.3em;">
                                             <br>
                                             <br>
-                                            <span class="hint">[`Name the album for this upload`]</span>
+                                            <span class="hint">[`Enter the name for a new album`]</span>
                                             <br>
                                             <input id="upload-album-name" name="album_name" type="text" >
                                         </div>
@@ -189,7 +189,7 @@
                         {% if (file.responseText) { %}
                             {%#file.responseText%}
                         {% } else { %}
-                            {%=$_('Failed to upload. Most probably, there were not enough memory to create thumbnails.')%}.
+                            {%=$_('Failed to upload. Perhaps there was not enough memory to create image thumbnails.')%}.
                         {% } %}
                     {% } else { %}
                         {%=file.error%}

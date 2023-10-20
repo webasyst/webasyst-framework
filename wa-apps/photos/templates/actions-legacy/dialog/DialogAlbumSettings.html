@@ -35,7 +35,7 @@
                                     <span>{if $album.full_base_url}{$album.full_base_url|escape}{/if}</span><input type="text" name="url" value="{$album.url}">/
                                     <em class="errormsg"></em>
                                 {else}
-                                    <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos.`]</span>
+                                    <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules set up for Photos app in your website settings. Use Site app’s “Structure” section to settle Photos app on your website and to start publishing photos.`]</span>
                                 {/if}
                             </div>
                         </div>
@@ -50,7 +50,7 @@
                                     <i class="icon10 yes overhanging"></i>
                                     <input id="access-public" type="radio" {if !empty($parent) && $parent.status <= 0}disabled{else if $album.status == 1}checked{/if} name="status" value="1">
                                     [`Public`]
-                                    <span class="hint">[`Album is visible in the public gallery`]</span>
+                                    <span class="hint">[`The album is visible in the public gallery.`]</span>
                                 </label>
                             </div>
                             <div class="value no-shift bottom-padded">
@@ -60,13 +60,13 @@
                                     <input id="access-private" type="radio" {if $album.status <= 0}checked{/if} name="status" value="0">
                                     [`Private`]
                                     <span class="hint">
-                                        [`Album is visible only to authorized users of the Photos app, or by a private link`].
+                                        [`The album is visible only to authorized users of the Photos app or via a private link.`]
                                         <a class="inline-link p-privacy-settings-link" href="#"><b><i>[`Privacy settings`]</i></b></a>
                                     </span>
                                     <div class="hint p-privacy-settings" {if $album.status == 1 || isset($rights[0])}style="display: none;"{/if}>
                                         <br><br>
                                         {if !empty($groups)}
-                                            [`Select user groups you want to have access to this album`]:
+                                            [`Select user groups which you want to have access to this album:`]
                                             <div class="block">
                                                 {foreach from=$groups item=group key=group_id}
                                                     <label for="album-group-{$group_id}"><input id="album-group-{$group_id}" name="groups[]" value="{$group_id}" type="checkbox" {if isset($rights[0]) || isset($rights[$group_id])}checked{/if} {if isset($rights[0])}disabled{/if}> <span>{$group.name|escape}</span></label><br>
@@ -75,7 +75,7 @@
                                             <em>[`Uncheck all groups to make this album visible to you only.`]</em>
                                         {else}
                                             <input type="hidden" name="groups[]" value="0" {if isset($rights[0])}disabled{/if} >
-                                            <em>[`There are no user groups in your Webasyst installation. Add groups in the Contacts app to be able to manage access to photos`]</em>
+                                            <em>[`There are no user groups set up in your Webasyst account. Add groups in the Team app to be able to manage access to photos.`]</em>
                                         {/if}
                                     </div>
                                 </label>
@@ -196,7 +196,7 @@
                             </div>
                             <div class="value no-shift">
                                 <textarea id="custom-settings" name="params" rows="10" cols="5">{if $params}{foreach $params as $k=>$v}{if $k!='order'}{$k}={$v|escape|cat:"\n"}{/if}{/foreach}{/if}</textarea><br>
-                                <span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$album.key&#125;</em>. Each key=value pair should be on a separate line.`]</span>
+                                <span class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in frontend theme templates as <em>&#123;$album.key&#125;</em>. Each key=value pair must be specified on a separate line.`]</span>
                             </div>
                         </div>
                     </div>

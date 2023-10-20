@@ -66,6 +66,13 @@ class boxberryShipping extends waShipping
     {
         $result = [];
 
+        $app_settings_model = new waAppSettingsModel();
+        $last_error_time = (int)$app_settings_model->get('webasyst.shipping.' . $this->getId(), 'last_error_time', 0);
+        $timeout = (int)$this->getSettings('timeout');
+        if ($last_error_time + $timeout > time()) {
+            return $result;
+        }
+
         // check user input
         $errors = (new boxberryShippingCalculateValidate($this))->getErrors();
 
@@ -259,10 +266,13 @@ class boxberryShipping extends waShipping
      */
     public function getParcelWeight()
     {
-        $weight = (int)ceil($this->getTotalWeight());
+        $weight = $this->getTotalWeight();
+        if ($weight !== null) {
+            $weight = (int)ceil($weight);
+        }
 
         if (!$weight) {
-            $weight = (int)ceil($this->default_weight);
+            $weight = (int)ceil((float)$this->default_weight);
         }
         return $weight;
     }

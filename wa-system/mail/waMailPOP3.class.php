@@ -20,7 +20,7 @@ class waMailPOP3
 
     protected $server;
     protected $port;
-    protected $login;
+    protected $user;
     protected $password;
 
     protected $handler;

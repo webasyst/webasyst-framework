@@ -110,7 +110,7 @@ class waSignupForm
 
     /**
      * @param array $data Input data - map of format <field_id> => <value>
-     * @param array $errors Errors to render right aways - map of format <field_id> => array <list_of_errors>
+     * @param array $errors Errors to render right away - map of format <field_id> => array <list_of_errors>
 
      * @return mixed|string
      */

@@ -48,9 +48,12 @@ class waPHPView extends waView
     public function fetch($template, $cache_id = null)
     {
         ob_start();
-        $this->display($template, $cache_id);
-        $result = ob_get_contents();
-        ob_end_clean();
+        try {
+            $this->display($template, $cache_id);
+            $result = ob_get_contents();
+        } finally {
+            ob_end_clean();
+        }
         return $result;
     }
 

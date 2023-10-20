@@ -383,12 +383,12 @@ $.wa = $.extend(true, $.wa, {
             var timezone = window.jstz.determine().name();
 
             // Session cookie timezone
-            document.cookie = "tz="+jstz.determine().name()+"; sameSite=LAX";
+            document.cookie = "tz="+jstz.determine().name()+"; path=/; sameSite=LAX";
 
             // Expires in two weeks
             var expire = new Date();
             expire.setTime(expire.getTime() + 14*24*60*60*1000); // two weeks
-            document.cookie = "oldtz="+timezone+"; expires="+expire.toUTCString()+"; sameSite=LAX";
+            document.cookie = "oldtz="+timezone+"; path=/; expires="+expire.toUTCString()+"; sameSite=LAX";
             if (callback) {
                 callback(timezone);
             }
@@ -412,7 +412,7 @@ if (!window.wa_skip_ajax_setup) {
     $.ajaxSetup({'cache': false});
     $(document).ajaxError(function(e, xhr, settings, exception) {
         // Ignore 502 error in background process
-        if (xhr.status === 502 && exception == 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && settings.data.indexOf('background_process') >= 0)) {
+        if (xhr.status === 502 && exception == 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && typeof settings.data === 'string' && settings.data.indexOf('background_process') >= 0)) {
             console && console.log && console.log('Notice: XHR failed on load: '+ settings.url);
             return;
         }
@@ -446,7 +446,7 @@ if (!window.wa_skip_ajax_setup) {
 
 if (!window.wa_skip_csrf_prefilter) {
     $.ajaxPrefilter(function (settings, originalSettings, xhr) {
-        if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST') {
+        if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST' || (settings.contentType && settings.contentType.substr(0, 33) !== 'application/x-www-form-urlencoded')) {
             return;
         }
 

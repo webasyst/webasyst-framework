@@ -6,9 +6,9 @@ abstract class teamInviting
 
     public function __construct(array $options = [])
     {
-        $this->options = array_merge($options, [
+        $this->options = array_merge([
             'tokens_limit' => 5
-        ]);
+        ], $options);
 
         $this->options['tokens_limit'] = intval($this->options['tokens_limit']);
         if ($this->options['tokens_limit'] <= 1) {
@@ -158,7 +158,7 @@ abstract class teamInviting
 
         $condition = [
             'app_id' => 'team',
-            'type' => 'user_invite',
+            'type' => ifset($token, 'type', 'user_invite'),
             'contact_id' => $token['contact_id']
         ];
 
@@ -213,6 +213,8 @@ abstract class teamInviting
                 return _w('This does not look like a valid phone number.');
             case 'webasyst_id_required':
                 return _w('This installation is not connected to Webasyst ID.');
+            case 'contact_does_not_exist':
+                return _w('Contact does not exist.');
             default:
                 return $error;
         }

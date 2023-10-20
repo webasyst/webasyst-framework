@@ -17,7 +17,7 @@ class waWebasystIDAccessTokenManager
      * @param array $params
      *  All these keys is required
      *      string      $params['issuer']     - issuer (who release token)
-     *      int         $params['contact_id'] - ID of contact for whom release token OR -1 for service-to-service communicartion token
+     *      int         $params['contact_id'] - ID of contact for whom release token OR -1 for service-to-service communication token
      *      string      $params['client_id']  - String ID of client for whom release token, contact must be "related" with this client
      *      int         $params['ttl']        - ttl of token in seconds
      *      string[]    $params['scopes']     - list of scopes access to which will be allowed by this access token
@@ -240,7 +240,7 @@ class waWebasystIDAccessTokenManager
     /**
      * Check token expiration
      * @param string $token
-     * @param string $grace_interval 
+     * @param string $grace_interval
      * @return bool
      */
     public function isTokenExpired($token, $grace_interval = null)

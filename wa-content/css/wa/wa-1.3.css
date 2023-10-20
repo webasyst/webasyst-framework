@@ -754,6 +754,7 @@ table.light td.no-border { border: none; }
 /* 16x16
 -------------------------------------------- */
 i.icon16 { background-repeat:no-repeat; background-image: url(../../../wa-content/img/icon16.png?1505); height:16px; width:16px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
+i.icon16.img { background-size: contain; }
 * i.icon16 { text-decoration:none!important; vertical-align:top; margin: -0.1em 0.25em 0 0; }
 .heading i.icon16 { vertical-align:top; margin:-0.1em 0.1em 0 -0.5em; }
 .hint i.icon10 { vertical-align:top; margin:0.15em 0.15em 0 0; }

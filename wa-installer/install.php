@@ -56,7 +56,7 @@ $path = preg_replace('!/[^/]*$!', '/', $path);
 $host = preg_replace('@:80(/|/?$)@', '', $_SERVER['HTTP_HOST']).($path ? "/{$path}/" : '/');
 $host = preg_replace('@(([^:]|^)/)/{1,}@', '$1', $host);
 
-setcookie('auth_token', null, -1, $path);
+setcookie('auth_token', '', -1, $path);
 
 /**
  * @param $stages
@@ -510,8 +510,10 @@ HTML;
             $cwd     = getcwd();
             $installer = new waInstaller(waInstaller::LOG_DEBUG);
             if (empty($_POST['complete'])) {
-                $local_path = dirname(dirname(__FILE__)).'/wa-sources/';
-                if (!file_exists($local_path) || !is_dir($local_path) || file_exists('.git')) {
+                $local_path = dirname(dirname(__FILE__)).'/';
+                $sources_path = $local_path . 'wa-sources/';
+                $apps_path = $local_path . 'wa-apps/';
+                if (!file_exists($sources_path) || !is_dir($sources_path) || (file_exists('.git') && file_exists($apps_path) && is_dir($apps_path))) {
 
                     //
                     // Install from a GIT repo: no wa-sources dir, no archives,
@@ -524,7 +526,6 @@ HTML;
                     // Search sources relative to root directory, list all apps and plugins
                     // We will need the list to activate them via wa-config/apps.php
                     // and wa-config/apps/*/plugins.php
-                    $local_path = dirname(dirname(__FILE__)).'/';
                     chdir($local_path);
                     $glob_pattern = '{wa-apps/*,wa-apps/*/plugins/*}';
                     _getComponents($glob_pattern,'#^([\\w%0-9\\-!]+)$#', $local_path, $urls, $apps, $plugins, $widgets);
@@ -539,9 +540,9 @@ HTML;
 
                     // Search sources relative to wa-sources directory,
                     // and unzip to appropriate places relative to root directory
-                    chdir($local_path);
+                    chdir($sources_path);
                     $glob_pattern = '{*.tar.gz,wa-apps/*.tar.gz,wa-widgets/*.tar.gz,wa-apps/*/plugins/*.tar.gz,wa-apps/*/themes/*.tar.gz,wa-apps/*/widgets/*.tar.gz,wa-plugins/*/*.tar.gz}';
-                    _getComponents($glob_pattern, '@^([\\w%0-9\\-!]+)\\.tar\\.gz$@', $local_path, $urls, $apps, $plugins, $widgets);
+                    _getComponents($glob_pattern, '@^([\\w%0-9\\-!]+)\\.tar\\.gz$@', $sources_path, $urls, $apps, $plugins, $widgets);
                 }
             }
 
@@ -654,9 +655,11 @@ HTACCESS;
                             if (!class_exists('waInstallerApps')) {
                                 throw new Exception('Class <b>waInstallerApps</b> not found');
                             }
-                            if (mysqli_query($link, 'SELECT 1 FROM `wa_app_settings` WHERE 0')) {
-                                throw new Exception($wa_locale->_('Webasyst cannot be installed into "%s" database because this database already contains Webasyst tables. Please specify connection credentials for another MySQL database.',
-                                    $db_options['database']));
+                            if ($result = mysqli_query($link, 'SHOW TABLES LIKE "wa_app_settings"')) {
+                                if (mysqli_num_rows($result)) {
+                                    throw new Exception($wa_locale->_('Webasyst cannot be installed into "%s" database because this database already contains Webasyst tables. Please specify connection credentials for another MySQL database.',
+                                        $db_options['database']));
+                                }
                             } elseif ($result = mysqli_query($link, 'SHOW TABLES')) {
                                 if ($count = mysqli_num_rows($result)) {
                                     $warning = $wa_locale->_('The database already contains %d tables.', $count);
@@ -799,7 +802,8 @@ HTACCESS;
         </div>
     </div>
     <input type="hidden" name="config[mod_rewrite]" value="{$mod_rewrite}" id="input_mod_rewrite">
-    <input type="hidden" name="config[default_host_domain]" value="{default_host_domain}" id="default_host_domain">
+    <input type="hidden" name="config[default_host_domain]" value="{$default_host_domain}" id="default_host_domain">
+    <input type="hidden" name="config[ui]" value="2.0">
 </div>
 <p class="clear-left i-hint">{$wa_locale->_('If you do not know what should be entered here, please contact your hosting provider technical support.')}</p>
 HTML;
@@ -853,6 +857,13 @@ PHP;
                 }
             }
 
+            // Possible scenario when user re-installs framework again on the same domain:
+            // we should log out here because old auth interferes with first user creation script later.
+            if (!headers_sent() && session_status() != PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            unset($_SESSION['auth_user']);
+
             $url = $is_https ? 'https' : 'http';
             $login_path = waInstallerApps::getGenericConfig('mod_rewrite', true) ? 'webasyst/' : 'index.php/webasyst/';
             $content = <<<HTML
@@ -902,7 +913,7 @@ HTML;
     $progress .= <<<HTML
         </div>
         <input type="submit" value="{$next}" class="button {$color}" id="wa-installer-submit">
-        <a href="{$wa_locale->_('install_quide_url')}" target="_blank" class="wa-help-link">
+        <a href="{$wa_locale->_('install_guide_url')}" target="_blank" class="wa-help-link">
             <span>{$wa_locale->_('Installation Guide')}</span> <i class="icon10 new-window"></i>
         </a>
     </div>

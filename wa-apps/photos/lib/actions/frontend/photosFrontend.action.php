@@ -10,8 +10,14 @@ class photosFrontendAction extends photosFrontendCollectionViewAction
         $this->hash = waRequest::param('hash');
 
         if ($type == 'tag') {
+            $tag = waRequest::param('tag');
+            $tag_model = new photosTagModel();
+            $tag_id = $tag_model->getByName($tag, true);
+            if (!$tag_id) {
+                throw new waException(_w('Tag not found'), 404);
+            }
             $this->view->assign('criteria', 'by-tag');
-            $this->view->assign('tag', waRequest::param('tag'));
+            $this->view->assign('tag', $tag);
         } else if ($type == 'favorites') {
             $this->view->assign('criteria', 'favorites');
         }

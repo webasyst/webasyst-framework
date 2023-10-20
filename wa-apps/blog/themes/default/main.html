@@ -1,123 +1,125 @@
-{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
-{foreach $frontend_action as $plugin => $output}
-	{if !empty($output.nav_before)}{$output.nav_before}{/if}
-{/foreach}
+<div class="row gap32 cols2 cols1-mobile">
+    <div class="col w9">
+        <div class="content with-sidebar" itemscope itemtype="http://schema.org/WebPage">
 
-<nav class="sidebar" role="navigation">
+            {if empty($posts) && $wa->currentUrl() == $wa_app_url}
 
-    <!-- SUBSCRIBE -->
-	{$rss = $wa->blog->rssUrl()}
-	{if $rss}
-		<div class="subscribe leadbox">
-            <ul>
-    			<li><a href="{$rss}" title="[s`RSS`]"><i class="icon16 rss"></i>[s`RSS`]</a></li>
-    			{*
-				<li><a href="#" title="[s`Facebook`]"><i class="icon16 facebook"></i><span>[s`Facebook`]</span></a></li>
-				<li><a href="#" title="[s`Twitter`]"><i class="icon16 twitter"></i><span>[`Twitter`]</span></a></li>
-				<li><a href="#" title="[s`VK`]"><i class="icon16 vk"></i><span>[s`VK`]</span></a></li>
-				*}
-			</ul>
-		</div>
-	{/if}
-    
-    <!-- TIMELINE navigation -->
-    {$timeline = $wa->blog->timeline()}
-    {if !empty($timeline)}
-    
-		<ul class="tree timeline">
-		{$year=null}
-		{foreach $timeline as $year_month => $item}
-			{if $year neq $item.year}
-				{if !$item@first}
-                        </ul>
-                    </li>
+                <div class="welcome">
+                    <h1>[`Welcome to your new blog!`]</h1>
+                    <p>{sprintf('[`Start by <a href="%s">writing a post</a> in your blog backend.`]', $wa_backend_url|cat:'blog/')}</p>
+                </div>
+
+            {else}
+
+                <!-- internal navigation breadcrumbs -->
+                {if isset($breadcrumbs)}
+                    <div class="breadcrumbs" itemprop="breadcrumb">
+                        {if $wa->globals('isMyAccount')}
+                            {* within My Account we exclude first node from navigation because links are on the page already *}
+                            {$breadcrumbs[0] = null}
+                        {/if}
+                        {foreach $breadcrumbs as $breadcrumb}
+                            {if $breadcrumb}
+                                <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="chevron right"></span>
+                            {/if}
+                        {/foreach}
+                    </div>
                 {/if}
-                <li{if $item.year_selected} class="selected"{/if}>
-	            {$year=$item.year}
-    	        <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
-				<ul class="tree">
+
+                {$content}
+
             {/if}
-            <li {if $item.selected}class="selected"{/if}>
-                <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
-            </li>
-		    {if $item@last}
-		            </ul>
-	    	    </li>
-            {/if}
+        </div>
+    </div>
+    <div class="col w3">
+        {* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
+        {foreach $frontend_action as $plugin => $output}
+            {if !empty($output.nav_before)}{$output.nav_before}{/if}
         {/foreach}
-        </ul>
 
-	{/if}
-        
-	<!-- PLUGINS -->
-	{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
-	{foreach $frontend_action as $plugin => $output}
-	  {if !empty($output.sidebar)}
-	      <hr>
-	      <div class="{$plugin}">
-              {$output.sidebar}
-          </div>
-      {/if}
-    {/foreach}
+        <nav class="sidebar" role="navigation">
 
+            <!-- SUBSCRIBE -->
+            {$rss = $wa->blog->rssUrl()}
+            {if $rss}
+                <div class="subscribe">
+                    <ul>
+                        <li><a class="wa-flex align-items-center" href="{$rss}" title="[s`RSS`]"><i class="icon16 rss"></i>[s`RSS`]</a></li>
+                        {*
+                        <li><a href="#" title="[s`Facebook`]"><i class="icon16 facebook"></i><span>[s`Facebook`]</span></a></li>
+                        <li><a href="#" title="[s`Twitter`]"><i class="icon16 twitter"></i><span>[`Twitter`]</span></a></li>
+                        <li><a href="#" title="[s`VK`]"><i class="icon16 vk"></i><span>[s`VK`]</span></a></li>
+                        *}
+                    </ul>
+                </div>
+            {/if}
 
-    <!-- FOLLOW -->
-    {if empty($realtime_preview)}
-    <aside class="connect">
-        {if !empty($theme_settings.facebook_likebox_code)}
-            <div class="likebox">
-                {$theme_settings.facebook_likebox_code}
-            </div>
-        {/if}
-        {if !empty($theme_settings.twitter_timeline_code)}
-            <div class="likebox">
-                {$theme_settings.twitter_timeline_code}
-            </div>
-        {/if}
-        {if !empty($theme_settings.vk_widget_code)}
-            <div class="likebox">
-                {$theme_settings.vk_widget_code}
-            </div>
-        {/if}
-        {*
-        <div class="likebox">
-             your custom social widget
-        </div>
-        *}
-    </aside>
-    {/if}
-</nav>
+            <!-- TIMELINE navigation -->
+            {$timeline = $wa->blog->timeline()}
+            {if !empty($timeline)}
 
-<div class="content with-sidebar" itemscope itemtype="http://schema.org/WebPage">
-
-    {if empty($posts) && $wa->currentUrl() == $wa_app_url}
-
-       <div class="welcome">
-            <h1>[`Welcome to your new blog!`]</h1>
-            <p>{sprintf('[`Start by <a href="%s">writing a post</a> in your blog backend.`]', $wa_backend_url|cat:'blog/')}</p>
-        </div>
-    
-    {else}
-
-        <!-- internal navigation breadcrumbs -->
-        {if isset($breadcrumbs)}
-            <div class="breadcrumbs" itemprop="breadcrumb">
-                {if $wa->globals('isMyAccount')}
-                    {* within My Account we exclude first node from navigation because links are on the page already *}
-                    {$breadcrumbs[0] = null}
-                {/if}
-                {foreach $breadcrumbs as $breadcrumb}
-                    {if $breadcrumb}
-                        <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                <ul class="tree timeline">
+                {$year=null}
+                {foreach $timeline as $year_month => $item}
+                    {if $year neq $item.year}
+                        {if !$item@first}
+                            </ul>
+                            </li>
+                        {/if}
+                        <li{if $item.year_selected} class="selected"{/if}>
+                        {$year=$item.year}
+                        <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
+                        <ul class="tree{if $item@last} wa-mb-0{/if}">
+                    {/if}
+                    <li {if $item.selected}class="selected"{/if}>
+                        <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}"{if $item@last} class="wa-mb-0"{/if}>{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
+                    </li>
+                    {if $item@last}
+                        </ul>
+                        </li>
                     {/if}
                 {/foreach}
-            </div>
-        {/if}
-        
-        {$content}
-        
-    {/if}
-    
-    <div class="clear-both"></div>
-        
+                </ul>
+
+            {/if}
+
+            <!-- PLUGINS -->
+            {* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
+            {foreach $frontend_action as $plugin => $output}
+                {if !empty($output.sidebar)}
+                    <hr>
+                    <div class="{$plugin}">
+                        {$output.sidebar}
+                    </div>
+                {/if}
+            {/foreach}
+
+
+            <!-- FOLLOW -->
+            {if empty($realtime_preview)}
+                <aside class="connect">
+                    {if !empty($theme_settings.facebook_likebox_code)}
+                        <div class="likebox">
+                            {$theme_settings.facebook_likebox_code}
+                        </div>
+                    {/if}
+                    {if !empty($theme_settings.twitter_timeline_code)}
+                        <div class="likebox">
+                            {$theme_settings.twitter_timeline_code}
+                        </div>
+                    {/if}
+                    {if !empty($theme_settings.vk_widget_code)}
+                        <div class="likebox">
+                            {$theme_settings.vk_widget_code}
+                        </div>
+                    {/if}
+                    {*
+                    <div class="likebox">
+                         your custom social widget
+                    </div>
+                    *}
+                </aside>
+            {/if}
+        </nav>
+    </div>
 </div>

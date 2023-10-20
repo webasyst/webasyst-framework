@@ -61,6 +61,7 @@ class teamProfileAction extends teamProfileContentViewAction
             'invite'                           => $invite,
             'is_own_profile'                   => $this->isOwnProfile(),
             'is_super_admin'                   => $this->getUser()->isAdmin('webasyst'),
+            'is_app_admin'                     => $this->getUser()->isAdmin($this->getAppId()),
             'save_url'                         => $this->getSaveUrl($can_edit),
             'geocoding'                        => $twasm->getGeocodingOptions(),
             // webasyst ID related vars
@@ -70,6 +71,8 @@ class teamProfileAction extends teamProfileContentViewAction
             'is_bound_with_webasyst_contact'   => $this->profile_contact->getWebasystContactId() > 0,
             'customer_center_auth_url'         => $this->getCustomerCenterAuthUrl(),
             'webasyst_id_email'                => $this->getWebasystIDEmail(),
+            'webasyst_id_data'                 => $this->getWebasystIDData(),
+            'webasyst_id_qrcode_url'           => $this->getWebasystIDQrcodeUrl(),
         ]);
 
         $this->view->assign(teamCalendar::getHtml($this->profile_contact['id'], null, null, true));
@@ -333,6 +336,54 @@ class teamProfileAction extends teamProfileContentViewAction
             }
         }
         return $online_status;
+    }
+
+    /**
+     * Data of webasyst ID contact bound with user, access tab of which this is all about
+     * @return array|string|null
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function getWebasystIDData()
+    {
+        $access_token = $this->getWAAuthAccessToken($this->contact, 'profile');
+        if (!$access_token) {
+            return '';
+        }
+        return (new waWebasystIDAccessTokenManager())->extractTokenInfo($access_token);
+    }
+
+    /**
+     * @param \waContact $contact
+     * @param            $scope_should_be_supported
+     * @return array|mixed
+     * @throws \waDbException
+     * @throws \waException
+     */
+    protected function getWAAuthAccessToken(waContact $contact, $scope_should_be_supported)
+    {
+        $token_params = $contact->getWebasystTokenParams();
+        if ($token_params) {
+            $access_token = $token_params['access_token'];
+            $atm = new waWebasystIDAccessTokenManager();
+            $supports = $atm->isScopeSupported($scope_should_be_supported, $access_token);
+            if ($supports) {
+                return $access_token;
+            }
+        }
+        return [];
+    }
+
+    protected function getWebasystIDQrcodeUrl()
+    {
+
+        $auth = new waWebasystIDWAAuth();
+        if ($auth->isClientConnected() && $this->profile_contact->getWebasystContactId() > 0) {
+            return (new waWebasystIDUrlsProvider())->getAuthCenterUrl('auth/qr/code/', [
+                'id' => $this->profile_contact->getWebasystContactId(),
+            ]);
+        }
+        return null;
     }
 
 }

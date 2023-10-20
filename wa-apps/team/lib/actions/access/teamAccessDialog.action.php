@@ -6,11 +6,13 @@
 class teamAccessDialogAction extends waViewAction
 {
     public function execute()
-    {
+    {  
         // Only allowed for global admin
         if (!wa()->getUser()->isAdmin()) {
             throw new waRightsException(_w('Access denied'));
         }
+
+        $ui = waRequest::get('ui', null, waRequest::TYPE_STRING_TRIM) and waRequest::setParam('force_ui_version', $ui);
 
         $contact_id = waRequest::request('user_id', 0, 'int');
         $app_id = waRequest::post("app_id", null, 'string');

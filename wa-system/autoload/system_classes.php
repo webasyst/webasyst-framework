@@ -69,6 +69,7 @@ return array(
     'waCaptcha'                         => 'captcha/waCaptcha.class.php',
     'waReCaptcha'                       => 'captcha/recaptcha/waReCaptcha.class.php',
     'waPHPCaptcha'                      => 'captcha/phpcaptcha/waPHPCaptcha.class.php',
+    'waSmartCaptcha'                    => 'captcha/smartcaptcha/waSmartCaptcha.class.php',
 
     'waModel'                           => 'database/waModel.class.php',
     'waModelExpr'                       => 'database/waModelExpr.class.php',
@@ -182,6 +183,7 @@ return array(
     'waUtils'                           => 'util/waUtils.class.php',
 
     'waDateValidator'                   => 'validator/waDateValidator.class.php',
+    'waDateIsoValidator'                => 'validator/waDateIsoValidator.class.php',
     'waEmailValidator'                  => 'validator/waEmailValidator.class.php',
     'waLoginValidator'                  => 'validator/waLoginValidator.class.php',
     'waNumberValidator'                 => 'validator/waNumberValidator.class.php',

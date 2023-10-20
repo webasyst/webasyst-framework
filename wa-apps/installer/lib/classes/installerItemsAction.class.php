@@ -107,7 +107,7 @@ abstract class installerItemsAction extends waViewAction
     protected function getReturnUrl()
     {
         $url = waRequest::get('return_url', waRequest::server('HTTP_REFERER'));
-        $hash = preg_replace('@^#@', '', waRequest::get('return_hash'));
+        $hash = preg_replace('@^#@', '', waRequest::get('return_hash', ''));
         if ($hash) {
             $url .= '#'.$hash;
         }

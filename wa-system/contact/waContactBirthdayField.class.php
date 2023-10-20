@@ -2,6 +2,33 @@
 
 class waContactBirthdayField extends waContactField
 {
+    public function getMonths()
+    {
+        return [
+            1  => _ws('January'),
+            2  => _ws('February'),
+            3  => _ws('March'),
+            4  => _ws('April'),
+            5  => _ws('May'),
+            6  => _ws('June'),
+            7  => _ws('July'),
+            8  => _ws('August'),
+            9  => _ws('September'),
+            10 => _ws('October'),
+            11 => _ws('November'),
+            12 => _ws('December')
+        ];
+    }
+
+    public function getDays()
+    {
+        $days = [];
+        for ($day = 1; $day <= 31; $day++) {
+            $days[] = $day;
+        }
+
+        return $days;
+    }
 
     protected function init()
     {
@@ -182,26 +209,13 @@ class waContactBirthdayField extends waContactField
         $result .= '<select '.$attrs.' '.$disabled.' name="'.htmlspecialchars($name_input).'[day]">';
         $selected_day = !empty($value['day']) ? " selected" : "";
         $result .= '<option value=""'.$selected_day.'>-</option>';
-        for($day = 1; $day <= 31; $day++) {
+        foreach ($this->getDays() as $day) {
             $selected_day = (isset($value['day']) && $day == $value['day']) ? " selected" : "";
             $result .= '<option value="'.$day.'"'.$selected_day.'>'.$day.'</option>';
         }
         $result .= '</select>';
 
-        $months = array(
-            1  => _ws('January'),
-            2  => _ws('February'),
-            3  => _ws('March'),
-            4  => _ws('April'),
-            5  => _ws('May'),
-            6  => _ws('June'),
-            7  => _ws('July'),
-            8  => _ws('August'),
-            9  => _ws('September'),
-            10 => _ws('October'),
-            11 => _ws('November'),
-            12 => _ws('December')
-        );
+        $months = $this->getMonths();
         $result .= '<select '.$attrs.' '.$disabled.' name="'.htmlspecialchars($name_input).'[month]">';
         $selected_month = !empty($value['month']) ? " selected" : "";
         $result .= '<option value=""'.$selected_month.'>-</option>';
@@ -226,7 +240,7 @@ class waContactBirthdayLocalFormatter extends waContactFieldFormatter
             $value = $data['data']['year'];
             $date["y"] = $data['data']['year'];
         } else {
-            // use leap year, for correct formating 29 Febrary
+            // use leap year, for correct formatting 29 February
             $value = date("Y");
             while (!date("L", strtotime("{$value}-01-01"))) {
                 $value += 1;

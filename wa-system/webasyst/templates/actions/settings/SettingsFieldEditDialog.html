@@ -22,7 +22,7 @@
             <h3>{if $field}[s`Edit field`]{else}[s`New field`]{/if}</h3>
         </header>
         <form method="post" class="js-field-form-edit fields" action="?module=settingsFieldSave{if $field}&id={$field.id}{/if}">
-            <div class="dialog-content fields-group">
+            <div class="dialog-content fields-group blank">
                     {* Field name *}
                     <div class="field">
                         <div class="name">[s`Field name`]</div>
@@ -179,7 +179,7 @@
 
                 <em class="state-error"></em>
             </div>
-            <footer class="dialog-footer fields-group">
+            <footer class="dialog-footer fields-group blank">
                 <div class="s-actions">
                     <div class="flexbox middle full-width">
                         <div class="s-column">

@@ -412,7 +412,7 @@ class waContactFields
      * If field already exists for this contact type then update its data and position.
      * @param $field string|waContactField Field ID
      * @param $type string person|company
-     * @param $position int how many items to skip at the begining of list before inserting $field (default: new field is inserted at the end of the list, existing field position does not change);
+     * @param $position int how many items to skip at the beginning of list before inserting $field (default: new field is inserted at the end of the list, existing field position does not change);
      * @throws waException
      */
     public static function enableField($field, $type, $position = null)

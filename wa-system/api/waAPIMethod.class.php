@@ -5,6 +5,7 @@ class waAPIMethod
 
     protected $method = 'GET';
     protected $response;
+    protected $http_status_code = 200;
 
     public function __construct()
     {
@@ -31,6 +32,11 @@ class waAPIMethod
 
         $this->execute();
         return $this->response;
+    }
+
+    public function getStatusCode()
+    {
+        return $this->http_status_code;
     }
 
     public function get($name, $required = false)

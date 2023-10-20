@@ -326,7 +326,7 @@ class waContact implements ArrayAccess
         }
 
         // Do not allow to read password hash from Smarty templates.
-        // But we still allow to check _existance_ of password.
+        // But we still allow to check _existence_ of password.
         if (waConfig::get('is_template') && $field_id == 'password') {
             $result = waContactFields::getStorage()->get($this, 'password');
             if ($result) {
@@ -401,8 +401,9 @@ class waContact implements ArrayAccess
 
             // 'default' format: a simple string
             if ($format === 'default' || (is_array($format) && in_array('default', $format))) {
-                // for multi fields return value of the first copy
                 if ($field->isMulti()) {
+                    // for multi fields return value of the first copy
+                    $result = array_values($result);
                     if (!$result) {
                         return '';
                     } elseif (is_array($result[0])) {
@@ -410,9 +411,8 @@ class waContact implements ArrayAccess
                     } else {
                         return $result[0];
                     }
-                }
-                // for non-multi fields return field value
-                else {
+                } else {
+                    // for non-multi fields return field value
                     return is_array($result) ? ifset($result['value']) : $result;
                 }
             }
@@ -427,12 +427,13 @@ class waContact implements ArrayAccess
             // no special formatting
             else {
                 // Contact without name derive firstname from email or phone
-                if ($field_id === 'firstname' &&
-                        !trim($result) &&
-                        !trim($this['middlename']) &&
-                        !trim($this['lastname']) &&
-                        !trim($this['company']))
-                {
+                if (
+                    $field_id === 'firstname'
+                    && (!isset($result) || !trim($result))
+                    && (!isset($this['middlename']) || !trim($this['middlename']))
+                    && (!isset($this['lastname']) || !trim($this['lastname']))
+                    && (!isset($this['company']) || !trim($this['company']))
+                ) {
                     $emls = $this->get('email', 'value');
                     $emls = waUtils::toStrArray($emls);
 
@@ -447,7 +448,7 @@ class waContact implements ArrayAccess
                         }
                     }
 
-                    // email happend to be empty - now will try phone
+                    // email happened to be empty - now will try phone
 
                     $phones = $this->get('phone', 'value');
                     $phones = waUtils::toStrArray($phones);
@@ -616,6 +617,7 @@ class waContact implements ArrayAccess
         $this->data['name'] = $this->get('name');
         $errors = array();
         foreach ($this->data as $field => $value) {
+            /** @var waContactField $f */
             if ($f = waContactFields::get($field, $this['is_company'] ? 'company' : 'person')) {
                 if ($f->isMulti() && !is_array($value)) {
                     $value = array($value);
@@ -705,6 +707,9 @@ class waContact implements ArrayAccess
                 $log_model->add('access_disable', null, $this->id, wa()->getUser()->getId());
             } else if ($this->data['is_user'] != '-1' && $is_user == '-1') {
                 $log_model->add('access_enable', null, $this->id, wa()->getUser()->getId());
+            }
+            if ($this->data['is_user'] > 0) {
+                $this->data['is_staff'] = 1;
             }
         }
 
@@ -1210,7 +1215,7 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Returns information about whether a user has full (adminstrative) access rights to all installed apps or only one
+     * Returns information about whether a user has full (administrative) access rights to all installed apps or only one
      * specified app.
      *
      * @param string $app_id App id. If not specified, access rights for all installed apps are verified.
@@ -1252,24 +1257,37 @@ class waContact implements ArrayAccess
      */
     public function getStatus()
     {
-        $timeout = self::$options['online_timeout']; // in sec
-        if (($last = $this->get('last_datetime')) && $last != '0000-00-00 00:00:00') {
-            if (time() - strtotime($last) < $timeout) {
-                $m = new waLoginLogModel();
-                $datetime_out = $m->select('datetime_out')->
-                        where('contact_id = i:0', array($this->id))->
-                        order('id DESC')->
-                        limit(1)->fetchField();
-                if ($datetime_out === null) {
-                    return 'online';
-                } else {
-                    return 'offline';
-                }
-            }
+        $last = $this->get('last_datetime');
+        if (!$last || $last == '0000-00-00 00:00:00') {
+            return 'offline';
         }
-        return 'offline';
+
+        $timeout = self::$options['online_timeout']; // in sec
+        $last = strtotime($last);
+        if (time() - $last >= $timeout) {
+            return 'offline';
+        }
+
+        $m = new waLoginLogModel();
+        $datetime_out = $m->select('datetime_out')->
+                where('contact_id = i:0', array($this->id))->
+                order('id DESC')->
+                limit(1)->fetchField();
+        if ($datetime_out === null || strtotime($datetime_out) < $last) {
+            // Time of last logout $datetime_out can be before last user activity time $last
+            // in case last activity was via API which does not get written into wa_login_log.
+            return 'online';
+        } else {
+            return 'offline';
+        }
     }
 
+    /**
+     * https://www.php.net/manual/ru/migration81.incompatible.php#migration81.incompatible.core.type-compatibility-internal
+     * @param $offset
+     * @return bool
+     */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         //@TODO
@@ -1280,6 +1298,11 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * @param $offset
+     * @return mixed
+     */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
@@ -1435,11 +1458,22 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * @param $offset
+     * @param $value
+     * @return void
+     */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->set($offset, $value);
     }
 
+    /**
+     * @param $offset
+     * @return void
+     */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->data[$offset] = null;
@@ -1491,7 +1525,7 @@ class waContact implements ArrayAccess
                                 $map_url = $data_for_map[$k]['with_street'];
                             }
                         }
-                        $v .= ' <a target="_blank" href="//maps.google.com/maps?q=' . urlencode($map_url) . '&z=15" class="small underline map-link">' . _w('map') . '</a>';
+                        $v .= ' <a target="_blank" href="//maps.google.com/maps?q=' . urlencode($map_url) . '&z=15" class="small underline map-link">' . _ws('map') . '</a>';
                         $v = '<div data-subfield-index='.$k.'>'.$v.'</div>';
                     }
                     unset($v);
@@ -1604,6 +1638,11 @@ class waContact implements ArrayAccess
      */
     public function getWebasystTokenParams()
     {
+        // not available in templates
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
         $cwm = new waContactWaidModel();
         $data = $cwm->get($this->getId());
         if (!$data) {

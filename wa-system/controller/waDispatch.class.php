@@ -150,7 +150,7 @@ class waDispatch
             if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
                 $csrf_exception_message = _ws('Anti-CSRF protection.');
 
-                if (!strlen(waRequest::post('_csrf'))) {
+                if (!strlen((string)waRequest::post('_csrf'))) {
                     $csrf_exception_message .= "\n" . _ws('This may be caused by a server error, or by a limitation on the allowed number of POST variables or their values size. Try to increase the values of “max_input_vars” and “post_max_size” parameters in PHP configuration or other similar parameters in you web server configuration.');
                 }
 
@@ -377,7 +377,8 @@ class waDispatch
 
         $params = array();
         $app = $argv[1];
-        $class = $app.ucfirst(ifset($argv[2], 'help'))."Cli";
+        $slug = ifset($argv[2], 'help');
+        $class = $app.ucfirst($slug)."Cli";
         $argv = array_slice($argv, 3);
         while ($arg = array_shift($argv)) {
             if (mb_substr($arg, 0, 2) == '--') {
@@ -388,7 +389,7 @@ class waDispatch
                 $params[] = $arg;
                 continue;
             }
-            $params[$key] = trim(array_shift($argv));
+            $params[$key] = trim((string)array_shift($argv));
         }
         waRequest::setParam($params);
         // Load system
@@ -413,6 +414,11 @@ class waDispatch
             try {
                 /** @var $cli waCliController */
                 $cli = new $class();
+                $plugin_id = rtrim(str_replace('plugins/', '', $cli->getPluginRoot(), $count), '/');
+                $plugins = wa()->getConfig()->getPlugins();
+                if ($count && $plugin_id && !isset($plugins[$plugin_id])) {
+                    throw new waException("Plugin $plugin_id is disabled and class $class is not running");
+                }
                 $cli->run();
                 $successful_execution = true;
             } catch (Exception $e) {

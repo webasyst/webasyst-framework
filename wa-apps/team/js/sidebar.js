@@ -177,21 +177,10 @@ var Sidebar = ( function($) {
     Sidebar.prototype.showInviteDialog = function(event) {
         event.preventDefault();
 
-        const that = this;
-
-        if (that.inviteDialog) {
-            that.inviteDialog.show();
-            return;
-        }
-
-        const href = $.team.app_url + that.options.api.inviteDialog;
+        const href = $.team.app_url + this.options.api.inviteDialog;
         $.get(href, function(html) {
-            that.inviteDialog = $.waDialog({
-                html,
-                onClose(dialog) {
-                    dialog.hide();
-                    return false;
-                }
+            $.waDialog({
+                html
             });
         });
     };
@@ -552,11 +541,13 @@ var Sidebar = ( function($) {
         const that = this;
 
         const searchValue = $(event.target).find('.t-search-field').val();
-        const search_string = encodeURIComponent(searchValue);
-        const content_uri = `${$.team.app_url}search/${search_string}/`;
+        if (searchValue) {
+            const search_string = encodeURIComponent(searchValue);
+            const content_uri = `${$.team.app_url}search/${search_string}/`;
 
-        $.team.content.load(content_uri);
-        that.$wrapper.find('.sidebar-mobile-toggle').trigger('click');
+            $.team.content.load(content_uri);
+            that.$wrapper.find('.sidebar-mobile-toggle').trigger('click');
+        }
     };
 
     Sidebar.prototype.setSelected = function(data) {

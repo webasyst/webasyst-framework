@@ -223,7 +223,7 @@ function &ref($var)
  */
 function wa_is_int($val)
 {
-    // check against objects to avoid nasty object to int convertion errors
+    // check against objects to avoid nasty object to int conversion errors
     if (!is_numeric($val)) {
         return false;
     }

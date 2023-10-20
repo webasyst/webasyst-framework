@@ -100,7 +100,13 @@ class waLocaleAdapter implements waiLocaleAdapter
         }
         $locale_file = !empty(self::$loaded_domains[$domain][$locale]) ? self::$loaded_domains[$domain][$locale] : null;
         if (!$locale_file) {
-            $locale_file = $this->buildLocaleFile($locale_path, $locale, $domain);
+            if ($locale_path && $locale) {
+                $locale_file = $this->buildLocaleFile($locale_path, $locale, $domain);
+            } else {
+                // Trying to translate from domain that's never been loaded
+                // probably because file does not exist
+                return $this->getPhpAdapter();
+            }
         }
 
         if (!isset(self::$adapter_by_file[$locale_file])) {

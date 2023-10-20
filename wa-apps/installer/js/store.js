@@ -168,6 +168,10 @@ var InstallerStore = (function ($) {
                         that.productRemove(data.data);
                         break;
 
+                    case 'bundle_install':
+                        that.bundleInstall(data.data);
+                        break;
+    
                     case 'product_rate_init':
                         that.initProductReview(data.data);
                         break;
@@ -336,16 +340,36 @@ var InstallerStore = (function ($) {
             fields.push({name: 'return_url', value: return_url});
         }
 
+        var confirm_message = that.options.locale['confirm_product_install'];
         if (data.trial) {
             fields.push({name: 'trial', value: data.trial});
+            if (that.options.locale['confirm_trial_theme_install']) {
+                confirm_message = that.options.locale['confirm_trial_theme_install'];
+            }
         }
 
         // If the Store is open in app (not the Installer) -
         // before installing show the confirm.
         // App can cancel confirmations in the options!
-        if (!that.options.in_app || (that.options.in_app && confirm(that.options.locale['confirm_product_install']))) {
+        if (!that.options.in_app || (that.options.in_app && confirm(confirm_message))) {
             that.initForm(url, fields);
         }
+    };
+
+    InstallerStore.prototype.bundleInstall = function (data) {
+        var that = this,
+            matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)")),
+            csrf = matches ? decodeURIComponent(matches[1]) : that.options.csrf,
+            url = that.options.app_url + '?module=update&action=manager',
+            fields = [
+                { name: 'install', value: 1 },
+                { name: '_csrf', value: csrf }
+            ];
+
+        $.each(data, function (i, product) {
+            fields.push({name: 'app_id['+ product.slug +']', value: product.vendor});
+        });
+        that.initForm(url, fields);
     };
 
     InstallerStore.prototype.productUpdate = function (data) {

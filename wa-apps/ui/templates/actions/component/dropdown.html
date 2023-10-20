@@ -19,6 +19,26 @@
 </div>
 {/function}
 
+{function name="_render_dropdown_right"}
+<div class="align-right">
+    <div class="dropdown" id="dropdown-right">
+        <button class="dropdown-toggle button outlined larger" type="button">.dropdown</button>
+        <div class="dropdown-body right">
+
+            <div class="box align-center">
+                <em>Hello World!</em>
+            </div>
+
+        </div>
+        <script>
+            ( function($) {
+                $("#dropdown-right").waDropdown();
+            })(jQuery);
+        </script>
+    </div>
+</div>
+{/function}
+
 {function name="_render_dropdown_menu_v"}
 <div class="dropdown" id="dropdown-2">
     <button class="dropdown-toggle button outlined yellow" type="button">.dropdown &gt; .menu</button>
@@ -153,7 +173,7 @@
     <h1 class="u-page-title">{$_title|escape}</h1>
     <h2><code>.dropdown</code></h2>
 
-    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2.</blockquote>
+    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором реализованы все базовые JS-компоненты Webasyst 2.</blockquote>
 
     <p>Выпадающий блок навигации с произвольным содержимым: колоночным меню, выбором из списка, абзацем с произвольным контентом или просто картинкой.</p>
 
@@ -190,6 +210,20 @@
 
     <div class="line">
         <pre class="prettyprint">{_render_dropdown_custom|escape}</pre>
+    </div>
+
+    <div class="line">
+        <h4>Выравнивание по правому краю</h4>
+        <p>Чтобы сделать раскрытие дропдауна с выравниванием меню по правому краю, добавьте на .dropdown-body дополнительный класс <code>.dropdown</code> &gt; <code>.dropdown-body<strong>.right</strong></code>.</p>
+        {_render_dropdown_right}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_dropdown_right|escape}</pre>
+    </div>
+
+    <div class="line">
+        <h4>Убрать стрелочку</h4>
+        <p>Чтобы убрать справа автоматическое добавление стрелочки <span class="dropdown"><span class="dropdown-toggle"></span></span>, подчеркивающей выпадающее поведение элемента навигации, используйте <code>.dropdown-toggle<strong>.without-arrow</strong></code>.</p>
     </div>
 
     <div class="u-example-section">

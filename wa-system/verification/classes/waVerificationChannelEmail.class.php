@@ -98,7 +98,7 @@ class waVerificationChannelEmail extends waVerificationChannel
      *
      * @return bool|int
      *
-     *   - On fail alwasy return FALSE
+     *   - On fail always return FALSE
      *   - if is_test_send call return TRUE|FALSE
      *   - In other cases return int asset_id
      *
@@ -427,7 +427,8 @@ class waVerificationChannelEmail extends waVerificationChannel
         }
 
         try {
-            $m = new waMailMessage($subject, $body);
+            $m = new waMailMessage($subject);
+            $m->setBody($body);
             $m->setTo($recipient['email'], isset($recipient['name']) ? $recipient['name'] : null);
             $from = $this->getAddress();
             if ($from) {
@@ -636,7 +637,7 @@ class waVerificationChannelEmail extends waVerificationChannel
      *
      * @return bool|int
      *
-     *   - On fail alwasy return FALSE
+     *   - On fail always return FALSE
      *   - if is_test_send call return TRUE|FALSE
      *   - In other cases return int asset_id
      */
@@ -759,7 +760,7 @@ class waVerificationChannelEmail extends waVerificationChannel
      *
      *        Otherwise 'details' has keys:
      *
-     *          - string   'error'      - string identificator of error - VERIFY_ERROR_* const
+     *          - string   'error'      - string identifier of error - VERIFY_ERROR_* const
      *          - int|null 'tries'      - total count of already made tries. Can be NULL in case if code is already dead or not exist
      *          - int      'rest_tries' - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
      *                                    But this value is NULL when 'tries' is NULL (in case if code is already dead or not exist)

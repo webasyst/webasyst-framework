@@ -71,7 +71,11 @@ class waDbMysqliAdapter extends waDbAdapter
      */
     public function query($query)
     {
-        $r = @$this->handler->query($query);
+        try {
+            $r = @$this->handler->query($query);
+        } catch (Exception $ee) {
+            $r = 0;
+        }
         if (!$r) {
             switch ($this->handler->errno) {
                 case 2006:
@@ -155,6 +159,8 @@ class waDbMysqliAdapter extends waDbAdapter
 
     public function escape($string)
     {
+        $string = ifset($string, '');
+
         return $this->handler->real_escape_string($string);
     }
 

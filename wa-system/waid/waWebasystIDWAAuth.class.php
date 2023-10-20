@@ -60,7 +60,7 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
         // redirect to provider auth page
         $request_url = $this->getHealthyRedirectUri();
         if (!$request_url) {
-            throw new waWebasystIDException(_w('Webasyst ID auth endpoint is not available'));
+            throw new waWebasystIDException(_ws('Webasyst ID authentication endpoint is not available'));
         }
         wa()->getResponse()->redirect($request_url);
     }
@@ -99,7 +99,7 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
                 $callback_url .= '&' . $key . '=' . urlencode($value);
             }
         }
-        
+
         return $callback_url;
     }
 
@@ -274,7 +274,7 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
         if (empty($phone) || !(new waPhoneNumberValidator)->isValid($phone) || !wa()->getUser()->isAuth()) {
             return $auth_url;
         }
-        
+
         $this->savePhone($phone);
         return $auth_url . '&auth_type=onetime_password&2fa_phone=' . urlencode($phone);
     }

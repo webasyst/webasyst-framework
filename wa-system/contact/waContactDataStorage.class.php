@@ -192,29 +192,37 @@ class waContactDataStorage extends waContactStorage
                     unset($data[$row['field']][$row['sort']]);
                 }
             }
-            $insert = array();
-            foreach ($data as $f => $f_rows) {
-                foreach ($f_rows as $s => $row) {
-                    $insert_row = array(
-                        $contact->getId(),
-                        "'" . $this->getModel()->escape($f) . "'",
-                        "'" . $this->getModel()->escape($row['ext']) . "'" ,
-                        "'" . $this->getModel()->escape($row['value']) . "'",
-                        (int)$s,
-                        isset($row['status']) ?
-                            ("'" . $this->getModel()->escape($row['status']) . "'")
-                            : 'NULL'
-                    );
-                    $insert_row = join(", ", $insert_row);
-                    $insert[] = $insert_row;
-                }
-            }
             // insert new records
-            if ($insert) {
-                $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, field, ext, value, sort, status)
-                        VALUES (".implode("), (", $insert).")";
-                return $this->getModel()->exec($sql);
+            if ($data) {
+                return $this->insertDataRows($contact, $data);
             }
+        }
+        return true;
+    }
+
+    protected function insertDataRows($contact, $data)
+    {
+        $insert = array();
+        foreach ($data as $f => $f_rows) {
+            foreach ($f_rows as $s => $row) {
+                $insert_row = array(
+                    $contact->getId(),
+                    "'" . $this->getModel()->escape($f) . "'",
+                    "'" . $this->getModel()->escape($row['ext']) . "'" ,
+                    "'" . $this->getModel()->escape($row['value']) . "'",
+                    (int)$s,
+                    isset($row['status']) ?
+                        ("'" . $this->getModel()->escape($row['status']) . "'")
+                        : 'NULL'
+                );
+                $insert_row = join(", ", $insert_row);
+                $insert[] = $insert_row;
+            }
+        }
+        if ($insert) {
+            $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, field, ext, value, sort, status)
+                    VALUES (".implode("), (", $insert).")";
+            return $this->getModel()->exec($sql);
         }
         return true;
     }

@@ -371,11 +371,13 @@ abstract class waMyProfileAction extends waViewAction
             if ($id === 'photo') {
                 return array(
                     'name' => _ws('Photo'),
+                    'type' => $field->getType(),
                     'value' => '<img src="'.$this->contact->getPhoto().'">',
                 );
             } else {
                 return array(
                     'name' => $field->getName(null, true),
+                    'type' => $field->getType(),
                     'value' => $this->contact->get($id, 'html'),
                 );
             }
@@ -388,4 +390,3 @@ abstract class waMyProfileAction extends waViewAction
         return parent::display(false);
     }
 }
-

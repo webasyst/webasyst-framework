@@ -21,7 +21,7 @@
                             {if isset($full_base_url)}
                                 <span>{$full_base_url|escape}</span><input type="text" name="url" value="">/
                             {else}
-                                <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos.`]</span>
+                                <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules set up for Photos app in your website settings. Use Site app’s “Structure” section to settle Photos app on your website and to start publishing photos.`]</span>
                             {/if}
                         </div>
                     </div>
@@ -42,7 +42,7 @@
                                         </span>
                                         <strong class="semibold">[`Public`]</strong>
                                     </span>
-                                    <p class="hint custom-mt-8 custom-mb-8">[`Album is visible in the public gallery`]</p>
+                                    <p class="hint custom-mt-8 custom-mb-8">[`The album is visible in the public gallery.`]</p>
                                 </label>
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                                     </span>
                                 </span>
                                 <p class="hint custom-mt-8 custom-mb-8">
-                                    [`Album is visible only to authorized users of the Photos app, or by a private link`].
+                                    [`The album is visible only to authorized users of the Photos app or via a private link.`]
                                     <a class="p-privacy-settings-link js-privacy-settings-link" href="#">[`Privacy settings`]</a>
                                 </p>
                             </label>
@@ -71,7 +71,7 @@
                         </div>
                         <div class="value small">
                             {if !empty($groups)}
-                                <p>[`Select user groups you want to have access to this album`]:</p>
+                                <p>[`Select user groups which you want to have access to this album:`]</p>
                                 <ul>
                                     {foreach from=$groups item=group_name key=group_id}
                                         <li>
@@ -93,7 +93,7 @@
                             {else}
                                 <p>
                                     <input type="hidden" name="groups[]" value="0"{if isset($rights[0])} disabled{/if}>
-                                    [`There are no user groups in your Webasyst installation. Add groups in the Contacts app to be able to manage access to photos`]
+                                    [`There are no user groups set up in your Webasyst account. Add groups in the Team app to be able to manage access to photos.`]
                                 </p>
                             {/if}
                         </div>

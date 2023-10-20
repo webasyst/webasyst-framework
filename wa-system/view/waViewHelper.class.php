@@ -50,7 +50,7 @@ class waViewHelper
      * @param array $options
      *      array  $options['custom']               some custom data for injecting into webasyst header
      *      string $options['custom']['content']    html content that will be shown in header
-     *      string $options['custom']['user']       html content that will be shown inside user aread
+     *      string $options['custom']['user']       html content that will be shown inside user area
      *
      * @return string
      */
@@ -86,7 +86,7 @@ class waViewHelper
         }
 
         $icon = ltrim($icon, '/');
-        $prefix = 'wa-apps/' . $app_id . '/';
+        $prefix = wa()->getAppStaticUrl($app_id);
         $prefix_len = strlen($prefix);
 
         if (substr($icon, 0, $prefix_len) === $prefix) {
@@ -204,8 +204,8 @@ class waViewHelper
             $i++;
         }
 
+        waRequest::setParam($old_params);
         if (isset($app_id) && $old_app != $app_id) {
-            waRequest::setParam($old_params);
             wa()->setActive($old_app);
         }
 
@@ -294,16 +294,14 @@ ga('send', 'pageview');
 HTML;
                 } else {
                     $html .= <<<HTML
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', '{$domain_config['google_analytics']['code']}']);
-  _gaq.push(['_trackPageview']);
- {$response->getGoogleAnalytics()}
-  (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+<script async src="https://www.googletagmanager.com/gtag/js?id={$domain_config['google_analytics']['code']}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '{$domain_config['google_analytics']['code']}');
+  {$response->getGoogleAnalytics()}
 </script>
 HTML;
                 }
@@ -786,7 +784,8 @@ HTML;
         $body = nl2br(htmlspecialchars($body));
         $body = _ws('Name').': '.htmlspecialchars($this->post('name'))."<br>\n".
             _ws('Email').': '.htmlspecialchars($email)."<br><br>\n".$body;
-        $m = new waMailMessage($subject, $body);
+        $m = new waMailMessage($subject);
+        $m->setBody($body);
         $m->setTo($to);
         $m->setReplyTo(array($email => $this->post('name')));
         if (!$m->send()) {
@@ -1358,11 +1357,11 @@ HTML;
             $tabs = $this->getContactTabs((int)$id);
         }
 
-        // Add UI-version to URL params
+        // Add UI-version and App Id to URL params
         foreach ($tabs as $key => &$tab) {
             if (!empty(ifset($tab['url']))) {
                 $query = parse_url($tab['url'], PHP_URL_QUERY);
-                $tab['url'] .= (!empty($query) ? '&' : '?') . 'ui=' . $this->whichUI();
+                $tab['url'] .= (!empty($query) ? '&' : '?') . 'ui=' . $this->whichUI() . '&app=' . wa()->getApp();
             }
         }
 
@@ -1469,7 +1468,8 @@ HTML;
     public function getContactTabs($id)
     {
         $id = (int)$id;
-        if (!$id || wa()->getEnv() !== 'backend') {
+        $env = wa()->getEnv();
+        if (!$id || !in_array($env, ['backend', 'api'])) {
             return array();
         }
 
@@ -1479,8 +1479,13 @@ HTML;
             waConfig::set('is_template', null);
         }
 
-        // Tabs of 'Team' app should always be on the left
+        // Force current UI version before trigger event
+        $old_forced_ui_version = waRequest::param('force_ui_version', null, waRequest::TYPE_STRING_TRIM);
+        waRequest::setParam('force_ui_version', $this->whichUI());
+        waRequest::setParam('profile_tab_counter_inside', (waRequest::param('profile_tab_counter_inside') === null && $env !== 'api'));
         $event_result = wa()->event(array('contacts', 'profile.tab'), $id);
+
+        waRequest::setParam('force_ui_version', $old_forced_ui_version);
 
         // restore is_template flag
         if ($is_template) {
@@ -1517,11 +1522,17 @@ HTML;
                     continue;
                 }
 
+                // Do not show tabs that can break contact tab
+                if (!empty($link['html']) && preg_match('~</body></html>$~', str_replace(["\n", "\t", " "], '', $link['html']))) {
+                    $link['html'] = '<pre>'.htmlspecialchars($link['html']).'</pre>';
+                }
+
                 $links[$link['id']] = $link + array(
                         'url'   => '',
                         'title' => '',
                         'count' => '',
                         'html'  => '',
+                        'app_id' => $plugin_app_id,
                     );
             }
         }

@@ -16,7 +16,7 @@ class teamUser
 
         try {
             // Look up by login if specified via routing
-            $user_login = urldecode(waRequest::param('login', null, waRequest::TYPE_STRING_TRIM));
+            $user_login = urldecode(waRequest::param('login', '', waRequest::TYPE_STRING_TRIM));
             if ($user_login) {
                 self::$current_user = waUser::getByLogin($user_login);
                 if (!self::$current_user) {
@@ -238,11 +238,11 @@ class teamUser
         $app_tokens_model = new waAppTokensModel();
 
         if (empty($data)) {
-            // if no access params presented 
+            // if no access params presented
             // than use access params from previously created and not expired invite token
             $prev_tokens = array_filter($app_tokens_model->getByField([
-                'app_id' => 'team', 
-                'type' => 'user_invite', 
+                'app_id' => 'team',
+                'type' => ['user_invite', 'waid_invite'],
                 'contact_id' => $contact_id
             ], true), function ($el) {
                 return !empty($el['data']) && $el['data'] !== 'null' && strtotime($el['expire_datetime']) > time();
@@ -253,9 +253,12 @@ class teamUser
             }
         }
 
+        $token_type = ifset($data, 'token_type', 'user_invite');
+        unset($data['token_type']);
+
         $app_token_data = [
             'app_id'            => 'team',
-            'type'              => 'user_invite',
+            'type'              => $token_type,
             'contact_id'        => $contact_id,
             'create_contact_id' => wa()->getUser()->getId(),
             'expire_datetime'   => date('Y-m-d H:i:s', time() + 3600 * 24 * 3),
@@ -264,7 +267,7 @@ class teamUser
         ];
 
         $result = $app_tokens_model->add($app_token_data);
-        if ((new waWebasystIDClientManager())->isConnected()) {
+        if ($token_type == 'user_invite' && (new waWebasystIDClientManager())->isConnected()) {
             $app_token_data['type']  = 'waid_invite';
             $app_token_data['token'] = waAppTokensModel::generateToken();
             $api = new waWebasystIDApi();

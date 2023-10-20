@@ -91,8 +91,8 @@ class teamInviteFrontendAction extends waViewAction
             if (!$errors) {
 
                 $token_data = json_decode($this->params['data'], true);
-                if ($token_data === null) {
-                    $token_data = ['full_access' => false];
+                if (!is_array($token_data)) {
+                    $token_data = [];
                 }
                 teamHelper::convertToBackendUser($contact_id, $token_data, $data['login'], $data['password']);
 
@@ -227,6 +227,9 @@ class teamInviteFrontendAction extends waViewAction
         ));
 
         $token_data = json_decode($this->params['data'], true);
+        if (!is_array($token_data)) {
+            $token_data = [];
+        }
         teamHelper::convertToBackendUser($contact_id, $token_data, $login, $password);
 
         return true;

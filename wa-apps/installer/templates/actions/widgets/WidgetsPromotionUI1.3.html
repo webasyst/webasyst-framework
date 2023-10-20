@@ -1,0 +1,35 @@
+<div class="wa-inst-promo-content">
+    {$promotion.html}
+</div>
+<div class="wa-inst-promo-buttons">
+
+    <div class="block float-right">
+        <a href="javascript:void(0)" class="hint js-never-show-again-link">[`Never show again`]</a>
+    </div>
+
+    <input type="button" value="[s`Close`]" class="cancel button">
+</div>
+<script>(function() { "use strict";
+
+    var promo_id = {$promotion.id|json_encode};
+
+    var $dialog_wrapper = $("#s-inst-ssx-dialog");
+    var installer_backend_url;
+
+    $dialog_wrapper.on("inst_ssx_dialog_loaded", function() {
+        installer_backend_url = $dialog_wrapper.data('installer_backend_url');
+        var $buttons_wrapper = $dialog_wrapper.find('.wa-inst-promo-buttons');
+        $dialog_wrapper.find('.dialog-buttons-gradient').append(
+            $buttons_wrapper
+        );
+
+        $buttons_wrapper.find('.js-never-show-again-link').click(function() {
+            $('.js-'+promo_id).remove();
+            localStorage.setItem('installer_hide_promo_'+promo_id, 1);
+            $dialog_wrapper.trigger('close');
+            return false;
+        });
+
+    });
+
+})();</script>

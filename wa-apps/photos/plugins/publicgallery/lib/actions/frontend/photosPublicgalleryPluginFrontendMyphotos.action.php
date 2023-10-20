@@ -46,7 +46,7 @@ class photosPublicgalleryPluginFrontendMyphotosAction extends waViewAction
             'total_photos_count' => $total_count,
             'lazy_load' => $lazy,
             'image_upload_url' => wa()->getRouteUrl('photos/frontend/imageUpload'),
-            'pages_count' => floor($total_count / $photos_per_page) + 1,
+            'pages_count' => ceil($total_count / $photos_per_page),
             'current_auth_source' => $current_auth_source,
             'adapters' => $adapters
         ));

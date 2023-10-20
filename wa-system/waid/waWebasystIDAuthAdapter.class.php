@@ -518,7 +518,7 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
         ];
 
         if (!$contact->exists()) {
-            $info['name'] = sprintf(_w('deleted contact %s'), $contact->getId());
+            $info['name'] = sprintf(_ws('deleted contact %s'), $contact->getId());
             return $info;
         }
 

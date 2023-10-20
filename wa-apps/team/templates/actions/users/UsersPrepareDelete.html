@@ -5,7 +5,6 @@
     <div class="dialog-body">
         <h3 class="dialog-header">[`Delete contacts`] <span style="color: #aaa;">({$total_count_requested})</span></h3>
         <div class="dialog-content">
-            <p>[`Contact deletion cannot be undone.`]</p>
             {if $contacts}
                 <p class="alert danger"><span class="bold">[`IMPORTANT NOTE:`]</span>
                     {if $total_count_requested == count($contacts)}
@@ -20,6 +19,25 @@
                         [`After deletion of these contacts, other applications will refer to non-existent contacts.`]
                     {/if}
                 </p>
+            {/if}
+
+            <p><label>
+                <input type="radio" name="delete_forever" value="" checked>
+                <strong>[`Just remove from the Team app`]</strong>
+                <i class="fas fa-ban text-gray"></i>
+                <br>
+                <span class="hint">[`The contact record and all related links will remain in Webasyst. The user won’t ever have access to Webasyst from now on.`]</span>
+            </label></p>
+
+            <p><label>
+                <input type="radio" name="delete_forever" value="1">
+                [`Delete this contact permanently`]
+                <i class="fas fa-exclamation-triangle text-red"></i><br>
+                <strong class="hint">[`Contact deletion cannot be undone.`] [`All links will be broken permanently.`]</strong>
+            </label></p>
+
+
+            {if $contacts}
                 <table class="table small">
                     {foreach $contacts as $id => $c}
                         {$name = $c.name}
@@ -54,7 +72,7 @@
                     <button type="button" class="button red js-delete-button">{if !$contacts}
                             [`Delete contacts`]
                         {elseif $is_superadmin}
-                            [`Delete anyway`]
+                            [`Delete contact`]
                         {else}
                             {sprintf(_w('Delete %d of %d selected'), count($ids), $all)}
                         {/if}</button>

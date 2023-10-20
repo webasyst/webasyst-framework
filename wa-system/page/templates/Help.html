@@ -150,7 +150,8 @@
         let id = $(this).parent().addClass('selected').attr('id') + '-content';
         $("#wa-editor-help-{$name} div.tab-content").hide();
         $('#' + id).show();
-    });
+    }).first().trigger('click');
+
 </script>
 </div>
 <footer class="drawer-footer">

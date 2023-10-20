@@ -9,6 +9,7 @@ use phpseclib\File\X509;
  * @property-read string  $userName
  * @property-read string  $password
  * @property-read boolean $TESTMODE
+ * @property-read boolean $without_certificate
  *
  * @property-read string  $currency_id
  * @property-read int     $sessionTimeoutSecs
@@ -1387,7 +1388,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         if ($this->credit) {
-            $register_fields['jsonParams'] += $this->getUserData($wa_order);
+            $register_fields['jsonParams'] += array_filter($this->getUserData($wa_order));
 
             if ($this->TESTMODE) {
                 $register_fields['dummy'] = true;
@@ -1459,14 +1460,13 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $order_bundle = array(
             'orderCreationDate' => time() * 1000,
             'customerDetails'   => array(
-                'email'   => $data['email'],
-                'phone'   => $data['phone'],
                 'contact' => $wa_order->getContact()->getName(),
             ),
             'cartItems'         => array(
                 'items' => $this->getItemsForFiscalization($wa_order),
             ),
         );
+        $order_bundle['customerDetails'] += array_filter($data);
 
         $country = $this->getISO2CountryCode($wa_order['shipping_address']['country']);
         $city = $wa_order['shipping_address']['city'];
@@ -1699,7 +1699,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             $item_code .= '_' . $data['split_index'];
         }
 
-        $tax_sum = $this->getTaxSum($data['price'], $data['tax_rate']);
+        $tax_sum = $this->getTaxSum($data['total'], $data['tax_rate']);
         $item_data = array(
             'positionId'   => $position_id,
             'name'         => mb_substr($data['name'], 0, 100),
@@ -1902,6 +1902,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'format'         => waNet::FORMAT_JSON,
             'request_format' => waNet::FORMAT_RAW,
             'timeout'        => 60,
+            'verify'         => empty($this->without_certificate),
         );
         if ($this->TESTMODE && class_exists('sbtestNet')) {
             $net = new sbtestNet($options);

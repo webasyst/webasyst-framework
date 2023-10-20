@@ -3,7 +3,7 @@
         <td>
             <input type="text"
                    class="js-sd-date js-datepicker"
-                   value="{ifset($date, 'date', '')|wa_date|escape}"
+                   value="{wa_date('date', ifset($date, 'date', ''), 'server')|escape}"
                    name="{$namespace}[{$type}][{$iterator}][date]"
                    data-name="date"
                    placeholder="{waDateTime::format('date')}"
@@ -13,15 +13,15 @@
         <td>
             <input type="text"
                    maxlength="64"
-                   class="js-sd-time-additional"
+                   class="js-sd-time-additional long"
                    name="{$namespace}[{$type}][{$iterator}][additional]"
                    value="{ifset($date, 'additional', '')|escape}"
                    data-name="additional"
                    >
         </td>
-        <td>
+        <td class="align-right">
             <a class="js-sd-delete-date" href="#" data-type="{$type}">
-                <i class="icon16 no"></i>
+                <i class="icon16 no fas fa-trash-alt text-red"></i>
             </a>
         </td>
     </tr>
@@ -32,7 +32,7 @@
         <td>
             <input type="text"
                    class="js-sd-date js-datepicker"
-                   value="{ifset($date, 'date', '')|wa_date|escape}"
+                   value="{wa_date('date', ifset($date, 'date', ''), 'server')|escape}"
                    name="{$namespace}[{$type}][{$iterator}][date]"
                    data-name="date"
                    placeholder="{waDateTime::format('date')}"
@@ -73,7 +73,7 @@
 
         <td>
             <a class="js-sd-delete-date" href="#" data-type="{$type}">
-                <i class="icon16 no"></i>
+                <i class="icon16 no fas fa-trash-alt text-red"></i>
             </a>
         </td>
     </tr>
@@ -89,7 +89,7 @@
     <div class="field">
         <div class="name">{$obj->_w('Time zone')}</div>
         <div class="value">
-            <select name="{$namespace}[timezone]">
+            <select class="small" name="{$namespace}[timezone]">
                 {foreach $timezones as $timezone => $cities}
                     <option value="{$timezone}" {if $timezone == $settings.timezone|default:''|escape}selected{/if}>{$cities}</option>
                 {/foreach}
@@ -161,8 +161,8 @@
     </div>
     <br>
     {*WORKDAYS*}
-    <div class="field-group">
-        <div class="field">
+    <div class="field-group custom-p-0 custom-m-0">
+        <div class="field vertical">
             <div class="name">
                 {$obj->_w('Extra workdays')}
             </div>
@@ -179,7 +179,7 @@
                     </thead>
                     <tfoot>
                     <tr class="white">
-                        <td><a class="inline-link js-sd-add-date" data-type="workdays"><i class="icon16 add"></i><b><i>{$obj->_w('Add date')}</i></b></a></td>
+                        <td><a class="inline-link sd-add-date js-sd-add-date" data-type="workdays"><i class="icon16 add fas fa-plus-circle text-green custom-mr-4"></i><b><i>{$obj->_w('Add date')}</i></b></a></td>
                     </tr>
                     </tfoot>
                     <tbody>
@@ -196,8 +196,8 @@
     </div>
     <br>
     {*WEEKEND*}
-    <div class="field-group">
-        <div class="field">
+    <div class="field-group custom-p-0 custom-m-0">
+        <div class="field vertical">
             <div class="name">
                 {$obj->_w('Extra days off')}
             </div>
@@ -212,7 +212,7 @@
                     </thead>
                     <tfoot>
                     <tr class="white">
-                        <td><a class="inline-link js-sd-add-date" data-type="weekend"><i class="icon16 add"></i><b><i>{$obj->_w('Add date')}</i></b></a></td>
+                        <td><a class="inline-link sd-add-date js-sd-add-date" data-type="weekend"><i class="icon16 add fas fa-plus-circle text-green custom-mr-4"></i><b><i>{$obj->_w('Add date')}</i></b></a></td>
                         <td>&nbsp;</td>
                     </tr>
                     </tfoot>
@@ -231,5 +231,5 @@
 </div>
 
 {capture name="_error_date_html"}
-    <p class="js-sd-error-date-msg errormsg">{$obj->_w('Invalid date')}</p>
+    <p class="js-sd-error-date-msg errormsg state-error-hint">{$obj->_w('Invalid date')}</p>
 {/capture}

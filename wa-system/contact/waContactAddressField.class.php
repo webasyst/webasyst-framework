@@ -43,6 +43,7 @@ class waContactAddressField extends waContactCompositeField
 
     public function format($data, $format = null, $ignore_hidden = true)
     {
+        $data = (array) $data;
         if (!isset($data['value'])) {
             $value = array();
             foreach ($this->options['fields'] as $field) {
@@ -60,8 +61,13 @@ class waContactAddressField extends waContactCompositeField
                         if (!in_array($f_id, array('country', 'region', 'zip', 'street', 'city'))) {
                             $tmp = $field->getName().' '.$tmp;
                         }
-                        $value[] = $tmp;
+                        $value[$f_id] = $tmp;
                     }
+                }
+            }
+            if ($format === 'short') {
+                if (count($value) > 1) {
+                    unset($value['country']);
                 }
             }
             $data['value'] = implode(", ", array_filter($value, 'strlen'));
@@ -111,6 +117,14 @@ class waContactAddressField extends waContactCompositeField
 class waContactAddressForMapFormatter extends waContactFieldFormatter
 {
     public function format($data) {
+        /** @var waMapAdapter $map_adapter */
+        static $map_adapter = null;
+
+        if (empty($map_adapter)) {
+            $_adapter = (new waAppSettingsModel())->get('webasyst', 'backend_map_adapter', 'google');
+            $map_adapter = wa()->getMap($_adapter);
+        }
+
         $res = array(
             'with_street' => '',
             'without_street' => ''
@@ -173,6 +187,9 @@ class waContactAddressForMapFormatter extends waContactFieldFormatter
 
         if (!empty($data['data']['lat']) && !empty($data['data']['lng'])) {
             $res['coords'] = str_replace(',', '.', $data['data']['lat']) . ", " . str_replace(',', '.', $data['data']['lng']);
+            $res['map_url'] = $map_adapter->getUrlToMap($res['with_street'], $data['data']['lng'], $data['data']['lat'], 15);
+        } else {
+            $res['map_url'] = $map_adapter->getUrlToMap($res['with_street'], null, null, 15);
         }
 
         return $res;

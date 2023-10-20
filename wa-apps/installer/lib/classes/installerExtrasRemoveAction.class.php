@@ -119,16 +119,16 @@ abstract class installerExtrasRemoveAction extends waViewAction
                                 /*
                                  _w("Unable to delete theme “%s”.");
                                  _w("Unable to delete plugin “%s”.");
-                                _w("Can not delete system application's widgets \"%s\"");
+                                _w("Cannot delete system app’s widgets \"%s\"");
                                  */
 
-                                $message = "Can not delete system application's {$this->extras_type} \"%s\"";
+                                $message = "Cannot delete system app’s {$this->extras_type} \"%s\"";
                                 throw new waException(sprintf(_w($message), _wd($slug, isset($info['name']) ? $info['name'] : '???')));
                             } elseif (!empty($installed['inbuilt'])) {
                                 /*
-                                _w("Can not delete inbuilt application's widgets \"%s\"");
+                                _w("Cannot delete built-in app’s widgets \"%s\"");
                                  */
-                                $message = "Can not delete inbuilt application's {$this->extras_type} \"%s\"";
+                                $message = "Cannot delete built-in app’s {$this->extras_type} \"%s\"";
                                 throw new waException(sprintf(_w($message), _wd($slug, isset($info['name']) ? $info['name'] : '???')));
                             } elseif ($this->extras_type == 'themes' && empty($installed['installed']['parent_theme_id'])) {
                                 $this->validateThemes($app_list, $app_id, $installed['installed']['id'], $slug);
@@ -180,8 +180,8 @@ abstract class installerExtrasRemoveAction extends waViewAction
              _w('Theme “%s“ has been deleted.', 'Themes “%s“ have been deleted.');
             _w('Application widget %s has been deleted', 'Applications widgets %s have been deleted');
              */
-            $message_singular = sprintf('Application %s %%s has been deleted', preg_replace('/s$/', '', $this->extras_type));
-            $message_plural = sprintf('Applications %s %%s have been deleted', $this->extras_type);
+            $message_singular = sprintf('App %s %%s has been deleted.', preg_replace('/s$/', '', $this->extras_type));
+            $message_plural = sprintf('App %s %%s have been deleted.', $this->extras_type);
             $message = sprintf(_w($message_singular, $message_plural, count($deleted_extras), false), implode(', ', $deleted_extras));
             $msg = installerMessage::getInstance()->raiseMessage($message);
             $this->redirect('?msg='.$msg);

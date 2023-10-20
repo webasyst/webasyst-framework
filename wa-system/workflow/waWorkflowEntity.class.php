@@ -25,7 +25,7 @@ class waWorkflowEntity
 
     /**
      * Human-readable name for debugging purposes or anything else subclasses may want to use it for.
-     * Defaults to class name. May be changed in overriden init().
+     * Defaults to class name. May be changed in overridden init().
      * @var string
      */
     public $name;

@@ -61,7 +61,22 @@ class onesignalPush extends waPushAdapter
         $template = wa()->getConfig()->getRootPath().'/wa-system/push/adapters/onesignal/init.js';
         return $view->fetch($template);
     }
+/*
+    public function getInitData()
+    {
+        $is_enabled = $this->isEnabled();
+        if (!$is_enabled) {
+            return null;
+        }
 
+        $app = $this->getAppByDomain();
+        return [
+            [ 'key' => 'appId', 'value' => $app['id'] ],
+            [ 'key' => 'subdomainName', 'value' => $app['chrome_web_sub_domain'] ],
+            [ 'key' => 'path', 'value' => $this->getActionUrl() ],
+        ];
+    }
+*/
     protected function initControls()
     {
         $api_token = $this->getSettings(self::API_TOKEN);
@@ -110,6 +125,20 @@ class onesignalPush extends waPushAdapter
         );
     }
 
+    protected function normalizeSubscriberData($data)
+    {
+        if (!is_array($data) || 
+            !ifset($data['onesignal_app_id']) ||
+            !ifset($data['onesignal_player_id'])
+        ) {
+            throw new waException('Invalid subscriber data');
+        }
+        return [
+            'api_app_id' => $data['onesignal_app_id'],
+            'api_user_id' => $data['onesignal_player_id'],
+        ];
+    }
+
     //
     // Senders
     //
@@ -121,12 +150,18 @@ class onesignalPush extends waPushAdapter
         $subscriber_list = $this->getSubscriberListByField('id', $id);
         $request_data['subscriber_list'] = $subscriber_list;
 
+        $result = [];
         foreach ($subscriber_list as $app_id => $user_ids) {
             $push_data = $request_data;
             $push_data['app_id'] = $app_id;
-            $push_data['include_player_ids'] = $user_ids;
-            $this->request('notifications', $push_data, waNet::METHOD_POST);
+            $user_ids = array_filter($user_ids);
+            if ($user_ids) {
+                $push_data['include_player_ids'] = $user_ids;
+                $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
+            }
         }
+
+        return $result;
     }
 
     public function sendByContact($contact_id, $data)
@@ -139,8 +174,11 @@ class onesignalPush extends waPushAdapter
         foreach ($subscriber_list as $app_id => $user_ids) {
             $push_data = $request_data;
             $push_data['app_id'] = $app_id;
-            $push_data['include_player_ids'] = $user_ids;
-            $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
+            $user_ids = array_filter($user_ids);
+            if ($user_ids) {
+                $push_data['include_player_ids'] = $user_ids;
+                $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
+            }
         }
 
         return $result;
@@ -180,9 +218,11 @@ class onesignalPush extends waPushAdapter
         );
         $rows = $this->getPushSubscribersModel()->getByField($fields, 'id');
 
+        $scope_app = wa()->getApp();
         $subscriber_list = array();
         foreach ($rows as $row) {
-            if (!empty($row['subscriber_data'])) {
+            $scope = $row['scope'];
+            if (!empty($row['subscriber_data']) && (empty($scope) || in_array($scope_app, explode(',', $scope)))) {
                 $subscriber_data = json_decode($row['subscriber_data'], true);
                 if (!empty($subscriber_data)) {
                     $subscriber_list[] = $subscriber_data;

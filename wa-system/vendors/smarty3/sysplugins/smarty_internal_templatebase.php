@@ -34,7 +34,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data {
     public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null, $display = false, $merge_tpl_vars = true, $no_output_filter = false)
     {
         $advanced_security = wa()->getConfig()->systemOption('advanced_security');
-        if (preg_match('~^\Astring:{1,}~', $template) && $advanced_security) {
+        if (!empty($template) && preg_match('~^\Astring:{1,}~', $template) && $advanced_security) {
             $this->dumpLog($template);
         }
         if ($template === null && $this instanceof $this->template_class) {
@@ -152,7 +152,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data {
                         ob_start();
                         eval("?>" . $code);
                         unset($code);
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         ob_get_clean();
                         throw $e;
                     }
@@ -189,7 +189,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data {
                             $_template->capture_error();
                         }
                         array_shift($_template->_capture_stack);
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         ob_get_clean();
                         throw $e;
                     }
@@ -202,7 +202,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data {
                     try {
                         ob_start();
                         $_template->source->renderUncompiled($_template);
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         ob_get_clean();
                         throw $e;
                     }
@@ -257,7 +257,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data {
                     ob_start();
                     eval("?>" . $output);
                     $_output = ob_get_clean();
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     ob_get_clean();
                     throw $e;
                 }
@@ -291,7 +291,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data {
                 }
                 array_shift($_template->_capture_stack);
                 $_output = ob_get_clean();
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 ob_get_clean();
                 throw $e;
             }

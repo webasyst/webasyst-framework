@@ -74,7 +74,6 @@
 })();</script>
 
 <style type="text/css">
-    .wa-pages { }
     .wa-pages .wa-editor-core-wrapper { margin-left: auto; }
     .wa-pages .ace { padding: 15px 12px; position: relative; }
     .wa-pages .wa-editor-upload-img { position: absolute; top: 15px; right: 12px; z-index: 80; cursor: pointer; background-color: #f9f9f9; border: 1px solid #ccc; transition: all 0.2s ease; width: 1.8rem; height: 1.8rem; text-align: center; line-height: 1.8rem;
@@ -94,13 +93,15 @@
     .block-pages { margin-bottom: 2rem; }
     .block-pages .heading { margin-top: 1rem; }
     .block-pages .heading span { word-break: break-all; }
-    .block-pages ul.menu a svg { color: var(--accent-color) !important; }
     .block-pages ul.menu li a { word-break: break-all; }
-    .block-pages.unsettled ul.menu a, .block-pages.unsettled ul.menu a svg, .block-pages.unsettled ul.menu a .hint { color: var(--text-color-hint) !important; }
+    .block-pages.unsettled ul.menu a, .block-pages.unsettled ul.menu a .hint { color: var(--text-color-hint) !important; }
     .block-pages.unsettled svg { color: var(--text-color-hint); }
     .block-pages.unsettled .wa-page-settle svg { font-size: .8rem; }
 
     a.wa-page-link .action { visibility: hidden; }
+    a.wa-page-link > .wa-page-expander { flex: 0; position: relative; }
+    a.wa-page-link > .wa-page-expander > * { position: absolute; top: 50%; transform: translateY(-50%); left: -11px; padding: 3px; }
+    .block-pages a.wa-page-link > svg { color: var(--accent-color); }
     a.wa-page-link:hover .action { visibility: visible; }
     .wa-page-gray-toolbar { flex-wrap: wrap; }
     .wa-page-gray-toolbar > ul { margin: 0 }
@@ -115,8 +116,6 @@
     .wa-editor-core-wrapper .redactor-toolbar { box-shadow: none; border-bottom: 1px solid var(--border-color-soft); }
     .wa-editor-core-wrapper .redactor-layer { border: 0 none; background: var(--background-color-blank); }
     .wa-ibutton-checkbox ul.chips li { padding: 1px 0 10px; vertical-align: middle;}
-
-    #wa-editor-status i.icon16 { margin-top: 6px; }
 
     .wa-dropdown { float: right; margin: 2px 20px 0 0; }
     .wa-dropdown .wa-dropdown-content { padding: 20px;  width: auto; width: 760px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
@@ -138,8 +137,6 @@
     .wa-dropdown .field .name { word-wrap: break-word; }
 
     #wa-page-advanced-params-link { margin-left: 166px; }
-
-    .expander { cursor:pointer; float:left;}
 </style>
 
 {if $sidebar}
@@ -151,38 +148,40 @@
                 {$unsettled_pages_count = 0}
             {/if}
             <section class="block-pages{if $unsettled_pages_count} unsettled{/if}">
-                <header class="heading{if !$unsettled_pages_count} black{/if} collapse-handler js-collapse-handler">
+                <header class="heading{if !$unsettled_pages_count} black{/if}">
                     <span>
-                        <span class="caret">
-                            <i class="fas fa-caret-down"></i>
+                        <span class="icon text-gray cursor-pointer js-collapse-handler">
+                            <i class="fas fa-caret-down js-icon"></i>
                         </span>
-                        {if $r}{str_replace('www.','',$route['url_decoded'])|escape|truncate:23:'...':false:true}{else}[s`Unpublished`]{/if}
+                        <span>{if $r}{str_replace('www.','',$route['url_decoded'])|escape|truncate:23:'...':false:true}{else}[s`Unpublished`]{/if}</span>
                     </span>
-{*                    <i class="count action fas fa-plus-circle wa-page-add no-parent"{if !$r} style="display:none"{/if}></i>*}
                     {if $unsettled_pages_count}
-                        <a id="wa-page-settle" class="count action wa-page-settle js-page-settle custom-ml-8" href="#">
-                            <i class="fas fa-exclamation-triangle"></i>
+                        <a id="wa-page-settle" class="count action wa-page-settle js-page-settle custom-ml-8" href="javascript:void(0);">
+                            <i class="fas fa-exclamation-triangle text-yellow"></i>
                         </a>
                     {/if}
-                    <a class="count action wa-page-add no-parent" href="#">
-                        <i class="fas fa-plus-circle"></i>
+                    <a class="count action wa-page-add no-parent" href="javascript:void(0);">
+                        <i class="fas fa-plus-circle text-green js-add-page-icon" {if !$r}style="display:none"{/if}></i>
+                        <span class="count js-add-page-count" style="display: none;"></span>
                     </a>
                 </header>
 
-                <ul class="menu collapsible" data-domain="{if !$r && isset($domain)}{$domain}{else}{$route.domain}{/if}" data-route="{$route.route}">
+                <ul class="collapsible custom-px-16 menu" data-domain="{if !$r && isset($domain)}{$domain}{else}{$route.domain}{/if}" data-route="{$route.route}">
                     <li class="drag-newposition"></li>
                     {if !empty($route.pages)}
                         {foreach $route.pages as $p}
                             <li class="dr" id="page-{$p.id}" data-page-id="{$p.id}">
-                                {if !empty($p.childs)}<i class="icon16 darr expander overhanging"></i>{/if}
                                 <a class="wa-page-link" href="{$page_url}{$p.id}">
+                                    {if !empty($p.childs)}
+                                        <span class="js-expander wa-page-expander"><i class="fas fa-caret-down js-icon"></i></span>
+                                    {/if}
                                     <i class="fas fa-{if $p.status}file{else}pencil{/if}-alt"></i>
                                     <span>
                                         {$p.name|escape}
                                         <span class="hint">/{$p.full_url|escape}</span>
                                     </span>
                                     <span class="count action small">
-                                        <i class="fas fa-plus-circle wa-page-add"></i>
+                                        <i class="fas fa-plus-circle fa-xs text-green wa-page-add"></i>
                                     </span>
                                 </a>
                                 {if !empty($p.childs)}
@@ -200,7 +199,7 @@
             <div class="dialog" id="wa-page-settle-dialog">
                 <div class="dialog-background"></div>
                 <form class="dialog-body" method="post" action="?module=pages&action=settle">
-                    <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+                    <a href="javascript:void(0);" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
                     <h3 class="dialog-header">[s`Unpublished pages`]</h3>
                     <div class="dialog-content small">
                         <p>[`These pages are not connected to any of the site’s structure rules and are therefore not displayed on your site. To publish these pages now, select a site structure rule for them:`]</p>
@@ -217,7 +216,7 @@
                     </div>
                     <footer class="dialog-footer">
                         <input class="button" type="submit" value="[s`Publish`]">
-                        <a class="js-close-dialog button light-gray" href="#">[s`Cancel`]</a>
+                        <a class="js-close-dialog button light-gray" href="javascript:void(0);">[s`Cancel`]</a>
                     </footer>
                 </form>
             </div>
@@ -260,19 +259,27 @@
     var wa_url = "{$wa_url}";
     var wa_app = "{$wa->app()}";
 
+    function changeCollapseIcon($icon, direction_or_class = 'right') {
+        const class_right = 'fa-caret-right',
+              class_down = 'fa-caret-down';
+        if (direction_or_class === 'down') {
+            $icon.removeClass(class_right).addClass(class_down);
+        } else if (direction_or_class === 'right') {
+            $icon.removeClass(class_down).addClass(class_right);
+        } else {
+            $icon.removeClass(class_down).removeClass(class_right).addClass(direction_or_class);
+        }
+    }
     function waExpand(page_id) {
         var t = $('#page-'+page_id);
         var c = t.children('ul');
-        if(c) {
-            t.children('i.expander').removeClass('rarr').addClass('darr');
+        if(c.length) {
+            changeCollapseIcon(t.children('a').children('.js-expander').children(), 'down');
             c.show();
         }
+
         var parent_id = t.parent().data('parent-id');
         if(parent_id) waExpand(parent_id);
-        var i = t.closest('.block-pages').find(".heading svg");
-        if (i.hasClass('rarr')) {
-            i.trigger('click', true);
-        }
     }
 
     function waLoadPage(params) {
@@ -281,9 +288,9 @@
             $("#page-" + params).addClass('selected');
             waExpand(params);
         }
-        $("#wa-page-container").html('<div class="block double-padded">' +
-            '[s`Loading`]... <i class="icon16 loading"></i>' +
-            '</div><div class="clear"></div>');
+        $("#wa-page-container").html('<div class="content">' +
+            '[s`Loading`]... <i class="fas fa-spinner wa-animation-spin loading"></i>' +
+            '</div>');
         $("#wa-page-container").load("?module=pages&action=edit&id=" + params);
     }
 
@@ -330,43 +337,43 @@
         function waClose(page_id) {
             var t = $('#page-'+page_id);
             var c = t.children('ul');
-            if(c) {
-                t.children('i.expander').removeClass('darr').addClass('rarr');
+            var $icon = t.children('a').children('.js-expander').children();
+
+            if(c.length) {
+                changeCollapseIcon($icon, 'right');
                 c.hide();
             } else {
-                t.children('i.expander').removeClass('rarr').removeClass('darr').addClass('notebook');
+                changeCollapseIcon($icon, 'fa-notebook');
             }
         }
 
-        $('.expander').click(function() {
-            var page_id = $(this).parent().attr('id').replace(/page-/g, '');
+        $('.js-expander').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var $icon = $(this).find('.js-icon');
+            var page_id = $icon.closest('li').attr('id').replace(/page-/g, '');
             var k = wa_app+'/pages/page-' + page_id;
-            if($(this).hasClass('rarr')) {
+
+            if($icon.hasClass('fa-caret-right')) {
                 waExpand(page_id);
                 $.storage.del(k);
-             } else {
+            } else {
                 waClose(page_id);
                 $.storage.set(k, 1);
             }
         });
 
-        $('.expander').each(function() {
-            var page_id = $(this).parent().attr('id').replace(/page-/g, '');
-            var k = wa_app+'/pages/page-' + page_id;
-            if ($.storage.get(k)) {
-                waClose(page_id);
-            }
-        });
-
-        $(".block-pages").on('click', '.action', function(e) {
+        $(".block-pages").on('click', '.wa-page-add', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             let $target = e.target;
             if ($target.tagName === 'path') {
                 $target = $target.parentElement
             }
             if($(this).hasClass('wa-page-add') || $target.classList.contains('wa-page-add')) {
                 const that = $(this),
-                    $li = $('<li><a class="wa-page-link" href="#"><i class="fas fa-file-alt"></i><span>[s`New page`]</span></a></li>');
+                    $li = $('<li><a class="wa-page-link" href="javascript:void(0);"><i class="fas fa-file-alt"></i><span>[s`New page`]</span></a></li>');
 
                 if (that.hasClass('no-parent')) {
                     that.closest('.heading').next('ul').append($li);
@@ -387,7 +394,8 @@
             if ($target.tagName === 'path') {
                 $target = $target.parentElement
             }
-            if ($target.classList.contains('wa-page-add')) return true;
+
+            if ($(e.target).closest('.js-expander').hasClass('js-expander') || $(e.target).closest('.wa-page-add').hasClass('wa-page-add')) return true;
 
             const p = $(this).parent();
             let id = p.attr('data-page-id') || false;
@@ -426,8 +434,9 @@
             }
         }
 
-        $(".block-pages .heading").click(function (e, not_save) {
-            if ($(e.target).hasClass('wa-page-add')) return true;
+        $(".block-pages .heading").on('click', function (e, not_save) {
+            if ($(e.target).closest('.wa-page-add').hasClass('wa-page-add')) return true;
+
             var h = $(this);
             var ul = h.next('ul');
             var k = wa_app+'/pages/domain-' + ul.data('domain') + '/' + ul.data('route');
@@ -439,19 +448,23 @@
                     $.storage.del(k);
                 }
             }
-            var c = h.children('span.count');
-            if (h.children('i').hasClass('darr')) {
-                h.children('i').removeClass('darr').addClass('rarr');
-                c.children('i').hide();
-                c.children('span').html(ul.find('a.wa-page-link').length).show();
+            var $icon_add_page = h.find('.js-add-page-icon'),
+                $count = h.find('.js-add-page-count'),
+                $icon = h.find('.js-icon');
+
+            if ($icon.hasClass('fa-caret-down')) {
+                $icon_add_page.hide();
+                changeCollapseIcon($icon, 'right');
+                $count.html(ul.find('a.wa-page-link').length).show();
                 ul.hide();
             } else {
-                h.children('i').removeClass('rarr').addClass('darr');
-                c.children('span').hide();
-                c.children('i').show();
+                $count.hide();
+                $icon_add_page.show();
+                changeCollapseIcon($icon, 'down');
                 ul.show();
             }
         });
+
         $(".block-pages .heading").each(function () {
             var ul = $(this).next('ul');
             var k = wa_app+'/pages/domain-' + ul.data('domain') + '/' + ul.data('route');
@@ -644,6 +657,14 @@
             }, "json");
         }
 
+        // after expanding, close using storage
+        $('.js-expander').each(function() {
+            var page_id = $(this).closest('li').attr('id').replace(/page-/g, '');
+            var k = wa_app+'/pages/page-' + page_id;
+            if ($.storage.get(k)) {
+                waClose(page_id);
+            }
+        });
     });
 
 </script>

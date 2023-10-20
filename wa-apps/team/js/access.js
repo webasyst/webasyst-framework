@@ -651,7 +651,7 @@ window.ProfileAccessTab = function(o) { "use strict";
     function initWebasystIDUnbindAuth() {
         $('.js-webasyst-id-unbind-auth').on('click', function (e) {
             e.preventDefault();
-            $('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth', {id: contact_id});
+            $(document).trigger('wa_waid_unbind_auth', {id: contact_id});
         });
     }
 
@@ -817,6 +817,7 @@ window.ProfileAccessTab = function(o) { "use strict";
         var $login_input = $form.find('.c-login-input');
 
         $form.submit(function () {
+            $('.dialog-footer .js-close-dialog').prop('disabled', true);
             $form.find('input.state-error').removeClass('error');
             $form.find('.state-error-hint').remove();
             var new_login = $.trim($login_input.val());
@@ -847,6 +848,7 @@ window.ProfileAccessTab = function(o) { "use strict";
                     login = new_login;
                     window.location.assign(new_url);
                 } else if (r.status === 'fail') {
+                    $('.dialog-footer .js-close-dialog').prop('disabled', false);
                     $form.find('input[type="submit"]').parent().prepend($('<p class="state-error-hint custom-mt-4 custom-mb-8">'+r.errors.join("\n<br>\n")+'</p>'));
                 }
             }, 'json');

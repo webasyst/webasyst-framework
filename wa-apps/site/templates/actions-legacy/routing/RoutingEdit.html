@@ -227,7 +227,7 @@
                 <div class="field">
                     <div class="name">[`Custom parameters`]</div>
                     <div class="value">
-                        <textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
+                        <textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled')) && substr($key, 0, 1) != '_' && !isset($params[$key]) && is_scalar($value)}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
 
 {/if}{/foreach}</textarea>
                         <br />

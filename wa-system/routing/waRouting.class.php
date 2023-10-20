@@ -657,7 +657,7 @@ class waRouting
      */
     protected function appExists($app_id)
     {
-        // overriden in unit tests
+        // overridden in unit tests
         return wa()->appExists($app_id);
     }
 

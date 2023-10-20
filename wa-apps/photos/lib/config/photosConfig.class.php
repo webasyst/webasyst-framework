@@ -178,10 +178,12 @@ class photosConfig extends waAppConfig
         foreach ($result as $plugin_id => $routing_rules) {
             if ($routing_rules) {
                 $plugin = str_replace('-plugin', '', $plugin_id);
-                if ($url_type == 0) {
+                if ($url_type == 0 && isset($routing_rules[0])) {
                     $routing_rules = $routing_rules[0];
-                } else {
+                } else if (isset($routing_rules[1])) {
                     $routing_rules = $routing_rules[1];
+                } else if (!is_array($routing_rules)) {
+                    continue;
                 }
                 foreach ($routing_rules as $url => &$route) {
                     if (!is_array($route)) {
@@ -227,7 +229,7 @@ class photosConfig extends waAppConfig
 
     public function getSaveQuality() {
         $quality = $this->getOption('save_quality');
-        if(!$quality) {
+        if($quality === '') {
             $quality = 90;
         }
         return $quality;

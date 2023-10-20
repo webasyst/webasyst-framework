@@ -127,6 +127,10 @@ const WASettingsGeneral = ( function($) {
                         that.logo_text = that.insertChar(that.logo_text, '\n', 2)
                     }
                     that.$logo_text_area.text(that.logo_text).toggleClass('two-lines', active)
+
+                    if($('.js-logo-area').text().trim() == '') {
+                        that.$logo_text_area.empty().append(`<i class="${that.$logo_text_area.data('icon')}"></i>`)
+                    }
                 }
             })
         }
@@ -140,9 +144,16 @@ const WASettingsGeneral = ( function($) {
                     text = that.insertChar(text, '\n', 2)
                 }
 
-                that.logo_text = text;
-                that.$logo_text_area.text(text);
-                $(this).val(text);
+                if(text.length > 0) {
+                    that.logo_text = text;
+                    that.$logo_text_area.text(text);
+                    $(this).val(text);
+                }else{
+                    that.logo_text = '';
+                    that.$logo_text_area.empty().append(`<i class="${that.$logo_text_area.data('icon')}"></i>`);
+                    $(this).val('');
+                }
+
             })
         }
 
@@ -318,7 +329,7 @@ const WASettingsGeneral = ( function($) {
         initSubmit () {
             let that = this
 
-            that.$form.on('submit', function (e) {
+            that.$form.on('submit', async function (e) {
                 e.preventDefault();
                 if (that.is_locked) {
                     return;
@@ -332,7 +343,9 @@ const WASettingsGeneral = ( function($) {
 
                     that.$button.empty().html($button_text + $loader_icon);
 
-                that.sendAjaxRequest().then(res => {
+                    try {
+                    const res = await that.sendAjaxRequest();
+
                     if (res.status === 'ok') {
                         that.$button.empty().html($button_text + $success_icon).removeClass('yellow');
                         that.$footer_actions.removeClass('is-changed');
@@ -349,12 +362,22 @@ const WASettingsGeneral = ( function($) {
                             // Update company name in header
                             let $logo = $('#wa-account'),
                                 $h3 = $logo.find('h3'),
-                                company_name = $.trim(that.$form.find('#config-logo-text').val());
+                                company_name = $.trim(that.$form.find('.js-logo-area').text());
 
-                            if($('#two-line-text').is(':checked')) {
-                                $h3.addClass('two-lines').text(company_name);
+                            if (company_name) {
+                                if($('#fake-two-line').is(':checked')) {
+                                    $h3.addClass('two-lines').text(company_name);
+                                }else{
+                                    $logo.find('h3').removeClass('two-lines').text(company_name);
+                                }
                             }else{
-                                $logo.find('h3').removeClass('two-lines').text(company_name);
+                                if($('#fake-two-line').is(':checked')) {
+                                    $h3.addClass('two-lines').empty().append(`<i class="${$h3.data('icon')}"></i>`);
+                                }else{
+                                    $h3.removeClass('two-lines').empty().append(`<i class="${$h3.data('icon')}"></i>`);
+                                }
+
+                                that.$logo_text_area.empty().append(`<i class="${$h3.data('icon')}"></i>`);
                             }
 
                             $logo.css({
@@ -373,14 +396,12 @@ const WASettingsGeneral = ( function($) {
                         });
                         that.$button.empty().html($button_text);
                     }
-
-                }).catch(error => {
+                } catch (error) {
                     console.error(error)
-                }).finally(() => {
+                } finally {
                     that.is_locked = false;
                     that.$button.prop('disabled', false);
-                })
-
+                }
             });
 
             function fieldError(field_name, message) {

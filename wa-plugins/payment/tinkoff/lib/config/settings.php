@@ -179,6 +179,17 @@ HTML
         ),
     ),
 
+    'payment_ffd' => array(
+        'value'        => '1.05',
+        'title'        => 'Версия ФФД',
+        'description'  => 'Текущая выбранная версия должна совпадать с версией в настройках ОФД',
+        'control_type' => waHtmlControl::SELECT,
+        'options' => array(
+            '1.05' => '1.05',
+            '1.2'  => '1.2'
+        )
+    ),
+
     'payment_language' => array(
         'value'        => 'ru',
         'title'        => 'Язык платежной формы',

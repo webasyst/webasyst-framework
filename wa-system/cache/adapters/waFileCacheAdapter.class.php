@@ -11,7 +11,7 @@ class waFileCacheAdapter extends waCacheAdapter
 
     public function key($key, $app_id, $group = null)
     {
-        $key = trim($key, '/');
+        $key = trim((string) $key, '/');
         if ($group === true) {
             return $app_id.'/cache/g_'.$key;
         } elseif (!$group) {

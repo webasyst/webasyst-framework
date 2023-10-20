@@ -15,6 +15,7 @@
  * @property-read        $testmode
  * @property-read int    $check_data_tax
  * @property-read string $taxation
+ * @property-read string $payment_ffd
  * @property-read string $payment_object_type_product
  * @property-read string $payment_object_type_service
  * @property-read string $payment_object_type_shipping
@@ -86,7 +87,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'Currency'    => ifset(self::$currencies[$this->currency_id]),
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
             'CustomerKey' => $c->getId(),
-            'Description' => ifempty($order_data, 'summary', ''),
+            'Description' => ifempty($order_data, 'description', ''),
             'PayType'     => $this->two_steps ? 'T' : 'O',
             'DATA'        => array(
                 'Email' => $email,
@@ -174,12 +175,14 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
 
         ksort($args);
-        foreach ($args as &$arg) {
+        foreach ($args as $k => &$arg) {
             if (is_bool($arg)) {
                 $arg = $arg ? 'true' : 'false';
+            } else if (!is_scalar($arg)) {
+                unset($args[$k]);
             }
-            unset($arg);
         }
+        unset($arg);
 
         $expected_token = hash('sha256', implode('', $args));
 
@@ -495,7 +498,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'Currency'    => ifset(self::$currencies[$this->currency_id]),
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
             'CustomerKey' => $c->getId(),
-            'Description' => ifempty($order_data, 'summary', ''),
+            'Description' => ifempty($order_data, 'description', ''),
             'DATA'        => array(
                 'Email' => $email,
             ),
@@ -788,7 +791,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 break;
 
             case 'CONFIRMED':
-                if ($parent_transaction) {
+                if ($parent_transaction && $parent_transaction['type'] == self::OPERATION_AUTH_ONLY) {
                     $transaction_data['type'] = self::OPERATION_CAPTURE;
                 } else {
                     $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
@@ -981,6 +984,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                             'PaymentMethod' => $this->payment_method_type,
                             'PaymentObject' => $item_data['payment_object_type'],
                             'Tax' => $this->getTaxId($item_data),
+                            'MeasurementUnit' => (empty($item_data['stock_unit_code']) ? 'шт' : $item_data['stock_unit']),
                         ];
 
                         if (isset($item_data['fiscal_code'])) {
@@ -1013,6 +1017,9 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 if (!empty($item['tax_rate']) && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18, 20)))) {
                     return null;
                 }
+            }
+            if ($this->payment_ffd === '1.2') {
+                $this->ffd_12();
             }
         }
         return $this->receipt;
@@ -1069,5 +1076,25 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     protected function isTestMode()
     {
         return $this->testmode || 'DEMO' === substr($this->getSettings('terminal_key'), -4);
+    }
+
+    /**
+     * @return void
+     */
+    private function ffd_12()
+    {
+        /** https://www.tinkoff.ru/kassa/develop/api/receipt/ffd12/#Items */
+        $this->receipt['FfdVersion'] = '1.2';
+        foreach ($this->receipt['Items'] as &$item) {
+            $item['MeasurementUnit'] = ifset($item, 'MeasurementUnit', 'шт');
+            if (isset($item['Ean13'])) {
+                $item['MarkProcessingMode'] = 0;
+                $item['PaymentObject'] = 'goods_with_marking_code';
+                $item['MarkCode'] = [
+                    'MarkCodeType' => 'EAN13',
+                    'Value' => $item['Ean13']
+                ];
+            }
+        }
     }
 }

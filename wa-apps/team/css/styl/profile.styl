@@ -247,15 +247,16 @@
                                 margin-right .5rem
                         .t-activity-point
                             position absolute
-                            left: -0.625rem
-                            top: 0
+                            left: -0.925rem
+                            top: -0.395rem
                             display: block
                             width: 1.25em
                             height: 1.25em
                             border-radius: 50%
                             background: var(--red)
+                            border  6px solid var(--background-color-blank)
                         &:not(:last-child):not(.is-last)
-                            border-left 1px solid var(--light-gray)
+                            border-left 1px solid var(--border-color-hr)
                             .activity-photo-wrapper
                                 .activity-photo-list
                                     display flex
@@ -740,8 +741,8 @@ svg
 
     width: calc(50% - 16px);
     min-height: 64px;
-    background-color: var(--background-color-blockquote);
-    border-radius: 4px;
+    background-color: var(--background-color);
+    border-radius: 12px;
     padding: 10px 50px 10px 10px;
     margin: 16px 8px 0;
 

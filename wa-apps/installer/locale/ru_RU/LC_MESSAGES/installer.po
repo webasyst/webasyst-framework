@@ -5,14 +5,14 @@ msgstr ""
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: WebAsyst Team\n"
+"Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.0.6\n"
-"Language: ru_RU\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -27,6 +27,9 @@ msgstr "Установить"
 
 msgid "Do you confirm the installation?"
 msgstr "Вы подтверждаете установку?"
+
+msgid "Theme will be installed on your account, and you will be able to privately try it on your site for free."
+msgstr "Будет установлена полная версия темы дизайна, и вы сможете примерить ее на своем сайте бесплатно в разделе «Витрина» или в приложении «Сайт»."
 
 msgid "This will delete the product’s source code and data, without a recovery option. Are you sure?"
 msgstr "Это полностью удалит код и данные продукта без возможности восстановления. Вы уверены?"
@@ -253,10 +256,10 @@ msgstr "Виджет «<strong>%s</strong>»"
 msgid "This widget will be updated automatically when you update %s app."
 msgstr "Виджет будет обновлен автоматически при установке обновления приложения «%s»."
 
-msgid "Can not delete system application's widgets \"%s\""
+msgid "Cannot delete system app’s widgets \"%s\""
 msgstr "Ошибка удаления виджетов системного приложения «%s»"
 
-msgid "Can not delete inbuilt application's widgets \"%s\""
+msgid "Cannot delete built-in app’s widgets \"%s\""
 msgstr "Ошибка удаления виджетов системного приложения «%s»"
 
 msgid "Gathering information about available updates..."
@@ -522,3 +525,33 @@ msgstr "Не удалось выполнить отключение."
 
 msgid "Deletion of design theme “%s” for the “%s” app is unavailable because it is selected as a parent theme for the child themes of apps %s. Before deleting this design theme, either delete all its child themes or change their parent design theme."
 msgstr "Удаление темы дизайна «%s» для приложения «%s» недоступно, потому что она является родительской для дочерних тем приложений %s. Перед удалением этой темы дизайна удалите все ее дочерние темы или смените для них родительскую тему дизайна."
+
+msgid "Never show again"
+msgstr "Больше не показывать"
+
+msgid "App plugin %s has been deleted."
+msgid_plural "App plugins %s have been deleted."
+msgstr[0] "Плагин %s удален."
+msgstr[1] "Плагины %s удалены."
+msgstr[2] "Плагины %s удалены."
+
+msgid "App widget %s has been deleted."
+msgid_plural "App widgets %s have been deleted."
+msgstr[0] "Виджет %s удален."
+msgstr[1] "Виджеты %s удалены."
+msgstr[2] "Виджеты %s удалены."
+
+msgid "App theme %s has been deleted."
+msgid_plural "App themes %s have been deleted."
+msgstr[0] "Тема дизайна %s удалена."
+msgstr[1] "Темы дизайна %s удалены."
+msgstr[2] "Темы дизайна %s удалены."
+
+msgid "%s not installed"
+msgstr "Приложение %s не установлено"
+
+msgid "Payment"
+msgstr "Оплата"
+
+msgid "Shipping"
+msgstr "Доставка"

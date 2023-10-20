@@ -14,15 +14,11 @@
 
             <div class="dialog-content">
                 <p>
-                    {sprintf('[s`Enter available options for %s depending on it’s parent field value.`]', $title)}
-                    <a href="[`https://www.shop-script.com/help/46/conditional-contact-fields/`]" target="_blank">
-                        [`Get help`]
-                        <span class="icon"><i class="fas fa-info-circle"></i></span>
-                    </a>
+                    {sprintf('[s`Enter available options for “%s” depending on its parent field’s value.`]', $title)}
                 </p>
 
                 <div class="fields form">
-                    <div class="fields-group">
+                    <div class="fields-group blank">
                         {* push dummy item for prepare adding-interface *}
                         {$fields[] = ['value' => '', 'children' => [] ]}
                         {foreach $fields as $parent}

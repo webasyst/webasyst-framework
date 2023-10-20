@@ -240,7 +240,7 @@ abstract class waLoginFormRenderer
      *          'login' => 'user_login_12345'
      *      )
      *
-     * @param array $errors input errors. Will be rendered right aways
+     * @param array $errors input errors. Will be rendered right away
      *
      *   Format
      *     string <ID> => string|array <values>
@@ -250,7 +250,7 @@ abstract class waLoginFormRenderer
      *          In that case error would be attached in the bottom or
      *              some other place that depends of UI login of concrete form
      *
-     * @param array $messages input messages. Will be rendered right aways
+     * @param array $messages input messages. Will be rendered right away
      *   Format and meanings same as the $errors but they are not errors, just some info kind messages
      *
      * @return string html

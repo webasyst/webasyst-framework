@@ -57,19 +57,17 @@
         </div>
         *}
 
-    </article>
+        {* @event frontend_post.%plugin_id%.footer *}
+        {foreach $frontend_post as $plugin => $output}
+            {if !empty($output.footer)}{$output.footer}{/if}
+        {/foreach}
 
-    {* @event frontend_post.%plugin_id%.footer *}
-    {foreach $frontend_post as $plugin => $output}
-        {if !empty($output.footer)}{$output.footer}{/if}
-    {/foreach}
-
-    {if $show_comments && $post.comments_allowed}
-        {if $post.status eq blogPostModel::STATUS_PUBLISHED}
-            {include 'comments.html' inline}
-        {else}
-            <h4>[`Comments for non published posts are disabled`]</h4>
+        {if $show_comments && $post.comments_allowed}
+            {if $post.status eq blogPostModel::STATUS_PUBLISHED}
+                {include 'comments.html' inline}
+            {else}
+                <h4>[`Comments for non published posts are disabled`]</h4>
+            {/if}
         {/if}
-    {/if}
-
+    </article>
 </div>

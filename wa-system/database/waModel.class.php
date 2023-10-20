@@ -16,6 +16,7 @@ class waModel
 {
     const INSERT_ON_DUPLICATE_KEY_UPDATE = 1;
     const INSERT_IGNORE = 2;
+    const INSERT_EXPLICIT = 3;
 
     /**
      * Database Adapter
@@ -665,14 +666,87 @@ class waModel
      *     'color' => array('red', 'green', 'blue'),
      * );</pre>
      *
+     * @param null|int|array $mode Allows to produce 'INSERT IGNORE ...' or 'INSERT ... ON DUPLICATE KEY UPDATE ...' queries
+     *     a) if $mode is int and equals to waModel::INSERT_IGNORE it allows to ignore rows with duplicate PRIMARY/UNIQUE keys
+     *     b) if $mode is array it contains fields to be updated in case of duplicate PRIMARY/UNIQUE key. See an example
+     *        which sets a field 'updated' to the fixed value and updates field 'name' with new value from dataset provided
+     *        in the $data array
+     *     c) if $mode is int and equals to waModel::INSERT_EXPLICIT: produces basic 'INSERT' statement;
+     *        if query fails with 1062 (Duplicate entry for key) then no rows change and waDbException is thrown.
+     *     d) Otherwise (default): produces basic 'INSERT' statement; if query fails with 1062 (Duplicate entry for key)
+     *        error is silently ignored and no row changed or added.
+     * @example <pre>array(
+     *      'updated' => '2022-02-22 16:15:11',
+     *      'name=VALUES(name)'
+     *);<pre>
+     *
      * @return resource|bool Returns true if there are no data to be inserted.
      * @throws waException
      */
     public function multipleInsert($data)
     {
-        if (!$data) {
+        $data = $this->prepareMultipleInsertData($data);
+        if (!$data || empty($data['fields']) || empty($data['values'])) {
             return true;
         }
+
+        $args = func_get_args();
+        $mode = ifset($args, 1, null);
+
+        if ($mode === null) {
+            //return $this->adapter->multipleInsert($this->table, $data['fields'], $data['values']);
+        }
+
+        $sql = $this->prepareMultipleInsertQuery($data['fields'], $data['values'], $mode);
+
+        try {
+            return $this->query($sql);
+        } catch (waDbException $e) {
+            if ($mode !== null || $e->getCode() != 1062) {
+                throw $e;
+            }
+        }
+    }
+
+    /** Helper for multipleInsert() */
+    protected function prepareMultipleInsertQuery(array $fields, array $values, $mode)
+    {
+        $sql = 'INSERT' . ($mode === self::INSERT_IGNORE ? ' IGNORE' : '');
+        $sql .= ' INTO `' . $this->getTableName() .
+            '` (' . implode(',', $fields) . ") VALUES\n(" .
+            implode("),\n(", $values) .
+            ')';
+
+        if (is_array($mode)) {
+            $update = [];
+            foreach ($mode as $field => $value) {
+                if (is_numeric($field) && isset($this->fields[$value])) {
+                    $escaped_field = $this->escapeField($value);
+                    $update[] = "$escaped_field=VALUES($escaped_field)";
+                } elseif (isset($this->fields[$field])) {
+                    $update[] = $this->escapeField($field) . "='".$this->escape($value)."'";
+                } else {
+                    $update[] = $value;
+                }
+            }
+            if ($update) {
+                $sql .= "\nON DUPLICATE KEY UPDATE\n" . implode(",\n", $update);
+            }
+        }
+
+        return $sql;
+    }
+
+   /**
+     * Helper for multipleInsert()
+     * @param array $data
+     * @return array
+     * @throws waException
+     */
+    protected function prepareMultipleInsertData(array $data)
+    {
+        if (!$data) return [];
+
         $values = array();
         $fields = array();
         if (isset($data[0])) {
@@ -685,6 +759,8 @@ class waModel
                 }
                 if (!$fields) {
                     $fields = array_keys($row_values);
+                } else if (count($fields) != count($row_values)) {
+                    continue; // silently ignore rows with field count mismatch
                 }
                 $values[] = implode(',', $row_values);
             }
@@ -711,10 +787,8 @@ class waModel
                 $values[] = implode(',', $row_values);
             }
         }
-        if ($values) {
-            return $this->adapter->multipleInsert($this->table, $fields, $values);
-        }
-        return true;
+
+        return ['fields' => $fields, 'values' => $values];
     }
 
     public function isAutoIncrement()
@@ -869,11 +943,15 @@ class waModel
      */
     public function getById($value)
     {
-        $all = !is_array($this->id) && is_array($value);
-        if (!is_array($this->id)) {
-            return $this->getByField($this->id, $value, $all ? $this->id : false);
+        if (is_array($this->id)) {
+            $value = $this->remapIds($value);
+            $all = (bool)array_filter($value, function($v) {
+                return is_array($v);
+            });
+            return $this->getByField($value, $all ? $this->id : false);
         } else {
-            return $this->getByField($this->remapIds($value), $all ? $this->id : false);
+            $all = is_array($value);
+            return $this->getByField($this->id, $value, $all ? $this->id : false);
         }
     }
 

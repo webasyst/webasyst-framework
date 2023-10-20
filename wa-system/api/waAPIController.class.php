@@ -142,7 +142,7 @@ class waAPIController
          * @var waAPIMethod $method
          */
         $method = new $class_name();
-        $this->response($method->getResponse());
+        $this->response($method->getResponse(), $method->getStatusCode());
     }
 
     protected function hasAppAccess($app)
@@ -191,6 +191,15 @@ class waAPIController
         // auth user
         wa()->setUser(new waApiAuthUser($data['contact_id']));
         wa()->setLocale(wa()->getUser()->getLocale());
+
+        // Update user last activity time
+        $time = wa()->getUser()->get('last_datetime');
+        if ($time && time() - strtotime($time) > 30) {
+            $contact_model = new waContactModel();
+            $contact_model->updateById($data['contact_id'], [
+                'last_datetime' => date('Y-m-d H:i:s'),
+            ]);
+        }
 
         return $data;
     }

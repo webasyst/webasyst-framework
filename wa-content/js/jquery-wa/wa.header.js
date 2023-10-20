@@ -319,31 +319,41 @@ class WaHeader {
      * @description Close Announcement notification
      */
     closeNotification() {
-        let that = this,
-            $wa_notifications_bell = $('.js-notifications-bell'),
-            $wa_announcement_counter = $wa_notifications_bell.find('.badge');
-        /*let hidden_alert_ids = JSON.parse(sessionStorage.getItem('wa_notification_alert')) || [],
-            wa_notifications = that.$notification_wrapper.find('.wa-notification')
-            counter;
+        const that = this;
+        const $wa_notifications_bell = $('.js-notifications-bell');
+        const $wa_announcement_counter = $wa_notifications_bell.find('.badge');
+        const hidden_alert_ids = JSON.parse(sessionStorage.getItem('wa_notification_alert')) || [];
+        const wa_notifications = that.$notification_wrapper.find('.wa-notification');
+        let counter = wa_notifications.length;
 
-        counter = wa_notifications.length;
         hidden_alert_ids.forEach(alert => {
             wa_notifications.filter(`[data-id="${alert}"]`).remove();
             counter--
         })
-        $wa_announcement_counter.text(counter);*/
+
+        if (counter > 0) {
+            $wa_announcement_counter.text(counter);
+        }else{
+            $wa_announcement_counter.remove();
+        }
 
         that.$notification_hide.on('click', function (e) {
             e.preventDefault()
 
-            let $close = $(this),
-                $alert = $close.closest('.wa-notification');
-
+            const $close = $(this);
+            const $alert = $close.closest('.wa-notification');
+            const alert_id = $alert.data('id');
 
             $alert.remove();
-            /* let alert_id = $alert.data('id');
             hidden_alert_ids.push(alert_id)
-            sessionStorage.setItem('wa_notification_alert', JSON.stringify(hidden_alert_ids));*/
+            sessionStorage.setItem('wa_notification_alert', JSON.stringify(hidden_alert_ids));
+
+            counter--;
+            if (counter > 0) {
+                $wa_announcement_counter.text(counter);
+            }else{
+                $wa_announcement_counter.remove();
+            }
         });
 
         that.$notification_close.on('click', function (e) {
@@ -353,9 +363,8 @@ class WaHeader {
                 app_id = $close.data('app-id'),
                 $notification_block = $close.closest('.js-wa-announcement');
 
-            const key = $notification_block.data('key');
-
             if ($notification_block.length) {
+                const key = $notification_block.data('key');
                 $notification_block.remove();
                 let counter = that.$notification_wrapper.children().length;
 

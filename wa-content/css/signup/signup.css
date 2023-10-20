@@ -3,7 +3,7 @@
 .wa-signup-form-wrapper input[type="password"] {
   width: 210px;
   max-width: 100%;
-  padding: 0.25em 0.25em;
+  padding: 0.25em 0.5em;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;

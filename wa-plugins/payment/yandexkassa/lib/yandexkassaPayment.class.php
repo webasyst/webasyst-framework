@@ -921,14 +921,13 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         $receipt_items = [];
 
         foreach ($order->items as $item) {
-            $quantity = (int)ifset($item, 'quantity', 0);
+            $quantity = ifset($item, 'quantity', 0);
             if ($quantity <= 0) {
                 continue;
             }
             $item['amount'] = round($item['price'], 2) - round(ifset($item['discount'], 0.0), 2);
 
-            // possible splitting items into array of items
-            $items = [$item];
+            $items = [];
 
             // "Честный знак" marking code for product item leads to splitting by 'quantity'
             if ($item['type'] === 'product') {
@@ -942,8 +941,12 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 }
             }
 
-            foreach ($items as $it) {
-                $receipt_items[] = $this->formatReceiptItem($it, $order->currency);
+            if ($items) {
+                foreach ($items as $it) {
+                    $receipt_items[] = $this->formatReceiptItem($it, $order->currency);
+                }
+            } else {
+                $receipt_items[] = $this->formatReceiptItem($item, $order->currency);
             }
 
             unset($item);

@@ -165,6 +165,11 @@ class teamAccessSaveActions extends waJsonActions
             return null;
         }
 
+        if (!preg_match('~^[a-z0-9@_\.\-]+$~u', strtolower($login))) {
+            $this->errors[] = _w('Invalid login name.');
+            return null;
+        }
+
         $user_model = new waUserModel();
         $another_user = $user_model->select('id,name')->where("login = s:0 AND id != i:1", array($login, $this->id))->limit(1)->fetch();
         if ($another_user) {

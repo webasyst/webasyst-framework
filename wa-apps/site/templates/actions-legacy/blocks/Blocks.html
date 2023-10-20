@@ -200,6 +200,7 @@ $(".s-block-code").click(function () {
 {/if}
 
 $("#s-block-delete").click(function () {
+    {if !empty($block)}
     if (confirm('{$confirm_message}')) {
         $.post("?module=blocks&action=delete", { id: "{$block.id|escape}"}, function (response) {
             if (response.status == 'ok') {
@@ -221,6 +222,8 @@ $("#s-block-delete").click(function () {
             }
         }, "json");
     }
+    {/if}
+
     return false;
 });
 

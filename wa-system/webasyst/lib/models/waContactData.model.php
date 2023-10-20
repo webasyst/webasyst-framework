@@ -57,7 +57,7 @@ class waContactDataModel extends waModel
                 $result[$row['contact_id']][$field][$row['sort']] = array(
                     'value' => $row['value'],
                     'ext'   => $row['ext'],
-                    'status' => $row['status']
+                    'status' => ifset($row, 'status', null),
                 );
             }
         }

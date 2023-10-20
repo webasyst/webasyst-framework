@@ -14,7 +14,7 @@
                     {$_template = $channel->getParams('template')|default:[]}
                     <div class="s-email-templates">
                             <h1 class="s-template-name">{$templates_list[$template_id]}</h1>
-                            <div class="fields-group">
+                            <div class="fields-group blank">
                                 <div class="field">
                                     <div class="name">[s`Sender`]</div>
                                     <div class="value">
@@ -50,18 +50,17 @@
 
                             <input type="hidden" name="data[template]" value="{$template_id|escape}" />
 
-                        <div class="fields-group s-footer-actions js-footer-actions">
+                        <div class="fields-group blank s-footer-actions js-footer-actions">
 
                         </div>
                         <div class="bottombar flexbox middle"{if $wa->isMobile()} style="overflow-x: scroll;"{/if}>
-                            <div class="article flexbox middle space-40 js-footer-actions"{if $wa->isMobile()} style="overflow-x: scroll; min-width: max-content; padding: 0 1rem;"{/if}>
+                            <div class="article flexbox middle space-48 js-footer-actions"{if $wa->isMobile()} style="overflow-x: scroll; min-width: max-content; padding: 0 1rem;"{/if}>
                                 <div>
                                     {* Save *}
-                                    <input class="button js-submit-button" type="submit" name="" value="[s`Save`]">
+                                    <input class="button js-submit-button green" type="submit" name="" value="[s`Save`]">
                                     {* Cancel *}
                                     <span class="c-hidden">
-                                        <span style="margin: 0 4px;">[s`or`]</span>
-                                        <a href="{$wa_backend_url}webasyst/settings/email/template/{$channel->getId()|escape}/{$template_id}/" class="js-cancel">[s`cancel`]</a>
+                                        <a href="{$wa_backend_url}webasyst/settings/email/template/{$channel->getId()|escape}/{$template_id}/" class="button light-gray js-cancel">[s`Cancel`]</a>
                                     </span>
                                     <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
                                 </div>

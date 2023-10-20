@@ -225,7 +225,7 @@ abstract class waController
 
         $path = str_replace($appsPath, '', $path);
         $path = trim($path, '\/');
-        $path = preg_replace('~^[^/]+/~', '', $path); // remove app dir from the begining of the path
+        $path = preg_replace('~^[^/]+/~', '', $path); // remove app dir from the beginning of the path
 
         // /lib dir indicates that we've found either a plugin root or an application root
         $prevBase = '';

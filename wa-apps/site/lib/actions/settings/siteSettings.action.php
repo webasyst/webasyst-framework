@@ -53,6 +53,20 @@ class siteSettingsAction extends waViewAction
         $domain_alias = wa()->getRouting()->isAlias($domain);
         $this->getRobots($domain, $domain_alias);
 
+        /**
+         * Backend settings page
+         * UI hook allow extends backend settings page
+         * @event backend_settings
+         * @param array $domain
+         * @return array[string][string]string $return[%plugin_id%]['action_button_li'] html output
+         * @return array[string][string]string $return[%plugin_id%]['section'] html output
+         */
+        $domain_info = siteHelper::getDomainInfo();
+        $this->view->assign('backend_settings', wa()->event('backend_settings', $domain_info, array(
+            'action_button_li',
+            'section'
+        )));
+
         if ($domain_alias) {
             $this->view->assign('domain_alias', $domain_alias);
             return;
@@ -139,20 +153,6 @@ class siteSettingsAction extends waViewAction
             'domains'           => $domains,
             'latter_apps_names' => $latter_apps_names,
         ));
-
-        /**
-         * Backend settings page
-         * UI hook allow extends backend settings page
-         * @event backend_settings
-         * @param array $domain
-         * @return array[string][string]string $return[%plugin_id%]['action_button_li'] html output
-         * @return array[string][string]string $return[%plugin_id%]['section'] html output
-         */
-        $domain_info = siteHelper::getDomainInfo();
-        $this->view->assign('backend_settings', wa()->event('backend_settings', $domain_info, array(
-            'action_button_li',
-            'section'
-        )));
     }
 
     protected function getDomainUrl($domain)

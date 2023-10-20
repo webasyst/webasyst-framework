@@ -711,7 +711,7 @@ abstract class waPayment extends waSystemPlugin
     {
         $rec = '#'.self::getLogRequestId()."\n";
         $module_id = strtolower($module_id);
-        if (!preg_match('@^[a-z][a-z0-9]+$@', $module_id)) {
+        if (!preg_match('@^[a-z][a-z0-9_]+$@', $module_id)) {
             $rec .= 'Invalid module_id: '.$module_id."\n";
             $module_id = 'general';
         }
@@ -1136,7 +1136,7 @@ abstract class waPayment extends waSystemPlugin
         $country_model = new waCountryModel();
         $country = $country_model->get($iso3code);
         if (!$country) {
-            throw new waException($this->_w("Unknown country: ").$iso3code);
+            throw new waException($this->_w("Unknown country:") . ' ' . $iso3code);
         }
         return strtoupper($country['iso2letter']);
     }
@@ -1150,7 +1150,7 @@ abstract class waPayment extends waSystemPlugin
     {
         $currency = waCurrency::getInfo($currency_code);
         if (!$currency) {
-            throw new waException($this->_w("Unknown currency: ").$currency_code);
+            throw new waException($this->_w("Unknown currency:") . ' ' . $currency_code);
         }
         return $currency['iso4217'];
     }
@@ -1323,6 +1323,12 @@ abstract class waPayment extends waSystemPlugin
 
 
             $unfiltered_transactions = self::getTransactionsByFields($search);
+            foreach ($unfiltered_transactions as $_transaction_id => $_transaction) {
+                // Ignore any records with empty native_id
+                if (empty($_transaction['native_id'])) {
+                    unset($unfiltered_transactions[$_transaction_id]);
+                }
+            }
             $unfiltered_transactions = self::filterTransactionsByDate($unfiltered_transactions);
             $active_part_number = $this->getActivePartNumber($unfiltered_transactions);
 
@@ -1376,10 +1382,10 @@ abstract class waPayment extends waSystemPlugin
     /**
      * This is backwards-compatibility code to support apps and payment plugins written before v.2.2.1
      * Before then, payment plugins could only support one payment transaction per order.
-     * ALl records with the same wa_tranasction.order_id (and belonging to the same plugin instance)
+     * ALl records with the same wa_transaction.order_id (and belonging to the same plugin instance)
      * were considered as one big log of a single payment transaction.
      *
-     * Since 2.2.1, `wa_tranasction` table contains column `part_number`. Values of part_number
+     * Since 2.2.1, `wa_transaction` table contains column `part_number`. Values of part_number
      * distinguish between different unrelated transactions in the same order. Apps and plugins
      * that are aware of this column, can use it to retry a failed payment, or support
      * payment via several smaller transactions, etc. - which was not possible before.
