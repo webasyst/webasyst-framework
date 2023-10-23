@@ -919,18 +919,18 @@ class waSystem
                         if (isset($app_info['icon'])) {
                             if (is_array($app_info['icon'])) {
                                 foreach ($app_info['icon'] as $size => $url) {
-                                    $app_info['icon'][$size] = ltrim($this->getAppStaticUrl($app).$url, '/');
+                                    $app_info['icon'][$size] = ltrim($this->getAppPathRelativeToFrameworkRoot($app).$url, '/');
                                 }
                             } else {
                                 $app_info['icon'] = array(
-                                    48 => ltrim($this->getAppStaticUrl($app).$app_info['icon'], '/')
+                                    48 => ltrim($this->getAppPathRelativeToFrameworkRoot($app).$app_info['icon'], '/')
                                 );
                             }
                         } else {
                             $app_info['icon'] = array();
                         }
                         if (isset($app_info['img'])) {
-                            $app_info['img'] = ltrim($this->getAppStaticUrl($app).$app_info['img'], '/');
+                            $app_info['img'] = ltrim($this->getAppPathRelativeToFrameworkRoot($app).$app_info['img'], '/');
                         } elseif (isset($app_info['icon'][48])) {
                             $app_info['img'] = $app_info['icon'][48];
                         }
@@ -951,7 +951,7 @@ class waSystem
                                 if (isset($params['name'])) {
                                     $params['name'] = _wd($app, $params['name']);
                                 }
-                                $path_to_app = ($app == 'webasyst') ? 'wa-content'.'/' : ltrim($this->getAppStaticUrl($app), '/');
+                                $path_to_app = ($app == 'webasyst') ? 'wa-content'.'/' : ltrim($this->getAppPathRelativeToFrameworkRoot($app), '/');
                                 if (isset($params['icon'])) {
                                     if (is_array($params['icon'])) {
                                         foreach ($params['icon'] as $size => $url) {
@@ -1196,7 +1196,11 @@ class waSystem
             $app = $this->getApp();
         }
         $url = $this->config->getRootUrl($absolute);
+        return $url.$this->getAppPathRelativeToFrameworkRoot($app);
+    }
 
+    protected function getAppPathRelativeToFrameworkRoot($app)
+    {
         $app_path = $this->getAppPath(null, $app);
 
         $base = waConfig::get('wa_path_root');
@@ -1207,7 +1211,7 @@ class waSystem
             $app_path = 'wa-apps/'.$app.'/';
         }
 
-        return $url.$app_path;
+        return $app_path;
     }
 
     /**
