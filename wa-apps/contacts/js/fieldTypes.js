@@ -1592,7 +1592,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
 
         newInlineFieldElement: function(mode) {
             // Do not show anything in view mode if field is empty
-            if(mode == 'view' && !this.fieldValue.value) {
+            if(mode == 'view' && (!this.fieldValue || !this.fieldValue.value)) {
                 return null;
             }
             var result = null;
@@ -1676,11 +1676,13 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                 return;
             }
             if (this.currentMode == 'edit') {
-                this.domElement.find('.val').each(function() {
-                    var el = $(this);
-                    var part = el.data('part');
-                    el.val(data.data[part] || '');
-                });
+                if (data && data.data) {
+                    this.domElement.find('.val').each(function() {
+                        var el = $(this);
+                        var part = el.data('part');
+                        el.val(data.data[part] || '');
+                    });
+                }
             } else {
                 this.domElement.find('.val').html(this.fieldValue);
             }
