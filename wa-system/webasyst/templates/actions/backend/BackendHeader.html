@@ -239,7 +239,7 @@
         {if $_force_set_wa_backend_ui_version == '2.0'}
 
             <div style="position: fixed; z-index: 9999; bottom: 20px; right: 20px; border-radius: 4px; background: #eee; padding: 25px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05), 0 0.5rem 0.5rem -0.5rem rgba(0, 0, 0, 0.13); max-width: 500px;{if $wa->cookie('force_hide_wa2ui_teaser') && $app_info.id != 'ui'} display: none;{/if}">
-                <a href="#" onClick="_setCookie('force_hide_wa2ui_teaser', 1, 180); $(this).parent().hide();
+                <a href="javascript:void(0)" onClick="_setCookie('force_hide_wa2ui_teaser', 1, 180); $(this).parent().hide();
     " style="padding: 6px; float: right; font-size: 24px; color: rgba(0,0,0,0.5); position: relative; top: -10px; right: -6px;">&times;</a>
                 <h3 style="font-size: 20px; margin-bottom: 12px; color: #777; margin-top: -7px;">
                     {if $app_info.id != 'webasyst'}<img src="{$root_url}{$app_info.icon.48}" style="width: 24px; height: 24px; position: relative; top: 4px;">{/if}

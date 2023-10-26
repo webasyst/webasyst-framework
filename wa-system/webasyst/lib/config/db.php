@@ -30,6 +30,7 @@ return array(
         'create_datetime' => array('datetime', 'null' => 0),
         'contact_id' => array('int', 11), // optional (eg. for frontend users)
         'subscriber_data' => array('text', 'null' => 0),
+        'scope' => array('varchar', 255, 'null' => 1),
         ':keys' => array(
             'PRIMARY' => 'id',
             'provider_id' => 'provider_id',

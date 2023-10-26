@@ -1199,8 +1199,16 @@ class waSystem
         return $url.$this->getAppPathRelativeToFrameworkRoot($app);
     }
 
-    protected function getAppPathRelativeToFrameworkRoot($app)
+    /**
+     * @param string|null $app Optional app id. If not specified, then current app's id is used by default.
+     * @return string
+     * @since 2.9.5
+     */
+    public function getAppPathRelativeToFrameworkRoot($app=null)
     {
+        if (!$app) {
+            $app = $this->getApp();
+        }
         $app_path = $this->getAppPath(null, $app);
 
         $base = waConfig::get('wa_path_root');
