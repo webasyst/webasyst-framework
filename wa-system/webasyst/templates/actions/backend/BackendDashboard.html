@@ -54,7 +54,7 @@
                             [s`<strong>Enable secure sign-in with 2-factor authentication (2FA).</strong> Your account will be connected to Webasyst ID, and any sign-in attempts from new devices will be protected with an SMS confirmation code.`]
                         </p>
                         <form class="flexbox middle space-16">
-                            <input type="tel" placeholder="[s`+1`]" class="solid bold" value="{$webasyst_id_auth_banner.phone|default:'[s`+1`]'}" style="background-color: var(--background-color-blank);">
+                            <input type="tel" placeholder="[s`+1`]" class="solid bold" value="{$webasyst_id_auth_banner.phone|default:'[s`+1`]'|escape}" style="background-color: var(--background-color-blank);">
                             <button type="submit" class="button green">[s`Connect`]</button>
                             <a href="javascript:void(0);" class="js-webasyst-id-helplink small">[s`How does it work?`]</a>
                             <script>

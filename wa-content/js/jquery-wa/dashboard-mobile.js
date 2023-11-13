@@ -618,13 +618,9 @@ const Page = ( function($, backend_url) {
                 $deferred.done( function(response) {
                     if ( $.trim(response).length && !response.includes('activity-empty-today')) {
                         // Render
-                        $wrapper.find(".empty-activity-text").remove();
-                        let $today = $wrapper.find(".today");
-                        if($today.length) {
-                            $today.after(response).remove();
-                        }else{
-                            $wrapper.prepend(response);
-                        }
+                        $widgetActivity.find(".empty-activity-text").remove();
+                        $widgetActivity.find(".activity-item.activity-empty-today").remove();
+                        $wrapper.prepend(response);
                     }
 
                     that.storage.isTopLazyLoadLocked = false;

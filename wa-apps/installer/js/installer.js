@@ -570,7 +570,7 @@ String.prototype.translate = function () {
                 $itemClone.find('img').removeClass('userpic userpic-48 custom-mr-8');
                 $itemClone.addClass('-added');
 
-                const targetPosition = $itemClone.offset();
+                const targetPosition = $app_menu.find('li:first').offset();
                 const startPosition = $this.offset();
 
                 const target_params = {

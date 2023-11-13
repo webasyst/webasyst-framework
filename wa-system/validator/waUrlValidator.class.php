@@ -18,7 +18,7 @@ class waUrlValidator extends waRegexValidator
 
     protected function init()
     {
-        $this->setMessage('not_match', 'Invalid URL');
+        $this->setMessage('not_match', _ws('Invalid URL'));
         $this->setPattern(self::REGEX_URL);
     }
 

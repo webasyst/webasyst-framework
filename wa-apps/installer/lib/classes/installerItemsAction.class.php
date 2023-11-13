@@ -16,7 +16,7 @@ abstract class installerItemsAction extends waViewAction
         $tag = $this->getFilters('tag');
 
         // System plugins
-        if (preg_match('~^wa-plugins/~', $slug)) {
+        if (preg_match('~^wa-plugins/~', (string) $slug)) {
             $filters['type'] = 'plugin';
             $filters['category'] = 'plugins:' . preg_replace('~^wa-plugins/~', '', $slug);
         } else {
@@ -42,7 +42,7 @@ abstract class installerItemsAction extends waViewAction
 
         // Set ui version from current app
         // For system plugins get UI from request param with 1.3 as default
-        $ui = (strpos($slug, 'wa-plugins/') === 0) ? waRequest::get('ui', '1.3', waRequest::TYPE_STRING_TRIM) : wa()->whichUI($slug);
+        $ui = (strpos((string) $slug, 'wa-plugins/') === 0) ? waRequest::get('ui', '1.3', waRequest::TYPE_STRING_TRIM) : wa()->whichUI($slug);
         waRequest::setParam('force_ui_version', $ui);
     }
 

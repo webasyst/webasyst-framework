@@ -21,6 +21,9 @@ class waAPIException extends Exception
         if ($this->error_description) {
             $this->response['error_description'] = $this->error_description;
         }
+        if (defined('WA_API_EXCEPTION_STACK_TRACE') && WA_API_EXCEPTION_STACK_TRACE) {
+            $this->response['trace'] = $this->getTraceAsString();
+        }
     }
 
     public function __toString()

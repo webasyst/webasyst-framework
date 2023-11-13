@@ -1882,6 +1882,9 @@ msgstr "Email-адрес введен неправильно"
 msgid "Invalid captcha"
 msgstr "Капча введена неверно"
 
+msgid "Invalid URL"
+msgstr "URL введен неправильно"
+
 msgid "Template settings"
 msgstr "Настройки шаблона"
 
