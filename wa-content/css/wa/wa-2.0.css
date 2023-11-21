@@ -2898,3 +2898,4 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
 }
 
 .hidden { display: none !important; }
+table.xdebug-error th { color: black; }

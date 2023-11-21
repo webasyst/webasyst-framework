@@ -228,7 +228,7 @@ class waCurrency
                 $n = round($n, $precision + 2);
                 $n = floor($n * pow(10, $precision)) / ((float) pow(10, $precision));
             } else {
-                $n = round($n, $precision);
+                $n = round((float) $n, $precision);
 
                 // required to show '%.1' correctly for 0.99
                 if ($trim_to_width !== false && strlen($n) > $trim_to_width) {

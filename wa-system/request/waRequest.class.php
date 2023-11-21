@@ -306,6 +306,9 @@ class waRequest
     {
         if ($name && !isset($_SERVER[$name])) {
             $name = strtoupper($name);
+            if (!isset($_SERVER[$name])) {
+                $name = 'REDIRECT_'.$name;
+            }
         }
         return self::getData($_SERVER, $name, $default, $type);
     }
