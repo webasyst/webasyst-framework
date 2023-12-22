@@ -12,15 +12,15 @@
             [s`Each domain used by your backend users has to be configured separately in OneSignal account.`]
         </p>
 
-        <table class="light" style="max-width: 200px; margin: 0 0 10px 0;">
+        <table class="light" style="max-width: {if $wa->whichUI() == '1.3'}200px{else}auto{/if}; margin: 0 0 10px 0;">
             {foreach $domains as $d}
                 <tr>
-                    <td style="color: black;">{$d.name|escape}</td>
+                    <td{if $wa->whichUI() == '1.3'} style="color: black;"{else} class="black"{/if}>{$d.name|escape}</td>
                     {if $d.connected}
                         <td style="color: green;">[`Connected`]</td>
                         <td></td>
                     {else}
-                        <td style="color: red;">[`Not connected`]</td>
+                        <td{if $wa->whichUI() == '1.3'} style="color: red;"{else} class="text-red"{/if}>[`Not connected`]</td>
                     {/if}
                 </tr>
             {/foreach}

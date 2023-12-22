@@ -574,7 +574,7 @@ String.prototype.translate = function () {
                 const startPosition = $this.offset();
 
                 const target_params = {
-                    top: targetPosition.top,
+                    top: 0,
                     left: targetPosition.left
                 };
 

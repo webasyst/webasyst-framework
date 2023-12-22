@@ -248,9 +248,9 @@
         $theme_preview_link = $('.js-tabs-menu .wa-theme-preview'),
         $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
 
-    const current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
+    var current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
 
-        let $bottombar = $('.bottombar');
+    var $bottombar = $('.bottombar');
 
 
     async function postData(url, data) {

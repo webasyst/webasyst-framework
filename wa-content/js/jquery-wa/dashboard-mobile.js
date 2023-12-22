@@ -553,6 +553,7 @@ const Page = ( function($, backend_url) {
 
                     /*TODO check vice versa case*/
                     $widgetActivity.find('.activity-empty-today').remove();
+                    $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
 
                     that.storage.isActivityFilterLocked = false;
                 });
@@ -620,7 +621,12 @@ const Page = ( function($, backend_url) {
                         // Render
                         $widgetActivity.find(".empty-activity-text").remove();
                         $widgetActivity.find(".activity-item.activity-empty-today").remove();
-                        $wrapper.prepend(response);
+                        const $activity_divider = $wrapper.find('.activity-divider:first');
+                        if ($activity_divider.length) {
+                            $activity_divider.after(response)
+                        }else{
+                            $wrapper.prepend(response);
+                        }
                     }
 
                     that.storage.isTopLazyLoadLocked = false;

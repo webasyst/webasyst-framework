@@ -1487,6 +1487,7 @@ const Page = ( function($, backend_url) {
 
                     /*TODO check vice versa case*/
                     $widgetActivity.find('.activity-empty-today').remove();
+                    $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
 
                     that.storage.isActivityFilterLocked = false;
                 });
@@ -1608,6 +1609,17 @@ const Page = ( function($, backend_url) {
 
                     /*TODO check vice versa case*/
                     $widgetActivity.find('.activity-empty-today').remove();
+
+                    const $activity_divider = $widgetActivity.find('.activity-divider');
+                    let uniqueTexts = [];
+                    $activity_divider.each(function() {
+                        const text = $(this).text();
+                        if ($.inArray(text, uniqueTexts) === -1) {
+                            uniqueTexts.push(text);
+                        } else {
+                            $(this).remove();
+                        }
+                    });
                 });
             }
         }
@@ -1637,7 +1649,23 @@ const Page = ( function($, backend_url) {
                         // Render
                         $widgetActivity.find(".empty-activity-text").remove();
                         $widgetActivity.find(".activity-item.activity-empty-today").remove();
-                        $wrapper.prepend(response);
+                        const $today_divider = $widgetActivity.find('.activity-divider.today');
+                        const $activity_divider = $widgetActivity.find('.activity-divider');
+                        if ($today_divider.length) {
+                            $today_divider.after(response)
+                        }else{
+                            $wrapper.prepend(response);
+                        }
+
+                        let uniqueTexts = [];
+                        $activity_divider.each(function() {
+                            const text = $(this).text();
+                            if ($.inArray(text, uniqueTexts) === -1) {
+                                uniqueTexts.push(text);
+                            } else {
+                                $(this).remove();
+                            }
+                        });
                     }
 
                     that.storage.isTopLazyLoadLocked = false;

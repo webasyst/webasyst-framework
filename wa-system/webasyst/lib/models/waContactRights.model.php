@@ -406,11 +406,9 @@ class waContactRightsModel extends waModel {
             'cids' => array_keys($no_access),
         ))->fetchAll('contact_id', true);
         foreach($arr as $id => $v) {
-            $access[$id] = $v;
-            unset($no_access[$id]);
-        }
-        if (!$no_access) {
-            return $access;
+            if (!isset($access[$id])) {
+                $access[$id] = $v;
+            }
         }
 
         // Filter people with group rigths allowing $name
@@ -427,8 +425,7 @@ class waContactRightsModel extends waModel {
             'cids' => array_keys($no_access),
         ))->fetchAll('contact_id', true);
         foreach($arr as $id => $v) {
-            $access[$id] = $v;
-            unset($no_access[$id]);
+            $access[$id] = max($v, ifset($access, $id, 0));
         }
 
         return $access;

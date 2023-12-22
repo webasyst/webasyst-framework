@@ -169,17 +169,20 @@ class waAPIController
                 $token = waRequest::server('HTTP_AUTHORIZATION', null, 'string');
             }
             if ($token) {
-                $token = preg_replace('~^(Bearer\s)~ui', '', $token);
+                $token = preg_replace('~^(\s*Bearer\s+)~ui', '', $token);
+                $token = trim($token);
             }
         }
         if (!$token) {
-            throw new waAPIException('invalid_request', 'Required parameter is missing: access_token', 400);
+            throw new waAPIException('token_required', 'Access token is missing', 400);
         }
 
         $tokens_model = new waApiTokensModel();
         $data = $tokens_model->getById($token);
         if (!$data || $data['token'] != $token) {
-            throw new waAPIException('invalid_token', 'Invalid access token', 401);
+            throw new waAPIException('invalid_token', 'Invalid access token', 401, [
+                'sha256' => hash('sha256', $token),
+            ]);
         }
         if ($data['expires'] && (strtotime($data['expires']) < time())) {
             throw new waAPIException('invalid_token', 'Access token has expired', 401);
