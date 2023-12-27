@@ -1490,6 +1490,17 @@ const Page = ( function($, backend_url) {
                     $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
 
                     that.storage.isActivityFilterLocked = false;
+
+                    const today = $wrapper.data("today-text");
+                    if ($wrapper.find('.activity-divider:first').text() !== today) {
+                        const empty_today = $wrapper.data("empty-today-text");
+                        $wrapper.prepend(`<div class="activity-divider h3">${today}</div>
+                                            <div class="activity-item activity-empty-today custom-mb-24">
+                                                <div class="item-content-wrapper">
+                                                    <div class="inline-content">${empty_today}</div>
+                                                </div>
+                                            </div>`);
+                    }
                 });
             }
         }

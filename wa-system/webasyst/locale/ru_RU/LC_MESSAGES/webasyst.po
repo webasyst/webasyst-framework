@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-11-28 09:58+0300\n"
+"PO-Revision-Date: 2023-12-20 18:47+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -6819,3 +6819,9 @@ msgstr "Текущее значение отсутствует среди дос
 
 msgid "Shipping will be restricted to the selected country."
 msgstr "Доставка будет ограничена выбранной страной."
+
+msgid "No web push provider is configured."
+msgstr "Нет настроенных провайдеров push-уведомлений."
+
+msgid "Web push provider “%s” not found."
+msgstr "Провайдер push-уведомлений «%s» не найден."

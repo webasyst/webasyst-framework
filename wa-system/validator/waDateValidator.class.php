@@ -23,7 +23,7 @@ class waDateValidator extends waValidator
     /**
      *
      * @param array|string $value
-     * @param bool $more_current
+     * @param bool $more_current deprecated
      * @return bool
      */
     public function isValid($value, $more_current = true)
@@ -41,7 +41,7 @@ class waDateValidator extends waValidator
             $year = null;
             if (isset($value['year'])) {
                 $year = $value['year'];
-                if ($year < 1 || ($more_current && $year > date('Y')) || !is_numeric($year) || floor($year) != $year) {
+                if ($year < 1 || !is_numeric($year) || floor($year) != $year) {
                     $error = $this->getMessage('incorrect_date');
                 }
             }

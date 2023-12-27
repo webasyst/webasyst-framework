@@ -393,7 +393,7 @@ class waSystem
         }
 
         if (empty($adapter)) {
-            throw new waException('Push provider are not configured');
+            throw new waException(_ws('No web push provider is configured.'));
         }
 
         $file = $this->config->getPath('system').'/push/adapters/'.$adapter.'/'.$adapter.'Push.class.php';
@@ -412,7 +412,7 @@ class waSystem
             }
         }
 
-        throw new waException(sprintf("Push provider %s not found.", var_export($adapter, true)));
+        throw new waException(sprintf_wp("Web push provider “%s” not found.", var_export($adapter, true)));
     }
 
     /**

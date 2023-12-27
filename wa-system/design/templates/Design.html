@@ -476,6 +476,7 @@
             }
 
             let hash = location.hash;
+            const ls_id = 'wa_{$app.id}_current_theme_hash';
             if (hash.indexOf('theme=') !== -1) {
                 if (!params['route']) {
                     hash = hash.replace(/&route=[^&]+/, '');
@@ -492,9 +493,9 @@
                     hash = hash + '&domain=' + params['domain'];
                 }
                 $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
-                localStorage.setItem('wa_photo_current_theme_hash', location.hash);
+                localStorage.setItem(ls_id, location.hash);
             } else {
-                const theme_hash = localStorage.getItem('wa_photo_current_theme_hash');
+                const theme_hash = localStorage.getItem(ls_id);
                 if (theme_hash){
                     location.href = theme_hash;
                 }else{

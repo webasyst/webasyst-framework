@@ -179,7 +179,7 @@
             </div>
         {/if}
 
-        <div class="activity-list-block js-activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+        <div class="activity-list-block js-activity-list-block" data-empty-text="[`No events in the live stream yet.`]" data-empty-today-text="[`No activity today yet.`]" data-today-text="[`Today`]">
             {if !empty($activity)}
                 {include file="../dashboard/DashboardActivity.html" inline}
             {else}
