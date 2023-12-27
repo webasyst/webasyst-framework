@@ -13,8 +13,6 @@
                     <option value="{$option.value}" {if $option.value === $settings.point_mode}selected{/if}>{$option.title}</option>
                 {/foreach}
             </select>
-        </div>
-        <div class="value">
             <p class="hint">{$obj->_w('Select values corresponding to your contract’s conditions.')}
                 <br>
                 {$obj->_w('If “With prepayment only” option is selected, then in Shop-Script, with “In-cart checkout” mode enabled, only prepayment options are available after shipping option selection.')}
