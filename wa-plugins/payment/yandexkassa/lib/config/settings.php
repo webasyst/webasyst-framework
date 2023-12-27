@@ -11,7 +11,7 @@ return array(
         'title'        => 'Секретный ключ',
         'description'  => <<<HTML
 <span class="js-yandexkassa-registration-link" style="background-color: #FFE6E6; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%;">
-Подключаясь к платёжной системе <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">через Webasyst</a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8% на 3&nbsp;месяца.
+Подключаясь к платёжной системе <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">через Webasyst</a>, вы получаете <b>премиум-тариф</b> со ставками от&nbsp;2,8% на 3&nbsp;месяца.
 </span>
 <span class="js-yandexkassa-registration-link" style="font-weight: normal; font-size: 14px;color: black;">
 Чтобы получить идентификатор, номер витрины и пароль, <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">отправьте заявку на подключение</a>.
