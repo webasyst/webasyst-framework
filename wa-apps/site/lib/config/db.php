@@ -2,7 +2,7 @@
 return array(
     'site_block' => array(
         'id' => array('varchar', 64, 'null' => 0),
-        'content' => array('text', 'null' => 0),
+        'content' => array('mediumtext', 'null' => 0),
         'create_datetime' => array('datetime', 'null' => 0),
         'description' => array('text', 'null' => 0),
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),

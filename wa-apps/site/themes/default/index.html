@@ -21,26 +21,26 @@
 {/if}
 
 {/strip}
-<html{if !empty($html_class_array)} class="{join(' ', $html_class_array)}"{/if} lang="{if $wa->locale()}{$wa->locale()}{else}en{/if}">
+<html{if !empty($html_class_array)} class="{join(' ', $html_class_array)}"{/if} lang="{if $wa->locale() == 'ru_RU'}ru{else}en{/if}">
 
 {$_head_prefix = $wa->globals("headPrefix")}
 
 <head {if !empty($_head_prefix)}prefix="{$_head_prefix}"{/if}>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}">
 
     <title>{$wa->title()|escape}</title>
-    <meta name="keywords" content="{$wa->meta('keywords')|escape}" />
-    <meta name="description" content="{$wa->meta('description')|escape}" />
+    <meta name="keywords" content="{$wa->meta('keywords')|escape}">
+    <meta name="description" content="{$wa->meta('description')|escape}">
     {if $theme_settings['header_customcolor']}
         <meta name="theme-color" content="{$theme_settings['header_customcolor']|escape}">
     {/if}
 
     {if !empty($canonical)}
-        <link rel="canonical" href="{$canonical}"/>
+        <link rel="canonical" href="{$canonical}">
     {/if}
-    <link rel="icon" href="/favicon.ico"/>
-    <link rel="shortcut icon" href="/favicon.ico"/>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
     {if $wa->blog}
         <!-- rss -->
         {$rss=$wa->blog->rssUrl()}
@@ -48,7 +48,7 @@
     {/if}
 
     <!-- css -->
-    <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
     {$wa->css()} {* links active plugins CSS *}
     {if !empty($theme_settings.font_family) && ($theme_settings.font_family != 'Trebuchet MS' || $theme_settings.font_family != 'Verdana' || $theme_settings.font_family != 'Georgia, Times')}
         {if $theme_settings.font_family == 'Fira Sans'}{$_real_font_name = 'Fira+Sans:400,500,700,400italic,500italic,700italic'}{/if}
@@ -260,14 +260,11 @@
                             {if $wa->isAuthEnabled()}
                                 <!-- user auth -->
                                 {strip}
-                                    <ul class="auth wa-flex align-items-center space-05" id="js-header-auth-wrapper">
+                                    <ul class="auth align-items-center space-05" id="js-header-auth-wrapper">
                                         {if $wa->user()->isAuth()}
                                             {if $wa->myUrl()}
                                                 <li>
                                                     <a href="{$wa->myUrl()}"><i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i></a>
-                                                </li>
-                                                <li{if $wa->globals('isMyAccount')} class="bold"{/if}>
-                                                    <a href="{$wa->myUrl()}">{$wa->user('firstname')|default:'[`My account`]'}</a>
                                                 </li>
                                             {else}
                                                 <li><strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></li>
@@ -325,7 +322,7 @@
         {if !empty($theme_settings.footer_subscribe_form_use) && $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
             <div class="mailer-subscribe">
                 <div class="container">
-                    <section class="s-subscribe-section row cols1-mobile" id="js-subscribe-section">
+                    <div class="s-subscribe-section row cols1-mobile" id="js-subscribe-section">
                         {if !empty($theme_settings.footer_subscribe_form_title)}
                             <p class="col w5 s-subscribe-section--title wa-mb-4 wa-pl-4">{$theme_settings.footer_subscribe_form_title}</p>
                         {/if}
@@ -348,7 +345,7 @@
                                 })
                             })(jQuery);
                         </script>
-                    </section>
+                    </div>
                     {if !empty($theme_settings.footer_subscribe_personal_data)}
                         <div class="s-subscribe-personal-data wa-mt-24">{$theme_settings.footer_subscribe_personal_data}</div>
                     {/if}

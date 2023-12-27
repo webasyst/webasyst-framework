@@ -157,18 +157,19 @@ var MatchMedia = function( media_query ) {
 };
 
 $(document).ready(function() {
-
+    const $header_container = $('#header-container');
+    const $body = $('body');
     // MOBILE nav slide-out menu
     $('#mobile-nav-toggle').click( function(){
         if (!$('.nav-negative').length) {
-            $('body').prepend($('header .apps').clone().removeClass('apps').addClass('nav-negative'));
-            $('body').prepend($('header .auth').clone().addClass('nav-negative'));
-            $('body').prepend($('header .search').clone().addClass('nav-negative'));
-            $('body').prepend($('header .offline').clone().addClass('nav-negative'));
+            $body.prepend($('header .apps').clone().removeClass('apps').addClass('nav-negative'));
+            $body.prepend($('header .auth').clone().addClass('nav-negative'));
+            $body.prepend($('header .offline').clone().addClass('nav-negative'));
             $('.nav-negative').hide().slideToggle(200);
         } else {
             $('.nav-negative').slideToggle(200);
         }
+        $header_container.toggleClass('no-margin');
         $("html, body").animate({ scrollTop: 0 }, 200);
         return false;
     });
