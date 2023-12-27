@@ -748,8 +748,8 @@ msgstr "Вы уверены, что хотите отключить «%s»?"
 msgid "Are you sure to delete \"%s\"?"
 msgstr "Вы уверены, что хотите удалить «%s»?"
 
-msgid "Also delete all events imported from this calendar "
-msgstr "Также удалить все события, импортированные из этого календаря "
+msgid "Also delete all events imported from this calendar (%s)"
+msgstr "Также удалить все события, импортированные из этого календаря (%s)"
 
 msgid "%d event"
 msgid_plural "%d events"
