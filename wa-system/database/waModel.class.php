@@ -861,9 +861,9 @@ class waModel
      *
      * @return int
      */
-    public function countAll()
+    public function countAll(): int
     {
-        return $this->query("SELECT COUNT(*) FROM ".$this->table)->fetchField();
+        return (int)$this->query("SELECT COUNT(*) FROM ".$this->table)->fetchField();
     }
 
     /**
