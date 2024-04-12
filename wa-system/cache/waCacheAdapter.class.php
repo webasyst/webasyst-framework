@@ -18,7 +18,7 @@ abstract class waCacheAdapter
 
     public function key($key, $app_id, $group = null)
     {
-        $key = trim($key, '/');
+        $key = empty($key) ? '' : trim($key, '/');
         if (!$group || $group === true) {
             return $app_id.'/'. $key;
         } else {

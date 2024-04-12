@@ -20,6 +20,9 @@
     .t-app-name-mobile {
         display: none;
     }
+    .c-access-single-app tr:not(.t-single-app-selected) > td > .t-access-status {
+        visibility: hidden;
+    }
     @media (max-width: 768px) {
         .t-app-icon {
             width: auto;
@@ -227,12 +230,30 @@
                             {$event_message = "`$event_message` `$message`"}
                         {/if}
                     {/foreach}
+
+                    {if $single_app_id}
+                        {$access_rights_selected_value = 'single_app_mode'}
+                    {elseif $fullAccess}
+                        {$access_rights_selected_value = '1'}
+                    {elseif $noAccess}
+                        {$access_rights_selected_value = 'remove'}
+                    {else}
+                        {$access_rights_selected_value = '0'}
+                    {/if}
+
+                    {$access_rights_select_options = [
+                        'remove' => _w('No access'),
+                        '0' => _w('Limited access'),
+                        '1' => _w('Administrator'),
+                        'single_app_mode' => _w('Single app')
+                    ]}
+
                     <div class="custom-mb-8">
                         <div class="wa-select small">
                             <select id="c-access-rights-toggle" {if $event_message}disabled{/if}>
-                                <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
-                                <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
-                                <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
+                                {foreach $access_rights_select_options as $value => $label}
+                                    <option value="{$value|escape}"{if $value == $access_rights_selected_value} selected="selected"{/if}>{$label|escape}</option>
+                                {/foreach}
                             </select>
                         </div>
                         {if $event_message}
@@ -429,11 +450,65 @@
             </div>
         </div>
         {/if}
+        <div class="field c-access-single-app" id="c-access-single-app-by-app" style="display: none">
+            <div class="name">[`Single app`]</div>
+            <div class="value c-access-rights c-access-rights-wrapper small custom-pt-4">
+                <span>[`Пользователь не увидит ниĸаĸих других приложения ĸроме выбранного.`]</span>
+                <table>
+                    <tbody>
+                    {foreach $apps as $app_id => $app}
+                    {$is_selected = $single_app_id && $single_app_id == $app_id}
+                        <tr {if $is_selected}class="t-single-app-selected"{/if}>
+                            <td class="min-width" style="min-width:1.35rem;">
+                                <label>
+                                    <span class="wa-radio large">
+                                        <input type="radio" id="t-radio-{$app_id}" class="c-access-single-app-checkbox" name="single_app_id" value="{$app_id}"{if $is_selected} checked{/if}>
+                                        <span></span>
+                                    </span>
+                                </label>
+                            </td>
+                            <td class="t-app-icon">
+                                <label for="t-radio-{$app_id}">
+                                    <img src="{$wa_url}{$app.img}">
+                                    <span class="t-app-name-mobile">{$app.name|escape}</span>
+                                </label>
+                            </td>
+                            <td class="t-app-name">
+                                <label for="t-radio-{$app_id}">
+                                    {$app.name|escape}
+                                </label>
+                            </td>
+                            <td class="t-app-access width-40">
+                                {$_rights = max($app.gaccess, $app.access)}
+                                {if $_rights > 1}
+                                    {$_access = $access_types.full}
+                                {elseif $_rights}
+                                    {$_access = $access_types.limited}
+                                {else}
+                                    {$_access = $access_types.no}
+                                {/if}
+                                <div class="t-access-status type-{$_access.id}"
+                                    data-app-id="{$app_id}"
+                                    title="[`Edit access`]"
+                                >
+                                    {* Output all possible names to be able to change them via JS *}
+                                    <i class="fas fa-edit"></i>
+                                    {foreach $access_types as $at}
+                                        <span class="t-access-name type-{$at.id}">{$at.name|default:""|escape}</span>
+                                    {/foreach}
+                                </div>
+                            </td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <div class="field c-access-rights" id="c-access-rights-by-app" style="display: none">
             <div class="name">[`Access rights`]</div>
-            <div class="value c-access-rights small custom-pt-4" id="c-access-rights-wrapper">
+            <div class="value c-access-rights c-access-rights-wrapper small custom-pt-4">
                 [`Backend access rights are customized for every app separately and result from a combination of personal and group access rights.`]
-                <table>
+                <table
                     <tbody>
                     {foreach $apps as $app_id => $app}
                         <tr>
@@ -458,6 +533,7 @@
                                     title="[`Edit access`]"
                                 >
                                     {* Output all possible names to be able to change them via JS *}
+                                    <i class="fas fa-edit"></i>
                                     {foreach $access_types as $at}
                                         <span class="t-access-name type-{$at.id}">{$at.name|default:""|escape}</span>
                                     {/foreach}
@@ -465,7 +541,7 @@
                             </td>
                         </tr>
                     {/foreach}
-                </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>

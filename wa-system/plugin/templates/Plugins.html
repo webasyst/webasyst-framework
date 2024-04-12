@@ -7,6 +7,19 @@
 <script type="text/javascript" src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
 <script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js?{$wa->version(true)}"></script>
 
+{if !empty($installer) && $wa->installer}
+    {$delete_plugin_url =  "`$wa_backend_url`installer/assets/?module=plugins&action=remove"}
+    <style>
+    #wa-plugin-list > li:hover > .dropdown.count { visibility: visible; }
+    #wa-plugin-list > li > .dropdown.count {
+        visibility: hidden;
+        position: absolute;
+        top: .5rem;
+        right: .5rem;
+    }
+    </style>
+{/if}
+
 {$plugin_names = array()}
 <div id="wa-plugins-container" class="content flexbox{if !empty($container_class)} {$container_class}{/if}">
     <div class="sidebar flexbox blank width-21rem bordered-right bordered-left">
@@ -22,7 +35,17 @@
                     {/if*}
                     {foreach $plugins as $plugin}
                         {$plugin_names[$plugin.id] = $plugin.name|escape}
-                        <li id="plugin-{$plugin.id}"{if !empty($plugin.custom_settings_url)} data-url="{$plugin.custom_settings_url}"{elseif !empty($plugin.custom_settings)} data-settings="1"{/if}>
+                        <li id="plugin-{$plugin.id}"{strip}
+                            {if !empty($plugin.custom_settings_url)}
+                                data-url="{$plugin.custom_settings_url}"
+                            {elseif !empty($plugin.custom_settings)}
+                                data-settings="1"
+                            {/if}
+                            {if !empty($delete_plugin_url)}
+                                data-plugin-slug="{$wa->app()|escape}/plugins/{$plugin.id|escape}"
+                                data-plugin-vendor="{if !empty($plugin.vendor)}{$plugin.vendor|escape}{/if}"
+                            {/if}
+                        {/strip}>
                             <a href="{$plugins_hash}/{$plugin.id}/">
                                 {if !isset($plugin.img)}
                                     <i class="fas fa-plug"></i>
@@ -36,7 +59,27 @@
                                         <p class="hint">{$plugin.description|escape}</p>
                                     {/if}
                                 </span>
+                                <span class="count" style="width:16px;"></span>
                             </a>
+
+                            {if !empty($delete_plugin_url)}
+                                <div class="dropdown count action">
+                                    <a class="dropdown-toggle without-arrow text-gray custom-px-8 custom-py-4" href="javascript:void(0);">
+                                        <i class="fas fa-ellipsis-h text-light-gray"></i>
+                                    </a>
+                                    <div class="dropdown-body right">
+                                        <ul class="menu">
+                                            <li>
+                                                <a class="js-delete-plugin" href="javascript:void(0);">
+                                                    <i class="fas fa-trash-alt text-light-gray"></i>
+                                                    <span>[s`Delete plugin`]</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            {/if}
+
                         </li>
                     {/foreach}
                 </ul>
@@ -106,6 +149,8 @@
                     cache: false
                 });
 
+                this.initDropdowns();
+
                 if ($.wa) $.wa.errorHandler = function (xhr) {
                     if ((xhr.status === 403) || (xhr.status === 404)) {
                         var text = $(xhr.responseText);
@@ -159,6 +204,44 @@
                     });
                 }
             }
+        },
+
+        initDropdowns: function() {
+            var that = this,
+                delete_plugin_url = this.options.delete_plugin_url;
+            if (!delete_plugin_url || !$.fn.waDropdown || !$.waDialog) {
+                $("#wa-plugin-list .dropdown").hide();
+                return;
+            }
+
+            $("#wa-plugin-list .dropdown").waDropdown();
+
+            $('#wa-plugin-list').on('click', '.js-delete-plugin', function() {
+                var $plugin_li = $(this).closest('[data-plugin-slug]');
+                if (!$plugin_li.length) {
+                    return;
+                }
+                var slug = $plugin_li.data('plugin-slug');
+                var vendor = $plugin_li.data('plugin-vendor');
+
+
+                $.waDialog.confirm({
+                    title: that.options.locale.confirm_delete_title,
+                    cancel_button_title: that.options.locale.confirm_delete_cancel_button,
+                    success_button_title: that.options.locale.confirm_delete_confirm_button,
+                    cancel_button_class: 'light-gray',
+                    success_button_class: 'danger',
+                    onSuccess() {
+
+                        var data = { extras_id: {} };
+                        data.extras_id[slug] = vendor;
+                        $.post(delete_plugin_url, data).then(function(r) {
+                            window.location.reload();
+                        });
+
+                    }
+                });
+            });
         },
 
         parsePath: function (path) {
@@ -441,11 +524,19 @@
         'wa_url': {$wa_url|json_encode},
         'loading': {'<div class="box">[`Loading...`] <i class="fas fa-spinner fa-spin loading"></i></div>'|json_encode},
         'title_suffix': ' — {$wa->accountName(false)|escape:'javascript'}',
-        'plugin_names': {$plugin_names|json_encode}
+        'plugin_names': {$plugin_names|json_encode},
+
+        'app_id': {$wa->app()|json_encode},
+        'delete_plugin_url': {$delete_plugin_url|default:null|json_encode},
+        locale: {
+            confirm_delete_title: {_wd('installer', "This will delete the product’s source code and data, without a recovery option. Are you sure?")|json_encode},
+            confirm_delete_confirm_button: {_w('Delete')|json_encode},
+            confirm_delete_cancel_button: {_w('Cancel')|json_encode}
+        }
     });
 
     {if empty($is_ajax)}
-        $('.js-plugin-list a, .js-plugins-list').on('click', function  () {
+        $('.js-plugin-list > li[id] > a, .js-plugins-list').on('click', function  () {
             $.plugins.dispatch($(this).attr('href'), true);
             return false;
         });

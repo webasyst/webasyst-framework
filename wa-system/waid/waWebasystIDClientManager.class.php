@@ -260,10 +260,13 @@ class waWebasystIDClientManager
      * Get system (non user) access token
      * @return string
      */
-    public function getSystemAccessToken()
+    public function getSystemAccessToken($force_refresh = false)
     {
         $system_access_token = $this->getAppSettingsModel()->get('webasyst', 'waid_system_access_token');
-        if (!empty($system_access_token) && !(new waWebasystIDAccessTokenManager)->isTokenExpired($system_access_token)) {
+        if (!empty($system_access_token) && 
+            !(new waWebasystIDAccessTokenManager)->isTokenExpired($system_access_token) && 
+            !$force_refresh
+        ) {
             return $system_access_token;
         }
 

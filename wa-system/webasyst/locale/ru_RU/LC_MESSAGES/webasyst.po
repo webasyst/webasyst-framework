@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-12-20 18:47+0300\n"
+"PO-Revision-Date: 2024-04-11 13:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.3.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -6412,6 +6412,9 @@ msgstr "Сегодня еще не было событий."
 msgid "Filter by app"
 msgstr "Фильтр по приложениям"
 
+msgid "Filter"
+msgstr "Фильтр"
+
 msgid "TV link"
 msgstr "Ссылка для ТВ"
 
@@ -6472,7 +6475,7 @@ msgstr "На вашем сервере должно быть установле�
 msgid "To check the sending of SMS messages, please first save the changes you have made."
 msgstr "Для проверки отправки SMS-сообщений сначала сохраните сделанные вами изменения."
 
-msgid "Select UI mode"
+msgid "UI mode (debug)"
 msgstr "Режим интерфейса (debug)"
 
 msgid "Route settings"
@@ -6559,8 +6562,17 @@ msgstr "Ошибка во время выполнения метаобновле
 msgid "Empty <code>form_id</code> parameter."
 msgstr "Пустой параметр <code>form_id</code>."
 
-msgid "Default UI mode"
-msgstr "Режим интерфейса по умолчанию"
+msgid "UI mode"
+msgstr "Режим интерфейса"
+
+msgid "Newest"
+msgstr "Новый"
+
+msgid "user selectable"
+msgstr "на выбор пользователя"
+
+msgid "older apps with 1.3 UI will still work"
+msgstr "старые приложения с 1.3 продолжат работу"
 
 msgid "new"
 msgstr "новый"
@@ -6825,3 +6837,123 @@ msgstr "Нет настроенных провайдеров push-уведомл
 
 msgid "Web push provider “%s” not found."
 msgstr "Провайдер push-уведомлений «%s» не найден."
+
+msgid "Another notification"
+msgid_plural "%d more notifications"
+msgstr[0] "еще сообщение"
+msgstr[1] "еще %d сообщения"
+msgstr[2] "еще %d сообщений"
+
+msgid "Post"
+msgstr "Написать"
+
+msgid "Show more"
+msgstr "Показать еще"
+
+msgid "Delete the notification permanently?"
+msgstr "Удалить уведомление навсегда?"
+
+msgid "Everyone on your team will see the announcement"
+msgstr "Объявление увидят все сотрудники"
+
+msgid "Show until"
+msgstr "Показывать до"
+
+msgid "Current time:"
+msgstr "Текущее время:"
+
+msgid "Pin above others"
+msgstr "Закрепить вверху"
+
+msgid "Breaking news"
+msgstr "Новость-молния"
+
+msgid "Notify everyone"
+msgstr "Уведомить всех"
+
+msgid "Notify everyone by email & SMS"
+msgstr "Уведомить всех по почте и SMS"
+
+msgid "Custom status..."
+msgstr "Другой статус..."
+
+msgid "No status"
+msgstr "Без статуса"
+
+msgid "Custom status"
+msgstr "Свой статус"
+
+msgid "Status label"
+msgstr "Статус"
+
+msgid "Enter custom text"
+msgstr "Введите свой текст"
+
+msgid "The status will be automatically linked with the selected calendar in the Team app."
+msgstr "Статус будет автоматически связан с выбранным календарем в приложении «Команда»."
+
+msgid "Show read items"
+msgstr "Показать прочитанные"
+
+msgid "Show all"
+msgstr "Показать все"
+
+msgid "Profile"
+msgstr "Профиль"
+
+msgid "Mode"
+msgstr "Режим"
+
+msgid "Status for %s"
+msgstr "Статус на %s"
+
+msgid "The announcement will automatically disappear at the specified time."
+msgstr "Объявление автоматически пропадет в указанное время."
+
+msgid "will show the announcement above others"
+msgstr "поднимет объявление выше других"
+
+msgid "Groups"
+msgstr "Группы"
+
+msgid "Users"
+msgstr "Сотрудники"
+
+msgid "To all users"
+msgstr "Всем сотрудникам"
+
+msgid "The dashboard will be available only to admin users with full access rights."
+msgstr "Дашборд будет доступен только пользователям с полными правами доступа."
+
+msgid "A private link will be generated for streaming this dashboard on 4K and Full HD TVs."
+msgstr "Будет создана приватная ссылка для трансляции дашборда на любой телевизор 4K или Full HD."
+
+msgid "Invite your teammates using the Team app."
+msgstr "Пригласите сотрудников в приложении «Команда»."
+
+msgid "Not connected to Webasyst ID."
+msgstr "Нет подключения к Webasyst ID."
+
+msgid "Webasyst WebSocket API error."
+msgstr "Ошибка API веб-сокетов Webasyst."
+
+msgid "Tinkoff client ID"
+msgstr "Идентификатор клиента"
+
+msgid "Single app mode misconfiguration: access denied to app %s for user with access only to app %s."
+msgstr "Неправильная конфигурация одиночного режима приложения: запрещен доступ к приложению «%s» для пользователя с доступом только к приложению «%s»."
+
+msgid "Single app mode misconfiguration: %s app does not exist."
+msgstr "Неправильная конфигурация одиночного режима приложения: приложение «%s» не существует."
+
+msgid "Record not found."
+msgstr "Запись не найдена."
+
+msgid "Announcement from %s"
+msgstr "Уведомление из %s"
+
+msgid "Delete plugin"
+msgstr "Удалить плагин"
+
+msgid "Link to %s"
+msgstr "Ссылка на %s"

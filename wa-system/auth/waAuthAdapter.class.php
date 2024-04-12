@@ -63,7 +63,7 @@ abstract class waAuthAdapter
      */
     public function getUrl()
     {
-        return wa()->getRootUrl(false, true).'oauth.php?app='.wa()->getApp().'&amp;provider='.$this->getId();
+        return wa()->getRootUrl(false, true).'oauth.php?app='.wa()->getApp().'&provider='.$this->getId();
     }
 
     /**
@@ -94,10 +94,13 @@ abstract class waAuthAdapter
         return file_get_contents($url);
     }
 
-    protected function post($url, $post_data)
+    protected function post($url, $post_data, $header = [])
     {
         if (function_exists('curl_init')) {
             $ch = curl_init($url);
+            if (!empty($header)) {
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+            }
             curl_setopt($ch, CURLOPT_HEADER, 0);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -108,10 +111,11 @@ abstract class waAuthAdapter
 
             return $content;
         }
+        $header[] = 'Content-type: application/x-www-form-urlencoded';
         $context = stream_context_create(array(
             parse_url($url, PHP_URL_SCHEME) => array(
                 'method'  => 'POST',
-                'header'  => 'Content-type: application/x-www-form-urlencoded',
+                'header'  => $header,
                 'content' => $post_data
             ),
         ));

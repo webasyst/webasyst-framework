@@ -183,6 +183,7 @@ var webasystIDHelp = ( function($) {
         var renderCurrentStep = function() {
             $steps.hide();
             $steps.filter('[data-id="' + that.current_step + '"]').show();
+            that.dialog.resize();
         };
 
         var renderNavButtons = function() {

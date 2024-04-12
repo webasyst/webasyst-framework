@@ -6,9 +6,12 @@ class waUserGroupsModel extends waModel
     protected $id = array('contact_id', 'group_id');
 
     public function getContactIds($group_id) {
+        if (!$group_id) {
+            return [];
+        }
         $sql = "SELECT contact_id FROM ".$this->table."
-                WHERE group_id = ".(int)$group_id;
-        return array_keys($this->query($sql)->fetchAll('contact_id'));
+                WHERE group_id IN (?)";
+        return array_keys($this->query($sql, [$group_id])->fetchAll('contact_id'));
     }
 
     public function getGroups($contact_id)

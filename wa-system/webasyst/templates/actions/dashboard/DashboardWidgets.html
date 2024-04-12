@@ -1,11 +1,37 @@
 {$_capture_array = []}
 {strip}
-<div class="d-widgets-block">
+<div class="d-widgets-block{if empty($public_dashboards) && empty($is_admin)} custom-pt-32{/if}">
+    {if !empty($public_dashboards) || !empty($is_admin)}
+    <ul class="chips rounded dashboards-list js-dashboards-list custom-mr-8 custom-my-32 desktop-and-tablet-only">
+        <li class="{if $selected_sidebar_item === 'my'} selected{/if}" data-header-title="[`My apps`]">
+            <a href="javascript:void(0)" data-dashboard="0">
+                <span class="semibold">[`My dashboard`]</span>
+            </a>
+        </li>
+        {foreach $public_dashboards as $d}
+            <li{if $selected_sidebar_item === "dashboard/`$d.id`"} class="selected"{/if} data-header-title="[`Everyone`]">
+                <a href="javascript:void(0)" data-dashboard="{$d.id}" title="{$d.name|escape}">
+                    <span class="semibold">{$d.name|escape|truncate:32}</span>
+                    <span class="js-loading hidden custom-mr-0 custom-ml-4 small"><i class="fas fa-spinner fa-spin" style="color:var(--text-color);"></i></span>
+                </a>
+            </li>
+        {/foreach}
+        {if !empty($is_admin)}
+            <li class="transparent">
+                <a class="js-new-dashboard" href="javascript:void(0);" data-dashboard="new_dashboard" title="[`New dashboard`]">
+                    <i class="fas fa-plus text-gray"></i>
+                </a>
+            </li>
+        {/if}
+    </ul>
+    {/if}
+
+
     {* LOAD RESOURCES *}
     <script src="{$wa_url}wa-content/js/d3/d3.min.js"></script>
 
     <div class="empty-widgets-wrapper {if empty($widgets)}is-shown{/if}" id="empty-widgets-wrapper">
-        [`Your dashboard is empty. Add widgets by clicking “Edit widgets” button at the top.`]
+        <p>[`Your dashboard is empty. Add widgets by clicking “Edit widgets” button at the top.`]</p>
     </div>
 
     <div id="d-widgets-block">

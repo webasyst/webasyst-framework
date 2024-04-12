@@ -29,6 +29,7 @@ class waWebasystIDAccessTokenManager
      * @param string $secret - secret for sign
      * @return string|null - if something wrong returns null
      */
+    /*
     public function releaseToken(array $params, $secret)
     {
         $header = [
@@ -110,7 +111,7 @@ class waWebasystIDAccessTokenManager
 
         return $body . '.' . waUtils::urlSafeBase64Encode($sign);
     }
-
+*/
     /**
      * Extract some info from token (issuer, contact_id and client_id)
      * @param $token
@@ -220,6 +221,7 @@ class waWebasystIDAccessTokenManager
      * @param string $secret
      * @return bool
      */
+    /*
     public function verifyTokenSign($token, $secret)
     {
         if (!is_string($token)) {
@@ -236,6 +238,7 @@ class waWebasystIDAccessTokenManager
         $expected_sign = waUtils::urlSafeBase64Encode(hash_hmac('sha512', $body, $secret));
         return $sign === $expected_sign;
     }
+    */
 
     /**
      * Check token expiration
@@ -284,10 +287,12 @@ class waWebasystIDAccessTokenManager
      * Generate JWT ID
      * @return string
      */
+    /*
     protected function generateJTI()
     {
         return waUtils::getRandomHexString(64);
     }
+    */
 
     /**
      * Get current unix timestamp

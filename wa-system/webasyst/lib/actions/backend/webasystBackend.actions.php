@@ -6,12 +6,21 @@ class webasystBackendActions extends waViewActions
 
     public function defaultMobileAction()
     {
+        if (wa()->whichUI() === '1.3') {
+            // This disables old jquery-mobile UI
+            $this->action = 'default';
+            $this->defaultAction();
+            return;
+        }
+
+        $this->redirectSingleAppMode();
         $app_settings_model = new waAppSettingsModel();
         $this->view->assign('header_items', $this->getHeaderItems());
         $this->view->assign('company_name', htmlspecialchars($app_settings_model->get('webasyst', 'name', _ws('My company')), ENT_QUOTES, 'utf-8'));
         $this->view->assign('backend_url', $this->getConfig()->getBackendUrl(true));
         $this->view->assign('public_dashboards', $this->getPublicDashboards());
         $this->view->assign('counts', wa()->getStorage()->read('apps-count'));
+        $this->view->assign($this->getCalendarData());
         $this->dashboardAction();
     }
 
@@ -27,6 +36,14 @@ class webasystBackendActions extends waViewActions
             $this->redirect($config->getBackendUrl(true));
         }
 
+        // Single app mode? Redirect to the only allowed application.
+        // In other applications this redirect is performed by {wa_header} with JS
+        // but for a common case of backend root it's nice to redirect with HTTP header instead
+        $this->redirectSingleAppMode();
+
+        // Update last time user has seen wa-announcement notifications
+        wa()->getUser()->setSettings('webasyst', 'wa_announcement_seen', date("Y-m-d H:i:s"));
+
         // other part of default action
 
         $this->action = 'dashboard';
@@ -36,8 +53,20 @@ class webasystBackendActions extends waViewActions
         $this->dashboardAction();
     }
 
+    protected function redirectSingleAppMode()
+    {
+        $single_app_mode_app_id = wa()->isSingleAppMode();
+        if ($single_app_mode_app_id) {
+            $this->redirect(wa()->getAppUrl($single_app_mode_app_id), 302);
+        }
+    }
+
     public function dashboardMobileAction()
     {
+        if (wa()->whichUI() === '1.3') {
+            // This disables old jquery-mobile UI
+            $this->action = 'dashboard';
+        }
         $this->dashboardAction();
     }
 
@@ -114,29 +143,66 @@ class webasystBackendActions extends waViewActions
 
         $is_admin = wa()->getUser()->isAdmin('webasyst');
 
+        try {
+            wa('team');
+            $groups = teamHelper::getVisibleGroups() + teamHelper::getVisibleLocations();
+
+            $contacts = teamUser::getList('users', array(
+                'fields' => 'id,name,photo_url_96',
+                'order' => 'name',
+            ));
+
+        } catch (waException $e) {
+            if (wa()->getUser()->isAdmin()) {
+                $group_model = new waGroupModel();
+                $groups = $group_model->getAll();
+
+                $col = new waContactsCollection('users');
+                $contacts = $col->getContacts('id,name,photo_url_96', 0, 500);
+            } else {
+                $groups = [];
+                $contacts = [];
+            }
+        }
+        foreach($groups as &$g) {
+            $g['contact_ids'] = [];
+        }
+        $user_groups_model = new waUserGroupsModel();
+        foreach($user_groups_model->getAll() as $row) {
+            if (!empty($groups[$row['group_id']])) {
+                $groups[$row['group_id']]['contact_ids'][] = $row['contact_id'];
+            }
+        }
+
         $this->view->assign([
-            'current_app'        => wa()->getApp(),
-            'today_users'        => $today_users,
-            'logo'               => (new webasystLogoSettings())->get(),
-            'counts'             => wa()->getStorage()->read('apps-count'),
-            'root_url'           => wa()->getRootUrl(),
-            'widgets'            => $widgets,
-            'apps'               => wa()->getUser()->getApps(),
-            'backend_url'        => $this->getConfig()->getBackendUrl(true),
-            'user'               => wa()->getUser(),
-            'user_filters'       => $user_filters,
-            'activity_load_more' => $activity_load_more,
-            'activity'           => $activity,
-            'is_admin'           => $is_admin,
-            'notifications'      => $this->getAnnouncements(),
-            'request_uri'        => waRequest::server('REQUEST_URI'),
-            'show_tutorial'      => !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'),
-            'public_dashboards'  => $this->getPublicDashboards(),
-            'no_today_activity'  => $no_today_activity,
+            'current_app'              => wa()->getApp(),
+            'today_users'              => $today_users,
+            'logo'                     => (new webasystLogoSettings())->get(),
+            'counts'                   => wa()->getStorage()->read('apps-count'),
+            'root_url'                 => wa()->getRootUrl(),
+            'widgets'                  => $widgets,
+            'apps'                     => wa()->getUser()->getApps(),
+            'backend_url'              => $this->getConfig()->getBackendUrl(true),
+            'user'                     => wa()->getUser(),
+            'user_filters'             => $user_filters,
+            'activity_load_more'       => $activity_load_more,
+            'activity'                 => $activity,
+            'is_admin'                 => $is_admin,
+            'notifications'            => $this->getAnnouncements(['backend_header_notification' => true]),
+            'request_uri'              => waRequest::server('REQUEST_URI'),
+            'show_tutorial'            => !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'),
+            'public_dashboards'        => $this->getPublicDashboards(),
+            'no_today_activity'        => $no_today_activity,
             'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
             'webasyst_id_auth_banner'  => $this->getWebasystIDAuthBanner(),
             'show_connection_banner'   => $this->showConnectionBanner(),
-            'current_domain'     => $this->getCurrentDomain(),
+            'current_domain'           => $this->getCurrentDomain(),
+            'groups'                   => $groups,
+            'contacts'                 => $contacts,
+            'selected_sidebar_item'    => $this->getSelectedSidebarItem(),
+            'dashboard_module_url'     => wa()->getAppUrl('webasyst') . 'webasyst/dashboard/',
+            'has_team_app_access'      => wa()->getUser()->getRights('team', 'backend') > 0,
+            'teams'                    => $this->getTeams(),
         ]);
     }
 
@@ -242,5 +308,18 @@ class webasystBackendActions extends waViewActions
     protected function getCurrentDomain() {
         $domain = wa()->getConfig()->getDomain();
         return waIdna::dec($domain);
+    }
+
+    protected function getSelectedSidebarItem()
+    {
+        $request_uri = waRequest::server('REQUEST_URI');
+        $dashboard_module_url = wa()->getAppUrl('webasyst') . 'webasyst/dashboard/';
+
+        $is_prefix = strpos($request_uri, $dashboard_module_url) === 0;
+        if ($is_prefix) {
+            return trim(substr($request_uri, strlen($dashboard_module_url)), '/');
+        }
+
+        return 'my';
     }
 }

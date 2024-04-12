@@ -136,6 +136,9 @@ msgstr "Нет доступа"
 msgid "Limited access"
 msgstr "Ограниченный доступ"
 
+msgid "Single app"
+msgstr "Одно приложение"
+
 msgid "Confirm access change"
 msgstr "Подтвердите изменение доступа"
 
@@ -972,6 +975,9 @@ msgstr "Может видеть участников"
 
 msgid "Can edit self contact info"
 msgstr "Может редактировать свои данные"
+
+msgid "Can post announcements on dashboard"
+msgstr "Может писать анонсы на дашборде"
 
 msgid "Can add users"
 msgstr "Может добавлять сотрудников"
@@ -1818,3 +1824,4 @@ msgstr "Да"
 
 msgid "No"
 msgstr "Нет"
+

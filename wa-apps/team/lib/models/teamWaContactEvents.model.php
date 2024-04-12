@@ -74,7 +74,7 @@ class teamWaContactEventsModel extends waContactEventsModel
             $sql_end_date_time = 'ce.end';
         }
 
-        $sql = "SELECT cc.*, ce.contact_id, 
+        $sql = "SELECT cc.*, ce.contact_id,
                     COUNT(ce.id) AS events_count,
                     SUM(
                       IF(ce.is_allday = 1,
@@ -167,20 +167,20 @@ class teamWaContactEventsModel extends waContactEventsModel
             'calendar_id' => $event['calendar_id']
         ));
         if (!$calendar) {
-            return;
+            return $id;
         }
         $plugin = teamCalendarExternalPlugin::factoryByCalendar($calendar['id']);
         if (!$plugin) {
-            return;
+            return $id;
         }
         $integration_level = $plugin->getCalendar()->getIntegrationLevel();
         if (!in_array($integration_level, array(teamCalendarExternalModel::INTEGRATION_LEVEL_SYNC, teamCalendarExternalModel::INTEGRATION_LEVEL_FULL))) {
-            return;
+            return $id;
         }
 
         $result = $plugin->addEvent($event);
         if (!$result) {
-            return;
+            return $id;
         }
 
         $external_event = array(
@@ -201,7 +201,7 @@ class teamWaContactEventsModel extends waContactEventsModel
 
         $event_external_id = $em->insert($external_event);
         if (!$event_external_id) {
-            return;
+            return $id;
         }
         $epm->set($event_external_id, $result['params']);
 
@@ -285,8 +285,8 @@ class teamWaContactEventsModel extends waContactEventsModel
     public function countExternalEventsByCalendarId($calendar_id)
     {
         $calendar_ids = array_map('intval', (array) $calendar_id);
-        $sql = "SELECT COUNT(*) 
-                FROM `team_event_external` tee 
+        $sql = "SELECT COUNT(*)
+                FROM `team_event_external` tee
                 JOIN `wa_contact_events` wce ON wce.id = tee.event_id
                 WHERE wce.calendar_id IN (:calendar_ids)";
         return $this->query($sql, array('calendar_ids' => $calendar_ids))->fetchField();
@@ -317,9 +317,9 @@ class teamWaContactEventsModel extends waContactEventsModel
         }
 
         // DELETE EXTERNAL EVENTS AND IT'S PARAMS
-        $sql = "DELETE tee, teep 
+        $sql = "DELETE tee, teep
                 FROM `wa_contact_events` wce
-                JOIN `team_event_external` tee ON wce.id = tee.event_id 
+                JOIN `team_event_external` tee ON wce.id = tee.event_id
                 LEFT JOIN `team_event_external_params` teep ON teep.event_external_id = tee.id
                 WHERE {$where}";
         $this->exec($sql);

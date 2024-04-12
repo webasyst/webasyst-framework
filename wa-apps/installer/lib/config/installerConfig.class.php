@@ -129,10 +129,19 @@ class installerConfig extends waAppConfig
                     $p = json_decode($l['params'], true);
 
                     if (isset($actions[$l['action']][$p['type']])) {
-                        if ($p['type'] == 'themes') {
-                            $url = sprintf('%s#/%s/%s/', $app_url, $p['type'], preg_replace('@^.+?/@', '', $p['id']));
-                        } else {
-                            $url = sprintf('%s#/%s/%s/', $app_url, $p['type'], $p['id']);
+                        switch($p['type']) {
+                            case 'apps':
+                                $url = sprintf('%sstore/app/%s/', $app_url, $p['id']);
+                                break;
+                            case 'plugins':
+                                $url = sprintf('%sstore/plugin/%s/', $app_url, str_replace('wa-plugins/', '', $p['id']));
+                                break;
+                            case 'widgets':
+                                $url = sprintf('%sstore/widget/%s/', $app_url, $p['id']);
+                                break;
+                            case 'themes':
+                                $url = sprintf('%sstore/theme/%s/', $app_url, preg_replace('@^.+?/@', '', $p['id']));
+                                break;
                         }
                         $name = sprintf('<a href="%s">%s</a>', $url, $p['id']);
                         $l['params_html'] .= sprintf($actions[$l['action']][$p['type']], $name);

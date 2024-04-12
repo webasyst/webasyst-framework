@@ -5,6 +5,7 @@ class webasystBackendHeaderAction extends waViewAction
     use webasystHeaderTrait;
 
     protected $params = [];
+    protected $single_app_mode = false;
 
     /**
      * webasystBackendHeaderAction constructor.
@@ -19,7 +20,22 @@ class webasystBackendHeaderAction extends waViewAction
         $params['custom'] = isset($params['custom']) && is_array($params['custom']) ? $params['custom'] : [];
         $params['custom'] = waUtils::extractValuesByKeys($params['custom'], ['main', 'aux'], false, '');
         $params['custom'] = waUtils::toStrArray($params['custom']);
+
+        $single_app_mode_app_id = wa()->isSingleAppMode();
+        if ($single_app_mode_app_id) {
+            if ($single_app_mode_app_id !== wa()->getApp()) {
+                return $this->jsRedirect(wa()->getAppUrl($single_app_mode_app_id));
+            }
+            $this->single_app_mode = true;
+        }
+
         parent::__construct($params);
+    }
+
+    protected function jsRedirect($url)
+    {
+        echo '<script>window.location = '.json_encode($url).';</script>';
+        exit;
     }
 
     public function execute()
@@ -49,70 +65,13 @@ class webasystBackendHeaderAction extends waViewAction
             }
         }
 
-        $is_from_template = waConfig::get('is_template');
-        waConfig::set('is_template', null);
-
-        /**
-         * @event backend_header
-         * @param string $current_app
-         * @return array[string]array $return[%plugin_id%] array of html output
-         * @return array[string][string]string $return[%plugin_id%]['header_top'] html output (will be rendered only in UI v1.3)
-         * @return array[string][string]string $return[%plugin_id%]['header_middle'] html output (will be rendered only in UI v1.3)
-         * @return array[string][string]string $return[%plugin_id%]['header_bottom'] html output (will be rendered only in UI v1.3)
-         * @return array[string][string]string $return[%plugin_id%]['notification'] html output (will be rendered only in UI v2.0, "under the bell")
-         */
-        $params = [
-            'current_app' => $current_app,
-            'ui_version' => $ui_version
-        ];
-        $backend_header = wa()->event(array('webasyst', 'backend_header'), $params);
-
-        waConfig::set('is_template', $is_from_template);
-
-        $header_top = [];
-        $header_middle = [];
-        $header_bottom = [];
-        $header_notification = [];
-
-        $header_user_area = [
-            'main' => [],
-            'aux' => [],
-        ];
-
-        foreach ($backend_header as $app_id => $header) {
-            if (is_array($header)) {
-
-                // header_top place allowed either for 1.3
-                //  or 2.0 but if event result returned by installer app (special case)
-                if (($ui_version === '1.3' || ($ui_version === '2.0' && $app_id === 'installer')) && !empty($header['header_top'])) {
-                    $header_top[] = $header['header_top'];
-                }
-
-                if ($ui_version === '1.3' && !empty($header['header_middle'])) {
-                    $header_bottom[] = $header['header_middle'];
-                }
-                if (!empty($header['header_bottom'])) {
-                    $header_bottom[] = $header['header_bottom'];
-                }
-
-                if ($ui_version === '2.0' && !empty($header['notification'])) {
-                    $header_notification[] = $header['notification'];
-                }
-
-                // header_user_area allowed for 2.0
-                if ($ui_version == '2.0' && !empty($header['user_area'])) {
-                    if (isset($header['user_area']['main'])) {
-                        $header_user_area['main'][] = $header['user_area']['main'];
-                    }
-                    if (isset($header['user_area']['aux'])) {
-                        $header_user_area['aux'][] = $header['user_area']['aux'];
-                    }
-                }
-
-            } elseif (is_string($header) && $ui_version === '1.3') {
-                $header_middle[] = $header;
-            }
-        }
+        list(
+            $header_top,
+            $header_middle,
+            $header_bottom,
+            $header_notification,
+            $header_user_area
+        ) = $this->execBackendHeaderEvent();
 
         $app_info = wa()->getAppInfo();
 
@@ -136,6 +95,45 @@ class webasystBackendHeaderAction extends waViewAction
         $request_uri = waRequest::server('REQUEST_URI');
         $backend_url = wa()->getConfig()->getBackendUrl(true);
 
+        $notifications = $this->getAnnouncements(['backend_header_notification' => $header_notification]);
+        $announcement_seen = wa()->getUser()->getSettings('webasyst', 'wa_announcement_seen');
+        $new_notification_group_id_to_id = [];
+
+        $notifications_count = 0;
+        if ($announcement_seen) {
+            $announcement_seen_ts = strtotime($announcement_seen);
+        }
+        $has_new_notifications = false;
+        $has_old_notifications = false;
+        foreach($notifications as $n) {
+            if (!empty($n['is_virtual']) || empty($n['datetime'])) {
+                continue;
+            }
+            foreach ($n['rows'] as $row) {
+                $notifications_count++;
+                if (!empty($announcement_seen_ts) && strtotime($row['datetime']) > $announcement_seen_ts) {
+                    $has_new_notifications = true;
+                    $new_notification_group_id_to_id[$n['id']][$row['id']] = 1;
+                } else {
+                    $has_old_notifications = true;
+                }
+            }
+        }
+
+        $total_count = $announcement_model->countByField([
+            'app_id' => array_keys($user->getApps() + ['webasyst' => 1]),
+        ]);
+
+        $notifications_load_more_url = $backend_url."webasyst/announcements/loadMore/";
+        if ($notifications_count >= $total_count) {
+            $notifications_load_more_url = null;
+        }
+
+        // force show from installer
+        if (!$has_new_notifications && !empty($notifications)) {
+            $has_new_notifications = !empty($notifications['installer']['is_virtual']);
+        }
+
         $this->view->assign([
             'root_url'        => wa()->getRootUrl(),
             'backend_url'     => $backend_url,
@@ -151,7 +149,11 @@ class webasystBackendHeaderAction extends waViewAction
             'counts'          => $counts,
             'wa_version'      => wa()->getVersion('webasyst'),
             'announcements'   => $announcements,
-            'notifications'   => $this->getAnnouncements(['backend_header_notification' => $header_notification]),
+            'notifications'   => $notifications,
+            'has_new_notifications' => $has_new_notifications,
+            'has_old_notifications' => $has_old_notifications,
+            'notifications_load_more_url' => $notifications_load_more_url,
+            'new_notification_group_id_to_id' => $new_notification_group_id_to_id,
             'header_top'      => $header_top,
             'header_middle'   => $header_middle,
             'header_bottom'   => $header_bottom,
@@ -163,9 +165,14 @@ class webasystBackendHeaderAction extends waViewAction
             'app_info'        => $app_info,
             'frontend_links'  => $this->getFrontendLinks(),
             'custom_params'   => $this->params['custom']
-        ]);
+        ] + $this->getCalendarData());
 
-        $this->setTemplate(wa()->getAppPath('templates/actions/backend/BackendHeader.html', 'webasyst'));
+        if ($this->single_app_mode) {
+            $template_path = 'templates/actions/backend/BackendHeaderSingleApp.html';
+        } else {
+            $template_path = 'templates/actions/backend/BackendHeader.html';
+        }
+        $this->setTemplate(wa()->getAppPath($template_path, 'webasyst'));
     }
 
     protected function getCurrentDomain()

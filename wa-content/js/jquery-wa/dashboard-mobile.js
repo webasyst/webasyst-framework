@@ -10,7 +10,7 @@ const WaMobileDashboard = ( function($) {
             this.$wrapper = options.$wrapper
             this.$header = options.$header
             this.$notification_wrapper = $('.js-notification-wrapper')
-            this.$notification_close = this.$notification_wrapper.find('.js-announcement-close');
+            this.$notification_close_selector = '.js-announcement-close';
             this.$dashboard_widgets_wrapper = $('.js-dashboard-widgets-wrapper')
             this.$bottombar = $('.js-bottombar')
             this.$dashboard_tabs = this.$wrapper.find('.dashboard-tabs')
@@ -125,32 +125,81 @@ const WaMobileDashboard = ( function($) {
         }
 
         closeNotification() {
-            let that = this,
-                $wa_notifications_bell = $('.wa-notifications-bell'),
-                $wa_announcement_counter = $wa_notifications_bell.find('.badge');
+            const that = this;
+            const $wa_notifications_bell = $('.js-notifications-bell');
+            const $wa_announcement_counter = $wa_notifications_bell.find('.badge');
+            const wa_notifications = that.$notification_wrapper.find('li.js-wa-announcement');
+            let counter = wa_notifications.length;
 
-            that.$notification_close.on('click touchstart', function (e) {
+            if (counter > 0) {
+                $wa_announcement_counter.text(counter);
+            }else{
+                $wa_announcement_counter.remove();
+            }
+
+            $('#wa_announcement').on('click touchstart', that.$notification_close_selector, function (e) {
+                e.stopPropagation();
                 e.preventDefault()
 
                 let $close = $(this),
-                    app_id = $close.data('app-id'),
-                    $notification_block = $close.closest('.wa-notification');
+                    $notification_block = $close.closest('.js-wa-announcement,.js-announcement-group'),
+                    app_id = $close.data('app-id') || $notification_block.data('app-id'),
+                    contact_id = $notification_block.data('contact-id');
 
                 if ($notification_block.length) {
-                    $notification_block.remove();
-                    let counter = that.$notification_wrapper.children().length;
+                    const key = $notification_block.data('key');
+                    if (key) {
+                        $notification_block.closest('.js-announcement-group').remove();
+                    } else {
+                        $notification_block.remove();
+                    }
+                    let counter = that.$notification_wrapper.find('li.js-wa-announcement').length;
+
+                    if (!$('.js-announcement-group.is-unread-group').length) {
+                        $('#js-show-all-notifications').remove();
+                    }
+
+                    if (key && app_id === 'installer') {
+                        $.post(`${backend_url}installer/?module=announcement&action=hide`, { key, app_id }, function(response) {
+                            if (response === 'ok') {
+                                let $system_notification_wrapper = $('.js-wa-announcement-wrap');
+                                let system_notification_count = $system_notification_wrapper.find('.js-wa-announcement').length;
+                                if (system_notification_count <= 0) {
+                                    $wa_announcement_counter.text(counter);
+                                    if (!counter) {
+                                        $wa_announcement_counter.remove();
+                                    }
+                                    $system_notification_wrapper.closest('.js-wa-announcement').remove();
+                                }
+                            }
+                        });
+                    } else {
+                        const payload = {
+                            app_id,
+                            name: 'announcement_close',
+                            value: 'now()',
+                            ...(contact_id ? { contact_id } : {})
+                        };
+                        $.post(`${backend_url}?module=settings&action=save`, payload, response => {
+                            if (response && response.status === 'ok') {
+                                if (counter === 0) {
+                                    $wa_announcement_counter.remove();
+                                }else{
+                                    $wa_announcement_counter.text(counter);
+                                }
+                            }
+                        });
+                    }
+
                     if (counter) {
                         $wa_announcement_counter.text(counter)
                     }else{
-                        that.$notification_wrapper.parent('.dropdown-body').remove()
+                        $wa_announcement_counter.remove();
                     }
                 } else {
-                    that.$notification_wrapper.parent('.dropdown-body').remove()
                     $wa_announcement_counter.remove();
                 }
 
-                let url = backend_url + "?module=settings&action=save";
-                $.post(url, {app_id: app_id, name: 'announcement_close', value: 'now()'});
             });
         }
 
@@ -427,7 +476,7 @@ const Page = ( function($, backend_url) {
                 return false;
             });
 
-            $("#activity-filter input:checkbox").on("change", function() {
+            const applyFilter = () => {
                 if (that.storage.activityFilterTimer) {
                     clearTimeout(that.storage.activityFilterTimer);
                 }
@@ -444,9 +493,21 @@ const Page = ( function($, backend_url) {
                 that.storage.topLazyLoadingTimer = setTimeout( function() {
                     that.loadNewActivityContent($widgetActivity);
                 }, that.storage.lazyTime );
+            };
+            $("#activity-filter input:checkbox").on("change", function() {
+                applyFilter();
 
                 // Change Text
                 that.changeFilterText();
+
+                return false;
+            });
+            $("#activity-filter .tabs li[data-group-id]").on("click", function() {
+                const $li = $(this);
+                $li.siblings().removeClass('selected');
+                $li.addClass('selected');
+
+                applyFilter();
 
                 return false;
             });
@@ -538,6 +599,14 @@ const Page = ( function($, backend_url) {
                     value: 1
                 });
 
+                const group_id = $form.find('li.selected[data-group-id]').data('group-id');
+                if (group_id) {
+                    dataArray.push({
+                        name: "group_id",
+                        value: group_id
+                    });
+                }
+
                 $.post(ajaxHref, dataArray, function (response) {
                     $deferred.resolve(response);
                 });
@@ -553,9 +622,23 @@ const Page = ( function($, backend_url) {
 
                     /*TODO check vice versa case*/
                     $widgetActivity.find('.activity-empty-today').remove();
-                    $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
+                    const is_empty_today_header = !$widgetActivity.find('.activity-divider.today').not('.hidden').length;
+                    if (is_empty_today_header) {
+                        $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
+                    }
 
                     that.storage.isActivityFilterLocked = false;
+
+                    const today = $wrapper.data("today-text");
+                    if ($wrapper.find('.activity-divider:first').text() !== today) {
+                        const empty_today = $wrapper.data("empty-today-text");
+                        $wrapper.prepend(`<div class="activity-divider h3${is_empty_today_header ? '' : ' hidden'}">${today}</div>
+                                            <div class="activity-item activity-empty-today custom-mb-24">
+                                                <div class="item-content-wrapper">
+                                                    <div class="inline-content">${empty_today}</div>
+                                                </div>
+                                            </div>`);
+                    }
                 });
             }
         }
@@ -621,12 +704,27 @@ const Page = ( function($, backend_url) {
                         // Render
                         $widgetActivity.find(".empty-activity-text").remove();
                         $widgetActivity.find(".activity-item.activity-empty-today").remove();
-                        const $activity_divider = $wrapper.find('.activity-divider:first');
-                        if ($activity_divider.length) {
-                            $activity_divider.after(response)
+                        const $today_divider = $widgetActivity.find('.js-activity-list-block > .activity-divider.today');
+                        if ($today_divider.length) {
+                            $today_divider.after(response)
                         }else{
                             $wrapper.prepend(response);
                         }
+
+                        if (!$widgetActivity.find('.activity-divider.today').not('.hidden').length) {
+                            $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
+                        }
+
+                        const $activity_divider = $wrapper.find('.activity-divider');
+                        let uniqueTexts = [];
+                        $activity_divider.each(function() {
+                            const text = $(this).text();
+                            if ($.inArray(text, uniqueTexts) === -1) {
+                                uniqueTexts.push(text);
+                            } else {
+                                $(this).remove();
+                            }
+                        });
                     }
 
                     that.storage.isTopLazyLoadLocked = false;

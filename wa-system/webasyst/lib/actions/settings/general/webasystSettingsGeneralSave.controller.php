@@ -85,6 +85,11 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
             }
         }
         if ($config_changed) {
+            $new_disallow_legacy_value = empty($config['ui']);
+            if (ifset($config, 'ui_disallow_legacy', false) !== $new_disallow_legacy_value) {
+                $config['ui_disallow_legacy'] = $new_disallow_legacy_value;
+                $flush =  true;
+            }
             waUtils::varExportToFile($config, $config_path);
         }
 

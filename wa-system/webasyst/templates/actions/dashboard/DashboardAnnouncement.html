@@ -1,37 +1,145 @@
-<div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
+<div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper hide-scrollbar{if $has_new_notifications && $has_old_notifications} visible-only-unread{/if}"
+    id="d-notification-wrapper"
+>
+    <style>
+        #wa-header .visible-only-unread > .wa-notification:not(.is-unread-group),
+        #wa-header .visible-only-unread > .wa-notification ul.list li:not(.is-unread) { display: none; }
+        #wa-header .wa-notification {  border-radius: 1rem; }
+        #wa-header .wa-notification.alert { margin-bottom: 1rem; }
+        #wa-header .wa-notification > .wa-notification-body { position: relative; padding: 0.75rem 2.25rem 0.75rem 1rem; }
+        #wa-header .wa-notification ul.list li { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        #wa-header .wa-notification ul.list li:first-child,
+        #wa-header .wa-notification ul.list li:not(.is-unread) + li.is-unread { margin-top: 0.25rem; }
+        #wa-header .wa-notification .wa-announcement-close { position: absolute; top: 0.6125rem; right: 0.85rem; font-size: 0.9375rem; }
+        #wa-header .wa-notification .wa-notification-content > p { margin: 0.5rem 0 0; }
+        #wa-header .wa-notification .wa-notification-content > p:first-child { display: inline; margin-top: 0; }
+        #wa-header .wa-notification .wa-notification-count { display: none; }
+
+        #wa-header .wa-notification.is-group:not(.is-unread-group) { cursor: pointer; box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2), 0 0.5rem 0.5rem -0.75rem rgba(0, 0, 0, 0.33), 0 14px 0 -8px var(--notification-background-color), 0px 14px 10px -8px rgb(0,0,0,0.14); }
+        #wa-header .wa-notification.is-group:not(.is-unread-group) ul.list li:not(:first-child) { display: none; }
+        #wa-header .wa-notification.is-group:not(.is-unread-group) .wa-notification-count { display: inline-block; }
+
+        #wa-header .alert-fixed-box { top: 4rem; max-height: calc(100% - 8rem); overflow-y: auto; padding: 1rem 1.5rem; }
+        #wa-header .alert-fixed-box.visible-only-unread .wa-notification-bottom-load-more { display: none; }
+        #wa-header .alert-fixed-box .wa-notification-bottom { display: flex; justify-content: center; height: 1.75rem; }
+        #wa-header .alert-fixed-box .wa-notification-bottom-button { position: relative; -webkit-backdrop-filter: blur(0.35rem); backdrop-filter: blur(0.35rem); }
+        @media screen and (max-width: 760px) {
+            #wa-header .alert-fixed-box { right: -0.5rem; }
+        }
+    </style>
     {if !empty($notifications)}
-        {foreach $notifications as $n}
-            <div class="alert wa-notification js-wa-announcement" data-id="{$n.id}">
-                <div class="wa-notification-header wa-gradient-overlay-medium">
-                    <div class="flexbox middle space-8">
-                        {$_info = $n.app}
-
-                        {* Version *}
-                        {if !empty($_info.version)}
-                            {$_version = "?v=`$_info.version|escape`"}
-                        {else}
-                            {$_version = null}
-                        {/if}
-
-                        <i class="icon size-20" style="background: url('{$root_url}{if !empty($_info.icon.24)}{$_info.icon.24}{else}{$_info.img}{/if}{$_version}'); background-size: 20px 20px;"></i>
-                        <strong class="nowrap uppercase wide">{$_info.name|escape}</strong>
-                        <span class="nowrap">{waDateTime::format('humandatetime', $n.datetime)}</span>
-                        <a href="javascript:void(0);" class="alert-close js-announcement-hide" title="[s`Close`]"><i class="fas fa-times"></i></a>
-                    </div>
-                </div>
-                <div class="wa-notification-body">
-                    {$n.text}
-                </div>
-                {if $n.app_id !== 'installer'}
-                    <a data-app-id="{$n.app_id}" href="javascript:void(0);" class="custom-ml-16 custom-py-4 hint js-announcement-close flexbox" title="[s`Close`]">[s`Mark as read`]</a>
-                {/if}
+        {include
+            file="./DashboardAnnouncementGroupList.inc.html"
+            notifications=$notifications
+            has_new_notifications=$has_new_notifications
+            new_notification_group_id_to_id=$new_notification_group_id_to_id
+            inline
+        }
+        {if $has_new_notifications && $has_old_notifications}
+            <div class="wa-notification-bottom">
+                <button type="button"
+                    id="js-show-all-notifications"
+                    class="wa-notification-bottom-button button light-gray rounded small"
+                >[s`Show more`]</button>
             </div>
-        {/foreach}
+        {/if}
+        <script>
+            $(function () {
+                $('[data-wa-tooltip-content]').waTooltip();
+
+                $('.js-announcement-group').on('click', function () {
+                    $(this).removeClass('is-group')
+                });
+
+                $('#js-show-all-notifications').on('click', function () {
+                    $('.js-notification-wrapper').removeClass('visible-only-unread');
+                    $('.js-announcement-group').removeClass(['is-unread-group', 'is-group']);
+                    $('.js-announcement-group .is-unread').removeClass('is-unread');
+                    $(this).parent().remove();
+                    $.wa_notifications.setSeen();
+                });
+            })
+        </script>
     {else}
-        <div class="alert wa-notification">
+        <div class="alert wa-notification wa-notification-empty">
             <div class="wa-notification-body-empty">
                 [s`No new notifications.`]
             </div>
         </div>
+    {/if}
+
+    {if $notifications_load_more_url}
+        <div class="wa-notification-bottom wa-notification-bottom-load-more">
+            <button type="button" data-load-more-url="{$notifications_load_more_url}" class="js-load-chunk-closed-notifications wa-notification-bottom-button button light-gray rounded small">[`Show read items`]</button>
+            <div class="js-lazyloading-spinner spinner wa-notification-bottom-button custom-p-4 hidden"></div>
+        </div>
+        <script>
+            $(function () {
+                "use strict";
+                const insertGroups = ($html) => {
+                    const $loaded_groups = $html.find('.js-announcement-group');
+                    if (!$loaded_groups.length) {
+                        return;
+                    }
+                    $loaded_groups.find('.js-announcement-close').remove();
+
+                    const $exists_groups = $('#d-notification-wrapper .alert.wa-notification');
+                    if ($exists_groups.length === 0 || ($exists_groups.length === 1 && $exists_groups.hasClass('wa-notification-empty'))) {
+                        $loaded_groups.insertAfter($exists_groups);
+                        $('.wa-notification-empty').remove();
+                    } else {
+                        $loaded_groups.each(function () {
+                            const $loaded_group = $(this);
+                            const app_id = $loaded_group.data('app-id');
+                            let $group_for_updating = $exists_groups.filter('[data-app-id="'+app_id+'"]');
+                            if ($group_for_updating.length && !$group_for_updating.hasClass('js-announcement-single')) {
+                                const contact_id = $loaded_group.data('contact-id');
+                                if (contact_id && $group_for_updating.length > 1) {
+                                    $group_for_updating = $group_for_updating.filter('[data-contact-id="'+contact_id+'"]');
+                                }
+                                $group_for_updating.find('ul.list').append($loaded_group.find('li.js-wa-announcement'));
+                            } else {
+                                $loaded_group.insertAfter($exists_groups.last());
+                            }
+                        });
+                    }
+
+                    $('.js-announcement-group').removeClass('is-group');
+                };
+
+                $('.js-load-chunk-closed-notifications').on('click', function () {
+                    const $self = $(this);
+                    const $loading = $('.js-lazyloading-spinner');
+                    const attr_url_key = 'data-load-more-url';
+                    const url = $self.attr(attr_url_key);
+                    if (!url) {
+                        $self.parent().remove();
+                        $loading.remove();
+                        return false;
+                    }
+
+                    $self.addClass('hidden');
+                    $loading.removeClass('hidden')
+                    const $temp_html = $('<div />');
+                    $temp_html.load(url, function () {
+                        insertGroups($temp_html);
+
+                        const new_url = $temp_html.children().attr(attr_url_key);
+                        $self.attr(attr_url_key, new_url);
+
+                        $temp_html.remove();
+                        $('[data-wa-tooltip-content]').waTooltip();
+
+                        if (new_url) {
+                            $self.removeClass('hidden');
+                            $self.text('[s`Show more`]');
+                        } else {
+                            $self.parent().remove();
+                        }
+                        $loading.addClass('hidden');
+                    });
+                });
+            })
+        </script>
     {/if}
 </div>

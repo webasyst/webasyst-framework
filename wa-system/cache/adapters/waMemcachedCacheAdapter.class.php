@@ -44,8 +44,11 @@ class waMemcachedCacheAdapter extends waCacheAdapter
         return $r;
     }
 
-    public function set($key, $value, $expiration = null, $group = null)
+    public function set($key, $value, $expiration = 0, $group = null)
     {
+        if ($expiration === null) {
+            $expiration = 0;
+        }
         if ($group) {
             $keys = $this->get($group);
             if (!$keys) {

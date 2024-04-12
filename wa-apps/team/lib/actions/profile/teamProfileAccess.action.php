@@ -71,11 +71,13 @@ class teamProfileAccessAction extends waViewAction
             $invite_token['expires_in'] = teamUsersInvitedAction::timeLeft($invite_token['expire_datetime']);
         }
         unset($invite_token);
-        
+
         $event_data = compact('user', 'invite_tokens', 'groups', 'apps');
-        $frontend_user_backend_access = (!$ownAccess['webasyst'] && $noAccess || $user['is_user'] == '-1') ? 
+        $frontend_user_backend_access = (!$ownAccess['webasyst'] && $noAccess || $user['is_user'] == '-1') ?
             wa()->event('frontend_user_backend_access', $event_data) : null;
         $ui = waRequest::get('ui', null, waRequest::TYPE_STRING_TRIM) and waRequest::setParam('force_ui_version', $ui);
+
+        $single_app_id = $this->user->getSettings('webasyst', 'single_app_id');
 
         $group_model = new waGroupModel();
         $this->view->assign(array(
@@ -114,6 +116,7 @@ class teamProfileAccessAction extends waViewAction
             'is_webasyst_id_forced'          => $this->isWebasystIDForced(),
 
             'frontend_user_backend_access'   => $frontend_user_backend_access,
+            'single_app_id' => $single_app_id,
         ));
     }
 

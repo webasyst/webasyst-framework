@@ -124,21 +124,32 @@ class waDispatch
             $app = 'webasyst';
         }
 
+        $is_xhr = waRequest::isXMLHttpRequest();
+        $single_app_mode_app_id = wa()->isSingleAppMode();
+
         if (!$this->system->appExists($app)) {
             if (wa('webasyst', 1)->event('backend_dispatch_miss', $app)) {
                 return;
             }
-            throw new waException("Page not found", 404);
+            if (!$is_xhr && $single_app_mode_app_id && $this->system->appExists($single_app_mode_app_id)) {
+                $this->system->getResponse()->redirect(wa()->getAppUrl($single_app_mode_app_id), 302);
+            } else {
+                throw new waException("Page not found", 404);
+            }
         }
 
         // heuristic: reset idle status, cause not ajax request (we suppose user voluntarily request page)
-        if (!waRequest::isXMLHttpRequest()) {
+        if (!$is_xhr) {
             (new waContactSettingsModel())->delete($this->system->getUser()->getId(), 'webasyst', 'idle_since');
         }
 
         // Make sure user has access to active app
         if ($app != 'webasyst' && !$this->system->getUser()->getRights($app, 'backend')) {
-            throw new waRightsException('Access to this app denied', 403);
+            if (!$is_xhr && $single_app_mode_app_id && $single_app_mode_app_id !== $app && $this->system->appExists($single_app_mode_app_id)) {
+                $this->system->getResponse()->redirect(wa()->getAppUrl($single_app_mode_app_id), 302);
+            } else {
+                throw new waRightsException('Access to this app denied', 403);
+            }
         }
 
         // Init system and app
@@ -287,6 +298,11 @@ class waDispatch
         // Run it through the routing, redirecting to backend if no routing is set up.
         $route_found = $this->system->getRouting()->dispatch();
         if (!$route_found) {
+            // Redirect to backend unless user deliberately changed backend URL.
+            // In this case do not disclose backend URL and show a regular 404.
+            if (waSystemConfig::systemOption('backend_url') !== 'webasyst') {
+                throw new waException("Page not found", 404);
+            }
             $this->system->getResponse()->redirect($this->config->getBackendUrl(true), 302);
             return;
         }

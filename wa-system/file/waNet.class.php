@@ -81,6 +81,7 @@ class waNet
             'cert'     => '',
             'password' => '',
         ),
+        'tolerate_empty_body_request' => false,
     );
 
     private static $master_options = array();
@@ -405,6 +406,10 @@ class waNet
     {
         $this->raw_response = $response;
         $this->decoded_response = null;
+        
+        if (empty($response) && ($this->options['expected_http_code'] == 204 || $this->options['tolerate_empty_body_request'])) {
+            return;
+        }
         switch ($this->options['format']) {
             case self::FORMAT_JSON:
                 $this->decoded_response = waUtils::jsonDecode($this->raw_response, true);

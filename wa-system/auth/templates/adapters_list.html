@@ -14,7 +14,7 @@
     <ul>
         {foreach $adapters as $_adapter}
             <li class="wa-auth-adapter-{$_adapter->getId()}">
-                <a href="{$_adapter->getUrl()}" data-id="{$_adapter->getId()}">
+                <a href="{$_adapter->getUrl()|escape}" data-id="{$_adapter->getId()}">
                     <img alt="{$_adapter->getName()}" title="{$_adapter->getName()}" src="{$_adapter->getIcon()}"/>
                     {if !empty($options.names)}
                         {$_adapter->getName()}

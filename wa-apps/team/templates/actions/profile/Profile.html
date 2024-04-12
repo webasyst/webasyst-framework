@@ -117,7 +117,7 @@
                         {* @event backend_customer.%plugin_id%.before_header *}
                         {foreach $backend_profile as $_}{ifset($_.before_header)}{/foreach}
                         <h3 class="js-username custom-mb-8">
-                            {if !empty($fieldValues.title)}{$fieldValues.title}{/if}&#32;
+                            {if !empty($fieldValues.title)}{$fieldValues.title|escape}{/if}&#32;
                             {$user_name_formatted|escape}
 
                             {if !empty($user.login)}
@@ -336,15 +336,15 @@
                     <div class="t-profile-block">
                         {$_href = ''}
                         {if $im.ext == 'whatsapp'}
-                        {$_href = "https://wa.me/`$im.data`"}
+                        {$_href = "https://wa.me/`$im.data|escape`"}
                         {elseif $im.ext == 'telegram'}
-                        {$_href = "https://telegram.im/@`$im.data|replace:'@':''`"}
+                        {$_href = "https://telegram.im/@`$im.data|escape|replace:'@':''`"}
                         {elseif $im.ext == 'skype'}
-                        {$_href = "skype:`$im.data`?chat"}
+                        {$_href = "skype:`$im.data|escape`?chat"}
                         {elseif $im.ext == 'viber'}
-                        {$_href = "viber://chat?number=`$im.data`"}
+                        {$_href = "viber://chat?number=`$im.data|escape`"}
                         {elseif $im.ext == 'facebook'}
-                        {$_href = "https://m.me/`$im.data`"}
+                        {$_href = "https://m.me/`$im.data|escape`"}
                         {/if}
 
                         {if !empty($_href)}
@@ -359,7 +359,7 @@
 
                         <div class="t-profile-block__value">
                             {if !empty($_href)}
-                            <a href="{$_href}" title="{$im.data}" class="t-profile-block__value-link">{$im.data|escape}</a>
+                            <a href="{$_href}" title="{$im.data|escape}" class="t-profile-block__value-link">{$im.data|escape}</a>
                             {else}
                             {$im.data|escape}
                             {/if}
@@ -421,7 +421,7 @@
 
                 <div class="t-profile-user-info-block fields custom-mt-20 custom-pb-40" id="tc-contact">
                     <div class="align-center">
-                        <a class="js-toggle-user-info bold" href="javascript:void(0);">[`More details`] <i class="fas fa-caret-down"></i></a>
+                        <a class="js-toggle-user-info small" href="javascript:void(0);">[`More details`] <i class="fas fa-caret-down"></i></a>
                     </div>
 
                     <div class="fields-group js-user-info custom-mt-16 hidden">
@@ -535,7 +535,7 @@
             "Auto": "[`Auto`]",
             "Contact info": "[`Contact info`]",
 
-            "code_dialog_text": {sprintf_wp("Share the code below with <strong>%s</strong>. Entering the code in a Webasyst mobile app in the ‘Add account’ screen will automatically connect the app to <code>%s</code>.", $user_name_formatted, str_replace(['http://','https://'], '', $wa->domainUrl()))|json_encode}
+            "code_dialog_text": {sprintf_wp("Share the code below with <strong>%s</strong>. Entering the code in a Webasyst mobile app in the ‘Add account’ screen will automatically connect the app to <code>%s</code>.", $user_name_formatted|escape, str_replace(['http://','https://'], '', $wa->domainUrl()))|json_encode}
         });
 
         $.team.profile = new Profile($.extend({$_profile_object_options|json_encode}, {

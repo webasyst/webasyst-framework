@@ -47,6 +47,7 @@
     </script>
 </head>
 <body>
+    {$has_dasboard = ($current_app === 'webasyst' && isset($activity))}
     <div id="wa">
         <div id="wa-nav">
             <div id="wa-header" class="blank flexbox space-16">
@@ -54,10 +55,12 @@
                 <div class="wa-header-sitename">
                     <span class="h3">{$wa->accountName()|truncate:42}</span>
                 </div>
-                <div class="dropdown dashboard-main-page" id="wa-notifications-dropdown">
-                    <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
-                    {include file="../dashboard/DashboardAnnouncement.html" inline}
-                </div>
+                {if !$has_dasboard}
+                    <div class="dropdown dashboard-main-page" id="wa-notifications-dropdown">
+                        <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
+                        {include file="../dashboard/DashboardAnnouncement.html" inline}
+                    </div>
+                {/if}
                 {*
                     TEASING WEBASYST GLOBAL SEARCH
                     <button class="button rounded small outlined js-header-search"><span><i class="fas fa-search"></i></span></button>
@@ -72,27 +75,7 @@
                         </form>
                     *}
                     {* Current user *}
-                    <div class="dropdown" id="wa-userprofile" data-user-id="{$user['id']}">
-                        <a class="dropdown-toggle without-arrow" href="javascript:void(0)">
-                            <img src="{$user->getPhoto(96)}" alt="" class="wa-userpic" />
-                        </a>
-                        <div class="dropdown-body right">
-                            <ul class="menu">
-                                <li>
-                                    <a href="{$backend_url}?module=profile">
-                                        <i class="fas fa-user"></i>
-                                        <span>[s`My profile`]</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{$backend_url}?action=logout">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                        <span>[s`Logout`]</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    {include file="./BackendHeaderCurrentUser.inc.html" inline}
                 {/strip}
                 </div>
             </div>
@@ -204,6 +187,21 @@
                                 </form>
                             </div>
                         {/if}
+                        {* Announcements *}
+                        {if $has_dasboard}
+                            <div class="wa-announcement-section custom-mt-24">
+                                {if $wa->user()->getRights('team', 'edit_announcements')}
+                                    <div class="align-center">
+                                        <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new larger button rounded light-gray small custom-mx-16 custom-mx-auto-mobile">
+                                            <i class="fas fa-bell small text-gray custom-mr-4"></i>
+                                            [`Post`]
+                                        </a>
+                                    </div>
+                                {/if}
+                                {include file="./BackendDashboardHeaderAnnouncements.inc.html" inline}
+                            </div>
+                        {/if}
+                        {* APPS *}
                         <ul>
                             {foreach $header_items as $app_id => $app}
 
@@ -241,59 +239,71 @@
                     </section>
                     <section id="wa_activity" class="dashboard-activity js-dashboard-activity box" data-nav="activity" style="display: none">
                         <div class="dashboard-activity-wrapper">
-                            {if !empty($activity)}
-                                {include file="../dashboard/DashboardActivityFilter.inc.html" inline}
-                            {/if}
+                            {include file="../dashboard/DashboardActivityFilter.inc.html" inline}
 
-                            {if $today_users}
-                                {$users_birthdays = $today_users.birthday|default:[]}
-                                {$users_statuses = $today_users.status|default:[]}
+                            {if !empty($today_users)}
+                            <div class="activity-list-block">
+                                <div class="activity-divider h3 today">[`Today`]</div>
 
-                                <div class="activity-list-block">
-                                    <div class="activity-divider h3">[`Today`]</div>
+                                <div class="users-groups flexbox space-16 wrap custom-mt-8">
+                                {foreach $today_users as $group_id => $today_group}
+                                    <div class="users-group">
+                                        {* Birthday users group (include other) *}
+                                        {if stristr($group_id, 'birthday') !== false }
+                                            {$user_count = count($today_group)}
+                                            {$_is_calendar_group = isset($today_group.calendar)}
+                                            {foreach $today_group.contacts as $birthday_user}
+                                            <div>
+                                                <a href="{$wa_backend_url}contacts/#/contact/{$birthday_user.id}" class="userpic userpic48 outlined" style="z-index:{$user_count - $birthday_user@index}">
+                                                    <img src="{$birthday_user.photo_url_48}" alt="{$birthday_user.formatted_name|escape}">
 
-                                    {if $users_birthdays}
-                                        <div class="users-group">
-                                            {foreach $users_birthdays.contacts as $contact}
-                                                {if $contact@index == 4}
-                                                    <span class="userpic userpic48 outlined" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3));">
+                                                    {if $birthday_user@last && $birthday_user@iteration < 5}
                                                         <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
+                                                        {if $_is_calendar_group}
+                                                            <span class="userstatus"><i class="{$today_group.calendar.icon}"></i></span>
+                                                        {/if}
+                                                    {/if}
+                                                </a>
+                                                <div class="hint semibold">[`Birthday`]</div>
+                                            </div>
+                                            {/foreach}
+                                            {if $today_group.rest_count > 0}
+                                                <span class="userpic userpic48 rest-count">
+                                                    <span>&plus;{$today_group.rest_count}</span>
+                                                    <span class="userstatus birthday">
+                                                        <i class="fas fa-birthday-cake"></i>
                                                     </span>
-                                                    {break}
-                                                {/if}
-                                                <span class="userpic userpic48 outlined" data-wa-tooltip-content="[`Birthday`]">
+                                                </span>
+                                            {/if}
+                                        {* Other users *}
+                                        {else}
+                                            {$contact_count = count($today_group.contacts)}
+                                            {foreach $today_group.contacts as $contact}
+                                            <div>
+                                                <a href="{$wa_backend_url}contacts/#/contact/{$contact.id}" class="userpic userpic48 outlined" style="z-index:{$contact_count - $contact@index}">
                                                     <img src="{$contact.photo_url_48}" alt="{$contact.formatted_name|escape}">
-                                                    {if $contact@last || $contact@index < 4}
-                                                        <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
+                                                    {if $contact@last && $contact@iteration < 5}
+                                                        <span class="userstatus" style="background-color:{$today_group.bg_color|escape};color:{$today_group.font_color|escape}">
+                                                            <i class="{$today_group.icon|escape|default:'fas fa-calendar-alt'}"></i>
+                                                        </span>
                                                     {/if}
-                                                </span>
+                                                </a>
+                                                <div class="hint semibold" style="max-width: 110px;">{if !empty($contact.summary)}{$contact.summary|escape}{else}{$today_group.name|escape}{/if}</div>
+                                            </div>
                                             {/foreach}
-                                        </div>
-                                    {/if}
-
-                                    {if $users_statuses}
-                                        <div class="users-group">
-                                            {foreach $users_statuses as $status}
-                                                {if $status@index == 4}
-                                                    <span class="userpic userpic48 outlined" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3));">
-                                                        <span class="userstatus"></span>
+                                            {if $today_group.rest_count > 0}
+                                                <span class="userpic userpic48 rest-count">
+                                                    <span>&plus;{$today_group.rest_count}</span>
+                                                    <span class="userstatus" style="background-color:{$today_group.bg_color|escape};color:{$today_group.font_color|escape}">
+                                                        <i class="{$today_group.icon|escape|default:'fas fa-calendar-alt'}"></i>
                                                     </span>
-                                                    {break}
-                                                {/if}
-                                                <span class="userpic userpic48 outlined" data-wa-tooltip-content="{$status.statuses[1].calendar.name|escape}">
-                                                    <img src="{$status.photo_url_48}" alt="{$status.formatted_name|escape}">
-                                                    {if $status@last || $status@index < 4}
-                                                        <span class="userstatus" style="background-color: {$status.statuses[1].calendar.bg_color}"></span>
-                                                    {/if}
                                                 </span>
-                                            {/foreach}
-                                        </div>
-                                    {/if}
-
-                                    {if $users_birthdays || $users_statuses}
-                                        <hr class="custom-my-16">
-                                    {/if}
+                                            {/if}
+                                        {/if}
+                                    </div>
+                                {/foreach}
                                 </div>
+                            </div>
                             {/if}
 
                             {if $no_today_activity}
@@ -311,14 +321,9 @@
                                 </div>
                             {/if}
 
-                            <div class="activity-list-block js-activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+                            <div class="activity-list-block js-activity-list-block" data-empty-text="[`No events in the live stream yet.`]" data-empty-today-text="[`No activity today yet.`]" data-today-text="[`Today`]">
                                 {if !empty($activity)}
                                     {include file="../dashboard/DashboardActivity.html" inline}
-                                {else}
-                                    <div class="empty-activity-text">
-                                        <h3>[`No events in the live stream yet.`]</h3>
-                                        <p>[`Live stream collects all events from installed apps and presents them in a chronological order.`]</p>
-                                    </div>
                                 {/if}
                             </div>
                         </div>
@@ -364,7 +369,7 @@
                     </li>
                     <li>
                         <a href="#" data-nav="widgets">
-                            <i class="fas fa-tv"></i>
+                            <i class="fas fa-chart-bar"></i>
                             <span>[`Dashboards`]</span>
                         </a>
                     </li>

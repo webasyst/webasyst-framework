@@ -98,6 +98,11 @@
                     <div class="dialog-content-indent">
                         <h1>[s`Theme preview`]</h1>
                         <p>[s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
+                        {if $theme.preview_url}
+                            <a href="{$theme.preview_url|escape}" target="_blank">
+                                <span>[s`Preview`]</span><i class="icon10 new-window" style="vertical-align: baseline;margin-left: 4px;"></i>
+                            </a>
+                        {/if}
                     </div>
                 </div>
                 <div class="dialog-buttons">

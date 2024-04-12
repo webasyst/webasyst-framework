@@ -35,6 +35,7 @@ class webasystConfig extends waAppConfig
         );
 
         (new waWebasystIDConfig())->keepEndpointsSynchronized();
+        (new waServicesApiUrlConfig())->keepEndpointsSynchronized();
 
         return $n;
     }

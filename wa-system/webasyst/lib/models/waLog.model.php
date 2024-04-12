@@ -65,6 +65,14 @@ class waLogModel extends waModel
             $where_string .= " AND l.datetime > '{$where['min_datetime']}'";
             unset($where['min_datetime']);
         }
+        if (!isset($where['contact_id']) && isset($where['group_id'])) {
+            $contact_ids = (new waUserGroupsModel())->getContactIds($where['group_id']);
+            if (!$contact_ids) {
+                return [];
+            }
+            $where['contact_id'] = $contact_ids;
+            unset($where['group_id']);
+        }
         $where = array_intersect_key($where, $this->getMetadata());
         if ($where) {
             $where_string .= ' AND ('.$this->getWhereByField($where).')';

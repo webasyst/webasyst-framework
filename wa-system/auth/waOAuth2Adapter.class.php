@@ -5,7 +5,7 @@ abstract class waOAuth2Adapter extends waAuthAdapter
     protected $app_id;
     protected $app_secret;
     // CSRF protection (add random state to redirect URI)
-    protected $check_state = false;
+    protected $check_state = true;
 
     public function __construct($options = array())
     {

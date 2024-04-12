@@ -429,7 +429,7 @@ class waContact implements ArrayAccess
                 // Contact without name derive firstname from email or phone
                 if (
                     $field_id === 'firstname'
-                    && (!isset($result) || !trim($result))
+                    && (!isset($result) || trim((string) $result) === '')
                     && (!isset($this['middlename']) || !trim($this['middlename']))
                     && (!isset($this['lastname']) || !trim($this['lastname']))
                     && (!isset($this['company']) || !trim($this['company']))
@@ -1146,6 +1146,15 @@ class waContact implements ArrayAccess
 
         $setting_model = new waContactSettingsModel();
         $setting_model->delete($this->id, $app_id, $name);
+    }
+
+    public function isSingleAppMode()
+    {
+        $result = $this->getSettings('webasyst', 'single_app_id');
+        if ($result !== 'webasyst') {
+            return $result;
+        }
+        return null;
     }
 
     /**

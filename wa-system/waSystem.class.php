@@ -713,6 +713,9 @@ class waSystem
      */
     public function whichUI($app_id = null)
     {
+        if ($this->isSingleAppMode()) {
+            return '2.0';
+        }
         $check_app_info = waRequest::param('check_app_info', true, waRequest::TYPE_INT);
         $force_version = waRequest::param('force_ui_version', null, waRequest::TYPE_STRING_TRIM);
         if (!empty($force_version) && !in_array($force_version, ['1.3', '2.0'])) {
@@ -745,6 +748,33 @@ class waSystem
 
         // otherwise app supports only specified app version
         return $app_ui_version;
+    }
+
+    /**
+     * Whether current application is running in Single App mode.
+     * @return string?   null when normal mode; app_id when single app mode is enabled for current user
+     * @throws waRightsException when current user has no access to backend due to misconfiguration
+     * @since 3.0.0
+     */
+    public function isSingleAppMode()
+    {
+        $single_app_id = wa()->getUser()->isSingleAppMode();
+        if (waSystemConfig::systemOption('single_app_mode')) {
+            $system_single_app_id = waSystemConfig::systemOption('single_app_id');
+            if ($system_single_app_id && $system_single_app_id !== 'webasyst') {
+                if ($single_app_id && $single_app_id !== $system_single_app_id) {
+                    throw new waRightsException(sprintf_wp('Single app mode misconfiguration: access denied to app %s for user with access only to app %s.', $system_single_app_id, $single_app_id));
+                }
+                $single_app_id = $system_single_app_id;
+            }
+        }
+        if (!$single_app_id) {
+            return null;
+        }
+        if (!wa()->appExists($single_app_id)) {
+            throw new waRightsException(sprintf_wp('Single app mode misconfiguration: %s app does not exist.', $single_app_id));
+        }
+        return $single_app_id;
     }
 
     /**
@@ -1027,6 +1057,9 @@ class waSystem
         if ($ui_support) {
             sort($ui_support, SORT_STRING);      // always 1.3,2.0 variant, to prevent double checking (double if) in application code
             $ui_support = join(',', $ui_support);
+            if (waSystemConfig::systemOption('ui_disallow_legacy') && $ui_support === '1.3,2.0') {
+                $ui_support = '2.0';
+            }
         } else {
             $ui_support = $default_ui_variant;
         }

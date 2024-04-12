@@ -1,0 +1,11 @@
+{if !empty($notifications)}
+<div data-load-more-url="{$notifications_load_more_url}">
+    {include
+        file="./DashboardAnnouncementGroupList.inc.html"
+        notifications=$notifications
+        has_new_notifications=false
+        new_notification_group_id_to_id=null
+        inline
+    }
+</div>
+{/if}

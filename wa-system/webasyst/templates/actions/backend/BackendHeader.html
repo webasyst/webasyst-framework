@@ -95,7 +95,7 @@
                         {/if}
                     </label>
 
-                    <span class="desktop-only">[`Select UI mode`]:</span>
+                    <span class="desktop-only">[`UI mode (debug)`]:</span>
 
                     <select onChange="_setCookie('force_set_wa_backend_ui_version', this.options[this.selectedIndex].value, 180); window.location.reload();" style="font-size: 16px;">
                         <option value="1.3"{if $_force_set_wa_backend_ui_version == '1.3'} selected{/if}>1.3</option>
@@ -211,12 +211,10 @@
                     <a href="#" class="popup-notification-new__close js-popup-notification-new-close">&times;</a>
                     <h3 class="popup-notification-new__title">
                         {if $app_info.id != 'webasyst'}<img src="{$root_url}{$app_info.icon.48}" class="popup-notification-new__title-img">{/if}
-                        [s`All-new Webasyst 2 UI`] <span class="popup-notification-new__title-color">([`beta`])</span>
+                        [s`All-new Webasyst 2 UI`]
                     </h3>
                     <p class="popup-notification-new__text">[s`This app supports the brand-new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can return to the classic UI any time.`]</p>
                     <button class="popup-notification-new__button" onClick="_setCookie('force_set_wa_backend_ui_version', '2.0', 180); window.location.reload();">[s`Turn on the new UI`]</button>
-                    [s`or`]
-                    <a href="[s`http://2.webasyst.com`]" target="_blank">[s`learn more about Webasyst 2`] <i class="icon10 new-window" class="popup-notification-new__icon"></i></a>
                 </div>
 
                 <script>

@@ -239,17 +239,10 @@ and (orientation : portrait) {
 .is-wa2 #wa-design-container .wa-theme-name-section {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
 }
 .is-wa2 #wa-design-container .wa-theme-name-section h1 {
     margin-right: 2rem;
     flex: 0 1 auto;
-}
-.is-wa2 #wa-design-container .wa-theme-name-section .dropdown {
-    flex: 1 0 auto;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
 }
 .is-wa2 #wa-design-container .wa-theme-name-section .search-setting-wrapper [type="search"] {
     max-width: 16.25rem;

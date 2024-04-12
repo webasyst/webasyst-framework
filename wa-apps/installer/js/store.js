@@ -171,7 +171,7 @@ var InstallerStore = (function ($) {
                     case 'bundle_install':
                         that.bundleInstall(data.data);
                         break;
-    
+
                     case 'product_rate_init':
                         that.initProductReview(data.data);
                         break;
@@ -348,12 +348,19 @@ var InstallerStore = (function ($) {
             }
         }
 
+        if (!that.options.in_app) {
+            that.initForm(url, fields);
+            return;
+        }
+
         // If the Store is open in app (not the Installer) -
         // before installing show the confirm.
         // App can cancel confirmations in the options!
-        if (!that.options.in_app || (that.options.in_app && confirm(confirm_message))) {
-            that.initForm(url, fields);
+        if (confirm_message && !confirm(confirm_message)) {
+            return;
         }
+
+        that.initInstallationDialog(fields);
     };
 
     InstallerStore.prototype.bundleInstall = function (data) {
@@ -726,6 +733,25 @@ var InstallerStore = (function ($) {
         });
 
         $form.appendTo('body').submit();
+    };
+
+    InstallerStore.prototype.initInstallationDialog = function(fields) {
+        var that = this;
+        $.post(that.options.app_url + '?module=update&action=managerDialog', fields).then(function(html) {
+            new $.waDialog({
+                html,
+                esc: false,
+                onOpen($dialog, dialog) {
+                    $dialog.trigger('installer_dialog_ready', [dialog, $dialog]);
+                    $dialog.on('installer_installation_successfull', function() {
+                        setTimeout(function() {
+                            dialog.close();
+                        }, 1200);
+                        location.reload();
+                    });
+                }
+            });
+        });
     };
 
     InstallerStore.prototype.setDefaultFilters = function() {

@@ -2,7 +2,7 @@
 {$show_body_flag = false}
 {$show_header_flag = false}
 <header class="drawer-header bordered-bottom">
-    <ul class="tabs">
+    <ul class="tabs custom-pl-0">
         {if !empty($vars)}
             {foreach $vars as $id => $app_vars}
                 {if !empty($apps_info[$id])}
@@ -53,14 +53,14 @@
                         <li>
                             <a href="#" class="semibold inline-link js-var">&#123;{$v}&#125;</a>
                             {if !is_array($desc)}
-                                <p class="small gray">{$desc}</p>
+                                <p class="hint custom-mt-4">{$desc}</p>
                             {/if}
                         </li>
                         {if is_array($desc)}
                             {foreach $desc as $sub_v => $sub_desc}
                                 <li>
                                     <a href="#" class="semibold inline-link js-var">&#123;{$sub_v}&#125;</a>
-                                    <p class="small gray">{$sub_desc}</p>
+                                    <p class="hint custom-mt-4">{$sub_desc}</p>
                                 </li>
                             {/foreach}
                         {/if}
@@ -78,7 +78,7 @@
                 {foreach from=$wa_vars item=desc key=v}
                     <li>
                         <a href="#" class="semibold inline-link js-var">&#123;{$v}&#125;</a>
-                        <p class="small gray">{$desc}</p>
+                        <p class="hint custom-mt-4">{$desc}</p>
                     </li>
                 {/foreach}
             </ul>
@@ -93,7 +93,7 @@
                 {foreach from=$smarty_vars item=desc key=v}
                     <li>
                         <a href="#" class="semibold inline-link js-var">{$v|escape}</a>
-                        <p class="small gray">{$desc}</p>
+                        <p class="hint custom-mt-4">{$desc}</p>
                     </li>
                 {/foreach}
             </ul>
@@ -106,12 +106,12 @@
             <ul class="separated bordered">
                 <li>
                     <a href="#" class="semibold inline-link js-var">{literal}{{/literal}$wa->block(<em>'id', $params=[]'</em>){literal}}{/literal}</a>
-                    <p class="small gray">[`<strong>id</strong>: block ID.<br><strong>$params</strong>: associative array of additional parameters passed to a block (example: <code>['myparam' => 100]</code>). A parameter is available by its name as a Smarty variable within a block (example: <code>$myparam</code>).`]</p>
+                    <p class="hint custom-mt-4">[`<strong>id</strong>: block ID.<br><strong>$params</strong>: associative array of additional parameters passed to a block (example: <code>['myparam' => 100]</code>). A parameter is available by its name as a Smarty variable within a block (example: <code>$myparam</code>).`]</p>
                 </li>
                 {foreach $blocks as $block_id => $b}
                     <li>
                         <a href="#" class="semibold inline-link js-var">{literal}{$wa->block('{/literal}{$block_id|escape}{literal}')}{/literal}</a>
-                        <p class="small gray">{$b.description}</p>
+                        <p class="hint custom-mt-4">{$b.description}</p>
                     </li>
                 {/foreach}
             </ul>
@@ -126,14 +126,14 @@
                     <li>
                         <a href="#" class="semibold inline-link js-var">&#123;{$id}&#125;</a>
                         {if !is_array($data)}
-                            <p class="small gray">{$data}</p>
+                            <p class="hint custom-mt-4">{$data}</p>
                         {/if}
                     </li>
                     {if is_array($data)}
                         {foreach $data as $sub_id => $sub_data}
                             <li class="field subfield">
                                 <a href="#" class="semibold inline-link js-var">&#123;{$sub_id}&#125;</a>
-                                <p class="small gray">{$sub_data}</p>
+                                <p class="hint custom-mt-4">{$sub_data}</p>
                             </li>
                         {/foreach}
                     {/if}

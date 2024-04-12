@@ -194,16 +194,21 @@
 <div class="dialog" id="wa-design-preview">
     <div class="dialog-background"></div>
     <form class="dialog-body">
-        <h3 class="dialog-header">[s`Theme preview`]</h3>
-        <input type="hidden" id="wa-preview-key" value="" />
-        <div class="dialog-content">
-            <p>[s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
+        <h3 class="dialog-header custom-pb-16">[s`Theme preview`]</h3>
+        <div class="dialog-content custom-pb-8">
+            <input type="hidden" id="wa-preview-key" value="" />
+            <p class="custom-mt-4"><i class="fas fa-check-circle text-green"></i> [s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
             {if waRequest::isHttps()}
                 <p>[s`The design theme preview will not work on your domain name <strong id="wa-preview-domain"></strong> if it is not available via HTTPS protocol. If so then please either install an SSL certificate for your domain name or log into your Webasyst backend on that domain to preview a design theme.`]</p>
             {/if}
+            {if $theme.preview_url}
+                <a href="{$theme.preview_url|escape}" target="_blank" class="button green">
+                    <span>[s`Preview on my website`]</span><i class="fas fa-external-link-alt smaller custom-ml-4 opacity-50"></i>
+                </a>
+            {/if}
         </div>
         <div class="dialog-footer">
-            <input type="submit" class="button" value="[s`Finish preview session`]">
+            <input type="submit" class="button outlined orange" value="[s`Finish preview session`]">
         </div>
     </form>
 </div>
@@ -231,7 +236,7 @@
             </div>
             <div class="dialog-footer">
                 <input type="submit" class="button green" value="[s`Upload`]">
-                [s`or`] <a href="{$themes_url}" class="js-close-dialog">[s`cancel`]</a>
+                <a href="{$themes_url}" class="js-close-dialog button light-gray">[s`Cancel`]</a>
             </div>
         </form>
     </div>

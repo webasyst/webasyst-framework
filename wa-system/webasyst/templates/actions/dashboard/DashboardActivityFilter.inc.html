@@ -11,7 +11,7 @@
                     {$checked = ""}
                     {$is_not_full = true}
                 {/if}
-                <li>
+                <li class="white">
                     <span class="chip">
                         <label for="field_{$app_id}">
                             <span class="wa-checkbox">
@@ -31,12 +31,38 @@
         <i class="fas fa-spinner fa-pulse loading" title="[`Loading`]" style="display: none"></i>
         <a href="javascript:void(0);" class="button light-gray rounded smaller activity-filter-toggler js-activity-filter-toggler">
             <i class="fas fa-filter"></i>
-            <span id="activity-select-text" data-text="[`Filter by app`]">[`Filter by app`]{if $is_not_full}  ({$check_count}){/if}</span>
+            <span id="activity-select-text" data-text="[`Filter`]">[`Filter`]{if $is_not_full}  ({$check_count}){/if}</span>
             <i class="fas fa-caret-down"></i>
         </a>
     </div>
     <form action="" id="activity-filter" style="display: none">
-        <ul class="chips custom-ml-16">
+        {if !empty($has_team_app_access) && $teams}
+            <div class="flexbox">
+                <ul class="tabs wide width-0 custom-pl-0">
+                    {if count($teams) >= 2}
+                        <li class="selected" data-header-title="[`Everyone`]" data-group-id>
+                            <a href="javascript:void(0)">
+                                <span>[`Everyone`]</span>
+                            </a>
+                        </li>
+                    {/if}
+                    {foreach $teams as $team}
+                        <li{if $selected_sidebar_item === "team/`$team.id`"} class="selected"{/if}
+                            data-header-title="{$team.name|escape}" data-group-id="{$team.id}">
+                            <a href="javascript:void(0)">
+                                <i class="{$team.icon|escape}"></i>
+                                <span>{$team.name|escape}</span>
+                                {* if $team.cnt > 0}
+                                    <span class="count">{$team.cnt}</span>
+                                {/if *}
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </div>
+        {/if}
+
+        <ul class="chips small rounded">
             {$select_options|strip}
         </ul>
     </form>

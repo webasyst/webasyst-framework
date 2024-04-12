@@ -10,6 +10,7 @@
     <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
     <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-3.3.2.min.js"></script>
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
+
 </head>
 <body{if $wa_app == 'webasyst' && $wa->get('tv')===''} class="tv"{/if}>
     <div id="wa">
@@ -18,80 +19,7 @@
         {/if}
         <div id="wa-app" class="flexbox">
             {$is_fixed_header = $wa->cookie('wa_header_fixed', 0)}
-            <div class="sidebar overflow-visible flexbox {if !$is_fixed_header} height-full{else} header-fixed{/if} js-main-sidebar">
-                <div class="sidebar-header box flexbox middle"{if $is_fixed_header} style="display: none;"{/if}>
-                    {include file="../actions/backend/BackendHeaderAccount.inc.html" logo=$logo position="sidebar" inline}
-                </div>
-                <div class="sidebar-body">
-                    <ul class="menu js-dashboards-list">
-                        <li{if $selected_sidebar_item === 'my'} class="selected"{/if} data-header-title="[`My apps`]">
-                            <a href="{$backend_url}" data-dashboard="0">
-                                <i class="fas fa-th"></i>
-                                <span>[`My dashboard`]</span>
-                            </a>
-                        </li>
-                        {foreach $public_dashboards as $d}
-                        <li{if $selected_sidebar_item === "dashboard/`$d.id`"} class="selected"{/if} data-header-title="[`Everyone`]">
-                            <a href="{$dashboard_module_url}dashboard/{$d.id}/" data-dashboard="{$d.id}">
-                                {if $selected_sidebar_item === "dashboard/`$d.id`"}
-                                    <span class="count action small js-dashboard-delete"><i class="fas fa-trash-alt"></i></span>
-                                {/if}
-                                <i class="fas fa-tv"></i>
-                                <span>{$d.name|escape}</span>
-                            </a>
-                        </li>
-                        {/foreach}
-                        {if !empty($is_admin)}
-                        <li class="small">
-                            <a class="count action js-new-dashboard" href="javascript:void(0);" data-dashboard="new_dashboard" title="[`New dashboard`]">
-                                <i class="fas fa-plus-circle"></i>
-                                <span>[`New dashboard`]</span>
-                            </a>
-                        </li>
-                        {/if}
-
-                        {*
-                            TEASING THE NEW INSTALLER'S SECTION FOR APPS
-                            <li{if $selected_sidebar_item === 'apps'} class="selected"{/if} data-header-title="[`Apps`]">
-                                <a href="{$dashboard_module_url}apps/">
-                                    <i class="fas fa-th"></i>
-                                    <span>[`Apps`]</span>
-                                </a>
-                            </li>
-                        *}
-                    </ul>
-                    {if !empty($has_team_app_access) && $teams}
-                        <header class="heading">
-                            [`Teams`]
-                        </header>
-                        <ul class="menu">
-                            {foreach $teams as $team}
-                                <li{if $selected_sidebar_item === "team/`$team.id`"} class="selected"{/if} data-header-title="{$team.name|escape}">
-                                    <a href="{$dashboard_module_url}team/{$team.id}/">
-                                        <i class="{$team.icon|escape}"></i>
-                                        <span>{$team.name|escape}</span>
-                                        {* if $team.cnt > 0}
-                                            <span class="count">{$team.cnt}</span>
-                                        {/if *}
-                                    </a>
-                                </li>
-                            {/foreach}
-                            {if count($teams) >= 2}
-                                <li{if $selected_sidebar_item === "users"} class="selected"{/if} data-header-title="[`Everyone`]">
-                                    <a href="{$dashboard_module_url}users/">
-                                        <i class="fas fa-users"></i>
-                                        <span>[`Everyone`]</span>
-                                    </a>
-                                </li>
-                            {/if}
-                        </ul>
-                        <div class="box align-center custom-pt-0">
-                            <p class="hint">[`Use the Team app to set up your team and customize access rights.`]</p>
-                        </div>
-                    {/if}
-                </div>
-            </div>
-            <div class="content blank box dashboard js-main-content{if $is_fixed_header} header-apps header-fixed{/if}">
+            <div class="content blank box dashboard js-main-content{if $is_fixed_header} header-apps header-fixed{/if}{if strpos(waRequest::server('REQUEST_URI'), "/webasyst/dashboard/dashboard/") !== false} is-dashboard{/if}">
                 {if $wa_app == 'webasyst'}
                     {$wa->header()}
                 {/if}
@@ -101,17 +29,17 @@
                     <div class="dialog-background"></div>
                     <form action="?module=dashboard&action=dashboardSave" data-dashboard-url="{$wa->domainUrl()}{$dashboard_module_url}dashboard/">
                         <div class="dialog-body">
-                            <h1 class="dialog-header">[`New dashboard`]</h1>
                             <div class="dialog-content fields">
                                 <div class="field">
-                                    <div class="name for-input">[`Dashboard title`]</div>
-                                    <div class="value"><input type="text" name="dashboard[name]" value=""></div>
+                                    <div class="name for-input bold">[`New dashboard`]</div>
+                                    <div class="value"><input type="text" name="dashboard[name]" value="" class="bold large"></div>
                                 </div>
-                                <p class="hint">[`Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs.`]</p>
+                                <p class="hint"><i class="fas fa-lock text-gray custom-mr-4"></i> [`The dashboard will be available only to admin users with full access rights.`]</p>
+                                <p class="hint"><i class="fas fa-tv fa-xs text-gray custom-mr-4"></i> [`A private link will be generated for streaming this dashboard on 4K and Full HD TVs.`]</p>
                             </div>
                             <div class="dialog-footer">
                                 <input type="submit" value="[`Save`]" class="button">
-                                [`or`] <a class="js-close-dialog" href="#">[`cancel`]</a>
+                                <a class="js-close-dialog button light-gray" href="#">[`Cancel`]</a>
                             </div>
                         </div>
                     </form>
@@ -119,13 +47,14 @@
                 <div class="dialog" id="dashboard-delete-dialog">
                     <div class="dialog-background"></div>
                     <div class="dialog-body">
-                        <h1 class="dialog-header">[`Delete dashboard`]</h1>
+                        <h1 class="dialog-header break-word">[`Delete dashboard`]</h1>
                         <div class="dialog-content">
                             <p>[`You are about to permanently delete this dashboard. Are you sure?`]</p>
                         </div>
                         <div class="dialog-footer">
                             <input type="submit" value="[`Delete`]" class="button red">
-                            [`or`] <a class="js-close-dialog" href="#">[`cancel`]</a>
+                            <a class="js-close-dialog button light-gray" href="#">[s`Cancel`]</a>
+                            <span class="js-loading hidden"><i class="fas fa-spinner fa-spin"></i></span>
                         </div>
                     </div>
                 </div>

@@ -75,14 +75,13 @@
 
 <style type="text/css">
     .wa-pages .wa-editor-core-wrapper { margin-left: auto; }
-    .wa-pages .ace { padding: 15px 12px; position: relative; }
+    .wa-pages .ace { padding: 0 2rem; position: relative; }
     .wa-pages .wa-editor-upload-img { position: absolute; top: 15px; right: 12px; z-index: 80; cursor: pointer; background-color: #f9f9f9; border: 1px solid #ccc; transition: all 0.2s ease; width: 1.8rem; height: 1.8rem; text-align: center; line-height: 1.8rem;
     }
     .wa-pages .heading { word-wrap: break-word; word-break: break-all; position: relative; margin-right: 15px; }
     .wa-pages .heading span.count { position: absolute; right: -15px; }
 
     .wa-page-gray { color: #AAA;}
-    .wa-page-draft { background: #CCC; color: white; font-weight: bold; font-size: 0.8em; padding: 0 2px; }
     .wa-page-wysiwyg-html-toggle { margin-right: 17px; margin-top: -20px; float: right; margin-bottom: 0; }
     .wa-page-wysiwyg-html-toggle li { list-style: none;float: left;}
     .wa-page-wysiwyg-html-toggle li.selected a { background: white;}
@@ -105,15 +104,14 @@
     a.wa-page-link:hover .action { visibility: visible; }
     .wa-page-gray-toolbar { flex-wrap: wrap; }
     .wa-page-gray-toolbar > ul { margin: 0 }
-    #wa-page-settings { flex: 1 0 100%; margin-top: 2rem; }
+    #wa-page-settings { flex: 1 0 100%; margin-top: 0; }
     #wa-page-advanced-params { margin-top: 2rem; }
 
     .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
-    .wa-editor-core-wrapper { background: var(--background-color-blank); }
     .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle { padding-left:0 }
-    .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle > li > a { padding-right: 0.5rem; padding-left: 0.5rem }
-    .wa-editor-core-wrapper .redactor-box { background: var(--background-color-blank); }
-    .wa-editor-core-wrapper .redactor-toolbar { box-shadow: none; border-bottom: 1px solid var(--border-color-soft); }
+    .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle > li > a { padding-right: 0; padding-left: 0; }
+    .wa-editor-core-wrapper .redactor-box { background: var(--background-color-blank); margin: 0 1rem; border-radius: 0.75rem; overflow: hidden; }
+    .wa-editor-core-wrapper .redactor-toolbar { box-shadow: none; border-bottom: 1px solid var(--border-color-soft); background: var(--background-color-blank); }
     .wa-editor-core-wrapper .redactor-layer { border: 0 none; background: var(--background-color-blank); }
     .wa-ibutton-checkbox ul.chips li { padding: 1px 0 10px; vertical-align: middle;}
 
@@ -170,7 +168,7 @@
                     <li class="drag-newposition"></li>
                     {if !empty($route.pages)}
                         {foreach $route.pages as $p}
-                            <li class="dr" id="page-{$p.id}" data-page-id="{$p.id}">
+                            <li class="rounded dr" id="page-{$p.id}" data-page-id="{$p.id}">
                                 <a class="wa-page-link" href="{$page_url}{$p.id}">
                                     {if !empty($p.childs)}
                                         <span class="js-expander wa-page-expander"><i class="fas fa-caret-down js-icon"></i></span>
@@ -252,7 +250,7 @@
 
     </div>
 {/if}
-<div id="wa-page-container" class="wa-pages content">
+<div id="wa-page-container" class="wa-pages content not-blank">
     [s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>
 </div>
 <script type="text/javascript">
@@ -373,7 +371,7 @@
             }
             if($(this).hasClass('wa-page-add') || $target.classList.contains('wa-page-add')) {
                 const that = $(this),
-                    $li = $('<li><a class="wa-page-link" href="javascript:void(0);"><i class="fas fa-file-alt"></i><span>[s`New page`]</span></a></li>');
+                    $li = $('<li class="rounded"><a class="wa-page-link" href="javascript:void(0);"><i class="fas fa-file-alt"></i><span>[s`New page`]</span></a></li>');
 
                 if (that.hasClass('no-parent')) {
                     that.closest('.heading').next('ul').append($li);

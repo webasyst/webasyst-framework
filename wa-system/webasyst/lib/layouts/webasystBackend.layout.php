@@ -21,7 +21,6 @@ class webasystBackendLayout extends waLayout
             'root_url' => wa()->getRootUrl(),
             'dashboard_module_url' => wa()->getAppUrl('webasyst') . 'webasyst/dashboard/',
             'public_dashboards' => $this->getPublicDashboards(),
-            'notifications' => $this->getAnnouncements(['one_per_app' => false]),
             'selected_sidebar_item' => $this->getSelectedSidebarItem(),
             'has_team_app_access' => wa()->getUser()->getRights('team', 'backend') > 0,
             'teams' => $this->getTeams()
@@ -58,12 +57,5 @@ class webasystBackendLayout extends waLayout
         }
 
         return $public_dashboards;
-    }
-
-    protected function getTeams()
-    {
-        $ids = $this->getUser()->getGroups();
-        $gm = new waGroupModel();
-        return $gm->getById($ids);
     }
 }

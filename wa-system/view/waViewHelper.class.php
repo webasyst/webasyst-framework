@@ -1557,6 +1557,11 @@ HTML;
         return wa()->whichUI($app_id);
     }
 
+    public function isSingleAppMode()
+    {
+        return wa()->isSingleAppMode();
+    }
+
     public function __get($app)
     {
         if (!isset(self::$helpers[$app])) {

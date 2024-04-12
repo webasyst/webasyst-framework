@@ -1552,3 +1552,13 @@ interface waIPaymentCheck
      */
     public function check($order_data);
 }
+
+/** @since 3.0.0 */
+interface waIPaymentImage
+{
+    /**
+     * @param waOrder $order_data
+     * @return array
+     */
+    public function image($order_data);
+}

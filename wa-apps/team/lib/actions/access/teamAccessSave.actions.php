@@ -83,7 +83,7 @@ class teamAccessSaveActions extends waJsonActions
         if ($this->errors) {
             return;
         }
-        
+
         $this->contact['is_user'] = 1;
         $this->saveContact();
     }
@@ -238,6 +238,35 @@ class teamAccessSaveActions extends waJsonActions
         );
     }
 
+    /** Revoke all access, then grant full access to a single app and set it as the only app available.
+     * In case app_id='webasyst' user will be left without access to any apps but with access to dashboard. */
+    protected function singleAppModeAction()
+    {
+        $app_id = waRequest::post('app_id', 'webasyst', 'string');
+        if (!$app_id || !wa()->appExists($app_id)) {
+            throw new waException('Unknown app_id', 400);
+        }
+
+        $has_backend_access_old = $this->hasBackendAccess($this->id);
+        waUser::revokeUser($this->id, false);
+        $this->contact->save(array(
+            'is_user' => 1,
+        ));
+        if (!$has_backend_access_old) {
+            $this->logAction("grant_backend_access", null, $this->id);
+        }
+
+        $this->action = 'rights';
+        $this->setRights('webasyst', ['backend' => 0]);
+
+        if ($app_id && $app_id !== 'webasyst') {
+            $this->setRights($app_id, ['backend' => 2]);
+            $this->contact->setSettings('webasyst', 'single_app_id', $app_id);
+        } else {
+            $this->contact->delSettings('webasyst', 'single_app_id');
+        }
+    }
+
     /** Save per-app backend access rights.
      *  Used in profile tab, as well as in a separate Access page. */
     protected function rightsAction()
@@ -255,6 +284,15 @@ class teamAccessSaveActions extends waJsonActions
             $values = array($name => $value);
         }
 
+        $this->setRights($app_id, $values);
+        if ($app_id === 'webasyst' && $name == 'backend') {
+            $this->contact->delSettings('webasyst', 'single_app_id');
+        }
+    }
+
+    protected function setRights($app_id, $values)
+    {
+        $name = count($values) == 1 ? key($values) : '';
         $right_model = new waContactRightsModel();
         $is_admin = $right_model->get($this->id, 'webasyst', 'backend', false);
 
