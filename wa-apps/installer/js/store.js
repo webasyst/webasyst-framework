@@ -403,7 +403,12 @@ var InstallerStore = (function ($) {
             fields.push({name: 'app_id['+ slug +']', value: data.vendor});
         });
 
-        that.initForm(url, fields);
+        if (!that.options.in_app) {
+            that.initForm(url, fields);
+            return;
+        }
+
+        that.initInstallationDialog(fields);
     };
 
     InstallerStore.prototype.productRemove = function (data) {

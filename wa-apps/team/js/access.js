@@ -1028,6 +1028,8 @@ window.ProfileAccessTab = function(o) { "use strict";
         $confirm_wrapper.on('click', '.button', function() {
             $confirm_wrapper.hide();
             updateFormAndSave();
+            const accessDialog = $('.t-sidebar-profile-dialog').data('dialog');
+            accessDialog.resize();
         });
 
         $select.change(function() {

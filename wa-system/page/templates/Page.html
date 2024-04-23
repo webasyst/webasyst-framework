@@ -90,7 +90,7 @@
     .wa-page-urls a i { margin: 0}
 
     .block-pages { margin-bottom: 2rem; }
-    .block-pages .heading { margin-top: 1rem; }
+    .block-pages .heading { margin-top: 1rem; cursor: pointer; }
     .block-pages .heading span { word-break: break-all; }
     .block-pages ul.menu li a { word-break: break-all; }
     .block-pages.unsettled ul.menu a, .block-pages.unsettled ul.menu a .hint { color: var(--text-color-hint) !important; }
@@ -107,7 +107,9 @@
     #wa-page-settings { flex: 1 0 100%; margin-top: 0; }
     #wa-page-advanced-params { margin-top: 2rem; }
 
-    .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
+    .block-pages ul:not(:has(li.dr)) li.drag-newposition { height: 5px !important; transform: translateY(3px); }
+    .block-pages ul li.drag-newposition { height: 2px; }
+    .block-pages ul li.drag-newposition.active { border-top: 3px solid var(--text-color-hint); background: none; }
     .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle { padding-left:0 }
     .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle > li > a { padding-right: 0; padding-left: 0; }
     .wa-editor-core-wrapper .redactor-box { background: var(--background-color-blank); margin: 0 1rem; border-radius: 0.75rem; overflow: hidden; }
@@ -178,8 +180,8 @@
                                         {$p.name|escape}
                                         <span class="hint">/{$p.full_url|escape}</span>
                                     </span>
-                                    <span class="count action small">
-                                        <i class="fas fa-plus-circle fa-xs text-green wa-page-add"></i>
+                                    <span class="count action small wa-page-add">
+                                        <i class="fas fa-plus-circle fa-xs text-green"></i>
                                     </span>
                                 </a>
                                 {if !empty($p.childs)}
@@ -472,162 +474,176 @@
         });
 
         {literal}
-        $("li.dr", $('.block-pages ul')).liveDraggable({
-            refreshPositions: true,
-            revert: "invalid",
-            helper: function() {
-                var self = $(this);
-                var parent = self.parents('.block-pages:first').find('>ul');
-                return self.clone().addClass('ui-draggable helper').css({
-                    position: 'absolute'
-                }).appendTo(parent);
-            },
-            cursor: "move",
-            opacity: 0.75,
-            zIndex: 9999,
-            distance: 5,
-            cursorAt: { left: 5 }
-        });
+        $.initPagesDraggable = function () {
+            $("li.dr", $('.block-pages ul')).liveDraggable({
+                refreshPositions: true,
+                revert: "invalid",
+                helper: function() {
+                    var self = $(this);
+                    var parent = self.parents('.block-pages:first').find('>ul');
+                    return self.clone().addClass('ui-draggable helper').css({
+                        position: 'absolute'
+                    }).appendTo(parent);
+                },
+                cursor: "move",
+                opacity: 0.75,
+                zIndex: 9999,
+                distance: 5,
+                cursorAt: { left: 5 }
+            });
 
-        $("li.drag-newposition", $('.block-pages ul')).liveDroppable({
-            accept: 'li.dr',
-            tolerance: 'pointer',
-            greedy: true,
-            hoverClass: 'active',
-            over: function() {
-                $(this).parent().parent().addClass('drag-active');
-            },
-            out: function() {
-                $(this).parent().parent().removeClass('drag-active');
-            },
-            deactivate: function(event, ui) {
-                var self = $(this);
-                if (self.is(':animated') || self.hasClass('dragging')) {
-                    self.stop().animate({height: '2px'}, 300, null, function() {self.removeClass('dragging');});
-                }
-                self.parent().parent().removeClass('drag-active');
-            },
-            drop: function(event, ui) {
-                var self = $(this);
-                var dr = ui.draggable;
-                var id = dr.attr('id').replace(/page-/, '');
-                var ul = self.parent();
-
-                var before_id = 0;
-                var before = self.next('li.dr');
-                if (before.length && !before.hasClass('helper')) {
-                    before_id = before.attr('id').replace(/page-/, '');
-                }
-
-                var sep = dr.next();
-                // means that actually nothing will be changed
-                if (sep.get(0) == self.get(0) || id == before_id) {
-                    return false;
-                }
-                var data = {
-                    id: id,
-                    route: ul.attr('data-route') || '',
-                    domain: ul.attr('data-domain') || '',
-                    parent_id: ul.attr('data-parent-id') || 0,
-                    before_id: before_id
-                };
-
-                var home = dr.prev();
-
-                sep.insertAfter(self);
-                dr.insertAfter(self);
-
-                waPageMove(data, function() {}, function() {
-                        // restore
-                        home.after(dr.next()).after(dr);
-                });
-            }
-        });
-
-        $("li.dr a", $('.block-pages ul')).liveDroppable({
-            accept: 'li.dr',
-            tolerance: 'pointer',
-            greedy: true,
-            out: function() {
-                $(this).parent().removeClass('drag-newparent');
-            },
-            over: function(event, ui) {
-                var self = $(this).parent(); // li
-                self.addClass('drag-newparent');
-
-                var dr = ui.draggable;
-                var drSelector = '.dr[id!="'+dr.attr('id')+'"]';
-                var nearby = $();
-
-                // helper to widen all spaces below the current li and above next li (which may be on another tree level, but not inside current)
-                var addBelow = function(nearby, current) {
-                    if (!current.length) {
-                        return nearby;
+            $("li.drag-newposition", $('.block-pages ul')).liveDroppable({
+                accept: 'li.dr',
+                tolerance: 'pointer',
+                greedy: true,
+                hoverClass: 'active',
+                over: function() {
+                    $(this).parent().parent().addClass('drag-active');
+                },
+                out: function() {
+                    $(this).parent().parent().removeClass('drag-active');
+                },
+                deactivate: function(event, ui) {
+                    var self = $(this);
+                    if (self.is(':animated') || self.hasClass('dragging')) {
+                        self.stop().animate({height: '2px'}, 300, null, function() {self.removeClass('dragging');});
                     }
-                    nearby = nearby.add(current.nextUntil(drSelector).filter('li.drag-newposition'));
-                    if (current.nextAll(drSelector).length > 0) {
-                        return nearby;
+                    self.parent().parent().removeClass('drag-active');
+                },
+                drop: function(event, ui) {
+                    var self = $(this);
+                    var dr = ui.draggable;
+                    var id = dr.attr('id').replace(/page-/, '');
+                    var ul = self.parent();
+
+                    var before_id = 0;
+                    var before = self.next('li.dr');
+                    if (before.length && !before.hasClass('helper')) {
+                        before_id = before.attr('id').replace(/page-/, '');
                     }
-                    return arguments.callee(nearby, current.parent().closest('li'));
-                }
 
-                // widen all spaces above the current li and below the prev li (which may be on another tree level)
-                var above = self.prevAll(drSelector+':first');
-                if(above.length > 0) {
-                    var d = above.find(drSelector);
-                    if (d.length > 0) {
-                        nearby = addBelow(nearby, d.last());
-                    } else {
-                        nearby = addBelow(nearby, above);
+                    var sep = dr.next();
+                    // means that actually nothing will be changed
+                    if (sep.get(0) == self.get(0) || id == before_id) {
+                        return false;
                     }
-                } else {
-                    nearby = nearby.add(self.prevUntil(drSelector).filter('li.drag-newposition'));
+                    var data = {
+                        id: id,
+                        route: ul.attr('data-route') || '',
+                        domain: ul.attr('data-domain') || '',
+                        parent_id: ul.attr('data-parent-id') || 0,
+                        before_id: before_id
+                    };
+
+                    var home = dr.prev();
+
+                    sep.insertAfter(self);
+                    dr.insertAfter(self);
+
+                    waPageMove(data, function() {}, function() {
+                            // restore
+                            home.after(dr.next()).after(dr);
+                    });
                 }
+            });
 
-                // widen all spaces below the current li and above the next li (which may be on another tree level)
-                if (self.children('ul').children(drSelector).length > 0) {
-                    nearby = nearby.add(self.children('ul').children('li.drag-newposition:first'));
-                } else {
-                    nearby = addBelow(nearby, self);
+            $(".heading", $('.block-pages')).liveDroppable({
+                accept: 'li.dr',
+                tolerance: 'pointer',
+                greedy: true,
+                over: function() {
+                    if ($(this).find('.fa-caret-right').length) {
+                        $(this).trigger('click');
+                    }
                 }
+            });
 
-                var old = $('.drag-newposition:animated, .drag-newposition.dragging').not(nearby);
+            $("li.dr a", $('.block-pages ul')).liveDroppable({
+                accept: 'li.dr',
+                tolerance: 'pointer',
+                greedy: true,
+                out: function() {
+                    $(this).parent().removeClass('drag-newparent');
+                },
+                over: function(event, ui) {
+                    var self = $(this).parent(); // li
+                    self.addClass('drag-newparent');
 
-                old.stop().animate({height: '2px'}, 300, null, function(){old.removeClass('dragging');});
-                nearby.stop().animate({height: '10px'}, 300, null, function(){nearby.addClass('dragging');});
-            },
-            drop: function(event, ui) {
-                var self = $(this).parent().removeClass('drag-newparent'); // li
-                var parent_id = self.attr('id').replace(/page-/, '');
-                var dr = ui.draggable;
+                    var dr = ui.draggable;
+                    var drSelector = '.dr[id!="'+dr.attr('id')+'"]';
+                    var nearby = $();
 
-                var id = dr.attr('id').replace(/page-/, '');
-                if (id == parent_id) {
-                    return false;
-                }
-
-                var ul;
-                var sep  = dr.next();
-                var home = dr.prev();
-                if (self.children('ul').length) {
-                    ul =  self.children('ul');
-                } else {
-                    ul = $('<ul class="menu unapproved" data-parent-id="' + parent_id + '"><li class="drag-newposition"></li></ul>').appendTo(self);
-                    ul.find('.drag-newposition').mouseover(); // init droppable
-                }
-                ul.append(dr).append(sep);
-
-                waPageMove({id: id, parent_id: parent_id, before_id: 0}, function() {
-                        ul.removeClass('unapproved');
-                    },function() {
-                        // restore
-                        home.after(dr).after(sep);
-                        if (ul.hasClass('unapproved')) {
-                            ul.remove();
+                    // helper to widen all spaces below the current li and above next li (which may be on another tree level, but not inside current)
+                    var addBelow = function(nearby, current) {
+                        if (!current.length) {
+                            return nearby;
                         }
-                });
-            }
-        });
+                        nearby = nearby.add(current.nextUntil(drSelector).filter('li.drag-newposition'));
+                        if (current.nextAll(drSelector).length > 0) {
+                            return nearby;
+                        }
+                        return arguments.callee(nearby, current.parent().closest('li'));
+                    }
+
+                    // widen all spaces above the current li and below the prev li (which may be on another tree level)
+                    var above = self.prevAll(drSelector+':first');
+                    if(above.length > 0) {
+                        var d = above.find(drSelector);
+                        if (d.length > 0) {
+                            nearby = addBelow(nearby, d.last());
+                        } else {
+                            nearby = addBelow(nearby, above);
+                        }
+                    } else {
+                        nearby = nearby.add(self.prevUntil(drSelector).filter('li.drag-newposition'));
+                    }
+
+                    // widen all spaces below the current li and above the next li (which may be on another tree level)
+                    if (self.children('ul').children(drSelector).length > 0) {
+                        nearby = nearby.add(self.children('ul').children('li.drag-newposition:first'));
+                    } else {
+                        nearby = addBelow(nearby, self);
+                    }
+
+                    var old = $('.drag-newposition:animated, .drag-newposition.dragging').not(nearby);
+
+                    old.stop().animate({height: '2px'}, 300, null, function(){old.removeClass('dragging');});
+                    nearby.stop().animate({height: '10px'}, 300, null, function(){nearby.addClass('dragging');});
+                },
+                drop: function(event, ui) {
+                    var self = $(this).parent().removeClass('drag-newparent'); // li
+                    var parent_id = self.attr('id').replace(/page-/, '');
+                    var dr = ui.draggable;
+
+                    var id = dr.attr('id').replace(/page-/, '');
+                    if (id == parent_id) {
+                        return false;
+                    }
+
+                    var ul;
+                    var sep  = dr.next();
+                    var home = dr.prev();
+                    if (self.children('ul').length) {
+                        ul =  self.children('ul');
+                    } else {
+                        ul = $('<ul class="menu unapproved" data-parent-id="' + parent_id + '"><li class="drag-newposition"></li></ul>').appendTo(self);
+                        ul.find('.drag-newposition').mouseover(); // init droppable
+                    }
+                    ul.append(dr).append(sep);
+
+                    waPageMove({id: id, parent_id: parent_id, before_id: 0}, function() {
+                            ul.removeClass('unapproved');
+                        },function() {
+                            // restore
+                            home.after(dr).after(sep);
+                            if (ul.hasClass('unapproved')) {
+                                ul.remove();
+                            }
+                    });
+                }
+            });
+        }
+        $.initPagesDraggable();
         {/literal}
 
         function waPageMove(data, success, error) {

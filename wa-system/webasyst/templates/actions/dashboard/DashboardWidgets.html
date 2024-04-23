@@ -2,7 +2,7 @@
 {strip}
 <div class="d-widgets-block{if empty($public_dashboards) && empty($is_admin)} custom-pt-32{/if}">
     {if !empty($public_dashboards) || !empty($is_admin)}
-    <ul class="chips rounded dashboards-list js-dashboards-list custom-mr-8 custom-my-32 desktop-and-tablet-only">
+    <ul class="chips rounded dashboards-list js-dashboards-list custom-mr-8 custom-mb-32 custom-mt-16 desktop-and-tablet-only">
         <li class="{if $selected_sidebar_item === 'my'} selected{/if}" data-header-title="[`My apps`]">
             <a href="javascript:void(0)" data-dashboard="0">
                 <span class="semibold">[`My dashboard`]</span>

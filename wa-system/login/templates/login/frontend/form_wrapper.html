@@ -29,7 +29,7 @@
 
     {$_locale = [
         'required'          => _ws('Field is required'),
-        'login_required'    => _ws('Login is required'),
+        'login_required'    => $login_required|default:_ws('Login is required'),
         'password_required' => _ws('Password is required'),
         'captcha_required'  => _ws('Captcha is required'),
         'sent_by_email'     => _ws('(sent by email)'),

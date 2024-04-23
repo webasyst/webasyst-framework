@@ -23,7 +23,11 @@ class waAutoload
 
     protected function __construct()
     {
-        $this->base_path = realpath(dirname(__FILE__).'/../..');
+        if (defined('WA_AUTOLOAD_BASE_PATH')) {
+            $this->base_path = realpath(WA_AUTOLOAD_BASE_PATH);
+        } else {
+            $this->base_path = realpath(dirname(__FILE__).'/../..');
+        }
 
         // load system classes
         if (!isset(self::$static_cache['system_classes'])) {

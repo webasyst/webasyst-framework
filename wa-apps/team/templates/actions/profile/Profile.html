@@ -338,7 +338,7 @@
                         {if $im.ext == 'whatsapp'}
                         {$_href = "https://wa.me/`$im.data|escape`"}
                         {elseif $im.ext == 'telegram'}
-                        {$_href = "https://telegram.im/@`$im.data|escape|replace:'@':''`"}
+                        {$_href = "https://t.me/`$im.data|escape|replace:'https://t.me/':''|replace:'https://telegram.im/@':''`"}
                         {elseif $im.ext == 'skype'}
                         {$_href = "skype:`$im.data|escape`?chat"}
                         {elseif $im.ext == 'viber'}

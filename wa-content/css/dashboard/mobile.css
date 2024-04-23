@@ -140,7 +140,7 @@
 #wa_announcement .wa-announcement-item .wa-announcement-item-inner {
   display: flex;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem 0.375rem;
+  padding: 0.5rem 0.75rem;
 }
 #wa_announcement .wa-announcement-item .wa-announcement-item-inner .icon {
   font-size: 1.5rem;

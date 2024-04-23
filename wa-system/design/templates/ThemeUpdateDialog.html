@@ -27,7 +27,7 @@
                         <label title="[s`You did not modify this file`]" class="gray item">
                             <input type="checkbox" disabled checked="checked">
                             {if $_non_m_files_count > 1}
-                                {sprintf('%s and %s',
+                                {sprintf_wp('%s and %s',
                                     $f_id|escape,
                                     _ws('%d more non-modified file', '%d more non-modified files', $_non_m_files_count-1)
                                 )}

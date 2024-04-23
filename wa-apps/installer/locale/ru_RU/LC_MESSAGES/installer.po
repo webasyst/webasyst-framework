@@ -555,3 +555,18 @@ msgstr "Оплата"
 
 msgid "Shipping"
 msgstr "Доставка"
+
+msgid "Installation failed"
+msgstr "Сбой установки"
+
+msgid "An unknown error has occurred during the installation. Please check your network connection and try again."
+msgstr "Произошла неизвестная ошибка во время установки. Проверьте сетевое подключение и повторите попытку."
+
+msgid "Product not found."
+msgstr "ПРодукт не найден."
+
+msgid "Cannot resolve the download URL."
+msgstr "Не удалось определить URL загрузки."
+
+msgid "The requirements are not satisfied."
+msgstr "Требования не соблюдены."

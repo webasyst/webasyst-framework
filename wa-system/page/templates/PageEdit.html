@@ -449,22 +449,23 @@
             $editor_status.html("<i class='fas fa-spin fa-spinner'></i> [s`Saving...`]").fadeIn("slow");
 
             $.post($form.attr('action'), $form.serialize(), function (response) {
-                if (response.status == 'ok') {
+                if (response.status === 'ok') {
                     $(".state-error").removeClass('state-error');
 
                     $editor_status.html('<i class="fas fa-check-circle"></i> [s`Saved`]').fadeOut('slow');
 
                     const p = response.data;
 
-                    let html = $(`<li id="page-${ p.id }" class="dr selected">
+                    let html = $(`<li class="dr rounded selected" id="page-${ p.id }" data-page-id="${ p.id }">
                                     <a class="wa-page-link ui-droppable" href="{$page_url}${ p.id }">
                                         <i class="fas fa-${ p.status == 0 ? 'pencil' : 'file' }-alt"></i>
                                         <span>${ p.name } <span class="hint">/${ p.full_url }</span></span>
-                                        <span class="count action small">
-                                            <i class="fas fa-plus-circle wa-page-add"></i>
+                                        <span class="count action small wa-page-add">
+                                            <i class="fas fa-plus-circle text-green"></i>
                                         </span>
                                     </a>
-                                </li>`);
+                                </li>
+                                <li class="drag-newposition ui-droppable"></li>`);
 
                     if (p.add) {
                         $li.replaceWith(html);
@@ -499,8 +500,8 @@
                         $page_urls_link.first().html(page_url);
                     }
 
-
-                } else if (response.status == 'fail') {
+                    $.initPagesDraggable();
+                } else if (response.status === 'fail') {
                     if ($.isArray(response.errors)) {
                         error = response.errors[0];
                         $(response.errors[1]).addClass('state-error');

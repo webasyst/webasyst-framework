@@ -3,6 +3,14 @@
     flex-wrap: unset;
   }
 }
+#wa-app {
+  height: 100vh;
+}
+@media screen and (max-width: 1119px) {
+  #wa-app {
+    height: auto;
+  }
+}
 #wa-app .sidebar {
   transition: padding 300ms, height 300ms;
 }
@@ -43,6 +51,10 @@
   word-break: break-all;
   font-size: 1.5em;
   display: inline-block;
+}
+#wa-app .content.dashboard {
+  display: flex;
+  flex-direction: column;
 }
 @media screen and (min-width: 1120px) {
   #wa-app .content {
@@ -131,6 +143,7 @@
 }
 #wa-app .content .wa-dashboard-page,
 #wa-app .content #dashboard-wrapper {
+  flex-grow: 1;
   --widget-width: 300px;
   display: grid;
   grid-template-columns: 1fr calc(var(--widgets-count, 1) * var(--widget-width) + 0.8rem);
@@ -499,6 +512,12 @@
   justify-content: center;
   font-size: 0.9375rem;
   padding-top: 1px;
+}
+@media screen and (max-width: 1119px) {
+  #wa-app .content .wa-dashboard-page #wa_widgets .d-widgets-block .dashboards-list,
+  #wa-app .content #dashboard-wrapper #wa_widgets .d-widgets-block .dashboards-list {
+    margin-top: 1.75rem !important;
+  }
 }
 #wa-app .content .wa-dashboard-page #wa_widgets .d-widgets-block #d-widgets-block,
 #wa-app .content #dashboard-wrapper #wa_widgets .d-widgets-block #d-widgets-block {
@@ -1004,8 +1023,12 @@
   }
   #wa-app .content .wa-dashboard-page #wa_announcement,
   #wa-app .content #dashboard-wrapper #wa_announcement {
-    padding-top: 1.5rem;
+    padding-top: 0.5rem;
   }
+}
+#wa-app .content .wa-dashboard-page .grid-placeholder,
+#wa-app .content #dashboard-wrapper .grid-placeholder {
+  background-color: var(--background-color-blank);
 }
 #wa-app .content.header-apps #wa-nav {
   box-shadow: none;
@@ -1154,9 +1177,9 @@
   overflow: visible;
   height: auto;
   box-shadow: none;
-  grid-template-columns: 1fr 1fr;
   grid-template-rows: 4rem;
   background-color: var(--background-color-blank);
+  grid-template-columns: minmax(0, 1fr);
 }
 @media screen and (min-width: 1120px) {
   #wa-app .content:not(.header-apps) #wa-nav #wa-header {
@@ -1171,6 +1194,10 @@
 #wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-logo-area {
   padding-top: 1rem;
   padding-left: 1rem;
+  margin: 0;
+  max-width: max-content;
+  overflow: hidden;
+  padding-bottom: 1rem;
 }
 #wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-logo-area #wa-account:has(.wa-header-logo) {
   align-items: flex-start;
@@ -1205,6 +1232,11 @@
 }
 #wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-user-area {
   padding-top: 0.75rem;
+  margin-inline: 0;
+  gap: 0.5rem;
+}
+#wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-user-area .wa-header-custom-aux-content {
+  margin: 0;
 }
 #wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-user-area .wa-toggle-apps,
 #wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-user-area .wa-toggle-panel {
@@ -1709,6 +1741,9 @@
   opacity: 1;
   transition: opacity 50ms linear 200ms;
 }
+.is-custom-edit-mode #wa-app {
+  height: auto;
+}
 .is-custom-edit-mode #wa-nav {
   position: relative;
   top: unset;
@@ -1994,7 +2029,7 @@
 #wa_announcement .wa-announcement-item .wa-announcement-item-inner {
   display: flex;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem 0.375rem;
+  padding: 0.5rem 0.75rem;
 }
 #wa_announcement .wa-announcement-item .wa-announcement-item-inner .icon {
   font-size: 1.5rem;

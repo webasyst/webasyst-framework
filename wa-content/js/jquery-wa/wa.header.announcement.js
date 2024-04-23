@@ -42,8 +42,6 @@ class WaHeaderAnnouncement {
             const $loading = $(`<span class="custom-mr-4">${that.loading_html}</span>`).prependTo($self);
             $self.prop('disabled', true);
             $.post(that.url_api + 'create/', that.getFormData(), function (r) {
-                $loading.remove();
-                $self.prop('disabled', false);
                 if (r.status === 'ok') {
                     that.hideAndResetForm(function () {
                         that.renderAnnouncementItemWithAnimation(r.data);
@@ -52,7 +50,14 @@ class WaHeaderAnnouncement {
                     r.errors.forEach(err => {
                         that.handleError(err);
                     });
+                } else {
+                    that.handleSaveError(r);
                 }
+            }).always(() => {
+                $loading.remove();
+                $self.prop('disabled', false);
+            }).fail((r) => {
+                that.handleSaveError(r);
             });
             return false;
         });
@@ -153,8 +158,6 @@ class WaHeaderAnnouncement {
                     that.url_api + 'update/',
                     { id: $item.data('id'), ...that.getFormData() },
                     function (r) {
-                        $loading.remove();
-                        $submit.prop('disabled', false);
                         if (r.status === 'ok') {
                             that.hideAndResetForm(function () {
                                 that.renderAnnouncementItemWithAnimation(r.data);
@@ -163,9 +166,16 @@ class WaHeaderAnnouncement {
                             r.errors.forEach(err => {
                                 that.handleError(err);
                             });
+                        } else {
+                            that.handleSaveError(r);
                         }
                     }
-                );
+                ).always(() => {
+                    $loading.remove();
+                    $self.prop('disabled', false);
+                }).fail((r) => {
+                    that.handleSaveError(r);
+                });
             });
             $('#js-cancel-announcement-form').one('click', function () {
                 that.hideAndResetForm(function () {
@@ -437,6 +447,7 @@ class WaHeaderAnnouncement {
     resetErrors () {
         this.$form.find('.state-error').removeClass('state-error');
         this.$form.find('.state-error-hint').remove();
+        $('#js-announcement-error').addClass('hidden');
     }
     handleError (error) {
         let $control = this.$form.find(`[name="${error.field}"]`);
@@ -448,6 +459,12 @@ class WaHeaderAnnouncement {
         if (error.error_description) {
             $(`<div class="state-error-hint">${error.error_description}<div>`).insertAfter($control);
         }
+    }
+    handleSaveError (response) {
+        if (typeof response === 'object') {
+            console.error(`${response.status}: ${response.responseText || response.statusText}`);
+        }
+        $('#js-announcement-error').removeClass('hidden');
     }
 
     setTextarea (text = '') {

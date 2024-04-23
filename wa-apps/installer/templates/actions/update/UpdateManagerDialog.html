@@ -35,8 +35,8 @@
         const update_execute_params = {$update_execute_params|default:[]|json_encode};
         const update_state_params = {$update_state_params|default:[]|json_encode};
         const general_error_alert_params = {
-            title: {_w('Unable to install')|json_encode},
-            text: {_w('... TODO ... общие слова какие-то, потому что описания ошибки получить не удалось ...')|json_encode},
+            title: {_w('Installation failed')|json_encode},
+            text: {_w('An unknown error has occurred during the installation. Please check your network connection and try again.')|json_encode},
             button_title: {_w('Close')|json_encode}
         };
 

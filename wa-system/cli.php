@@ -9,7 +9,10 @@ if ($_SERVER['argc'] < 3) {
 }
 
 try {
-    require_once realpath(dirname(__FILE__).'/../wa-config/').'/SystemConfig.class.php';
+    if (!isset($wa_config_path)) {
+        $wa_config_path = realpath(dirname(__FILE__).'/../wa-config');
+    }
+    require_once $wa_config_path.'/SystemConfig.class.php';
     $config = new SystemConfig('cli');
     waSystem::getInstance(null, $config)->dispatchCli($_SERVER['argv']);
 } catch (Exception $e) {

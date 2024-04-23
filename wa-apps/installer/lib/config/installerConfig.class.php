@@ -74,12 +74,16 @@ class installerConfig extends waAppConfig
 
     public function setCount($n = null)
     {
-        wa()->getStorage()->open();
         $model = new waAppSettingsModel();
         $model->ping();
         $app_id = $this->getApplication();
         $model->set($app_id, 'update_counter', $n);
         $model->set($app_id, 'update_counter_timestamp', ($n === false) ? 0 : time());
+
+        if (wa()->getEnv() !== 'backend') {
+            return;
+        }
+        wa()->getStorage()->open();
         parent::setCount($n);
     }
 

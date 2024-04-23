@@ -84,10 +84,10 @@
                     $loaded_groups.find('.js-announcement-close').remove();
 
                     const $exists_groups = $('#d-notification-wrapper .alert.wa-notification');
-                    if ($exists_groups.length === 0 || ($exists_groups.length === 1 && $exists_groups.hasClass('wa-notification-empty'))) {
+                    if ($exists_groups.hasClass('wa-notification-empty')) {
                         $loaded_groups.insertAfter($exists_groups);
-                        $('.wa-notification-empty').remove();
-                    } else {
+                        $exists_groups.remove();
+                    } else if ($exists_groups.length > 0) {
                         $loaded_groups.each(function () {
                             const $loaded_group = $(this);
                             const app_id = $loaded_group.data('app-id');
@@ -102,6 +102,8 @@
                                 $loaded_group.insertAfter($exists_groups.last());
                             }
                         });
+                    } else {
+                        $loaded_groups.prependTo($('#d-notification-wrapper'));
                     }
 
                     $('.js-announcement-group').removeClass('is-group');

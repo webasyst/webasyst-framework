@@ -213,17 +213,19 @@ class tinkoffAuth extends waOAuth2Adapter
 
         $result = json_encode($tinkoff_tokens);
         if ($contact_data && !empty($tinkoff_tokens)) {
-            try {
-                $cdm->insert([
-                    'field'      => 'tinkoff_tokens',
-                    'contact_id' => (int) $contact_data['contact_id'],
-                    'value'      => $result
-                ]);
-            } catch (Exception $e) {
+            $contact_id = (int) $contact_data['contact_id'];
+            $contact_data = $cdm->getData($contact_id);
+            if (isset($contact_data['tinkoff_tokens'])) {
                 $cdm->updateByField([
                     'field'      => 'tinkoff_tokens',
-                    'contact_id' => (int) $contact_data['contact_id']
+                    'contact_id' => $contact_id
                 ], ['value' => $result]);
+            } else {
+                $cdm->insert([
+                    'field'      => 'tinkoff_tokens',
+                    'contact_id' => $contact_id,
+                    'value'      => $result
+                ]);
             }
         }
 

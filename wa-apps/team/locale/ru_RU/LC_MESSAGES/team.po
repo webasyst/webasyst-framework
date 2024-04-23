@@ -1825,3 +1825,5 @@ msgstr "Да"
 msgid "No"
 msgstr "Нет"
 
+msgid "The user will not see any other apps except for the selected one."
+msgstr "Сотрудник не увидит никаких других приложений, кроме выбранного."

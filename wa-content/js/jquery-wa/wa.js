@@ -893,6 +893,7 @@
             };
             that.options = {
                 hover: (typeof options["hover"] === "boolean" ? options["hover"] : true),
+                hover_out_delay: (typeof options["hover_out_delay"] === "number" && options["hover_out_delay"] > 0 ? options["hover_out_delay"] : 0),
                 hide: (typeof options["hide"] === "boolean" ? options["hide"] : true),
                 items: (options["items"] ? options["items"] : null),
                 active_class: (options["active_class"] ? options["active_class"] : "selected"),
@@ -918,9 +919,29 @@
                     that.toggleMenu(true);
                 });
 
+                var mouseenter_before_leave = false;
+                var leave_timer_id = null;
                 that.$wrapper.on("mouseleave", function() {
-                    that.toggleMenu(false);
+                    if (mouseenter_before_leave) {
+                        mouseenter_before_leave = false;
+                    }
+
+                    leave_timer_id = setTimeout(() => {
+                        if (mouseenter_before_leave) {
+                            mouseenter_before_leave = false;
+                        } else {
+                            that.toggleMenu(false);
+                        }
+                    }, that.options.hover_out_delay);
                 });
+
+                if (that.options.hover_out_delay) {
+                    that.$menu.on("mouseenter", function() {
+                        clearTimeout(leave_timer_id);
+                        leave_timer_id = null;
+                        mouseenter_before_leave = true;
+                    });
+                }
             }
 
             that.$button.on("click touchend", function(event) {
