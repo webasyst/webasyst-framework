@@ -66,3 +66,11 @@ msgstr ""
 msgid "When done editing, click \"Save\" to apply changes."
 msgstr "When done editing, click “Save” to apply changes."
 
+
+#: /wa-apps/blog/plugins/category/templates/actions/settings/Settings.html:83
+msgid "Include /Frontend_URL/ into blog post URLs"
+msgstr ""
+
+#: /wa-apps/blog/plugins/category/templates/actions/settings/Settings.html:85
+msgid "Blog post addresses, when opened from category, will contain a prefix with the category Frontend URL specified above in the Category List."
+msgstr ""

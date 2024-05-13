@@ -1,2 +1,2 @@
 @CHARSET "UTF-8";
-i.icon16.troll { background-image: url(../img/troll.png);margin: 2px 0px !important;}
+i.icon16.troll { background: url(../img/troll.png) no-repeat;margin: 2px 0px !important;height:16px;width:16px;display:inline-block;text-decoration:none!important;vertical-align: middle;}

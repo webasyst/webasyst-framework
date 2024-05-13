@@ -8,11 +8,12 @@ class blogFavoritePlugin extends blogPlugin
         $favorite_model = new blogFavoritePluginModel();
         $count = $favorite_model->countByField('contact_id',wa()->getUser()->getId());
 
-        $selected = '';
-        if ( waRequest::get('search') == $this->id ) {
-            $selected = 'class="selected"';
-        }
-        $output['menu'] = '<li '.$selected.'><span class="count favorites_count">'.$count.'</span><a href="?search='.$this->id.'"><i class="icon16 star"></i>'._wp('Favorites').'</a></li>';
+        $output['menu'] = $this->renderMiscTemplate('SidebarItem.html', [
+            'plugin_id' => $this->id,
+            'count' => $count,
+            'is_selected' => waRequest::get('search') == $this->id
+        ]);
+
         return $output;
     }
 
@@ -31,12 +32,9 @@ class blogFavoritePlugin extends blogPlugin
             $favorite = $favorite_model->getByField(array('contact_id'=>$contact_id,'post_id'=>array_keys($posts)),'post_id');
 
             foreach ($posts as  $id => &$post) {
-
-                if (isset($favorite[$id])) {
-                    $post['plugins']['post_title'][$this->id] = '<span class="favorite-plugin"><a href="#" ><i class="icon16 star" title="'._wp('Remove from favorites').'"></i></a></span>';
-                } else {
-                    $post['plugins']['post_title'][$this->id] = '<span class="favorite-plugin"><a href="#" ><i class="icon16 star-empty" title="'._wp('Add to favorites').'"></i></a></span>';
-                }
+                $post['plugins']['post_title'][$this->id] = $this->renderMiscTemplate('PostStar.html', [
+                    'is_marked' => isset($favorite[$id])
+                ]);
                 unset($post);
             }
         }
@@ -59,5 +57,10 @@ class blogFavoritePlugin extends blogPlugin
             }
         }
         return $result;
+    }
+
+    protected function renderMiscTemplate($template, $assign = [])
+    {
+        return $this->renderTemplate('misc', $template, $assign, true);
     }
 }

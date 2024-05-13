@@ -2,6 +2,8 @@
 
 class blogCategoryPlugin extends blogPlugin
 {
+    protected static $current_category;
+
     public function postUpdate($post)
     {
         $post_id = $post['id'];
@@ -25,6 +27,9 @@ class blogCategoryPlugin extends blogPlugin
                 $result['join'] = array();
                 $category_model = new blogCategoryModel();
                 if ($category = $category_model->getByField('url',$options['plugin'][$this->id],'id')) {
+
+                    self::$current_category = reset($category);
+
                     $result['join'] = array();
 
                     $result['join']['blog_post_category'] = array(
@@ -62,12 +67,10 @@ class blogCategoryPlugin extends blogPlugin
     {
         $output = array();
         $action = new blogCategoryToolbarPluginBackendAction(array('post_id'=>$post['id']));
-        $action->setTemplate('plugins/category/templates/actions/backend/ToolbarBackend.html');
+        $action->setTemplate('backend/ToolbarBackend.html', true);
         $output['sidebar'] = $action->display(false);
         return $output;
     }
-
-
 
     public function frontendSidebar($params)
     {
@@ -91,5 +94,83 @@ HTML;
             $output['sidebar'] .= '</ul>';
         }
         return $output;
+    }
+
+    public function frontendPreparePosts(&$posts)
+    {
+        if (!self::$current_category) {
+            return;
+        }
+
+        $url_type = $this->getSettings('url_type');
+        if ($url_type) {
+
+            if (!$posts) {
+                return;
+            }
+
+            $dummy_post = reset($posts);
+            $dummy_post['url'] = trim(self::$current_category['url'], '/') . '/:POST_URL:';
+            $link_template = blogPost::getUrl($dummy_post);
+
+            $prev_id = 0;
+            $next_map = array();
+            foreach ($posts as &$post) {
+                $post['original_link'] = $post['link'];
+                $post['link'] = str_replace(':POST_URL:', $post['url'], $link_template);
+                $post['plugin_category'] = array(
+                    'category' => self::$current_category
+                );
+                if ($prev_id > 0) {
+                    $next_map[$prev_id] = $post['id'];
+                }
+                $prev_id = $post['id'];
+            }
+            unset($post);
+
+            foreach ($posts as &$post) {
+                if (!isset($next_map[$post['id']])) {
+                    continue;
+                }
+                $next_id = $next_map[$post['id']];
+                if (!isset($posts[$next_id])) {
+                    continue;
+                }
+                $next_post = $posts[$next_id];
+                $post['plugin_category']['next_link'] = $next_post['link'];
+            }
+            unset($post);
+        }
+    }
+
+    public function routing($route = array())
+    {
+        $blog_id = isset($route['blog_url_type']) ? (int) $route['blog_url_type']: 0;
+
+        switch ($blog_id) {
+            case -1:
+                $route_id = 2;
+                break;
+            case 0:
+                $route_id = 0;
+                break;
+            default:
+                $route_id = 1;
+                break;
+        }
+
+        $_all_categories = blogCategory::getAll();
+        $_url_type = $this->getSettings('url_type');
+
+        $file = $this->path.'/lib/config/routing.php';
+        if (file_exists($file)) {
+            /**
+             * @var array $route Variable available at routing file
+             */
+            $routing = include($file);
+            return $routing[$route_id];
+        }
+
+        return array();
     }
 }

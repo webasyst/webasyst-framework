@@ -9,7 +9,7 @@ $.wa_blog.plugins_akismet = {
 			self.addControl(e.target);
 		});
 
-		$('.b-comment-spam').live('click', self.controlClickHandler);
+		$('.b-comment-spam').on('click', self.controlClickHandler);
 	},
 	controlClickHandler : function() {
 		var self = $.wa_blog.plugins_akismet;

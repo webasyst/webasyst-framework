@@ -11,12 +11,6 @@
             this.options = $.extend(this.options, options);
             var self = this;
 
-            $("#b-settings-blog-type").iButton({
-                labelOn : "",
-                labelOff : "",
-                className: 'mini'
-            });
-
             setupBlogUrlWidget();
 
             $('#blog-name').keyup(
@@ -29,28 +23,9 @@
                         }
                     });
 
-            $('.b-setting-icon').click(
-                    function() {
-                        $(this).parent().find('li.selected').removeClass('selected');
-                        $(this).addClass('selected');
-                        $(this).parents('.value').find('input[name="settings\\[icon\\]"]').val($(this).attr('id').replace(/^b-icon-/,''));
-                        $('#b-icon-url').val('');
-                        return false;
-                    });
-
-            $('.b-blog-settings-colorbox a').click(
-                    function(e) {
-                        var color = $(this).find('input').attr('checked', true)    .val();
-                        $(".triple-padded:not(.b-stream-title)").attr('class','block triple-padded b-post ' + color);
-                        if ($(e.target).is(':radio')) {
-                            return true;
-                        }
-                        return false;
-                    });
-
 
             self.status_check($('#b-settings-blog-type'));
-            $('#b-settings-blog-type').change(function() {
+            $('#b-settings-blog-type').on('change', function() {
                 self.status_check(this);
             });
 
@@ -70,11 +45,6 @@
 
             $('#blog-name, #blog-url').focus(function() {
                 hideErrorMsg($(this));
-            });
-
-            $('form input:submit').click(function() {
-                $(this).after('<i class="icon16 loading"></i>');
-                return true;
             });
 
             $('#inline-edit-url').click(function() {

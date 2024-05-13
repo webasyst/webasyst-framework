@@ -39,8 +39,13 @@ class blogEmailsubscriptionCli extends waCliController
 
             $message_count = 0;
 
+            $rights_model = new waContactRightsModel();
+            $contact_ids = $rights_model->getUsers('blog', "blog.{$blog['id']}", blogRightConfig::RIGHT_READ);
             foreach ($rows as $row) {
                 try {
+                    if ($blog['status'] == blogBlogModel::STATUS_PRIVATE && !in_array($row['contact_id'], $contact_ids)) {
+                        continue;
+                    }
                     $message->setTo($row['email'], $row['name']);
                     $status = $message->send() ? 1 : -1;
                     $model->setStatus($row['id'], $status);

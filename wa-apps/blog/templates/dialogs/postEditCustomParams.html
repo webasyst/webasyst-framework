@@ -1,55 +1,48 @@
-<div class="dialog width650px" id="b-post-edit-custom-params-dialog">
-  <div class="dialog-background"></div>
-  <div class="dialog-window">
-    <div class="dialog-content">
-      <div class="dialog-content-indent">
-        <h1>{$post.title|escape}</h1>
-        <div class="fields form">
-            <div class="field">
-                <div class="name"><strong>[`Title`]</strong> <span class="hint">&lt;title&gt;</span></div>
-                <div class="value">
-                    <input value="{$post.meta_title|escape}" id="b-post-meta-title"
-                                name="meta_title" 
-                                class="long bold">
+<div class="dialog" id="b-post-edit-custom-params-dialog">
+    <div class="dialog-background"></div>
+        <div class="dialog-body">
+            <h3 class="dialog-header">{$post.title|escape}</h3>
+            <div class="dialog-content">
+                <div class="fields">
+                    <div class="field">
+                        <div class="name"><strong>[`Title`]</strong> <span class="hint">&lt;title&gt;</span></div>
+                        <div class="value">
+                            <input type="text" value="{$post.meta_title|escape}" id="b-post-meta-title" name="meta_title" class="long bold">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Meta Keywords`]</div>
+                        <div class="value">
+                            <textarea name="meta_keywords" class="width-100 no-resize" style="height: 60px;">{$post.meta_keywords|escape}</textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Meta Description`]</div>
+                        <div class="value">
+                            <textarea name="meta_description" class="width-100 no-resize">{$post.meta_description|escape}</textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Custom parameters`]</div>
+                        <div class="value">
+                            <textarea name="params" id="post-custom-parameters" class="width-100 no-resize" style="height: 100px;">{if $params}{foreach $params as $k => $v}{$k}={$v|escape}&#13;{/foreach}{/if}</textarea>
+                            <p class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$post.key&#125;</em>. Each key=value pair should be on a separate line.`]</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="field">
-                <div class="name">[`Meta Keywords`]</div>
-                <div class="value no-shift">
-                    <textarea name="meta_keywords" style="height: 40px;">{$post.meta_keywords|escape}</textarea>
-                </div>
-            </div>
-            <div class="field">
-                <div class="name">[`Meta Description`]</div>
-                <div class="value no-shift">
-                    <textarea name="meta_description">{$post.meta_description|escape}</textarea>
-                </div>
-            </div>
-            <div class="field">
-                <div class="name">[`Custom parameters`]</div>
-                <div class="value no-shift">
-                    <textarea name="params" id="post-custom-parameters" style="height: 100px;">{if $params}{foreach $params as $k => $v}{$k}={$v|escape}
-{/foreach}{/if}</textarea>
-                    <span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$post.key&#125;</em>. Each key=value pair should be on a separate line.`]</span>
-                </div>
+            <div class="dialog-footer">
+                <input type="button" class="button blue" value="[`Save`]" id="b-post-save-custom-params">
+                 <a href="#" class="button light-gray js-close-dialog">[`Cancel`]</a>
             </div>
         </div>
-      </div>
-    </div>
-    <div class="dialog-buttons">
-      <div class="dialog-buttons-gradient">
-        <input type="button" class="button green" value="[`Save`]" id="b-post-save-custom-params">
-        [`or`] <a href="#" class="cancel">[`cancel`]</a>
-      </div>
-    </div>
-  </div>
 </div>
 <script>
 $(function() {
     /**
-    * Make input (or textarea) with field_id flexible, 
+    * Make input (or textarea) with field_id flexible,
     * what means that depends on length and threshold this field turn into input or textarea and back
-    * 
+    *
     * @param String field_id
     * @param Number threshold (default 50)
     */
@@ -96,7 +89,7 @@ $(function() {
         // initial shot
         handler();
     }
-    
+
     function input2textarea(input) {
         var p = input.parent();
         var rm = false;
@@ -119,7 +112,7 @@ $(function() {
 
         return $(html);
     };
-                
+
     function textarea2input(textarea) {
         var p = textarea.parent();
         var rm = false;
@@ -140,8 +133,8 @@ $(function() {
 
         return $(html);
     }
-    
+
     makeFlexibleInput('b-post-meta-title');
-    
+
 });
 </script>

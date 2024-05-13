@@ -1,5 +1,5 @@
 {if $page == 1 && !empty($posts)}
-    <script type="text/javascript">
+    <script>
         $(function() {
             $.pageless({
                 url: location.href.replace(/[&\?]page=[\d]+/, ''),
@@ -24,7 +24,7 @@
             });
         });
     </script>
-    
+
     <h1 class="gray">{$stream.title|escape}</h1>
 {/if}
 
@@ -33,7 +33,7 @@
     {if $page == 1}
     <ul data-role="listview" data-divider-theme="d" data-theme="d" class="b-stream">
     {/if}
-    
+
     {foreach $posts as $post_id => $post}
         <li >
             <h3 {if isset($post.new) && $post.new} class="highlighted"{/if}>{$post.title|escape}</h3>
@@ -65,7 +65,7 @@
             </div>
         </li>
     {/foreach}
-    
+
     {if $page == 1}
     </ul>
     {/if}

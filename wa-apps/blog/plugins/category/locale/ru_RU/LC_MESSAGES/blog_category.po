@@ -14,7 +14,6 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
-
 #: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:24
 msgid "Category list"
 msgstr "Список категорий"
@@ -67,3 +66,10 @@ msgstr "Фильтрация записей по категориям"
 msgid "When done editing, click \"Save\" to apply changes."
 msgstr "После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
 
+#: /wa-apps/blog/plugins/category/templates/actions/settings/Settings.html:83
+msgid "Include /Frontend_URL/ into blog post URLs"
+msgstr "Включать /Frontend_URL/ в адрес блог-поста"
+
+#: /wa-apps/blog/plugins/category/templates/actions/settings/Settings.html:85
+msgid "Blog post addresses, when opened from category, will contain a prefix with the category Frontend URL specified above in the Category List."
+msgstr "Адрес блог поста, в случае если он открыт из категории, будет содержать префикс с URL категории, указанный выше в списке категорий."

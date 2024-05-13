@@ -2,7 +2,7 @@
 
 //create first blog at install
 try {
-    $name = wa()->accountName();
+    $name = _w('Our news');
     $blog = array(
 	'status'=>blogBlogModel::STATUS_PUBLIC,
 	'name'=>$name,

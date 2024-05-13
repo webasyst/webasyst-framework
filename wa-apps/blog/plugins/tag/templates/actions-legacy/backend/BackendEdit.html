@@ -1,0 +1,33 @@
+<script>
+$.wa_blog.plugins_tag = {
+	options: {
+		'defaultText':'{'[`Add a tag`]'|escape:'javascript'}'
+	},
+	wrapper:null,
+	init : function() {
+		this.wrapper = $('#post-tags').tagsInput({
+			autocomplete_url:'?plugin=tag&module=backend&action=list',
+			height: 120,
+			width: 150,
+			defaultText:this.options.defaultText
+		});
+	},
+	onSubmit : function() {
+		if(this.wrapper) {
+			var input = $('#post-tags_tag');
+			if (input.length && (input.val() != this.options.defaultText)) {
+				var e = jQuery.Event("keypress",{
+					which:13
+				});
+				$('#post-tags_tag').trigger(e);
+			}
+		}
+	}
+};
+
+</script>
+<div class="block">
+	<h6>[`Assign tags`]</h6>
+	<input id="post-tags" value="{$tags|escape}" name="plugin[tag]">
+	<span class="hint">[`Separate tags with a comma (,).`]</span>
+</div>

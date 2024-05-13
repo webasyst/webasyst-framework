@@ -8,9 +8,9 @@ class blogTrollPlugin extends blogPlugin
         if ($email) {
             $pattern = '/(.*'.preg_replace('/[,\n\s]{1,}/','|.*',$email).')/i';
             if ( (wa()->getEnv() == 'backend') && wa()->getUser()->isAdmin($this->app_id)) {
-                $label = '<a href="?module=plugins&amp;slug=troll"><i class="icon16 troll"  title="'.($title = _wp('Troll')).'"><!-- trollface --></i></a>';
+                $label = '<a href="?module=plugins&amp;slug=troll"><i class="icon16 troll"  title="'.($title = _wp('Troll')).'"></i></a>';
             } else {
-                $label = '<i class="icon16 troll"  title="'.($title = _wp('Troll!')).'"><!-- trollface --></i>';
+                $label = '<i class="icon16 troll"  title="'.($title = _wp('Troll!')).'"></i>';
             }
 
             // Fetch emails of registered users

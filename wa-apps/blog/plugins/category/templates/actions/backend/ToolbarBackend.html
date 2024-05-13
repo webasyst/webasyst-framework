@@ -1,20 +1,36 @@
-<div class="block">
-  <h6>[`Categories`]</h6>
-  {if $categories_all}
-  <input type="hidden" name="plugin[category][0]" value="0">
-  <ul class="menu-v compact with-icons">
-     {foreach $categories_all as $category}
-    <li>
-      <label for="plugin-category-checkbox-{$category.id}">
-        <i class="icon16 {$category.icon}"></i>
-        <input id="plugin-category-checkbox-{$category.id}" {if isset($categories[$category.id])}checked="checked"{/if}  type="checkbox" class="b-overhanging-checkbox" 
-                   name="plugin[category][{$category.id}]">
-        {$category.name|escape}
-      </label>
-    </li>
-     {/foreach}
-  </ul>
-  {else}
-    <span class="hint">{'?module=plugins#/category/'|string_format:'[`Add at least one category in the <a href="%s">plugin settings</a>`]'}</span>
-  {/if}
+<div class="field">
+    <div class="name">[`Categories`]</div>
+    <div class="value">
+        {if $categories_all}
+            <input type="hidden" name="plugin[category][0]" value="0">
+            <ul class="menu">
+                {strip}
+                {foreach $categories_all as $category}
+                    <li>
+                        <label>
+                            <span class="wa-checkbox">
+                                <input class="b-overhanging-checkbox" type="checkbox" name="plugin[category][{$category.id}]" {if isset($categories[$category.id])}checked{/if}>
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </span>
+                            </span>
+                            <span class="icon hint">
+                                {if $category.icon}
+                                    <i class="icon16 {$category.icon}"></i>
+                                {else}
+                                    <i class="fas fa-folder"></i>
+                                {/if}
+                            </span>
+                            <span class="b-name">{$category.name|escape}</span>
+                        </label>
+                    </li>
+                {/foreach}
+                {/strip}
+            </ul>
+        {else}
+            <span class="hint">{'?module=plugins#/category/'|string_format:'[`Add at least one category in the <a href="%s">plugin settings</a>`]'}</span>
+        {/if}
+    </div>
 </div>

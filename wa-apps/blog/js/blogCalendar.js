@@ -5,33 +5,21 @@
             this.options = options || {};
             this._initDateSelecter();
             if (options.allow_add) {
-                $(".b-calendar td").click(function(event){
+                $(".b-calendar-table > div:not(.b-calendar-header)").on('click', function(event){
                     if (event.target.tagName == $(this).get(0).tagName ) {
                         window.location.href = "?module=post&action=edit&date="+$(this).attr("id").replace(/^date-/,'');
                     }
                 });
                 var title = this.options.td_title;
-                $('.b-calendar td').each(function(){
+                $('.b-calendar-table > div:not(.b-calendar-header)').each(function(){
                     $(this).attr('title', title);
                 });
             }
             this.initDragnDrop();
-            $(document).bind('selectstart', function(e) {
-                var target_name = e.target.tagName;
-                if (target_name == 'TD' || 
-                    target_name == 'TH' ||
-                    target_name == 'TR' ||
-                    target_name == 'TBODY' ||
-                    target_name == 'TABLE'
-                ) 
-                {
-                    return false;
-                }
-            });
         },
-        
+
         _initDateSelecter: function() {
-            $('select.month,select.year').change(function() {
+            $('select.month,select.year').on('change', function() {
                 var match = location.search.match(/[&\?](month=.*?&|month=.*)/),
                     month_value = $('select.month').val(),
                     year_value = $('select.year').val(),
@@ -45,20 +33,22 @@
                 }
             });
         },
-        
+
         initDragnDrop: function() {
             var self = this;
             self._extendJqueryUIDragAndDrop();
             var items = [
-                '.status-' + self.options.statuses.deadline, 
+                '.status-' + self.options.statuses.deadline,
                 '.status-' + self.options.statuses.draft
             ];
-            $(items.join(','), '.b-calendar td').liveDraggable({
-                containment: $('.b-calendar'),
+
+            $(items.join(','), '.b-calendar-table > div:not(.b-calendar-header)').liveDraggable({
+                appendTo: "body",
+                containment: $('.b-calendar-table'),
                 distance: 5,
                 helper: 'clone'
             });
-            $('.b-calendar td').liveDroppable({
+            $('.b-calendar-table > div:not(.b-calendar-header)').liveDroppable({
                 greedy: true,
                 tolerance: 'pointer',
                 activeClass: 'drop-active',
@@ -72,8 +62,8 @@
 
                         item.hide();
                         cell.append(item_clone);
-                        
-                        $.post('?module=post&action=saveField', { 
+
+                        $.post('?module=post&action=saveField', {
                                 post_id: item.attr('data-post-id'),
                                 data: {
                                     'datetime': datetime,
@@ -82,12 +72,11 @@
                             },
                             function(r) {
                                 if (r && r.status == 'ok') {
-                                    cell.append('<br><br>');
                                     item.nextAll('br:lt(2)').remove().end().remove();
                                     // change icon
-                                    item_clone.find('.icon10.edit-bw').
-                                        removeClass('edit-bw').
-                                        addClass('exclamation').
+                                    item_clone.find('.fa-pen').
+                                        removeClass('fa-pen text-gray').
+                                        addClass('fas fa-exclamation-triangle text-orange').
                                         attr('title', $_('Overdue'));
                                     // change status
                                     item_clone.attr(
@@ -103,6 +92,8 @@
                                     item.show();
                                     item_clone.remove();
                                 }
+
+                                self.initDragnDrop();
                             },
                             'json'
                         ).error(function() {
@@ -113,17 +104,17 @@
                 }
             });
         },
-        
+
         _extendJqueryUIDragAndDrop: function() {
             // live draggable and live droppable
             $.fn.liveDraggable = function (opts) {
                 this.each(function(i,el) {
                     var self = $(this);
                     if (self.data('init_draggable')) {
-                        self.die("mouseover", self.data('init_draggable'));
+                        self.off("mouseover", self.data('init_draggable'));
                     }
                 });
-                this.live("mouseover", function() {
+                this.on("mouseover", function() {
                     var self = $(this);
                     if (!self.data("init_draggable")) {
                         self.data("init_draggable", arguments.callee).draggable(opts);
@@ -135,7 +126,7 @@
                 this.each(function(i,el) {
                     var self = $(this);
                     if (self.data('init_droppable')) {
-                        self.die("mouseover", self.data('init_droppable'));
+                        self.off("mouseover", self.data('init_droppable'));
                     }
                 });
 
@@ -147,8 +138,8 @@
                     }
                 };
                 init.call(this);
-                this.die("mouseover", init).live("mouseover", init);
-                this.live('mouseover', init);
+                this.off("mouseover", init).on("mouseover", init);
+                this.on('mouseover', init);
             };
         }
     }

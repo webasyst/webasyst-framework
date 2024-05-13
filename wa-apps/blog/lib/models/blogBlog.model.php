@@ -79,10 +79,10 @@ class blogBlogModel extends blogItemModel
         if (isset($options['new']) && $options['new']) {
             $post_model = new blogPostModel();
 
-            $blog_activity = blogActivity::getInstance();
             $posts_update = $post_model->getAddedPostCount(blogActivity::getUserActivity(), array_keys($items), true);
 
             if ($posts_update) {
+                $blog_activity = blogActivity::getInstance();
                 foreach ($posts_update as $blog_id => $new) {
 
                     if (isset($items[$blog_id])) {
@@ -98,6 +98,7 @@ class blogBlogModel extends blogItemModel
                         }
                     }
                 }
+                $blog_activity = null; // force destruct
             }
         }
 

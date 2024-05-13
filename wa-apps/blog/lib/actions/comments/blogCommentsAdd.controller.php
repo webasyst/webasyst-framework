@@ -100,7 +100,10 @@ class blogCommentsAddController extends waJsonController
         $view = wa()->getView();
         $view->assign('post', $post);
         $view->assign('contact_rights', $this->getUser()->getRights('contacts', 'backend'));
-        $template = $view->fetch('templates/actions/post/include.comments.html');
+        if (wa()->whichUI("blog") === "1.3") {
+            $actions_dir = "actions-legacy";
+        }
+        $template = $view->fetch('templates/' . ifempty($actions_dir, 'actions') . '/post/include.comments.html');
 
         $this->getResponse()->addHeader('Content-type', 'application/json');
 

@@ -1,0 +1,42 @@
+{capture assign="_confirm_subscribe"}
+    {if !$cron_schedule_time && !$last_emailsubscription_cron_time}
+        {$_msg = sprintf( _wp('WARNING: Email subscription works only if Cron scheduled task for the Blog app is properly configured (%s), and it appears that Cron was not setup for your Webasyst installation yet. Please contact your server administrator, or follow instructions given in the Plugins > Email subscription page of the Blog app. Click OK to subscribe anyway (subscription will be enabled, but will start to work only when Cron is enabled).'), 'cli.php blog emailsubscription' )}
+        if ($(this).is(':checked') && !confirm('{$_msg}')) {
+            $(this).iButton('toggle', false);
+            return false;
+        }
+        subscribe();
+    {else}
+        subscribe();
+    {/if}
+{/capture}
+
+<div class="b-ibutton-checkbox">
+    <ul class="menu-h">
+        <li style="margin-top: -3px;"><input type="checkbox" id="blog-emailsubscription-checkbox" {if $is_subscribed} checked="checked"{/if}></li>
+        <li style="margin-top: -4px; padding-left: 0.3em; padding-right: 0.3em;"><span id="blog-emailsubscription-status" {if $is_subscribed}class="b-unselected" {/if}>{_wp('Email alerts')}</span></li>
+    </ul>
+</div>
+<script>
+    $("#blog-emailsubscription-checkbox").iButton({
+        labelOn: "",
+        labelOff: "",
+        classContainer: "ibutton-container mini"
+    }).change(function () {
+        if ($(this).is(":checked")) {
+            $("#blog-emailsubscription-status").removeClass("b-unselected");
+        } else {
+            $("#blog-emailsubscription-status").addClass("b-unselected");
+        }
+        var that = this;
+        function subscribe() {
+            $.post("?plugin=emailsubscription&module=subscribe", {
+                blog_id: {$blog_id|json_encode},
+                subscribe: $(that).is(":checked") ? 1 : 0
+            }, "json");
+        }
+
+        {$_confirm_subscribe}
+    });
+</script>
+

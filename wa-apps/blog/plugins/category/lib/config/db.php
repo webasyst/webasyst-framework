@@ -5,7 +5,7 @@ return array(
         'id'    => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'name'  => array('varchar', 255, 'null' => 0),
         'url'   => array('varchar', 255, 'null' => 0),
-        'icon'  => array('varchar', 20, 'null' => 0),
+        'icon'  => array('varchar', 50, 'null' => 0),
         'qty'   => array('int', 11, 'null' => 0, 'default' => '0'),
         'sort'  => array('int', 11, 'null' => 0, 'default' => '0'),
         ':keys' => array(

@@ -1,0 +1,30 @@
+<div class="dialog width300px height300px" id="postpublish-dialog">
+  <div class="dialog-background"> </div>
+  <div class="dialog-window" style="width: 500px; min-width: 350px">
+    <div class="dialog-content">
+      <div class="dialog-content-indent">
+        <h1>[`Confirm the blog for publishing this post`]</h1>
+        <ul class="menu-v">
+          {foreach $blogs as $blog_item_id => $blog_item key}
+          {if $blog_item.rights ge blogRightConfig::RIGHT_READ_WRITE}
+          <li>
+            <input type="radio" name="publish_blog_id" value="{$blog_item_id}" id="b-post-publish-blog-{$blog_item_id}"{if $blog_item.id eq $post.blog_id} checked="checked"{/if}>
+            &nbsp;
+            <label for="b-post-publish-blog-{$blog_item_id}">
+                {$blog_item.icon_html|default:''}{$blog_item.name|escape}
+                {if $blog_item.status ==  blogBlogModel::STATUS_PRIVATE}<i class="icon10 lock-bw no-overhanging"></i>{/if}
+            </label>
+            {if !$blog_item@last}<br>{/if}
+          </li>
+          {/if}{/foreach}
+        </ul>
+      </div>
+    </div>
+    <div class="dialog-buttons">
+      <div class="dialog-buttons-gradient">
+        <input id="b-post-save-button" type="button" class="button green" name="published" value="[`Publish`]" >
+        [`or`] <a href="#" class="cancel">[`cancel`]</a>
+      </div>
+    </div>
+  </div>
+</div>

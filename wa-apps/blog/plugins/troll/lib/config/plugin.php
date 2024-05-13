@@ -4,7 +4,7 @@ return array(
     'name'        => /*_wp*/('Troll'),
     'description' => /*_wp*/("Mark selected users with a troll face"),
     'vendor'      => 'webasyst',
-    'version'     => '1.1',
+    'version'     => '1.2.0',
     'img'         => 'img/troll.png',
     'handlers'    => array(
         'backend_comments'          => 'addControls',

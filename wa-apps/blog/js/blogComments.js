@@ -7,7 +7,8 @@
         init : function() {
             this.parent = $.wa_blog;
             var self = this;
-            $('a.b-comment-delete, a.b-comment-restore').live('click',function(eventObject){
+            const $comment_wrapper = $('.b-comments');
+            $comment_wrapper.on('click', 'a.b-comment-delete, a.b-comment-restore',function(eventObject){
                 return self.manageComment.apply(self,[this,eventObject]);
             });
 
@@ -36,7 +37,7 @@
             self.parent.common.onContentUpdate();
 
             // comments
-            $('.b-comment-reply').live('click', self.replyClick);
+            $comment_wrapper.on('click', '.b-comment-reply', self.replyClick);
             $(this.options.form_selector+' #send').click(self.formSubmit);
 
             // filter
@@ -70,7 +71,7 @@
             var status_container = button.parent().find('.b-comment-add-form-status');
             status_container.show();
 
-            var container = $('ul#b-comment-add');
+            var container = $('#b-comment-add');
             var form = $($.wa_blog.comments.options.form_selector);
             $.post(form.attr('action'), form.serialize(), function(response) {
                 button.attr('disabled', false);
@@ -86,9 +87,9 @@
                         target = container.prev().prev();
                     } else {
                         target = container.parent();
-                        if (!target.children('ul.menu-v').not(container).size()) {
+                        if (!target.children('ul.menu').not(container).size()) {
                             target = target
-                                    .append('<ul class="menu-v with-icons"></ul>')
+                                    .append('<ul class="zebra"></ul>')
                                     .find('ul').not(container);
                         }
                     }
@@ -152,7 +153,7 @@
             var id = parseInt($(item).attr('id').replace(/^[\D]+/,''));
             var url = '?module=comments&action=edit';
             var self =this;
-            $(element).hide().after('<i class="b-ajax-status-loading icon16 loading"></i>');
+            $(element).hide().after('<i class="b-ajax-status-loading fas fa-spin fa-spinner"></i>');
             $.ajax({
                         url : url,
                         type: 'POST',
@@ -168,7 +169,7 @@
                                             + delta);
                                 });
                             }
-                            item.find('i.icon16.loading').remove();
+                            item.find('.fa-spinner').remove();
                             var count = null;
                             if (response && response.data && response.data.count_str) {
                                 count = response.data.count_str;
@@ -176,7 +177,7 @@
                             self.setCommentStatus(id, response.data.status,count);
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
-                            item.find('i.icon16.loading').remove();
+                            item.find('.fa-spinner').remove();
                             self.setCommentStatus(id, (action == 'approved')?'approved':'deleted',null);
                         },
                         dataType : 'json'

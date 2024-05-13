@@ -14,20 +14,15 @@ class blogMypostsPlugin extends blogPlugin
         );
         $count = $post_model->countByField($search_options);
 
-        $selected = '';
-        if ( waRequest::get('search') == $this->id ) {
-            $selected = ' class="selected"';
-        }
         $img_url = wa()->getUser()->getPhoto(20);
-        $title = _wp('Posts by me');
-        $output['menu'] = <<<HTML
-<li{$selected}>
-	<span class="count my_count">{$count}</span>
-	<a href="?search={$this->id}">
-		<i class="icon16 userpic20" style="background-image: url('{$img_url}');"></i>{$title}
-	</a>
-</li>
-HTML;
+
+        $output['menu'] = $this->renderMiscTemplate('MenuItem.html', [
+            'is_selected' => waRequest::get('search') == $this->id,
+            'count' => $count,
+            'img_url' => $img_url,
+            'plugin_id' => $this->id
+        ]);
+
         return $output;
     }
 
@@ -45,5 +40,10 @@ HTML;
             }
         }
         return $result;
+    }
+
+    protected function renderMiscTemplate($template, $assign = [])
+    {
+        return $this->renderTemplate('misc', $template, $assign, true);
     }
 }

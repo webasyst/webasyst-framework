@@ -292,6 +292,7 @@ class blogHelper
                 $blog_activity->set("b.{$blog_id}", $post_ids);
             }
         }
+        $blog_activity = null; // force destruct
     }
 
     /**

@@ -184,7 +184,7 @@ class blogFrontendPostAction extends blogViewAction
         $current_auth_source = $current_auth ? $current_auth['source'] : null;
 
         $this->view->assign('current_auth_source', $current_auth_source);
-        $this->view->assign('current_auth', $current_auth, true);
+        $this->view->assign('current_auth', $current_auth ?? [], true);
 
         $adapters = wa()->getAuthAdapters();
         $this->view->assign('auth_adapters', $adapters);

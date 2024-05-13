@@ -1,0 +1,20 @@
+{strip}
+    <div class="tags">
+        {_wp('Tags')}:&nbsp;
+
+        {* collect existing tags of current post *}
+        {$_tags = []}
+        {foreach $post_item_tags as $tag_id}
+            {if !empty($tags_data[$tag_id])}
+                {$_tags[$tag_id] = $tags_data[$tag_id]}
+            {/if}
+        {/foreach}
+
+        {foreach $_tags as $_tag}
+            {if !$_tag@first},&nbsp;{/if}
+            <span>
+            <a href="{$_tag['link']}">{$_tag['name']|escape}</a>
+        </span>
+        {/foreach}
+    </div>
+{/strip}

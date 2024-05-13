@@ -80,8 +80,10 @@ class blogFrontendPreviewTemplateAction extends blogViewAction
         $parent_url = json_encode(waRequest::get('parent_url', '', 'string'));
         $app_static_url = wa()->getAppStaticUrl('blog', 1);
         $version = wa()->getVersion('blog');
+        $ui = wa()->whichUI('blog');
+
         return <<<EOF
-            <script src="{$app_static_url}js/postmessage.js?{$version}"></script>
+            <script src="{$app_static_url}js{if $ui == '1.3'}-legacy{/if}/postmessage.js?{$version}"></script>
             <script>$(function() {
                 // Make sure we're in an iframe
                 if (window.top === window) {

@@ -1,0 +1,7 @@
+<li {if $is_selected}class="selected"{/if}>
+    <a href="?search={$plugin_id}">
+        <i class="fas fa-star"></i>
+        <span>{_wp('Favorites')}</span>
+        <span class="count" id="blog-plugin-favorites-counter">{$count}</span>
+    </a>
+</li>

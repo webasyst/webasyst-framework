@@ -1,0 +1,147 @@
+<div class="dialog width650px" id="b-post-edit-custom-params-dialog">
+  <div class="dialog-background"></div>
+  <div class="dialog-window">
+    <div class="dialog-content">
+      <div class="dialog-content-indent">
+        <h1>{$post.title|escape}</h1>
+        <div class="fields form">
+            <div class="field">
+                <div class="name"><strong>[`Title`]</strong> <span class="hint">&lt;title&gt;</span></div>
+                <div class="value">
+                    <input value="{$post.meta_title|escape}" id="b-post-meta-title"
+                                name="meta_title" 
+                                class="long bold">
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Meta Keywords`]</div>
+                <div class="value no-shift">
+                    <textarea name="meta_keywords" style="height: 40px;">{$post.meta_keywords|escape}</textarea>
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Meta Description`]</div>
+                <div class="value no-shift">
+                    <textarea name="meta_description">{$post.meta_description|escape}</textarea>
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Custom parameters`]</div>
+                <div class="value no-shift">
+                    <textarea name="params" id="post-custom-parameters" style="height: 100px;">{if $params}{foreach $params as $k => $v}{$k}={$v|escape}
+{/foreach}{/if}</textarea>
+                    <span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$post.key&#125;</em>. Each key=value pair should be on a separate line.`]</span>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="dialog-buttons">
+      <div class="dialog-buttons-gradient">
+        <input type="button" class="button green" value="[`Save`]" id="b-post-save-custom-params">
+        [`or`] <a href="#" class="cancel">[`cancel`]</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(function() {
+    /**
+    * Make input (or textarea) with field_id flexible, 
+    * what means that depends on length and threshold this field turn into input or textarea and back
+    * 
+    * @param String field_id
+    * @param Number threshold (default 50)
+    */
+    function makeFlexibleInput(field_id, threshold) {
+        var timeout = 250;
+        threshold = threshold || 50;
+        var height = 45;
+        var timer_id = null;
+        field_id = '#' + field_id;
+        var field = $(field_id);
+
+        var onFocus = function() {
+            this.selectionStart = this.selectionEnd = this.value.length;
+        };
+        var handler = function() {
+            if (timer_id) {
+                clearTimeout(timer_id);
+                timer_id = null;
+            }
+            timer_id = setTimeout(function() {
+                var val = field.val();
+                if (val.length > threshold && field.is('input')) {
+                    var textarea = input2textarea(field);
+                    textarea.css('height', height);
+                    field.replaceWith(textarea);
+                    field = textarea;
+                    field.focus();
+                } else if (val.length <= threshold && field.is('textarea')) {
+                    var input = textarea2input(field);
+                    input.css('height', '');
+                    field.replaceWith(input);
+                    field = input;
+                    field.focus();
+                }
+            }, timeout);
+        };
+
+        var p = field.parent();
+        p.off('keydown', field_id).
+            on('keydown',  field_id, handler);
+        p.off('focus',    field_id).
+            on('focus',     field_id, onFocus);
+
+        // initial shot
+        handler();
+    }
+    
+    function input2textarea(input) {
+        var p = input.parent();
+        var rm = false;
+        if (!p.length) {
+            p = $('<div></div>');
+            p.append(input);
+            rm = true;
+        }
+        var val = input.val();
+
+        var html = p.html();
+        html = html.replace(/value(\s*?=\s*?['"][\s\S]*?['"])*/, '');
+        html = html.replace(/type\s*?=\s*?['"]text['"]/, '');
+        html = html.replace('input', 'textarea');
+        html = html.replace(/(\/\s*?>|>)/, '>' + val  + '</textarea>');
+
+        if (rm) {
+            p.remove();
+        }
+
+        return $(html);
+    };
+                
+    function textarea2input(textarea) {
+        var p = textarea.parent();
+        var rm = false;
+        if (!p.length) {
+            p = $('<div></div>');
+            p.append(textarea);
+            rm = true;
+        }
+        var val = textarea.val();
+
+        var html = p.html();
+        html = html.replace('textarea', 'input type="text" value="' + val + '"');
+        html = html.replace('</textarea>', '');
+
+        if (rm) {
+            p.remove();
+        }
+
+        return $(html);
+    }
+    
+    makeFlexibleInput('b-post-meta-title');
+    
+});
+</script>

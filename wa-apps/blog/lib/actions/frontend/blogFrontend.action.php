@@ -105,7 +105,8 @@ class blogFrontendAction extends blogViewAction
                 $name = $post['user']['name'];
                 $is_search = true;
             } else {
-                if ($contact = blogHelper::getContactInfo($this->search_params['contact_id'])) {
+                $contact = blogHelper::getContactInfo($this->search_params['contact_id']);
+                if ($contact && $contact['create_app_id'] == $this->getAppId()) {
                     $name = htmlentities($contact['name'], ENT_QUOTES, 'utf-8');
                     $is_search = true;
                 } else {

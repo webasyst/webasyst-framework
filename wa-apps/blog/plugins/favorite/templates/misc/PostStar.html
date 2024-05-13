@@ -1,0 +1,17 @@
+{strip}
+
+{$_locales = [
+    "default" => _wp('Add to favorites'),
+    "active" => _wp('Remove from favorites')
+]}
+
+{$_title = $_locales["default"]}
+{if $is_marked}
+    {$_title = $_locales["active"]}
+{/if}
+
+<span class="js-post-favorite-toggle valign-top smaller text-{if !empty($is_marked)}yellow{else}light-gray{/if} cursor-pointer{if !empty($is_marked)} is-active{/if}" title="{$_title|escape}" data-active-title="{$_locales["active"]|escape}" data-inactive-title="{$_locales["default"]|escape}">
+    <i class="fas fa-star smaller" style="pointer-events: none;"></i>
+</span>
+
+{/strip}

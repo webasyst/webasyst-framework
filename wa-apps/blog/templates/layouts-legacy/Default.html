@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  {$title=$wa->title()}
+  <title>{if $title}{$title|escape}{else}{$wa->appName()}{/if} &mdash; {$wa->accountName()}</title>
+  {$wa->css()}
+  <link rel="stylesheet" href="{$wa_app_static_url}css-legacy/blog.css?v={$wa->version()}">
+  <link rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css?v={$wa->version()}">
+
+  <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js"></script>
+
+  <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.json.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.store.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.history.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.tmpl.min.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js"></script>
+
+  <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js"></script>
+  {wa_js file="js-legacy/blog.min.js"}
+  {$wa_app_static_url}js-legacy/jquery.sticky.js
+  {$wa_app_static_url}js-legacy/jquery.pageless2.js
+  {$wa_app_static_url}js-legacy/blog.js
+  {$wa_app_static_url}js-legacy/blogComments.js
+  {$wa_app_static_url}js-legacy/jquery.form.js
+  {/wa_js}
+  {$wa->js(false)}
+
+  {* @event backend_assets.%plugin_id% *}
+  {foreach $backend_assets as $item}
+      {$item}
+  {/foreach}
+
+  <script>
+  $.wa_blog = $.extend(true,$.wa_blog,{
+    'rights':{json_encode($rights)}
+  });
+  </script>
+</head>
+<body>
+  <div id="wa">
+    {$wa->header()}
+    <div id="wa-app">
+      {$sidebar}
+      <div class="content left200px">
+        {$content}
+      </div>
+    </div><!-- #wa-app -->
+  </div><!-- #wa -->
+</body>
+</html>

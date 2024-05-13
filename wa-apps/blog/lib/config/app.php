@@ -2,12 +2,7 @@
 
 return array(
     'name' => 'Blog',
-    'icon' => array(
-        16 => 'img/blog16.png',
-        24 => 'img/blog24.png',
-        48 => 'img/blog.png',
-        96 => 'img/blog96.png',
-    ),
+    'icon' => 'img/blog.svg',
     'sash_color' => '#f0b100',
     'rights' => true,
     'frontend' => true,
@@ -16,12 +11,13 @@ return array(
     'plugins' => true,
     'pages' => true,
     'mobile' => true,
-    'version' => '1.4.10',
-    'critical' => '1.4.10',
+    'version' => '2.0.0',
+    'critical' => '2.0.0',
     'vendor' => 'webasyst',
     'csrf' => true,
     'my_account' => true,
     'routing_params' => array(
         'blog_url_type' => 1,
     ),
+    'ui' => '1.3,2.0',
 );

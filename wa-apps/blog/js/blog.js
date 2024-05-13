@@ -1,9 +1,27 @@
+/**
+ * MAIN APP CONTROLLER
+ */
+/*( function($) { "use strict";
+    $.wa_blog = {
+        app_url: null,
+        backend_url: null,
+        rights: null,
+        use_retina: false,
+        ui_version: 2,
+
+        init: {}
+    };
+})(jQuery);*/
+
+
+
 $.storage = new $.store();
 $.wa_blog_options = $.wa_blog_options ||{};
 $.wa_blog = $.extend(true, $.wa_blog, {
     rights : {
         admin : false
     },
+    ui_version: 2,
     common : {
         options : {},
         parent : null,
@@ -83,7 +101,7 @@ $.wa_blog = $.extend(true, $.wa_blog, {
             for ( var i in blog) {
                 if (i != 'common') {
                     if (blog[i].onContentUpdate
-                            && (typeof (blog[i].onContentUpdate) == 'function')) {
+                        && (typeof (blog[i].onContentUpdate) == 'function')) {
                         try {
                             blog[i].onContentUpdate();
                         } catch (e) {
@@ -97,14 +115,14 @@ $.wa_blog = $.extend(true, $.wa_blog, {
         }
     },
     plugins : {
-    // placeholder for plugins js code
+        // placeholder for plugins js code
     },
     dialogs : {
         pull : {},
         init : function() {
             var self = this;
-            $(".dialog-confirm").live('click', self.confirm);
-            $(".js-confirm").live('click', self.jsConfirm);
+            $(".dialog-confirm").on('click', self.confirm);
+            $(".js-confirm").on('click', self.jsConfirm);
         },
         close : function(id) {
             if ($.wa_blog.dialogs.pull[id]) {
@@ -113,7 +131,13 @@ $.wa_blog = $.extend(true, $.wa_blog, {
         },
         confirm : function() {
             var id = $(this).attr('id').replace(/-.*$/, '');
-            $.wa_blog.dialogs.pull[id] = $("#" + id + "-dialog").waDialog({
+
+            if (!$.wa_blog.dialogs.pull[id]?.length) {
+                $.wa_blog.dialogs.pull[id] = $("#" + id + "-dialog").detach();
+            }
+
+            $.waDialog({
+                $wrapper: $.wa_blog.dialogs.pull[id],
                 disableButtonsOnSubmit : true,
                 onSubmit : function() {
                     return false;
@@ -134,114 +158,90 @@ $.wa_blog = $.extend(true, $.wa_blog, {
             key : 'blog/collapsible/'
         },
         init : function() {
-            var self = this;
-            $(".menu-collapsible .collapse-handler").each(function() {
-                self.restore(this);
-                $(this).click(function() {
-                    return self.toggle(this);
+            const self = this;
+
+            $("details").each(function() {
+                const $details = $(this);
+                const details_id = $details.data("id");
+                const $toggle = $details.find("summary > span");
+
+                self.restore($details);
+
+                $toggle.on('click', function() {
+                    const is_hidden = !$details.is('[open]');
+                    $.storage.set(self.options.key + details_id, is_hidden);
                 });
             });
 
             // all drafts / my drafts filter
             (function() {
-                var all_drafts_link = $('#b-all-drafts');
-                var my_drafts_link = $('#b-my-drafts');
+                const all_drafts_link = $('#b-all-drafts');
+                const my_drafts_link = $('#b-my-drafts');
+                const $drafts_handler = $('details[data-id="drafts"]');
+                const $drafts_title = $drafts_handler.find('.title');
 
-                if (!my_drafts_link.length) {
+                function showMyDrafts(contact_id) {
+                    $drafts_handler.find('li[data-contact-id!=' + contact_id + ']').hide();
+                    $.storage.set('blog/my-drafts', 1);
+                    all_drafts_link.show();
+                    my_drafts_link.hide();
+                    $drafts_title.hide().filter('.b-my-drafts').show();
+                }
+
+                function showAllDrafts() {
+                    $drafts_handler.find('li').show();
                     $.storage.del('blog/my-drafts');
+                    my_drafts_link.show();
+                    all_drafts_link.hide();
+                    $drafts_title.hide().filter('.b-all-drafts').show();
                 }
 
                 function clickHandler() {
-                    var contact_id = $(this).data('contact-id');
+                    const contact_id = $(this).data('contact-id');
                     if (contact_id) {
-                        // show my drafts
-                        $('#blog-drafts li[data-contact-id!='+contact_id+']').hide();
-                        $.storage.set('blog/my-drafts', 1);
-                        all_drafts_link.show();
-                        my_drafts_link.hide();
-                        my_drafts_link.closest('.block').find('.title').hide().
-                                filter('.b-my-drafts').show();
+                        showMyDrafts(contact_id);
                     } else {
-                        // show all drafts
-                        $('#blog-drafts li').show();
-                        $.storage.del('blog/my-drafts');
-                        my_drafts_link.show();
-                        all_drafts_link.hide();
-                        all_drafts_link.closest('.block').find('.title').hide().
-                                filter('.b-all-drafts').show();
+                        showAllDrafts();
                     }
                     return false;
                 }
 
-                function onCollapse() {
-                    var icon = $(this).find('i');
-                    var show_my_drafts = $.storage.get('blog/my-drafts');
-                    if (!icon.hasClass('rarr')) {
+                function onCollapse(is_open) {
+                    if (typeof is_open !== "boolean") {
+                        is_open = !$(this).is('[open]');
+                    }
+                    const show_my_drafts = $.storage.get('blog/my-drafts');
+                    if (is_open) {
                         if (show_my_drafts) {
                             clickHandler.apply(my_drafts_link.find('a').get(0));
                         } else {
                             clickHandler.apply(all_drafts_link.find('a').get(0));
                         }
+                        $(this).find('.counter').hide();
+                        $(this).find('.title').hide().filter(show_my_drafts ? '.b-my-drafts' : '.b-all-drafts').show();
                     } else {
                         my_drafts_link.hide();
                         all_drafts_link.hide();
-                        var block = $(this).closest('.block');
-                        if (show_my_drafts) {
-                            block.find('.counter').hide().filter('.b-my-drafts').show();
-                            block.find('.title').hide().filter('.b-my-drafts').show();
-                        } else {
-                            block.find('.counter').hide().filter('.b-all-drafts').show();
-                            block.find('.title').hide().filter('.b-all-drafts').show();
-                        }
+                        $(this).find('.counter').hide().filter(show_my_drafts ? '.b-my-drafts' : '.b-all-drafts').show();
+                        $(this).find('.title').hide().filter(show_my_drafts ? '.b-my-drafts' : '.b-all-drafts').show();
                     }
                 }
 
-                var collapse_handler = $('#blog-drafts').closest('.block').find('.collapse-handler');
-                collapse_handler.click(onCollapse);
-                onCollapse.apply(collapse_handler.get(0));
-
+                $drafts_handler.on('click', onCollapse);
+                onCollapse.apply($drafts_handler.get(0), [$drafts_handler.is('[open]')]);
                 all_drafts_link.find('a').click(clickHandler);
                 my_drafts_link.find('a').click(clickHandler);
             })();
 
         },
-        toggle : function(Element) {
-            var item = $(Element).find('.rarr');
-            if (item.length) { // show
-                this.show(Element);
-            } else if (item = $(this).find('.darr')) {
-                this.hide(Element);
-            }
-            return false;
-        },
-        show : function(Element) {
-            Element = $(Element);
-            var list = Element.parent().find('ul.collapsible');
-            list.show();
-            if (list.attr('id') == 'blog-drafts') {
-                Element.find('.count').hide();
-            }
-            Element.find('.rarr').removeClass('rarr').addClass('darr');
-            $.storage.set(this.options.key + list.attr('id'), null);
-        },
-        hide : function(Element) {
-            Element = $(Element);
-            var list = Element.parent().find('ul.collapsible');
-            if (list.attr('id') == 'blog-drafts') {
-                Element.find('.count').show();
-            }
-            list.hide();
-            Element.find('.darr').removeClass('darr').addClass('rarr');
-            $.storage.set(this.options.key + list.attr('id'), 2);
-
-        },
         restore : function(Element) {
-            var list = $(Element).parent().find('ul.collapsible');
-            var id = list.attr('id');
-            if (id) {
+            const details_id = Element.data("id");
+            if (details_id) {
                 try {
-                    if (parseInt($.storage.get(this.options.key + id)) == 2) {
-                        this.hide(Element);
+                    if (details_id === 'blogs' && $.storage.get(this.options.key + details_id) == null) {
+                        Element.attr('open', true);
+                    }else{
+                        Element.attr('open', $.storage.get(this.options.key + details_id));
                     }
                 } catch (e) {
                     if (typeof (console) == 'object') {
@@ -249,6 +249,31 @@ $.wa_blog = $.extend(true, $.wa_blog, {
                     }
                 }
             }
+        },
+        lockPosition: function () {
+            const sidebar = document.querySelector('.sidebar-body');
+
+            if (!sidebar) {
+                return;
+            }
+
+            const sessionKey = 'blog/sidebar/position';
+
+            function saveScrollPosition() {
+                sessionStorage.setItem(sessionKey, sidebar.scrollTop.toString());
+            }
+
+            function loadScrollPosition() {
+                const savedPosition = sessionStorage.getItem(sessionKey);
+                if (savedPosition !== null) {
+                    sidebar.scrollTop = parseInt(savedPosition, 10);
+                }
+            }
+
+            window.onload = function() {
+                loadScrollPosition();
+                window.onbeforeunload = saveScrollPosition;
+            };
         }
     },
     helpers : {

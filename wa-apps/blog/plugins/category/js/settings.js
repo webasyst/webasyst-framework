@@ -1,41 +1,41 @@
 if (!$.wa_blog_plugins_category) {
     $.wa_blog_plugins_category = {
         options: {
-            loader: '<i class="b-ajax-status-loading icon16 loading"></i>'
+            loader: '<i class="fas fa-spinner fa-spin"></i>'
         },
         counter: 0,
         ajaxInit: function () {
             //this.ajaxPurge();
-            var self = this;
-            var $container = $('#b-plugins-categories');
-            $container.find('.b-category-add').live('click.plugins_category', function (eventObject) {
+            const self = this;
+            const $container = $('#plugin-category-form');
+
+            $container.on('click.plugins_category', '.b-category-add', function (eventObject) {
                 return self.addHandler.apply(self, [this, eventObject]);
             });
             // inline edit
-            $container.find('.b-category-edit').live('click.plugins_category', function (eventObject) {
+            $container.on('click.plugins_category', '.b-category-edit', function (eventObject) {
                 return self.editHandler.apply(self, [this, eventObject]);
             });
-            $container.find('.b-category-delete').live('click.plugins_category', function (eventObject) {
+            $container.on('click.plugins_category', '.b-category-delete', function (eventObject) {
                 return self.deleteHandler.apply(self, [this, eventObject]);
             });
-            $container.find('.b-plugins-category-icon').live('change.plugins_category', function (eventObject) {
+            $container.on('change.plugins_category', '.b-plugins-category-icon', function (eventObject) {
                 return self.iconHandler.apply(self, [this, eventObject]);
             });
-            $('#plugin-category-form').live('submit.plugins_category', function (eventObject) {
+            $container.on('submit.plugins_category', function (eventObject) {
                 return self.submitHandler.apply(self, [this, eventObject]);
             });
 
-
             if (!$('#b-plugins-categories tbody tr:visible').length) {
-                $("#b-plugins-categories .b-category-add").click();
+                $container.find('.b-category-add').click();
             }
+
             self.makeSortable();
         },
         ajaxPurge: function () {
-            $("#plugin-category-form").die('.plugins_category');
-            var $container = $('#b-plugins-categories');
-            $("#b-plugins-categories *").die('.plugins_category');
-            $('#b-plugins-categories *').unbind('.plugins_category');
+            const $container = $('#plugin-category-form');
+            $container.off('.plugins_category');
+            $container.find('*').off('.plugins_category');
         },
         makeSortable: function () {
             var self = this;
@@ -56,8 +56,8 @@ if (!$.wa_blog_plugins_category) {
         },
         addHandler: function (element, eventObject) {
             var self = this;
-            var row = $(element).parents('table').find('tbody tr:last');
-            if (row) {
+            var row = $('#b-plugins-categories').find('tbody tr:last');
+            if (row.length) {
                 var counter = ++self.counter;
                 row = row.clone().insertAfter(row).show();
                 row.find(':text').val('');
@@ -66,7 +66,6 @@ if (!$.wa_blog_plugins_category) {
                 row.find(':input').each(function () {
                     $(this).attr('name', $(this).attr('name').replace(/\[\-?\d+\]/, '[-' + counter + ']'));
                 });
-                row.find('.b-category-edit').click();
             }
             return false;
         },
@@ -111,12 +110,12 @@ if (!$.wa_blog_plugins_category) {
                     $.get('?plugin=category&module=backend&action=sidebar', function (html) {
                         $('#blog-category-sidebar-block').replaceWith(html);
 
-                        var $container = $("#wa-plugins-content");
+                        const $container = $("#wa-plugins-content");
 
                         $container.empty();
                         $container.html(response);
 
-                        self.makeSortable();
+                        self.ajaxInit();
                     });
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -126,7 +125,7 @@ if (!$.wa_blog_plugins_category) {
             return false;
         },
         showHint: function () {
-            $('#b-plugins-categories').next('div').show();
+            $('.js-hint').show();
         }
     };
     $.wa_blog_plugins_category.ajaxInit();
