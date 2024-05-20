@@ -3041,7 +3041,7 @@
             });
 
             this.$toggler.siblings().each((i, el) => {
-                if (el.nodeName !== 'SCRIPT' && el.nodeName !== 'STYLE') {
+                if (el.nodeName !== 'SCRIPT' && el.nodeName !== 'STYLE' && !el.classList.contains('js-no-animation-sidebar-block')) {
                     $(el).slideToggle(400, function () {
                         const self = $(this);
 

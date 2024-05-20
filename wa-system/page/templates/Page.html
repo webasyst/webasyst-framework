@@ -173,7 +173,7 @@
                             <li class="rounded dr" id="page-{$p.id}" data-page-id="{$p.id}">
                                 <a class="wa-page-link" href="{$page_url}{$p.id}">
                                     {if !empty($p.childs)}
-                                        <span class="js-expander wa-page-expander"><i class="fas fa-caret-down js-icon"></i></span>
+                                        <span class="js-expander wa-page-expander custom-mr-4"><i class="fas fa-caret-down js-icon"></i></span>
                                     {/if}
                                     <i class="fas fa-{if $p.status}file{else}pencil{/if}-alt"></i>
                                     <span>
@@ -259,13 +259,14 @@
     var wa_url = "{$wa_url}";
     var wa_app = "{$wa->app()}";
 
-    function changeCollapseIcon($icon, direction_or_class = 'right') {
+    function changeCollapseIcon($icon, direction_or_class = 'caret-right') {
         const class_right = 'fa-caret-right',
               class_down = 'fa-caret-down';
-        if (direction_or_class === 'down') {
-            $icon.removeClass(class_right).addClass(class_down);
-        } else if (direction_or_class === 'right') {
-            $icon.removeClass(class_down).addClass(class_right);
+
+        if (direction_or_class === 'caret-down') {
+            $icon.attr('data-icon', direction_or_class).removeClass(class_right).addClass(class_down);
+        } else if (direction_or_class === 'caret-right') {
+            $icon.attr('data-icon', direction_or_class).removeClass(class_down).addClass(class_right);
         } else {
             $icon.removeClass(class_down).removeClass(class_right).addClass(direction_or_class);
         }
@@ -274,7 +275,7 @@
         var t = $('#page-'+page_id);
         var c = t.children('ul');
         if(c.length) {
-            changeCollapseIcon(t.children('a').children('.js-expander').children(), 'down');
+            changeCollapseIcon(t.children('a').children('.js-expander').children(), 'caret-down');
             c.show();
         }
 
@@ -340,22 +341,27 @@
             var $icon = t.children('a').children('.js-expander').children();
 
             if(c.length) {
-                changeCollapseIcon($icon, 'right');
+                changeCollapseIcon($icon, 'caret-right');
                 c.hide();
             } else {
                 changeCollapseIcon($icon, 'fa-notebook');
             }
         }
 
-        $('.js-expander').on('click', function(e) {
+        $('.block-pages').on('click', '.js-expander', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
-            var $icon = $(this).find('.js-icon');
+            let $target = e.target;
+            if ($target.tagName === 'path') {
+                $target = $target.parentElement
+            }
+
+            var $icon = $($target);
             var page_id = $icon.closest('li').attr('id').replace(/page-/g, '');
             var k = wa_app+'/pages/page-' + page_id;
 
-            if($icon.hasClass('fa-caret-right')) {
+            if($target.classList.contains('fa-caret-right')) {
                 waExpand(page_id);
                 $.storage.del(k);
             } else {
@@ -448,19 +454,20 @@
                     $.storage.del(k);
                 }
             }
+
             var $icon_add_page = h.find('.js-add-page-icon'),
                 $count = h.find('.js-add-page-count'),
                 $icon = h.find('.js-icon');
 
-            if ($icon.hasClass('fa-caret-down')) {
+            if (ul.is(':visible')) {
                 $icon_add_page.hide();
-                changeCollapseIcon($icon, 'right');
+                changeCollapseIcon($icon, 'caret-right');
                 $count.html(ul.find('a.wa-page-link').length).show();
                 ul.hide();
             } else {
                 $count.hide();
                 $icon_add_page.show();
-                changeCollapseIcon($icon, 'down');
+                changeCollapseIcon($icon, 'caret-down');
                 ul.show();
             }
         });
@@ -672,13 +679,33 @@
         }
 
         // after expanding, close using storage
-        $('.js-expander').each(function() {
-            var page_id = $(this).closest('li').attr('id').replace(/page-/g, '');
-            var k = wa_app+'/pages/page-' + page_id;
-            if ($.storage.get(k)) {
-                waClose(page_id);
-            }
+        waitFaLoaded().then(() => {
+            $('.js-expander').each(function () {
+                var page_id = $(this).closest('li').attr('id').replace(/page-/g, '');
+                var k = wa_app + '/pages/page-' + page_id;
+                if ($.storage.get(k)) {
+                    waClose(page_id);
+                }
+            });
         });
+
+        // wait for font-awesome to be loaded
+        function waitFaLoaded(timeout = 5000) {
+            return new Promise((resolve, reject) => {
+                const checkClass = () => {
+                    if (document.documentElement.classList.contains('fontawesome-i2svg-complete')) {
+                        resolve();
+                    } else if (timeout > 0) {
+                        setTimeout(checkClass, 100);
+                        timeout -= 100;
+                    } else {
+                        reject();
+                    }
+                };
+
+                checkClass();
+            });
+        }
     });
 
 </script>

@@ -8,7 +8,7 @@
                name="name[{$locale.id}]"
                autocomplete="off"
                data-error-id="{$locale.id}"
-               value="{$localized_name_value|escape}"
+               value="{$localized_name_value|default:''|trim|escape}"
                {if $is_main_locale}data-main-locale="1"{/if}
                 {if !$editable}disabled="disabled"{/if}>
         <span class="state-error-hint"></span>

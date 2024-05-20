@@ -30,7 +30,7 @@
         </td>
         <td>
             <label for="enbl-{$uniqid}" class="name-label">{$f->getName(null, true)}</label>
-            <input type="text" class="name-input" placeholder="[s`Field name`]" name="{$prefix}[{$fid}][localized_names]" value="{$f->getName(null, true)}">
+            <input type="text" class="name-input" placeholder="[s`Field name`]" name="{$prefix}[{$fid}][localized_names]" value="{$f->getName(null, true)|trim}">
 
             {if !$new_field}
                 <p class="name-hint hint">{localizedType f=$f}</p>

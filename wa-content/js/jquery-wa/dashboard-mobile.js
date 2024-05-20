@@ -9,8 +9,6 @@ const WaMobileDashboard = ( function($) {
         constructor(options) {
             this.$wrapper = options.$wrapper
             this.$header = options.$header
-            this.$notification_wrapper = $('.js-notification-wrapper')
-            this.$notification_close_selector = '.js-announcement-close';
             this.$dashboard_widgets_wrapper = $('.js-dashboard-widgets-wrapper')
             this.$bottombar = $('.js-bottombar')
             this.$dashboard_tabs = this.$wrapper.find('.dashboard-tabs')
@@ -19,7 +17,6 @@ const WaMobileDashboard = ( function($) {
             this.switchBottombar()
             this.searchPanel()
             setInterval(this.updateCount, 60000);
-            this.closeNotification()
             this.switchDashboards()
             //this.sortableApps()
         }
@@ -121,85 +118,6 @@ const WaMobileDashboard = ( function($) {
                 },
                 dataType: "json",
                 async: true
-            });
-        }
-
-        closeNotification() {
-            const that = this;
-            const $wa_notifications_bell = $('.js-notifications-bell');
-            const $wa_announcement_counter = $wa_notifications_bell.find('.badge');
-            const wa_notifications = that.$notification_wrapper.find('li.js-wa-announcement');
-            let counter = wa_notifications.length;
-
-            if (counter > 0) {
-                $wa_announcement_counter.text(counter);
-            }else{
-                $wa_announcement_counter.remove();
-            }
-
-            $('#wa_announcement').on('click touchstart', that.$notification_close_selector, function (e) {
-                e.stopPropagation();
-                e.preventDefault()
-
-                let $close = $(this),
-                    $notification_block = $close.closest('.js-wa-announcement,.js-announcement-group'),
-                    app_id = $close.data('app-id') || $notification_block.data('app-id'),
-                    contact_id = $notification_block.data('contact-id');
-
-                if ($notification_block.length) {
-                    const key = $notification_block.data('key');
-                    if (key) {
-                        $notification_block.closest('.js-announcement-group').remove();
-                    } else {
-                        $notification_block.remove();
-                    }
-                    let counter = that.$notification_wrapper.find('li.js-wa-announcement').length;
-
-                    if (!$('.js-announcement-group.is-unread-group').length) {
-                        $('#js-show-all-notifications').remove();
-                    }
-
-                    if (key && app_id === 'installer') {
-                        $.post(`${backend_url}installer/?module=announcement&action=hide`, { key, app_id }, function(response) {
-                            if (response === 'ok') {
-                                let $system_notification_wrapper = $('.js-wa-announcement-wrap');
-                                let system_notification_count = $system_notification_wrapper.find('.js-wa-announcement').length;
-                                if (system_notification_count <= 0) {
-                                    $wa_announcement_counter.text(counter);
-                                    if (!counter) {
-                                        $wa_announcement_counter.remove();
-                                    }
-                                    $system_notification_wrapper.closest('.js-wa-announcement').remove();
-                                }
-                            }
-                        });
-                    } else {
-                        const payload = {
-                            app_id,
-                            name: 'announcement_close',
-                            value: 'now()',
-                            ...(contact_id ? { contact_id } : {})
-                        };
-                        $.post(`${backend_url}?module=settings&action=save`, payload, response => {
-                            if (response && response.status === 'ok') {
-                                if (counter === 0) {
-                                    $wa_announcement_counter.remove();
-                                }else{
-                                    $wa_announcement_counter.text(counter);
-                                }
-                            }
-                        });
-                    }
-
-                    if (counter) {
-                        $wa_announcement_counter.text(counter)
-                    }else{
-                        $wa_announcement_counter.remove();
-                    }
-                } else {
-                    $wa_announcement_counter.remove();
-                }
-
             });
         }
 

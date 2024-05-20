@@ -56,7 +56,9 @@
                     $('.js-announcement-group').removeClass(['is-unread-group', 'is-group']);
                     $('.js-announcement-group .is-unread').removeClass('is-unread');
                     $(this).parent().remove();
-                    $.wa_notifications.setSeen();
+                    if (BellAnnouncement && typeof BellAnnouncement.setSeen === 'function') {
+                        BellAnnouncement.setSeen();
+                    }
                 });
             })
         </script>

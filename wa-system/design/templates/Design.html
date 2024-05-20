@@ -104,7 +104,7 @@
             <li data-action="theme" class="info selected custom-pb-0" data-is-nav>
                 <a class="wa-themes-link semibold" href="{$design_url}theme={$theme.id}&action=theme">
                     <i class="fas fa-tasks"></i>
-                    [s`Settings`]
+                    [s`Appearance`]
                 </a>
             </li>
 
@@ -130,14 +130,14 @@
                 {skeleton_sidebar}
             </section>
 
-            <ul class="menu js-design-actions custom-mt-0">
-                <li data-action="settings" class="settings" data-is-nav>
-                    <a href="{$design_url}action=settings">
-                        <i class="fas fa-cog"></i>
+            <div class="js-design-actions box align-center">
+                <div data-action="settings" class="settings" data-is-nav>
+                    <a href="{$design_url}action=settings" class="button light-gray rounded small">
+                        <i class="fas fa-cog text-blue custom-mr-4"></i>
                         <span>{if $_route_label}{sprintf('[s`Configure %s`]', "<span class=\"js-route-label\">`$_route_label`</span>")}{else}[s`Route settings`]{/if}</span>
                     </a>
-                </li>
-            </ul>
+                </div>
+            </div>
 
             {* Installer review widget *}
             {if $need_show_review_widget}
@@ -311,7 +311,11 @@
         }
 
         {if !$options.is_ajax}
-            waDesignLoad($(this).attr('href').replace(/.*?#\//, '').replace(/\/$/, ''));
+            if ($(this).is('li')){
+                waDesignLoad($(this).find('a').attr('href')?.replace(/.*?#\//, '')?.replace(/\/$/, ''));
+            }else{
+                waDesignLoad($(this).attr('href')?.replace(/.*?#\//, '')?.replace(/\/$/, ''));
+            }
         {/if}
     });
 
@@ -329,11 +333,13 @@
             if (hash == 'themes' || !!~hash.indexOf('action=settings')) {
                 let hash = $design_actions.filter('[data-action="theme"]').find('a').attr('href')
                 $.wa.setHash(hash);
+                waDesignLoad(hash.replace(/.*?#\//, '').replace(/\/$/, ''));
                 $theme_settings_section.data('menu-id', menu_id)
             }
         }
 
         $li.addClass('selected').siblings().removeClass('selected');
+        $design_actions.removeClass('selected');
 
         if (!$bottombar.length) {
             $bottombar = $('.bottombar');

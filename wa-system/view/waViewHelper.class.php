@@ -1562,6 +1562,21 @@ HTML;
         return wa()->isSingleAppMode();
     }
 
+    /**
+     * @since 10.0.1
+     */
+    public function headerSingleAppUser()
+    {
+        if (!wa()->isSingleAppMode()) {
+            return null;
+        }
+
+        $header = new webasystBackendHeaderAction([
+            'single_app_user' => true,
+        ]);
+        return $header->display();
+    }
+
     public function __get($app)
     {
         if (!isset(self::$helpers[$app])) {

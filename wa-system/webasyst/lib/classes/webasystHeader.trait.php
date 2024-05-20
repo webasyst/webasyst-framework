@@ -201,12 +201,74 @@ trait webasystHeaderTrait
     }
 
     /**
+     * @since 3.0.1
+     */
+    public function assignNotificationsData(array $options = [])
+    {
+        $wa = wa();
+        $backend_url = $wa->getConfig()->getBackendUrl(true);
+
+        $announcement_model = new waAnnouncementModel();
+        $notifications = $this->getAnnouncements($options);
+        $announcement_seen = $wa->getUser()->getSettings('webasyst', 'wa_announcement_seen');
+        $new_notification_group_id_to_id = [];
+
+        $notifications_count = 0;
+        if ($announcement_seen) {
+            $announcement_seen_ts = strtotime($announcement_seen);
+        }
+        $has_new_notifications = false;
+        $has_old_notifications = false;
+        foreach($notifications as $n) {
+            if (!empty($n['is_virtual']) || empty($n['datetime'])) {
+                continue;
+            }
+            foreach ($n['rows'] as $row) {
+                $notifications_count++;
+                if (!empty($announcement_seen_ts) && strtotime($row['datetime']) > $announcement_seen_ts) {
+                    $has_new_notifications = true;
+                    $new_notification_group_id_to_id[$n['id']][$row['id']] = 1;
+                } else {
+                    $has_old_notifications = true;
+                }
+            }
+        }
+
+        $total_count = $announcement_model->countByField([
+            'app_id' => array_keys($wa->getUser()->getApps() + ['webasyst' => 1]),
+        ]);
+
+        $notifications_load_more_url = $backend_url."webasyst/announcements/loadMore/";
+        if ($notifications_count >= $total_count) {
+            $notifications_load_more_url = null;
+        }
+
+        // force show from installer
+        if (!$has_new_notifications && !empty($notifications)) {
+            $has_new_notifications = !empty($notifications['installer']['is_virtual']);
+        }
+
+        $this->view->assign([
+            'notifications'   => $notifications,
+            'has_new_notifications' => $has_new_notifications,
+            'has_old_notifications' => $has_old_notifications,
+            'notifications_load_more_url' => $notifications_load_more_url,
+            'new_notification_group_id_to_id' => $new_notification_group_id_to_id,
+        ]);
+    }
+
+    /**
      * Run the webasyst.backend_header event hook, process and return the results.
      * Helper for ->getAnnouncements(), and also used in webasystBackendHeaderAction.
      * @since 3.0.0
      */
     protected function execBackendHeaderEvent()
     {
+        static $result_cache = null;
+        if ($result_cache !== null) {
+            return $result_cache;
+        }
+
         $current_app = wa()->getApp();
         $ui_version = wa()->whichUI($current_app);
 
@@ -237,6 +299,7 @@ trait webasystHeaderTrait
         $header_user_area = [
             'main' => [],
             'aux' => [],
+            'single_app' => [],
         ];
 
         foreach ($backend_header as $app_id => $header) {
@@ -269,12 +332,16 @@ trait webasystHeaderTrait
                     }
                 }
 
+                if (wa()->isSingleAppMode() && !empty($header['header_single_app_user'])) {
+                    $header_user_area['single_app'][] = $header['header_single_app_user'];
+                }
+
             } elseif (is_string($header) && $ui_version === '1.3') {
                 $header_middle[] = $header;
             }
         }
 
-        return [
+        return $result_cache = [
             $header_top,
             $header_middle,
             $header_bottom,

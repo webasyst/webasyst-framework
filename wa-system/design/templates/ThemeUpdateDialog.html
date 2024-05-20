@@ -11,7 +11,7 @@
         <ul class="menu">
             <li>
                 <label title="[s`Theme appearance settings will be updated automatically`]" class="gray item">
-                    <input type="checkbox" disabled checked="checked">
+                    <input type="checkbox" disabled checked="checked" class="custom-mt-0 custom-mr-4">
                     [s`Theme appearance settings (theme.xml)`]
                 </label>
             </li>
@@ -25,7 +25,7 @@
                 {if !$_non_m_group_shown_flag}
                     <li>
                         <label title="[s`You did not modify this file`]" class="gray item">
-                            <input type="checkbox" disabled checked="checked">
+                            <input type="checkbox" disabled checked="checked" class="custom-mt-0 custom-mr-4">
                             {if $_non_m_files_count > 1}
                                 {sprintf_wp('%s and %s',
                                     $f_id|escape,
@@ -42,14 +42,14 @@
                 {if empty($f.custom)}
                     <li>
                         <label class="bold item" title="[s`You modified this file`]">
-                            <input name="reset[]" type="checkbox" value="{$f_id|escape}">
+                            <input name="reset[]" type="checkbox" value="{$f_id|escape}" class="custom-mt-0 custom-mr-4">
                             {$f_id|escape}
                         </label>
                     </li>
                 {else}
                     <li>
                         <label title="[s`This is a custom file and it will not be affected by the update.`]" class="gray item">
-                            <input name="reset[]" type="checkbox" disabled value="{$f_id|escape}"> {$f_id|escape}
+                            <input name="reset[]" type="checkbox" disabled value="{$f_id|escape}" class="custom-mt-0 custom-mr-4"> {$f_id|escape}
                         </label>
                     </li>
                 {/if}
@@ -67,7 +67,7 @@
         <ul class="menu">
             <li>
                 <label title="[s`Theme appearance settings will be updated automatically`]" class="gray item">
-                    <input type="checkbox" disabled checked="checked">
+                    <input type="checkbox" disabled checked="checked" class="custom-mt-0 custom-mr-4">
                     [s`Theme appearance settings (theme.xml)`]
                 </label>
             </li>
@@ -81,7 +81,7 @@
                 {if !$_non_m_group_shown_flag}
                     <li>
                         <label title="[s`You did not modify this file`]" class="gray item">
-                            <input type="checkbox" disabled checked="checked">
+                            <input type="checkbox" disabled checked="checked" class="custom-mt-0 custom-mr-4">
                             {if $_non_m_files_count > 1}
                                 {sprintf(
                                     _ws('%s and %d more unmodified file', '%s and %d more unmodified files', $_non_m_files_count-1, false),
@@ -98,7 +98,7 @@
             {else}
                 <li>
                     <label class="bold item" title="[s`You modified this file`]">
-                        <input name="parent_reset[]" type="checkbox" value="{$f_id|escape}">
+                        <input name="parent_reset[]" type="checkbox" value="{$f_id|escape}" class="custom-mt-0 custom-mr-4">
                         {$f_id|escape}
                     </label>
                 </li>

@@ -391,21 +391,6 @@
                 $('#activity-filter').slideToggle();
             });
 
-            const $notifications_bell = $('.js-notifications-bell');
-            $notifications_bell.on('click', function (e){
-                e.preventDefault();
-                $(this).toggleClass('wa-animation-bell');
-                setTimeout(() => $(this).toggleClass('wa-animation-bell'), 1000);
-                if (e.hasOwnProperty('originalEvent')){
-                    $(this).next('.js-notification-wrapper').toggle().removeClass('hidden');
-                }else{
-                    $(this).next('.js-notification-wrapper').toggle();
-                }
-            });
-            {if !empty($notifications)}
-                $notifications_bell.trigger('click');
-            {/if}
-
             $("#wa-userprofile").waDropdown({
                 hover: false
             });

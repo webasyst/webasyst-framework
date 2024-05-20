@@ -61,17 +61,17 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
 
     protected function getId()
     {
-        return trim((string) $this->getRequest()->request('id'));
+        return waRequest::request('id', '', waRequest::TYPE_STRING_TRIM);
     }
 
     protected function getFieldData()
     {
-        return array(
-            'id'                 => trim($this->getRequest()->post('id_val')),
-            'names'              => (array)$this->getRequest()->post('name'),
-            'ftype'              => trim($this->getRequest()->post('ftype')),
-            'select_field_value' => trim($this->getRequest()->post('select_field_value'))
-        );
+        return [
+            'id'                 => waRequest::post('id_val', '', waRequest::TYPE_STRING_TRIM),
+            'names'              => waRequest::post('name', [], waRequest::TYPE_ARRAY_TRIM),
+            'ftype'              => waRequest::post('ftype', '', waRequest::TYPE_STRING_TRIM),
+            'select_field_value' => waRequest::post('select_field_value', '', waRequest::TYPE_STRING_TRIM)
+        ];
     }
 
     /**
@@ -140,6 +140,9 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
 
                     // update
                     foreach ($params as $param_key => $param_value) {
+                        if ($param_key === 'localized_names' && is_scalar($param_value)) {
+                            $param_value = trim($param_value);
+                        }
                         $subfield->setParameter($param_key, $param_value);
                         $new_fields[$subfield_id] = $subfield;
                     }

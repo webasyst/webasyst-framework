@@ -231,52 +231,16 @@
             src="{$root_url}wa-content/js/jquery-wa/wa.header.js?{$wa_version}"
             {if !$user['timezone']} data-determine-timezone="1"{/if}>
     </script>
+    <script type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.bell-announcement.js?{$wa_version}"></script>
     <script>
         $(function () {
             new WaHeader();
+            new BellAnnouncement();
 
-            /* Notification Actions */
-            $.wa_notifications = { is_setted_seen: false };
-            $.wa_notifications.setSeen = function () {
-                if (this.is_setted_seen) {
-                    return;
-                }
-                $.post('{$wa_backend_url}?module=settings&action=save', {
-                    app_id: 'webasyst',
-                    name: 'wa_announcement_seen',
-                    value: 'now()'
-                }, (r) => {
-                    this.is_setted_seen = r && r.status === 'ok';
-                });
-            };
-            const $notifications_bell = $('.js-notifications-bell');
-            $notifications_bell.on('click', function (e, params) {
-                e.preventDefault();
-                params = params || { disable_set_seen: false };
-
-                $(this).toggleClass('wa-animation-bell');
-                setTimeout(() => $(this).toggleClass('wa-animation-bell'), 1000);
-
-                if (!params.disable_set_seen && $('#js-show-all-notifications').length) {
-                    $('#js-show-all-notifications').trigger('click');
-                    return false;
-                }
-
-                const $notifications_wrapper = $(this).next('.js-notification-wrapper');
-                $notifications_wrapper.toggle().removeClass('hidden');
-                if (!$notifications_wrapper.hasClass('hidden')) {
-                    const $notifications_dropdown = $('#wa-notifications-dropdown');
-                    $notifications_dropdown.is(':hidden') && $notifications_dropdown.show();
-                }
-
-                if (!params.disable_set_seen && $notifications_wrapper.is(':visible')) {
-                    $.wa_notifications.setSeen();
-                }
-            });
             /* Active All Notifications On Main Dashboard */
             {* old logic {if !empty($notifications) && ($request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard)} *}
             {if $has_new_notifications}
-                $notifications_bell.trigger('click', { disable_set_seen: true });
+                $('.js-notifications-bell').trigger('click', { disable_set_seen: true });
             {/if}
 
             {if !$wa->debug()}

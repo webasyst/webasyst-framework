@@ -44,11 +44,14 @@ class webasystBackendHeaderAction extends waViewAction
             throw new waException('Unavailable from the frontend');
         }
 
+        if (!empty($this->params['single_app_user'])) {
+            return $this->executeSingleAppUserNavigation();
+        }
+
         $this->view = wa('webasyst')->getView();
         $user = wa()->getUser();
         $apps = $user->getApps();
         $current_app = wa()->getApp();
-        $ui_version = wa()->whichUI($current_app);
         $counts = wa()->getStorage()->read('apps-count');
         $date = _ws(waDateTime::date('l')).', '.trim(str_replace(date('Y'), '', waDateTime::format('humandate')), ' ,/');
 
@@ -95,45 +98,6 @@ class webasystBackendHeaderAction extends waViewAction
         $request_uri = waRequest::server('REQUEST_URI');
         $backend_url = wa()->getConfig()->getBackendUrl(true);
 
-        $notifications = $this->getAnnouncements(['backend_header_notification' => $header_notification]);
-        $announcement_seen = wa()->getUser()->getSettings('webasyst', 'wa_announcement_seen');
-        $new_notification_group_id_to_id = [];
-
-        $notifications_count = 0;
-        if ($announcement_seen) {
-            $announcement_seen_ts = strtotime($announcement_seen);
-        }
-        $has_new_notifications = false;
-        $has_old_notifications = false;
-        foreach($notifications as $n) {
-            if (!empty($n['is_virtual']) || empty($n['datetime'])) {
-                continue;
-            }
-            foreach ($n['rows'] as $row) {
-                $notifications_count++;
-                if (!empty($announcement_seen_ts) && strtotime($row['datetime']) > $announcement_seen_ts) {
-                    $has_new_notifications = true;
-                    $new_notification_group_id_to_id[$n['id']][$row['id']] = 1;
-                } else {
-                    $has_old_notifications = true;
-                }
-            }
-        }
-
-        $total_count = $announcement_model->countByField([
-            'app_id' => array_keys($user->getApps() + ['webasyst' => 1]),
-        ]);
-
-        $notifications_load_more_url = $backend_url."webasyst/announcements/loadMore/";
-        if ($notifications_count >= $total_count) {
-            $notifications_load_more_url = null;
-        }
-
-        // force show from installer
-        if (!$has_new_notifications && !empty($notifications)) {
-            $has_new_notifications = !empty($notifications['installer']['is_virtual']);
-        }
-
         $this->view->assign([
             'root_url'        => wa()->getRootUrl(),
             'backend_url'     => $backend_url,
@@ -149,11 +113,6 @@ class webasystBackendHeaderAction extends waViewAction
             'counts'          => $counts,
             'wa_version'      => wa()->getVersion('webasyst'),
             'announcements'   => $announcements,
-            'notifications'   => $notifications,
-            'has_new_notifications' => $has_new_notifications,
-            'has_old_notifications' => $has_old_notifications,
-            'notifications_load_more_url' => $notifications_load_more_url,
-            'new_notification_group_id_to_id' => $new_notification_group_id_to_id,
             'header_top'      => $header_top,
             'header_middle'   => $header_middle,
             'header_bottom'   => $header_bottom,
@@ -170,9 +129,37 @@ class webasystBackendHeaderAction extends waViewAction
         if ($this->single_app_mode) {
             $template_path = 'templates/actions/backend/BackendHeaderSingleApp.html';
         } else {
+            $this->assignNotificationsData(['backend_header_notification' => $header_notification]);
             $template_path = 'templates/actions/backend/BackendHeader.html';
         }
         $this->setTemplate(wa()->getAppPath($template_path, 'webasyst'));
+    }
+
+    /**
+     * Implements {$wa->headerSingleAppUser()} smarty helper.
+     * Used by apps in single-app mode to render simplified WA navigation if they desire.
+     */
+    protected function executeSingleAppUserNavigation()
+    {
+        $wa = wa();
+        $view = $wa->getView();
+        $user = $wa->getUser();
+        $request_uri = waRequest::server('REQUEST_URI');
+        $backend_url = $wa->getConfig()->getBackendUrl(true);
+        list( , , , $header_notification, $header_user_area) = $this->execBackendHeaderEvent();
+
+        $view->assign([
+            'backend_url'    => $wa->getConfig()->getBackendUrl(true),
+            'header_single_app_user' => $header_user_area['single_app'],
+            'root_url'       => $wa->getRootUrl(),
+            'backend_url'    => $backend_url,
+            'request_uri'    => $request_uri,
+            'user'           => $user,
+        ]);
+
+        $this->assignNotificationsData(['backend_header_notification' => $header_notification]);
+
+        $this->setTemplate($wa->getAppPath('templates/actions/backend/BackendHeaderSingleAppUser.html', 'webasyst'));
     }
 
     protected function getCurrentDomain()

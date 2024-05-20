@@ -149,7 +149,7 @@
   grid-template-columns: 1fr calc(var(--widgets-count, 1) * var(--widget-width) + 0.8rem);
   grid-template-rows: auto auto 1fr;
   gap: 1rem;
-  margin-top: 3.5rem;
+  margin-top: 3rem;
 }
 @media screen and (min-width: 1024px) {
   #wa-app .content .wa-dashboard-page,
@@ -1020,10 +1020,6 @@
   #wa-app .content .wa-dashboard-page #wa_activity,
   #wa-app .content #dashboard-wrapper #wa_activity {
     background-color: var(--background-color-blank);
-  }
-  #wa-app .content .wa-dashboard-page #wa_announcement,
-  #wa-app .content #dashboard-wrapper #wa_announcement {
-    padding-top: 0.5rem;
   }
 }
 #wa-app .content .wa-dashboard-page .grid-placeholder,

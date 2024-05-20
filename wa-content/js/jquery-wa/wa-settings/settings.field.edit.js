@@ -174,7 +174,11 @@ class WASettingsFieldEdit {
         $form.find('.state-error').removeClass('state-error');
         $('[name$="[localized_names]"]').each(function() {
             let self = $(this);
-            if (!self.val() && self.parents('.template').length <= 0) {
+            let val = self.val();
+            if (typeof val === 'string' || val instanceof String) {
+                val = val.trim();
+            }
+            if (!val && self.parents('.template').length <= 0) {
                 if (self.closest('tr').find('[name$="[_disabled]"]:checked').length) {
                     validation_passed = false;
                     self.addClass('state-error').parent().append($('<em class="state-error"></em>').text(that.locales["field_is_required"]));

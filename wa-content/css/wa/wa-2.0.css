@@ -1326,6 +1326,8 @@ button.webasyst-magic-wand:hover,
 .button.webasyst-magic-wand:hover { }
 button.webasyst-magic-wand .icon,
 .button.webasyst-magic-wand .icon { width: 1.25em; height: 1.25em; background-image: url('../../img/webasyst-wand-bold.svg'); background-size: 100%; vertical-align: -0.25em; margin-right: 0.25em; }
+button.webasyst-magic-wand.shadowed,
+.button.webasyst-magic-wand.shadowed { box-shadow: 0 0.25em 0.5em -0.25em rgba(0, 0, 0, 0.1); }
 
 input[type="button"]:not(.blue, .green, .yellow, .orange, .red, .purple, .pink, .brown, .gray, .dark-gray, .black, .white) { background-color: var(--background-color-btn-light-gray); color: var(--text-color-input); box-shadow: none; } /* fallback for unstyled old-fashioned <input type="button"> */
 input[type="button"]:not(.blue, .green, .yellow, .orange, .red, .purple, .pink, .brown, .gray, .dark-gray, .black, .white):hover { box-shadow: none; background-color: var(--background-color-btn-light-gray-hover); }
@@ -2945,7 +2947,10 @@ table.xdebug-error th { color: black; }
 /* SINGLE APP MODE: No classic Webasyst header
 ---------------------------------------------- */
 
-.wa-no-header .sidebar { height: 100vh; top: 0; }
 .wa-no-header .sidebar.scrolls-with-content { min-height: 100vh; }
 .wa-no-header .banner { top: 0; }
 .wa-no-header .wa-loading { top: 0 !important; }
+
+@media (min-width: 761px) { /* non-mobile */
+  .wa-no-header .sidebar { height: 100vh; top: 0; }
+}

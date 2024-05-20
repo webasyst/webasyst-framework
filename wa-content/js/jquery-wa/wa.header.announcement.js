@@ -104,7 +104,6 @@ class WaHeaderAnnouncement {
             if ($item.find('.js-is-allowed-edit').val() !== '1' || $item.hasClass('js-announcement-preview-item')) {
                 return false;
             }
-            const $submit = $('#js-update-announcement');
             if (that.editing_data) {
                 that.hideAndResetForm(function () {
                     if (that.editing_data.id != $item.data('id')) {
@@ -116,12 +115,13 @@ class WaHeaderAnnouncement {
                 });
                 return false;
             }
+            is_load_editing = true;
 
+            const $submit = $('#js-update-announcement');
             const revertChangedButton = () => {
                 $submit.addClass('green').removeClass('yellow');
             };
 
-            is_load_editing = true;
             const $loading = $(that.loading_html);
             $self.find('span').addClass('hidden');
             $self.append($loading);
@@ -172,11 +172,12 @@ class WaHeaderAnnouncement {
                     }
                 ).always(() => {
                     $loading.remove();
-                    $self.prop('disabled', false);
+                    $submit.prop('disabled', false);
                 }).fail((r) => {
                     that.handleSaveError(r);
                 });
             });
+
             $('#js-cancel-announcement-form').one('click', function () {
                 that.hideAndResetForm(function () {
                     // revert original data
