@@ -21,6 +21,7 @@ class webasystBackendActions extends waViewActions
         $this->view->assign('public_dashboards', $this->getPublicDashboards());
         $this->view->assign('counts', wa()->getStorage()->read('apps-count'));
         $this->view->assign($this->getCalendarData());
+        $this->view->assign('is_user_connected_to_waid', !!(new waContactWaidModel())->get($this->getUserId()));
         $this->dashboardAction();
     }
 

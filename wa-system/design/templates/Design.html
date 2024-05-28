@@ -267,7 +267,7 @@
     }
 
     function waDesignConfirm() {
-        if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
+        if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow') || $("#bb_submit").length && $('#bb_submit').hasClass('yellow') ) {
             if (!confirm("[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]")) {
                 return false;
             }

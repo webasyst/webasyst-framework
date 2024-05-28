@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-05-16 15:13+0300\n"
+"PO-Revision-Date: 2024-05-21 11:40+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -6963,3 +6963,9 @@ msgstr "Возникла неизвестная ошибка. Обновите �
 
 msgid "Plugins for %s"
 msgstr "Плагины для %s"
+
+msgid "https://www.webasyst.com/my/"
+msgstr "https://www.webasyst.ru/my/"
+
+msgid "My Webasyst ID"
+msgstr "Мой Webasyst ID"

@@ -308,6 +308,7 @@
                 let hash = $('.js-plugin-list').find('> li:first-child > a').attr('href');
                 if (hash) {
                     $.wa.setHash(hash);
+                    setTimeout(function() { $.plugins.dispatch(location.hash, true); }, 0);
                 }
                 return;
             }

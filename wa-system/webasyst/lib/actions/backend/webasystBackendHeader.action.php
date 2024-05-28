@@ -123,7 +123,8 @@ class webasystBackendHeaderAction extends waViewAction
             'current_domain'  => $this->getCurrentDomain(),
             'app_info'        => $app_info,
             'frontend_links'  => $this->getFrontendLinks(),
-            'custom_params'   => $this->params['custom']
+            'custom_params'   => $this->params['custom'],
+            'is_user_connected_to_waid' => !!(new waContactWaidModel())->get($user->getId()),
         ] + $this->getCalendarData());
 
         if ($this->single_app_mode) {
@@ -155,6 +156,7 @@ class webasystBackendHeaderAction extends waViewAction
             'backend_url'    => $backend_url,
             'request_uri'    => $request_uri,
             'user'           => $user,
+            'is_user_connected_to_waid' => !!(new waContactWaidModel())->get($user->getId()),
         ]);
 
         $this->assignNotificationsData(['backend_header_notification' => $header_notification]);

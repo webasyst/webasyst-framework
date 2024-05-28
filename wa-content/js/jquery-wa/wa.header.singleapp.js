@@ -1,3 +1,7 @@
+if (typeof WaHeaderSingleApp === 'undefined') {
+
+window.WaHeaderSingleApp = (function() {
+
 class WaHeaderSingleApp {
     constructor() {
         // Variables
@@ -48,4 +52,10 @@ class WaHeaderSingleApp {
             async: true
         });
     }
+}
+
+return WaHeaderSingleApp;
+
+}());
+
 }
