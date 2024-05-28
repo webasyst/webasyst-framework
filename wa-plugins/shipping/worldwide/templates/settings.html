@@ -3,8 +3,20 @@
     #{$plid}-delivery-table tr.{$plid}-disabled td { text-decoration: line-through; color: #aaa; }
     .{$plid}-disable-region-link i.delete { opacity: 0; }
     .{$plid}-disable-region-link:hover i.delete { opacity: 1; }
+
+    .is-wa2 .s-payment-shipping-logo { margin-top: 0; }
+    .is-wa2 [name="shipping[settings][service_name]"] { width: 20rem; }
+    .is-wa2 .{$plid}-add-column-link * { font-style: normal; font-weight: normal; }
+    .is-wa2 #{$plid}-deliverty-settings .hint { color: var(--text-color-hint); }
+    .is-wa2 #{$plid}-deliverty-settings { --font-size-small: 87.5%; --font-size-smaller: 75%; }
+    .is-wa2 #{$plid}-deliverty-settings .field .value:not(:first-child) { display: block; }
+    .is-wa2 #{$plid}-delivery-table { font-size: var(--font-size-small); }
+    .is-wa2 #{$plid}-delivery-table input.numerical.short { width: 7rem; }
+    @media screen and (max-width: 1300px) {
+        .is-wa2 #{$plid}-delivery-table { font-size: var(--font-size-smaller); }
+    }
 </style>
-<div class="field-group" id="{$plid}-deliverty-settings">
+<div class="--field-group" id="{$plid}-deliverty-settings">
     {if $services_by_type}
     <div class="field">
         <div class="name">{$p->_w('Shipping service name')}</div>
@@ -61,16 +73,16 @@
         </div>
     </div>
 
-    <div class="field">
+    <div class="field vertical custom-mt-20">
         <div class="name">
             {$p->_w('Delivery rates')}
         </div>
-        <div class="value no-shift">
+        <div class="value no-shift table-scrollable-x">
 
-            <table id="{$plid}-delivery-table" class="zebra">
+            <table id="{$plid}-delivery-table" class="zebra bigdata">
                 <thead  id="{$plid}-delivery-table-head">
                     <tr class="white">
-                        <th colspan="2" class="nowrap {$plid}-country-column">{$p->_w('Destination')} <i class="icon10 uarr"></i></th>
+                        <th colspan="2" class="nowrap {$plid}-country-column">{$p->_w('Destination')} <i class="icon10 uarr fas fa-sort-up"></i></th>
                         <th id="{$plid}-calculation-type-th">
                             <select id="{$plid}-calculation-type">
                                 <option value="all">{$p->_w('Same rate for any package weight')}</option>
@@ -91,11 +103,11 @@
                         </td>
                     </tr>
 
-                    <tr class="white">
+                    <tr class="white transparent">
                         <td colspan="5"></td>
                     </tr>
 
-                    <tr class="white">
+                    <tr class="white transparent">
                         <td colspan="5">
                             <select id="{$plid}-add-new-country">
                                 <option selected value="">{$p->_w('Add country')}</option>
@@ -200,15 +212,15 @@
     var renderDeliveryTableHead = function(weights) {
         var weight_unit = $('#{$plid}-weight-unit-input').val();
         var th = '';
-        th += '<th colspan="2" class="nowrap {$plid}-country-column">{$p->_w('Destination')} <i class="icon10 uarr"></i></th>';
+        th += '<th colspan="2" class="nowrap {$plid}-country-column">{$p->_w('Destination')} <i class="icon10 uarr fas fa-sort-up"></i></th>';
         if (!$.isArray(weights)||weights.length==0) {
             th += '<th>' + renderCalculationTypeSelector() + '</th>';
         } else {
             for (var i = 0; i < weights.length; i += 1) {
-                th += '<th class="{$plid}-weight-td" data-index="' + i + '"><span style="margin-left: -0.85em;">≥</span>&nbsp;<input type="text" class="short bold numerical {$plid}-weight-input" placeholder="0" value="' + weights[i] + '">&nbsp;<span class="{$plid}-weight-unit">'+weight_unit+'</span>&nbsp;';
-                th += '<a href="javascript:void(0);" class="inline"><i class="icon10 delete {$plid}-delete-weight-link" style="margin-top: 6px;"></i></a></th>';
+                th += '<th class="{$plid}-weight-td nowrap" data-index="' + i + '"><span style="margin-left: -0.85em;">≥</span>&nbsp;<input type="text" class="short bold numerical {$plid}-weight-input" placeholder="0" value="' + weights[i] + '">&nbsp;<span class="{$plid}-weight-unit">'+weight_unit+'</span>&nbsp;';
+                th += '<a href="javascript:void(0);" class="{$plid}-delete-weight-link inline"><i class="icon10 delete fas fa-times-circle text-red small" style="margin-top: 6px;"></i></a></th>';
             }
-            th += '<th><a href="javascript:void(0)" class="inline {$plid}-add-column-link inline-link small"><i class="icon10 add"></i><b><i>{$p->_w('Add weight')}</i></b></a></th>';
+            th += '<th><a href="javascript:void(0)" class="inline {$plid}-add-column-link inline-link nowrap"><i class="icon10 add fas fa-plus-circle text-green small"></i><b><i> {$p->_w('Add weight')}</i></b></a></th>';
         }
         th += '<th>{$p->_w("Transit time")}</th>';
         th += '<th></th>';
@@ -232,7 +244,7 @@
             }
             var icon = '';
             if (country && country.slice(0, 1) !== '%' && !region) {
-                icon = '<i class="icon16 country" style="background:url({$wa_url}wa-content/img/country/' + country + '.gif) no-repeat"></i>';
+                icon = '<i class="icon16 country icon middle" style="background:url({$wa_url}wa-content/img/country/' + country + '.gif) no-repeat"></i>';
             }
 
             var name_html = '';
@@ -259,9 +271,9 @@
             td.push('<td>' + renderTranslitTimeSelector(item.transit_time) + '</td>');
 
             if (!region) {
-                td.push('<td><a href="javascript:void(0);" class="{$plid}-delete-country-link"><i class="icon16 delete"></i></a></td>');
+                td.push('<td><a href="javascript:void(0);" class="{$plid}-delete-country-link"><i class="icon16 delete fas fa-trash-alt text-red"></i></a></td>');
             } else {
-                td.push('<td><a href="javascript:void(0);" class="{$plid}-disable-region-toggle"><i class="icon10 ' + (!item.disabled ? 'no' : 'no-bw') + '"></i></a></td>');            }
+                td.push('<td><a href="javascript:void(0);" class="{$plid}-disable-region-toggle"><i class="icon10 fas ' + (!item.disabled ? 'no fa-trash-alt text-red' : 'no-bw fa-trash-alt text-gray') + '"></i></a></td>'); }
 
             var cls = '';
             var title='';
@@ -368,7 +380,7 @@
 
             var loadRegions = function(after) {
                 if (regions[val] === undefined) {
-                    var loading = $('<i class="icon16 loading"></i>').insertAfter(select);
+                    var loading = $('<span><i class="icon16 loading fas fa-spinner fa-spin custom-ml-4"></i></span>').insertAfter(select);
                     $.post('{$xhr_url}', { country: val }, function(r) {
                         loading.remove();
                         regions[val] = r.data;
@@ -489,7 +501,7 @@
         })
         .on('click', '.{$plid}-disable-region-toggle', function() {
             var link = $(this);
-            var icon = link.find('i');
+            var icon = link.find('i,svg');
             var tr = link.closest('tr');
             var country = tr.data('country');
             var region = tr.data('region');
@@ -498,13 +510,13 @@
 
             var delete_link = icon.hasClass('no');
             if (delete_link) {
-                icon.removeClass('no').addClass('no-bw');
+                icon.removeClass('no text-red').addClass('no-bw text-gray');
                 tr.addClass('{$plid}-disabled');
                 tr.attr('title','{$p->_w("Shipping to this region will not be offered.")|escape:"js"}')
                 //tr.find(':input').attr('disabled',true);
                 item.disabled = true;
             } else {
-                icon.removeClass('no-bw').addClass('no');
+                icon.removeClass('no-bw text-gray').addClass('no text-red');
                 tr.removeClass('{$plid}-disabled');
                 //tr.find(':input').attr('disabled',null);
                 tr.attr('title','');
@@ -528,4 +540,3 @@
         });
 
 })();</script>
-
