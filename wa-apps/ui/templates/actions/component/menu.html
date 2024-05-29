@@ -40,6 +40,7 @@
         "url" => "javascript:void(0);",
         "icon_url" => "{$wa_url}wa-content/img/userpic.svg",
         "icon_userpic" => true,
+        "accented" => true,
         "hint" => "<i class=\"fas fa-thumbs-up\"></i>"
     ],
     [
@@ -57,7 +58,7 @@
 <div style="width: 300px;">
     <ul class="menu">
 {foreach $_menu as $_item}
-            <li {if !empty($_item.selected)}class="selected rounded"{elseif !empty($_item.bottom_padded)}class="bottom-padded"{elseif !empty($_item.tag)}class="tag"{/if}>
+            <li {if !empty($_item.selected)}class="selected rounded"{elseif !empty($_item.accented)}class="accented rounded"{elseif !empty($_item.bottom_padded)}class="bottom-padded"{elseif !empty($_item.tag)}class="tag"{/if}>
                 <a href="{$_item.url|escape}">
                     {if !empty($_item.count)}<span class="count">{if !empty($_item.badge)}<span class="badge">{$_item.count}</span>
                     {else}{$_item.count}{/if}</span>
@@ -115,6 +116,7 @@
 
     <h3>Модификаторы для <code>.menu &gt; li</code></h3>
     <p><code>li<strong>.selected</strong></code> — для выбранных пунктов.</p>
+    <p><code>li<strong>.accented</strong></code> — для выбранных пунктов с усиленным выделением.</p>
     <p><code>li<strong>.rounded</strong></code> — если нужно немного скруглить края пункта меню. Рекомендуется, если меню располагается вне сайдбара в контентной области без видимых границ.</p>
     <p><code>li<strong>.top-padded</strong></code> и <code>li<strong>.bottom-padded</strong></code> — добавляют к выбранному пункту меню дополнительный отступ сверху или снизу.</p>
 

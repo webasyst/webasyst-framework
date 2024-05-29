@@ -106,6 +106,8 @@
                 that.lock_body_scroll = (typeof options["lock_body_scroll"] === "boolean" ? options["lock_body_scroll"] : true);
                 that.bodyDefaultPadding = document.body.style.getPropertyValue('padding-right');
                 that.bodyDefaultBoxSizing = document.body.style.getPropertyValue('box-sizing');
+                const append_to = that.$body.find(options["append_to"]);
+                that.append_to = append_to.length ? append_to : that.$body;
 
                 // DYNAMIC VARS
                 that.is_visible = false;
@@ -180,7 +182,7 @@
             const is_exist = $.contains(top.document, that.$wrapper);
 
             if (!is_exist) {
-                that.$body.append(that.$wrapper);
+                that.append_to.append(that.$wrapper);
             }
 
             that.$wrapper.addClass(class_names["wrapper-opened"]);
@@ -596,6 +598,8 @@
                 that.animation_time = 333;
                 that.hide_class = "is-hide";
                 that.width = options["width"] || false;
+                const append_to = that.$body.find(options["append_to"]);
+                that.append_to = append_to.length ? append_to : that.$body;
 
                 // DYNAMIC VARS
                 that.is_visible = false;
@@ -751,7 +755,7 @@
                 is_exist = $.contains(document, that.$wrapper[0]);
 
             if (!is_exist) {
-                that.$body.append(that.$wrapper.show());
+                that.append_to.append(that.$wrapper.show());
             }
 
             if (!that.is_locked) {
@@ -889,6 +893,7 @@
             };
             that.options = {
                 hover: (typeof options["hover"] === "boolean" ? options["hover"] : true),
+                hover_out_delay: (typeof options["hover_out_delay"] === "number" && options["hover_out_delay"] > 0 ? options["hover_out_delay"] : 0),
                 hide: (typeof options["hide"] === "boolean" ? options["hide"] : true),
                 items: (options["items"] ? options["items"] : null),
                 active_class: (options["active_class"] ? options["active_class"] : "selected"),
@@ -914,9 +919,29 @@
                     that.toggleMenu(true);
                 });
 
+                var mouseenter_before_leave = false;
+                var leave_timer_id = null;
                 that.$wrapper.on("mouseleave", function() {
-                    that.toggleMenu(false);
+                    if (mouseenter_before_leave) {
+                        mouseenter_before_leave = false;
+                    }
+
+                    leave_timer_id = setTimeout(() => {
+                        if (mouseenter_before_leave) {
+                            mouseenter_before_leave = false;
+                        } else {
+                            that.toggleMenu(false);
+                        }
+                    }, that.options.hover_out_delay);
                 });
+
+                if (that.options.hover_out_delay) {
+                    that.$menu.on("mouseenter", function() {
+                        clearTimeout(leave_timer_id);
+                        leave_timer_id = null;
+                        mouseenter_before_leave = true;
+                    });
+                }
             }
 
             that.$button.on("click touchend", function(event) {
@@ -2562,6 +2587,7 @@
             const that = this;
 
             that.files = e.originalEvent.dataTransfer.files;
+            that.$file_input[0].files = that.files;
 
             that.handleFiles(that.files);
         }
@@ -3015,7 +3041,7 @@
             });
 
             this.$toggler.siblings().each((i, el) => {
-                if (el.nodeName !== 'SCRIPT' && el.nodeName !== 'STYLE') {
+                if (el.nodeName !== 'SCRIPT' && el.nodeName !== 'STYLE' && !el.classList.contains('js-no-animation-sidebar-block')) {
                     $(el).slideToggle(400, function () {
                         const self = $(this);
 

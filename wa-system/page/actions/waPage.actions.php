@@ -229,11 +229,11 @@ class waPageActions extends waActions
                 $html .= '<li class="drag-newposition"></li>';
                 $html .= '<li class="dr" id="page-'.$page['id'].'" data-page-id="'.$page['id'].'">'.
                     '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'">'.
-                    (!empty($page['childs']) ? '<span class="js-expander wa-page-expander"><i class="fas fa-caret-down js-icon"></i></span>' : '').
+                    (!empty($page['childs']) ? '<span class="js-expander wa-page-expander custom-mr-4"><i class="fas fa-caret-down js-icon"></i></span>' : '').
                     $icon.
                     '<span>'.htmlspecialchars($page['name']).
                     ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span></span>'.
-                    '<span class="count action small"><i class="fas fa-plus-circle text-green wa-page-add"></i></span>';
+                    '<span class="count action small wa-page-add"><i class="fas fa-plus-circle text-green"></i></span>';
                 $html .= '</a>';
                 if (!empty($page['childs'])) {
                     $html .= self::printPagesTree($page, $page['childs'], $prefix_url);

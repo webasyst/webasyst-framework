@@ -156,7 +156,7 @@ class waLocalePHPAdapter implements waiLocaleAdapter
             if (is_array($m)) {
                 if (isset(self::$cache[self::$locale][$domain]['meta']['f'])) {
                     $f = self::$cache[self::$locale][$domain]['meta']['f'];
-                    $i = $f($n);
+                    $i = $f(intval($n));
                     return $m[$i];
                 }
             } else {

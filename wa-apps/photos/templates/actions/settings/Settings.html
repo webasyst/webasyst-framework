@@ -114,11 +114,9 @@
                             <div class="value">
                                 <ul>
                                     <li>
-                                        <label>
-                                            <span class="switch smaller middle" id="allow_gen_thumbs_on_demand">
-                                                <input type="checkbox" name="thumbs_on_demand" value="1" {if !empty($settings.thumbs_on_demand)}checked{/if}>
-                                            </span>
-                                        </label>
+                                        <span class="switch smaller middle" id="allow_gen_thumbs_on_demand">
+                                            <input type="checkbox" name="thumbs_on_demand" value="1" {if !empty($settings.thumbs_on_demand)}checked{/if}>
+                                        </span>
                                         <p class="hint custom-mt-4">[`If enabled, frontend design theme can request Photos app to create custom-sized photo thumbnails on the fly (the thumbnail size is contained in the image URL).`]</p>
                                     </li>
                                     <li id="max_available_size_control"{if !$settings.thumbs_on_demand} style="display:none;"{/if}>
@@ -140,11 +138,9 @@
                                 [`Sharpen`]
                             </div>
                             <div class="value">
-                                <label>
-                                    <span class="switch smaller middle" id="sharpen">
-                                        <input type="checkbox" name="sharpen" value="1" {if !empty($settings.sharpen)}checked{/if}>
-                                    </span>
-                                </label>
+                                <span class="switch smaller middle" id="sharpen">
+                                    <input type="checkbox" name="sharpen" value="1" {if !empty($settings.sharpen)}checked{/if}>
+                                </span>
                                 <p class="hint custom-mt-4">[`Apply sharpening filter when creating thumbnails (recommended)`]</p>
                             </div>
                         </div>
@@ -166,11 +162,9 @@
                                 [`Originals`]
                             </div>
                             <div class="value">
-                                <label>
-                                    <span class="switch smaller middle" id="save_original">
-                                        <input type="checkbox" name="save_original" value="1" {if !empty($settings.save_original)}checked{/if}>
-                                    </span>
-                                </label>
+                                <span class="switch smaller middle" id="save_original">
+                                    <input type="checkbox" name="save_original" value="1" {if !empty($settings.save_original)}checked{/if}>
+                                </span>
                                 <p class="hint">[`When enabled, every uploaded image file is automatically backed up and stored independently of the photo's full-size version, which is modified when you edit it; e.g., rotate, apply watermarks or image visual effects. Original images are never updated. Pros: you have backups of all uploaded images. Cons: almost twice as much disk space is required to store original images in addition to full-size versions and thumbnails.`]</p>
                             </div>
                         </div>
@@ -183,11 +177,9 @@
                                 [`@2x image thumbnail generation`]
                             </div>
                             <div class="value">
-                                <label>
-                                    <span class="switch smaller middle" id="enable_2x">
-                                        <input type="checkbox" name="enable_2x" value="1" {if !empty($settings.enable_2x)}checked{/if}>
-                                    </span>
-                                </label>
+                                <span class="switch smaller middle" id="enable_2x">
+                                    <input type="checkbox" name="enable_2x" value="1" {if !empty($settings.enable_2x)}checked{/if}>
+                                </span>
                                 <p class="hint">[`Enabling this option will allow automatic creation of image thumbnails on-fly for devices with high pixel density displays, e.g. Retina displays. Generating bigger images require more memory resources for image generation, requires more disk space for storing images, but significantly improves user experience on devices with high-end displays`]</p>
                             </div>
                         </div>

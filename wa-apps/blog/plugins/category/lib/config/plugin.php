@@ -4,7 +4,7 @@ return array(
     'name'        => /*_wp*/('Categories'),
     'description' => /*_wp*/('Posts filtering by category'),
     'vendor'      => 'webasyst',
-    'version'     => '1.2',
+    'version'     => '1.3.0',
     'img'         => 'img/category.png',
     'frontend'    => true,
 
@@ -21,6 +21,7 @@ return array(
         'frontend_action_default'=> 'frontendSidebar',
         'frontend_action_post'   => 'frontendSidebar',
         'frontend_action_page'   => 'frontendSidebar',
+        'prepare_posts_frontend' => 'frontendPreparePosts'
     ),
     'custom_settings' => true,
 );

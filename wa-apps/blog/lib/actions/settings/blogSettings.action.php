@@ -198,7 +198,7 @@ class blogSettingsAction extends waViewAction
         }
     }
 
-    private function _save($type = 'frontend', $settings)
+    private function _save($type, $settings)
     {
         $app = $this->getApp();
 

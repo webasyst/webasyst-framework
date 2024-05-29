@@ -3,7 +3,11 @@
 
 <h1>Шпаргалка <code>1.3</code> &rarr; <code>2.0</code></h1>
 
-<p>Краткий список того, с чем почти наверняка столкнется разработчик приложения Webasyst при проверке своего приложения в новом окружении <code>wa-2.0.css</code>:</p>
+<blockquote class="highlighted caution">
+    Информация на этой странице — только для разработчиков приложений и плагинов, работающих на основе <code>wa-1.3.css</code> (старой  дизайн-системы 2011—2020).
+</blockquote>
+
+<p>Краткий список того, с чем почти наверняка столкнется разработчик приложения Webasyst при проверке своего приложения или плагина из <code>wa-1.3.css</code> в окружение <code>wa-2.0.css</code>:</p>
 
 <ol class="separated">
     <li>Скорее всего, «поползет» общий лейаут. Это из-за перехода <code>#wa-app</code>, <code>.sidebar</code> и <code>.content</code> на <code>display: flex;</code>. Попробуйте для начала поставить на проблемный блок (контейнер) <code>display: block;</code>. А затем переводите <code><a href="{$wa_app_url}component/sidebar/">.sidebar / .content</a></code> в своем приложении на режим flexbox.</li>

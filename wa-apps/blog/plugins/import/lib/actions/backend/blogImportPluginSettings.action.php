@@ -108,7 +108,7 @@ var row = $(element).parents('tr');
     <tfoot>
         <tr>
             <td colspan="4">
-                <a href="#" class="inline-link" onClick="return blog_import_html_control_replace_add(this,event)"><i class="icon16 add"></i><b><i>{$strings['add']}</i></b></a>
+                <a href="#" class="inline-link" onClick="return blog_import_html_control_replace_add(this,event)"><i class="icon16 add fas fa fa-plus-circle text-green custom-mr-4"></i>{$strings['add']}</a>
             </td>
         </tr>
     </tfoot>
@@ -125,7 +125,7 @@ HTML;
             $control .= <<<HTML
 
             <td>
-                <a href="#" class="inline-link" onClick="return blog_import_html_control_replace_remove(this,event)"><i class="icon16 delete" title="{$strings['remove']}"></i></a>
+                <a href="#" class="inline-link" onClick="return blog_import_html_control_replace_remove(this,event)"><i class="icon16 delete fas fa-times-circle text-red" title="{$strings['remove']}"></i></a>
             </td>
 HTML;
             $control .= "\n\t\t</tr>";

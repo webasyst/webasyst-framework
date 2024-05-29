@@ -558,7 +558,8 @@ class waWebasystIDApi
             'timeout' => 20,
             'format' => waNet::FORMAT_JSON,
             'request_format' => waNet::FORMAT_RAW,
-            'expected_http_code' => null
+            'expected_http_code' => null,
+            'tolerate_empty_body_request' => true,
         ];
 
         $net_options = array_merge($default_net_options, $net_options);

@@ -27,7 +27,7 @@
         if (settings.paging_selector) {
             $(settings.paging_selector).hide();
         }
-        pageless_wrapper.find('a.pageless-link').live('click', function () {
+        pageless_wrapper.find('a.pageless-link').on('click', function () {
             if (!isNaN(settings.times)) {
                 settings.times = Math.max(settings.times + 1, 1);
             }

@@ -3,9 +3,13 @@
 {foreach $activity as $activity_item}
     {$app_name = $activity_item.app.name}
     {$app_color = ifset($activity_item.app.sash_color, "#aaa")}
+    {$is_today = $activity_item.datetime_group === _ws('Today')}
+    {if $activity_item@first && $activity_item.datetime_group == $_group}
+        <div class="activity-divider h3{if $is_today} hidden today{/if}">{$activity_item.datetime_group}</div>
+    {/if}
 
-    {if $activity_item.datetime_group != $_group }
-        <div class="activity-divider h3">{$activity_item.datetime_group}</div>
+    {if $activity_item.datetime_group != $_group}
+        <div class="activity-divider h3{if $is_today && $activity_item@first} today{/if}">{$activity_item.datetime_group}</div>
     {/if}
     {$_group=$activity_item.datetime_group}
 

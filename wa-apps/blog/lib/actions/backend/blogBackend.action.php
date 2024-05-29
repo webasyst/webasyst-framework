@@ -158,15 +158,20 @@ class blogBackendAction extends waViewAction
 
     private function chooseLayout()
     {
-        $this->setLayout(!$this->getRequest()->isMobile() ? new blogDefaultLayout() : new blogMobileLayout());
+        if ($this->getRequest()->isMobile() && wa()->whichUI('blog') === '1.3') {
+            $layout = new blogMobileLayout();
+        } else {
+            $layout = new blogDefaultLayout();
+        }
+        $this->setLayout($layout);
     }
 
 
     protected function getTemplate()
     {
         $template = parent::getTemplate();
-        if ($this->getRequest()->isMobile()) {
-            $template = str_replace('actions', 'actions-mobile', $template);
+        if ($this->getRequest()->isMobile() && wa()->whichUI('blog') === '1.3') {
+            $template = str_replace('actions-legacy', 'actions-mobile', $template);
         }
         return $template;
     }

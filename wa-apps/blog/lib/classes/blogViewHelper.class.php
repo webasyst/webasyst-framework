@@ -32,15 +32,15 @@ class blogViewHelper extends waAppViewHelper
             }
             $this->avaialable_blogs = blogHelper::getAvailable(true, $default_blog_id);
             foreach ($this->avaialable_blogs as &$item) {
-                $item['name'] = htmlspecialchars($item['name'], ENT_QUOTES, 'utf-8');
+                $item['name'] = htmlspecialchars((string)$item['name'], ENT_QUOTES, 'utf-8');
                 if (!is_array($item['link'])) {
-                    $item['link'] = htmlspecialchars($item['link'], ENT_QUOTES, 'utf-8');
+                    $item['link'] = htmlspecialchars((string)$item['link'], ENT_QUOTES, 'utf-8');
                 } else {
                     foreach ($item['link'] as &$l) {
-                        $l = htmlspecialchars($l, ENT_QUOTES, 'utf-8');
+                        $l = htmlspecialchars((string)$l, ENT_QUOTES, 'utf-8');
                     }
                 }
-                $item['title'] = htmlspecialchars($item['title'], ENT_QUOTES, 'utf-8');
+                $item['title'] = htmlspecialchars((string)$item['title'], ENT_QUOTES, 'utf-8');
             }
         }
 
@@ -200,7 +200,17 @@ HTML;
 
     public function timeline($blog_ids = array(), $datetime = array())
     {
-        $blogs = blogHelper::getAvailable();
+        $default_blog_id = intval(wa()->getRouting()->getRouteParam('blog_url_type'));
+        if ($default_blog_id < 1) {
+            $blogs = blogHelper::getAvailable();
+            $blog_url = waRequest::param('blog_url', '', waRequest::TYPE_STRING_TRIM);
+            $blog_id = waRequest::param('blog_id', null, waRequest::TYPE_INT);
+            if (mb_strlen($blog_url) && $blog_id && isset($blogs[$blog_id])) {
+                $blogs = [$blog_id => $blogs[$blog_id]];
+            }
+        } else {
+            $blogs = blogHelper::getAvailable(true, $default_blog_id);
+        }
         if (empty($blog_ids)) {
             $blog_ids = array_keys($blogs);
         }
@@ -241,7 +251,7 @@ HTML;
             }
             unset($item);
         } else {
-            $data = htmlspecialchars($data, ENT_QUOTES, 'utf-8');
+            $data = htmlspecialchars(ifset($data, ''), ENT_QUOTES, 'utf-8');
         }
     }
 }

@@ -249,6 +249,7 @@ class blogCommentModel extends waNestedSetModel
                         }
                     }
                 }
+                $blog_activity = null; // force destruct
             }
         } elseif ($post_id && is_array($post_id)) {
             $sql = "SELECT post_id, COUNT(*) FROM {$this->table} ".implode('', $join)." WHERE (".implode(') AND (', $where).") GROUP BY post_id";

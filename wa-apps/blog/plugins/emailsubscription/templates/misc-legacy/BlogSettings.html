@@ -1,0 +1,22 @@
+<div class="fields-group">
+    <div class="field">
+        <div class="name">{_wp('Subscribed via email')}</div>
+        <div class="value">
+            <ul class="menu-v">
+                {if !$contacts}
+                    <li>{_wp('none')}</li>
+                {/if}
+                {foreach $contacts as $c}
+                    <li>
+                        {if $rights}<a href="{$contact_url_prefix}{$c.id}">{/if}
+
+                        <i class="icon16 userpic20" style="background-image: url('{$c.photo_url}')"></i>
+                        <span>{$c.name|escape}</span>
+
+                        {if $rights}</a>{/if}
+                    </li>
+                {/foreach}
+            </ul>
+        </div>
+    </div>
+</div>

@@ -5,7 +5,7 @@ return array(
     'description' => ('Backend filtering for self-authored posts'),//_wp('Backend filtering for self-authored posts')
     'img' => '/img/myposts.png',
     'vendor'=>'webasyst',
-    'version'=>'1.1',
+    'version'=>'1.2.0',
     'handlers' => array(
         'search_posts_backend'=>'postSearch',
         'backend_sidebar' => 'backendSidebar',

@@ -102,9 +102,13 @@ function smarty_block_wa_js($params, $content, &$smarty)
                 // check Google Closure Compiler
                 // https://developers.google.com/closure/compiler/docs/gettingstarted_app
 
-                if ($compiler = waSystemConfig::systemOption('js_compiler')) {
-                    $create_source_map = waSystemConfig::systemOption('js_compiler_source_map');
+                if ( ( $compiler = waSystemConfig::systemOption('js_compiler_cli'))) {
+                    $cmd = $compiler;
+                } else if ( ( $compiler = waSystemConfig::systemOption('js_compiler'))) {
                     $cmd = 'java -jar "'.$compiler.'" --summary_detail_level 0';
+                }
+                if (!empty($cmd)) {
+                    $create_source_map = waSystemConfig::systemOption('js_compiler_source_map');
                     if ($create_source_map) {
                         $cmd .= ' --create_source_map "%outname%.map" --source_map_format=V3';
                     }

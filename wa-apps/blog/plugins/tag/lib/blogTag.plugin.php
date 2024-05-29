@@ -59,10 +59,24 @@ class blogTagPlugin extends blogPlugin
     {
         $output = array();
 
-        $config = include($this->path.'/lib/config/config.php');
+        $options = include($this->path.'/lib/config/config.php');
+        if (!empty($options['compare_blog'])) {
+            $default_blog_id = ifset($params, 'blog_url_type', null);
+            if ($default_blog_id !== null) {
+                $default_blog_id = (int)$default_blog_id;
+                if ($default_blog_id < 1) {
+                    $blog_id = ifset($params, 'blog_id', null);
+                    if ($blog_id && isset($params['blog_url']) && mb_strlen($params['blog_url'])) {
+                        $options['blog_id'] = $blog_id;
+                    }
+                } else {
+                    $options['blog_id'] = $default_blog_id;
+                }
+            }
+        }
 
         $tag_model = new blogTagPluginModel();
-        if($tags = $tag_model->getAllTags($config)){
+        if ($tags = $tag_model->getAllTags($options)) {
             $output['sidebar'] = '<div class="tags cloud">';
             $wa = wa();
             foreach ($tags as $tag) {
@@ -112,18 +126,11 @@ HTML;
                 }
                 unset($tag);
 
-                foreach ($post_tags as $id=>$post_item_tags) {
-                    $html = "";
-                    $tag_html = array();
-                    foreach ($post_item_tags as $tag_id) {
-                        if (!isset($tags_data[$tag_id])) {
-                            continue;
-                        }
-                        $tag_html[] = '<span><a href="'.$tags_data[$tag_id]['link'].'">'.htmlspecialchars($tags_data[$tag_id]['name']).'</a></span>';
-                    }
-                    $html =  '<div class="tags">'._wp('Tags').': ';
-                    $html .= implode(", ", $tag_html);
-                    $html .=  "</div>";
+                foreach ($post_tags as $id => $post_item_tags) {
+                    $html = $this->renderMiscTemplate('PostTags.html', [
+                        'tags_data' => $tags_data,
+                        'post_item_tags' => $post_item_tags,
+                    ]);
                     $posts[$id]['plugins']['after'][$this->id] = $html;
                 }
             }
@@ -142,24 +149,16 @@ HTML;
                 $wa = wa();
                 foreach ($tags_data as &$tag) {
                     $tag['link'] = $wa->getRouteUrl('blog/frontend', array('tag'=>urlencode($tag['name'])), true);
-                    $tag['name'] = htmlspecialchars($tag['name'],ENT_QUOTES,'utf-8');
+                    //$tag['name'] = htmlspecialchars($tag['name'],ENT_QUOTES,'utf-8');
                 }
                 unset($tag);
 
-                foreach ($post_tags as $id=>$post_item_tags) {
-                    $html = "";
-                    $tag_html = array();
-                    foreach ($post_item_tags as $tag_id) {
-                        if (isset($tags_data[$tag_id])) {
-                            $t = $tags_data[$tag_id];
-                            $tag_html[] = <<<HTML
-<a href="{$t['link']}">{$t['name']}</a>
-HTML;
-                        }
-                    }
-                    $html = '<div class="tags">'._wp('Tags').': ';
-                    $html .= implode(", ", $tag_html);
-                    $html .=  "</div>";
+                foreach ($post_tags as $id => $post_item_tags) {
+                    $html = $this->renderMiscTemplate('PostTags.html', [
+                        'tags_data' => $tags_data,
+                        'post_item_tags' => $post_item_tags,
+                    ]);
+
                     $posts[$id]['plugins']['after'][$this->id] = $html;
                 }
             }
@@ -196,5 +195,10 @@ HTML;
     {
         $post_tag_model = new blogTagPostTagPluginModel();
         $post_tag_model->deletePost($post_ids);
+    }
+
+    protected function renderMiscTemplate($template, $assign = [])
+    {
+        return $this->renderTemplate('misc', $template, $assign, true);
     }
 }

@@ -246,6 +246,9 @@ class waSystemConfig
             if (!empty(self::$system_options['cache_versioning'])) {
                 $this->enableCacheVersioning();
             }
+            if (!isset(self::$system_options['ui_disallow_legacy']) && empty(self::$system_options['ui'])) {
+                self::$system_options['ui_disallow_legacy'] = true;
+            }
         }
     }
 
@@ -644,7 +647,7 @@ class waSystemConfig
     {
         $default_system_ui = waSystemConfig::systemOption('ui');
         if (!$default_system_ui) {
-            $default_system_ui = '1.3';
+            $default_system_ui = waSystemConfig::systemOption('ui_disallow_legacy') ? '2.0' : '1.3';
         }
         $default_system_ui = $default_system_ui === '2.0' ? '2.0' : '1.3';
 

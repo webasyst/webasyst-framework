@@ -9,8 +9,6 @@ const WaMobileDashboard = ( function($) {
         constructor(options) {
             this.$wrapper = options.$wrapper
             this.$header = options.$header
-            this.$notification_wrapper = $('.js-notification-wrapper')
-            this.$notification_close = this.$notification_wrapper.find('.js-announcement-close');
             this.$dashboard_widgets_wrapper = $('.js-dashboard-widgets-wrapper')
             this.$bottombar = $('.js-bottombar')
             this.$dashboard_tabs = this.$wrapper.find('.dashboard-tabs')
@@ -19,7 +17,6 @@ const WaMobileDashboard = ( function($) {
             this.switchBottombar()
             this.searchPanel()
             setInterval(this.updateCount, 60000);
-            this.closeNotification()
             this.switchDashboards()
             //this.sortableApps()
         }
@@ -121,36 +118,6 @@ const WaMobileDashboard = ( function($) {
                 },
                 dataType: "json",
                 async: true
-            });
-        }
-
-        closeNotification() {
-            let that = this,
-                $wa_notifications_bell = $('.wa-notifications-bell'),
-                $wa_announcement_counter = $wa_notifications_bell.find('.badge');
-
-            that.$notification_close.on('click touchstart', function (e) {
-                e.preventDefault()
-
-                let $close = $(this),
-                    app_id = $close.data('app-id'),
-                    $notification_block = $close.closest('.wa-notification');
-
-                if ($notification_block.length) {
-                    $notification_block.remove();
-                    let counter = that.$notification_wrapper.children().length;
-                    if (counter) {
-                        $wa_announcement_counter.text(counter)
-                    }else{
-                        that.$notification_wrapper.parent('.dropdown-body').remove()
-                    }
-                } else {
-                    that.$notification_wrapper.parent('.dropdown-body').remove()
-                    $wa_announcement_counter.remove();
-                }
-
-                let url = backend_url + "?module=settings&action=save";
-                $.post(url, {app_id: app_id, name: 'announcement_close', value: 'now()'});
             });
         }
 
@@ -427,7 +394,7 @@ const Page = ( function($, backend_url) {
                 return false;
             });
 
-            $("#activity-filter input:checkbox").on("change", function() {
+            const applyFilter = () => {
                 if (that.storage.activityFilterTimer) {
                     clearTimeout(that.storage.activityFilterTimer);
                 }
@@ -444,9 +411,21 @@ const Page = ( function($, backend_url) {
                 that.storage.topLazyLoadingTimer = setTimeout( function() {
                     that.loadNewActivityContent($widgetActivity);
                 }, that.storage.lazyTime );
+            };
+            $("#activity-filter input:checkbox").on("change", function() {
+                applyFilter();
 
                 // Change Text
                 that.changeFilterText();
+
+                return false;
+            });
+            $("#activity-filter .tabs li[data-group-id]").on("click", function() {
+                const $li = $(this);
+                $li.siblings().removeClass('selected');
+                $li.addClass('selected');
+
+                applyFilter();
 
                 return false;
             });
@@ -538,6 +517,14 @@ const Page = ( function($, backend_url) {
                     value: 1
                 });
 
+                const group_id = $form.find('li.selected[data-group-id]').data('group-id');
+                if (group_id) {
+                    dataArray.push({
+                        name: "group_id",
+                        value: group_id
+                    });
+                }
+
                 $.post(ajaxHref, dataArray, function (response) {
                     $deferred.resolve(response);
                 });
@@ -553,8 +540,23 @@ const Page = ( function($, backend_url) {
 
                     /*TODO check vice versa case*/
                     $widgetActivity.find('.activity-empty-today').remove();
+                    const is_empty_today_header = !$widgetActivity.find('.activity-divider.today').not('.hidden').length;
+                    if (is_empty_today_header) {
+                        $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
+                    }
 
                     that.storage.isActivityFilterLocked = false;
+
+                    const today = $wrapper.data("today-text");
+                    if ($wrapper.find('.activity-divider:first').text() !== today) {
+                        const empty_today = $wrapper.data("empty-today-text");
+                        $wrapper.prepend(`<div class="activity-divider h3${is_empty_today_header ? '' : ' hidden'}">${today}</div>
+                                            <div class="activity-item activity-empty-today custom-mb-24">
+                                                <div class="item-content-wrapper">
+                                                    <div class="inline-content">${empty_today}</div>
+                                                </div>
+                                            </div>`);
+                    }
                 });
             }
         }
@@ -618,13 +620,29 @@ const Page = ( function($, backend_url) {
                 $deferred.done( function(response) {
                     if ( $.trim(response).length && !response.includes('activity-empty-today')) {
                         // Render
-                        $wrapper.find(".empty-activity-text").remove();
-                        let $today = $wrapper.find(".today");
-                        if($today.length) {
-                            $today.after(response).remove();
+                        $widgetActivity.find(".empty-activity-text").remove();
+                        $widgetActivity.find(".activity-item.activity-empty-today").remove();
+                        const $today_divider = $widgetActivity.find('.js-activity-list-block > .activity-divider.today');
+                        if ($today_divider.length) {
+                            $today_divider.after(response)
                         }else{
                             $wrapper.prepend(response);
                         }
+
+                        if (!$widgetActivity.find('.activity-divider.today').not('.hidden').length) {
+                            $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
+                        }
+
+                        const $activity_divider = $wrapper.find('.activity-divider');
+                        let uniqueTexts = [];
+                        $activity_divider.each(function() {
+                            const text = $(this).text();
+                            if ($.inArray(text, uniqueTexts) === -1) {
+                                uniqueTexts.push(text);
+                            } else {
+                                $(this).remove();
+                            }
+                        });
                     }
 
                     that.storage.isTopLazyLoadLocked = false;

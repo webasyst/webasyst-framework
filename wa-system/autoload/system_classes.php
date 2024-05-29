@@ -176,6 +176,7 @@ return array(
 
     'waArrayObject'                     => 'util/waArrayObject.class.php',
     'waArrayObjectDiff'                 => 'util/waArrayObjectDiff.class.php',
+    'waHtmlSanitizer'                   => 'util/waHtmlSanitizer.class.php',
     'waLazyDisplay'                     => 'util/waLazyDisplay.class.php',
     'waCSV'                             => 'util/waCSV.class.php',
     'waHtmlControl'                     => 'util/waHtmlControl.class.php',
@@ -249,7 +250,12 @@ return array(
     'waWebasystIDCache'                        => 'waid/waWebasystIDCache.class.php',
     'waWebasystIDEndpointsConfig'              => 'waid/waWebasystIDEndpointsConfig.class.php',
     'waWebasystIDEndpointsHealthChecker'       => 'waid/waWebasystIDEndpointsHealthChecker.class.php',
-    'waWebasystIDUrlsProvider'                 => 'waid/waWebasystIDUrlsProvider.class.php'
+    'waWebasystIDUrlsProvider'                 => 'waid/waWebasystIDUrlsProvider.class.php',
+
+    'waServicesApiUrlConfig'                   => 'waid/services/waServicesApiUrlConfig.class.php',
+    'waServicesApi'                            => 'waid/services/waServicesApi.class.php',
+    'waServicesEndpointsConfig'                => 'waid/services/waServicesEndpointsConfig.class.php',
+    'waServicesUrlsProvider'                   => 'waid/services/waServicesUrlsProvider.class.php',
 
     // </WEBASYST ID MODULE>
 );

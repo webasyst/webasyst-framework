@@ -3,13 +3,18 @@
         <h1>{$dashboard.name|escape}</h1>
     </div>
 
-    <div class="d-dashboard-link-wrapper box" id="d-dashboard-link-wrapper">
+    <div class="d-dashboard-link-wrapper align-center custom-mb-16" id="d-dashboard-link-wrapper">
         <div class="dropdown" id="dashboard_link">
-            <button class="dropdown-toggle button nobutton" type="button">
-                <span><i class="fas fa-tv"></i> [`TV link`]</span>
+            <button class="dropdown-toggle button nobutton rounded" type="button">
+                <span><i class="fas fa-tv custom-mr-4"></i> {sprintf('[`Link to %s`]', {$dashboard.name|escape|truncate:32})}</span>
             </button>
-            <div class="dropdown-body" style="width: auto; max-width: fit-content;">
+            <div class="dropdown-body right" style="width: auto; max-width: fit-content;">
                 <ul class="menu">
+                    <li>
+                        <a href="javascript:void(0)" class="js-copy-url">
+                            <code class="nowrap bold">{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/</code>
+                        </a>
+                    </li>
                     <li>
                         <a href="{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/" target="_blank" rel="noopener">
                             <i class="fas fa-external-link-alt"></i> <span>[`Open in a new window`]</span>
@@ -17,16 +22,15 @@
                     </li>
                     <li>
                         <a href="javascript:void(0)" class="js-copy-url">
-                            <i class="fas fa-clipboard"></i> <span>[`Copy`]: <strong class="nowrap">{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/</strong></span>
+                            <i class="fas fa-clone"></i> <span>[`Copy`]</span>
                         </a>
                     </li>
                 </ul>
             </div>
             <input style="position: absolute; left: -9999em" class="js-dashboard-url" type="text" aria-hidden="true" value="{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/">
         </div>
-        <span data-wa-tooltip-placement="right" data-wa-tooltip-content="[`This dashboard can be viewed both in a browser and on a TV with the support for basic website browsing. Get a private TV link and open it using an internal browser on your TV.`]">
-                <i class="fas fa-question-circle"></i>
-        </span>
+        <a href="javascript:void(0)" data-dashboard-id="{$dashboard.id}" data-dashboard-name="{$dashboard.name|escape}"
+            class="button nobutton circle count action small js-dashboard-delete custom-ml-8"><i class="fas fa-trash-alt text-gray"></i></a>
         <div class="alert-fixed-box hidden" id="link_coped">
             <span class="alert success">
                 [`Copied`]
@@ -45,49 +49,32 @@
         </div>
     </div>
 </section>
-<script>
+<script id="script-dashboard-init">
     $(function () {
-        let $wa_header = document.querySelector('#wa-header'),
-            wa_header_height = $wa_header.clientHeight;
-
-        WaHeader.headerBehavior('.wa-dashboard-page', { rootMargin: `${ wa_header_height }px 0px -100% 0px` });
-
-        new Dashboard();
-        new Group();
-        new Page();
+        new Page({
+            locale: "{$wa->user()->getLocale()|replace:'_':'-'}"
+        });
 
         let $dashboard_link_wrapper = document.querySelector('#d-dashboard-link-wrapper'),
             $dashboard_link = document.querySelector('.js-dashboard-url'),
-            $copy_btn = $dashboard_link_wrapper.querySelector('.js-copy-url'),
+            $copy_btns = $dashboard_link_wrapper.querySelectorAll('.js-copy-url'),
             $link_coped = $dashboard_link_wrapper.querySelector('#link_coped');
 
-        $copy_btn.addEventListener('click', function (event) {
-            event.preventDefault();
+            for (const $copy_btn of $copy_btns) {
+                $copy_btn.addEventListener('click', function (event) {
+                    event.preventDefault();
 
-            $dashboard_link.select();
-            document.execCommand("copy");
+                    $dashboard_link.select();
+                    document.execCommand("copy");
+                    $link_coped.classList.toggle('hidden');
 
-            let $copy_icon = $copy_btn.querySelector('svg');
-            $copy_icon.classList.toggle('fa-clipboard')
-            $copy_icon.classList.toggle('fa-clipboard-check')
-
-            $link_coped.classList.toggle('hidden');
-
-
-            setTimeout(()=>{
-                $copy_icon = $copy_btn.querySelector('svg');
-                $copy_icon.classList.toggle('fa-clipboard-check')
-                $copy_icon.classList.toggle('fa-clipboard')
-                $link_coped.classList.toggle('hidden');
-            }, 1000)
-        });
+                    setTimeout(()=>{
+                        $link_coped.classList.toggle('hidden');
+                    }, 1000)
+                });
+            }
 
         $("#dashboard_link").waDropdown();
         $("[data-wa-tooltip-content]").waTooltip();
-
-        WaHeader.setHeaderTitle({
-            title_text: "{$dashboard.name|escape}",
-            truncate: 42
-        })
     });
 </script>

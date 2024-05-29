@@ -75,14 +75,13 @@
 
 <style type="text/css">
     .wa-pages .wa-editor-core-wrapper { margin-left: auto; }
-    .wa-pages .ace { padding: 15px 12px; position: relative; }
+    .wa-pages .ace { padding: 0 2rem; position: relative; }
     .wa-pages .wa-editor-upload-img { position: absolute; top: 15px; right: 12px; z-index: 80; cursor: pointer; background-color: #f9f9f9; border: 1px solid #ccc; transition: all 0.2s ease; width: 1.8rem; height: 1.8rem; text-align: center; line-height: 1.8rem;
     }
     .wa-pages .heading { word-wrap: break-word; word-break: break-all; position: relative; margin-right: 15px; }
     .wa-pages .heading span.count { position: absolute; right: -15px; }
 
     .wa-page-gray { color: #AAA;}
-    .wa-page-draft { background: #CCC; color: white; font-weight: bold; font-size: 0.8em; padding: 0 2px; }
     .wa-page-wysiwyg-html-toggle { margin-right: 17px; margin-top: -20px; float: right; margin-bottom: 0; }
     .wa-page-wysiwyg-html-toggle li { list-style: none;float: left;}
     .wa-page-wysiwyg-html-toggle li.selected a { background: white;}
@@ -91,7 +90,7 @@
     .wa-page-urls a i { margin: 0}
 
     .block-pages { margin-bottom: 2rem; }
-    .block-pages .heading { margin-top: 1rem; }
+    .block-pages .heading { margin-top: 1rem; cursor: pointer; }
     .block-pages .heading span { word-break: break-all; }
     .block-pages ul.menu li a { word-break: break-all; }
     .block-pages.unsettled ul.menu a, .block-pages.unsettled ul.menu a .hint { color: var(--text-color-hint) !important; }
@@ -105,15 +104,16 @@
     a.wa-page-link:hover .action { visibility: visible; }
     .wa-page-gray-toolbar { flex-wrap: wrap; }
     .wa-page-gray-toolbar > ul { margin: 0 }
-    #wa-page-settings { flex: 1 0 100%; margin-top: 2rem; }
+    #wa-page-settings { flex: 1 0 100%; margin-top: 0; }
     #wa-page-advanced-params { margin-top: 2rem; }
 
-    .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
-    .wa-editor-core-wrapper { background: var(--background-color-blank); }
+    .block-pages ul:not(:has(li.dr)) li.drag-newposition { height: 5px !important; transform: translateY(3px); }
+    .block-pages ul li.drag-newposition { height: 2px; }
+    .block-pages ul li.drag-newposition.active { border-top: 3px solid var(--text-color-hint); background: none; }
     .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle { padding-left:0 }
-    .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle > li > a { padding-right: 0.5rem; padding-left: 0.5rem }
-    .wa-editor-core-wrapper .redactor-box { background: var(--background-color-blank); }
-    .wa-editor-core-wrapper .redactor-toolbar { box-shadow: none; border-bottom: 1px solid var(--border-color-soft); }
+    .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle > li > a { padding-right: 0; padding-left: 0; }
+    .wa-editor-core-wrapper .redactor-box { background: var(--background-color-blank); margin: 0 1rem; border-radius: 0.75rem; overflow: hidden; }
+    .wa-editor-core-wrapper .redactor-toolbar { box-shadow: none; border-bottom: 1px solid var(--border-color-soft); background: var(--background-color-blank); }
     .wa-editor-core-wrapper .redactor-layer { border: 0 none; background: var(--background-color-blank); }
     .wa-ibutton-checkbox ul.chips li { padding: 1px 0 10px; vertical-align: middle;}
 
@@ -170,18 +170,18 @@
                     <li class="drag-newposition"></li>
                     {if !empty($route.pages)}
                         {foreach $route.pages as $p}
-                            <li class="dr" id="page-{$p.id}" data-page-id="{$p.id}">
+                            <li class="rounded dr" id="page-{$p.id}" data-page-id="{$p.id}">
                                 <a class="wa-page-link" href="{$page_url}{$p.id}">
                                     {if !empty($p.childs)}
-                                        <span class="js-expander wa-page-expander"><i class="fas fa-caret-down js-icon"></i></span>
+                                        <span class="js-expander wa-page-expander custom-mr-4"><i class="fas fa-caret-down js-icon"></i></span>
                                     {/if}
                                     <i class="fas fa-{if $p.status}file{else}pencil{/if}-alt"></i>
                                     <span>
                                         {$p.name|escape}
                                         <span class="hint">/{$p.full_url|escape}</span>
                                     </span>
-                                    <span class="count action small">
-                                        <i class="fas fa-plus-circle fa-xs text-green wa-page-add"></i>
+                                    <span class="count action small wa-page-add">
+                                        <i class="fas fa-plus-circle fa-xs text-green"></i>
                                     </span>
                                 </a>
                                 {if !empty($p.childs)}
@@ -252,20 +252,21 @@
 
     </div>
 {/if}
-<div id="wa-page-container" class="wa-pages content">
+<div id="wa-page-container" class="wa-pages content not-blank">
     [s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>
 </div>
 <script type="text/javascript">
     var wa_url = "{$wa_url}";
     var wa_app = "{$wa->app()}";
 
-    function changeCollapseIcon($icon, direction_or_class = 'right') {
+    function changeCollapseIcon($icon, direction_or_class = 'caret-right') {
         const class_right = 'fa-caret-right',
               class_down = 'fa-caret-down';
-        if (direction_or_class === 'down') {
-            $icon.removeClass(class_right).addClass(class_down);
-        } else if (direction_or_class === 'right') {
-            $icon.removeClass(class_down).addClass(class_right);
+
+        if (direction_or_class === 'caret-down') {
+            $icon.attr('data-icon', direction_or_class).removeClass(class_right).addClass(class_down);
+        } else if (direction_or_class === 'caret-right') {
+            $icon.attr('data-icon', direction_or_class).removeClass(class_down).addClass(class_right);
         } else {
             $icon.removeClass(class_down).removeClass(class_right).addClass(direction_or_class);
         }
@@ -274,7 +275,7 @@
         var t = $('#page-'+page_id);
         var c = t.children('ul');
         if(c.length) {
-            changeCollapseIcon(t.children('a').children('.js-expander').children(), 'down');
+            changeCollapseIcon(t.children('a').children('.js-expander').children(), 'caret-down');
             c.show();
         }
 
@@ -340,22 +341,27 @@
             var $icon = t.children('a').children('.js-expander').children();
 
             if(c.length) {
-                changeCollapseIcon($icon, 'right');
+                changeCollapseIcon($icon, 'caret-right');
                 c.hide();
             } else {
                 changeCollapseIcon($icon, 'fa-notebook');
             }
         }
 
-        $('.js-expander').on('click', function(e) {
+        $('.block-pages').on('click', '.js-expander', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
-            var $icon = $(this).find('.js-icon');
+            let $target = e.target;
+            if ($target.tagName === 'path') {
+                $target = $target.parentElement
+            }
+
+            var $icon = $($target);
             var page_id = $icon.closest('li').attr('id').replace(/page-/g, '');
             var k = wa_app+'/pages/page-' + page_id;
 
-            if($icon.hasClass('fa-caret-right')) {
+            if($target.classList.contains('fa-caret-right')) {
                 waExpand(page_id);
                 $.storage.del(k);
             } else {
@@ -373,7 +379,7 @@
             }
             if($(this).hasClass('wa-page-add') || $target.classList.contains('wa-page-add')) {
                 const that = $(this),
-                    $li = $('<li><a class="wa-page-link" href="javascript:void(0);"><i class="fas fa-file-alt"></i><span>[s`New page`]</span></a></li>');
+                    $li = $('<li class="rounded"><a class="wa-page-link" href="javascript:void(0);"><i class="fas fa-file-alt"></i><span>[s`New page`]</span></a></li>');
 
                 if (that.hasClass('no-parent')) {
                     that.closest('.heading').next('ul').append($li);
@@ -448,19 +454,20 @@
                     $.storage.del(k);
                 }
             }
+
             var $icon_add_page = h.find('.js-add-page-icon'),
                 $count = h.find('.js-add-page-count'),
                 $icon = h.find('.js-icon');
 
-            if ($icon.hasClass('fa-caret-down')) {
+            if (ul.is(':visible')) {
                 $icon_add_page.hide();
-                changeCollapseIcon($icon, 'right');
+                changeCollapseIcon($icon, 'caret-right');
                 $count.html(ul.find('a.wa-page-link').length).show();
                 ul.hide();
             } else {
                 $count.hide();
                 $icon_add_page.show();
-                changeCollapseIcon($icon, 'down');
+                changeCollapseIcon($icon, 'caret-down');
                 ul.show();
             }
         });
@@ -474,162 +481,176 @@
         });
 
         {literal}
-        $("li.dr", $('.block-pages ul')).liveDraggable({
-            refreshPositions: true,
-            revert: "invalid",
-            helper: function() {
-                var self = $(this);
-                var parent = self.parents('.block-pages:first').find('>ul');
-                return self.clone().addClass('ui-draggable helper').css({
-                    position: 'absolute'
-                }).appendTo(parent);
-            },
-            cursor: "move",
-            opacity: 0.75,
-            zIndex: 9999,
-            distance: 5,
-            cursorAt: { left: 5 }
-        });
+        $.initPagesDraggable = function () {
+            $("li.dr", $('.block-pages ul')).liveDraggable({
+                refreshPositions: true,
+                revert: "invalid",
+                helper: function() {
+                    var self = $(this);
+                    var parent = self.parents('.block-pages:first').find('>ul');
+                    return self.clone().addClass('ui-draggable helper').css({
+                        position: 'absolute'
+                    }).appendTo(parent);
+                },
+                cursor: "move",
+                opacity: 0.75,
+                zIndex: 9999,
+                distance: 5,
+                cursorAt: { left: 5 }
+            });
 
-        $("li.drag-newposition", $('.block-pages ul')).liveDroppable({
-            accept: 'li.dr',
-            tolerance: 'pointer',
-            greedy: true,
-            hoverClass: 'active',
-            over: function() {
-                $(this).parent().parent().addClass('drag-active');
-            },
-            out: function() {
-                $(this).parent().parent().removeClass('drag-active');
-            },
-            deactivate: function(event, ui) {
-                var self = $(this);
-                if (self.is(':animated') || self.hasClass('dragging')) {
-                    self.stop().animate({height: '2px'}, 300, null, function() {self.removeClass('dragging');});
-                }
-                self.parent().parent().removeClass('drag-active');
-            },
-            drop: function(event, ui) {
-                var self = $(this);
-                var dr = ui.draggable;
-                var id = dr.attr('id').replace(/page-/, '');
-                var ul = self.parent();
-
-                var before_id = 0;
-                var before = self.next('li.dr');
-                if (before.length && !before.hasClass('helper')) {
-                    before_id = before.attr('id').replace(/page-/, '');
-                }
-
-                var sep = dr.next();
-                // means that actually nothing will be changed
-                if (sep.get(0) == self.get(0) || id == before_id) {
-                    return false;
-                }
-                var data = {
-                    id: id,
-                    route: ul.attr('data-route') || '',
-                    domain: ul.attr('data-domain') || '',
-                    parent_id: ul.attr('data-parent-id') || 0,
-                    before_id: before_id
-                };
-
-                var home = dr.prev();
-
-                sep.insertAfter(self);
-                dr.insertAfter(self);
-
-                waPageMove(data, function() {}, function() {
-                        // restore
-                        home.after(dr.next()).after(dr);
-                });
-            }
-        });
-
-        $("li.dr a", $('.block-pages ul')).liveDroppable({
-            accept: 'li.dr',
-            tolerance: 'pointer',
-            greedy: true,
-            out: function() {
-                $(this).parent().removeClass('drag-newparent');
-            },
-            over: function(event, ui) {
-                var self = $(this).parent(); // li
-                self.addClass('drag-newparent');
-
-                var dr = ui.draggable;
-                var drSelector = '.dr[id!="'+dr.attr('id')+'"]';
-                var nearby = $();
-
-                // helper to widen all spaces below the current li and above next li (which may be on another tree level, but not inside current)
-                var addBelow = function(nearby, current) {
-                    if (!current.length) {
-                        return nearby;
+            $("li.drag-newposition", $('.block-pages ul')).liveDroppable({
+                accept: 'li.dr',
+                tolerance: 'pointer',
+                greedy: true,
+                hoverClass: 'active',
+                over: function() {
+                    $(this).parent().parent().addClass('drag-active');
+                },
+                out: function() {
+                    $(this).parent().parent().removeClass('drag-active');
+                },
+                deactivate: function(event, ui) {
+                    var self = $(this);
+                    if (self.is(':animated') || self.hasClass('dragging')) {
+                        self.stop().animate({height: '2px'}, 300, null, function() {self.removeClass('dragging');});
                     }
-                    nearby = nearby.add(current.nextUntil(drSelector).filter('li.drag-newposition'));
-                    if (current.nextAll(drSelector).length > 0) {
-                        return nearby;
+                    self.parent().parent().removeClass('drag-active');
+                },
+                drop: function(event, ui) {
+                    var self = $(this);
+                    var dr = ui.draggable;
+                    var id = dr.attr('id').replace(/page-/, '');
+                    var ul = self.parent();
+
+                    var before_id = 0;
+                    var before = self.next('li.dr');
+                    if (before.length && !before.hasClass('helper')) {
+                        before_id = before.attr('id').replace(/page-/, '');
                     }
-                    return arguments.callee(nearby, current.parent().closest('li'));
-                }
 
-                // widen all spaces above the current li and below the prev li (which may be on another tree level)
-                var above = self.prevAll(drSelector+':first');
-                if(above.length > 0) {
-                    var d = above.find(drSelector);
-                    if (d.length > 0) {
-                        nearby = addBelow(nearby, d.last());
-                    } else {
-                        nearby = addBelow(nearby, above);
+                    var sep = dr.next();
+                    // means that actually nothing will be changed
+                    if (sep.get(0) == self.get(0) || id == before_id) {
+                        return false;
                     }
-                } else {
-                    nearby = nearby.add(self.prevUntil(drSelector).filter('li.drag-newposition'));
+                    var data = {
+                        id: id,
+                        route: ul.attr('data-route') || '',
+                        domain: ul.attr('data-domain') || '',
+                        parent_id: ul.attr('data-parent-id') || 0,
+                        before_id: before_id
+                    };
+
+                    var home = dr.prev();
+
+                    sep.insertAfter(self);
+                    dr.insertAfter(self);
+
+                    waPageMove(data, function() {}, function() {
+                            // restore
+                            home.after(dr.next()).after(dr);
+                    });
                 }
+            });
 
-                // widen all spaces below the current li and above the next li (which may be on another tree level)
-                if (self.children('ul').children(drSelector).length > 0) {
-                    nearby = nearby.add(self.children('ul').children('li.drag-newposition:first'));
-                } else {
-                    nearby = addBelow(nearby, self);
+            $(".heading", $('.block-pages')).liveDroppable({
+                accept: 'li.dr',
+                tolerance: 'pointer',
+                greedy: true,
+                over: function() {
+                    if ($(this).find('.fa-caret-right').length) {
+                        $(this).trigger('click');
+                    }
                 }
+            });
 
-                var old = $('.drag-newposition:animated, .drag-newposition.dragging').not(nearby);
+            $("li.dr a", $('.block-pages ul')).liveDroppable({
+                accept: 'li.dr',
+                tolerance: 'pointer',
+                greedy: true,
+                out: function() {
+                    $(this).parent().removeClass('drag-newparent');
+                },
+                over: function(event, ui) {
+                    var self = $(this).parent(); // li
+                    self.addClass('drag-newparent');
 
-                old.stop().animate({height: '2px'}, 300, null, function(){old.removeClass('dragging');});
-                nearby.stop().animate({height: '10px'}, 300, null, function(){nearby.addClass('dragging');});
-            },
-            drop: function(event, ui) {
-                var self = $(this).parent().removeClass('drag-newparent'); // li
-                var parent_id = self.attr('id').replace(/page-/, '');
-                var dr = ui.draggable;
+                    var dr = ui.draggable;
+                    var drSelector = '.dr[id!="'+dr.attr('id')+'"]';
+                    var nearby = $();
 
-                var id = dr.attr('id').replace(/page-/, '');
-                if (id == parent_id) {
-                    return false;
-                }
-
-                var ul;
-                var sep  = dr.next();
-                var home = dr.prev();
-                if (self.children('ul').length) {
-                    ul =  self.children('ul');
-                } else {
-                    ul = $('<ul class="menu unapproved" data-parent-id="' + parent_id + '"><li class="drag-newposition"></li></ul>').appendTo(self);
-                    ul.find('.drag-newposition').mouseover(); // init droppable
-                }
-                ul.append(dr).append(sep);
-
-                waPageMove({id: id, parent_id: parent_id, before_id: 0}, function() {
-                        ul.removeClass('unapproved');
-                    },function() {
-                        // restore
-                        home.after(dr).after(sep);
-                        if (ul.hasClass('unapproved')) {
-                            ul.remove();
+                    // helper to widen all spaces below the current li and above next li (which may be on another tree level, but not inside current)
+                    var addBelow = function(nearby, current) {
+                        if (!current.length) {
+                            return nearby;
                         }
-                });
-            }
-        });
+                        nearby = nearby.add(current.nextUntil(drSelector).filter('li.drag-newposition'));
+                        if (current.nextAll(drSelector).length > 0) {
+                            return nearby;
+                        }
+                        return arguments.callee(nearby, current.parent().closest('li'));
+                    }
+
+                    // widen all spaces above the current li and below the prev li (which may be on another tree level)
+                    var above = self.prevAll(drSelector+':first');
+                    if(above.length > 0) {
+                        var d = above.find(drSelector);
+                        if (d.length > 0) {
+                            nearby = addBelow(nearby, d.last());
+                        } else {
+                            nearby = addBelow(nearby, above);
+                        }
+                    } else {
+                        nearby = nearby.add(self.prevUntil(drSelector).filter('li.drag-newposition'));
+                    }
+
+                    // widen all spaces below the current li and above the next li (which may be on another tree level)
+                    if (self.children('ul').children(drSelector).length > 0) {
+                        nearby = nearby.add(self.children('ul').children('li.drag-newposition:first'));
+                    } else {
+                        nearby = addBelow(nearby, self);
+                    }
+
+                    var old = $('.drag-newposition:animated, .drag-newposition.dragging').not(nearby);
+
+                    old.stop().animate({height: '2px'}, 300, null, function(){old.removeClass('dragging');});
+                    nearby.stop().animate({height: '10px'}, 300, null, function(){nearby.addClass('dragging');});
+                },
+                drop: function(event, ui) {
+                    var self = $(this).parent().removeClass('drag-newparent'); // li
+                    var parent_id = self.attr('id').replace(/page-/, '');
+                    var dr = ui.draggable;
+
+                    var id = dr.attr('id').replace(/page-/, '');
+                    if (id == parent_id) {
+                        return false;
+                    }
+
+                    var ul;
+                    var sep  = dr.next();
+                    var home = dr.prev();
+                    if (self.children('ul').length) {
+                        ul =  self.children('ul');
+                    } else {
+                        ul = $('<ul class="menu unapproved" data-parent-id="' + parent_id + '"><li class="drag-newposition"></li></ul>').appendTo(self);
+                        ul.find('.drag-newposition').mouseover(); // init droppable
+                    }
+                    ul.append(dr).append(sep);
+
+                    waPageMove({id: id, parent_id: parent_id, before_id: 0}, function() {
+                            ul.removeClass('unapproved');
+                        },function() {
+                            // restore
+                            home.after(dr).after(sep);
+                            if (ul.hasClass('unapproved')) {
+                                ul.remove();
+                            }
+                    });
+                }
+            });
+        }
+        $.initPagesDraggable();
         {/literal}
 
         function waPageMove(data, success, error) {
@@ -658,13 +679,33 @@
         }
 
         // after expanding, close using storage
-        $('.js-expander').each(function() {
-            var page_id = $(this).closest('li').attr('id').replace(/page-/g, '');
-            var k = wa_app+'/pages/page-' + page_id;
-            if ($.storage.get(k)) {
-                waClose(page_id);
-            }
+        waitFaLoaded().then(() => {
+            $('.js-expander').each(function () {
+                var page_id = $(this).closest('li').attr('id').replace(/page-/g, '');
+                var k = wa_app + '/pages/page-' + page_id;
+                if ($.storage.get(k)) {
+                    waClose(page_id);
+                }
+            });
         });
+
+        // wait for font-awesome to be loaded
+        function waitFaLoaded(timeout = 5000) {
+            return new Promise((resolve, reject) => {
+                const checkClass = () => {
+                    if (document.documentElement.classList.contains('fontawesome-i2svg-complete')) {
+                        resolve();
+                    } else if (timeout > 0) {
+                        setTimeout(checkClass, 100);
+                        timeout -= 100;
+                    } else {
+                        reject();
+                    }
+                };
+
+                checkClass();
+            });
+        }
     });
 
 </script>

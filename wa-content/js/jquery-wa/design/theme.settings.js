@@ -254,7 +254,7 @@ var WAThemeSettings = ( function($) {
                             let l = $(this).parent();
                             if ($(this).is(':checked')) {
                                 if (!l.find('span.hint').length) {
-                                    l.append(' <span class="hint">'+ that.locale.will_be_lost +'</span>');
+                                    l.append(' <span class="hint custom-ml-8">'+ that.locale.will_be_lost +'</span>');
                                 }
                             } else {
                                 l.find('span.hint').remove();

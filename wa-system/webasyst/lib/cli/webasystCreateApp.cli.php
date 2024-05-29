@@ -76,6 +76,7 @@ class webasystCreateAppCli extends webasystCreateCliController
             ),
             'version' => ifempty($params['version'], $this->getDefaults('version')),
             'vendor'  => ifempty($params['vendor'], $this->getDefaults('vendor')),
+            'ui' => '2.0',
         );
 
         if (isset($params['frontend'])) {
@@ -267,44 +268,49 @@ PHP;
     <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
     {$wa->css()}
     <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/%app_id%.css?v{$wa->version()}">
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
-    <script type="text/javascript" src="{$wa_app_static_url}js/%app_id%.js?v{$wa->version()}"></script>
-
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
+    <script src="{$wa_app_static_url}js/%app_id%.js?v{$wa->version()}"></script>
 </head>
 <body>
     <div id="wa">
         {$wa->header()}
-        <div id="wa-app">
-            <div class="sidebar left200px">
-                <div class="block">
-                    <ul class="menu-v with-icons">
-                         <li class="selected">
-                             <a href="#" class="bold"><i class="icon16 smiley"></i>[`Hello world`]</a>
-                         </li>
-                    </ul>
-                </div>
-                <div class="block">
-                    <h5 class="heading top-padded"><b>[`Navigation`]</b></h5>
-                    <ul class="menu-v with-icons collapsible">
-                         <li>
-                             <a href="#"><i class="icon16 folder"></i>[`Menu item 1`]</a>
-                         </li>
-                         <li>
-                             <a href="#"><i class="icon16 folder"></i>[`Menu item 2`]</a>
-                         </li>
-                         <li>
-                             <a href="#"><i class="icon16 folder"></i>[`Menu item 3`]</a>
-                         </li>
-                    </ul>
-                </div>
+        <div id="wa-app" class="flexbox wrap-mobile">
+            <div class="sidebar flexbox overflow-visible width-adaptive-wider mobile-friendly js-app-sidebar">
+                <ul class="menu mobile-friendly">
+                     <li class="selected">
+                         <a href="#">
+                             <i class="fas fa-smile"></i>
+                             <span>[`Hello world`]</span>
+                         </a>
+                     </li>
+                </ul>
+                <h5 class="heading">[`Navigation`]</h5>
+                <ul class="menu mobile-friendly">
+                     <li>
+                         <a href="#">
+                             <i class="fas fa-folder"></i>
+                             <span>[`Menu item 1`]</span>
+                         </a>
+                     </li>
+                     <li>
+                         <a href="#">
+                             <i class="fas fa-folder"></i>
+                             <span>[`Menu item 2`]</span>
+                         </a>
+                     </li>
+                     <li>
+                         <a href="#">
+                             <i class="fas fa-folder"></i>
+                             <span>[`Menu item 3`]</span>
+                         </a>
+                     </li>
+                </ul>
             </div>
-            <div class="content left200px">
-                <div id="content">
-                    <div class="block">
-                        <h1>{$message|escape}</h1>
-                        <p>[`Woohoo, Webasyst app is ready!`]</p>
-                    </div>
+            <div id="content" class="content blank">
+                <div class="box contentbox">
+                    <h1>{$message|escape}</h1>
+                    <p>[`Woohoo, Webasyst app is ready!`]</p>
                 </div>
             </div>
         </div>
@@ -323,26 +329,27 @@ PHP;
 <title>{$title|escape} &mdash; {$wa->accountName()}</title>
 {$wa->css()}
 <link rel="stylesheet" type="text/css" href="{$wa_app_static_url}css/%app_id%.css?v{$wa->version()}" media="screen" />
-<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
+<script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
 </head>
-<body id="{$wa_app}"><div id="wa">
+<body id="{$wa_app}">
+    <div id="wa">
     {$wa->header()}
-    <div id="wa-app">
-        <div class="sidebar left200px">
+        <div id="wa-app" class="flexbox wrap-mobile">
+        <div class="sidebar flexbox overflow-visible width-adaptive-wider mobile-friendly js-app-sidebar">
             {if !empty($sidebar)}
                 {$sidebar}
             {/if}
         </div>
-        <div class="content left200px" id="cl-core">
-            <div class="shadowed %app_id%-content">
-                {if !empty($content)}
+        <div id="content" class="content blank">
+            <div class="box contentbox">
+               {if !empty($content)}
                     {$content}
                 {/if}
             </div>
         </div>
     </div>
-</div></body>
+</body>
 </html>
 ';
         return str_replace('%app_id%', $this->app_id, $template);

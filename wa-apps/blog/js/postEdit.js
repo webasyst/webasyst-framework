@@ -1,4 +1,5 @@
 (function($) {
+
     $.wa_blog.editor = {
 
         options : {
@@ -19,6 +20,10 @@
             'public': 'public'
         },
 
+        reInit() {
+            this.init(this.options);
+        },
+
         init : function(options) {
 
             var self = this;
@@ -37,8 +42,8 @@
                 },
 
                 afterSave: function(data) {
-                    $('#b-post-save-button').removeClass('yellow').addClass('green');
-                    $('#postpublish-edit').removeClass('yellow').addClass('green');
+                    $('#b-post-save-button').removeClass('yellow').addClass('blue');
+                    $('#postpublish-edit').removeClass('yellow').addClass('blue');
                     self.postUrlWidget.resetEditReady();
                     self.postUrlWidget.updateSlugs(data.url, data.preview_hash||false);
                     resetEditDatetimeReady.call($('#inline-edit-datetime').get(0), data.formatted_datetime);
@@ -46,51 +51,56 @@
                         $('#post-url-field .small').removeClass('small').addClass('hint');
                     }
 
-                    var dialog = $('#b-post-edit-custom-params-dialog');
-                    if (!dialog.is(':hidden')) {
-                        var meta_title = dialog.find(':input[name=meta_title]').val();
-                        var meta_keywords = dialog.find(':input[name=meta_keywords]').val();
-                        var meta_description = dialog.find(':input[name=meta_description]').val();
-                        var params = dialog.find(':input[name=params]').val();
-                        if (meta_title) {
-                            $('#b-post-edit-meta-title').show().find('.val').text(meta_title);
-                        } else {
-                            $('#b-post-edit-meta-title').hide();
-                        }
-                        if (meta_keywords) {
-                            $('#b-post-edit-meta-keywords').show().find('.val').text(meta_keywords);
-                        } else {
-                            $('#b-post-edit-meta-keywords').hide()
-                        }
-                        if (meta_description) {
-                            $('#b-post-edit-meta-description').show().find('.val').text(meta_description);
-                        } else {
-                            $('#b-post-edit-meta-description').hide();
-                        }
-                        if (params) {
-                            $('#b-post-edit-custom-params').show().html(params.trim().split("\n").join("<br>") + "<br>");
-                        } else {
-                            $('#b-post-edit-custom-params').hide();
-                        }
-                        if (meta_title || meta_keywords || meta_description || params) {
-                            $('#b-post-edit-no-meta').hide();
-                        } else {
-                            $('#b-post-edit-no-meta').show();
-                        }
-                        dialog.trigger('close');
+                    const meta_title = data?.meta?.title;
+                    const meta_keywords = data?.meta?.keywords;
+                    const meta_description = data?.meta?.description;
+                    const params = data?.params;
+                    const dialog = $('#b-post-edit-custom-params-dialog');
+
+
+
+                    dialog.find(':input[name=meta_description]').val(meta_description);
+                    dialog.find(':input[name=params]').val(params);
+
+                    if (meta_title) {
+                        $('#b-post-edit-meta-title').show().find('.val').text(meta_title);
+                        dialog.find(':input[name=meta_title]').val(meta_title);
+                    } else {
+                        $('#b-post-edit-meta-title').hide();
                     }
-
+                    if (meta_keywords) {
+                        $('#b-post-edit-meta-keywords').show().find('.val').text(meta_keywords);
+                        dialog.find(':input[name=meta_keywords]').val(meta_keywords);
+                    } else {
+                        $('#b-post-edit-meta-keywords').hide()
+                    }
+                    if (meta_description) {
+                        $('#b-post-edit-meta-description').show().find('.val').text(meta_description);
+                        dialog.find(':input[name=meta_description]').val(meta_description);
+                    } else {
+                        $('#b-post-edit-meta-description').hide();
+                    }
+                    if (params) {
+                        $('#b-post-edit-custom-params').show().html(params.trim().split("\n").join("<br>") + "<br>");
+                        dialog.find(':input[name=params]').val(params);
+                    } else {
+                        $('#b-post-edit-custom-params').hide();
+                    }
+                    if (meta_title || meta_keywords || meta_description || params) {
+                        $('#b-post-edit-no-meta').hide();
+                    } else {
+                        $('#b-post-edit-no-meta').show();
+                    }
                 }
-
             });
 
-            setupSwitcherWidget();
             initDatepickers(self.options);
             initDialogs();
 
             var editor = null;
             try {
-                editor = $.storage.get('blog/editor') || 'redactor';
+                editor = localStorage.getItem('blog/editor') || 'redactor';
+                editor = editor.replaceAll('"','');
             } catch(e) {
                 this.log('Exception: '+e.message + '\nline: '+e.fileName+':'+e.lineNumber);
             }
@@ -112,9 +122,9 @@
                 $('#post-title').focus();
             }
 
-            $.wa.dropdownsCloseEnable();
+            //$.wa.dropdownsCloseEnable();
             $('.change-blog').click($.wa_blog.editor.changeBlogHandler);
-            $('#postpublish-dialog input[name="publish_blog_id"]').change($.wa_blog.editor.changePublishBlogHandler);
+            $(document).on('change', '#postpublish-dialog input[name="publish_blog_id"]', $.wa_blog.editor.changePublishBlogHandler);
 
 
             $('#post-title').keyup(function() {
@@ -153,22 +163,19 @@
                 return false;
             });
 
-            $('#b-post-edit-custom-params-link').click(function() {
-                $('#b-post-edit-custom-params-dialog').waDialog({
-                    onSubmit: function() {
-                        return false;
+            $('#b-post-edit-custom-params-link').on('click', function() {
+                $.waDialog({
+                    $wrapper: $('#b-post-edit-custom-params-dialog').clone(),
+                    append_to: '#post-form',
+                    onOpen($dialog, dialog_instance){
+                        $.wa_blog.editor.currentDialog = dialog_instance;
+                        $dialog.find('[type="button"]').on('click', function() {
+                            dialog_instance.close();
+                            $.wa_blog.editor.currentDialog = null;
+                        });
                     }
                 });
                 return false;
-            });
-
-            // Stick button bar to the bottom of the window
-            var $window = $(window), $buttons_bar = $('#buttons-bar');
-            $buttons_bar.sticky && $('#buttons-bar').sticky({
-                fixed_class: 'b-fixed-button-bar',
-                isStaticVisible: function (e, o) {
-                    return  $window.scrollTop() + $window.height() >= e.element.offset().top + e.element.outerHeight();
-                }
             });
 
             initRealtimePreviewMode();
@@ -177,6 +184,7 @@
 
             function initDialogs()
             {
+                const dialogs = {};
 
                 $('.dialog-edit').each(function() {
                     /*$(this).parents('.block:first').click(function(e) {
@@ -184,7 +192,7 @@
                             return linkClickHandler.call(e.target);
                         }
                     });*/
-                    $(this).click(function(e) {
+                    $(this).on('click', function(e) {
                             e.preventDefault();
                             return linkClickHandler.call(e.target);
                     });
@@ -194,21 +202,28 @@
                 {
                     var id = $(this).attr('id').replace(/-.*$/,'');
 
+                    if (!dialogs[id]?.length) {
+                        dialogs[id] = $("#" + id +"-dialog").detach();
+                    }
+
                     $.wa_blog.editor.currentDialog =
-                        $("#" + id +"-dialog").waDialog({
-                            disableButtonsOnSubmit: true,
-                            onLoad: function () {
-                                $(this).find("input,select").removeAttr('disabled');
+                        $.waDialog({
+                            $wrapper: dialogs[id],
+                            append_to: $(this).closest('form'),
+                            onOpen: function ($dialog) {
+                                $dialog.find("input,select").removeAttr('disabled');
                                 $('.user-date-format').text(getDateFormat());
                             },
-                            onSubmit: function () {
-                                return false;
-                            },
-                            onCancel: function(dialog) {
+                            onClose: function(dialog) {
                                 $(this).find("input:text,select").each(function(id){
                                     $(this).value = $(this).defaultValue;
                                     $(this).attr('disabled','disabled');
                                 });
+
+                                if (id === 'schedule') {
+                                    dialog.hide();
+                                    return false;
+                                }
                             }
                         });
 
@@ -350,7 +365,7 @@
                 // has bag and doesn't hide calendar by oneself
                 $('#ui-datepicker-div').hide();
 
-                $('.datepicker').focus(function() {
+                $('.datepicker').on('focus', function() {
                     hideDatetimeError($(this));
                 });
 
@@ -367,33 +382,6 @@
             }
 
             // ===== Widgets and classes declaration section ====
-
-            function setupSwitcherWidget()
-            {
-                var switcher = $('#allow-comment-switcher');
-
-                handler.call(switcher.get(0));
-
-                switcher.iButton({
-                    labelOn : '',
-                    labelOff : '',
-                    className: 'mini'
-                }).change(handler);
-
-                function handler()
-                {
-                    var onLabelSelector = '#' + this.id + '-on-label',
-                    offLabelSelector = '#' + this.id + '-off-label';
-
-                    if (!this.checked) {
-                        $(onLabelSelector).addClass('b-unselected');
-                        $(offLabelSelector).removeClass('b-unselected');
-                    } else {
-                        $(onLabelSelector).removeClass('b-unselected');
-                        $(offLabelSelector).addClass('b-unselected');
-                    }
-                }
-            }
 
             /**
              * Setup widget for display/typing url of post
@@ -448,13 +436,6 @@
 
                 function updateHtml(descriptor)
                 {
-                    var wholeUrl = descriptor.link + descriptor.slug + '/';
-
-                    $('#url-link').text(wholeUrl);
-                    $('#url-link').attr('href', descriptor.preview_hash
-                            ? wholeUrl + '?preview=' + descriptor.preview_hash
-                            : wholeUrl
-                    );
                     $('#pure-url').text(descriptor.link);
                     $('#preview-url').data('preview-url', descriptor.preview_link);
 
@@ -494,8 +475,8 @@
 
                         var icon = $('#post-url-field').children(':first');
 
-                        if (icon.is('.icon10')) {
-                            tmpl = '<i class="' + icon.attr('class') + '"></i> ' + tmpl;
+                        if (icon.is('.fas') || icon.is('[data-icon]')) {
+                            tmpl = icon.get(0).outerHTML + tmpl;
                         }
 
                         $('#other-urls').html($.tmpl(tmpl, data));
@@ -662,28 +643,45 @@
 
                 function init()
                 {
-                    $('input[type=submit], input[type=button], a.js-submit').click(function() {
+                    $(document).on('click', '[type=submit], input[type=button], a.js-submit', function() {
+
                         if($(this).hasClass('dialog-edit')) {
                             return false;
                         }
+
                         if($(this).hasClass('js-submit')) {
-                            var question = $(this).attr('title')||$(this).text()||'Are you sure?';
-                            if(!confirm(question)) {
-                                return false;
-                            }
+                            const that = this;
+                            const question = $(that).attr('title')||$(that).text()||'Are you sure?';
+
+                            $.waDialog.confirm({
+                                text: question,
+                                success_button_title: $.wa.locale['Confirm'],
+                                success_button_class: 'danger',
+                                cancel_button_title: $.wa.locale['Cancel'],
+                                cancel_button_class: 'light-gray',
+                                onSuccess(){
+                                    onConfirm && onConfirm.apply(that)
+                                }
+                            });
+
+                            return false;
                         }
-                        if ($('#post-id').val() && (this.id == 'b-post-save-button' ||
+
+                        onConfirm.apply(this)
+
+                        function onConfirm() {
+                            if ($('#post-id').val() && (this.id == 'b-post-save-button' ||
                                 this.id == 'b-post-save-draft-button' ||
                                 this.id == 'b-post-save-custom-params'))
-                        {
-                            inline = true;
+                            {
+                                inline = true;
+                            }
+                            action = this.name;
+                            if (action == 'deadline' || action == 'schedule') {
+                                $('#' + this.name + '-dialog').find('input[name^=datetime]').attr('disabled', false);
+                            }
+                            save();
                         }
-                        action = this.name;
-                        if (action == 'deadline' || action == 'schedule') {
-                            $('#' + this.name + '-dialog').find('input[name^=datetime]').attr('disabled', false);
-                        }
-                        save();
-                        return false;
                     });
                     $('#post-url').focus(function() {
                         //hideErrorMsg($(this));
@@ -762,6 +760,9 @@
 
                     data += inline ? '&inline=1' : '';
                     data += !$.wa_blog.editor.transliterated ? '&transliterate=1' : '';
+                    if($.wa_blog.editor.currentDialog && $.wa_blog.editor.currentDialog.$wrapper.attr('id') === 'b-post-edit-custom-params-dialog') {
+                        data += '&' + $.wa_blog.editor.currentDialog.$wrapper.find('[name]').serialize();
+                    }
 
                     fn = fn || function() {};
 
@@ -834,7 +835,6 @@
                 var $post_title = $('#post-title');
                 var $not_available_message = $('#not-available-message');
                 var $wa_header = $('#wa-header');
-                var $fixed_button_bar = $('.b-fixed-button-bar');
                 var $album_selector = $('#blog-photo_bridge-editor [name="album_id"]');
                 var $hidden_realtime_on = $preview_sidebar.find('[name="realtime_on"]');
 
@@ -874,7 +874,6 @@
                         this.$content.css({
                             marginRight: this.sidebar_width+'px'
                         });
-                        $fixed_button_bar.css('right', (this.sidebar_width+16)+'px');
                         $(window).resize();
                     },
                     _mouseStop: function() {
@@ -971,6 +970,10 @@
 
                 // Helper to send post title into the iframe
                 function setIframePostTitle(str) {
+                    if (!$iframe[0]?.contentWindow) {
+                    return;
+                    }
+
                     $.pm({
                         target: $iframe[0].contentWindow,
                         type: 'update_title',
@@ -1073,14 +1076,6 @@
                         marginLeft: 0
                     }, 400);
 
-                    $fixed_button_bar.css({
-                        'min-width': 0,
-                        right: (sidebar200px_width+16)+'px'
-                    }).animate({
-                        left: '15px',
-                        right: (right_sidebar_width-0+15)+'px'
-                    }, 400);
-
                     $post_form.find('.content').animate({
                         marginRight: right_sidebar_width+'px'
                     }, 400);
@@ -1110,20 +1105,12 @@
                     }, 400);
                     $preview_sidebar.hide();
                     $wa_header.slideDown(400);
-                    $fixed_button_bar.animate({
-                        left: (sidebar200px_width+15)+'px',
-                        right: (sidebar200px_width+16)+'px'
-                    }, 400);
                     setTimeout(function() {
                         $sidebars.show();
                         $preview_sidebar.hide();
                         animation_in_progress = false;
                         $outer_content.css('marginLeft', '');
                         $inner_content.css('marginRight', '');
-                        $fixed_button_bar.css({
-                            left: '',
-                            right: ''
-                        });
                         $(window).resize().scroll();
                     }, 410);
                 }
@@ -1164,7 +1151,7 @@
                 inited: false,
                 init : function($textarea) {
                     if(!this.inited) {
-
+                        var self = this;
                         this.inited = true;
                         var options = $.wa_blog.editor.options;
                         this.container = $('<div id="blog-ace-editor"></div>').appendTo("#post_text_wrapper");
@@ -1173,7 +1160,8 @@
                         this.editor = ace.edit('blog-ace-editor');
                         ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
 
-                        this.editor.setTheme("ace/theme/eclipse");
+                        setEditorTheme();
+                        document.documentElement.addEventListener('wa-theme-change', setEditorTheme);
                         var session = this.editor.getSession();
 
                         session.setMode("ace/mode/javascript");
@@ -1227,25 +1215,29 @@
                             editor.resize();
                         };
 
-                        var self = this;
-                        var $window = $(window);
-
                         // Whenever a change happens inside the ACE editor, update
                         // the size again
                         session.on('change', function() {
                             heightUpdateFunction(self.editor, "blog-ace-editor");
-                            $window.scroll(); // trigger sticky bottom buttons
                         });
                         setTimeout(function() {
                             heightUpdateFunction(self.editor, "blog-ace-editor");
                         }, 50);
-                        $window.resize(function() {
+                        $(window).resize(function() {
                             self.editor.resize();
                             heightUpdateFunction(self.editor, "blog-ace-editor");
                         });
 
                         this.container.on('keydown', $.wa_blog.editor.editorKeyCallback());
                         this.container.on('keypress', $.wa_blog.editor.editorKeyCallback(true));
+
+                        function setEditorTheme() {
+                            if (document.documentElement.dataset.theme === 'dark') {
+                                self.editor.setTheme("ace/theme/monokai");
+                            } else {
+                                self.editor.setTheme("ace/theme/eclipse");
+                            }
+                        }
                     }
 
                     return true;
@@ -1260,7 +1252,7 @@
                         text = $.wa_blog.editor.wysiwygToHtml(text);
                         var p = self.editor.getCursorPosition();
                         self.editor.setValue(text);
-                        if (!$('#post-title').is(':focus')) {
+                        if ($('#post-title').val() != '') {
                             self.editor.focus();
                         }
                         self.editor.navigateTo(p.row, p.column);
@@ -1296,9 +1288,13 @@
                         var $save_button = $('#b-post-save-button');
                         var $postpublish_edit = $('#postpublish-edit');
                         var sidebar_height = $('#post-form .sidebar .b-edit-options:first').height();
+                        let focus = true;
+                        if ($('#post-title').val() == '') {
+                            focus = false;
+                        }
 
                         var options = $.extend({
-                            focus: true,
+                            focus: focus,
                             deniedTags: false,
                             minHeight: 300, //minHeight: Math.max(300, sidebar_height - 229),
                             linkify: false,
@@ -1306,6 +1302,7 @@
                             paragraphy: false,
                             replaceDivs: false,
                             toolbarFixed: true,
+                            toolbarFixedTopOffset: $("#wa-nav").outerHeight() + $(".b-post-editor-toggle").outerHeight(),
                             replaceTags: {
                                 'b': 'strong',
                                 'i': 'em',
@@ -1316,6 +1313,7 @@
                             imagePosition: true,
                             imageResizable: true,
                             imageFloatMargin: '1.5em',
+                            imageTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
                             buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists',
                                 'image', 'video', 'file', 'table', 'link', 'alignment', 'fontcolor', 'fontsize', 'fontfamily'],
                             plugins: ['fontcolor', 'fontfamily', 'alignment', 'fontsize', 'table', 'video', 'cut'],
@@ -1330,8 +1328,6 @@
                                     if ($save_button.is(':visible')) {
                                         $save_button.removeClass('green').addClass('yellow');
                                     }
-                                    // Make sure sticky bottom buttons behave correctly when height of an editor changes
-                                    $window.scroll();
                                 }
                             }
                         }, (options || {}));
@@ -1520,7 +1516,7 @@
 
                         var $album_frontend_link = $('#album-frontend-link');
                         var $album_selector = this.container.find('select[name="album_id"]');
-                        var $fields_public_only = this.container.find('.hidden.field');
+                        var $fields_public_only = this.container.find('.js-post-url');
 
                         var delay = 0;
                         $album_selector.change(function() {
@@ -1564,14 +1560,16 @@
         getExtHeightShift: function() {
             return -70;
         },
-        editorTooggle : function() {
+        editorTooggle : function(e) {
+            e.preventDefault();
+            const scrollY = window.scrollY
             var self = $(this);
-            if (!self.hasClass('selected')
-                    && $.wa_blog.editor.selectEditor(self.attr('id'))) {
+            if (!self.parent().hasClass('selected') && $.wa_blog.editor.selectEditor(self.attr('id'))) {
                 $('.b-post-editor-toggle li.selected').removeClass('selected');
                 self.parent().addClass('selected');
+
+                window.scrollTo(0, scrollY + 1);
             }
-            return false;
         },
         selectEditor : function(id, external) {
             if (this.editors[id]) {
@@ -1600,8 +1598,6 @@
                             $('#' + id).parent().addClass('selected');
                             this.editors[id].show($textarea);
 
-                            // Make sure sticky bottom buttons behave correctly when height of an editor changes
-                            setTimeout(function() { $(window).scroll(); }, 0);
                         }
                     } catch(e) {
                         this.log('Exception: '+e.message + '\nline: '+e.fileName+':'+e.lineNumber, e.stack);
@@ -1679,7 +1675,7 @@
             }
 
             var button = $('#b-post-save-button');
-            var color_class = 'green';
+            var color_class = 'blue';
 
             if ((button.attr('name') == 'draft') || (button.attr('name') == 'deadline')) {
                 color_class = 'grey';
@@ -1705,7 +1701,7 @@
         closeCurrentDialog: function()
         {
             if (this.currentDialog) {
-                this.currentDialog.waDialog().trigger('close');
+                this.currentDialog.close();
             }
         },
         registerEditor : function(id, callback) {
@@ -1726,34 +1722,31 @@
             }
         },
         changeBlogHandler: function() {
-            var id = parseInt($(this).attr('href').replace(/^.*#/,''));
+            const id = parseInt($(this).find('[data-id]').data('id'));
             if($.wa_blog.editor.selectCurrentBlog(id)) {
                 $('.dialog :input:checked').attr('checked',false);
                 $('.dialog #b-post-publish-blog-'+id).attr('checked',true);
             }
-            $.wa.dropdownsClose();
-            return false;
         },
         changePublishBlogHandler: function() {
-            if($(this).attr('checked')) {
+            if(this.checked) {
                 var id = parseInt($(this).val());
                 $.wa_blog.editor.selectCurrentBlog(id);
             }
         },
         selectCurrentBlog: function(id)
         {
-            var blog = $.wa_blog.editor.options.blogs[id];
-            var prev_id = $.wa_blog.editor.options.current_blog_id;
+            const blog = $.wa_blog.editor.options.blogs[id];
+            const prev_id = $.wa_blog.editor.options.current_blog_id;
             if(blog && (prev_id != id)) {
-                var current_blog = $.tmpl('selected-blog',{'blog':blog});
-
-                $('.current-blog').replaceWith(current_blog);
+                const current_blog = $.tmpl('selected-blog',{'blog':blog});
+                $('.current-blog').html(current_blog);
                 $('#blog-selector-'+prev_id).removeClass('selected');
-                var blog_selector = $('#blog-selector-'+id).addClass('selected');
+                const blog_selector = $('#blog-selector-'+id).addClass('selected');
 
-                var prev_blog = $.wa_blog.editor.options.blogs[prev_id];
+                const prev_blog = $.wa_blog.editor.options.blogs[prev_id];
                 $.wa_blog.editor.options.current_blog_id = parseInt(id);
-                var post = $('.b-post');
+                const post = $('.b-post');
                 if(prev_blog) {
                     post.removeClass(prev_blog.color);
                 }

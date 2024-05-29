@@ -18,9 +18,9 @@
                     <tr class="item-row">
                         <td class="min-width"><i class="fas fa-bars ui-sortable-handle" style="cursor: move;"></i></td>
                         <td>
-                            <input type="text" name="{$prefix}[{$fid}][options][{$value}]" value="{$label|escape}" class="full-width smallest">
+                            <input type="text" name="{$prefix}[{$fid}][options][{$value|escape}]" value="{$label|escape}" class="full-width smallest">
                             {if $ftype == 'branch'}
-                                <input type="hidden" name="{$prefix}[{$fid}][hide][{$value}]" value="{implode(',', ifempty($hide[$value], array()))}">
+                                <input type="hidden" name="{$prefix}[{$fid}][hide][{$value|escape}]" value="{implode(',', ifempty($hide[$value], array()))}">
                             {/if}
                         </td>
                         <td class="min-width"><a href="javascript:void(0);" title="[s`Delete`]" class="js-delete-subitem"><i class="fas fa-trash-alt"></i></a></td>

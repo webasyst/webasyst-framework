@@ -1,0 +1,25 @@
+{strip}
+
+{$_tags = []}
+{foreach $post_item_tags as $tag_id}
+    {if !empty($tags_data[$tag_id])}
+        {$_tags[$tag_id] = $tags_data[$tag_id]}
+    {/if}
+{/foreach}
+
+{if !empty($_tags)}
+    <div class="tags-section">
+        <p class="custom-mt-16 custom-mb-0">{_wp('Tags')}:</p>
+        <ul class="chips tags smaller custom-mt-0">
+            {foreach $_tags as $_tag}
+                <li>
+                    <a href="{$_tag['link']}">
+                        <i class="fas fa-hashtag"></i>{$_tag['name']|escape}
+                    </a>
+                </li>
+            {/foreach}
+        </ul>
+    </div>
+{/if}
+
+{/strip}

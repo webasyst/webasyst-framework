@@ -90,7 +90,7 @@ class waPHPCaptcha extends waAbstractCaptcha
                 $code = wa()->getRequest()->post('captcha');
             }
         }
-        $code = strtolower(trim($code));
+        $code = strtolower(trim((string) $code));
         $captcha = wa()->getStorage()->get('captcha');
         $app_id = $this->getAppId();
         if (isset($captcha[$app_id]) && $captcha[$app_id] === $code) {

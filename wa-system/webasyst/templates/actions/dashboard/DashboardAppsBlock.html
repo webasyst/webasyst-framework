@@ -29,7 +29,7 @@
             {/if}
             <a href="{$_item_url}" title="{$_info.name|ifempty}">
                 {if isset($_info.img)}
-                    <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{if !empty($_info.icon.96)}{$_info.icon.96}{else}{$_info.img}{/if}{$_version}" alt="">
+                    <img{if !empty($_info.icon.96)} data-src2="{$wa_url}{$_info.icon.96}{$_version}"{/if} src="{$wa_url}{if !empty($_info.icon.96)}{$_info.icon.96}{else}{$_info.img}{/if}{$_version}" alt="">
                 {/if}
                 <span class="nowrap">{$_info.name|ifempty}</span>
                 {if $_count}
@@ -47,64 +47,66 @@
 </div>
 {/strip}
 <script>
-  ( function($) {
-    function toggleDashboardItems(){
-      const grid = $('.js-dashboard-grid');
+    window.onload = function() {
+        ( function($) {
+            function toggleDashboardItems(){
+                const grid = $('.js-dashboard-grid');
 
-      if (!grid.length) {
-          return;
-      }
+                if (!grid.length) {
+                    return;
+                }
 
-      if (grid[0].getBoundingClientRect().bottom < 0) {
-          return;
-      }
+                if (grid[0].getBoundingClientRect().bottom < 0) {
+                    return;
+                }
 
-      const gridItems = grid.find('li');
-      const itemsWidth = grid.find('li').outerWidth();
-      const colCounter = Math.floor((grid.outerWidth())/itemsWidth);
-      const rowCounter = Math.ceil(gridItems.length/colCounter);
+                const gridItems = grid.find('li');
+                const itemsWidth = gridItems.outerWidth();
+                const colCounter = Math.floor((grid.outerWidth())/itemsWidth);
+                const rowCounter = Math.ceil(gridItems.length/colCounter);
 
-      let rowsToShow;
-      if ($(window).width() < 1400) {
-        rowsToShow = 5;
-      } else {
-        rowsToShow = 6;
-      }
+                let rowsToShow;
+                if ($(window).width() < 1400) {
+                    rowsToShow = 5;
+                } else {
+                    rowsToShow = 6;
+                }
 
-      const itemsToShow = rowsToShow * colCounter;
-      const expandItem = $('<div class="expand"><i class="fas fa-arrow-circle-down"></i></div>');
+                const itemsToShow = rowsToShow * colCounter;
+                const expandItem = $('<div class="expand"><i class="fas fa-arrow-circle-down"></i></div>');
 
-      if (rowCounter <= rowsToShow || $(window).width() < 1024) {
-        grid.css('height', '');
-        grid.find('.expand').remove();
-        grid.removeClass('expanded collapsed');
-        return;
-      }
+                if (rowCounter <= rowsToShow || $(window).width() < 1024) {
+                    grid.css('height', '');
+                    grid.find('.expand').remove();
+                    grid.removeClass('expanded collapsed');
+                    return;
+                }
 
-      if (rowCounter > rowsToShow) {
-        const topValue = grid.offset().top;
-        const bottomValue = grid.find('li:nth-child('+ itemsToShow +')')[0].getBoundingClientRect().bottom
-        const gridMaxHeight = bottomValue - topValue;
+                if (rowCounter > rowsToShow) {
+                    const topValue = grid.offset().top;
+                    const bottomValue = grid.find('li:nth-child('+ itemsToShow +')')[0]?.getBoundingClientRect().bottom
+                    const gridMaxHeight = bottomValue - topValue;
 
-        grid.css('height', gridMaxHeight);
+                    grid.css('height', gridMaxHeight);
 
-        if (!grid.hasClass('expanded')) {
-          grid.addClass('collapsed');
-        }
+                    if (!grid.hasClass('expanded')) {
+                        grid.addClass('collapsed');
+                    }
 
-        if (!grid.has('.expand').length) {
-          grid.append(expandItem)
-        }
+                    if (!grid.has('.expand').length) {
+                        grid.append(expandItem)
+                    }
 
-        expandItem.on('click', function() {
-          grid.toggleClass('expanded');
-          grid.toggleClass('collapsed');
-          $(this).find('svg').toggleClass('rotated')
-        })
-      }
-    }
+                    expandItem.on('click', function() {
+                        grid.toggleClass('expanded');
+                        grid.toggleClass('collapsed');
+                        $(this).find('svg').toggleClass('rotated')
+                    })
+                }
+            }
 
-    toggleDashboardItems();
-    $(window).on('resize refresh', toggleDashboardItems);
-  })(jQuery);
+            toggleDashboardItems();
+            $(window).on('resize refresh', toggleDashboardItems);
+        })(jQuery);
+    };
 </script>

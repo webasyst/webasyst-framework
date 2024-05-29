@@ -1,0 +1,49 @@
+<div id="wa-single-app-nav" class="js-no-animation-sidebar-block">
+<style>
+    #wa-single-app-nav #wa-header { display: block; }
+    #wa-single-app-nav #wa-userprofile .dropdown-body { width: 200px; }
+    #wa-single-app-nav #wa-userprofile .dropdown-body .bricks > .brick { width: 57px; }
+    #wa-single-app-nav #wa-header .alert-fixed-box { right: auto; top: 4rem; margin-left: -2rem; }
+
+    #wa-single-app-nav .dropdown-body { left: 2px; width: auto; overflow: visible; }
+    @media screen and (max-width: 760px) {
+        #wa-single-app-nav #wa-header .alert-fixed-box,
+        #wa-single-app-nav #wa-header .dropdown-body { left: auto; right: 0; }
+        #wa-single-app-nav #wa-userprofile .dropdown-body { left: 0; }
+    }
+</style>
+<div id="wa-header">
+    <div class="wa-single-app-nav flexbox middle full-width">
+        <div class="wa-single-app-nav-left">
+            {* Current user options *}
+            {include file="./BackendHeaderCurrentUser.inc.html" dropdown_body_left=true without_link_profile=true inline}
+        </div>
+
+        <div class="wa-single-app-nav-right flexbox middle">
+            {* Announcements *}
+            <div id="wa_announcement">
+                <div class="dropdown custom-pr-12" id="wa-notifications-dropdown">
+                    <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
+                    {include file="../dashboard/DashboardAnnouncement.html" notifications=$notifications inline}
+                </div>
+            </div>
+
+            <!-- plugin hook: 'backend_header.header_single_app_user' -->
+            {* @event backend_header.%plugin_id%.header_single_app_user *}
+            {if !empty($header_single_app_user)}{foreach $header_single_app_user as $_}{$_}{/foreach}{/if}
+
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.bell-announcement.js?{$wa->version(true)}"></script>
+<script>
+    $(function() {
+        new BellAnnouncement();
+        {if $has_new_notifications}
+            $('.js-notifications-bell').trigger('click', { disable_set_seen: true });
+        {/if}
+    });
+</script>
+</div>

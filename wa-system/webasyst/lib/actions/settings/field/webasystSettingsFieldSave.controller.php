@@ -61,17 +61,17 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
 
     protected function getId()
     {
-        return trim((string) $this->getRequest()->request('id'));
+        return waRequest::request('id', '', waRequest::TYPE_STRING_TRIM);
     }
 
     protected function getFieldData()
     {
-        return array(
-            'id'                 => trim($this->getRequest()->post('id_val')),
-            'names'              => (array)$this->getRequest()->post('name'),
-            'ftype'              => trim($this->getRequest()->post('ftype')),
-            'select_field_value' => trim($this->getRequest()->post('select_field_value'))
-        );
+        return [
+            'id'                 => waRequest::post('id_val', '', waRequest::TYPE_STRING_TRIM),
+            'names'              => waRequest::post('name', [], waRequest::TYPE_ARRAY_TRIM),
+            'ftype'              => waRequest::post('ftype', '', waRequest::TYPE_STRING_TRIM),
+            'select_field_value' => waRequest::post('select_field_value', '', waRequest::TYPE_STRING_TRIM)
+        ];
     }
 
     /**
@@ -140,6 +140,9 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
 
                     // update
                     foreach ($params as $param_key => $param_value) {
+                        if ($param_key === 'localized_names' && is_scalar($param_value)) {
+                            $param_value = trim($param_value);
+                        }
                         $subfield->setParameter($param_key, $param_value);
                         $new_fields[$subfield_id] = $subfield;
                     }
@@ -233,11 +236,22 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
         if (strlen($fld_id) > 15) {
             $fld_id = substr($fld_id, 0, 15);
         }
-        while (isset($occupied_keys[$fld_id])) {
-            if (strlen($fld_id) >= 15) {
-                $fld_id = substr($fld_id, 0, 10);
+
+        /** @var waContactField $_field */
+        foreach ($occupied_keys as $_field) {
+            if ($_field instanceof waContactCompositeField) {
+                $sub_field = $_field->getFields();
+                /** @var waContactField $_sub_field */
+                foreach ($sub_field as $_sub_field) {
+                    if ($_sub_field->getId() === $fld_id) {
+                        if (strlen($fld_id) >= 15) {
+                            $fld_id = substr($fld_id, 0, 10);
+                        }
+                        $fld_id .= mt_rand(0, 9);
+                        break 2;
+                    }
+                }
             }
-            $fld_id .= mt_rand(0, 9);
         }
 
         // Create field object of appropriate type

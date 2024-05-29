@@ -49,13 +49,30 @@
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
 {/if}
 
+{$has_dasboard = ($current_app === 'webasyst' && isset($activity))}
+
 <div id="wa-header">
     <div id="wa-header-logo-area">
         {* Account name *}
         {include file="./BackendLogo.inc.html" backend_url=$backend_url company_name=$company_name position="header" inline}
-        <p class="wa-header-sitename flexbox middle space-16">
-            <span class="h2 wa-sitename{if $request_uri == $backend_url || $request_uri == "`$backend_url`/"} is-main-dashboard{/if}">{$wa->accountName()|truncate:42}</span>
-        </p>
+        <div class="width-100 custom-pr-16 custom-my-12">
+            <div class="flexbox middle">
+                <p class="wa-header-sitename flexbox middle space-16">
+                    <span class="h2 wa-sitename{if $request_uri == $backend_url || $request_uri == "`$backend_url`/"} is-main-dashboard{/if}">{$wa->accountName()|truncate:42}</span>
+                </p>
+                {if $has_dasboard && $wa->user()->getRights('team', 'edit_announcements')}
+                    <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new larger button rounded light-gray small">
+                        <i class="fas fa-bell text-gray custom-mr-4"></i>
+                        [`Post`]
+                    </a>
+                {/if}
+            </div>
+            {if $has_dasboard}
+                <div class="flexbox middle custom-ml-20 custom-mt-12">
+                    <span class="js-header-datetime wa-header-datetime gray semibold"></span>
+                </div>
+            {/if}
+        </div>
     </div>
     <div id="wa-header-content-area">
         {* App list *}
@@ -81,7 +98,7 @@
 
 
     </div>
-    <div id="wa-header-user-area" class="flexbox space-16">
+    <div id="wa-header-user-area" class="flexbox space-24">
         {* Current user *}
         {$dashboards = strpos($request_uri, "/webasyst/dashboard/")}
         {$dashboard_url = strpos($request_uri, "/webasyst/dashboard/dashboard/")}
@@ -115,7 +132,6 @@
                 {/if}
             {/if}
 
-
             {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboards}
                 {*
                     EXPERIMENTAL wa_header lock/unlock on the main dashboard
@@ -129,71 +145,53 @@
             {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard}
                 {if !empty($frontend_links)}
                     {if count($frontend_links) == 1}
-                        <a href="{reset($frontend_links)|escape}" class="button light-gray rounded nowrap" target="_blank">
+                        <a href="{reset($frontend_links)|escape}" class="button light-gray small rounded nowrap" target="_blank">
                             <i class="fas fa-external-link-alt text-gray"></i> <span>[s`Site`]</span>
                         </a>
                     {else}
                         <div class="dropdown" id="wa-frontend-links">
                             <span class="dropdown-toggle without-arrow">
-                                <span class="button light-gray rounded nowrap">
+                                <span class="button light-gray rounded small nowrap">
                                     <i class="fas fa-external-link-alt text-gray"></i> <span>[s`Site`]</span> <i class="fas fa-chevron-down fa-xs text-light-gray"></i>
                                 </span>
                             </span>
                             <div class="dropdown-body right">
                                 <ul class="menu">
                                     {foreach $frontend_links as $domain => $link}
-                                    <li>
-                                        <a href="{$link|escape}" target="_blank">
-                                            <span>{$domain|escape}</span>
-                                        </a>
-                                    </li>
+                                        <li>
+                                            <a href="{$link|escape}" target="_blank">
+                                                <span>{$domain|escape}</span>
+                                            </a>
+                                        </li>
                                     {/foreach}
                                 </ul>
                             </div>
                         </div>
                     {/if}
                 {/if}
-                <div class="dashboard-customize">
-                    <a href="javascript:void(0);"
-                       class="button nobutton rounded nowrap gray js-dashboard-edit"
-                       data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
-                       id="show-dashboard-editable-mode_">
-                        <i class="fas fa-sliders-h"></i> <span>[s`Widgets`]</span>
-                    </a>
-                    <a href="javascript:void(0);"
-                       class="button js-dashboard-edit-close"
-                       style="display: none;">
-                        <span>[s`Done`]</span>
-                    </a>
-                </div>
             {/if}
 
+            {if !$has_dasboard}
             <div class="dropdown" id="wa-notifications-dropdown">
                 <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
                 {include file="../dashboard/DashboardAnnouncement.html" notifications=$notifications inline}
             </div>
-
-            {if isset($app_info['ui']) && $app_info['ui'] === '2.0'}
-                <button class="icon large js-mode-toggle" title="[`Light/dark mode`]" data-wa-mode-toggle>
-                    <i class="fas fa-adjust"></i>
-                </button>
-
             {/if}
 
             {** wa2ui showcase box in case the wa1 legacy ui is supported by the app **}
             {if !$wa->debug() && ifset($app_info, 'ui', '1.3') === '1.3,2.0'
 
-                    && $app_info.id != 'webasyst'
+                    && $app_info.id != 'webasyst' && !$wa->isMobile()
 
                 }
-                <div class="dropdown" id="wa2ui-dropdown">
-                    <span class="dropdown-toggle without-arrow js-wa2ui" title="[s`New Webasyst 2 UI`]" style="color: var(--text-color-link); cursor: pointer;"><span class="badge blue">2.0</span></span>
+                <div class="dropdown desktop-and-tablet-only" id="wa2ui-dropdown">
+                    <span class="dropdown-toggle without-arrow js-wa2ui custom-pr-0" title="[s`New Webasyst 2 UI`]" style="color: var(--text-color-link); cursor: pointer;"><span class="badge blue">2.0</span></span>
                     <div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
                         <div class="wa-notification">
                             <div class="wa-notification-header wa2ui-teaser">
                                 <div class="flexbox middle space-8">
                                     {if $app_info.id != 'webasyst'}<img src="{$root_url}{$app_info.icon.48}" style="width: 24px; height: 24px;">{/if}
-                                    [s`All-new Webasyst 2 UI`]&nbsp;<span style="opacity: 0.42;">([`beta`])</span>
+                                    [s`All-new Webasyst 2 UI`]
                                 </div>
                             </div>
                             <div class="wa-notification-body">
@@ -208,7 +206,6 @@
                                 </p>
 
                                 <button class="button gray outlined small custom-mr-4" onClick="_setCookie('force_set_wa_backend_ui_version', '1.3', 365); _setCookie('force_hide_wa2ui_teaser', 0, -1); window.location.reload();"><span>[s`Back to the classic UI`]</span></button>
-                                [s`or`] <a href="[s`http://2.webasyst.com`]" target="_blank">[s`learn more about Webasyst 2`]</a>
                             </div>
                         </div>
                     </div>
@@ -225,50 +222,25 @@
             *}
 
             {* Current user *}
-            <div class="dropdown" id="wa-userprofile" data-user-id="{$user['id']}">
-                <a href="{$backend_url}?module=profile" title="[s`My profile`]" class="dropdown-toggle without-arrow">
-                    <img src="{$user->getPhoto(96)}" alt="" class="wa-userpic" />
-                </a>
-                <div class="dropdown-body right">
-                    <ul class="menu">
-                        <li>
-                            <a href="{$backend_url}?module=profile">
-                                <i class="fas fa-user"></i>
-                                <span>[s`My profile`]</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{$backend_url}?action=logout">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>[s`Logout`]</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            {include file="./BackendHeaderCurrentUser.inc.html" inline}
         {/strip}
     </div>
 </div>
-<script id="wa-header-js"
-        type="text/javascript"
-        src="{$root_url}wa-content/js/jquery-wa/wa.header.js?{$wa_version}"
-        {if !$user['timezone']} data-determine-timezone="1"{/if}>
-</script>
+    <script id="wa-header-js"
+            type="text/javascript"
+            src="{$root_url}wa-content/js/jquery-wa/wa.header.js?{$wa_version}"
+            {if !$user['timezone']} data-determine-timezone="1"{/if}>
+    </script>
+    <script type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.bell-announcement.js?{$wa_version}"></script>
     <script>
         $(function () {
             new WaHeader();
+            new BellAnnouncement();
 
-            /* Notification Actions */
-            const $notifications_bell = $('.js-notifications-bell');
-            $notifications_bell.on('click', function (e){
-                e.preventDefault();
-                $(this).toggleClass('wa-animation-bell');
-                setTimeout(() => $(this).toggleClass('wa-animation-bell'), 1000);
-                $(this).next('.js-notification-wrapper').toggle().removeClass('hidden');
-            });
             /* Active All Notifications On Main Dashboard */
-            {if !empty($notifications) && ($request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard)}
-                $notifications_bell.trigger('click');
+            {* old logic {if !empty($notifications) && ($request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard)} *}
+            {if $has_new_notifications}
+                $('.js-notifications-bell').trigger('click', { disable_set_seen: true });
             {/if}
 
             {if !$wa->debug()}
@@ -280,25 +252,12 @@
                 });
             {/if}
 
-            /* User Profile Dropdown*/
-            const userprofile_options = { };
-            {if $wa->isMobile()}
-                userprofile_options.hover = false;
-            {/if}
-            const $userprofile = $("#wa-userprofile");
-            $userprofile.waDropdown(userprofile_options);
-
             /* Frontend links */
             $("#wa-frontend-links").waDropdown({
                 {if $wa->isMobile()}
                     hover: false
                 {/if}
             });
-
-            $userprofile.on('click', 'a', function () {
-                $(this).off('click');
-                this.click();
-            })
         });
     </script>
 

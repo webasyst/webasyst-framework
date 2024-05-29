@@ -6,6 +6,7 @@ class blogCategoryPluginSettingsAction extends blogPluginsSettingsViewAction
     {
         $this->plugin_id = 'category';
         parent::execute();
+
         if($data = waRequest::post($this->plugin_id)) {
             $order = 0;
             $model = new blogCategoryModel();
@@ -27,13 +28,27 @@ class blogCategoryPluginSettingsAction extends blogPluginsSettingsViewAction
             }
             unset($row);
         }
+
+        $this->saveSettings();
+
         $categories = blogCategory::getAll();
         $icons = $this->getConfig()->getIcons();
         if(!$categories) {
             $categories[0] = array('url'=>'','name'=>'','icon'=>current($icons),'id'=>0,'qty'=>0, 'sort'=>0);
         }
+
+        $this->view->assign('settings', $this->plugin_instance->getSettings());
         $this->view->assign('categories', $categories);
         $this->view->assign('icons', $icons);
+    }
+
+    protected function saveSettings()
+    {
+        $settings = $this->getRequest()->post('settings');
+        if (empty($settings)) {
+            return;
+        }
+        $this->plugin_instance->saveSettings($settings);
     }
 }
 

@@ -41,7 +41,7 @@ class blogAkismetPlugin extends blogPlugin
         $output = array();
         $string = _wp("mark as spam");
         $output['toolbar'] = <<<HTML
-<script type="text/javascript">
+<script>
   $.wa.locale = $.extend($.wa.locale, {
     'mark as spam':'{$string}'
   });

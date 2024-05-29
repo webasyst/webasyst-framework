@@ -99,7 +99,7 @@ class waSmarty3View extends waView
             if (is_array($value)) {
                 $value = array_map('htmlspecialchars', $value);
             } else {
-                $value = htmlspecialchars($value);
+                $value = htmlspecialchars((string) $value);
             }
         }
         $this->smarty->assign($name, $value);

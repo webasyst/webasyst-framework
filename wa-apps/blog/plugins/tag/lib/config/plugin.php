@@ -4,7 +4,7 @@ return array(
     'name'        => /*_wp*/('Tags'),
     'description' => /*_wp*/('Assign tags to posts'),
     'vendor'      => 'webasyst',
-    'version'     => '1.1',
+    'version'     => '1.2.0',
     'img'         => 'img/tags.png',
     'frontend'    => true,
 

@@ -69,8 +69,8 @@ class waNet
         'proxy_auth'          => 'basic',
         # specify custom interface
         'interface'           => null,
-        # string with list of expected codes separated comma or space; null to accept any code
-        'expected_http_code'  => 200,
+        # list of expected codes (or string separated comma or space); null to accept any code
+        'expected_http_code'  => [200],
         'priority'            => array(
             'curl',
             'fopen',
@@ -81,6 +81,7 @@ class waNet
             'cert'     => '',
             'password' => '',
         ),
+        'tolerate_empty_body_request' => false,
     );
 
     private static $master_options = array();
@@ -119,6 +120,10 @@ class waNet
             $options,
             self::$master_options
         );
+
+        if (isset($this->options['expected_http_code']) && !is_array($this->options['expected_http_code'])) {
+            $this->options['expected_http_code'] = preg_split('@[,:;.\s]+@', $this->options['expected_http_code']);
+        }
 
         $this->request_headers = array_merge($this->request_headers, $custom_headers);
     }
@@ -206,11 +211,7 @@ class waNet
         $this->decodeResponse($response);
 
         if ($this->options['expected_http_code'] !== null) {
-            $expected = $this->options['expected_http_code'];
-            if (!is_array($expected)) {
-                $expected = preg_split('@[,:;.\s]+@', $this->options['expected_http_code']);
-            }
-            if (empty($this->response_header['http_code']) || !in_array($this->response_header['http_code'], $expected)) {
+            if (empty($this->response_header['http_code']) || !in_array($this->response_header['http_code'], $this->options['expected_http_code'])) {
                 throw new waNetException($response, $this->response_header['http_code']);
             }
         }
@@ -405,6 +406,10 @@ class waNet
     {
         $this->raw_response = $response;
         $this->decoded_response = null;
+
+        if (empty($response) && (in_array(204, ifset($this->options, 'expected_http_code', [])) || $this->options['tolerate_empty_body_request'])) {
+            return;
+        }
         switch ($this->options['format']) {
             case self::FORMAT_JSON:
                 $this->decoded_response = waUtils::jsonDecode($this->raw_response, true);
@@ -810,7 +815,9 @@ class waNet
         }
 
         if ($this->options['expected_http_code'] !== null) {
-            if (!$response || !in_array($response_code, array('unknown', $this->options['expected_http_code']), true)) {
+            $expected = $this->options['expected_http_code'];
+            $expected[] = 'unknown';
+            if (!$response || !in_array($response_code, $expected, true)) {
                 if (empty($hint)) {
                     $hint = $this->getHint(__LINE__);
                 }

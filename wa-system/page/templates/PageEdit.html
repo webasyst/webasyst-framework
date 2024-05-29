@@ -3,9 +3,9 @@
     {foreach $options.data as $k => $v}
     <input type="hidden" name="{$k}" value="{$v|escape}">
     {/foreach}
-    <div class="box wa-page-gray-toolbar flexbox">
+    <div class="box contentbox wa-page-gray-toolbar flexbox">
         <div class="wide">
-            <h2 class="wa-page-name">{if $page}{$page.name|escape}{if !$page.status} <span class="wa-page-draft">[s`draft`]</span>{/if}{else}[s`New page`]{/if}</h2>
+            <h2 class="wa-page-name">{if $page}{$page.name|escape}{if !$page.status} <span class="wa-page-draft badge light-gray squared smaller">[s`draft`]</span>{/if}{else}[s`New page`]{/if}</h2>
             <div class="wa-page-urls small">
                 {if $page}
                     {if !empty($url)}
@@ -45,7 +45,7 @@
             </ul>
         {/if}
         <div id="wa-page-settings" class="fields" style="{if $page}display: none;{/if}">
-            <div class="fields-group">
+            <div>
                 <div class="field">
                     <div class="name for-input">[s`Page name`]</div>
                     <div class="value">
@@ -108,7 +108,7 @@
                 </a>
             {/if}
             <div id="wa-page-advanced-params" {if !$page || !$page.id} style="display:none"{/if}>
-                <div class="fields-group">
+                <div class="">
                     <div class="field">
                         <div class="name for-input">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
                         <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold long" /></div>
@@ -140,7 +140,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="fields-group og-group" {if empty($og_params)}style="display: none;"{/if}>
+                <div class="custom-mt-24 og-group" {if empty($og_params)}style="display: none;"{/if}>
                     <div class="field">
                         <div class="name for-input">[s`Social sharing title`] <span class="hint">og:title</span></div>
                         <div class="value">
@@ -176,12 +176,12 @@
                 </div>
 
                 {if !empty($page_edit)}
-                    <div class="fields-group">
+                    <div class="custom-mt-24">
                         {foreach $page_edit as $_}{$_}{/foreach}
                     </div>
                 {/if}
 
-                <div class="fields-group">
+                <div class="custom-mt-24">
                     <div class="field">
                         <div class="name for-input">[s`Page custom parameters`]</div>
                         <div class="value">
@@ -195,7 +195,7 @@
         </div>
     </div>
     <div class="wa-editor-core-wrapper">
-        <ul class="tabs overflow-dropdown wa-editor-wysiwyg-html-toggle bordered-bottom custom-ml-8 small">
+        <ul class="tabs overflow-dropdown wa-editor-wysiwyg-html-toggle custom-mx-16 custom-pl-16 small">
             <li class="selected">
                 <a class="wysiwyg js-is-wa2" href="javascript:void(0);">[s`WYSIWYG`]</a>
             </li>
@@ -449,22 +449,23 @@
             $editor_status.html("<i class='fas fa-spin fa-spinner'></i> [s`Saving...`]").fadeIn("slow");
 
             $.post($form.attr('action'), $form.serialize(), function (response) {
-                if (response.status == 'ok') {
+                if (response.status === 'ok') {
                     $(".state-error").removeClass('state-error');
 
                     $editor_status.html('<i class="fas fa-check-circle"></i> [s`Saved`]').fadeOut('slow');
 
                     const p = response.data;
 
-                    let html = $(`<li id="page-${ p.id }" class="dr selected">
+                    let html = $(`<li class="dr rounded selected" id="page-${ p.id }" data-page-id="${ p.id }">
                                     <a class="wa-page-link ui-droppable" href="{$page_url}${ p.id }">
                                         <i class="fas fa-${ p.status == 0 ? 'pencil' : 'file' }-alt"></i>
                                         <span>${ p.name } <span class="hint">/${ p.full_url }</span></span>
-                                        <span class="count action small">
-                                            <i class="fas fa-plus-circle wa-page-add"></i>
+                                        <span class="count action small wa-page-add">
+                                            <i class="fas fa-plus-circle text-green"></i>
                                         </span>
                                     </a>
-                                </li>`);
+                                </li>
+                                <li class="drag-newposition ui-droppable"></li>`);
 
                     if (p.add) {
                         $li.replaceWith(html);
@@ -499,8 +500,8 @@
                         $page_urls_link.first().html(page_url);
                     }
 
-
-                } else if (response.status == 'fail') {
+                    $.initPagesDraggable();
+                } else if (response.status === 'fail') {
                     if ($.isArray(response.errors)) {
                         error = response.errors[0];
                         $(response.errors[1]).addClass('state-error');

@@ -22,8 +22,11 @@
                                         </span>
                                     </span>
                                 </span>
-                                [`Also delete all events imported from this calendar `]
-                                ({sprintf(_w('%d event', '%d events', $events_count))})
+                                &nbsp;
+                                {sprintf_wp(
+                                    'Also delete all events imported from this calendar (%s)',
+                                    _w('%d event', '%d events', $events_count)
+                                )}
                             </label>
                         </p>
                     {/if}

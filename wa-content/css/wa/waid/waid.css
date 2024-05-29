@@ -71,6 +71,8 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 .wa-dialog.w-webasyst-id-help-dialog .wa-dialog-body .action-buttons .dots {
   margin: 0;

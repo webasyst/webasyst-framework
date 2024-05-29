@@ -56,6 +56,7 @@ class blogPostSaveController extends waJsonController
             'meta_description'   => waRequest::post('meta_description', null, waRequest::TYPE_STRING_TRIM),
             'album_id'           => waRequest::post('album_id', null, waRequest::TYPE_INT),
             'album_link_type'    => waRequest::post('album_link_type', null, waRequest::TYPE_STRING_TRIM),
+            'params'             => waRequest::post('params', '', waRequest::TYPE_STRING_TRIM),
         );
 
         if ($post['album_id'] && blogPhotosBridge::isAvailable()) {
@@ -258,6 +259,10 @@ class blogPostSaveController extends waJsonController
                 $this->response['formatted_datetime'] = waDateTime::format('humandatetime', $post['datetime']);
                 $this->response['id'] = $post['id'];
                 $this->response['url'] = $post['url'];
+                $this->response['meta']['description'] = $post['meta_description'];
+                $this->response['meta']['keywords'] = $post['meta_keywords'];
+                $this->response['meta']['title'] = $post['meta_title'];
+                $this->response['params'] = $post['params'];
                 if ($post['status'] != blogPostModel::STATUS_PUBLISHED) {
                     $options = array(
                         'contact_id' => $post['contact_id'],

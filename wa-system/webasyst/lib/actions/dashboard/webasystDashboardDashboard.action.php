@@ -4,7 +4,7 @@ class webasystDashboardDashboardAction extends webasystDashboardViewAction
 {
     public function preExecute()
     {
-        // This page doesn't exist in old webasyst UI 
+        // This page doesn't exist in old webasyst UI
         if (wa()->whichUI() !== '2.0') {
             $this->redirect(wa()->getConfig()->getBackendUrl(true));
         }
@@ -61,9 +61,42 @@ class webasystDashboardDashboardAction extends webasystDashboardViewAction
             }
         }
 
-        $this->view->assign(array(
-            'dashboard' => $dashboard,
-            'widgets' => $widgets,
-        ));
+        $this->view->assign([
+            'dashboard'             => $dashboard,
+            'widgets'               => $widgets,
+            'public_dashboards'     => $this->getPublicDashboards(),
+            'selected_sidebar_item' => $this->getSelectedSidebarItem(),
+            'dashboard_module_url'  => wa()->getAppUrl('webasyst') . 'webasyst/dashboard/',
+            'backend_url'           => wa()->getConfig()->getBackendUrl(true),
+            'is_admin'              => wa()->getUser()->isAdmin('webasyst'),
+        ]);
+    }
+
+    protected function getPublicDashboards()
+    {
+        $is_admin = wa()->getUser()->isAdmin('webasyst');
+
+        $public_dashboards = [];
+        if ($is_admin) {
+            $dashboard_model = new waDashboardModel();
+            $public_dashboards = $dashboard_model->order('name')->fetchAll('id');
+        }
+
+        return $public_dashboards;
+    }
+
+    protected function getSelectedSidebarItem()
+    {
+        $request_uri = waRequest::server('REQUEST_URI');
+        $dashboard_module_url = wa()->getAppUrl('webasyst') . 'webasyst/dashboard/';
+
+        $is_prefix = strpos($request_uri, $dashboard_module_url) === 0;
+        if ($is_prefix) {
+            $str = trim(substr($request_uri, strlen($dashboard_module_url)), '/');
+            // with removing get-params
+            return preg_replace('/\/\?\S*/', '', $str);
+        }
+
+        return 'my';
     }
 }

@@ -37,7 +37,7 @@
                     return false;
                 }
             });
-            $('input.blog-post-checkbox').live('change', function () {
+            $('input.blog-post-checkbox').on('change', function () {
                 if (this.checked)
                     $(this).parent().addClass('bold');
                 else
@@ -161,7 +161,7 @@
                 $(this).removeClass('js-managed');
                 $(this).find('h3:hidden').show();
                 $(this).find('h3:first').hide();
-                $(this).find('.b-post-body:hidden, .profile.image20px:hidden').fadeIn();
+                $(this).find('.b-post-body:hidden, .js-profile:hidden').fadeIn();
             });
             return false;
         },
@@ -254,7 +254,7 @@
             if (this.management) {
                 var self = this;
                 var collapsed = false;
-                $('.b-post-body:visible, .profile.image20px:visible').hide();
+                $('.b-post-body:visible, .js-profile:visible').hide();
                 $('.b-post').each(function () {
                     if (!$(this).hasClass('js-managed')) {
                         $(this).find('h3:visible').hide();

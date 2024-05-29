@@ -54,7 +54,7 @@ $.wa.contactEditorFactory = function(options) {
           * this.factoryTypes must already be set.*/
         initFactories: function(fields, fieldsOrder) {
             this.fields = fields;
-            this.fieldsOrder = fieldsOrder,
+            this.fieldsOrder = fieldsOrder;
             this.editorFactories = {};
             this.fieldEditors = {};
             for (var i = 0; i < fieldsOrder.length; i += 1) {
@@ -104,10 +104,15 @@ $.wa.contactEditorFactory = function(options) {
                     return;
                 }
 
-                if (typeof this.fieldEditors[f] == 'undefined') {
-                    this.fieldEditors[f] = this.editorFactories[f].createEditor(this.contactType);
+                try {
+                    if (typeof this.fieldEditors[f] == 'undefined') {
+                        this.fieldEditors[f] = this.editorFactories[f].createEditor(this.contactType);
+                    }
+                    this.fieldEditors[f].setValue(newData[f]);
+                } catch (e) {
+                    console.log('Unable to initialize editor '+f);
+                    console.log(e);
                 }
-                this.fieldEditors[f].setValue(newData[f]);
             }
 
         },

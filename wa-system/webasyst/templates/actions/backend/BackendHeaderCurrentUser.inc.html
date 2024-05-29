@@ -1,0 +1,348 @@
+{$calendars = (empty($calendars)) ? null : $calendars}
+{$current_status = (empty($current_status)) ? null : $current_status}
+{$change_status_access = $wa->team && $calendars}
+
+{function get_icon status=null with_color=false}
+    {$_icon = 'fas fa-calendar-alt'}
+    {$_style = ''}
+    {if $status}
+        {if $status.id === 'birthday'}
+            {$_icon = 'fas fa-birthday-cake'}
+        {elseif !empty($status.icon)}
+            {$_icon = {$status.icon|escape}}
+        {/if}
+
+        {if $with_color}
+            {if !empty($status.status_bg_color)}
+                {$_style = "color: `$status.status_bg_color`;"}
+            {elseif !empty($status.bg_color)}
+                {$_style = "color: `$status.bg_color`;"}
+            {/if}
+        {/if}
+    {/if}
+    <i class="{$_icon}"{if $_style} style="{$_style}"{/if}></i>
+{/function}
+
+<div class="dropdown" id="wa-userprofile" data-user-id="{$user['id']}" {if $change_status_access}data-current-status-id="{if $current_status}{$current_status.id}{/if}"{/if}>
+    <a href="{$backend_url}?module=profile" id="js-user-dropdown-toggler" class="dropdown-toggle without-arrow userpic userpic-48" style="overflow: visible;">
+        <img src="{$user->getPhoto(96)}" alt="" class="wa-userpic" title="[s`My profile`]" />
+        {if $change_status_access}
+            {$_style = ''}
+            {if $current_status}
+                {if !empty($current_status.status_bg_color)}
+                    {$_style = "background-color: `$current_status.status_bg_color`;"}
+                {else}
+                    {$_style = "background-color: `$current_status.bg_color`;"}
+                {/if}
+
+                {if !empty($current_status.status_font_color)}
+                    {$_style = {$_style|cat:"color: `$current_status.status_font_color`;"}}
+                {else}
+                    {$_style = {$_style|cat:"color: `$current_status.font_color`;"}}
+                {/if}
+            {/if}
+            <span class="userstatus{if !$current_status} hidden{/if}"
+                data-wa-tooltip-content="{if $current_status}{if !empty($current_status.summary)}{$current_status.summary|escape}{else}{$current_status.calendar_name|escape}{/if}{/if}"
+                data-wa-tooltip-placement="left"
+                style="{$_style}"
+            >
+                {get_icon status=$current_status}
+            </span>
+        {/if}
+    </a>
+    <div class="dropdown-body{if empty($dropdown_body_left)} right{/if}">
+        <div class="bricks custom-mt-12">
+            {if empty($without_link_profile)}
+            <a class="brick selected" href="{$backend_url}?module=profile">
+                <span class="icon"><i class="userpic size-24" style="background-image: url('{$user->getPhoto(96)}');"></i></span>
+                <span>[s`Profile`]</span>
+            </a>
+            {/if}
+            <a href="javascript:void(0)" class="brick selected" data-wa-mode-toggle>
+                <span class="icon"><i class="fas fa-adjust"></i></span>
+                <span>[s`Mode`]</span>
+            </a>
+            <a href="{$backend_url}?action=logout" class="brick selected">
+                <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                <span>[s`Logout`]</span>
+            </a>
+        </div>
+
+        {if $is_user_connected_to_waid}
+            <div class="custom-pb-12 custom-px-12">
+                <a href="[s`https://www.webasyst.com/my/`]" target="_blank" class="button white full-width smaller webasyst-id-button"><i class="icon webasyst-magic-wand custom-mr-8"></i>[s`My Webasyst ID`]</a>
+            </div>
+        {/if}
+
+        {if $change_status_access}
+            <div class="blank custom-pt-12 custom-pb-4">
+                <h5 class="heading flexbox">
+                  <span class="wide nowrap">{sprintf('[s`Status for %s`]', $smarty.now|wa_datetime:'humandate')}</span>
+                  <a href="{$backend_url}team/calendar/" class="button smaller light-gray rounded bold">[s`Calendar`]</a>
+                </h5>
+                <ul id="js-user-dropdown-menu" class="menu custom-mb-0">
+                    <li class="{if !$current_status}hidden{/if}" data-action-id="delete">
+                        <a href="javascript:void(0)">
+                            <i class="far fa-circle text-light-gray"></i>
+                            <span>[s`No status`]</span>
+                        </a>
+                    </li>
+                    {foreach $calendars as $_c}
+                        {$current_calendar_id = ($current_status) ? $current_status.calendar_id : null}
+                        {$status_name = ($_c.default_status) ? {$_c.default_status|escape} : {$_c.name|escape}}
+                        {if $current_calendar_id === $_c.id && $current_status.summary}
+                            {$status_name = {$current_status.summary|escape}}
+                        {/if}
+
+                        <li class="js-calendar-item{if $current_calendar_id === $_c.id} selected{/if}{if !$_c.default_status && $current_calendar_id !== $_c.id} hidden{/if}"
+                            data-calendar-id="{$_c.id}"
+                        >
+                            <a href="javascript:void(0)">
+                                {get_icon status=$_c with_color=true}
+                                <span>{$status_name}</span>
+                            </a>
+                        </li>
+                    {/foreach}
+                    <li data-action-id="custom">
+                        <a href="javascript:void(0)">
+                            <i class="fas fa-ellipsis-h text-light-gray"></i>
+                            <span>[s`Custom status...`]</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {/if}
+    </div>
+</div>
+<script>
+$(function () {
+    /* User Profile Dropdown*/
+    const userprofile_options = { hover_out_delay: 200 };
+    {if $wa->isMobile()}
+        userprofile_options.hover = false;
+    {/if}
+    const $userprofile = $("#wa-userprofile");
+    $userprofile.waDropdown(userprofile_options);
+
+    {if $change_status_access}
+    /* Change status */
+    const calendars_obj = Object.freeze({$calendars|json_encode});
+    const url_module = "{$backend_url}team/calendar/?module=schedule&action=";
+    const $toggler = $('#js-user-dropdown-toggler');
+    const $dropdown_menu = $('#js-user-dropdown-menu');
+    const $remove_button = $dropdown_menu.find('[data-action-id="delete"]');
+
+    const statusLoading = () => {
+        const $userstatus = $toggler.find('.userstatus');
+        const $userstatus_svg = $userstatus.find('svg');
+        return {
+            show: () => {
+                $userstatus.append('<span class="js-loading"><i class="fas fa-spinner fa-spin text-white"></i></span>').removeClass('hidden');
+                $userstatus_svg.addClass('hidden');
+            },
+            hide: () => {
+                $userstatus.find('.js-loading').remove();
+                $userstatus_svg.removeClass('hidden');
+            }
+        }
+    };
+    const initTooltip = () => {
+        $toggler.find('.userstatus').removeAttr('data-tooltip').waTooltip();
+    };
+    initTooltip();
+
+    const reRenderItems = (selected_calendar_id = null) => {
+        $dropdown_menu.find('[data-calendar-id]').each(function () {
+            const $_self = $(this);
+            const _calendar_id = $_self.data('calendar-id');
+
+            if (parseInt(_calendar_id) === parseInt(selected_calendar_id)) {
+                $_self.removeClass('hidden');
+                return;
+            }
+
+            const { default_status, name } = calendars_obj[_calendar_id];
+            if (!default_status) {
+                $_self.addClass('hidden');
+            }
+            $_self.find('span').text(default_status || name);
+        });
+    };
+    const upsertStatus = (calendar_id, additional_payload = null, callback = null) => {
+        const selected_status_id = $userprofile.data('current-status-id');
+        const calendar = calendars_obj[calendar_id];
+
+        statusLoading().show();
+        const payload = {
+            data: {
+                summary: calendar.default_status,
+                description: '',
+                location: '',
+                start: '{date("Y-m-d H", strtotime("+1 hours"))}:00:00',
+                end: '{date("Y-m-d H", strtotime("+2 hours"))}:00:00',
+                is_allday: 1,
+                summary_type: 'default',
+                calendar_id: calendar_id,
+                contact_id: $userprofile.data('user-id'),
+                is_status: 1,
+                ...(selected_status_id ? { id: selected_status_id } : {}),
+                ...(additional_payload && typeof additional_payload === 'object' ? additional_payload : {})
+            }
+        };
+        $.post(url_module + "eventSave", payload, function(response) {
+            if (response.status === "ok") {
+                const $item = $dropdown_menu.find('[data-calendar-id="'+calendar_id+'"]');
+                $item.find('span').text(payload.data.summary);
+                $item.addClass('selected').siblings().removeClass('selected');
+
+                $userprofile.data('current-status-id', response.data.id);
+                $remove_button.removeClass('hidden');
+
+                const $userstatus = $toggler.find('.userstatus');
+                const $userstatus_clone = $userstatus.clone().remove();
+                $userstatus_clone
+                    .removeClass('hidden')
+                    .attr('data-wa-tooltip-content', payload.data.summary)
+                    .css('background-color', (calendar.status_bg_color || calendar.bg_color));
+
+                const icon_class = calendar.icon || 'fas fa-calendar-alt';
+                $userstatus_clone
+                    .empty()
+                    .append('<i class="'+icon_class+'" style="color:'+(calendar.status_font_color || calendar.font_color)+'"></i>');
+
+                $toggler.append($userstatus_clone);
+                initTooltip();
+                reRenderItems(payload.data.calendar_id);
+
+                if (response.data && response.data.message) {
+                    alert(response.data.message);
+                }
+
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            }
+        });
+    };
+
+    $dropdown_menu.find('[data-calendar-id],[data-action-id]').on('click', function () {
+        const $self = $(this);
+        if ($self.hasClass('selected')) {
+            return true;
+        }
+        const action_id = $self.data('action-id');
+        const calendar_id = $self.data('calendar-id');
+
+        switch (action_id) {
+            case 'custom':
+                $.waDialog({
+                    html: $('#todaystatus-dialog-template').html(),
+                    onOpen: function ($d, instance) {
+                        const $form = $d.find('form');
+                        const $submit = $form.find(':submit');
+
+                        $form.find(':radio').on('change', function () {
+                            $submit.prop('disabled', !$(this).is(':checked'));
+                        });
+                        $form.on('submit', function (e) {
+                            e.preventDefault();
+
+                            const form_data = $form.serializeArray().reduce((acc, field) => {
+                                acc[field.name] = field.value;
+                                return acc;
+                            }, {});
+
+                            if (form_data.summary.trim()) {
+                                form_data.summary_type = 'custom';
+                            } else {
+                                const { name, default_status } = calendars_obj[form_data.calendar_id];
+                                form_data.summary = default_status || name;
+                            }
+
+                            $submit.prepend('<span class="custom-mr-4"><i class="fas fa-spinner fa-spin"></i></span>');
+                            upsertStatus(form_data.calendar_id, form_data, () => {
+                                instance.close();
+                            });
+                        });
+                    }
+                });
+                break;
+
+            case 'delete':
+                const selected_status_id = $userprofile.data('current-status-id');
+                if (!selected_status_id) {
+                    break;
+                }
+                statusLoading().show();
+                $.post(url_module + "eventDelete", { id: selected_status_id }, function(response) {
+                    if (response.status === "ok") {
+                        $toggler.find('.userstatus').addClass('hidden');
+                        $userprofile.data('current-status-id', '');
+                        $userprofile.find('li[data-calendar-id]').removeClass('selected');
+                        $remove_button.addClass('hidden');
+                        reRenderItems();
+                        if (response.data && response.data.message) {
+                            alert(response.data.message);
+                        }
+                    }
+                    statusLoading().hide();
+                });
+                break;
+
+            default:
+                upsertStatus(calendar_id);
+                break;
+        }
+    });
+    {/if}
+})
+</script>
+
+{if $change_status_access}
+<script id="todaystatus-dialog-template" type="text/html">
+    <div class="dialog">
+        <div class="dialog-background"></div>
+        <form class="dialog-body">
+            <header class="dialog-header">
+                <h1>[`Custom status`]</h1>
+            </header>
+
+            <div class="dialog-content fields form">
+                <div class="field">
+                    <div class="name nowrap for-input">
+                        [`Status label`]
+                    </div>
+                    <div class="value">
+                        <input type="text" class="bold" name="summary" placeholder="[`Enter custom text`]"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name for-checkbox">
+                        [`Calendar`]
+                    </div>
+                    <div class="value">
+                        {foreach $calendars as $_c}
+                        <div class="custom-mb-8" data-calendar-id="{$_c.id}">
+                            <label title="{$_c.default_status|escape}">
+                                <span class="wa-radio">
+                                    <input type="radio" name="calendar_id" value="{$_c.id}"/>
+                                    <span></span>
+                                </span>
+                                {get_icon status=$_c with_color=true}
+                                <span>{$_c.name|escape}</span>
+                            </label>
+                        </div>
+                        {/foreach}
+                        <p class="hint custom-mt-12">[`The status will be automatically linked with the selected calendar in the Team app.`]</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="dialog-footer">
+                <button type="submit" class="button" disabled>[`Save`]</button>
+                <button type="button" class="js-close-dialog button light-gray">[`Cancel`]</button>
+            </footer>
+        </form>
+    </div>
+</script>
+{/if}

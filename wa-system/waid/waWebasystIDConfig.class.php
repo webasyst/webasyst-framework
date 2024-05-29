@@ -40,7 +40,7 @@ class waWebasystIDConfig
     protected function getMTime()
     {
         $app_settings_model = new waAppSettingsModel();
-        $time = $app_settings_model->get('webasyst', self::ENDPOINTS_SYNC_TIME_KEY, '');
+        $time = $app_settings_model->get('webasyst', $this->getSettingsKey(), '');
         if (wa_is_int($time) && $time > 0) {
             return $time;
         }
@@ -50,7 +50,12 @@ class waWebasystIDConfig
     protected function updateMTime()
     {
         $app_settings_model = new waAppSettingsModel();
-        $app_settings_model->set('webasyst', self::ENDPOINTS_SYNC_TIME_KEY, time());
+        $app_settings_model->set('webasyst', $this->getSettingsKey(), time());
+    }
+
+    protected function getSettingsKey()
+    {
+        return self::ENDPOINTS_SYNC_TIME_KEY;
     }
 
     protected function getConfigPath()

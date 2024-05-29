@@ -1,30 +1,42 @@
-<div class="dialog width300px height300px" id="postpublish-dialog">
-  <div class="dialog-background"> </div>
-  <div class="dialog-window" style="width: 500px; min-width: 350px">
-    <div class="dialog-content">
-      <div class="dialog-content-indent">
-        <h1>[`Confirm the blog for publishing this post`]</h1>
-        <ul class="menu-v">
-          {foreach $blogs as $blog_item_id => $blog_item key}
-          {if $blog_item.rights ge blogRightConfig::RIGHT_READ_WRITE}
-          <li>
-            <input type="radio" name="publish_blog_id" value="{$blog_item_id}" id="b-post-publish-blog-{$blog_item_id}"{if $blog_item.id eq $post.blog_id} checked="checked"{/if}>
-            &nbsp;
-            <label for="b-post-publish-blog-{$blog_item_id}">
-                {$blog_item.icon_html|default:''}{$blog_item.name|escape}
-                {if $blog_item.status ==  blogBlogModel::STATUS_PRIVATE}<i class="icon10 lock-bw no-overhanging"></i>{/if}
-            </label>
-            {if !$blog_item@last}<br>{/if}
-          </li>
-          {/if}{/foreach}
-        </ul>
-      </div>
+<div class="dialog" id="postpublish-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <h3 class="dialog-header">[`Confirm the blog for publishing this post`]</h3>
+        <div class="dialog-content">
+            <ul class="menu large">
+                {foreach $blogs as $blog_item_id => $blog_item key}
+                    {if $blog_item.rights ge blogRightConfig::RIGHT_READ_WRITE}
+                        <li>
+                            <label class="item" for="b-post-publish-blog-{$blog_item_id}">
+                                <input type="radio" class="custom-mr-12" name="publish_blog_id" value="{$blog_item_id}" id="b-post-publish-blog-{$blog_item_id}"{if $blog_item.id eq $post.blog_id} checked="checked"{/if}>
+
+                                {if $blog_item.color == 'b-white' && strpos($blog_item.icon_html, 'background-image') !== false}
+                                    <span class="icon custom-mr-4">
+                                        {$blog_item.icon_html}
+                                    </span>
+                                {/if}
+                                {if $blog_item.color != 'b-white'}
+                                    {$_color = $blog_item.color|replace:'b-':'icon16 text-'}
+                                    <span class="icon custom-mr-4">
+                                        {$blog_item.icon_html|replace:'icon16':$_color}
+                                    </span>
+                                {/if}
+
+                                    <span>
+                                        {$blog_item.name|escape}
+                                        {if $blog_item.status ==  blogBlogModel::STATUS_PRIVATE}
+                                            <i class="fas fa-lock count"></i>
+                                        {/if}
+                                    </span>
+                                </label>
+                        </li>
+                    {/if}
+                {/foreach}
+            </ul>
+        </div>
+        <div class="dialog-footer">
+            <input id="b-post-save-button" type="button" class="button blue" name="published" value="[`Publish`]"> <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+        </div>
     </div>
-    <div class="dialog-buttons">
-      <div class="dialog-buttons-gradient">
-        <input id="b-post-save-button" type="button" class="button green" name="published" value="[`Publish`]" >
-        [`or`] <a href="#" class="cancel">[`cancel`]</a>
-      </div>
-    </div>
-  </div>
+    <style>body:has(#postpublish-dialog.dialog-opened) #wa-nav{ z-index: 0;}</style>
 </div>

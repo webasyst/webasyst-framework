@@ -67,7 +67,8 @@ $(function() {
                                 if (wa_url) {
                                     ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
                                 }
-                                that.editor.setTheme("ace/theme/eclipse");
+                                setEditorTheme();
+                                document.documentElement.addEventListener('wa-theme-change', setEditorTheme);
                                 var session = that.editor.getSession();
                                 session.setMode("ace/mode/markdown");
                                 session.setUseWrapMode(true);
@@ -129,6 +130,14 @@ $(function() {
                                     that.editor.resize();
                                     heightUpdateFunction(that.editor, "blog-markdown-editor");
                                 });
+
+                                function setEditorTheme() {
+                                    if (document.documentElement.dataset.theme === 'dark') {
+                                        that.editor.setTheme("ace/theme/monokai");
+                                    } else {
+                                        that.editor.setTheme("ace/theme/eclipse");
+                                    }
+                                }
                             }
 
                             init();
@@ -182,7 +191,7 @@ $(function() {
                         if (!markdown_text && html_text) {
 
                             if (!$('#post-no-markdown-markup-yet').length) {
-                                var div = $('<div class="block triple-padded mrkdn" id="post-no-markdown-markup-yet"><p class="align-center">' + $('#markdown_plugin_text_no_markup_yet').html() +
+                                var div = $('<div class="block triple-padded custom-p-32 mrkdn" id="post-no-markdown-markup-yet"><p class="align-center">' + $('#markdown_plugin_text_no_markup_yet').html() +
                                         '<br><br><input type="button" value="'+$('#markdown_plugin_text_generate').text()+'" /></p></div>').appendTo("#post_text_wrapper");
                                 div.find('input[type=button]').click(function() {
                                     div.hide();
@@ -239,7 +248,7 @@ $(function() {
                 }
             });
 
-            if ($.storage.get('blog/editor') == 'markdown') {
+            if (localStorage.getItem('blog/editor') == 'markdown') {
                 $.wa_blog.editor.selectEditor('markdown');
             }
 

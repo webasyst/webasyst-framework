@@ -28,21 +28,21 @@ class contactsDefaultLayout extends waLayout
                 }
             }
         }
-        
+
         /**
          * Include plugins js and css
          * @event backend_assets
          * @return array[string]string $return[%plugin_id%]
          */
         $this->view->assign('backend_assets', wa()->event('backend_assets'));
-        
+
         /**
          * Include plugins js templates
-         * @event backend_tempaltes
+         * @event backend_templates
          * @return array[string]string $return[%plugin_id%]
          */
         $this->view->assign('backend_templates', wa()->event('backend_templates'));
-        
+
         $this->view->assign(array(
             'admin' => wa()->getUser()->getRights('contacts', 'backend') > 1,
             'global_admin' => wa()->getUser()->getRights('webasyst', 'backend') > 0,
@@ -52,7 +52,7 @@ class contactsDefaultLayout extends waLayout
             'lang' => substr(wa()->getLocale(), 0, 2)
         ));
     }
-    
+
     public function getGroups()
     {
         $m = new waGroupModel();

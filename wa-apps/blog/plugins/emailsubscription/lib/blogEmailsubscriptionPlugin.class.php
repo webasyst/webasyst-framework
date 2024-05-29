@@ -80,8 +80,13 @@ class blogEmailsubscriptionPlugin extends blogPlugin
             $message->setBody($body);
             $rows = $model->getByField(array('status' => 0, 'post_id' => $post_id), true);
 
+            $rights_model = new waContactRightsModel();
+            $contact_ids = $rights_model->getUsers('blog', "blog.{$blog['id']}", blogRightConfig::RIGHT_READ);
             foreach ($rows as $row) {
                 try {
+                    if ($blog['status'] == blogBlogModel::STATUS_PRIVATE && !in_array($row['contact_id'], $contact_ids)) {
+                        continue;
+                    }
                     $message->setTo($row['email'], $row['name']);
                     $status = $message->send() ? 1 : -1;
                     $model->setStatus($row['id'], $status);
@@ -95,30 +100,21 @@ class blogEmailsubscriptionPlugin extends blogPlugin
     public function settingsAction($params)
     {
         $blog_id = $params['id'];
-        $html = '<div class="fields-group">
-        <div class="field">
-            <div class="name">'._wp('Subscribed via email').'</div>
-            <div class="value">';
+
         $model = new blogEmailsubscriptionModel();
         $contacts = $model->getSubscribers($blog_id);
         $rights = wa()->getUser()->getRights('contacts');
-        $html .= '<ul class="menu-v">';
-        if (!$contacts) {
-            $html .= '<li>'._wp('none').'</li>';
+
+        foreach ($contacts as &$contact) {
+            $contact['photo_url'] = waContact::getPhotoUrl($contact['id'], $contact['photo'], 20);
         }
-        foreach ($contacts as $c) {
-            $html .= '<li>';
-            if ($rights) {
-                $html .= '<a href="'.wa()->getConfig()->getBackendUrl(true).'contacts/#/contact/'.$c['id'].'">';
-            }
-            $html .= '<i class="icon16 userpic20" style="background-image: url('.waContact::getPhotoUrl($c['id'], $c['photo'], 20).')"></i>';
-            $html .= '<span>'.htmlspecialchars($c['name']).'</span>';
-            if ($rights) {
-                $html .= '</a>';
-            }
-            $html .= '</li>';
-        }
-        $html .= '</ul></div></div></div>';
+        unset($contact);
+
+        $html = $this->renderMiscTemplate('BlogSettings.html', [
+            'contacts' => $contacts,
+            'rights' => $rights,
+            'contact_url_prefix' => wa()->getConfig()->getBackendUrl(true).'contacts/#/contact/',
+        ]);
 
         return array(
             'settings' => $html
@@ -139,47 +135,22 @@ class blogEmailsubscriptionPlugin extends blogPlugin
             $cron_schedule_time = waSystem::getSetting('cron_schedule', 0, 'blog');
 
             $last_emailsubscription_cron_time = waSystem::getSetting('last_emailsubscription_cron_time', 0, array('blog', 'emailsubscription'));
-            if (!$cron_schedule_time && !$last_emailsubscription_cron_time) {
-                $msg = sprintf( _wp('WARNING: Email subscription works only if Cron scheduled task for the Blog app is properly configured (%s), and it appears that Cron was not setup for your Webasyst installation yet. Please contact your server administrator, or follow instructions given in the Plugins > Email subscription page of the Blog app. Click OK to subscribe anyway (subscription will be enabled, but will start to work only when Cron is enabled).'), 'cli.php blog emailsubscription' );
-                $confirm_subscribe =  "
-            if ($(this).is(':checked') && !confirm('".$msg."')) {
-                $(this).iButton('toggle', false);
-                return false;
-            }
-            subscribe();
-          ";
-            } else {
-                $confirm_subscribe  = "subscribe();";
-            }
-            $html = '<div class="b-ibutton-checkbox">
-    <ul class="menu-h">
-        <li style="margin-top: -3px;"><input type="checkbox" id="blog-emailsubscription-checkbox"'.($subscribed ? ' checked="checked"' : '').'></li>
-        <li style="margin-top: -4px; padding-left: 0.3em; padding-right: 0.3em;"><span id="blog-emailsubscription-status"'.(!$subscribed ? ' class="b-unselected"':'').'>'._wp('Email alerts').'</span></li>
-    </ul>
-</div>
-<script>
-    $("#blog-emailsubscription-checkbox").iButton({
-        labelOn: "",
-        labelOff: "",
-        classContainer: "ibutton-container mini"
-    }).change(function () {
-        if ($(this).is(":checked")) {
-            $("#blog-emailsubscription-status").removeClass("b-unselected");
-        } else {
-            $("#blog-emailsubscription-status").addClass("b-unselected");
-        }
-        var that = this;
-        function subscribe() {
-            $.post("?plugin=emailsubscription&module=subscribe", {blog_id:'.$blog_id.', subscribe: $(that).is(":checked") ? 1 : 0}, function () {
-            }, "json");
-        }
 
-        '.$confirm_subscribe.'
-    });
-</script>';
+            $html = $this->renderMiscTemplate('SubscribeToggle.html', [
+                'cron_schedule_time' => $cron_schedule_time,
+                'last_emailsubscription_cron_time' => $last_emailsubscription_cron_time,
+                'is_subscribed' => $subscribed,
+                'blog_id' => $blog_id
+            ]);
+
             return array(
                 'menu' => $html
             );
         }
+    }
+
+    protected function renderMiscTemplate($template, $assign = [])
+    {
+        return $this->renderTemplate('misc', $template, $assign, true);
     }
 }

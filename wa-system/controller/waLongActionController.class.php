@@ -630,7 +630,7 @@ abstract class waLongActionController extends waController
             $attempts = 3;
             do {
                 $attempts--;
-                $failed = !copy($this->_files['new']['file'], $this->_files['old']['file']);
+                $failed = !$this->copyLockedFile($this->_fd, $this->_files['new']['file'], $this->_files['old']['file']);
                 $failed = !copy($this->_files['new']['data'], $this->_files['old']['data']) || $failed;
 
                 //clearstatcache();
@@ -674,6 +674,29 @@ abstract class waLongActionController extends waController
 
         // We're ok, current Runner may continue.
         return true;
+    }
+
+    /**
+     * PHP 8+ on Windows will refuse to copy() a flock()'ed file.
+     * This implements a separate logic to copy from file descriptor.
+     */
+    protected function copyLockedFile($fd, $source, $dest)
+    {
+        if (PHP_MAJOR_VERSION >= 8 && PHP_OS_FAMILY == 'Windows') {
+            // don't have to fseek() back because _save() resets file position anyway
+            fseek($fd, 0);
+            $fd2 = fopen($dest, 'wb');
+            while ( ( $c = fread($fd, 8192))) {
+                if (strlen($c) != fwrite($fd2, $c)) {
+                    fclose($fd2);
+                    return false;
+                }
+            }
+            fclose($fd2);
+            return true;
+        } else {
+            return copy($source, $dest);
+        }
     }
 
     /**

@@ -3,7 +3,6 @@ class WaHeader {
         // Variables
         let that = this
         /// dom
-        this.$notification_wrapper = $('.js-notification-wrapper')
         this.$wa_nav = $('#wa-nav')
         this.$dashboard_wrapper = $('#dashboard-wrapper')
         this.$content = $('.js-main-content')
@@ -12,8 +11,6 @@ class WaHeader {
         this.$wa_header = this.$wa_nav.find('#wa-header');
         this.$applist = this.$wa_header.find('.js-applist-header');
         this.$applists = $('.js-applist');
-        this.$notification_hide = this.$notification_wrapper.find('.js-announcement-hide');
-        this.$notification_close = this.$notification_wrapper.find('.js-announcement-close');
         this.header_apps_tooltips = $('.js-applist-header a[data-wa-tooltip-content]') || null;
         /// params
 
@@ -22,7 +19,6 @@ class WaHeader {
         // Fns Init
         this.sortableApps()
         this.setRetina()
-        this.closeNotification()
 
         this.panelToggle()
         this.appsToggle()
@@ -78,9 +74,15 @@ class WaHeader {
             $target_grid = $target.querySelector('.js-dashboard-grid');
 
         const handler = () => {
+            let top_block = null;
+            if (settings.topBlockSelector) {
+                top_block = document.querySelector(settings.topBlockSelector);
+            }
+
             let rect = $target.getBoundingClientRect(),
-                $target_height = rect.height,
-                $target_top = rect.top,
+                top_block_offset_height = (top_block ? top_block.offsetHeight : 0),
+                $target_height = rect.height + top_block_offset_height,
+                $target_top = rect.top - top_block_offset_height,
                 is_edit_mode = document.querySelector('body').classList.contains('is-custom-edit-mode');
 
             if (!is_edit_mode) {
@@ -124,7 +126,8 @@ class WaHeader {
     static setHeaderTitle(options) {
         let title_text = options.title_text || '',
             place_after = options.place_after || '.wa-sitename',
-            truncate = options.truncate || false;
+            truncate = options.truncate || false,
+            replace = options.replace || false;
 
         if (title_text) {
             if (truncate && (title_text.length > truncate)) {
@@ -133,7 +136,11 @@ class WaHeader {
 
             let $place_after = document.querySelector('#wa-header').querySelector(place_after);
             title_text = $.wa.encodeHTML(title_text);
-            $place_after.insertAdjacentHTML("afterEnd", `<span class="h2 wa-pagename">${title_text}</span>`);
+            if (replace) {
+                $place_after.innerText = title_text;
+            } else {
+                $place_after.insertAdjacentHTML("afterEnd", `<span class="h2 wa-pagename">${title_text}</span>`);
+            }
         }
     }
 
@@ -312,99 +319,6 @@ class WaHeader {
                     }
                 });
             }
-        });
-    }
-
-    /**
-     * @description Close Announcement notification
-     */
-    closeNotification() {
-        const that = this;
-        const $wa_notifications_bell = $('.js-notifications-bell');
-        const $wa_announcement_counter = $wa_notifications_bell.find('.badge');
-        const hidden_alert_ids = JSON.parse(sessionStorage.getItem('wa_notification_alert')) || [];
-        const wa_notifications = that.$notification_wrapper.find('.wa-notification');
-        let counter = wa_notifications.length;
-
-        hidden_alert_ids.forEach(alert => {
-            wa_notifications.filter(`[data-id="${alert}"]`).remove();
-            counter--
-        })
-
-        if (counter > 0) {
-            $wa_announcement_counter.text(counter);
-        }else{
-            $wa_announcement_counter.remove();
-        }
-
-        that.$notification_hide.on('click', function (e) {
-            e.preventDefault()
-
-            const $close = $(this);
-            const $alert = $close.closest('.wa-notification');
-            const alert_id = $alert.data('id');
-
-            $alert.remove();
-            hidden_alert_ids.push(alert_id)
-            sessionStorage.setItem('wa_notification_alert', JSON.stringify(hidden_alert_ids));
-
-            counter--;
-            if (counter > 0) {
-                $wa_announcement_counter.text(counter);
-            }else{
-                $wa_announcement_counter.remove();
-            }
-        });
-
-        that.$notification_close.on('click', function (e) {
-            e.preventDefault()
-
-            let $close = $(this),
-                app_id = $close.data('app-id'),
-                $notification_block = $close.closest('.js-wa-announcement');
-
-            if ($notification_block.length) {
-                const key = $notification_block.data('key');
-                $notification_block.remove();
-                let counter = that.$notification_wrapper.children().length;
-
-                $.post(`${backend_url}?module=settings&action=save`, {app_id, name: 'announcement_close', value: 'now()'}, response => {
-                    if (response === 'ok') {
-                        console.log(--counter)
-                        if (--counter <= 0) {
-                            $wa_announcement_counter.remove();
-                        }else{
-                            $wa_announcement_counter.text(counter--);
-                        }
-                    }
-                });
-
-                if (key) {
-                    $.post(`${backend_url}installer/?module=announcement&action=hide`, { key, app_id }, function(response) {
-                        if (response === 'ok') {
-                            let $system_notification_wrapper = $('.js-wa-announcement-wrap');
-                            let system_notification_count = $system_notification_wrapper.find('.js-wa-announcement').length;
-                            if (system_notification_count <= 0) {
-                                counter--;
-                                $wa_announcement_counter.text(counter);
-                                if (!counter) {
-                                    $wa_announcement_counter.remove();
-                                }
-                                $system_notification_wrapper.closest('.js-wa-announcement').remove();
-                            }
-                        }
-                    });
-                }
-
-                if (counter) {
-                    $wa_announcement_counter.text(counter)
-                }else{
-                    $wa_announcement_counter.remove();
-                }
-            } else {
-                $wa_announcement_counter.remove();
-            }
-
         });
     }
 

@@ -9,7 +9,7 @@ $.wa_blog_plugins_import = {
         this.ajaxPurge();
         var self = this;
         self.form = $('#plugin-import-form');
-        var selector = $(':input[name="blog_import_transport"]').bind(
+        var selector = $(':input[name="blog_import_transport"]').on(
             'change.plugins_import',
             function (eventObject) {
                 return self.settingsHandler
@@ -22,14 +22,14 @@ $.wa_blog_plugins_import = {
         $(window).bind('unload.plugins_import', function () {
             return self.checkProgress();
         });
-        $("#wa-app > div.sidebar a, #wa-header a, #plugin-list a").live('click.plugins_import', function () {
+        $("#wa-app > div.sidebar a, #wa-header a, #plugin-list a").on('click.plugins_import', function () {
             return self.checkProgress();
         });
 
     },
     ajaxPurge: function () {
         $(window).unbind('.plugins_import');
-        $("#wa-app > div.sidebar a, #wa-header a, #plugin-list a").die('.plugins_import');
+        $("#wa-app > div.sidebar a, #wa-header a, #plugin-list a").off('.plugins_import');
     },
     settingsTooggle: function (display) {
         var self = this;
@@ -132,7 +132,7 @@ $.wa_blog_plugins_import = {
                     self.form.find('.progressbar .progressbar-inner').css('width', '0%');
 
                     self.form.find('.progressbar').attr('title', '0.00%');
-                    self.form.find('.progressbar-description').text('0.00%');
+                    self.form.find('.progressbar-description, .progressbar-text').text('0.00%');
                     self.form.find('.js-progressbar-container').show();
 
                     self.ajax_pull[response.processId] = [];
@@ -208,7 +208,7 @@ $.wa_blog_plugins_import = {
                 var bar = self.form.find('.progressbar .progressbar-inner');
                 bar.css('width', response.progress.replace(/,/, '.'));
                 bar.parents('.progressbar').attr('title', response.progress);
-                self.form.find('.progressbar-description').text(response.progress);
+                self.form.find('.progressbar-description, .progressbar-text').text(response.progress);
             }
             var ajax_url = url;
             var id = processId;

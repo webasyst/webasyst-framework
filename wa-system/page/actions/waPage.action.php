@@ -12,7 +12,7 @@ class waPageAction extends waViewAction
             $page = $this->getPageModel()->get($id);
             foreach ($page as $k => $v) {
                 if ($k != 'content' && $k != 'title') {
-                    $page[$k] = htmlspecialchars($v);
+                    $page[$k] = htmlspecialchars(ifset($v, ''));
                 }
             }
         }

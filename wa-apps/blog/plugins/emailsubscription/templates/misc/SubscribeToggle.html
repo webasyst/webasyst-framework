@@ -1,0 +1,63 @@
+{strip}
+
+{$_locales = [
+    "confirm" => sprintf(_wp('WARNING: Email subscription works only if Cron scheduled task for the Blog app is properly configured (%s), and it appears that Cron was not setup for your Webasyst installation yet. Please contact your server administrator, or follow instructions given in the Plugins > Email subscription page of the Blog app. Click OK to subscribe anyway (subscription will be enabled, but will start to work only when Cron is enabled).'), 'cli.php blog emailsubscription' )
+]}
+
+<label class="blog-plugin-emailsubscription-section">
+    <div class="wa-checkbox nowrap">
+        <input id="blog-plugin-emailsubscription-checkbox" type="checkbox" {if $is_subscribed}checked{/if}>
+        <span>
+            <span class="icon">
+                <i class="fas fa-check"></i>
+            </span>
+        </span>
+    </div>
+
+    <span style="margin-left: 4px;">{_wp('Email alerts')}</span>
+
+    <script>
+        ( function($) {
+
+            var $input = $("#blog-plugin-emailsubscription-checkbox");
+
+            var locales = {$_locales|json_encode},
+                urls = { "submit": {$wa_app_url|json_encode} + "?plugin=emailsubscription&module=subscribe" },
+                confirm_required = {if !$cron_schedule_time && !$last_emailsubscription_cron_time}true{else}false{/if};
+
+            var xhr = null;
+
+            $input.on("change", function() {
+                var is_active = $input.is(":checked");
+
+                if (confirm_required && is_active && !confirm(locales["confirm"])) {
+                    $input.attr("checked", false);
+                } else {
+                    subscribe(is_active);
+                }
+            });
+
+            function subscribe(subscribe) {
+                if (xhr) { return false; }
+
+                $input.attr("disabled", true);
+
+                var data = {
+                    blog_id: {$blog_id|json_encode},
+                    subscribe: (subscribe ? 1 : 0)
+                };
+
+                xhr = $.post(urls["submit"], data, "json")
+                    .always( function() {
+                        $input.attr("disabled", false);
+                        xhr = null;
+                    });
+
+                return xhr;
+            }
+
+        })(jQuery);
+    </script>
+</label>
+
+{/strip}

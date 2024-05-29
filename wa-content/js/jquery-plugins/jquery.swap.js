@@ -21,4 +21,4 @@
             $el.insertBefore($siblings.get(index));
         }
     };
-})(jQuery)
+})(jQuery);

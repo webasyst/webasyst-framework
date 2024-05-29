@@ -1,0 +1,33 @@
+<div class="wa-nav-single-app">
+    <script>
+        if (typeof wa_url === "undefined") {
+            wa_url = {$wa_url|json_encode};
+        }
+        const backend_url = {$backend_url|json_encode};
+    </script>
+
+    {* @event backend_header *}
+    {* $return[%app_id%]['header_top'] *}
+    {if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
+
+    {if !empty($include_wa_push)}
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
+    {/if}
+
+    <script id="wa-header-js"
+            type="text/javascript"
+            src="{$root_url}wa-content/js/jquery-wa/wa.header.singleapp.js?{$wa_version}"
+            {if !$user['timezone']} data-determine-timezone="1"{/if}>
+    </script>
+    <script>
+        $(function () {
+            new WaHeaderSingleApp();
+            $('html').addClass('wa-no-header');
+        });
+    </script>
+
+    {* @event backend_header *}
+    {* $return[%app_id%]['header_bottom'] *}
+    {if !empty($header_bottom)}{foreach $header_bottom as $_}{$_}{/foreach}{/if}
+
+</div>

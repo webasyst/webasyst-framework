@@ -73,12 +73,23 @@ class installerSettingsStaticIDController extends waJsonController
         $params = [
             'hash'   => $wa_installer->getHash(),
             'domain' => waRequest::server('HTTP_HOST'),
+            'token'  => $this->getStoreToken(),
             'beta_test_products' => 1,
             'locale' => wa()->getLocale(),
         ];
         $url = $wa_installer->getInstallationStaticIDUrl();
         $url .= '?'.http_build_query($params);
         return $url;
+    }
+
+    protected function getStoreToken()
+    {
+        $token_data = (new waAppSettingsModel)->get('installer', 'token_data', false);
+        if ($token_data) {
+            $token_data = waUtils::jsonDecode($token_data, true);
+            return $token_data && isset($token_data['token']) ? $token_data['token'] : null;
+        }
+        return null;
     }
 
     protected function logException(Exception $e)

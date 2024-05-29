@@ -376,7 +376,9 @@ class waLocale
             }
             return $value;
         }
-
+        if (empty($value)) {
+            return $value;
+        }
         return str_replace(array_keys($t), array_values($t), $value);
     }
 }

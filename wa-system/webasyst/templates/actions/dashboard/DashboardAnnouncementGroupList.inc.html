@@ -1,0 +1,73 @@
+{if !empty($notifications)}
+    {$has_some_new_notifications = !empty($new_notification_group_id_to_id)}
+    {foreach $notifications as $group_notifications}
+        {$count_rows = (!empty($group_notifications.rows)) ? count($group_notifications.rows) : 0}
+
+        {* Announcements from installer *}
+        {if $group_notifications.app_id === 'installer' && !empty($group_notifications.is_virtual)}
+            {$group_notifications.text}
+            {if $count_rows === 1}
+                {continue}
+            {/if}
+        {/if}
+
+        <div class="alert wa-notification js-announcement-group{if $count_rows > 1} is-group{/if}{if $has_some_new_notifications && isset($new_notification_group_id_to_id[$group_notifications.id])} is-unread-group{/if}"
+            data-app-id="{$group_notifications.app_id}"{if !empty($group_notifications.contact)}
+            data-contact-id="{$group_notifications.contact.id}"{/if}
+        >
+            <div class="wa-notification-body">
+
+                <ul class="list custom-m-0">
+                    {$_info = $group_notifications.app}
+
+                    {* Version *}
+                    {if !empty($_info.version)}
+                        {$_version = "?v=`$_info.version|escape`"}
+                    {else}
+                        {$_version = null}
+                    {/if}
+
+                    {$_is_contact = false}
+                    {$_icon_app = "{$root_url}{if !empty($_info.icon.20)}{$_info.icon.20}{else}{$_info.img}{/if}{$_version}"}
+                    {if !empty($group_notifications.contact)}
+                        {$_icon_app = $group_notifications.contact.photo_url_32}
+                        {$_is_contact = true}
+                    {/if}
+
+                    {$_counter = $count_rows}
+                    {for $i=0 to $count_rows - 1}
+                        {$n = $group_notifications.rows[$i]}
+                        {if $i === 0 && !empty($n.is_virtual)}
+                            {$_counter = $_counter - 1}
+                            {continue}
+                        {/if}
+
+                        <li class="js-wa-announcement{if $has_some_new_notifications && isset($new_notification_group_id_to_id[$group_notifications.id][$n.id])} is-unread{/if}"
+                            data-id="{$n.id}"
+                        >
+                            <span>
+                                <img class="icon size-20 {if $_is_contact}userpic userpic-20{/if}"
+                                    src="{$_icon_app}"
+                                    data-wa-tooltip-content="{if $_is_contact}{$group_notifications.contact.name|escape}{else}{$_info.name|escape}{/if}"
+                                    data-wa-tooltip-placement="right"
+                                >
+                            </span>
+
+                            <div>
+                                {$visible_counter = $count_rows > 1 && ( $i === 0 || ($i === 1 && $_counter < $count_rows) )}
+                                {if $visible_counter}
+                                    <span class="wa-notification-count badge gray bold">{$_counter}</span>
+                                {/if}
+                                <span class="wa-notification-pinned{if !$n.is_pinned} hidden{/if}"><i class="fas fa-bolt text-orange"></i></span>
+                                <span class="wa-notification-content">{$n.text}</span>
+                                <span class="nowrap hint">{waDateTime::format('humandatetime', $n.datetime)}</span>
+                            </div>
+                        </li>
+                    {/for}
+                </ul>
+
+                <a data-app-id="{$n.app_id}" href="javascript:void(0);" class="custom-ml-16 custom-py-4 back js-announcement-close wa-announcement-close" title="[s`Mark as read`]"><i class="fas fa-times"></i></a>
+            </div>
+        </div>
+    {/foreach}
+{/if}

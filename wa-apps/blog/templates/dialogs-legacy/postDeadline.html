@@ -1,0 +1,26 @@
+<div class="dialog width400px height200px" id="deadline-dialog">
+  <div class="dialog-background"> </div>
+  <div class="dialog-window">
+    <div class="dialog-content">
+      <div class="dialog-content-indent">
+        <h1>[`Publication deadline`]</h1>
+        <div class="datetime">
+          <i class="icon16 exclamation" style="margin-top: 0.3em;"></i>
+          <input class="datepicker" disabled="disabled" name="datetime[]" type="text" 
+                     value="{if $post.datetime}{$post.datetime|wa_date}{else if $wa->get('date')}{date('d.m.Y', strtotime($wa->get('date')))}{/if}" 
+                     size="8">
+        </div>
+        {* {if !$post.datetime || $post.id || $post.status neq blogPostModel::STATUS_DEADLINE}disabled="disabled"{/if} *}
+        <span class="hint">(<span class="user-date-format"><!-- format placeholder --></span> [`format`])</span>
+        <br><br>
+        <p class="hint">[`Deadline is for planning purposes only. It will not publish the post automatically, but will highlight the post in the calendar if it is not published in time.`]</p>
+      </div>
+    </div>
+    <div class="dialog-buttons">
+      <div class="dialog-buttons-gradient">
+        <input type="button" name="deadline" class="button green" value="[`Save`]">
+        [`or`] <a href="#" class="cancel">[`cancel`]</a>
+      </div>
+    </div>
+  </div>
+</div>

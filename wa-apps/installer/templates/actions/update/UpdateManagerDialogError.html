@@ -1,0 +1,9 @@
+<script>(function() { "use strict";
+
+    $.waDialog.alert({
+        title: {_w('Installation failed')|json_encode},
+        text: {$error_message|json_encode},
+        button_title: {_w('Close')|json_encode}
+    });
+
+})();</script>

@@ -95,7 +95,7 @@ class waModel
             if (SystemConfig::isDebug()) {
                 $this->fields = $this->getFields();
             } else {
-                $cache = new waSystemCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
+                $cache = new waSystemCache('db/'.$this->getMetadataCacheKey().'/'.$this->table, -1, 'webasyst');
                 if (!($this->fields = $cache->get())) {
                     $this->fields = $this->getFields();
                     $cache->set($this->fields);
@@ -114,23 +114,27 @@ class waModel
     public function clearMetadataCache()
     {
         $this->getMetadataCache()->delete();
-        $cache = new waSystemCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
+        $cache = new waSystemCache('db/'.$this->getMetadataCacheKey().'/'.$this->table, -1, 'webasyst');
         $cache->delete();
         $this->fields = null;
         return $this->getMetadata();
     }
 
-    protected function getMetadataCache()
+    protected function getMetadataCacheKey()
     {
         if (is_scalar($this->type)) {
-            $key = $this->type;
+            return $this->type;
         } else {
             if (empty($this->type['metadata_cache_key'])) {
                 $this->type['metadata_cache_key'] = uniqid('m', true);
             }
-            $key = $this->type['metadata_cache_key'];
+            return $this->type['metadata_cache_key'];
         }
-        return new waRuntimeCache('db/'.$key.'/'.$this->table, -1, 'webasyst');
+    }
+
+    protected function getMetadataCache()
+    {
+        return new waRuntimeCache('db/'.$this->getMetadataCacheKey().'/'.$this->table, -1, 'webasyst');
     }
 
     /**
@@ -867,6 +871,16 @@ class waModel
     }
 
     /**
+     * Returns whether this table is empty. This is faster than ->countAll()
+     * @return bool
+     * @since 3.0.0
+     */
+    public function isEmpty()
+    {
+        return !$this->query("SELECT 1 FROM ".$this->table." LIMIT 1")->fetchField();
+    }
+
+    /**
      * Make a string safe to use inside single quotes in SQL statement.
      *
      * @param mixed $data
@@ -1282,6 +1296,13 @@ class waModel
         $table = $table !== null ? $table : $this->table;
         if (isset($schema[$table])) {
             $this->adapter->addColumn($table, $column, $schema[$table], $after_column);
+            if ($this->table && $table == $this->table) {
+                $this->clearMetadataCache();
+            } else {
+                $key = $this->getMetadataCacheKey();
+                (new waSystemCache('db/'.$key.'/'.$table, -1, 'webasyst'))->delete();
+                (new waRuntimeCache('db/'.$key.'/'.$table, -1, 'webasyst'))->delete();
+            }
         }
     }
 
@@ -1310,7 +1331,17 @@ class waModel
         $schema = $this->formatSchema($db_schema);
         $table = $table !== null ? $table : $this->table;
         if (isset($schema[$table])) {
-            return $this->adapter->modifyColumn($table, $column, $schema[$table], $after_column, $emulate);
+            $result = $this->adapter->modifyColumn($table, $column, $schema[$table], $after_column, $emulate);
+            if (!$emulate) {
+                if ($this->table && $table == $this->table) {
+                    $this->clearMetadataCache();
+                } else {
+                    $key = $this->getMetadataCacheKey();
+                    (new waSystemCache('db/'.$key.'/'.$table, -1, 'webasyst'))->delete();
+                    (new waRuntimeCache('db/'.$key.'/'.$table, -1, 'webasyst'))->delete();
+                }
+            }
+            return $result;
         }
     }
 

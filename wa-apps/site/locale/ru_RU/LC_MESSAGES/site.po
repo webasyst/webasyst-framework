@@ -1032,3 +1032,6 @@ msgstr "Приложение [%s] отключено."
 
 msgid "Google Analytics 4"
 msgstr "Google Analytics 4"
+
+msgid "The block is too large. Reduce it or create several blocks instead of one."
+msgstr "Содержимое блока слишком большое. Сократите его или создайте несколько блоков."

@@ -1,0 +1,175 @@
+<div class="dialog">
+    <style>#installation-progressbar .progressbar-text { display: none; }</style>
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <div class="dialog-content">
+            <div class="width-80 custom-mt-48 custom-mx-auto align-center">
+                <h4>{strip}
+                    {_w('Installing the application','Installing applications', count($queue_apps) - $count_installer_dependencies - 1)}
+                    &nbsp;
+                    {$product_names = []}
+                    {$installer_text_shown = false}
+                    {foreach $queue_apps as $item}
+                        {if ifset($item, 'id', null) == 'installer'}
+                            {if !$installer_text_shown}
+                                {$product_names[] = _w('Webasyst framework')|string_format:'[`“%s”`]'}
+                                {$installer_text_shown = true}
+                            {/if}
+                        {else}
+                            {$product_names[] = $item.name|string_format:'[`“%s”`]'}
+                        {/if}
+                    {/foreach}
+
+                    {join(', ', $product_names)|escape}
+                {/strip}</h4>
+            </div>
+            <div class="width-70 custom-mt-24 custom-mb-48 custom-mx-auto align-center">
+                <div class="progressbar" id="installation-progressbar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>(function() { "use strict";
+
+        const installer_app_url = {$wa_app_url|json_encode};
+        const update_execute_params = {$update_execute_params|default:[]|json_encode};
+        const update_state_params = {$update_state_params|default:[]|json_encode};
+        const general_error_alert_params = {
+            title: {_w('Installation failed')|json_encode},
+            text: {_w('An unknown error has occurred during the installation. Please check your network connection and try again.')|json_encode},
+            button_title: {_w('Close')|json_encode}
+        };
+
+        const $progressbar = $("#installation-progressbar");
+        const $dialog = $progressbar.closest('.dialog');
+
+        var installation_in_progress = true;
+
+        $dialog.on('installer_dialog_ready', function(event, dialog) {
+
+            let animator = new ProgressbarAnimation($progressbar.waProgressbar({
+                    "display-text": false
+                }).data('progressbar'));
+
+            backgroundInstallationProcess().then(function(installation_finished) {
+                installation_in_progress = false;
+                animator.stage_progress = 1;
+                if (installation_finished) {
+                    $dialog.trigger('installer_installation_successfull');
+                } else {
+                    $dialog.trigger('installer_installation_failed');
+                    dialog.close();
+                    $.waDialog.alert(general_error_alert_params);
+                }
+            });
+
+            backgroundStateProcess(animator);
+        });
+
+        async function backgroundInstallationProcess() {
+            const UPDATE_ATTEMPT_INTERVAL = 3000;
+            var installation_finished = false;
+
+            for (var attempt = 1; attempt <= 3; attempt++) {
+                try {
+                    await ajax_post(installer_app_url+'?module=update&action=execute', update_execute_params).then(function(data) {
+                        if (data.status == 'ok') {
+                            installation_finished = true;
+                            return;
+                        }
+                    });
+                } catch (e) {
+                    console.log('updateExecute error', e);
+                }
+
+                if (installation_finished) {
+                    return true;
+                }
+
+                await new Promise(resolve => setTimeout(resolve, UPDATE_ATTEMPT_INTERVAL));
+            }
+
+            return false;
+        }
+
+        async function backgroundStateProcess(animator) {
+
+            const CALL_INTERVAL = 2000;
+
+            while (installation_in_progress) {
+                await new Promise(resolve => setTimeout(resolve, CALL_INTERVAL));
+
+                await ajax_post(installer_app_url+'?module=update&action=state', update_state_params).then(function(data) {
+                    if (!data || data.status != 'ok' || !installation_in_progress) {
+                        return;
+                    }
+                    animator.stage_progress = data.data.current_state.stage / data.data.state.length;
+                });
+            }
+        }
+
+        function ajax_post(url, params) {
+            return $.ajax({
+                url: url,
+                data: params,
+                type: 'GET',
+                dataType: 'json',
+                global: false
+            });
+        }
+
+        class ProgressbarAnimation {
+
+            INITIAL_PROGRESS = 20;
+            TOTAL_IDLE_INCREMENT = 30;
+            TOTAL_STAGE_INCREMENT = 50;
+
+            stage_progress = 0; // 0.0-1.0
+            idle_progress = 0; // 0.0-1.0
+            progress;
+
+            constructor(progress) {
+                this.progress = progress;
+                this.animator();
+            }
+
+            async animator() {
+                this.idleProgressUpdater();
+                this.progress.set({ percentage: this.INITIAL_PROGRESS / 2 });
+                this.animateTowards(this.INITIAL_PROGRESS);
+
+                while (this.stage_progress < 1) {
+                    await new Promise(resolve => setTimeout(resolve, 250));
+                    this.animateTowards(
+                        this.INITIAL_PROGRESS +
+                        this.TOTAL_STAGE_INCREMENT * this.stage_progress +
+                        this.TOTAL_IDLE_INCREMENT * this.idle_progress
+                    );
+                }
+
+                this.animateTowards(100, 500);
+            }
+
+            async idleProgressUpdater() {
+                var x = 0;
+                while (x < 100) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    x += 1 / 30;
+                    this.idle_progress = 1 - 1 / (x + 1);
+                }
+            }
+
+            async animateTowards(percentage, time=1000) {
+                const STAGES = 10;
+                var p = this.progress.percentage;
+                for (var i = 1; i < STAGES; i++) {
+                    this.progress.set({ percentage: Math.round(Math.max(p + (percentage - p)*i/STAGES, this.progress.percentage)) });
+                    await new Promise(resolve => setTimeout(resolve, time / (STAGES-1)));
+                }
+                this.progress.set({ percentage: Math.round(Math.max(percentage, this.progress.percentage)) });
+            }
+        }
+
+    })();</script>
+
+</div>

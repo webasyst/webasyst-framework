@@ -34,6 +34,7 @@ class teamRightConfig extends waRightConfig
         }
 
         $this->addItem('edit_self', _w('Can edit self contact info'), 'always_enabled');
+        $this->addItem('edit_announcements', _w('Can post announcements on dashboard'));
 
         $this->addItem('add_users', _w('Can add users'), 'checkbox');
         $this->addItem('add_groups', _w('Can add groups'), 'checkbox');
@@ -70,6 +71,13 @@ class teamRightConfig extends waRightConfig
         }
         wa()->event('rights.config', $this);
 
+    }
+
+    public function getDefaultRights($contact_id)
+    {
+        return array(
+            'edit_announcements' => 1,
+        );
     }
 
     /**

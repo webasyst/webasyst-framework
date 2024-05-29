@@ -193,32 +193,10 @@
 
         <div class="wa-theme-name-section">
 
-            {if ($theme_routes || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
-                {* Search settings *}
-                <div class="search-setting-wrapper custom-mb-24 custom-mr-8">
-                    <div class="state-with-inner-icon left width-100">
-                        <span class="icon"><i class="fas fa-search"></i></span>
-                        <input type="search" class="js-search-setting width-100" autocomplete="off" placeholder="[s`Find setting`]" />
-                    </div>
-                </div>
-            {/if}
-
-            {* Theme help *}
-            {if !empty($support) || !empty($instruction)}
-                <div class="wa-theme-help custom-mb-24">
-                    {if !empty($instruction)}
-                        <a class="button nobutton" href="{$instruction|escape}" rel="noopener" target="_blank">[s`User manual`] <i class="fas fa-external-link-alt fa-xs"></i></a>
-                    {/if}
-                    {if !empty($support)}
-                        <a class="button nobutton" href="{$support|escape}" rel="noopener" target="_blank">[s`User support`] <i class="fas fa-external-link-alt fa-xs"></i></a>
-                    {/if}
-                </div>
-            {/if}
-
             {* Theme actions *}
-            <div class="dropdown js-theme-actions-dropdown custom-mb-24">
-                <button class="dropdown-toggle button light-1 outlined{if $wa->isMobile()} full-width{/if}" type="button">[s`Actions`]</button>
-                <div class="dropdown-body right dd-long dd-wide">
+            <div class="dropdown js-theme-actions-dropdown custom-mb-24 custom-mr-24">
+                <button class="dropdown-toggle button light-1 {if $wa->isMobile()} full-width{/if}" type="button">[s`Actions`]</button>
+                <div class="dropdown-body dd-long dd-wide">
                     <ul class="menu">
                         {if !$_is_trial}
                             {if count($theme->related_themes) > 1}
@@ -319,11 +297,34 @@
                     </ul>
                 </div>
             </div>
+
+            {if ($theme_routes || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
+                {* Search settings *}
+                <div class="search-setting-wrapper custom-mb-24 custom-mr-8">
+                    <div class="state-with-inner-icon left width-100">
+                        <span class="icon"><i class="fas fa-search"></i></span>
+                        <input type="search" class="js-search-setting width-100" autocomplete="off" placeholder="[s`Find setting`]" />
+                    </div>
+                </div>
+            {/if}
+
+            {* Theme help *}
+            {if !empty($support) || !empty($instruction)}
+                <div class="wa-theme-help custom-mb-24">
+                    {if !empty($instruction)}
+                        <a class="button nobutton" href="{$instruction|escape}" rel="noopener" target="_blank">[s`User manual`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+                    {/if}
+                    {if !empty($support)}
+                        <a class="button nobutton" href="{$support|escape}" rel="noopener" target="_blank">[s`User support`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+                    {/if}
+                </div>
+            {/if}
+
         </div>
 
         <div class="wa-theme-info-section js-theme-info-section">
             {* Theme update *}
-            <div class="wa-theme-actions js-theme-actions custom-mb-32">
+            <div class="wa-theme-actions js-theme-actions custom-mb-16">
                 {if $theme.type == waTheme::TRIAL}
 
                     {* Trial theme *}
@@ -350,7 +351,7 @@
                 {elseif $theme.type == waTheme::ORIGINAL}
 
                     {if $theme_routes && !empty($theme_warning_requirements)}
-                        <div class="highlighted box">
+                        <div class="alert warning">
                             <ul class="menu">
                                 {foreach $theme_warning_requirements as $requirement}
                                     <li>{$requirement.warning|escape}</li>
@@ -360,7 +361,7 @@
                     {/if}
 
                     {* Original theme version from /wa-apps/ *}
-                    <div class="highlighted green box">
+                    <div class="alert success">
                         <i class="fas fa-check"></i>
                         {sprintf('[s`Original version <strong>%s</strong>`]', $theme.version)}
                         <p class="hint custom-mt-8">[s`No customizations have been made to theme settings and template files.`]</p>
@@ -371,14 +372,14 @@
                     {if $theme.version == $theme_original_version}
                         {if !$theme.parent_theme || $theme.parent_theme.type == waTheme::ORIGINAL || $theme.parent_theme.version == $theme_parent_original_version}
                             {* Modified, but still the latest version *}
-                            <div class="highlighted green box">
-                                <i class="fas fa-thumbs-up bold"></i> {sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}
+                            <div class="alert success">
+                                <i class="fas fa-thumbs-up bold"></i> <b>{sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}</b>
                                 <p class="custom-mt-8 hint">{sprintf('[s`Your customized version of %s theme is up to date.`]', $theme.name|escape)}</p>
                             </div>
                         {else}
                             {* Update is not available *}
                             {if !empty($theme_parent_warning_requirements)}
-                                <div class="highlighted box">
+                                <div class="alert warning">
                                     <strong>[s`Update not available`]</strong>
                                     <ul class="menu">
                                         {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
@@ -391,7 +392,7 @@
 
                                 {* Update is available *}
                             {elseif $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN && $theme.parent_theme.version != $theme_parent_original_version}
-                                <div class="wa-theme-update-available highlighted blue box custom-px-24 custom-py-16">
+                                <div class="wa-theme-update-available alert info">
                                     <a class="theme-update js-theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]">
                                         <i class="fas fa-redo-alt"></i>
                                         <span>[s`Update is available`]</span>
@@ -403,7 +404,7 @@
                     {else}
                         {*Update is not available *}
                         {if $theme.version != $theme_original_version && !empty($theme_warning_requirements)}
-                            <div class="highlighted box">
+                            <div class="alert warning">
                                 <strong>[s`Update not available`]</strong>
                                 <ul class="menu">
                                     {foreach $theme_warning_requirements as $requirement}
@@ -416,7 +417,7 @@
 
                             {*Update is not available *}
                         {elseif $theme.version != $theme_original_version && !empty($theme_original_warning_requirements)}
-                            <div class="highlighted box">
+                            <div class="alert warning">
                                 <strong>[s`Update not available`]</strong>
                                 <ul class="menu">
                                     {foreach $theme_original_warning_requirements as $requirement}
@@ -429,7 +430,7 @@
 
                             {*Update is available *}
                         {elseif $theme.version != $theme_original_version}
-                            <div class="wa-theme-update-available highlighted blue box">
+                            <div class="wa-theme-update-available alert info">
                                 <a class="theme-update js-theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="fas fa-redo-alt"></i> <span>{sprintf('[s`Update to version %s is available`]', $theme_original_version)}</span></a>
                                 <p class="hint custom-mt-8">[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</p>
                             </div>
@@ -488,15 +489,15 @@
                         {/foreach}
                     </ul>
                 {else}
-                    <p class="flexbox middle space-16">
+                    <p class="flexbox middle space-4">
                         <a id="theme-start-using" href="#" class="button green js-theme-start-using">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
                         {if !empty($preview_url)}
                             <span>[s`or`]</span>
                             <span class="nowrap">
-                                <a class="wa-theme-preview" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">
+                                <a class="wa-theme-preview custom-ml-4" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">
                                     [s`preview this theme`]
+                                    <i class="fas fa-external-link-alt fa-xs opacity-50 custom-ml-4"></i>
                                 </a>
-                                <i class="fas fa-external-link-alt fa-xs"></i>
                             </span>
                         {/if}
                     </p>

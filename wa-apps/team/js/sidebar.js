@@ -163,14 +163,22 @@ var Sidebar = ( function($) {
             that.options.xhr.abort();
         }
 
+        if (!$.contains(document, that.$body[0]) ) {
+            return;
+        }
+
         that.options.xhr = $.get(sidebar_uri, {is_reload: 1}, function(html) {
             that.options.xhr = false;
+            if (!$.contains(document, that.$body[0]) ) {
+                return;
+            }
+
             that.$body.replaceWith(html);
             that.$wrapper.find('.sidebar-header').css('display', '');
             that.$wrapper.find('.sidebar-body').css('display', '');
             that.$wrapper.find('.sidebar-footer').css('display', '');
 
-            that.initClass();
+            //that.initClass(); // called by <script> inside `html`
         });
     };
 
@@ -370,7 +378,7 @@ var Sidebar = ( function($) {
         const time = that.options.updateTime;
 
         that.options.timer = setTimeout( function() {
-            if ($.contains(document, that.$wrapper[0]) ) {
+            if ($.contains(document, that.$body[0]) ) {
                 that.reload(true);
             }
         }, time);

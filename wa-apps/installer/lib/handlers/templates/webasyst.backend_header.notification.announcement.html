@@ -1,13 +1,32 @@
 {if $announcements}
-    <div class="js-wa-announcement-wrap">
-        {foreach $announcements as $_key => $_a}
-            <div class="js-wa-announcement" data-key="{$_key}">
-                {$_a.html}
-                <a data-app-id="installer" href="javascript:void(0);" class="custom-mt-8 hint js-announcement-close flexbox" title="[s`Close`]">[s`Mark as read`]</a>
-                {if !$_a@last}
-                    <hr class="custom-my-16">
-                {/if}
-            </div>
-        {/foreach}
+    {$apps = $wa->apps()}
+    {$app_id = 'installer'}
+
+    {foreach $announcements as $_key => $_a}
+    <div class="alert wa-notification js-announcement-group js-announcement-single wa-announcement-group is-unread-group" data-app-id="{$app_id}">
+        <div class="wa-notification-body js-wa-announcement-wrap">
+            <ul class="wa-announcement-list list">
+
+                <li class="js-wa-announcement wa-announcement-item is-unread" data-key="{$_key}">
+                    <div class="wa-announcement-item-inner flexbox space-8">
+                        <span>
+                            <img class="icon size-20"
+                                src="{$wa_url}{$apps['installer']['icon'][24]}"
+                                data-wa-tooltip-content="[`Installer`]"
+                                data-wa-tooltip-placement="right"
+                            >
+                        </span>
+                        <div class="wa-announcement-item-main semibold">{$_a.html}</div>
+
+                        {* if always_open then UI not support close icon to close banner *}
+                        {if empty($_a['always_open'])}
+                            <a data-app-id="{$app_id}" href="javascript:void(0);" class="wa-announcement-close js-announcement-close back" title="[s`Mark as read`]"><i class="fas fa-times"></i></a>
+                        {/if}
+                    </div>
+                </li>
+
+            </ul>
+        </div>
     </div>
+    {/foreach}
 {/if}

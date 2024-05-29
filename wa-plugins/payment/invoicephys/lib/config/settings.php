@@ -54,4 +54,10 @@ return array(
         'description'  => '',
         'control_type' => waHtmlControl::CHECKBOX,
     ),
+    'qrcode'  => array(
+        'value'        => true,
+        'title'        => 'Показывать QR-код на оплату',
+        'description'  => '',
+        'control_type' => waHtmlControl::CHECKBOX,
+    ),
 );

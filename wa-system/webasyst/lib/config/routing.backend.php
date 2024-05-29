@@ -22,8 +22,10 @@ return array(
 
     'dashboard/apps/?'                          => 'dashboardApps',
     'dashboard/team/<id>/?'                     => 'dashboardUsers',
-    'dashboard/users/?'                      => 'dashboardUsers',
+    'dashboard/users/?'                         => 'dashboardUsers',
     'dashboard/dashboard/<id>/?'                => 'dashboardDashboard',
+    'announcements/?'                           => 'dashboardAnnouncements',
+    'announcements/<action>/?'                  => 'dashboardAnnouncements',
 
     'repair'                                    => array(
         'url'    => 'repair/<action:(\w+)?>/?',

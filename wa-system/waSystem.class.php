@@ -393,7 +393,7 @@ class waSystem
         }
 
         if (empty($adapter)) {
-            throw new waException('Push provider are not configured');
+            throw new waException(_ws('No web push provider is configured.'));
         }
 
         $file = $this->config->getPath('system').'/push/adapters/'.$adapter.'/'.$adapter.'Push.class.php';
@@ -412,7 +412,7 @@ class waSystem
             }
         }
 
-        throw new waException(sprintf("Push provider %s not found.", var_export($adapter, true)));
+        throw new waException(sprintf_wp("Web push provider “%s” not found.", var_export($adapter, true)));
     }
 
     /**
@@ -713,6 +713,9 @@ class waSystem
      */
     public function whichUI($app_id = null)
     {
+        if ($this->isSingleAppMode()) {
+            return '2.0';
+        }
         $check_app_info = waRequest::param('check_app_info', true, waRequest::TYPE_INT);
         $force_version = waRequest::param('force_ui_version', null, waRequest::TYPE_STRING_TRIM);
         if (!empty($force_version) && !in_array($force_version, ['1.3', '2.0'])) {
@@ -745,6 +748,33 @@ class waSystem
 
         // otherwise app supports only specified app version
         return $app_ui_version;
+    }
+
+    /**
+     * Whether current application is running in Single App mode.
+     * @return string?   null when normal mode; app_id when single app mode is enabled for current user
+     * @throws waRightsException when current user has no access to backend due to misconfiguration
+     * @since 3.0.0
+     */
+    public function isSingleAppMode()
+    {
+        $single_app_id = wa()->getUser()->isSingleAppMode();
+        if (waSystemConfig::systemOption('single_app_mode')) {
+            $system_single_app_id = waSystemConfig::systemOption('single_app_id');
+            if ($system_single_app_id && $system_single_app_id !== 'webasyst') {
+                if ($single_app_id && $single_app_id !== $system_single_app_id) {
+                    throw new waRightsException(sprintf_wp('Single app mode misconfiguration: access denied to app %s for user with access only to app %s.', $system_single_app_id, $single_app_id));
+                }
+                $single_app_id = $system_single_app_id;
+            }
+        }
+        if (!$single_app_id) {
+            return null;
+        }
+        if (!wa()->appExists($single_app_id)) {
+            throw new waRightsException(sprintf_wp('Single app mode misconfiguration: %s app does not exist.', $single_app_id));
+        }
+        return $single_app_id;
     }
 
     /**
@@ -919,18 +949,18 @@ class waSystem
                         if (isset($app_info['icon'])) {
                             if (is_array($app_info['icon'])) {
                                 foreach ($app_info['icon'] as $size => $url) {
-                                    $app_info['icon'][$size] = ltrim($this->getAppStaticUrl($app).$url, '/');
+                                    $app_info['icon'][$size] = ltrim($this->getAppPathRelativeToFrameworkRoot($app).$url, '/');
                                 }
                             } else {
                                 $app_info['icon'] = array(
-                                    48 => ltrim($this->getAppStaticUrl($app).$app_info['icon'], '/')
+                                    48 => ltrim($this->getAppPathRelativeToFrameworkRoot($app).$app_info['icon'], '/')
                                 );
                             }
                         } else {
                             $app_info['icon'] = array();
                         }
                         if (isset($app_info['img'])) {
-                            $app_info['img'] = ltrim($this->getAppStaticUrl($app).$app_info['img'], '/');
+                            $app_info['img'] = ltrim($this->getAppPathRelativeToFrameworkRoot($app).$app_info['img'], '/');
                         } elseif (isset($app_info['icon'][48])) {
                             $app_info['img'] = $app_info['icon'][48];
                         }
@@ -951,7 +981,7 @@ class waSystem
                                 if (isset($params['name'])) {
                                     $params['name'] = _wd($app, $params['name']);
                                 }
-                                $path_to_app = ($app == 'webasyst') ? 'wa-content'.'/' : ltrim($this->getAppStaticUrl($app), '/');
+                                $path_to_app = ($app == 'webasyst') ? 'wa-content'.'/' : ltrim($this->getAppPathRelativeToFrameworkRoot($app), '/');
                                 if (isset($params['icon'])) {
                                     if (is_array($params['icon'])) {
                                         foreach ($params['icon'] as $size => $url) {
@@ -1027,6 +1057,9 @@ class waSystem
         if ($ui_support) {
             sort($ui_support, SORT_STRING);      // always 1.3,2.0 variant, to prevent double checking (double if) in application code
             $ui_support = join(',', $ui_support);
+            if (waSystemConfig::systemOption('ui_disallow_legacy') && $ui_support === '1.3,2.0') {
+                $ui_support = '2.0';
+            }
         } else {
             $ui_support = $default_ui_variant;
         }
@@ -1196,7 +1229,19 @@ class waSystem
             $app = $this->getApp();
         }
         $url = $this->config->getRootUrl($absolute);
+        return $url.$this->getAppPathRelativeToFrameworkRoot($app);
+    }
 
+    /**
+     * @param string|null $app Optional app id. If not specified, then current app's id is used by default.
+     * @return string
+     * @since 2.9.5
+     */
+    public function getAppPathRelativeToFrameworkRoot($app=null)
+    {
+        if (!$app) {
+            $app = $this->getApp();
+        }
         $app_path = $this->getAppPath(null, $app);
 
         $base = waConfig::get('wa_path_root');
@@ -1207,7 +1252,7 @@ class waSystem
             $app_path = 'wa-apps/'.$app.'/';
         }
 
-        return $url.$app_path;
+        return $app_path;
     }
 
     /**

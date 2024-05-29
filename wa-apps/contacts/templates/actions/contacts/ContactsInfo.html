@@ -20,6 +20,9 @@
     {/foreach}
 
 {/if}
+{if !isset($photo_editor_url)}
+    {$photo_editor_url = null}
+{/if}
 
 <div class="contacts-background" id="c-info-container">
 

@@ -628,7 +628,7 @@ window.ProfileAccessTab = function(o) { "use strict";
 
     initSelectorGlobalAccess(o.is_own_profile, o.contact_no_access, o.contact_groups_no_access);
     new UserAccessTable({
-        $wrapper: $('#c-access-rights-wrapper'),
+        $wrapper: $('.c-access-rights-wrapper'),
         contact_id: contact_id,
         is_frame: true
     });
@@ -1028,6 +1028,8 @@ window.ProfileAccessTab = function(o) { "use strict";
         $confirm_wrapper.on('click', '.button', function() {
             $confirm_wrapper.hide();
             updateFormAndSave();
+            const accessDialog = $('.t-sidebar-profile-dialog').data('dialog');
+            accessDialog.resize();
         });
 
         $select.change(function() {
@@ -1063,6 +1065,7 @@ window.ProfileAccessTab = function(o) { "use strict";
         function initForm(is_update) {
             $('#c-access-rights-hint-warning').hide();
             $('#c-access-rights-hint-customize').hide();
+            var $single_app_by_app = $('#c-access-single-app-by-app').hide();
 
             var new_select_value = $select.val();
             if (new_select_value === undefined) {
@@ -1142,6 +1145,67 @@ window.ProfileAccessTab = function(o) { "use strict";
                             return false;
                         }
                     }
+                case 'single_app_mode':
+                    if (!login && !password) {
+                        $('#c-credentials-block').show()
+                            .find('.c-login-input').focus().end()
+                            .find('.cancel').one('click.access', function() {
+                                $select.val(last_select_value);
+                                updateFormAndSave();
+                            });
+                        return false;
+                    } else {
+                        if (login) {
+                            const $checkboxes = $single_app_by_app.find('.c-access-single-app-checkbox');
+                            if (is_update) {
+                                $single_app_by_app.find('.t-access-status')
+                                    .removeClass('type-no type-limited type-full').addClass('type-no')
+                                    .closest('tr').addClass('t-single-app-selected').removeClass('t-single-app-selected');
+                                $checkboxes.prop('checked', false);
+                            }
+                            $single_app_by_app.show();
+                            $('#c-access-rights-by-app').hide();
+                            $('.c-shown-on-access').show();
+                            $('#c-login-block').show();
+                            $('#c-password-block').show();
+
+                            $checkboxes
+                                .off('change').on('change', function () {
+                                    var $self = $(this);
+                                    var $label= $self.closest('label');
+                                    var app_id = $self.val();
+                                    if (app_id) {
+                                        var $loading = $('<span><i class="spinner loading large custom-mr-4"></i></span>');
+                                        $label.hide();
+                                        $loading.insertAfter($label);
+                                        enableSingleAppMode(app_id)
+                                            .always(function() {
+                                                $loading.remove();
+                                                $label.show();
+                                            })
+                                            .done(function() {
+                                                $('#c-access-single-app-by-app').find('.t-access-status')
+                                                    .removeClass('type-no type-limited type-full').addClass('type-full');
+                                                $self.closest('tr').addClass('t-single-app-selected')
+                                                    .siblings().removeClass('t-single-app-selected');
+                                            })
+                                            .fail(function() {
+                                                $self.prop('checked', false);
+                                            });
+                                    }
+                                })
+                            break;
+                        } else {
+                            $('#c-login-block').show()
+                                .find('.cancel').one('click.access', function() {
+                                    $select.val(last_select_value);
+                                    updateFormAndSave();
+                                }).end()
+                                .find('.c-tab-toggle:first').click();
+                            $('#c-password-block').show();
+                            return false;
+                        }
+                    }
                 default:
                     return false;
             }
@@ -1166,12 +1230,16 @@ window.ProfileAccessTab = function(o) { "use strict";
                     case '0':
                         // Limited access user
                         return makeIsUser1().then(function() {
+                            // this also disables single_app_mode
                             return setAppRight('webasyst', 'backend', 0);
                         });
                     case '1':
                         // make superadmin
-                        // also sets is_user=1 if it was 0
+                        // also sets is_user=1 if it was 0 and disables single_app_mode
                         return setAppRight('webasyst', 'backend', 1);
+                    case 'single_app_mode':
+                        // also sets is_user=1 if it was 0
+                        return enableSingleAppMode('webasyst');
                     case 'remove':
                         // revoke all access
                         return $.post(wa_app_url+'?module=accessSave&action=revoke', { id: contact_id }, 'json');
@@ -1187,14 +1255,20 @@ window.ProfileAccessTab = function(o) { "use strict";
             function makeIsUser1() {
                 return $.post(wa_app_url+'?module=accessSave&action=makeuser', { id: contact_id }, 'json');
             }
+        }
 
-            function setAppRight(app_id, name, value) {
-                return $.post(wa_app_url+'?module=accessSave&action=rights&id='+contact_id, {
-                    app_id: app_id,
-                    name: name,
-                    value: value
-                }, 'json');
-            }
+        function enableSingleAppMode(app_id) {
+            return $.post(wa_app_url+'?module=accessSave&action=singleAppMode&id='+contact_id, {
+                app_id: app_id
+            }, 'json');
+        }
+
+        function setAppRight(app_id, name, value) {
+            return $.post(wa_app_url+'?module=accessSave&action=rights&id='+contact_id, {
+                app_id: app_id,
+                name: name,
+                value: value
+            }, 'json');
         }
     }//}}}
 };

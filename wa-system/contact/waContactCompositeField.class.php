@@ -274,7 +274,7 @@ class waContactCompositeField extends waContactField
     {
         $fields = array();
         foreach($this->options['fields'] as $f) {
-            if ($f->getId() === $subfield_name) {
+            if ($f->getId() === (string) $subfield_name) {
                 return $f;
             }
             $fields[$f->getId()] = $f;

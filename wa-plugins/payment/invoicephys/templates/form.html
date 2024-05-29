@@ -20,12 +20,17 @@
                     <tr>
                         <td style="vertical-align: top; text-align: right;">Извещение</td>
                     </tr>
+                    {if $qrcode}
                     <tr>
-                        <td style="vertical-align: top; padding: 15em 0 5px; text-align: right;">Кассир</td>
+                        <td style="vertical-align: top; text-align: right; padding: 1em 0 5px;">{$qrcode}</td>
+                    </tr>
+                    {/if}
+                    <tr>
+                        <td style="vertical-align: top; padding: {if !$qrcode}1{/if}5em 0 5px; text-align: right;">Кассир</td>
                     </tr>
                 </table>
             </td>
-            <td style="width: 70%; border: 2px solid #000;">
+            <td style="width: 70%; border: 2px solid #000; vertical-align:top;">
                 {capture name='row'}
                     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
                         <tr>

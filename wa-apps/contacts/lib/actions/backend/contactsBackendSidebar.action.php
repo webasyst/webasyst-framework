@@ -54,7 +54,7 @@ class contactsBackendSidebarAction extends waViewAction
         $this->view->assign('show_create', $wcrm->get(null, null, 'create'));
 
         $event_params = array();
-        $this->view->assign('backend_sidebar', wa()->event('backend_sidebar', $event_params, array('top_li')));
+        $this->view->assign('backend_sidebar', wa()->event('backend_sidebar', $event_params));
     }
 }
 

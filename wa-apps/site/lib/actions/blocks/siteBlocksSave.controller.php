@@ -25,6 +25,15 @@ class siteBlocksSaveController extends waJsonController
                     $info['old_id'] = $id;
                 }
                 $this->response($info);
+            } catch (waDbException $wde) {
+                if ($wde->getCode() === 1406) {
+                    $this->errors = [
+                        _w('The block is too large. Reduce it or create several blocks instead of one.'),
+                        'input[name="info[content]"]'
+                    ];
+                } else {
+                    throw $wde;
+                }
             } catch (Exception $e) {
                 if ($model->getById($info['id'])) {
                     $this->errors = array(
@@ -40,6 +49,15 @@ class siteBlocksSaveController extends waJsonController
                 $model->add($info);
                 $this->logAction('block_add');
                 $this->response($info);
+            } catch (waDbException $wde) {
+                if ($wde->getCode() === 1406) {
+                    $this->errors = [
+                        _w('The block is too large. Reduce it or create several blocks instead of one.'),
+                        'input[name="info[content]"]'
+                    ];
+                } else {
+                    throw $wde;
+                }
             } catch (Exception $e) {
                 if ($model->getById($info['id'])) {
                     $this->errors = array(

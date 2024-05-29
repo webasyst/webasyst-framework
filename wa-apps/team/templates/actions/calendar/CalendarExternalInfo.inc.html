@@ -2,88 +2,91 @@
 {$container_id = uniqid('t-external-calendar-create')}
 {$title = '[`External calendar`]'}
 
-<div class="t-external-calendar-page" id="{$container_id}">
-    <h1>{$title}</h1>
 
-    {if !empty($calendar.owner)}
-        {$_user = $calendar.owner}
-        {$_user_link = "`$wa_app_url`id/`$_user.id`/"}
-        {if !empty($_user.login)}
-            {$_l = urlencode($_user.login)}
-            {$_user_link = "`$wa_app_url`u/`$_l`/"}
+<div class="content article box t-external-calendar-page" id="{$container_id}">
+    <div class="t-content-body article-body">
+        <header class="t-content-header flexbox">
+            <h1 class="custom-my-0 wide">{$title}</h1>
+        </header>
+        {if !empty($calendar.owner)}
+            {$_user = $calendar.owner}
+            {$_user_link = "`$wa_app_url`id/`$_user.id`/"}
+            {if !empty($_user.login)}
+                {$_l = urlencode($_user.login)}
+                {$_user_link = "`$wa_app_url`u/`$_l`/"}
+            {/if}
+
+            <div class="profile image32px">
+                <div class="image">
+                    <a href="{$_user_link}">
+                        <img class="userpic userpic32" src="{$calendar.owner->getPhoto('32')}">
+                    </a>
+                </div>
+                <div class="details">
+                    <a href="{$_user_link}">
+                        {waUser::getNameAndStatus($calendar.owner)}
+                    </a>
+                </div>
+            </div>
         {/if}
 
-        <div class="profile image32px">
-            <div class="image">
-                <a href="{$_user_link}">
-                    <img class="userpic userpic32" src="{$calendar.owner->getPhoto('32')}">
-                </a>
-            </div>
-            <div class="details">
-                <a href="{$_user_link}">
-                    {waUser::getNameAndStatus($calendar.owner)}
-                </a>
-            </div>
+        <div class="line">
+            <span class="hint">{$calendar.create_datetime|wa_date:'humandatetime'}</span>
         </div>
-    {/if}
 
-    <div class="line">
-        <span class="hint">{$calendar.create_datetime|wa_date:'humandatetime'}</span>
-    </div>
+        <div class="line">
+            <i class="icon custom-mr-8" style="background-image: url('{$calendar.plugin.icon}');"></i>
 
-    <div class="line">
-        <i class="icon custom-mr-8" style="background-image: url('{$calendar.plugin.icon}');"></i>
+            <span class="t-name">{$calendar.name|escape}</span>
 
-        <span class="t-name">{$calendar.name|escape}</span>
+            {$_styles = []}
+            {if !empty($calendar.calendar.bg_color)}
+                {$_styles[] = "background: `$calendar.calendar.bg_color`;"}
+            {/if}
+            {if !empty($calendar.calendar.font_color)}
+                {$_styles[] = "color: `$calendar.calendar.font_color`;"}
+            {/if}
+            &rarr;&nbsp;<span class="t-calendar-name" style="{$_styles|join:""}">{$calendar.calendar.name|escape}</span>
 
-        {$_styles = []}
-        {if !empty($calendar.calendar.bg_color)}
-            {$_styles[] = "background: `$calendar.calendar.bg_color`;"}
+        </div>
+
+        {if !empty($calendar.plugin.account_info_html)}
+            <div class="line t-html">{$calendar.plugin.account_info_html}</div>
         {/if}
-        {if !empty($calendar.calendar.font_color)}
-            {$_styles[] = "color: `$calendar.calendar.font_color`;"}
+
+        <div class="line t-html">
+            <span>{$calendar.integration_level_name}</span>
+        </div>
+
+        {if !empty($auth_error)}
+            <div class="line t-html errormsg">{$auth_error}</div>
         {/if}
-        &rarr;&nbsp;<span class="t-calendar-name" style="{$_styles|join:""}">{$calendar.calendar.name|escape}</span>
 
-    </div>
+        <div class="t-actions">
+            <a class="button red t-external-calendar-unmount" href="javascript:void(0)" data-id="{$calendar.id}">
+                <i class="icon16 delete"></i>
+                [`unlink calendar`]
+            </a>
+        </div>
 
-    {if !empty($calendar.plugin.account_info_html)}
-        <div class="line t-html">{$calendar.plugin.account_info_html}</div>
-    {/if}
+        <script>
+            ( function($) {
+                $.team.setTitle("{$title}");
 
-    <div class="line t-html">
-        <span>{$calendar.integration_level_name}</span>
-    </div>
+                var $wrapper = $("#{$container_id}"),
+                    calendar_id = {$calendar.id},
+                    is_locked = false;
 
-    {if !empty($auth_error)}
-        <div class="line t-html errormsg">{$auth_error}</div>
-    {/if}
+                $wrapper.on("click", ".t-external-calendar-unmount", showConfirmDialog);
 
-    <div class="t-actions">
-        <a class="button red t-external-calendar-unmount" href="javascript:void(0)" data-id="{$calendar.id}">
-            <i class="icon16 delete"></i>
-            [`unlink calendar`]
-        </a>
-    </div>
+                function showConfirmDialog() {
+                    if (!is_locked) {
+                        is_locked = true;
 
-    <script>
-        ( function($) {
-            $.team.setTitle("{$title}");
-
-            var $wrapper = $("#{$container_id}"),
-                calendar_id = {$calendar.id},
-                is_locked = false;
-
-            $wrapper.on("click", ".t-external-calendar-unmount", showConfirmDialog);
-
-            function showConfirmDialog() {
-                if (!is_locked) {
-                    is_locked = true;
-
-                    var href = "?module=calendarExternal&action=DeleteConfirm&redirect=calendar/external",
-                        data = {
-                            id: calendar_id
-                        };
+                        var href = "?module=calendarExternal&action=DeleteConfirm&redirect=calendar/external",
+                            data = {
+                                id: calendar_id
+                            };
 
                         $.get(href, data, function(html) {
                             new $.waDialog({
@@ -99,10 +102,11 @@
                             is_locked = false;
                         });
 
-                    is_locked = false;
+                        is_locked = false;
+                    }
                 }
-            }
 
-        })(jQuery);
-    </script>
+            })(jQuery);
+        </script>
+    </div>
 </div>

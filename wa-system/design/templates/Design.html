@@ -104,7 +104,7 @@
             <li data-action="theme" class="info selected custom-pb-0" data-is-nav>
                 <a class="wa-themes-link semibold" href="{$design_url}theme={$theme.id}&action=theme">
                     <i class="fas fa-tasks"></i>
-                    [s`Settings`]
+                    [s`Appearance`]
                 </a>
             </li>
 
@@ -130,14 +130,14 @@
                 {skeleton_sidebar}
             </section>
 
-            <ul class="menu js-design-actions custom-mt-0">
-                <li data-action="settings" class="settings" data-is-nav>
-                    <a href="{$design_url}action=settings">
-                        <i class="fas fa-cog"></i>
+            <div class="js-design-actions box align-center">
+                <div data-action="settings" class="settings" data-is-nav>
+                    <a href="{$design_url}action=settings" class="button light-gray rounded small">
+                        <i class="fas fa-cog text-blue custom-mr-4"></i>
                         <span>{if $_route_label}{sprintf('[s`Configure %s`]', "<span class=\"js-route-label\">`$_route_label`</span>")}{else}[s`Route settings`]{/if}</span>
                     </a>
-                </li>
-            </ul>
+                </div>
+            </div>
 
             {* Installer review widget *}
             {if $need_show_review_widget}
@@ -194,16 +194,21 @@
 <div class="dialog" id="wa-design-preview">
     <div class="dialog-background"></div>
     <form class="dialog-body">
-        <h3 class="dialog-header">[s`Theme preview`]</h3>
-        <input type="hidden" id="wa-preview-key" value="" />
-        <div class="dialog-content">
-            <p>[s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
+        <h3 class="dialog-header custom-pb-16">[s`Theme preview`]</h3>
+        <div class="dialog-content custom-pb-8">
+            <input type="hidden" id="wa-preview-key" value="" />
+            <p class="custom-mt-4"><i class="fas fa-check-circle text-green"></i> [s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
             {if waRequest::isHttps()}
                 <p>[s`The design theme preview will not work on your domain name <strong id="wa-preview-domain"></strong> if it is not available via HTTPS protocol. If so then please either install an SSL certificate for your domain name or log into your Webasyst backend on that domain to preview a design theme.`]</p>
             {/if}
+            {if $theme.preview_url}
+                <a href="{$theme.preview_url|escape}" target="_blank" class="button green">
+                    <span>[s`Preview on my website`]</span><i class="fas fa-external-link-alt smaller custom-ml-4 opacity-50"></i>
+                </a>
+            {/if}
         </div>
         <div class="dialog-footer">
-            <input type="submit" class="button" value="[s`Finish preview session`]">
+            <input type="submit" class="button outlined orange" value="[s`Finish preview session`]">
         </div>
     </form>
 </div>
@@ -231,7 +236,7 @@
             </div>
             <div class="dialog-footer">
                 <input type="submit" class="button green" value="[s`Upload`]">
-                [s`or`] <a href="{$themes_url}" class="js-close-dialog">[s`cancel`]</a>
+                <a href="{$themes_url}" class="js-close-dialog button light-gray">[s`Cancel`]</a>
             </div>
         </form>
     </div>
@@ -248,9 +253,9 @@
         $theme_preview_link = $('.js-tabs-menu .wa-theme-preview'),
         $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
 
-    const current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
+    var current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
 
-        let $bottombar = $('.bottombar');
+    var $bottombar = $('.bottombar');
 
 
     async function postData(url, data) {
@@ -262,7 +267,7 @@
     }
 
     function waDesignConfirm() {
-        if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
+        if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow') || $("#bb_submit").length && $('#bb_submit').hasClass('yellow') ) {
             if (!confirm("[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]")) {
                 return false;
             }
@@ -306,7 +311,11 @@
         }
 
         {if !$options.is_ajax}
-            waDesignLoad($(this).attr('href').replace(/.*?#\//, '').replace(/\/$/, ''));
+            if ($(this).is('li')){
+                waDesignLoad($(this).find('a').attr('href')?.replace(/.*?#\//, '')?.replace(/\/$/, ''));
+            }else{
+                waDesignLoad($(this).attr('href')?.replace(/.*?#\//, '')?.replace(/\/$/, ''));
+            }
         {/if}
     });
 
@@ -324,11 +333,13 @@
             if (hash == 'themes' || !!~hash.indexOf('action=settings')) {
                 let hash = $design_actions.filter('[data-action="theme"]').find('a').attr('href')
                 $.wa.setHash(hash);
+                waDesignLoad(hash.replace(/.*?#\//, '').replace(/\/$/, ''));
                 $theme_settings_section.data('menu-id', menu_id)
             }
         }
 
         $li.addClass('selected').siblings().removeClass('selected');
+        $design_actions.removeClass('selected');
 
         if (!$bottombar.length) {
             $bottombar = $('.bottombar');
@@ -476,6 +487,7 @@
             }
 
             let hash = location.hash;
+            const ls_id = 'wa_{$app.id}_current_theme_hash';
             if (hash.indexOf('theme=') !== -1) {
                 if (!params['route']) {
                     hash = hash.replace(/&route=[^&]+/, '');
@@ -492,9 +504,9 @@
                     hash = hash + '&domain=' + params['domain'];
                 }
                 $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
-                localStorage.setItem('wa_photo_current_theme_hash', location.hash);
+                localStorage.setItem(ls_id, location.hash);
             } else {
-                const theme_hash = localStorage.getItem('wa_photo_current_theme_hash');
+                const theme_hash = localStorage.getItem(ls_id);
                 if (theme_hash){
                     location.href = theme_hash;
                 }else{

@@ -29,7 +29,7 @@
                                 <div class="field {if $parent@last}s-new-rule{/if}" {if $parent@last}style="display:none;"{/if}>
                                     <div class="name" style="padding-top:0">
                                         <input type="hidden" name="parent[]" value="{$parent@index}" autocomplete="off" {if $parent@last}disabled="disabled"{/if}>
-                                        = <input type="text" name="parent_value[{$parent@index}]" value="{$parent.value}" {if $parent@last}disabled="disabled"{/if} style="width: 120px;">
+                                        = <input type="text" name="parent_value[{$parent@index}]" value="{$parent.value|escape}" {if $parent@last}disabled="disabled"{/if} style="width: 120px;">
                                     </div>
                                     <div class="value">
                                         {sprintf('[s`Prompt to select %s from the following list:`]', $title)}<br><br>
@@ -39,7 +39,7 @@
                                                 {foreach $parent.children as $child}
                                                     <tr class="sortable">
                                                         <td class="min-width"><i class="icon16 sort"></i></td>
-                                                        <td><input type="text" class="small short" name="value[{$parent@index}][{$child.id}]" value="{$child.value}"></td>
+                                                        <td><input type="text" class="small short" name="value[{$parent@index}][{$child.id}]" value="{$child.value|escape}"></td>
                                                         <td class="min-width"><a href="#" data-id="{$child.id}" class="s-delete-value"><i class="icon10 delete"></i></a></td>
                                                     </tr>
                                                 {/foreach}

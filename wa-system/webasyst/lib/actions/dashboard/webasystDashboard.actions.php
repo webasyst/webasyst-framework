@@ -65,13 +65,13 @@ class webasystDashboardActions extends waActions
         if (count($widget_ids) != count(array_flip($widget_ids))) {
             throw new waException('bad arguments: duplicate widget id');
         }
-        
+
         $widget_model = new waWidgetModel();
         $widgets = $widget_model->getById($widget_ids);
         if (!$widgets) {
             return [0, ['no widgets found in DB']]; // no widgets to sort
         }
-        
+
         // All widgets belong to the same dashboard?
         $contact_id = false;
         $dashboard_id = false;
@@ -85,7 +85,7 @@ class webasystDashboardActions extends waActions
                 throw new waException("bad arguments: all widgets must belong to the same contact's dashboard");
             }
         }
-        
+
         $warnings = [];
 
         // Any other widgets on this dashboard? Add them at the end of the list.
@@ -127,7 +127,7 @@ class webasystDashboardActions extends waActions
                     $block++;
                     $sort = 0;
                 }
-                
+
                 if ($w['sort'] != $sort || $w['block'] != $block) {
                     $count_updated_widgets++;
                     $widget_model->updateById($w['id'], [
@@ -135,7 +135,7 @@ class webasystDashboardActions extends waActions
                         'sort' => $sort,
                     ]);
                 }
-                
+
                 $block_filled += $fill;
                 $sort++;
             }

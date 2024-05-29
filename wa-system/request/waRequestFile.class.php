@@ -122,7 +122,7 @@ class waRequestFile
     {
         switch($name) {
             case 'extension':
-                $path_info = pathinfo($this->data['name']);
+                $path_info = pathinfo((string) $this->data['name']);
                 return isset($path_info['extension']) ? $path_info['extension'] : '';
             default: // is it a key in $this->data?
                 if ($this->data === null) {

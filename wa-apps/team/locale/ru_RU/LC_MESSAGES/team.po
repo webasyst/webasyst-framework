@@ -136,6 +136,9 @@ msgstr "Нет доступа"
 msgid "Limited access"
 msgstr "Ограниченный доступ"
 
+msgid "Single app"
+msgstr "Одно приложение"
+
 msgid "Confirm access change"
 msgstr "Подтвердите изменение доступа"
 
@@ -748,8 +751,8 @@ msgstr "Вы уверены, что хотите отключить «%s»?"
 msgid "Are you sure to delete \"%s\"?"
 msgstr "Вы уверены, что хотите удалить «%s»?"
 
-msgid "Also delete all events imported from this calendar "
-msgstr "Также удалить все события, импортированные из этого календаря "
+msgid "Also delete all events imported from this calendar (%s)"
+msgstr "Также удалить все события, импортированные из этого календаря (%s)"
 
 msgid "%d event"
 msgid_plural "%d events"
@@ -972,6 +975,9 @@ msgstr "Может видеть участников"
 
 msgid "Can edit self contact info"
 msgstr "Может редактировать свои данные"
+
+msgid "Can post announcements on dashboard"
+msgstr "Может писать анонсы на дашборде"
 
 msgid "Can add users"
 msgstr "Может добавлять сотрудников"
@@ -1818,3 +1824,6 @@ msgstr "Да"
 
 msgid "No"
 msgstr "Нет"
+
+msgid "The user will not see any other apps except for the selected one."
+msgstr "Сотрудник не увидит никаких других приложений, кроме выбранного."

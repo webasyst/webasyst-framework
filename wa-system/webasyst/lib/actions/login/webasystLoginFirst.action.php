@@ -5,7 +5,7 @@ class webasystLoginFirstAction extends waViewAction
     public function execute()
     {
         $contact_model = new waContactModel();
-        if ($contact_model->countAll()) {
+        if (!$contact_model->isEmpty()) {
             $this->redirect($this->getConfig()->getBackendUrl(true));
         }
         if (($locale = waRequest::get('lang')) && waLocale::getInfo($locale)) {

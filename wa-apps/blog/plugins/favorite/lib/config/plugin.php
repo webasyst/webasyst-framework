@@ -4,7 +4,7 @@ return array(
     'name'        => /*_wp*/('Favorites'),
     'description' => /*_wp*/('Backend favorite posts filtering'),
     'vendor'      => 'webasyst',
-    'version'     => '1.1',
+    'version'     => '1.2.0',
     'img'         => 'img/star.png',
     'icons'       => array(
         16 => 'img/star.png',

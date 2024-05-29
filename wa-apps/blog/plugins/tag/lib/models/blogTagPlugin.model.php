@@ -5,10 +5,14 @@ class blogTagPluginModel extends waModel
 
     public function getAllTags($options = array())
     {
+        $join = '';
+        if (!empty($options['blog_id'])) {
+            $join = "\nJOIN blog_post bp ON bp.id = bpt.post_id AND bp.blog_id = " . (int)$options['blog_id'];
+        }
         $sql = <<<SQL
 SELECT tag.id as id, tag.name as name, COUNT(tag.id) as count
 FROM {$this->table} AS tag
-LEFT JOIN blog_post_tag ON (blog_post_tag.tag_id = tag.id)
+LEFT JOIN blog_post_tag bpt ON (bpt.tag_id = tag.id) $join
 GROUP BY tag.id
 ORDER BY tag.name
 SQL;
@@ -105,7 +109,6 @@ SQL;
             $data = '('.implode( '),(', $ids).')';
             $this->exec("INSERT INTO `blog_post_tag` (`post_id`, `tag_id`) VALUES {$data}");
         }
-
         if ( !empty($ids_delete) ) {
             $ids = array();
             foreach ($ids_delete as $key => $id) {
@@ -117,7 +120,8 @@ SQL;
             $tag_count = $this->query("
 				SELECT tag_id, COUNT(tag_id) as count
 				FROM blog_post_tag
-				WHERE tag_id IN (".implode(',', $ids_delete).")")->fetchAll('tag_id');
+				WHERE tag_id IN (".implode(',', $ids_delete).")
+				GROUP BY tag_id")->fetchAll('tag_id');
 
             $empty_tag = array_diff($ids_delete, array_keys($tag_count));
             if ( !empty($empty_tag) ) {

@@ -1,5 +1,29 @@
 <?php
 return array(
+    'wa_announcement' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'app_id' => array('varchar', 32, 'null' => 0),
+        'type' => array('varchar', 32),
+        'contact_id' => array('int', 11),
+        'text' => array('text', 'null' => 0),
+        'data' => array('text'),
+        'datetime' => array('datetime', 'null' => 0),
+        'ttl_datetime' => array('datetime'),
+        'is_pinned' => array('tinyint', 4, 'null' => 0, 'default' => '0'),
+        'access' => array('enum', "'all','limited'", 'null' => 0, 'default' => 'all'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'app_datetime' => array('datetime', 'app_id'),
+        ),
+    ),
+    'wa_announcement_rights' => array(
+        'group_id' => array('int', 11, 'null' => 0),
+        'announcement_id' => array('int', 11, 'null' => 0),
+        ':keys' => array(
+            'group_announcement' => array('group_id', 'announcement_id', 'unique' => 1),
+            'announcement_id' => 'announcement_id',
+        ),
+    ),
     'wa_api_auth_codes' => array(
         'code' => array('varchar', 32, 'null' => 0),
         'contact_id' => array('int', 11, 'null' => 0),
@@ -30,22 +54,13 @@ return array(
         'create_datetime' => array('datetime', 'null' => 0),
         'contact_id' => array('int', 11), // optional (eg. for frontend users)
         'subscriber_data' => array('text', 'null' => 0),
+        'scope' => array('varchar', 255, 'null' => 1),
         ':keys' => array(
             'PRIMARY' => 'id',
             'provider_id' => 'provider_id',
             'domain' => 'domain',
             'contact_id' => 'contact_id',
             'create_datetime' => 'create_datetime',
-        ),
-    ),
-    'wa_announcement' => array(
-        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
-        'app_id' => array('varchar', 32, 'null' => 0),
-        'text' => array('text', 'null' => 0),
-        'datetime' => array('datetime', 'null' => 0),
-        ':keys' => array(
-            'PRIMARY' => 'id',
-            'app_datetime' => array('datetime', 'app_id'),
         ),
     ),
     'wa_app_settings' => array(

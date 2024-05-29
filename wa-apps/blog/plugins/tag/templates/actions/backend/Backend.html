@@ -1,13 +1,23 @@
-<div class="block">
-	<h5 class="heading collapse-handler">
-		<i class="icon16 darr"></i>[`Tags`]
-	</h5>
-	<ul id="blog-tags" class="collapsible" style="list-style-type: none; margin: 5px 0 0;">
-		<li class="tags">
-			{foreach $tags as $tag}
-			<a href="?search=tag&amp;tag={$tag.name|escape:'url'}" style="font-size: {$tag.size}%; opacity: {$tag.opacity};" title="{$tag.count|escape}">{$tag.name|escape}</a>
-			{/foreach}
-		</li>
-	</ul>
-
-</div>
+<details data-id="tags">
+    <summary class="heading">
+        <span class="cursor-pointer">
+            <span class="caret"><i class="fas fa-caret-right"></i></span>
+            [`Tags`]
+        </span>
+    </summary>
+    <section class="b-sidebar-section box" id="blog-plugin-tags-section" data-id="blog-plugin-tags">
+        {if !empty($tags)}
+            <ul class="chips tags smaller" id="blog-plugin-tags-menu">
+                {foreach $tags as $_tag}
+                    <li>
+                        <a href="?search=tag&amp;tag={$_tag.name|escape:'url'}" style="opacity: {$_tag.opacity};" title="{$_tag.count|escape}">
+                            <span class="s-name"><i class="fas fa-hashtag"></i>{$_tag.name|escape}</span>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        {else}
+            <p class="align-center hint box custom-mt-8">[`No tags.`]</p>
+        {/if}
+    </section>
+</details>

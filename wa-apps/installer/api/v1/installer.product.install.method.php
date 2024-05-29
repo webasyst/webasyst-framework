@@ -92,7 +92,7 @@ class installerProductInstallMethod extends waAPIMethod
                         'status' => false,
                         'details' => [
                             'error' => 'product_not_found',
-                            'error_description' => _w('Product not found'),
+                            'error_description' => _w('Product not found.'),
                         ]
                     ];
                 }
@@ -105,7 +105,7 @@ class installerProductInstallMethod extends waAPIMethod
                         'status' => false,
                         'details' => [
                             'error' => 'cant_resolve_download_url',
-                            'error_description' => _w('Download url can not resolve download url')
+                            'error_description' => _w('Cannot resolve the download URL.')
                         ],
                     ];
                 }
@@ -119,7 +119,7 @@ class installerProductInstallMethod extends waAPIMethod
                     if ($warnings && $warnings[$slug]) {
                         $error_description = join("\n", $warnings[$slug]);
                     } else {
-                        $error_description = _w('Requirements not satisfied');
+                        $error_description = _w('The requirements are not satisfied.');
                     }
 
                     $updater->flush();
@@ -206,7 +206,7 @@ class installerProductInstallMethod extends waAPIMethod
                     'status' => false,
                     'details' => [
                         'error' => 'product_not_found',
-                        'error_description' => _w('Product not found'),
+                        'error_description' => _w('Product not found.'),
                     ],
                 ];
             }

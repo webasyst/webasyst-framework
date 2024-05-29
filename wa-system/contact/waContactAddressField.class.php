@@ -59,6 +59,13 @@ class waContactAddressField extends waContactCompositeField
                     $tmp = trim($field->format($data['data'][$f_id], 'value', $data['data']));
                     if ($tmp) {
                         if (!in_array($f_id, array('country', 'region', 'zip', 'street', 'city'))) {
+                            if ($field instanceof waContactSelectField) {
+                                try {
+                                    $tmp = $field->getOptions($tmp);
+                                } catch (Exception $e) {
+                                    //
+                                }
+                            }
                             $tmp = $field->getName().' '.$tmp;
                         }
                         $value[$f_id] = $tmp;
@@ -276,6 +283,13 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
                 }
                 $result['parts'][$id] = htmlspecialchars($result['parts'][$id]);
                 if (!in_array($id, array('country', 'region', 'zip', 'street', 'city'))) {
+                    if ($field instanceof waContactSelectField) {
+                        try {
+                            $result['parts'][$id] = $field->getOptions($result['parts'][$id]);
+                        } catch (Exception $e) {
+                            //
+                        }
+                    }
                     $result['parts'][$id] = '<span>'.$field->getName().'</span>' . ' ' . $result['parts'][$id];
                 }
             }

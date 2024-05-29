@@ -75,10 +75,12 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
                 'company' => ifset($params['payment_params_'.$company], $order->contact_id ? $order->getContactField($company) : ''),
                 'inn'     => ifset($params['payment_params_'.$inn], $order->contact_id ? $order->getContactField($inn) : ''),
             );
+            $settings = $this->getSettings();
             $view = wa()->getView();
             $view->assign('order', $order);
-            $view->assign('settings', $this->getSettings(), true);
+            $view->assign('settings', $settings, true);
             $view->assign('company', $company, true);
+            $view->assign('qrcode', $this->qrCode($order, $settings));
             return $view->fetch($this->path.'/templates/form.html');
         } else {
             throw new waException('print form not found');
@@ -139,5 +141,24 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
         }
         $order = new waOrder($params);
         return $this->displayPrintForm($params['plugin'], $order);
+    }
+
+    protected function qrCode($order, $settings)
+    {
+        if (empty($settings['qrcode'])
+            || empty($settings['company_name'])
+            || empty($settings['bank_account_number'])
+            || empty($settings['bank_name'])
+            || empty($settings['bik'])
+            || empty($settings['bank_kor_number'])
+        ) {
+            return '';
+        }
+
+        $qr_value = "ST00012|Name=".$settings['company_name']."|PersonalAcc=".$settings['bank_account_number']."|BankName=".$settings['bank_name']."|BIC=".$settings['bik']."|CorrespAcc=".$settings['bank_kor_number']."|Sum=".$order['total'] * 100 ."|Purpose=Оплата счёта ".$order['id_str']." от ".waDateTime::date('d.m.Y', $order['datetime'])."|PayeeINN=".$settings['inn']."|KPP=".$settings['kpp'];
+        $out =  '<script src="'.wa()->getRootUrl().'wa-content/js/qrcode/qrcode.min.js"></script>';
+        $out .= '<script>window.onload = () => {new QRCode(document.scripts[document.scripts.length - 1].parentNode, {text: '.waUtils::jsonEncode(strip_tags($qr_value)).',width: 175,height: 175})}</script>';
+
+        return $out;
     }
 }

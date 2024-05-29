@@ -1,0 +1,21 @@
+<div class="dialog width300px height200px" id="postmove-dialog">
+  <div class="dialog-background"> </div>
+  <div class="dialog-window" style="height:130px; min-height: 130px; width: 500px; min-width: 350px">
+    <div class="dialog-content">
+      <div class="dialog-content-indent">
+        <h1>[`Move posts`]</h1>
+        <select name="blog_id">
+          {foreach $blogs as $blog_item_id => $blog_item key}
+          {if $blog_item.rights ge blogRightConfig::RIGHT_READ_WRITE && (!$blog_id || $blog_item.id ne $blog_id)}
+          <option value="{$blog_item_id}">{$blog_item.name|escape}</option>
+          {/if}{/foreach}
+        </select>
+      </div>
+    </div>
+    <div class="dialog-buttons">
+      <div class="dialog-buttons-gradient">
+        <input type="button" name="delete" class="button green" value="[`Move posts`]">  [`or`] <a href="#" class="cancel">[`cancel`]</a>
+      </div>
+    </div>
+  </div>
+</div>

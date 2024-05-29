@@ -1062,7 +1062,7 @@ const Group = ( function($, backend_url) {
 const Page = ( function($, backend_url) {
     return class Page {
 
-        constructor() {
+        constructor(options) {
             this.storage = {
                 activeLighterClass: "is-highlighted",
                 dashboardEditableClass: "is-editable-mode",
@@ -1137,16 +1137,24 @@ const Page = ( function($, backend_url) {
             this.$sortable_grouped_widgets = {};
             this.$sortable_root_widget_groups = {};
 
-            this.new_dashboard_dialog = $("#dashboard-editor-dialog") || false
+            this.locale = options?.locale || "ru-RU";
+
+            this.new_dashboard_dialog = $("#dashboard-editor-dialog").clone() || false
             // todo @deprecated
             /*const initialize = function() {
                 // Init Select
                 initDashboardSelect();
             };*/
 
+            if (window.headerDateTimeId) {
+                clearInterval(window.headerDateTimeId);
+            }
+
             this.bindEvents();
             //
             this.showFirstNotice();
+
+            this.headerDateTimeWidget();
 
         }
 
@@ -1164,7 +1172,7 @@ const Page = ( function($, backend_url) {
             $new_dashboard.on('click', function (e) {
                 e.preventDefault()
                 if (!that.new_dashboard_dialog.length) {
-                    that.new_dashboard_dialog = $("#dashboard-editor-dialog")
+                    that.new_dashboard_dialog = $("#dashboard-editor-dialog").clone();
                 }
                 that.createNewDashboard();
             });
@@ -1172,14 +1180,19 @@ const Page = ( function($, backend_url) {
             // delete dashboard
             $delete_dashboard.on('click', function (e) {
                 e.preventDefault();
-                let id = $(this).parent('a').data("dashboard")
-                let $wrapper = $('#dashboard-delete-dialog')
+                const id = $(this).data("dashboard-id");
+                const name = $(this).data("dashboard-name");
+                const $wrapper = $('#dashboard-delete-dialog').clone();
+                $wrapper.find('h1').text(name);
                 $.waDialog({
                     $wrapper,
-                    onOpen: function ($dialog) {
-                        let $submit = $dialog.find('[type="submit"]')
+                    onOpen: function ($dialog, dialog) {
+                        const $submit = $dialog.find('[type="submit"]')
                         $submit.on('click', function (e) {
+                            e.preventDefault();
+                            $dialog.find('.js-loading').removeClass('hidden');
                             that.deleteCustomDashboard(id);
+                            dialog.close();
                         });
                     }
                 });
@@ -1221,7 +1234,7 @@ const Page = ( function($, backend_url) {
                 return false;
             });
 
-            $("#activity-filter input:checkbox").on("change", function() {
+            const applyFilter = () => {
                 if (that.storage.activityFilterTimer) {
                     clearTimeout(that.storage.activityFilterTimer);
                 }
@@ -1238,13 +1251,24 @@ const Page = ( function($, backend_url) {
                 that.storage.topLazyLoadingTimer = setTimeout( function() {
                     that.loadNewActivityContent($widgetActivity);
                 }, that.storage.lazyTime );
+            };
+            $("#activity-filter input:checkbox").on("change", function() {
+                applyFilter();
 
                 // Change Text
                 that.changeFilterText();
 
                 return false;
             });
+            $("#activity-filter .tabs li[data-group-id]").on("click", function() {
+                const $li = $(this);
+                $li.siblings().removeClass('selected');
+                $li.addClass('selected');
 
+                applyFilter();
+
+                return false;
+            });
 
             // Escape close edit-mode
             $(document).on("keyup", function(event) {
@@ -1472,6 +1496,14 @@ const Page = ( function($, backend_url) {
                     value: 1
                 });
 
+                const group_id = $form.find('li.selected[data-group-id]').data('group-id');
+                if (group_id) {
+                    dataArray.push({
+                        name: "group_id",
+                        value: group_id
+                    });
+                }
+
                 $.post(ajaxHref, dataArray, function (response) {
                     $deferred.resolve(response);
                 });
@@ -1487,8 +1519,23 @@ const Page = ( function($, backend_url) {
 
                     /*TODO check vice versa case*/
                     $widgetActivity.find('.activity-empty-today').remove();
+                    const is_empty_today_header = !$widgetActivity.find('.activity-divider.today').not('.hidden').length;
+                    if (is_empty_today_header) {
+                        $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
+                    }
 
                     that.storage.isActivityFilterLocked = false;
+
+                    const today = $wrapper.data("today-text");
+                    if ($wrapper.find('.activity-divider:first').text() !== today) {
+                        const empty_today = $wrapper.data("empty-today-text");
+                        $wrapper.prepend(`<div class="activity-divider h3${is_empty_today_header ? '' : ' hidden'}">${today}</div>
+                                            <div class="activity-item activity-empty-today custom-mb-24">
+                                                <div class="item-content-wrapper">
+                                                    <div class="inline-content">${empty_today}</div>
+                                                </div>
+                                            </div>`);
+                    }
                 });
             }
         }
@@ -1608,6 +1655,17 @@ const Page = ( function($, backend_url) {
 
                     /*TODO check vice versa case*/
                     $widgetActivity.find('.activity-empty-today').remove();
+
+                    const $activity_divider = $widgetActivity.find('.activity-divider');
+                    let uniqueTexts = [];
+                    $activity_divider.each(function() {
+                        const text = $(this).text();
+                        if ($.inArray(text, uniqueTexts) === -1) {
+                            uniqueTexts.push(text);
+                        } else {
+                            $(this).remove();
+                        }
+                    });
                 });
             }
         }
@@ -1635,14 +1693,29 @@ const Page = ( function($, backend_url) {
                 $deferred.done( function(response) {
                     if ( $.trim(response).length && !response.includes('activity-empty-today')) {
                         // Render
-                        $wrapper.find(".empty-activity-text").remove();
-                        $wrapper.find(".activity-empty-today").remove();
-                        let $today = $wrapper.find(".today");
-                        if($today.length) {
-                            $today.after(response).remove();
+                        $widgetActivity.find(".empty-activity-text").remove();
+                        $widgetActivity.find(".activity-item.activity-empty-today").remove();
+                        const $today_divider = $widgetActivity.find('.js-activity-list-block > .activity-divider.today');
+                        if ($today_divider.length) {
+                            $today_divider.after(response)
                         }else{
                             $wrapper.prepend(response);
                         }
+
+                        if (!$widgetActivity.find('.activity-divider.today').not('.hidden').length) {
+                            $widgetActivity.find('.activity-divider.hidden:first').removeClass('hidden');
+                        }
+
+                        const $activity_divider = $widgetActivity.find('.activity-divider');
+                        let uniqueTexts = [];
+                        $activity_divider.each(function() {
+                            const text = $(this).text();
+                            if ($.inArray(text, uniqueTexts) === -1) {
+                                uniqueTexts.push(text);
+                            } else {
+                                $(this).remove();
+                            }
+                        });
                     }
 
                     that.storage.isTopLazyLoadLocked = false;
@@ -1697,19 +1770,6 @@ const Page = ( function($, backend_url) {
         }
 
         // todo deprecated
-        /*initDashboardSelect() {
-            let that = this,
-             $dashboardList = that.storage.getDashboardsList(),
-                $select = that.getDashboardSelect(),
-                default_value = $select.find("option").first().val();
-
-            that.storage.dashboardSelectData.default = default_value;
-            that.storage.dashboardSelectData.active = default_value;
-
-            $select.val(default_value);
-
-            $dashboardList.prepend($select);
-        }*/
 
         changeDashboard() {
             let that = this,
@@ -1746,30 +1806,6 @@ const Page = ( function($, backend_url) {
                 that.storage.dashboardSelectData.active = value;
             }
         }
-
-        // initCustomDashboard( dashboard_id) {
-        //     let that = this,
-        //         $deferred = $.Deferred(),
-        //         $dashboardArea = $("#d-widgets-block"),
-        //         dashboard_href = "?module=dashboard&action=editPublic&dashboard_id=" + dashboard_id,
-        //         dashboard_data = {};
-        //
-        //     $dashboardArea.html("");
-        //
-        //     $.post(dashboard_href, dashboard_data, function(response) {
-        //         $deferred.resolve(response);
-        //     });
-        //
-        //     $deferred.done( function(html) {
-        //         $dashboardArea.html(html);
-        //
-        //         let $link = $dashboardArea.find(".d-dashboard-link-wrapper"),
-        //             $deleteLink = $dashboardArea.find(".d-delete-dashboard-wrapper");
-        //
-        //         that.renderDashboardLinks( $link, $deleteLink );
-        //     });
-        //
-        // }
 
         renderDashboardLinks( $link, $deleteLink ) {
             let that = this,
@@ -1816,10 +1852,26 @@ const Page = ( function($, backend_url) {
                             // Remove Load
                             $form.find('.loading').remove();
 
-                            if (response.status == 'ok') {
-                                let id = response.data.id
+                            if (response.status === 'ok') {
+                                const { id, name } = response.data;
                                 localStorage.setItem('dashboard_id', id);
-                                location.href = `${dashboard_url}${id}/`
+
+                                const $li = $(`<li>
+                                    <a href="javascript:void(0)" data-dashboard="${id}">
+                                        <span class="semibold"></span>
+                                    </a>
+                                </li>`);
+                                $li.find('span:first').text(name);
+                                const $link = that.storage.getDashboardsList()
+                                    .append($li)
+                                    .find(`a[data-dashboard="${id}"]`).trigger('click');
+
+                                const promise = $link.data('promise');
+                                if (promise && typeof promise === 'object') {
+                                    promise.then(() => {
+                                        dialog.close();
+                                    });
+                                }
                             } else {
                                 alert(response.errors);
                             }
@@ -1836,7 +1888,8 @@ const Page = ( function($, backend_url) {
         }
 
         deleteCustomDashboard( dashboard_id ) {
-            let $deferred = $.Deferred(),
+            let that = this,
+                $deferred = $.Deferred(),
                 delete_href = "?module=dashboard&action=dashboardDelete",
                 delete_data = {
                     id: dashboard_id
@@ -1847,8 +1900,46 @@ const Page = ( function($, backend_url) {
                 }, "json");
 
                 $deferred.done( function() {
-                    location.href = backend_url;
+                    // location.href = backend_url;
+                    that.storage.getDashboardsList().find(`[data-dashboard="${dashboard_id}"]`).closest('li').remove();
+                    that.storage.getDashboardsList().find('[data-dashboard="0"]').trigger('click');
                 });
+            }
+        }
+
+        headerDateTimeWidget() {
+            const $widget_place = $('.js-header-datetime');
+            const locale = this.locale;
+
+            if (!$widget_place.length) {
+                return;
+            }
+
+            window.headerDateTimeId = setInterval(updateTime, 1000);
+
+            updateTime();
+
+            function updateTime() {
+                const now = new Date();
+                const date_options = {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'long',
+                };
+                const time_options = {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: false,
+                };
+
+                const dateString = new Intl.DateTimeFormat(locale, date_options).format(now);
+                let timeString = new Intl.DateTimeFormat(locale, time_options).format(now);
+
+                if (now.getSeconds() % 2 === 0) {
+                    timeString = timeString.replace(':', ' ');
+                }
+
+                $widget_place.text(`${dateString} ${timeString}`);
             }
         }
     }

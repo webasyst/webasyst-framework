@@ -1602,7 +1602,7 @@ var EventEditDialog = ( function($) {
             $wrapper.on("focus change keyup", "input:text", function() {
                 var $input = $(this),
                     value = $input.val();
-                that.summary = $("<div />").html( $input.val() ).text();
+                that.summary = $("<div />").text( $input.val() )
 
                 if (value.length) {
                     that.summary_type = "custom";

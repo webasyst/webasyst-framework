@@ -285,22 +285,33 @@
 
                 {* UI version select *}
                 <div class="field custom-my-24">
-                    <div class="name for-checkbox">[s`Default UI mode`]</div>
+                    <div class="name for-checkbox">[s`UI mode`]</div>
                     <div class="value">
+                        <label>
+                            <span class="wa-radio">
+                                <input type="radio"{if !empty($config.ui_disallow_legacy) || !isset($config.ui)} checked{/if} name="config[ui]" value="">
+                                <span></span>
+                            </span>
+                            [s`Newest`] (2.0)
+                            <span class="hint">[s`older apps with 1.3 UI will still work`] <i class="fas fa-thumbs-up text-green"></i></span>
+                        </label>
+                        <br>
                         <label>
                             <span class="wa-radio">
                                 <input type="radio"{if isset($config.ui) && $config.ui === '2.0'} checked{/if} name="config[ui]" value="2.0">
                                 <span></span>
                             </span>
-                            2.0 ([s`new`])
+                            2.0 / 1.3
+                            <span class="hint">[s`user selectable`]</span>
                         </label>
                         <br>
                         <label class="custom-mr-8">
                             <span class="wa-radio">
-                                <input type="radio"{if !isset($config.ui) || $config.ui === '1.3'} checked{/if} name="config[ui]" value="1.3">
+                                <input type="radio"{if isset($config.ui) && $config.ui === '1.3'} checked{/if} name="config[ui]" value="1.3">
                                 <span></span>
                             </span>
                             1.3 ([s`old`])
+                            <span class="hint">2011—2020</span>
                         </label>
                     </div>
                 </div>

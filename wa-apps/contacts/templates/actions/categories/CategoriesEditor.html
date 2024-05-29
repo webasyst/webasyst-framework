@@ -1,5 +1,5 @@
 
-<div class="block" id="c-ce-header">
+<div id="c-ce-header">
 	{if $category}
 		<h1>{sprintf(_w('Edit category &ldquo;%s&rdquo;'), htmlspecialchars($category.name))}</h1>
 	{else}
@@ -8,33 +8,31 @@
 </div>
 
 <div id="tc-ge-members" class="tab-content">
-	<div class="block double-padded">
+	<div>
 		<form action="?module=categories&action=save" id="category-editor-form">
-			<div class="fields" style="width:100%">
+			<div class="fields width-100">
 				{if $category}
 					<input name="id" type="hidden" value="{$category.id}">
 				{/if}
 				<input name="user_operation" type="hidden" value="set">
 				<div class="field c-header-edit">
 					<div class="name large">[`Name:`]</div>
-					<div class="value"><span><input name="name" type="text" class="large" value="{$category.name|escape}" style="width:55%"></span></div>
+					<div class="value"><span><input name="name" type="text" class="large width-60" value="{$category.name|escape}"></span></div>
 				</div>
 				<div class="field buttons">
 					<div class="value submit">
 						<em class="validation-notice errormsg"></em>
 
-						<input type="submit" value="[`Save`]" class="button green"> [`or`] <a href="#" onclick="$.wa.back(); return false;">[`cancel`]</a>
+						<input type="submit" value="[`Save`]" class="button green">
+                        <button class="button light-gray" onclick="$.wa.back();">[`Cancel`]</button>
 
-						<i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+						<i class="fas fa-spinner fa-spin text-gray loading" style="margin-left: 16px; display: none;"></i>
 					</div>
 				</div>
 			</div>
 		</form>
-		<div class="clear-left"></div>
 	</div>
 </div>
-
-<div class="clear-left"></div>
 
 <script type="text/javascript">
 (function() {

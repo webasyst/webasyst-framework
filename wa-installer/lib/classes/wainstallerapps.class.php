@@ -1994,7 +1994,6 @@ class waInstallerApps
         $default = array(
             'debug'         => false,
             'identity_hash' => md5(mt_rand().__FILE__.(function_exists('php_uname') ? php_uname() : '').phpversion().mt_rand()),
-            'ui' => '2.0',
         );
         $current = self::getConfig(self::CONFIG_GENERIC);
         if (isset($config['identity_hash'])) {

@@ -279,11 +279,13 @@ class webasystFieldConstructor
         }
 
         if ($select_field_value && $field->getParameter('storage') === 'data') {
-            $opts = array_map('trim', array_filter(explode("\r\n", $select_field_value)));
+            $opts = array_map('trim', explode("\r\n", $select_field_value));
             if (!empty($opts)) {
                 $select_options = array();
                 foreach ($opts as $val) {
-                    $select_options[$val] = $val;
+                    if ((string) $val !== '') {
+                        $select_options[$val] = $val;
+                    }
                 }
                 $field->setParameter('options', $select_options);
             }

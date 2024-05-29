@@ -18,7 +18,7 @@ class webasystLoginController extends waViewController
         }
 
         // There is no contacts yet - first login action
-        if (!$contact_model->countAll()) {
+        if ($contact_model->isEmpty()) {
             $this->executeAction(new webasystLoginFirstAction());
             return;
         }

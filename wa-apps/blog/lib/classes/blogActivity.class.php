@@ -92,7 +92,9 @@ class blogActivity
 
     public function __destruct()
     {
-        wa()->getStorage()->set(__CLASS__, $this->data);
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            wa()->getStorage()->set(__CLASS__, $this->data);
+        }
         self::$instance = null;
     }
 

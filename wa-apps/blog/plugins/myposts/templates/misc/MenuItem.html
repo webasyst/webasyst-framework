@@ -1,0 +1,9 @@
+{$_search_query = $wa->get('search')}
+{$_is_selected = ($_search_query == $plugin_id)}
+<li {if $is_selected}class="selected"{/if}>
+    <a href="?search={$plugin_id}">
+        <span class="icon userpic userpic-20" style="background-image: url('{$img_url}')"></span>
+        <span>{_wp('Posts by me')}</span>
+        <span class="count" id="blog-plugin-myposts-counter">{$count}</span>
+    </a>
+</li>

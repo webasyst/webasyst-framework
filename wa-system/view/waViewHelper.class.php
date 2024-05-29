@@ -261,7 +261,7 @@ class waViewHelper
         $og = wa()->getResponse()->getMeta('og');
         if ($og) {
             foreach ($og as $k => $v) {
-                $html .= '<meta property="'.htmlspecialchars($k).'" content="'.htmlspecialchars($v).'" />'.PHP_EOL;
+                $html .= '<meta property="'.htmlspecialchars($k).'" content="'.htmlspecialchars($v).'">'.PHP_EOL;
             }
         }
 
@@ -282,7 +282,7 @@ class waViewHelper
             if (!empty($domain_config['google_analytics']['code'])) {
                 if (!empty($domain_config['google_analytics']['universal'])) {
                     $html .= <<<HTML
-<script type="text/javascript">
+<script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -310,7 +310,7 @@ HTML;
 
         $canonical = wa()->getResponse()->getCanonical();
         if ($canonical) {
-            $html .= '<link rel="canonical" href="' . htmlspecialchars($canonical) . '" />' . PHP_EOL;
+            $html .= '<link rel="canonical" href="' . htmlspecialchars($canonical) . '">' . PHP_EOL;
         }
 
         return $html;
@@ -412,7 +412,7 @@ HTML;
 
         // for handling iPad and tablet computer default view properly
         if (!waRequest::isMobile(false)) {
-            $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n";
+            $css .= '<meta name="viewport" content="width=device-width, initial-scale=1">'."\n";
         }
 
         return $css.wa()->getResponse()->getCss(true, $strict);
@@ -437,10 +437,10 @@ HTML;
             $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-2.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css">
             <script src="'.wa()->getRootUrl().'wa-content/js/jquery-wa/wa.switch-mode.js?v'.$this->version(true).'"></script>
     <script defer src="'.wa()->getRootUrl().'wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0" />';
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0">';
 
             // no referrer for backend urls
-            $css .= '<meta name="referrer" content="origin-when-cross-origin" />';
+            $css .= '<meta name="referrer" content="origin-when-cross-origin">';
         }
 
         return $css.wa()->getResponse()->getCss(true, $strict);
@@ -1555,6 +1555,26 @@ HTML;
     public function whichUI($app_id = null)
     {
         return wa()->whichUI($app_id);
+    }
+
+    public function isSingleAppMode()
+    {
+        return wa()->isSingleAppMode();
+    }
+
+    /**
+     * @since 10.0.1
+     */
+    public function headerSingleAppUser()
+    {
+        if (!wa()->isSingleAppMode()) {
+            return null;
+        }
+
+        $header = new webasystBackendHeaderAction([
+            'single_app_user' => true,
+        ]);
+        return $header->display();
     }
 
     public function __get($app)
