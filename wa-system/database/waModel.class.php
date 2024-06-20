@@ -1079,6 +1079,9 @@ class waModel
             } else {
                 return '1=0';
             }
+        } elseif ($value instanceof waModelExpr) {
+            // Single field, expression value
+            return $prefix.$this->escapeField($field)." ".$this->getFieldValue($field, $value);
         }
 
         // Single field, single value
