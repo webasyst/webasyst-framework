@@ -39,10 +39,10 @@ class waFiles
         if (file_exists($path)) {
             return $path;
         }
-        $result = $path;
-        if (!$is_dir && substr($path, -1) !== '/' && strpos(basename($path), ".") !== false) {
+        if (!$is_dir && !in_array(substr($path, -1), array('\\', '/')) && strpos(basename($path), ".") !== false) {
             $path = dirname($path);
         }
+        $result = $path;
         if ($path && !file_exists($path)) {
             $status = @mkdir($path, 0775, true);
             if (!file_exists($path) && file_exists(self::create(dirname($path)))) {
