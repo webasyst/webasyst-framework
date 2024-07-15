@@ -281,11 +281,14 @@ class WaHeaderAnnouncement {
         $wrapper.find('[data-wa-tooltip-content]').waTooltip();
     }
     initNotifyUsersDropdown () {
-        const $dropdown_notify_to_users = $('#dropdown-notify-to-users');
-        const $toggle_groups_or_users = $('#toggle-groups-or-users');
+        const $dropdown = $('#dropdown-notify-to-users');
+        const $toggle_buttons = $('#toggle-groups-or-users');
 
+        const getToggleType = () => {
+            return $toggle_buttons.find('.selected').data('type');
+        };
         const updateNotifyCounter = (use_init_value = false) => {
-            const dropdown = $dropdown_notify_to_users.data('dropdown');
+            const dropdown = $dropdown.data('dropdown');
             const $counter = $('#js-announcement-notify-counter');
             const contact_ids = [];
             let sum = 0;
@@ -314,79 +317,70 @@ class WaHeaderAnnouncement {
             this.$form.find('[name="data[is_notify]"]:checkbox').prop('disabled', !sum);
             $counter.text(sum);
         };
-        const selectAllUsers = () => {
-            const dropdown = $dropdown_notify_to_users.data('dropdown');
-            dropdown.$menu.find(':checkbox').prop('checked', false);
+        const unselect = (list_id) => {
+            const dropdown = $dropdown.data('dropdown');
+            dropdown.$menu.find((list_id ? `[data-list="${list_id}"] ` : '') + ':checkbox').prop('checked', false);
             dropdown.$button.text(dropdown.$button.data('init-text'));
             updateNotifyCounter(true);
         };
+        const selectAllUsers = () => {
+            $dropdown.data('dropdown').hide();
+            $dropdown.find('.toggle [data-type="all"]').trigger('click');
+            unselect();
+        };
         const updateDropdownTitle = () => {
-            const dropdown = $dropdown_notify_to_users.data('dropdown');
-            const current_toggle_name = $toggle_groups_or_users.data('toggle').$active.text();
-            const count = dropdown.$menu.find(':checkbox:checked').length;
-            if (count) {
-                dropdown.setTitle(`${current_toggle_name}: ${count}`);
-                this.$form.find('#js-announcement-textarea').redactor('placeholder.hide');
-            } else {
-                selectAllUsers();
-            }
+            const dropdown = $dropdown.data('dropdown');
+            const current_toggle_title = $toggle_buttons.data('toggle').$active.text();
+            const count = dropdown.$menu.find(`[data-list="${getToggleType()}"] :checkbox:checked`).length;
+            dropdown.setTitle(`${current_toggle_title}: ${count}`);
+            this.$form.find('#js-announcement-textarea').redactor('placeholder.hide');
         };
-        const resetSelected = () => {
-            $dropdown_notify_to_users.find('[data-type="contacts"]').trigger('click');
-            selectAllUsers();
-            $dropdown_notify_to_users.data('dropdown').hide();
-            $toggle_groups_or_users
-                .find('span[data-id]').removeClass('selected')
-                .filter('[data-type="contacts"]').addClass('selected');
-        };
-        const selectGroupsOrContactsByIds = (type, ids) => {
-            $dropdown_notify_to_users.find(`[data-type="${type}s"]`).trigger('click');
 
-            const dropdown = $dropdown_notify_to_users.data('dropdown');
-            const $list = dropdown.$menu.find(`[data-list=${type}]`);
-            const $li = $list.find('> [data-id]');
-            if ($li.length) {
-                let query_str = '';
-                ids.forEach(id => {
-                    query_str += `[data-id="${id}"],`;
+        const updateSelectUsersByGroups = () => {
+            if (getToggleType() === 'groups') {
+                unselect('contacts');
+
+                let contact_ids_str = '';
+                $('#notify-to-groups-list :checkbox:checked').each(function () {
+                    contact_ids_str += $(this).closest('[data-contact-ids]').data('contact-ids') + ',';
                 });
-                if (query_str) {
-                    query_str = query_str.slice(0, -1);
-                }
+                if (contact_ids_str) {
+                    contact_ids_str = contact_ids_str.slice(0, -1);
+                    const unique_ids = Array.from(new Set(contact_ids_str.split(',')));
 
-                $li.filter(query_str).find(':checkbox').prop('checked', true);
-                updateNotifyCounter();
-                updateDropdownTitle();
+                    let selector_contacts = '';
+                    unique_ids.forEach(id => {
+                        selector_contacts += `[data-id="${id}"] :checkbox,`;
+                    });
+                    selector_contacts = selector_contacts.slice(0, -1);
+
+                    $('#notify-to-users-list').find(selector_contacts).prop('checked', true);
+                }
+            } else {
+                // clicked on other toggle type
+                unselect('groups');
             }
         };
 
-
-        $toggle_groups_or_users.waToggle({
+        $toggle_buttons.waToggle({
             use_animation: false,
             change: function (_, target) {
-                const $groups_list = $('#notify-to-groups-list');
-                const $users_list = $('#notify-to-users-list');
-
-                $groups_list.add($users_list).find(':checkbox').prop('checked', false);
-                updateNotifyCounter();
-
+                $('[data-list]', $dropdown).hide();
                 switch ($(target).data('type')) {
+                    case 'all':
+                        $('[data-list="all"]', $dropdown).show();
+                        selectAllUsers();
+                        break;
                     case 'groups':
-                        $groups_list.show();
-                        $users_list.hide();
+                        $('#notify-to-groups-list', $dropdown).show();
                         break;
                     case 'contacts':
-                        $groups_list.hide();
-                        $users_list.show();
-                        break;
-                    default:
-                        break;
+                        $('#notify-to-users-list', $dropdown).show();
                 }
-                updateDropdownTitle();
             }
         });
 
-        $dropdown_notify_to_users.waDropdown({
+        $dropdown.waDropdown({
             hover: false,
             hide: false,
             items: 'ul > li',
@@ -398,23 +392,43 @@ class WaHeaderAnnouncement {
             },
             change: function (_, target) {
                 const $li = $(target);
-                const $checkbox = $li.find(':checkbox:first');
-                if ($checkbox.length) {
-                    $li.removeClass('selected');
-                    $checkbox.prop('checked', !$checkbox.prop('checked'));
+                $li.removeClass('selected');
 
-                    updateNotifyCounter();
-                    updateDropdownTitle();
+                const $checkbox = $li.find(':checkbox');
+                const is_checked = $checkbox.prop('checked');
 
-                } else {
-                    // select 'All users'
-                    resetSelected();
-                }
+                $checkbox.prop('checked', !is_checked);
+                updateSelectUsersByGroups();
+                updateNotifyCounter();
+                updateDropdownTitle();
             }
         });
 
+        const selectGroupsOrContactsByIds = (type, ids) => {
+            $dropdown.find(`[data-type="${type}"]`).trigger('click');
+            const dropdown = $dropdown.data('dropdown');
+            const $list = dropdown.$menu.find(`[data-list=${type}]`);
+            const $li = $list.find('> [data-id]');
+            if (!$li.length) {
+                return;
+            }
+
+            let query_str = '';
+            ids.forEach(id => {
+                query_str += `[data-id="${id}"],`;
+            });
+            if (query_str) {
+                query_str = query_str.slice(0, -1);
+            }
+
+            $li.filter(query_str).find(':checkbox').prop('checked', true);
+            updateSelectUsersByGroups();
+            updateNotifyCounter();
+            updateDropdownTitle();
+        };
+
         return {
-            resetSelected,
+            selectAllUsers,
             selectGroupsOrContactsByIds
         }
     }
@@ -503,12 +517,14 @@ class WaHeaderAnnouncement {
         if (ttl_date) {
             form_data.data.ttl_datetime = `${ttl_date} ${$('#js-announcement-ttl-time').val()}:00`;
         }
-
+        if (
+            (form_data.group_ids && form_data.group_ids.length) ||
+            (!form_data.contact_ids && this.editing_data && this.editing_data.access_contact_ids)
+        ) {
+            form_data.contact_ids = [null];
+        }
         if (!form_data.group_ids && this.editing_data && this.editing_data.access_group_ids) {
             form_data.group_ids = [null];
-        }
-        if (!form_data.contact_ids && this.editing_data && this.editing_data.access_contact_ids) {
-            form_data.contact_ids = [null];
         }
 
         return form_data;
@@ -619,7 +635,7 @@ class WaHeaderAnnouncement {
             this.$form.removeClass('visible');
             $('#js-announcement-fields-more').find('svg').addClass('fa-caret-down').removeClass('fa-caret-up');
             $('#js-announcement-fields').slideUp();
-            this.notify_users_dropdown && this.notify_users_dropdown.resetSelected();
+            this.notify_users_dropdown && this.notify_users_dropdown.selectAllUsers();
             dfd.resolve();
         });
         $('.js-new-announcement').removeClass('is-open');
@@ -643,10 +659,10 @@ class WaHeaderAnnouncement {
 
         if (access === 'limited') {
             if (access_group_ids.length) {
-                this.notify_users_dropdown.selectGroupsOrContactsByIds('group', access_group_ids);
+                this.notify_users_dropdown.selectGroupsOrContactsByIds('groups', access_group_ids);
             }
             if (access_contact_ids.length) {
-                this.notify_users_dropdown.selectGroupsOrContactsByIds('contact', access_contact_ids);
+                this.notify_users_dropdown.selectGroupsOrContactsByIds('contacts', access_contact_ids);
             }
         }
     }

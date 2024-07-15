@@ -202,26 +202,6 @@
             <div class="d-dashboard-link-wrapper" id="d-dashboard-link-wrapper"></div>
         {/if*}
     </section>
-    {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || strpos($request_uri, "/webasyst/dashboard/dashboard/") !== false}
-    <div class="grid-placeholder">&nbsp;</div>
-    <div class="dashboard-controls" style="position: sticky; bottom: 2rem; grid-column: 2/-1; text-align: center">
-
-            <div class="dashboard-customize">
-                <a href="javascript:void(0);"
-                   class="button rounded nowrap white d-dashboard-edit-button js-dashboard-edit"
-                   data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
-                   id="show-dashboard-editable-mode_">
-                    <i class="fas fa-sliders-h text-gray custom-mr-4"></i> <span>[s`Widgets`]</span>
-                </a>
-                <a href="javascript:void(0);"
-                   class="button rounded nowrap white d-dashboard-edit-button js-dashboard-edit-close"
-                   style="display: none;">
-                    <span>[s`Done`]</span>
-                </a>
-            </div>
-
-    </div>
-    {/if}
 </div>
 <script id="script-dashboard-init">
     $(function () {

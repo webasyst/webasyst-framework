@@ -150,7 +150,6 @@ class webasystBackendHeaderAction extends waViewAction
         list( , , , $header_notification, $header_user_area) = $this->execBackendHeaderEvent();
 
         $view->assign([
-            'backend_url'    => $wa->getConfig()->getBackendUrl(true),
             'header_single_app_user' => $header_user_area['single_app'],
             'root_url'       => $wa->getRootUrl(),
             'backend_url'    => $backend_url,

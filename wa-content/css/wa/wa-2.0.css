@@ -540,6 +540,9 @@ mark.orange, .highlighted.orange { background: var(--highlighted-orange); }
 .text-gray { color: var(--gray) !important; }
 .text-light-gray { color: var(--light-gray) !important; }
 .text-dark-gray { color: var(--dark-gray) !important; }
+.text-strong { color: var(--text-color-strong) !important; }
+.text-stronger { color: var(--text-color-stronger) !important; }
+.text-strongest { color: var(--text-color-strongest) !important; }
 
 .bg-blue { background-color: var(--blue) !important; }
 .bg-red { background-color: var(--red) !important; }
@@ -791,7 +794,6 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 #wa-nav #wa-header #wa-header-user-area .wa-header-search-form.collapsed { margin-right: 0; margin-left: 1rem;}
 #wa-nav #wa-header #wa-header-user-area .wa-header-search-form > input { transition: width 300ms; opacity: 1;}
 #wa-nav #wa-header #wa-header-user-area .wa-header-search-form.collapsed > input { width: 1em; padding: 0; opacity: 0;}
-#wa-nav #wa-header #wa-header-user-area .wa-header-custom-aux-content { margin-right: 1.25rem; }
 
 #wa-header #wa-header-user-area #wa-userprofile { position: relative; border-bottom: 0 none;}
 #wa-header #wa-header-user-area #wa-userprofile.is-opened::before { position: absolute; top: 0; right: 0; bottom: 0; width: 115px; content: ''; }
@@ -1738,7 +1740,7 @@ ul.tabs { list-style-type: none; margin: 0; padding: 0 0 0 1em; display: flex; o
 ul.tabs::-webkit-scrollbar { display: none; }
 ul.tabs > li { text-align: left; position: relative; flex: 0 0 auto; padding: 0; display: flex; align-items: center; }
 ul.tabs > li:not(:empty):not(:last-child) { margin-right: 1.5em; }
-ul.tabs > li > a { outline: none; font-style: normal; text-decoration: none; color: var(--menu-link-color); padding: 0.75em 0; cursor: pointer; flex: 1; border-bottom: 0.25em solid transparent; }
+ul.tabs > li > a { outline: none; font-style: normal; text-decoration: none; color: var(--menu-link-color); padding: 0.75em 0; cursor: pointer; flex: auto; border-bottom: 0.25em solid transparent; }
 ul.tabs > li > a i,
 ul.tabs > li > a svg,
 ul.tabs > li > a img { font-size: 1em; max-height: 1em; margin: 0 0.25em 0 0; }
@@ -1820,7 +1822,7 @@ HSL implementation
 .alert .alert-close:hover { color: var(--text-color-link-hover); }
 .alert .hint { color: inherit; opacity: 0.6; }
 
-.alert-fixed-box { position: fixed; top: 5.5rem; right: 1.5rem; z-index: 1060; width: 18.75rem; font-size: 0.9375rem; }
+.alert-fixed-box { position: fixed; top: 5.5rem; right: 1.5rem; z-index: 1060; width: 18.75rem; font-size: 0.9375rem; max-width: 90%; }
 .alert-fixed-box.large { width: 31.25rem; }
 .alert-fixed-box.bottom { top: auto; bottom: 0; }
 .alert-fixed-box > .alert.outlined { background: var(--alert-background-color); }
@@ -1950,7 +1952,7 @@ ul.breadcrumbs > li * > a { color: inherit; }
 .fields .field > .value > .hint:first-child { margin-top: 0; }
 .fields .field > .value.submit { padding-left: 10.5rem; }
 .fields .field > .value > ul { list-style: none; padding-left: 0; }
-.fields .field > .value > ul:not(.thumbs) > li:not(:first-child) { margin-top: 0.5rem; }
+.fields .field > .value > ul:not(.thumbs,.chips) > li:not(:first-child) { margin-top: 0.5rem; }
 
 .fields.vertical .field:not(:first-child) { margin-top: 1rem; }
 .fields.vertical .field > .name { width: auto; }

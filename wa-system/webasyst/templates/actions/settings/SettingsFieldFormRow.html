@@ -19,13 +19,11 @@
 {if $f->getType() != "Hidden"}
     <tr class="{$tr_classes}" data-field-id="{$fid}"{if !$new_field} data-field-type="{$f->getType()}"{/if}>
         <td class="min-width"><i class="fas fa-bars js-subfield-sort" style="cursor: move"></i></td>
-        <td class="min-width">
+        <td class="hidden">
             {if $f->getParameter('always_required')}
                 <input type="hidden" name="{$prefix}[{$fid}][_disabled]" value="">
-                <input type="checkbox" checked disabled>
             {else}
                 <input type="hidden" name="{$prefix}[{$fid}][_disabled]" value="1">
-                <input type="checkbox" id="enbl-{$uniqid}" name="{$prefix}[{$fid}][_disabled]" value=""{if !$f->getParameter('_disabled')} checked{/if}>
             {/if}
         </td>
         <td>

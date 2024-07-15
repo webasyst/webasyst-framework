@@ -18,6 +18,9 @@ class installerPluginsViewAction extends installerItemsAction
 
     protected function buildStorePath($params)
     {
+        if (waRequest::get('hide_back')) {
+            $params['hide_back'] = 1;
+        }
         return '?'.http_build_query($params);
     }
 }

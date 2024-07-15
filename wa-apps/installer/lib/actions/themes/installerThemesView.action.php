@@ -18,6 +18,12 @@ class installerThemesViewAction extends installerItemsAction
 
     protected function buildStorePath($params)
     {
+        if (waRequest::get('full_width')) {
+            $params['full_width'] = 1;
+        }
+        if (waRequest::get('hide_back')) {
+            $params['hide_back'] = 1;
+        }
         return 'themes/?'.http_build_query($params);
     }
 }

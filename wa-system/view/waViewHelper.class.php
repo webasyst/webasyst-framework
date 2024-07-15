@@ -1382,6 +1382,7 @@ HTML;
             'selected_tab'                    => $selected_tab,
             'contact_id'                      => $id,
             'tabs'                            => $tabs,
+            'is_system_profile'               => ifset($options['is_system_profile']),
         ));
 
         $template_file = $this->getConfig()->getConfigPath('ProfileTabs.html', true, 'webasyst');

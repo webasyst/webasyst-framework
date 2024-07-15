@@ -54,14 +54,22 @@
                     </div>
                     {foreach $available_transports as $id => $transport}
                         {if PHP_MAJOR_VERSION < 8 || $id != 'mail' || $_transport == $id}
-                            <p class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}">{$transport.description|default:null}</p>
+                            {if $id == 'wasender'}
+                                <div class="js-transport-description js-{$id}-description custom-my-8"{if $_transport != $id} style="display: none;"{/if}>
+                                    {$transport.description|default:null}
+                                </div>
+                            {else}
+                                <p class="hint js-transport-description js-{$id}-description"{if $_transport != $id} style="display: none;"{/if}>
+                                    {$transport.description|default:null}
+                                </p>
+                            {/if}
                         {/if}
                     {/foreach}
                 </div>
             </div>
             {* MAIL PARAMS *}
             {if isset($available_transports.mail)}
-                <div class="field s-params js-params js-mail-params"{if $_transport !== 'mail'} style="display:none"{/if}>
+                <div class="field js-params js-mail-params custom-mt-8"{if $_transport !== 'mail'} style="display:none"{/if}>
                     <div class="name for-input">[s`Options`]</div>
                     <div class="value">
                         <input type="text" placeholder="-f%s" data-name="options" value="{$config.options|default:null|escape}" />
@@ -70,7 +78,7 @@
             {/if}
             {* SMTP PARAMS *}
             {if isset($available_transports.smtp)}
-                <div class="fields-group blank s-params js-params js-smtp-params"{if $_transport != 'smtp'} style="display:none"{/if}>
+                <div class="js-params js-smtp-params custom-mt-8"{if $_transport != 'smtp'} style="display:none"{/if}>
                     <div class="field">
                         <div class="name for-input">[s`Host`]</div>
                         <div class="value">
@@ -127,7 +135,7 @@
             {/if}
             {* SENDMAIL PARAMS *}
             {if isset($available_transports.sendmail)}
-                <div class="fields-group blank s-params js-params js-sendmail-params"{if $_transport != 'sendmail'} style="display:none"{/if}>
+                <div class="js-params js-sendmail-params custom-mt-8"{if $_transport != 'sendmail'} style="display:none"{/if}>
                     <div class="field">
                         <div class="name for-input">[s`Command`]</div>
                         <div class="value">
@@ -138,8 +146,8 @@
             {/if}
 
             {* DKIM *}
-            {if $key !== 'default'}
-                <div class="fields-group blank s-dkim-field js-dkim-field">
+            {if $key !== 'default' && $_transport != 'wasender'}
+                <div class="s-dkim-field js-dkim-field custom-mt-16">
                     <div class="field">
                         <div class="name for-checkbox">
                             <label for="dkim-{$_rand}">DKIM</label>

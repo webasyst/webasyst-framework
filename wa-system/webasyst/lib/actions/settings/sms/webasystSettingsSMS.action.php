@@ -2,10 +2,12 @@
 
 class webasystSettingsSMSAction extends webasystSettingsViewAction
 {
+    protected $used;
+
     public function execute()
     {
         $this->view->assign(array(
-            'sms_adapters' => $this->getSMSAdapters()
+            'sms_adapters' => $this->getSMSAdapters(),
         ));
     }
 
@@ -39,10 +41,10 @@ class webasystSettingsSMSAction extends webasystSettingsViewAction
         // Get config
         $config = wa()->getConfig()->getConfigFile('sms');
 
-        $used = array();
+        $this->used = [];
         foreach ($config as $c_from => $c) {
             if (isset($adapters[$c['adapter']])) {
-                $used[$c['adapter']] = 1;
+                $this->used[$c['adapter']] = 1;
                 if (!isset($result[$c['adapter']])) {
                     $temp = $this->getSMSAdapaterInfo($adapters[$c['adapter']]);
                     $temp['config'] = $c;
@@ -55,11 +57,11 @@ class webasystSettingsSMSAction extends webasystSettingsViewAction
         }
         $result = array_values($result);
 
-        foreach ($adapters as $a) {
+        foreach ($adapters as $id => $a) {
             /**
              * @var waSMSAdapter $a
              */
-            if (!empty($used[$a->getId()])) {
+            if (!empty($this->used[$a->getId()])) {
                 continue;
             }
             $result[] = $this->getSMSAdapaterInfo($a);
@@ -73,6 +75,18 @@ class webasystSettingsSMSAction extends webasystSettingsViewAction
         $temp = $a->getInfo();
         $temp['id'] = $a->getId();
         $temp['controls'] = $a->getControls();
+
+        if (ifset($temp['no_settings'], false) && !empty($this->used) && empty($this->used[$a->getId()])) {
+            $temp['controls_html'] = '<p class="hint">'.
+                sprintf(
+                    _ws('%s is not currently used. There are other configured SMS adapters. To use %s, remove settings from all SMS adapters.'),
+                    $temp['name'], $temp['name']
+                ) . '</p>';
+        } else {
+            $temp['controls_html'] = $a->getControlsHtml();
+        }
+
         return $temp;
     }
+
 }

@@ -6,11 +6,11 @@
  *}
 
 {if is_profile_sidebar}
-{foreach $tabs as $tab_id => $tab}
-{if !empty($tab.html) && empty($tab.url) && $tab.id != 'info' && $tab.id != 'access'}
-<div class="hidden js-tab-content-{$tab_id|escape}">{$tab.html}</div>
-{/if}
-{/foreach}
+    {foreach $tabs as $tab_id => $tab}
+        {if !empty($tab.html) && empty($tab.url) && ($is_system_profile || $tab.id != 'info' && $tab.id != 'access')}
+            <div class="hidden js-tab-content-{$tab_id|escape}">{$tab.html}</div>
+        {/if}
+    {/foreach}
 {else}
 <ul class="t-profile-tabs tabs overflow-arrows" id="t-profile-tabs-{$uniqid}">
     {foreach $tabs as $tab_id => $tab}

@@ -1231,9 +1231,6 @@
   margin-inline: 0;
   gap: 0.5rem;
 }
-#wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-user-area .wa-header-custom-aux-content {
-  margin: 0;
-}
 #wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-user-area .wa-toggle-apps,
 #wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-user-area .wa-toggle-panel {
   display: none;
@@ -1422,14 +1419,6 @@
   overflow: hidden;
   border-radius: 0.5rem;
 }
-.d-dashboard-edit-button {
-  padding: 1rem 1.5rem;
-  border-radius: 2.5rem;
-  font-size: 1.125rem;
-  background-color: var(--notification-background-blurred-color) !important;
-  color: var(--text-color-strong) !important;
-  backdrop-filter: blur(0.35rem);
-}
 #wa-app .content #dashboard-wrapper #wa_widgets.is-editable-mode .d-widgets-block #d-widgets-block .widget-group-wrapper,
 #wa-app .content .wa-dashboard-page #wa_widgets.is-editable-mode .d-widgets-block #d-widgets-block .widget-group-wrapper {
   border-radius: 0.875rem;
@@ -1597,6 +1586,10 @@
   overflow: hidden;
   color: #333;
   font-size: 0.85em;
+}
+#wa-app .content #dashboard-wrapper #wa_widgets.is-editable-mode .dashboards-list .dashboard-customize,
+#wa-app .content .wa-dashboard-page #wa_widgets.is-editable-mode .dashboards-list .dashboard-customize {
+  display: none;
 }
 #wa-app .content .wa-dashboard-page {
   display: block;

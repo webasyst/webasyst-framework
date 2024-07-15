@@ -28,24 +28,31 @@ class tinkoffAuth extends waOAuth2Adapter
 
     public function getName()
     {
-        return (wa()->getLocale() == 'en_US' ? 'Tinkoff ID' : 'Тинькофф ID');
+        return 'T-ID';
     }
 
     public function getControls()
     {
         return [
-            'client_id' => _ws('Tinkoff client ID'),
-            'client_secret' => _ws('Secret')
+            'client_id' => _ws('T client ID'),
+            'client_secret' => _ws('Secret'),
+            'redirect_uri' => _ws('Redirect URI')
+                .'<br><span class="hint">'.
+                _ws('По умолчанию значение пустого поля: ').parent::getCallbackUrl()
+                .'</span>'
         ];
     }
 
     /**
-     * Метод временный, для тестирования
+     * @param $absolute
      * @return string
+     * @throws waException
      */
     public function getCallbackUrl($absolute = true)
     {
-        return 'https://www.webasyst.com/cash-connector/tinkoff/';
+        $redirect_uri = $this->getOption('redirect_uri');
+
+        return (string) (empty($redirect_uri) ? parent::getCallbackUrl($absolute) : $redirect_uri);
     }
 
     public function getRedirectUri()
@@ -201,7 +208,7 @@ class tinkoffAuth extends waOAuth2Adapter
     {
         $result = '';
         if (empty($tinkoff_id)) {
-            waLog::log('tinkoff_id is empty. Tokens are not saved', self::PATH_LOG);
+            waLog::log('T-ID is empty. Tokens are not saved.', self::PATH_LOG);
             return $result;
         }
         $cdm = new waContactDataModel();

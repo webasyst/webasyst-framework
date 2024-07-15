@@ -64,6 +64,7 @@ var WASettingsSMS = ( function($) {
                     that.$loading.hide();
                 }
                 that.is_locked = false;
+                $.wa.content.reload();
                 that.$button.prop('disabled', false);
             });
         });

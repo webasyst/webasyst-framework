@@ -746,9 +746,6 @@
   margin-bottom: 20px;
   padding-bottom: 20px;
 }
-.s-email-settings-page .s-settings-items .s-item .field:first-child {
-  display: inline-block;
-}
 .s-email-settings-page .s-settings-items .s-item .s-remove {
   text-align: right;
 }

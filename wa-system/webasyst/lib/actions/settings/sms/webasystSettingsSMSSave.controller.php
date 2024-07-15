@@ -29,7 +29,7 @@ class webasystSettingsSMSSaveController extends webasystSettingsJsonController
                 break;
             }
 
-            $from = $s['from'];
+            $from = ifset($s['from'], null);
             $adapter = $s['adapter'];
 
             $adapter_indexes[$adapter] = $index;
@@ -44,7 +44,7 @@ class webasystSettingsSMSSaveController extends webasystSettingsJsonController
                 }
             }
             if (!$empty) {
-                if (!$from) {
+                if (empty($from)) {
                     $from = '*';
                 }
                 foreach (explode("\n", $from) as $from) {

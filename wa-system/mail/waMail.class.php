@@ -118,6 +118,15 @@ class waMail extends Swift_Mailer
         if (!$config || !isset($config['type'])) {
             return Swift_MailTransport::newInstance();
         }
+        if ($config['type'] == 'wasender' && !(new waServicesApi)->isConnected()) {
+            // Fallback to default transport in case of Webasyst ID does not connected
+            if (isset(self::$wa_config['transport']['default']) && self::$wa_config['transport']['default']['type'] !== 'wasender') {
+                $config = self::$wa_config['transport']['default'];
+            } else {
+                return Swift_MailTransport::newInstance();
+            }
+        }
+
         if ($config['type'] == 'smtp') {
             if (empty($config['port'])) {
                 $config['port'] = 25;
@@ -131,6 +140,8 @@ class waMail extends Swift_Mailer
                 $transport->setEncryption($config['encryption']);
             }
             return $transport;
+        } elseif ($config['type'] == 'wasender') {
+            return new waMailSenderTransport();
         } else {
             $class_name = "Swift_".ucfirst($config['type'])."Transport";
             if (class_exists($class_name)) {

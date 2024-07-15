@@ -327,6 +327,7 @@ abstract class waPayment extends waSystemPlugin
             if (class_exists('waPaymentDebug')) {
                 waPaymentDebug::startDebugCallback();
             }
+            waAutoload::getInstance()->add(waPayment::getClasses());
             $module = static::factory($module_id);
             static::log($module_id, $log);
 
@@ -1561,4 +1562,17 @@ interface waIPaymentImage
      * @return array
      */
     public function image($order_data);
+}
+
+/** @since 3.1.0 */
+interface waIPaymentStatePolling
+{
+    /**
+     * Apps that support state polling for payment plugins will occasionally call this method
+     * (e.g. when user opens an order page or regularly with cron job).
+     * Plugin may use this to poll order state from API and emulate callback functionality
+     * to notify app that order has changed.
+     * @param waOrder $order_data
+     */
+    public function statePolling($order_data);
 }

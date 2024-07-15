@@ -72,6 +72,7 @@ class WASettingsSMS {
                     that.$button.empty().html($button_text);
                 }
                 that.is_locked = false;
+                $.wa.content.reload();
                 that.$button.prop('disabled', false);
             });
         });

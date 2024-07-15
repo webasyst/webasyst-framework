@@ -868,6 +868,8 @@ HELP;
                                 'type',
                                 'multi_curl',
                                 'sync',
+                                'fractional_quantity',
+                                'stock_units',
                             )
                         );
                         break;
@@ -879,6 +881,9 @@ HELP;
                                 'offline',
                                 'discount',
                                 'partial_refund',
+                                'partial_capture',
+                                'fractional_quantity',
+                                'stock_units',
                             )
                         );
                         break;

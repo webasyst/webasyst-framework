@@ -29,10 +29,13 @@
                 }else{
                     $element.addClass(element_class)
                 }
-            })
+            });
+
+            $(document).trigger('wa_dashboard_sidebar_loaded');
         })(jQuery);
     </script>
     <div data-installed-widgets>
+        <h2 class="flexbox">[`Add widgets`] <a href="javascript:void(0)" class="custom-ml-auto custom-mt-2 smaller text-light-gray js-dashboard-edit-close"><i class="fas fa-times custom-ml-4 custom-mt-2"></i></a></h2>
         <p class="widgets-list-header hint align-center">
             [`Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]
         </p>

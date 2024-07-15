@@ -583,7 +583,8 @@ class waWebasystIDApi
 
         $status = $net->getResponseHeader('http_code');
         $response_headers = $net->getResponseHeader();
-        $body = trim($net->getResponse(true));
+        $body = $net->getResponse(true) ?: '';
+        $body = trim($body);
         if ($status == 204 && strlen($body) == 0) {
             return [
                 'status' => 204,

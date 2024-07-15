@@ -179,8 +179,7 @@ var WASettingsSubfieldConditionalValues = (function ($) {
                     $('.loading').remove();
                     $done.appendTo($button.parent());
                     if (r.status == 'ok') {
-                        that.$dialog_link.parents('.field-advanced-settings').find('.show-when-modified').show();
-                        that.$dialog_link.parents('.field-advanced-settings').find('.hide-when-modified').hide();
+                        that.$dialog_link.closest('.field-row').removeClass('editor-on').addClass('editor-off');
                         setTimeout(function() {
                             dialog.close();
                         }, 1000);

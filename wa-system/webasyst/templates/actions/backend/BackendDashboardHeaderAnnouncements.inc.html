@@ -74,7 +74,7 @@
             <div class="fields">
                 <div class="fields-group">
                     <div class="flexbox middle full-width space-12 wrap-mobile custom-mb-12">
-                        <div id="dropdown-notify-to-users" class="dropdown width-100-mobile" style="min-width: 250px;">
+                        <div id="dropdown-notify-to-users" class="dropdown width-100-mobile" style="min-width: 270px;">
 
                             <button type="button" class="dropdown-toggle button light-gray width-100 small"
                                 style="text-align:left;" data-init-text="[`To all users`]">[`To all users`]</button>
@@ -82,12 +82,19 @@
                             <div class="dropdown-body">
                                 <div class="box flexbox vertical">
                                     <div class="toggle small middle" id="toggle-groups-or-users">
-                                        <span class="selected" data-type="groups">[`Groups`]</span>
+                                        <span data-type="all" class="selected">[`All`]</span>
+                                        <span data-type="groups">[`Groups`]</span>
                                         <span data-type="contacts">[`Users`]</span>
                                     </div>
                                 </div>
 
-                                <ul id="notify-to-groups-list" class="menu custom-mt-0" data-list="group">
+                                <ul class="menu custom-mt-0" data-list="all">
+                                    <div class="gray align-center custom-mx-8">
+                                        [`All users will see this in their Webasyst accounts.`]
+                                    </div>
+                                </ul>
+
+                                <ul id="notify-to-groups-list" class="menu custom-mt-0" data-list="groups" style="display: none;">
                                     {if !empty($groups)}
                                         {foreach $groups as $_g}
                                             <li data-id="{$_g.id}">
@@ -125,7 +132,7 @@
                                     {/if}
                                 </ul>
 
-                                <ul id="notify-to-users-list" class="menu custom-mt-0" data-list="contact" style="display: none;">
+                                <ul id="notify-to-users-list" class="menu custom-mt-0" data-list="contacts" style="display: none;">
                                     {if !empty($contacts)}
                                         {foreach $contacts as $_c}
                                             <li data-id="{$_c.id}"{if $_c.id === $wa->user('id')}class="disabled"{/if}>

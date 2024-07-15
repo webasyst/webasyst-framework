@@ -28,7 +28,8 @@ abstract class installerExtrasRemoveAction extends waViewAction
 
     private function init()
     {
-        $url = parse_url($r = waRequest::server('HTTP_REFERER'), PHP_URL_QUERY);
+        $referer = (string) waRequest::server('HTTP_REFERER', '');
+        $url = (string) parse_url($referer, PHP_URL_QUERY);
         if (preg_match('/(^|&)module=(themes|plugins|widgets)($|&)/', $url, $matches)) {
             $this->extras_type = $matches[2];
         } elseif (preg_match('/^installer(\w+)RemoveAction$/', get_class($this), $matches)) {
@@ -63,7 +64,7 @@ abstract class installerExtrasRemoveAction extends waViewAction
     {
         $this->init();
 
-        $extras_ids = waRequest::post('extras_id');
+        $extras_ids = (array) waRequest::post('extras_id', []);
         try {
             /*
              _w('Themes not found');

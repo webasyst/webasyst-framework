@@ -5,6 +5,7 @@ class waServicesApi extends waWebasystIDApi
     public const WS_CONNECT_SERVICE = 'WS_TOKEN';
     public const WS_MESSAGE_SERVICE = 'WS_MESSAGE';
     public const EMAIL_MESSAGE_SERVICE = 'EMAIL';
+    public const SMS_SERVICE = 'SMS';
 
     public function __construct(array $options = [])
     {
@@ -72,6 +73,7 @@ class waServicesApi extends waWebasystIDApi
             $this->refreshApiUrlConfig();
             $url = $this->provider->getServiceUrl($service);
             if (!empty($url)) {
+                $url .= $service_sub_path;
                 $resp = $this->requestApiUrl($url, $token, $params, $http_method, $net_options);
             }
         } else if (in_array($resp['status'], [301, 302]) && !empty(ifset($resp, 'headers', 'Location', null))) {
@@ -158,6 +160,16 @@ class waServicesApi extends waWebasystIDApi
     public function sendEmail(array $message_data)
     {
         return $this->serviceCall(self::EMAIL_MESSAGE_SERVICE, $message_data, waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON]);
+    }
+
+    public function sendSms($to, $text, $from = null, $is_repeated = false)
+    {
+        return $this->serviceCall(self::SMS_SERVICE, [
+            'to' => $to,
+            'text' => $text,
+            'from' => $from,
+            'is_repeated' => $is_repeated,
+        ], waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON]);
     }
 
     public function getWebsocketUrl($channel_id, $app_id = null)

@@ -241,9 +241,14 @@ class WASettingsEmail {
                 transport = $item.find(that.transport_class).val();
 
             $item.find('.js-params').hide(); // Hide all params
-            $item.find('.js-transport-description').css('display', 'none'); // Hide all descriptions
-            $item.find('.js-'+ transport +'-description').css('display', 'inline-block'); // Show needed description
+            $item.find('.js-transport-description').hide(); // Hide all descriptions
+            $item.find('.js-'+ transport +'-description').show(); // Show needed description
             $item.find('.js-'+ transport +'-params').show(); // Show needed params
+            if (transport === 'wasender') {
+                $item.find('.js-dkim-field').hide();
+            } else {
+                $item.find('.js-dkim-field').show();
+            }
         });
     }
 

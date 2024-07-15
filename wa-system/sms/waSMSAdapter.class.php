@@ -32,6 +32,11 @@ abstract class waSMSAdapter
         return array();
     }
 
+    public function getControlsHtml()
+    {
+        return null;
+    }
+
     public function getId()
     {
         return substr(get_class($this), 0, -3);

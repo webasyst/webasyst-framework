@@ -24,7 +24,7 @@ class webasystProfilePageAction extends waViewAction
         }
 
         // User with no access to the Team app - force legacy UI
-        waRequest::setParam('force_ui_version', '1.3');
+        //waRequest::setParam('force_ui_version', '1.3');
 
         $can_edit = $this->canEdit($user['id']);
         $this->getContactInfo($can_edit, $user);
@@ -32,9 +32,18 @@ class webasystProfilePageAction extends waViewAction
         if (wa()->appExists('team')) {
             $profile_template_path = wa()->getAppPath('templates/actions/profile/Profile.html', 'team');
         } else {
-            $profile_template_path = wa()->getAppPath('templates/actions-legacy/profile/ProfilePage.html', 'webasyst');
-            //$profile_template_path = wa()->getAppPath('templates/actions/profile/ProfilePage.html', 'webasyst');
+            $profile_template_path = wa()->getAppPath('templates/actions' . ((wa()->whichUI() === '1.3') ? '-legacy' : '') . '/profile/ProfilePage.html', 'webasyst');
         }
+
+        $twasm = new teamWaAppSettingsModel();
+        $user_name_format = $twasm->getUserNameDisplayFormat();
+        if ($user_name_format !== 'login') {
+            $user_name_formatted = $user->getName();
+        } else {
+            $user_name_formatted = waContactNameField::formatName($user, true);
+        }
+
+        $this->view->assign($this->getUI20Data());
 
         $this->view->assign(array(
             'backend_personal_profile' => $backend_personal_profile,
@@ -48,6 +57,7 @@ class webasystProfilePageAction extends waViewAction
             'user_settings' => (new waContactSettingsModel())->get($user['id'], 'webasyst'),
             'can_edit' => $can_edit,
             'profile_template_path' => $profile_template_path,
+            'user_name_formatted' => $user_name_formatted,
         ));
     }
 
@@ -212,5 +222,86 @@ class webasystProfilePageAction extends waViewAction
         $cm = new waContactCategoriesModel();
         $this->view->assign('contact_categories', array_values($cm->getContactCategories($user['id'])));
 
+    }
+
+    protected function getUI20Data()
+    {
+        if (wa()->whichUI($this->getAppId()) != '2.0') {
+            return [];
+        }
+
+        $profile_data = $this->view->getVars();
+        unset($profile_data['own_profile'],$profile_data['contact'],$profile_data['contact_create_time'],$profile_data['author']);
+
+        $profile_contact = wa()->getUser();
+
+        if (isset($profile_data['fieldValues']['socialnetwork'])) {
+            $socialnetwork_icons = [
+                'instagram' => '<span class="t-profile-im-icon"><i class="fab fa-instagram" style="color: #FF2565;"></i></span>',
+                'twitter' => '<span class="t-profile-im-icon"><i class="fab fa-twitter" style="color: #29A6F3;"></i></span>',
+                'vkontakte' => '<span class="t-profile-im-icon"><i class="fab fa-vk" style="color: #2787F5;"></i></span>',
+                'facebook' => '<span class="t-profile-im-icon"><i class="fab fa-facebook-f" style="color: #1877F2;"></i></span>',
+                'linkedin' => '<span class="t-profile-im-icon"><i class="fab fa-linkedin-in" style="color: #0078B6;"></i></span>'
+            ];
+            foreach ($profile_data['fieldValues']['socialnetwork'] as $id => $socialnetwork) {
+                if(in_array($socialnetwork['ext'], array_keys($socialnetwork_icons))) {
+                    $profile_data['fieldValues']['socialnetwork'][$id]['value'] = str_replace('<i class="icon16 '.$socialnetwork['ext'].'"></i>', $socialnetwork_icons[$socialnetwork['ext']], $socialnetwork['value']);
+                    if($socialnetwork['ext'] === 'linkedin') {
+                        $profile_data['fieldValues']['socialnetwork'][$id]['value'] = $socialnetwork_icons[$socialnetwork['ext']].$socialnetwork['value'];
+                    }
+                }else{
+                    $profile_data['fieldValues']['socialnetwork'][$id]['value'] = '<span class="t-profile-im-icon"><i class="fas fa-users" style="color: #5757D6;"></i></span>'.$socialnetwork['value'];
+                }
+            }
+        }
+
+        if (isset($profile_data['fieldValues']['im'])) {
+            $im_icons = [
+                'whatsapp' => '<i class="fab fa-whatsapp" style="color: #29C54D;"></i>',
+                'telegram' => '<i class="fab fa-telegram-plane" style="color: #279FDA;"></i>',
+                'skype' => '<i class="fab fa-skype" style="color: #28A8EA;"></i>',
+                'facebook' => '<i class="fab fa-facebook-messenger" style="color: #0084FF;"></i>',
+                'viber' => '<i class="fab fa-viber" style="color: #7360F4;"></i>',
+                'discord' => '<i class="fab fa-discord" style="color: #404EED;"></i>',
+                'slack' => '<i class="fab fa-slack" style="color: #A436AB;"></i>',
+                'jabber' => '<i class="fas fa-comments" style="color: #d64c1e;"></i>',
+                'yahoo' => '<i class="fab fa-yahoo" style="color: #581cc7;"></i>',
+                'aim' => '<i class="fas fa-comments text-black"></i>',
+                'msn' => '<i class="fas fa-comments" style="color: #333;"></i>',
+            ];
+            foreach ($profile_data['fieldValues']['im'] as $id => $im) {
+                if(in_array($im['ext'], array_keys($im_icons))) {
+                    $profile_data['fieldValues']['im'][$id]['value'] = $im_icons[$im['ext']].'&nbsp;<span>'.$im['value'].'</span>';
+                    $profile_data['fieldValues']['im'][$id]['icon'] = $im_icons[$im['ext']];
+                }else{
+                    $profile_data['fieldValues']['im'][$id]['value'] = '<i class="fas fa-comments text-gray"></i>&nbsp;<span>'.$im['value'].'</span>';
+                    $profile_data['fieldValues']['im'][$id]['icon'] = '<i class="fas fa-comments text-purple"></i>';
+                }
+            }
+        }
+
+        return [
+            'user_settings' => (new waContactSettingsModel())->get($profile_contact['id'], 'webasyst'),
+            'profile_editor' => [
+                'options' => $this->getEditorOptions(),
+                'data' => $profile_data
+            ]
+        ];
+    }
+
+    protected function getEditorOptions()
+    {
+        $tasm = new teamWaAppSettingsModel();
+        $wa_app_url = wa()->getConfig()->getBackendUrl(true);
+
+        return [
+            'saveUrl' => $wa_app_url.'?module=profile&action=save',
+            'contact_id' => $this->getUserId(),
+            'current_user_id' => $this->getUserId(),
+            'justCreated' => false,
+            'geocoding' => $tasm->getGeocodingOptions(),
+            'wa_app_url' => $wa_app_url,
+            'contactType' => $this->getUser()['is_company'] ? 'company' : 'person'
+        ];
     }
 }

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-05-21 11:40+0300\n"
+"PO-Revision-Date: 2024-07-10 10:38+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -6969,3 +6969,102 @@ msgstr "https://www.webasyst.ru/my/"
 
 msgid "My Webasyst ID"
 msgstr "Мой Webasyst ID"
+
+msgid "Light"
+msgstr "Свет"
+
+msgid "Cost"
+msgstr "Стоимость"
+
+msgid "Free "
+msgstr "Бесплатно"
+
+msgid "%s / message"
+msgstr "%s / сообщение"
+
+msgid "Current balance"
+msgstr "Текущий баланс"
+
+msgid "Top up balance"
+msgstr "Пополнить баланс"
+
+msgid "Add IP address to the white list"
+msgstr "Добавить IP-адрес в белый список"
+
+msgid "White list of IP addresses"
+msgstr "Белый список IP-адресов"
+
+msgid "Server response"
+msgstr "Ответ сервера"
+
+msgid "Code has been sent to phone number %s."
+msgstr "Код отправлен на номер телефона %s."
+
+msgid "Code has been sent to email address %s."
+msgstr "Код отправлен на email-адрес %s."
+
+msgid "Response code: %s."
+msgstr "Код ответа: %s."
+
+msgid "Webasyst API error"
+msgstr "Ошибка API Webasyst"
+
+msgid "<a href=\"%s\">Connect to Webasyst ID</a> to use the Webasyst Email."
+msgstr "<a href=\"%s\">Подключите Webasyst ID</a>, чтобы пользоваться отправителем Webasyst Email."
+
+msgid "<a href=\"%s\">Connect to Webasyst ID</a> to use the Webasyst SMS."
+msgstr "<a href=\"%s\">Подключите Webasyst ID</a>, чтобы пользоваться отправителем Webasyst SMS."
+
+msgid "The IP address of the server where your Webasyst is installed is in the list of banned addresses."
+msgstr "IP-адрес сервера, на котором установлен ваш Webasyst, попал в список запрещенных адресов."
+
+msgid "It might have been caused by several technical reasons; e.g., by moving your Webasyst account to another server."
+msgstr "Это могло произойти по ряду технических причин, например, в результате переезда вашей установки на новый хостинг."
+
+msgid "Click this button to add your new IP address to the list of allowed addresses."
+msgstr "Нажмите на кнопку, чтобы добавить ваш новый IP-адрес в реестр разрешенных адресов."
+
+msgid "Add current IP address to the white list"
+msgstr "Включить текущий IP-адрес в белый список"
+
+msgid "%d message"
+msgid_plural "%d messages"
+msgstr[0] "%d сообщение"
+msgstr[1] "%d сообщения"
+msgstr[2] "%d сообщений"
+
+msgid "%s remains"
+msgid_plural "%s remain"
+msgstr[0] "Остался %s"
+msgstr[1] "Осталось %s"
+msgstr[2] "Осталось %s"
+
+msgid "%d message remains"
+msgid_plural "%d messages remain"
+msgstr[0] "Осталось %s сообщение"
+msgstr[1] "Осталось %s сообщения"
+msgstr[2] "Осталось %s сообщений"
+
+msgid "Enough to send &#8776;%s message."
+msgid_plural "Enough to send &#8776;%s messages."
+msgstr[0] "Достаточно для отправки &#8776;%s сообщения."
+msgstr[1] "Достаточно для отправки &#8776;%s сообщений."
+msgstr[2] "Достаточно для отправки &#8776;%s сообщений."
+
+msgid "total"
+msgstr "всего"
+
+msgid "%s is not currently used. There are other configured SMS adapters. To use %s, remove settings from all SMS adapters."
+msgstr "%s в настоящее время не используется. Есть другие настроенные SMS-адаптеры. Чтобы использовать %s, удалите настройки всех SMS-адаптеров."
+
+msgid "Free message limit reached"
+msgstr "Достигнут лимит бесплатных сообщений"
+
+msgid "Limit of %d free message reached"
+msgid_plural "Limit of %d free messages reached"
+msgstr[0] "Достигнут лимит из %d бесплатного сообщения"
+msgstr[1] "Достигнут лимит из %d бесплатных сообщений"
+msgstr[2] "Достигнут лимит из %d бесплатных сообщений"
+
+msgid "All users will see this in their Webasyst accounts."
+msgstr "Все сотрудники увидят это сообщение при входе в Webasyst."

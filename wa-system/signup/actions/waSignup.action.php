@@ -950,7 +950,7 @@ class waSignupAction extends waViewAction
 
         // check captcha
         if ($this->auth_config->getSignUpCaptcha()) {
-            if (!wa()->getCaptcha(['app_id' => $this->auth_config->getApp()])->isValid()) {
+            if (!$this->getCaptcha()->isValid()) {
                 $errors['captcha'] = _ws('Invalid captcha');
             }
         }
@@ -1054,6 +1054,11 @@ class waSignupAction extends waViewAction
         }
 
         return $errors;
+    }
+
+    protected function getCaptcha()
+    {
+        return wa()->getCaptcha(['app_id' => $this->auth_config->getApp()]);
     }
 
     /**

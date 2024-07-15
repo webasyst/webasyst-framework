@@ -47,7 +47,7 @@ class waOAuthController extends waViewController
 
             $provider_id = $this->getAuthProviderId();
             if (!$provider_id) {
-                throw new waException('Unknown adapter ID');
+                throw new waException('Unknown adapter ID', 404);
             }
 
             $type = $this->getAuthType();
@@ -75,7 +75,7 @@ class waOAuthController extends waViewController
             //    from external resource and return here if all goes well.
             $auth_response_data = $auth->auth();
             if (!$auth_response_data) {
-                throw new waException('Unable to finish auth process.');
+                throw new waException('Unable to finish auth process.', 401);
             }
 
             // Person identified. Now properly authorize them as local waContact,
@@ -138,7 +138,7 @@ class waOAuthController extends waViewController
     {
         $config = wa()->getAuthConfig();
         if (!isset($config['adapters'][$provider])) {
-            throw new waException('Unknown auth provider');
+            throw new waException('Unknown auth provider', 404);
         }
 
         return wa()->getAuth($provider, $config['adapters'][$provider]);

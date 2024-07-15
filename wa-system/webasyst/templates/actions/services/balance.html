@@ -1,0 +1,215 @@
+{if $wa_is_allowed_ip}
+    <div class="flexbox wrap small">
+        <div class="flexbox vertical width-25 custom-pb-16">
+            <span class="text-gray bold">[s`Current balance`]</span>
+            <span class="bold large custom-my-4">{$wa_balance}</span>
+            {if $wa_messages_count}
+                <span class="hint">{_ws('Enough to send &#8776;%s message.', 'Enough to send &#8776;%s messages.', $wa_messages_count)}</span>
+            {/if}
+            <a href="javascript:void(0)" class="button small custom-mt-8" id="js-balance-button">[s`Top up balance`]</a>
+        </div>
+
+        <div class="flexbox vertical width-25 custom-mx-32">
+            <span class="text-gray bold">[s`Cost`]</span>
+            <span class="custom-my-4"><span class="large bold">{sprintf(_ws('%s / message'), $wa_price)}</span>
+        </div>
+
+        <div class="flexbox vertical width-35">
+            <span class="text-gray bold">[s`Free `]</span>
+            <span class="custom-my-4">
+                <span class="custom-my-4 flexbox vertical">
+                    {if isset($wa_remaining_free_calls['total']) && $wa_remaining_free_calls['total'] <= 0}
+                        <span class="custom-my-4" style="line-height: 1.0;">
+                            <span class="hint">
+                                {if isset($wa_free_limits['total']) && $wa_free_limits['total'] > 0}
+                                    {_ws('Limit of %d free message reached', 'Limit of %d free messages reached', $wa_free_limits['total'])}
+                                {else}
+                                    [s`Free message limit reached`]
+                                {/if}
+                            </span>
+                        </span>
+                    {else}
+                        {foreach $wa_free_limits as $period => $limit}
+                            <span class="custom-my-4" style="line-height: 1.0;">
+                                {if $period == 'total'}
+                                    {if isset($wa_remaining_free_calls[$period]) && $wa_remaining_free_calls[$period] < $limit}
+                                        <span class="bold">{_ws('%d message remains', '%d messages remains', $wa_remaining_free_calls[$period])}</span>
+                                    {else}
+                                        <span class="bold">{_ws('%d message', '%d messages', $limit)}</span>
+                                    {/if}
+                                    {if count($wa_free_limits) > 1}
+                                        / {_ws($period)}
+                                    {/if}
+                                {else}
+                                    <span class="bold">{_ws('%d message', '%d messages', $limit)}</span>
+                                    / {_ws($period)}
+                                    {if isset($wa_remaining_free_calls[$period]) && $wa_remaining_free_calls[$period] < $limit}
+                                        <span class="hint nowrap">({_ws('%s remains', '%s remain', $wa_remaining_free_calls[$period])})</span>
+                                    {/if}
+                                {/if}
+                            </span>
+                        {/foreach}
+                    {/if}
+                </span>
+            </span>
+        </div>
+    </div>
+{else}
+    <p class="text-red small">
+        <i class="fas fa-exclamation-triangle"></i> [s`The IP address of the server where your Webasyst is installed is in the list of banned addresses.`]
+    </p>
+    <p class="text-red small">
+        [s`It might have been caused by several technical reasons; e.g., by moving your Webasyst account to another server.`]
+    </p>
+    <p class="text-red small">
+        [s`Click this button to add your new IP address to the list of allowed addresses.`]
+    </p>
+    <input type="hidden" class="js-ip" value="{$wa_current_ip}">
+    <button class="button orange small" id="js-add-current-ip-button">[s`Add current IP address to the white list`]</button>
+{/if}
+
+<div class="dialog" id="js-dialog-elements">
+    <header class="dialog-header js-header-1"><h1>[s`Confirmation code`]</h1></header>
+    <header class="dialog-header js-header-2"><h3>[s`Server response`]</h3></header>
+    <div class="dialog-content">
+        <input type="text" class="semibold js-code" placeholder="1234">
+        <button class="button js-code-confirm">[s`Confirm`]</button>
+        <div class="gray custom-mt-8 js-message"></div>
+    </div>
+    <footer class="dialog-footer"><button class='button gray js-close-dialog'>[s`Close`]</button></footer>
+</div>
+
+<script>
+(function () {
+    "use strict";
+    const response_code_str = {_ws('Response code: %s.')|json_encode};
+    const code_sent_to_phone_str = {_ws('Code has been sent to phone number %s.')|json_encode};
+    const code_sent_to_email_str = {_ws('Code has been sent to email address %s.')|json_encode};
+
+    $('#js-balance-button:not(.disabled)').on('click', function (e) {
+        e.preventDefault();
+        $(this).addClass('disabled');
+        $.get('{$wa_backend_url}webasyst/?module=services&action=balanceUrl', function (data) {
+            let resp = data.data.response;
+            let status = data.data.status || '-';
+            let err = resp.error_description || resp.error || resp.errors || null;
+            if (data.status === 'fail') {
+                console.warn('balance', data);
+                responseDialog(status, '');
+                $('#js-balance-button').removeClass('disabled');
+            } else if (err) {
+                responseDialog(status, err.toString());
+                $('#js-balance-button').removeClass('disabled');
+            } else if (typeof resp.url !== 'undefined') {
+                document.location = resp.url;
+            }
+        });
+    });
+
+    $('#js-add-current-ip-button').on('click', function (e) {
+        e.preventDefault();
+        $(this).prop('disabled', true);
+        let ip = $('.js-ip').val();
+        $.post('{$wa_backend_url}webasyst/?module=services&action=addIpToWhiteList', { ip: ip }, function (data) {
+            let resp = data.data.response;
+            let status = data.data.status || '-';
+            let err = resp.error_description || resp.error || resp.errors || null;
+            if (data.status === 'fail') {
+                console.warn('add IP', data);
+                responseDialog(status, '');
+            } else if (err) {
+                responseDialog(status, err.toString());
+            } else if (resp.email) {
+                codeConfirm(code_sent_to_email_str.replace('%s', resp.email));
+            } else if (resp.phone) {
+                codeConfirm(code_sent_to_phone_str.replace('%s', resp.phone));
+            }
+            $('#js-add-current-ip-button').prop('disabled', false);
+        });
+        return false;
+    });
+
+    $('#js-ips-table').on('click', '.js-delete-ip', function () {
+        let ip = $(this).data('ip');
+        $.post('{$wa_backend_url}webasyst/?module=services&action=deleteIpFromWhitelist', { ip: ip }, function (data) {
+            let resp = data.data.response;
+            let status = data.data.status || '-';
+            let err = resp.error_description || resp.error || resp.errors || null;
+            if (data.status === 'fail') {
+                console.warn('delete IP', data);
+                responseDialog(status, '');
+            } else if (err) {
+                responseDialog(status, err.toString());
+            } else if (resp.email) {
+                codeConfirm(code_sent_to_email_str.replace('%s', resp.email));
+            } else if (resp.phone) {
+                codeConfirm(code_sent_to_phone_str.replace('%s', resp.phone));
+            }
+        });
+        return false;
+    });
+
+    function responseDialog(code, message) {
+        let content = response_code_str.replace('%s', code);
+        content += message ? '<br><pre class="small gray">'+ message +'</pre>' : '';
+        $.waDialog({
+            header: $('#js-dialog-elements header.js-header-2').html(),
+            content: content,
+            footer: $('#js-dialog-elements footer').html(),
+        });
+    }
+
+    function myConfirm(code, dialog) {
+        if (typeof code === 'undefined' || code.trim() === '') {
+            return null;
+        }
+        dialog.find('.js-code-confirm').prop('disabled', true);
+        $.post('{$wa_backend_url}webasyst/?module=services&action=IpWhiteListChangeConfirm', { code: code }, function (data) {
+            let resp = data.data.response;
+            let status = data.data.status || '-';
+            let err = resp.error_description || resp.error || resp.errors || null;
+            if (data.status === 'fail') {
+                console.warn('confirm code', data);
+                responseDialog(status, '');
+                dialog.find('.js-code-confirm').prop('disabled', false);
+            } else if (err) {
+                responseDialog(status, err.toString());
+                dialog.find('.js-code-confirm').prop('disabled', false);
+            } else if (typeof resp.action !== 'undefined' && typeof resp.ip !== 'undefined') {
+                if (resp.action === 'add' || resp.action === 'delete') {
+                    document.location.reload();
+                }
+            }
+        });
+    }
+
+    function codeConfirm(message) {
+        $.waDialog({
+            header: $('#js-dialog-elements header.js-header-1').html(),
+            content: $('#js-dialog-elements div.dialog-content').html(),
+            footer: $('#js-dialog-elements footer').html(),
+            onOpen: function (dialog) {
+                dialog.find('.js-code').removeClass('state-error');
+                dialog.find('.js-message').html(message);
+                dialog.find('.js-code').on('keyup', function(e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        let res = myConfirm(dialog.find('.js-code').val(), dialog);
+                        if (res === null) {
+                            dialog.find('.js-code').addClass('state-error');
+                            dialog.find('.js-code-confirm').prop('disabled', false);
+                        }
+                    }
+                });
+                dialog.find('.js-code-confirm').on('click', function () {
+                    let res = myConfirm(dialog.find('.js-code').val(), dialog);
+                    if (res === null) {
+                        dialog.find('.js-code').addClass('state-error');
+                        dialog.find('.js-code-confirm').prop('disabled', false);
+                    }
+                });
+            }
+        });
+    }
+})();
+</script>

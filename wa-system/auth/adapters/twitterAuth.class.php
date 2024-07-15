@@ -253,4 +253,9 @@ class twitterAuth extends waAuthAdapter
     {
         return wa()->getRootUrl($absolute, true).'oauth.php/twitter/';
     }
+
+    public function getName()
+    {
+        return 'X';
+    }
 }

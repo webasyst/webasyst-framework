@@ -1103,9 +1103,6 @@ const Page = ( function($, backend_url) {
                 getShowButton: function() {
                     return $(".js-dashboard-edit");
                 },
-                getHideButton: function() {
-                    return $(".js-dashboard-edit-close");
-                },
                 getWidgetList: function() {
                     return $(".widgets-list-wrapper")
                 },
@@ -1160,16 +1157,30 @@ const Page = ( function($, backend_url) {
 
         bindEvents() {
             let that = this,
-                $showLink = that.storage.getShowButton(),
-                $hideLink = that.storage.getHideButton(),
                 $widgetActivity = that.storage.getWidgetActivity(),
                 $delete_dashboard = $('.js-dashboard-delete'),
                 $edit_dashboard = $('.js-dashboard-edit'),
-                $new_dashboard = that.storage.getNewDashboard(),
                 $closeNoticeLink = that.storage.getFirstNoticeWrapper().find(".close-notice-link");
 
+            if ($(`.${that.storage.dashboardCustomEditClass}`).length) {
+                that.storage.getNewDashboard().show().parent().show();
+                //$edit_dashboard.hide();
+            }
+
+            let $hideLink;
+            $(document).on('wa_dashboard_sidebar_loaded', () => {
+                $hideLink = $(".js-dashboard-edit-close");
+
+                $hideLink.on("click", function(e) {
+                    e.preventDefault()
+                    that.storage.getShowButton().show();
+                    that.storage.getNewDashboard().parent().hide();
+                    that.hideEditMode();
+                });
+            });
+
             // add new dashboard
-            $new_dashboard.on('click', function (e) {
+            that.storage.getNewDashboard().on('click', function (e) {
                 e.preventDefault()
                 if (!that.new_dashboard_dialog.length) {
                     that.new_dashboard_dialog = $("#dashboard-editor-dialog").clone();
@@ -1220,13 +1231,6 @@ const Page = ( function($, backend_url) {
             $closeNoticeLink.on("click", function(e) {
                 e.preventDefault()
                 that.hideFirstNotice();
-            });
-
-            $hideLink.on("click", function(e) {
-                e.preventDefault()
-                $showLink.show();
-                $hideLink.hide();
-                that.hideEditMode();
             });
 
             $widgetActivity.on("click", "#d-load-more-activity", function () {
@@ -1337,13 +1341,12 @@ const Page = ( function($, backend_url) {
         onShowLinkClick() {
             let that = this,
                 $showLink = that.storage.getShowButton(),
-                $hideLink = that.storage.getHideButton(),
                 $firstNotice = that.storage.getFirstNoticeWrapper(),
                 notice_is_shown = ( $firstNotice.css("display") !== "none" );
 
             // Change Buttons
             $showLink.hide();
-            $hideLink.show();
+            that.storage.getNewDashboard().parent().show();
 
             // Hide First Notice
             if (notice_is_shown) {

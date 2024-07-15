@@ -7,6 +7,7 @@ class webasystSettingsEmailSaveController extends webasystSettingsJsonController
         'smtp'     => array('type', 'host', 'port', 'login', 'password', 'encryption', 'pop3_host', 'pop3_port'),
         'sendmail' => array('type', 'command'),
         'wadebug'  => array('type'),
+        'wasender' => array('type'),
     );
 
     protected $config_default_values = array(
