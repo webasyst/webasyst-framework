@@ -125,8 +125,8 @@ class waMailSenderTransport implements Swift_Transport
 
         if ($status == 402) {
             // Insufficient funds.
-            $this->logError("Unable to send email:\n". _ws('Not sufficient account balance. Please top up your balance.'));
-            throw new waException(_ws('Not sufficient account balance. Please top up your balance.'));
+            $this->logError("Unable to send email:\n". _ws('Insufficient account balance. Please top up your balance.'));
+            throw new waException(_ws('Insufficient account balance. Please top up your balance.'));
         } else {
             $successfully_sent_count = count((array) $message->getTo()) + count((array) $message->getCc()) + count((array) $message->getBcc());
             if ($status >= 300) {

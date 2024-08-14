@@ -189,6 +189,10 @@ class waWebasystIDAccessTokenManager
             $info['two_fa_time'] = $payload['two_fa_time'];
         }
 
+        if (isset($payload['inst_id']) && is_scalar($payload['inst_id'])) {
+            $info['inst_id'] = $payload['inst_id'];
+        }
+
         if (isset($payload['aux_info']) && is_string($payload['aux_info'])) {
             $aux_info = json_decode($payload['aux_info'], true);
             if (is_array($aux_info)) {

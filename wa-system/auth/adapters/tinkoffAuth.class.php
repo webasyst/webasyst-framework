@@ -38,7 +38,7 @@ class tinkoffAuth extends waOAuth2Adapter
             'client_secret' => _ws('Secret'),
             'redirect_uri' => _ws('Redirect URI')
                 .'<br><span class="hint">'.
-                _ws('По умолчанию значение пустого поля: ').parent::getCallbackUrl()
+                sprintf(_ws('Default value in case of the empty field: %s'), parent::getCallbackUrl())
                 .'</span>'
         ];
     }

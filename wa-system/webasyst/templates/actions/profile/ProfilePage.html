@@ -113,9 +113,9 @@
                             {/if}
 
                             {if $user.is_user < 0}
-                                <p class="grey custom-mt-4">[`Access is switched off`]</p>
+                                <p class="grey custom-mt-4">[`Access is disabled`]</p>
                             {elseif $invite}
-                                <p class="italic small custom-my-0">{sprintf('[`Invitation link is valid through %s`]', $invite.expire_datetime|wa_datetime:'humandatetime')}</p>
+                                <p class="italic small custom-my-0">{sprintf('[`The invitation link is valid through %s`]', $invite.expire_datetime|wa_datetime:'humandatetime')}</p>
                                 {if teamHelper::hasRights('add_users')}
                                     {if !empty($user.email)}
                                         <a href="javascript:void(0)" class="js-invite small nowrap custom-mr-16" data-type="email" data-email="{$user.email[0].value|escape}">

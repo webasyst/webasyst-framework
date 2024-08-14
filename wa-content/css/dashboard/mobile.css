@@ -442,10 +442,8 @@ html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper #ac
 }
 html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group {
   display: inline-flex;
-  align-items: center;
-}
-html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group + .users-group {
-  margin-left: 1.25rem;
+  gap: 0.5rem;
+  text-align: center;
 }
 html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group > .userpic {
   margin-right: -0.8rem;

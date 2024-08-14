@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-07-10 10:38+0300\n"
+"PO-Revision-Date: 2024-07-17 16:03+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -7068,3 +7068,108 @@ msgstr[2] "Достигнут лимит из %d бесплатных сообщ
 
 msgid "All users will see this in their Webasyst accounts."
 msgstr "Все сотрудники увидят это сообщение при входе в Webasyst."
+
+msgid "Insufficient account balance. Please top up your balance."
+msgstr "Недостаточный баланс. Пожалуйста, внесите средства."
+
+msgid "API error"
+msgstr "Ошибка API"
+
+msgid "Failed to send email: %s"
+msgstr "Не удалось отправить email: %s"
+
+msgid "T client ID"
+msgstr "ID Т-клиента"
+
+msgid "Redirect URI"
+msgstr "URI перенаправления"
+
+msgid "Default value in case of the empty field: %s"
+msgstr "По умолчанию значение пустого поля: %s"
+
+msgid "This user does not belong to any group."
+msgstr "Этот сотрудник не принадлежит ни к какой группе."
+
+msgid "Edit groups"
+msgstr "Редактировать группы"
+
+msgid "Access is disabled"
+msgstr "Доступ выключен"
+
+msgid "The invitation link is valid through %s"
+msgstr "Пригласительная ссылка действительна по %s"
+
+msgid "Send again"
+msgstr "Отправить снова"
+
+msgid "Copy link"
+msgstr "Скопировать ссылку"
+
+msgid "Edit user"
+msgstr "Редактировать сотрудника"
+
+msgid "Contacts"
+msgstr "Контакты"
+
+msgid "Access"
+msgstr "Доступ"
+
+msgid "email"
+msgstr "email"
+
+msgid "no data"
+msgstr "нет данных"
+
+msgid "phone"
+msgstr "телефон"
+
+msgid "which?"
+msgstr "который?"
+
+msgid "delete"
+msgstr "удалить"
+
+msgid "Add another"
+msgstr "Добавить еще оди"
+
+msgid "required"
+msgstr "обязательное"
+
+msgid "Incorrect email address format."
+msgstr "Неверный формат email-адреса."
+
+msgid "Incorrect URL format."
+msgstr "Неверный формат URL."
+
+msgid "Must be a number."
+msgstr "Должно быть числом."
+
+msgid "&lt;no name&gt;"
+msgstr "&lt;без названия&gt;"
+
+msgid "&lt;none&gt;"
+msgstr "&lt;нет&gt;"
+
+msgid "no name"
+msgstr "без названия"
+
+msgid "This is a required field."
+msgstr "Это обязательное поле."
+
+msgid "At least one of these fields must be completed."
+msgstr "Хотя бы одно из этих полей должно быть заполнено."
+
+msgid "Auto"
+msgstr "Авто"
+
+msgid "Contact info"
+msgstr "Контактная информация"
+
+msgid "Share the code below with <strong>%s</strong>. Entering the code in a Webasyst mobile app in the ‘Add account’ screen will automatically connect the app to <code>%s</code>."
+msgstr "Поделитесь указанным ниже кодом с <strong>%s</strong>. Ввод кода в мобильное приложение Webasyst в разделе «Добавить аккаунт» автоматически подключит приложение к <code>%s</code>."
+
+msgid "Required parameter is missing."
+msgstr "Отсутствует обязательный параметр."
+
+msgid "Webasyst Email"
+msgstr "Webasyst Email"
