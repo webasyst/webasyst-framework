@@ -277,6 +277,8 @@ class waFiles
                 return 'image/'.strtolower($type);
             case 'ico':
                 return 'image/x-icon';
+            case 'svg':
+                return 'image/svg+xml';
             case 'doc':
             case 'docx':
                 return 'application/msword';

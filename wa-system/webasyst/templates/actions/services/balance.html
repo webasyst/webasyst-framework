@@ -33,7 +33,7 @@
                             <span class="custom-my-4" style="line-height: 1.0;">
                                 {if $period == 'total'}
                                     {if isset($wa_remaining_free_calls[$period]) && $wa_remaining_free_calls[$period] < $limit}
-                                        <span class="bold">{_ws('%d message remains', '%d messages remains', $wa_remaining_free_calls[$period])}</span>
+                                        <span class="bold">{_ws('%d message left', '%d messages left', $wa_remaining_free_calls[$period])}</span>
                                     {else}
                                         <span class="bold">{_ws('%d message', '%d messages', $limit)}</span>
                                     {/if}

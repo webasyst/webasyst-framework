@@ -15,6 +15,7 @@
 class waInstallerRequirements
 {
     private $root;
+    private $wa_locale;
 
     /**
      *
@@ -36,6 +37,7 @@ class waInstallerRequirements
         while (preg_match('@/\.\./@', $this->root)) {
             $this->root = preg_replace('@/[^/]+/\.\./@', '/', $this->root);
         }
+        $this->wa_locale = new waInstallerLocale();
     }
 
     private function __clone()
@@ -149,7 +151,7 @@ class waInstallerRequirements
     {
         $requirement['passed'] = empty($requirement['strict']);
         $requirement['note'] = false;
-        $requirement['warning'] = _w('Please install updates for the proper verification requirements');
+        $requirement['warning'] = $this->wa_locale->_('Please install updates for the proper verification requirements');
         self::setDefaultDescription($requirement, array('Unknown requirement case %s', htmlentities($subject, ENT_QUOTES, 'utf-8'), ''));
         return $requirement['passed'];
     }
@@ -171,9 +173,9 @@ class waInstallerRequirements
                 $relation = $this->getRelation($requirement['value'], true);
                 if ($relation) {
                     if (!version_compare($value, $requirement['value'], $relation)) {
-                        $format = _w('Value of PHP configuration parameter %s: %s. Required value: %s.');
+                        $format = $this->wa_locale->_('Value of PHP configuration parameter %s: %s. Required value: %s.');
                         if (empty($requirement['strict'])) {
-                            $format = _w('Value of PHP configuration parameter %s: %s. Recommended value: %s.');
+                            $format = $this->wa_locale->_('Value of PHP configuration parameter %s: %s. Recommended value: %s.');
                         }
                         $requirement['warning'] = sprintf($format, $subject, $value, $relation.$requirement['value']);
                     } else {
@@ -187,9 +189,9 @@ class waInstallerRequirements
                         }
                     }
                 } elseif ($value != $requirement['value']) {
-                    $format = _w('Value of PHP configuration parameter %s: %s. Required value: %s.');
+                    $format = $this->wa_locale->_('Value of PHP configuration parameter %s: %s. Required value: %s.');
                     if (empty($requirement['strict'])) {
-                        $format = _w('Value of PHP configuration parameter %s: %s. Recommended value: %s.');
+                        $format = $this->wa_locale->_('Value of PHP configuration parameter %s: %s. Recommended value: %s.');
                     }
                     $requirement['warning'] = sprintf($format, $subject, $value, $requirement['value']);
                 } else {
@@ -233,9 +235,9 @@ class waInstallerRequirements
                     $requirement['relation'] = $this->getRelation($requirement['version']);
                     if (!version_compare($version, $requirement['version'], $requirement['relation'])) {
                         if (!empty($requirement['strict'])) {
-                            $format = _w('extension %s has %s version but should be %s %s');
+                            $format = $this->wa_locale->_('extension %s has %s version but should be %s %s');
                         } else {
-                            $format = _w('extension %s has %s version but recommended is %s %s');
+                            $format = $this->wa_locale->_('extension %s has %s version but recommended is %s %s');
                         }
 
                         $requirement['warning'] = sprintf($format, $subject, $version, $requirement['relation'], $requirement['version']);
@@ -249,7 +251,7 @@ class waInstallerRequirements
                     $requirement['passed'] = true;
                 }
             } else {
-                $requirement['warning'] = sprintf(_w('PHP extension %s is required'), $subject);
+                $requirement['warning'] = sprintf($this->wa_locale->_('PHP extension %s is required'), $subject);
             }
         } else {
             self::setDefaultDescription($requirement, 'PHP version', '');
@@ -257,7 +259,7 @@ class waInstallerRequirements
             if (isset($requirement['version'])) {
                 $requirement['relation'] = $this->getRelation($requirement['version']);
                 if (!version_compare($version, $requirement['version'], $requirement['relation'])) {
-                    $requirement['warning'] = sprintf(_w('PHP has version %s but should be %s %s'), $version, $requirement['relation'], $requirement['version']);
+                    $requirement['warning'] = sprintf($this->wa_locale->_('PHP has version %s but should be %s %s'), $version, $requirement['relation'], $requirement['version']);
                 } else {
                     if ($version) {
                         $requirement['note'] = $version;
@@ -289,9 +291,9 @@ class waInstallerRequirements
             if (isset($requirement['version'])) {
                 $requirement['relation'] = $this->getRelation($requirement['version']);
                 if (!version_compare($version, $requirement['version'], $requirement['relation'])) {
-                    $format = !empty($requirement['strict']) ? _w('%s has %s version but should be %s %s') : _w('%s has %s version but recommended is %s %s');
-                    $relation = _w($requirement['relation']);
-                    $name = $subject == 'installer' ? _w('Webasyst Framework') : $app_name;
+                    $format = !empty($requirement['strict']) ? $this->wa_locale->_('%s has %s version but should be %s %s') : $this->wa_locale->_('%s has %s version but recommended is %s %s');
+                    $relation = $this->wa_locale->_($requirement['relation']);
+                    $name = $subject == 'installer' ? $this->wa_locale->_('Webasyst Framework') : $app_name;
                     $requirement['warning'] = sprintf($format, $name, $version, $relation, $requirement['version']);
                 } else {
                     if ($version) {
@@ -303,7 +305,7 @@ class waInstallerRequirements
                 $requirement['passed'] = ($version === false) ? false : true;
             }
         } else {
-            $requirement['warning'] = sprintf(_w('%s not installed'), $app_name);
+            $requirement['warning'] = sprintf($this->wa_locale->_('%s not installed'), $app_name);
         }
     }
 
@@ -340,11 +342,11 @@ class waInstallerRequirements
         }
 
         if ($bad_folders) {
-            $requirement['warning'] .= sprintf(_w('%s should be writable'), implode(', ', $bad_folders));
+            $requirement['warning'] .= sprintf($this->wa_locale->_('%s should be writable'), implode(', ', $bad_folders));
         }
 
         if ($good_folders) {
-            $requirement['note'] .= sprintf(_w('%s is writable'), implode(', ', $good_folders));
+            $requirement['note'] .= sprintf($this->wa_locale->_('%s is writable'), implode(', ', $good_folders));
         }
     }
 
@@ -361,18 +363,18 @@ class waInstallerRequirements
             self::setDefaultDescription($requirement, array('Server module %s', htmlentities($subject, ENT_QUOTES, 'utf-8')));
             if (function_exists('apache_get_modules')) {
                 if (in_array($subject, apache_get_modules())) {
-                    $requirement['note'] = _w('server module loaded');
+                    $requirement['note'] = $this->wa_locale->_('server module loaded');
                     $requirement['passed'] = true;
                     $requirement['value'] = true;
                 } else {
-                    $requirement['warning'] = _w('server module not loaded');
+                    $requirement['warning'] = $this->wa_locale->_('server module not loaded');
                     $requirement['value'] = false;
                 }
             } elseif (strpos(strtolower($server), 'apache') === false) { //CGI or non apache?
-                $requirement['warning'] = _w('not Apache server');
+                $requirement['warning'] = $this->wa_locale->_('not Apache server');
                 $requirement['value'] = false;
             } else {
-                $requirement['warning'] = _w('CGI PHP mode');
+                $requirement['warning'] = $this->wa_locale->_('CGI PHP mode');
             }
         } else {
             self::setDefaultDescription($requirement, 'Server software version');

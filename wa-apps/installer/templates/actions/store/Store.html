@@ -46,7 +46,7 @@
     {$dialog_prefix = 'wa-'}
     {/if}
     <link href="{$wa_url}wa-apps/installer/css/helper/review-widget.css?v={$wa->version()}" rel="stylesheet">
-    
+
     <div class="{$dialog_prefix}dialog i-product-review-dialog">
         <div class="{$dialog_prefix}dialog-background"></div>
         <div class="{$dialog_prefix}dialog-body">
@@ -152,7 +152,8 @@
                 confirm: {$_confirm_text_template|json_encode}
             },
             csrf: {$csrf|json_encode},
-            activeFilters: {json_encode($filters)}
+            activeFilters: {json_encode($filters)},
+            go_return_hash_after_installation: {if waRequest::get('go_return_hash_after_installation')}true{else}false{/if}
         });
     })(jQuery);
 </script>

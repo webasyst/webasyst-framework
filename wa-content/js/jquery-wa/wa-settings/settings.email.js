@@ -428,19 +428,22 @@ class WASettingsEmail {
 
             that.is_locked = true;
             that.$button.prop('disabled', true);
-            that.$loading.removeClass('yes').addClass('loading').show();
+
+            var $button_text = that.$button.text(),
+                $loader_icon = ' <i class="fas fa-spinner fa-spin"></i>',
+                $success_icon = ' <i class="fas fa-check-circle"></i>';
+            that.$button.empty().html($button_text + $loader_icon);
 
             let href = that.$form.attr('action'),
                 data = that.$form.serialize();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
-                    that.$button.removeClass('yellow');
-                    that.$loading.removeClass('loading').addClass('yes');
+                    that.$button.empty().html($button_text + $success_icon).removeClass('yellow');
                     that.$footer_actions.removeClass('is-changed');
                     setTimeout(function(){
-                        that.$loading.hide();
-                    }, 2000);
+                        that.$button.empty().html($button_text);
+                    },2000);
                 } else if (res.errors) {
                     $.each(res.errors, function (i, error) {
                         if (error.field) {

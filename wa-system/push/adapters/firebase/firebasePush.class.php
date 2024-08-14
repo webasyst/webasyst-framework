@@ -71,10 +71,10 @@ class firebasePush extends waPushAdapter
 
     protected function normalizeSubscriberData($data)
     {
-        if (!is_array($data) || 
+        if (!is_array($data) ||
             !ifset($data['firebase_client_token'])
         ) {
-            throw new waException('Invalid subscriber data');
+            throw new waException(_ws('Invalid subscriber data'));
         }
         return [
             'sender_id' => $this->getSettings(self::SENDER_ID),

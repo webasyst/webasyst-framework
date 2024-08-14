@@ -162,13 +162,16 @@ class waServicesApi extends waWebasystIDApi
         return $this->serviceCall(self::EMAIL_MESSAGE_SERVICE, $message_data, waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON]);
     }
 
-    public function sendSms($to, $text, $from = null, $is_repeated = false)
+    public function sendSms($to, $text, $from = null, $is_repeated = false, $app_id = null, $context = null)
     {
+        $app_id = ifempty($app_id, wa()->getApp());
         return $this->serviceCall(self::SMS_SERVICE, [
             'to' => $to,
             'text' => $text,
             'from' => $from,
             'is_repeated' => $is_repeated,
+            'app_id' => $app_id,
+            'context' => $context,
         ], waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON]);
     }
 

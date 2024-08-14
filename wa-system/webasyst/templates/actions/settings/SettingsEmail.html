@@ -280,12 +280,7 @@
             {/foreach}
         </div>
 {/strip}
-        <div class="s-form-buttons fields-group">
-            <div class="s-footer-actions js-footer-actions field">
-                <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
-                <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
-            </div>
-        </div>
+        {include file="./SettingsSaveBtn.inc.html" settings_page="email" inline}
     </form>
     {_renderConfig key=null is_template=true}
   </div>

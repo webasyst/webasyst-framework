@@ -127,11 +127,11 @@ class onesignalPush extends waPushAdapter
 
     protected function normalizeSubscriberData($data)
     {
-        if (!is_array($data) || 
+        if (!is_array($data) ||
             !ifset($data['onesignal_app_id']) ||
             !ifset($data['onesignal_player_id'])
         ) {
-            throw new waException('Invalid subscriber data');
+            throw new waException(_ws('Invalid subscriber data'));
         }
         return [
             'api_app_id' => $data['onesignal_app_id'],

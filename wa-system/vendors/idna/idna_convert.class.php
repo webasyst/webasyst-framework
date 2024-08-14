@@ -190,7 +190,7 @@ class idna_convert
             }
         }
         // Make sure to drop any newline characters around
-        $input = trim($input);
+        $input = !empty($input) ? trim($input) : '';
 
         // Negotiate input and try to determine, whether it is a plain string,
         // an email address or something like a complete URL

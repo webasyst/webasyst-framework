@@ -26,7 +26,7 @@ class waAPIMethod
             if ((is_array($this->method) && !in_array($request_method, $this->method)) ||
                 (!is_array($this->method) && $request_method != $this->method)
             ) {
-                throw new waAPIException('invalid_request', 'Method '.$request_method.' not allowed', 405);
+                throw new waAPIException('invalid_request', sprintf(_ws('Method %s not allowed'), $request_method), 405);
             }
         }
 
@@ -43,7 +43,7 @@ class waAPIMethod
     {
         $v = waRequest::get($name);
         if ($required && !$v) {
-            throw new waAPIException('invalid_param', 'Required parameter is missing: '.$name, 400);
+            throw new waAPIException('invalid_param', sprintf(_ws('Required parameter is missing: “%s”.'), $name), 400);
         }
         return $v;
     }
@@ -52,7 +52,7 @@ class waAPIMethod
     {
         $v = waRequest::post($name);
         if ($required && !$v) {
-            throw new waAPIException('invalid_param', 'Required parameter is missing: '.$name, 400);
+            throw new waAPIException('invalid_param', sprintf(_ws('Required parameter is missing: “%s”.'), $name), 400);
         }
         return $v;
     }

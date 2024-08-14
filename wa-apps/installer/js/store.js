@@ -752,6 +752,12 @@ var InstallerStore = (function ($) {
                         setTimeout(function() {
                             dialog.close();
                         }, 1200);
+                        if (that.options.go_return_hash_after_installation) {
+                            const return_url = fields.find(f => f.name === 'return_url');
+                            if (return_url) {
+                                location.href = return_url.value;
+                            }
+                        }
                         location.reload();
                     });
                 }

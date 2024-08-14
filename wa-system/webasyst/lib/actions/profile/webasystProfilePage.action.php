@@ -31,12 +31,13 @@ class webasystProfilePageAction extends waViewAction
 
         if (wa()->appExists('team')) {
             $profile_template_path = wa()->getAppPath('templates/actions/profile/Profile.html', 'team');
+            $twasm = new teamWaAppSettingsModel();
+            $user_name_format = $twasm->getUserNameDisplayFormat();
         } else {
             $profile_template_path = wa()->getAppPath('templates/actions' . ((wa()->whichUI() === '1.3') ? '-legacy' : '') . '/profile/ProfilePage.html', 'webasyst');
+            $user_name_format = 'login';
         }
 
-        $twasm = new teamWaAppSettingsModel();
-        $user_name_format = $twasm->getUserNameDisplayFormat();
         if ($user_name_format !== 'login') {
             $user_name_formatted = $user->getName();
         } else {
@@ -146,7 +147,13 @@ class webasystProfilePageAction extends waViewAction
 
     protected function canEdit($user_id)
     {
-        return teamUser::canEdit($user_id);
+        try {
+            if (wa()->appExists('team')) {
+                return teamUser::canEdit($user_id);
+            }
+        } catch (waException $e) {
+        }
+        return $user_id == wa()->getUser()->getId();
     }
 
     /** Using $this->id get waContact and save it in $this->contact;
@@ -291,7 +298,15 @@ class webasystProfilePageAction extends waViewAction
 
     protected function getEditorOptions()
     {
-        $tasm = new teamWaAppSettingsModel();
+        if (wa()->appExists('team')) {
+            $tasm = new teamWaAppSettingsModel();
+            $map_options = $tasm->getGeocodingOptions();
+        } else {
+            $map_options = array(
+                'type' => '',
+                'key' => '',
+            );
+        }
         $wa_app_url = wa()->getConfig()->getBackendUrl(true);
 
         return [
@@ -299,7 +314,7 @@ class webasystProfilePageAction extends waViewAction
             'contact_id' => $this->getUserId(),
             'current_user_id' => $this->getUserId(),
             'justCreated' => false,
-            'geocoding' => $tasm->getGeocodingOptions(),
+            'geocoding' => $map_options,
             'wa_app_url' => $wa_app_url,
             'contactType' => $this->getUser()['is_company'] ? 'company' : 'person'
         ];

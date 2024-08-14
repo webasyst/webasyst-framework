@@ -155,7 +155,7 @@ class waEvent
         try {
             wa($app_id);
         } catch (Exception $e) {
-            waLog::log('Event handling error. Unable to initialize app_id '.$app_id.': '.$e->getMessage());
+            waLog::log('Event handling error. Unable to initialize app_id '.$app_id.': '.$e->getMessage()."\n".$e->getTraceAsString());
             return $result;
         }
 
@@ -186,7 +186,7 @@ class waEvent
                 }
             }
         } catch (Exception $e) {
-            waLog::log('Event handling error in '.$class.': '.$e->getMessage());
+            waLog::log('Event handling error in '.$class.': '.$e->getMessage()."\n".$e->getTraceAsString());
         }
         wa()->popActivePlugin();
 
