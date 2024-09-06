@@ -3,12 +3,23 @@
     #wa-single-app-nav #wa-header { display: block; }
     #wa-single-app-nav #wa-userprofile .dropdown-body { width: 200px; }
     #wa-single-app-nav #wa-userprofile .dropdown-body .bricks > .brick { width: 57px; }
-    #wa-single-app-nav #wa-header .alert-fixed-box { right: auto; top: 4rem; margin-left: -2rem; }
+    #wa-single-app-nav #wa-header .alert-fixed-box { right: auto; top: 3rem; margin-left: -2rem; }
+
+
+    #wa-single-app-nav .wa-applist { width: 550px; flex: 1; padding-top: 0.25rem; position: relative; border-bottom: 1px solid rgba(0, 0, 0, 0.0625); text-align: center; }
+    #wa-single-app-nav .wa-applist ul { list-style-type: none; padding-left: 0; margin: 0 auto; }
+    #wa-single-app-nav .wa-applist ul li { position: relative; width: 5.5rem; margin-bottom: 0.75rem; }
+    #wa-single-app-nav .wa-applist ul li a { display: block; font-size: 0.875rem; text-align: center; text-decoration: none; color: var(--text-color); }
+    #wa-single-app-nav .wa-applist ul li a:hover { color: var(--text-color-strongest); }
+    #wa-single-app-nav .wa-applist ul li a .badge { position: absolute; top: 0rem; right: 0.25rem; background: var(--red); color: var(--white); font-size: 0.75rem; min-width: 1em; min-height: 1em; padding: 0.25em; }
+    #wa-single-app-nav .wa-applist ul li a img { border: 0; display: block; margin: 0 auto 0.5rem; width: 4rem; height: 4rem; }
+    #wa-single-app-nav .wa-applist ul li.selected a { font-weight: bold; color: var(--text-color-stronger); }
 
     #wa-single-app-nav .dropdown-body { left: 2px; width: auto; overflow: visible; }
     @media screen and (max-width: 760px) {
-        #wa-single-app-nav #wa-header .alert-fixed-box,
-        #wa-single-app-nav #wa-header .dropdown-body { left: auto; right: 0; }
+        #wa-single-app-nav .wa-applist { width: 100%; }
+        #wa-single-app-nav #wa-header .alert-fixed-box { left: auto; right: 0; }
+        #wa-single-app-nav #wa-header .dropdown-body { left: auto; right: 0; min-width: 320px; }
         #wa-single-app-nav #wa-userprofile .dropdown-body { left: 0; }
     }
 </style>

@@ -122,10 +122,28 @@
         }
 
         .message-text {
-            font-size: 24px;
+            font-size: 16px;
         }
         .message-text > span > p:first-child {
             display: inline;
+        }
+
+        .btn-to-dashboard {
+            border-radius: 1.5em;
+            background-color: #f0f1f5;
+            color: #1f2d3d !important;
+            box-shadow: none;
+            display: inline-block;
+            text-align: center;
+            user-select: none;
+            border: 0.125em solid transparent;
+            padding: 0.4375em 0.75em;
+            line-height: 1;
+            outline: 0 none;
+            transition: color .1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out;
+            cursor: pointer;
+            box-sizing: border-box;
+            font-weight: bold;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -145,6 +163,11 @@
             .content div,
             .content p {
                 color: rgb(232, 233, 237) !important;
+            }
+
+            .btn-to-dashboard {
+                background-color: #444354;
+                color: #f0f1f5 !important;
             }
         }
     </style>
@@ -200,7 +223,7 @@
                                             <!-- Change App Link -->
                                             <tr>
                                                 <td align="right"
-                                                    style="font-size:0px;padding:8px 10px;word-break:break-word;">
+                                                    style="font-size:0px;padding:12px 10px;word-break:break-word;">
                                                     <div
                                                         style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;font-size:15px;line-height:20px;text-align:right;color:#000000;">
                                                         <a href="{$host_url}" target="_blank"
@@ -240,7 +263,18 @@
                                                 <div
                                                     style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;font-size:15px;line-height:20px;text-align:left;color:#000000;">
                                                     <!-- -------------- Content Start -------------- -->
-                                                    <div class="message-text">
+                                                    <a href="{$backend_url}">
+                                                        <img src="{$host_url}{$sender_user->getPhoto()|escape}"
+                                                             style="border-radius:50%; width:20px;height:20px;vertical-align: middle; margin-right: 4px;">
+
+                                                        <span style="vertical-align:bottom; color: #777777 !important;">{$sender_user.name|escape}</span>
+                                                    </a>
+
+                                                    <div style="margin-top: 16px;">
+                                                        <span style="vertical-align:bottom; color: #777777 !important; font-size: 12px;">{$date}</span>
+                                                    </div>
+
+                                                    <div class="message-text" style="margin-top: 16px;">
                                                         {if $announcement.is_pinned}
                                                             <img
                                                                 src="{$wa->url(true)}wa-content/img/icons/fa-bolt-orange.svg"
@@ -251,11 +285,8 @@
                                                         <span>{$announcement.text}</span>
                                                     </div>
 
-                                                    <div style="margin-top: 16px;">
-                                                        <img src="{$host_url}{$sender_user->getPhoto()|escape}"
-                                                        style="border-radius:50%; width:20px;height:20px;vertical-align: middle; margin-right: 4px;">
-
-                                                        <span style="vertical-align:bottom; color: #777777 !important;">{$sender_user.name|escape}</span>
+                                                    <div style="margin-top: 32px; text-align: center;">
+                                                        <a href="{$backend_url}" class="btn-to-dashboard">[`View on dashboard`]</a>
                                                     </div>
                                                     <!-- -------------- Content End -------------- -->
                                                 </div>

@@ -23,14 +23,16 @@
                 </a>
             </li>
         {/if}
-        <li class="transparent dashboard-customize">
-            <a href="javascript:void(0);"
-               class="js-dashboard-edit"
-               data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
-               id="show-dashboard-editable-mode_" title="[s`Widgets`]">
-                <i class="fas fa-sliders-h text-gray"></i>
-            </a>
-        </li>
+        {if !$wa->isMobile()}
+            <li class="transparent dashboard-customize">
+                <a href="javascript:void(0);"
+                   class="js-dashboard-edit"
+                   data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
+                   id="show-dashboard-editable-mode_" title="[s`Widgets`]">
+                    <i class="fas fa-sliders-h text-gray"></i>
+                </a>
+            </li>
+        {/if}
     </ul>
     {/if}
 

@@ -35,7 +35,7 @@
         })(jQuery);
     </script>
     <div data-installed-widgets>
-        <h2 class="flexbox">[`Add widgets`] <a href="javascript:void(0)" class="custom-ml-auto custom-mt-2 smaller text-light-gray js-dashboard-edit-close"><i class="fas fa-times custom-ml-4 custom-mt-2"></i></a></h2>
+        <h2 class="flexbox">[`Add widgets`]{* <a href="javascript:void(0)" class="custom-ml-auto custom-mt-2 smaller text-light-gray js-dashboard-edit-close"><i class="fas fa-times custom-ml-4 custom-mt-2"></i></a>*}</h2>
         <p class="widgets-list-header hint align-center">
             [`Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]
         </p>
@@ -53,7 +53,7 @@
                     <div class="list-wrapper">
                         {foreach $app_widgets as $widget}
 
-                            <div class="widget-item-wrapper"
+                            <div class="widget-item-wrapper{if $widget@last} custom-mr-auto{/if}"
                                  id="list-widget-{$widget.widget}"
                                  data-app_id="{$widget.app_id}"
                                  data-size="{$widget.size}"

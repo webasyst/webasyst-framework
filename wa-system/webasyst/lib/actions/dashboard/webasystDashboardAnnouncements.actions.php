@@ -432,6 +432,8 @@ class webasystDashboardAnnouncementsActions extends waActions
             'sender_user' => $from,
             'app_name' => wa()->accountName(),
             'app_icon' => empty($logo['image']['thumbs']['64x64']['url']) ? null : $logo['image']['thumbs']['64x64']['url'],
+            'backend_url' => wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl(false) . '/',
+            'date' => waDateTime::date('j f Y', date('d-m-Y')),
         ]);
         $body = $view->fetch($wa->getAppPath('templates/mail/AnnouncementNotification.html', 'webasyst'));
 

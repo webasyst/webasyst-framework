@@ -338,9 +338,8 @@ class waNestedSetModel extends waModel
     public function getTree($id, $depth = null, $where = array())
     {
         $where = (array)$where;
-        if (($id = max(0, (int) $id))) {
-            $result = $this->getById($id);
-
+        $id = max(0, (int) $id);
+        if ($id && ($result = $this->getById($id))) {
             $left  = (int) $result[$this->left];
             $right = (int) $result[$this->right];
         } else {

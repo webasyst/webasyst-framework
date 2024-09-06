@@ -824,7 +824,6 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 
 #wa-applist { flex: 1; padding-top: 0.25rem; position: relative; border-bottom: 1px solid rgba(0, 0, 0, 0.0625); text-align: center; }
 #wa-applist ul { list-style-type: none; padding-left: 0; margin: 0 auto; max-width: 70%; }
-/*#wa-applist ul li { display: inline-block; width: 4rem; text-align: center; vertical-align: top; position: relative; }*/
 #wa-applist ul li { position: relative; }
 #wa-applist ul li a { display: block; font-size: 0.9375rem; text-align: center; text-decoration: none; color: var(--text-color); }
 #wa-applist ul li a:hover { color: var(--text-color-strongest); }

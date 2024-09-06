@@ -1664,6 +1664,22 @@
 #wa-app .content.header-fixed #wa-nav #wa-header #wa-header-logo-area .wa-header-sitename .wa-sitename {
   display: block;
 }
+.widgets-list-wrapper-close {
+  position: sticky;
+  z-index: 1;
+  top: 2.3rem;
+  margin-left: calc(100% - 3rem);
+  width: 1.5em;
+  display: inline-flex;
+  transform: translateX(-27rem);
+  opacity: 0;
+  transition: opacity 1s linear;
+  height: 1.5em;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  box-shadow: 0 0 5px 0 var(--gray);
+}
 .widgets-list-wrapper {
   position: absolute;
   top: 0;
@@ -1780,6 +1796,10 @@
 .is-custom-edit-mode .wa-dashboard-page #d-widgets-block {
   justify-content: flex-start !important;
 }
+.is-custom-edit-mode .widgets-list-wrapper-close {
+  transform: translateX(0);
+  opacity: 1;
+}
 .is-custom-edit-mode .widgets-list-wrapper {
   transform: translateX(0);
   background: var(--background-color-blank);
@@ -1796,7 +1816,8 @@
 .is-custom-edit-mode .widgets-list-wrapper .list-group-wrapper .list-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 1.5rem;
+  justify-content: space-between;
 }
 .is-custom-edit-mode .widgets-list-wrapper .list-group-wrapper .list-wrapper .widget-item-wrapper {
   position: relative;

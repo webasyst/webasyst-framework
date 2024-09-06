@@ -29,7 +29,7 @@
 
         <div id="wa-account"{if $position === 'sidebar'} class="wa-sidebar-logo"{/if}>
             <a href="{$backend_url}">
-                <img{if $position === 'sidebar'} src="{$logo_url_sidebar}"{else} src="{$logo_url_1x}" srcset="{$logo_url_1x} 1x, {$logo_url_2x} 2x, {$logo_url_3x} 3x"{/if} class="wa-header-logo" alt="{$company_name|truncate:2:''}">
+                <img{if $position === 'sidebar'} src="{$logo_url_sidebar}"{else} src="{$logo_url_2x}" srcset="{$logo_url_2x} 1x, {$logo_url_3x} 2x"{/if} class="wa-header-logo" alt="{$company_name|truncate:2:''}">
             </a>
         </div>
     {/if}

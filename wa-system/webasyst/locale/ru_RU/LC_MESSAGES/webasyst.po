@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-08-08 16:55+0300\n"
+"PO-Revision-Date: 2024-09-02 22:54+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.5\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -3889,6 +3889,9 @@ msgstr "365 дней"
 msgid "Dashboard"
 msgstr "Дашборд"
 
+msgid "View on dashboard"
+msgstr "Посмотреть на дашборде"
+
 msgid "Live Stream"
 msgstr "Лента событий"
 
@@ -6846,6 +6849,9 @@ msgstr[2] "еще %d сообщений"
 
 msgid "Post"
 msgstr "Написать"
+
+msgid "Add announcement"
+msgstr "Написать объявление"
 
 msgid "Show more"
 msgstr "Показать еще"

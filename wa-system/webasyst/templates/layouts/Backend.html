@@ -59,20 +59,25 @@
                     </div>
                 </div>
             </div>
-            <div class="widgets-list-wrapper" data-backend-url="{$wa_backend_url|escape}">
-            {function skeleton}
-                <div class="skeleton list-group-wrapper">
-                    <div class="list-wrapper">
-                        {for $i=1 to 12}
-                            <div class="widget-item-wrapper">
-                                <span class="skeleton-custom-box image-wrapper"></span>
-                                <span class="skeleton-line custom-mt-16"></span>
-                            </div>
-                        {/for}
+            <div>
+                <a href="javascript:void(0)" class="widgets-list-wrapper-close text-light-gray js-dashboard-edit-close">
+                    <i class="fas fa-times"></i>
+                </a>
+                <div class="widgets-list-wrapper" data-backend-url="{$wa_backend_url|escape}">
+                {function skeleton}
+                    <div class="skeleton list-group-wrapper">
+                        <div class="list-wrapper">
+                            {for $i=1 to 12}
+                                <div class="widget-item-wrapper">
+                                    <span class="skeleton-custom-box image-wrapper"></span>
+                                    <span class="skeleton-line custom-mt-16"></span>
+                                </div>
+                            {/for}
+                        </div>
                     </div>
+                {/function}
+                {skeleton}
                 </div>
-            {/function}
-            {skeleton}
             </div>
         </div>
     </div>
