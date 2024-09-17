@@ -137,6 +137,9 @@ class waFrontController
             waSystem::pushActivePlugin($widget->getInfo('widget'), $app_id.'_widget');
         }
         $widget->loadLocale($app_id == 'webasyst');
+        if ($action === null) {
+            wa()->getStorage()->close();
+        }
         return $widget->run($action);
     }
 

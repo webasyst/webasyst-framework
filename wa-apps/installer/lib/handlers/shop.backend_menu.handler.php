@@ -26,13 +26,33 @@ class installerShopBackend_menuHandler extends waEventHandler
         $installer_backend_url = wa()->getAppUrl('installer', true);
 
         // Link to open in new window if user middle-clicks
-        $link = $wa_app_url.'?action=settings#/premium/';
+        $link = ifset($promotion, 'url', '');
+        if (!$link) {
+            $link = $wa_app_url.'?action=settings#/premium/';
+        } else {
+            if (!preg_match('~^(https?||javascript):~i', $link)) {
+                $link = "{$wa_app_url}../".$link;
+            }
+        }
+
+        $link_attrs = '';
+        if (!empty($promotion['open_new_tab'])) {
+            $link_attrs = ' target="_blank"';
+        }
+
+        if (empty($promotion['html'])) {
+            return [
+                'aux_li' => '<li class="small float-right no-tab js-'.$promo_id.'" id="s-ssx-link" style="margin:0 30px 0 -30px"><a href="'.$link.'"'.$link_attrs.'>'.
+                    $promo_link_title
+                .'</a></li>',
+            ];
+        }
 
         // URL to fetch dialog content from if user left-clicks
         $dialog_url = $wa_app_url.'?action=settings#/premium/';
 
         return array(
-            'aux_li' => '<li class="small float-right no-tab js-'.$promo_id.'" id="s-ssx-link" style="margin:0 30px 0 -30px"><a href="'.$link.'">'.
+            'aux_li' => '<li class="small float-right no-tab js-'.$promo_id.'" id="s-ssx-link" style="margin:0 30px 0 -30px"><a href="'.$link.'"'.$link_attrs.'>'.
                 $promo_link_title
             .'</a></li>'.
             '

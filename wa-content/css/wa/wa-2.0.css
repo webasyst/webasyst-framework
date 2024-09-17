@@ -1001,6 +1001,11 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 .sidebar-body,
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-color: transparent transparent; scrollbar-width: none; }
 
+.sidebar-dropdown-container { position: relative; }
+.sidebar-dropdown-container > .dropdown { position: static; }
+.sidebar-dropdown-container > .dropdown > .dropdown-body { top: auto !important; min-width: 100% !important; }
+.sidebar-dropdown-container > .dropdown.is-opened > .dropdown-toggle { background: var(--background-color-btn-light-gray-hover); }
+
 .content { flex: 1 !important; position: relative; }
 
 .blank { background: var(--background-color-blank); }

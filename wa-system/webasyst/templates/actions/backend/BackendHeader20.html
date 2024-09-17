@@ -50,6 +50,8 @@
 {/if}
 
 {$has_dasboard = ($current_app === 'webasyst' && isset($activity))}
+{$request_uri = explode('?', $request_uri, 2)}
+{$request_uri = $request_uri[0]}
 
 <div id="wa-header">
     <div id="wa-header-logo-area">

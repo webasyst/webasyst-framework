@@ -226,6 +226,13 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
         return wa()->getRootUrl(false, false).'oauth.php?provider='.$this->getId().'&type='.$this->getType();
     }
 
+    public function getUrlWithReferrer($url = null)
+    {
+        $referrer_url = $url ?: wa()->getConfig()->getCurrentUrl();
+        $referrer_url_encoded = waUtils::urlSafeBase64Encode($referrer_url);
+        return $this->getUrl().'&referrer_url='.$referrer_url_encoded;
+    }
+
     /**
      * Url for get auth code
      * @return string
@@ -434,7 +441,18 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
      */
     public function getCallbackUrl($absolute = true)
     {
-        return wa()->getRootUrl($absolute, true).'oauth.php?provider='.$this->getId().'&type='.$this->getType();
+        $callback_url = wa()->getRootUrl($absolute, true).'oauth.php?provider='.$this->getId().'&type='.$this->getType();
+
+        $referrer_url = $this->getReferrerUrl();
+        if ($referrer_url) {
+            if (!waUtils::isUrlSafeBase64Encoded($referrer_url)) {
+                $callback_url .= '&referrer_url=' . waUtils::urlSafeBase64Encode($referrer_url);
+            } else {
+                $callback_url .= '&referrer_url=' . $referrer_url;
+            }
+        }
+
+        return $callback_url;
     }
 
     protected function getUserInfo()

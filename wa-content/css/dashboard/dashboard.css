@@ -1667,18 +1667,21 @@
 .widgets-list-wrapper-close {
   position: sticky;
   z-index: 1;
-  top: 2.3rem;
-  margin-left: calc(100% - 3rem);
-  width: 1.5em;
+  top: 1.75rem;
+  margin-left: calc(100% - 4rem);
+  width: 2.5rem;
   display: inline-flex;
-  transform: translateX(-27rem);
   opacity: 0;
   transition: opacity 1s linear;
-  height: 1.5em;
+  transform: translateX(-27rem);
+  height: 2.5rem;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  box-shadow: 0 0 5px 0 var(--gray);
+  background: var(--notification-background-blurred-color);
+  font-size: 1.5rem;
+  box-shadow: 0 1px 0.25rem rgba(0,0,0,0.13);
+  color: var(--text-color-hint) !important;
 }
 .widgets-list-wrapper {
   position: absolute;

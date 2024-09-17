@@ -1,0 +1,36 @@
+<div class="dialog" id="s-inst-promo-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        <div class="dialog-content">
+            {$promotion.html}
+        </div>
+        <footer class="dialog-footer">
+            <div class="flexbox">
+                <div class="wide">
+                    <button class="js-close-dialog button light-gray">[`Close`]</button>
+                </div>
+                <div>
+                    <a href="javascript:void(0)" class="hint js-never-show-again-link js-close-dialog">[`Never show again`]</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+<script>(function() { "use strict";
+
+    var promo_id = {$promotion.id|json_encode};
+
+    var $dialog_wrapper = $("#s-inst-promo-dialog");
+    var installer_backend_url;
+
+    $dialog_wrapper.on("inst_ssx_dialog_loaded", function() {
+        installer_backend_url = $dialog_wrapper.data('installer_backend_url');
+
+        $dialog_wrapper.find('.js-never-show-again-link').click(function() {
+            $('.js-int-promo-link'+promo_id).remove();
+            localStorage.setItem('installer_hide_promo_'+promo_id, 1);
+        });
+    });
+
+})();</script>

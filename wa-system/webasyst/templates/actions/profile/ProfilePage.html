@@ -102,13 +102,11 @@
                                         {/foreach}
                                     </div>
                                 {else}
+                                    {if $wa->user()->isAdmin()}
                                     <div class="small custom-my-8">
-                                        <span class="text-gray custom-mr-8">[`This user does not belong to any group.`]</span>
-
-                                        {if $wa->user()->isAdmin()}
-                                            <a href="javascript:void(0)" class="semibold nowrap js-edit-groups"><i class="fas fa-pen"></i>&nbsp;[`Edit groups`]</a>
-                                        {/if}
+                                        <a href="javascript:void(0)" class="semibold nowrap js-edit-groups"><i class="fas fa-pen"></i>&nbsp;[`Edit groups`]</a>
                                     </div>
+                                    {/if}
                                 {/if}
                             {/if}
 

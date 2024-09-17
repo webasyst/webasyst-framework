@@ -22,7 +22,7 @@ class installerWidgetsPromotionAction extends waViewAction
             die('');
         }
 
-        if (false && $ui_version == '2.0') {
+        if ($ui_version == '2.0') {
             $this->setTemplate('WidgetsPromotionUI2.0.html');
         } else {
             $this->setTemplate('WidgetsPromotionUI1.3.html');

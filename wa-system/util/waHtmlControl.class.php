@@ -1110,10 +1110,10 @@ HTML;
             $selected_class = ifset($params, 'params', 'selected', 'ui-state-active');
 
             $start_date = date('Y-m-d');
-            $min_date   = $offset;
+            $min_date   = "'{$offset}'";
             if (isset($params['delivery_date'])) {
                 $start_date = date('Y-m-d', $params['delivery_date']);
-                $min_date   = date('d.m.Y', $params['delivery_date']);
+                $min_date   = 'new Date('.$params['delivery_date'].'*1000)';
             }
             $html .= <<<HTML
 <script>
@@ -1191,7 +1191,7 @@ HTML;
                 "altField": (multiple_dates === false?('#{$date_formatted_params['id']}'):null),
                 "altFormat": 'yy-mm-dd',
                 "dateFormat": '{$js_date_format}',
-                "minDate": '{$min_date}',
+                "minDate": {$min_date},
                 "numberOfMonths": (multiple_dates === false ? 1 : [2,3]),
                 "onSelect": function (dateText) {
                     var date = container.datepicker('getDate');

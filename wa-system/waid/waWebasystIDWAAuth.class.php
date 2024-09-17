@@ -81,15 +81,6 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
             $callback_url .= '&invite_token=' . $invite_auth;
         }
 
-        $referrer_url = $this->getReferrerUrl();
-        if ($referrer_url) {
-            if (!waUtils::isUrlSafeBase64Encoded($referrer_url)) {
-                $callback_url .= '&referrer_url=' . waUtils::urlSafeBase64Encode($referrer_url);
-            } else {
-                $callback_url .= '&referrer_url=' . $referrer_url;
-            }
-        }
-
         // all other get params leave as it is
 
         $ignore = ['provider', 'type', 'backend_auth', 'invite_token', 'referrer_url', 'code', 'state'];

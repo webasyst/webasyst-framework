@@ -23,7 +23,7 @@ class webasystBackendHeaderAction extends waViewAction
 
         $single_app_mode_app_id = wa()->isSingleAppMode();
         if ($single_app_mode_app_id) {
-            if ($single_app_mode_app_id !== wa()->getApp()) {
+            if ($single_app_mode_app_id !== wa()->getApp() && !$this->isModuleProfile()) {
                 return $this->jsRedirect(wa()->getAppUrl($single_app_mode_app_id));
             }
             $this->single_app_mode = true;
@@ -193,5 +193,10 @@ class webasystBackendHeaderAction extends waViewAction
             }
         }
         return $result;
+    }
+
+    protected function isModuleProfile()
+    {
+        return wa()->getApp() == 'webasyst' && waRequest::get('module') === 'profile';
     }
 }

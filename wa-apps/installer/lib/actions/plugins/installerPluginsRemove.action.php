@@ -52,8 +52,10 @@ class installerPluginsRemoveAction extends installerExtrasRemoveAction
                 try {
                     $system_plugin_instance = null;
                     if ($type == 'payment') {
+                        waAutoload::getInstance()->add(waPayment::getClasses());
                         $system_plugin_instance = waPayment::factory($extras_id);
                     } elseif ($type == 'shipping') {
+                        waAutoload::getInstance()->add(waShipping::getClasses());
                         $system_plugin_instance = waShipping::factory($extras_id);
                     }
                     if ($system_plugin_instance) {

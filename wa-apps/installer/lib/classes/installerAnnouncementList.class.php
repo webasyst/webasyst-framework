@@ -95,6 +95,9 @@ class installerAnnouncementList
             self::PLACE_PROMOTION => [],
         ];
         foreach ($list as $key => $announcement) {
+            if(empty($announcement['html'])) {
+                $announcement['html'] = [self::PLACE_PROMOTION => ''];
+            }
 
             // grouping
             foreach ($result as $place => $_) {
