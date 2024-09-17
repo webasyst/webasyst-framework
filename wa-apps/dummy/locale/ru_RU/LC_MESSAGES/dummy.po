@@ -2,60 +2,60 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-06-06 17:31+0300\n"
+"PO-Revision-Date: 2013-01-31 12:36+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
-"X-Poedit-Language: Russian\n"
-"X-Poedit-Country: Russian Federation\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)"
+">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
 msgid "Dummy"
 msgstr "Пустышка"
 
-
 #: /wa-apps/dummy/templates/actions/backend/Backend.html:29
 msgid "All records"
-msgstr ""
+msgstr "Все записи"
 
 #: /wa-apps/dummy/templates/actions/backend/Backend.html:58
 msgid "Add record"
-msgstr ""
+msgstr "Новая запись"
 
 #: /wa-apps/dummy/lib/config/dummyRightConfig.class.php:24
 msgid "Records"
-msgstr ""
+msgstr "Записи"
 
 #: /wa-apps/dummy/templates/actions/backend/Backend.html:45
 msgid "Loading..."
-msgstr ""
+msgstr "Загрузка..."
 
 #: /wa-apps/dummy/templates/actions/backend/Backend.html:63
 msgid "Title"
-msgstr ""
+msgstr "Заголовок"
 
 #: /wa-apps/dummy/templates/actions/backend/Backend.html:67
 msgid "Content"
-msgstr ""
+msgstr "Содержимое"
 
 #: /wa-apps/dummy/templates/actions/backend/Backend.html:77
 msgid "Add"
-msgstr ""
+msgstr "Добавить"
 
 #: /wa-apps/dummy/templates/actions/backend/Backend.html:77
 msgid "or"
-msgstr ""
+msgstr "или"
 
 #: /wa-apps/dummy/templates/actions/backend/Backend.html:78
 msgid "cancel"
-msgstr ""
+msgstr "отмена"
 
 #: /wa-apps/dummy/lib/config/dummyRightConfig.class.php:15
 msgid "Add new records"
-msgstr ""
+msgstr "Добавить записи"

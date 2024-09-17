@@ -1,13 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>{$wa->appName()}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{$wa->appName()}</title>
 </head>
 
 <body>
-	<h1>{$wa->appName()}</h1>
-	<p>{$message|escape}</p>	
+<h1>{$wa->appName()}</h1>
+
+<!-- plugin hook: 'frontend_view.before_message' -->
+{* @event frontend_view.%plugin_id%.before_message *}
+{foreach $backend_menu as $_}{$_.aux_li|default:''}{/foreach}
+
+<p>{$message|escape}</p>
 </body>
 
 </html>
