@@ -1,11 +1,11 @@
 <?php
 return array(
-    'name'            => 'Банк Тинькофф',
-    'description'     => 'Оплата картами VISA, MasterCard и Maestro через интернет-эквайринг банка Тинькофф',
-    'icon'            => 'img/tinkoff16.png',
-    'logo'            => 'img/tinkoff.png',
+    'name'            => 'Т-Касса',
+    'description'     => 'Интернет-эквайринг от «Т-Банка»: банковские карты, СБП, SberPay, T-Pay, MirPay',
+    'icon'            => 'img/tinkoff.svg',
+    'logo'            => 'img/tinkoff.png?v2',
     'vendor'          => 'webasyst',
-    'version'         => '1.0.22',
+    'version'         => '1.1.0',
     'type'            => waPayment::TYPE_ONLINE,
     'partial_refund'  => true,
     'partial_capture' => true,

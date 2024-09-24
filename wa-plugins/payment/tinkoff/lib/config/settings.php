@@ -10,6 +10,12 @@ return array(
         'value'        => '',
         'title'        => /*_wp*/('Пароль'),
         'control_type' => waHtmlControl::PASSWORD,
+        'description'  => <<<HTML
+<span class="js-tkassa-registration-link" style="background-color: #fea; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
+Подключайтесь к Т-Кассе <a href="https://www.tbank.ru/kassa/form/partner/webasyst" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a> и получите данные для заполнения Terminal ID и пароля.
+</span>
+HTML
+        ,
     ),
     'currency_id' => array(
         'value'        => '',
@@ -23,7 +29,7 @@ return array(
     'two_steps' => array(
         'value'        => false,
         'title'        => 'Схема подключения',
-        'description'  => /*_wp*/('Вариант обработки платежей, выбранный при заключении договора с банком Тинькофф.<br>Двухстадийную схему подключения можно использовать только с поддерживаемым приложением, например, Shop-Script версии не ниже 8.6.'),
+        'description'  => /*_wp*/('Вариант обработки платежей, выбранный при заключении договора с Т-Кассой.<br>Двухстадийную схему подключения можно использовать только с поддерживаемым приложением, например, Shop-Script версии не ниже 8.6.'),
         'control_type' => waHtmlControl::RADIOGROUP,
         'options'      => array(
             '0' => 'Одностадийная',
