@@ -271,7 +271,7 @@ class flatrateShipping extends waShipping
 
         $string = preg_replace('@\\s+@', '', $string);
 
-        foreach (preg_split('@\+|(\-)@', $string, null, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY) as $chunk) {
+        foreach (preg_split('@\+|(\-)@', $string, -1, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY) as $chunk) {
             $value = str_replace(',', '.', trim($chunk[0]));
             if (strpos($value, '%')) {
                 $value = round($this->getTotalPrice() * floatval($value) / 100.0, 2);
