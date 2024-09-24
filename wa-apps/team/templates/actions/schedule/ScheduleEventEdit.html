@@ -127,7 +127,7 @@
                                     {foreach $available_calendars as $_c}
                                         <li class="t-menu-item{if $_selected_calendar.id == $_c.id} selected{/if}"
                                             data-calendar-id="{$_c.id}"
-                                            data-default-status="{$_c.default_status|default:''}">
+                                            data-default-status="{$_c.default_status|escape|default:''}">
                                             <a href="javascript:void(0);">
                                                 <i class="{if !empty($_c.icon)}{$_c.icon|escape}{else}fas fa-calendar-alt{/if}" style="color: {if $_c.status_bg_color}{$_c.status_bg_color}{else}{$_c.bg_color}{/if};"></i>
                                                 <span>{$_c.name|escape}</span>
@@ -308,7 +308,7 @@
                 event_id: "{$event.id}",
                 user_id: "{$_selected_user.id}",
                 calendar_id: "{$_selected_calendar.id}",
-                summary: {if !empty($event.summary)}{$event.summary|escape|json_encode}{else}false{/if},
+                summary: {if !empty($event.summary)}{$event.summary|json_encode}{else}false{/if},
                 summary_type: {if !empty($event.summary_type)}{$event.summary_type|escape|json_encode}{else}false{/if},
                 is_status: true,
                 locales: {

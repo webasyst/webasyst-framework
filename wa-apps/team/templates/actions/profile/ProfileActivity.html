@@ -13,7 +13,7 @@
         {/if}
         {$_max_id = null}
 
-        <ul class="t-activity">
+        <ul class="t-activity unstyled">
             {foreach $activity as $_activity_item}
                 {if $_activity_item@last}
                     {$_max_id = $_activity_item.id}
@@ -68,6 +68,10 @@
 
         <script>
             ( function($) {
+                if (!$.team) {
+                    return;
+                }
+
                 $.team.app_url = {$wa_app_url|json_encode};
 
                 var $wrapper = $("#t-activity-wrapper");

@@ -22,6 +22,7 @@ var Profile = ( function($) {
         that.wa_url = options.wa_url || '';
         that.wa_version = options.wa_version || '';
         that.webasyst_id_auth_url = options.webasyst_id_auth_url || '';
+        that.is_system_profile = options.is_system_profile || false;
 
         // DYNAMIC VARS
         that.is_locked = false;
@@ -130,12 +131,14 @@ var Profile = ( function($) {
             ui: '2.0'
         });
 
-        $(document).on('wa_before_load', () => {
-            that.sidebar_drawer = null;
-            that.showSidebarDrawer(true);
-        });
+        if (!that.is_system_profile) {
+            $(document).on('wa_before_load', () => {
+                that.sidebar_drawer = null;
+                that.showSidebarDrawer(true);
+            });
 
-        that.showSidebarDrawer(true);
+            that.showSidebarDrawer(true);
+        }
     };
 
     Profile.prototype.bindEvents = function() {
@@ -210,16 +213,26 @@ var Profile = ( function($) {
             that.accessDialog = $.waDialog({
                 html,
                 onOpen($dialog, dialog) {
-                    dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
-
-                    $.post(href, options, function (content) {
-                        dialog.$content.empty().html(content);
+                    if (that.is_system_profile) {
+                        dialog.$content.append($('#profile-access-wrapper'));
+                        dialog.resize();
                         that.$wrapper.trigger('dialog_opened', dialog);
-                    });
+                    }else{
+                        dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
+
+                        $.post(href, options, function (content) {
+                            dialog.$content.empty().html(content);
+                            that.$wrapper.trigger('dialog_opened', dialog);
+                        });
+                    }
                 },
                 onClose(dialog) {
                     dialog.hide();
-                    $.team.content.reload();
+                    if (that.is_system_profile) {
+                        location.reload();
+                    }else{
+                        $.team.content.reload();
+                    }
                     return false;
                 }
             });
@@ -481,6 +494,7 @@ var Profile = ( function($) {
     };
 
     Profile.prototype.showSidebarDrawer = function (is_init = false) {
+
         const that = this;
         if (!that.sidebar_drawer) {
             that.sidebar_drawer = $.waDrawer({
