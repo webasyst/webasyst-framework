@@ -26,6 +26,7 @@ class installerUpdateCli extends waCliController
             $this->unsafeExecute();
         } catch (Throwable $e) {
             fwrite($this->stderr, "ERROR\n".((string)$e));
+            exit(1);
         }
     }
 
@@ -85,6 +86,7 @@ PENDING 1
 UPDATED 1
 PENDING 0
 ");
+        exit(1);
     }
 
     protected function setupInstallationDomain()
