@@ -333,6 +333,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 'app_id'      => $this->app_id,
                 'merchant_id' => $this->merchant_id,
                 'order_id'    => $order->id,
+                'cms_name'    => 'webasyst',
             ),
         );
 
@@ -1562,7 +1563,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             ),
             'tinkoff_bank'   => array(
                 'value'     => 'tinkoff_bank',
-                'title'     => 'Тинькофф Банк',
+                'title'     => 'Т-Касса',
                 'ttl'       => '1 час',
                 'hold'      => '6 часов',
                 'code'      => 'TB',

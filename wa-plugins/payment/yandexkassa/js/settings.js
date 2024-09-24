@@ -113,6 +113,14 @@
 
             this.payment_type.unbind('change').bind('change', function (event) {
                 self.changePaymentMode(event, this);
+
+                const $select = $(this);
+                if ($select.val() === 'installments') {
+                    const warning_for_installments = '<div class="js-warning-for-installments errormsg" style="margin-top:4px;">Этот способ оплаты недоступен с 02.07.2024.</div>';
+                    $(warning_for_installments).insertBefore($select.siblings('.hint'));
+                } else {
+                    $('.js-warning-for-installments').remove();
+                }
             }).trigger('change');
         }
     };
