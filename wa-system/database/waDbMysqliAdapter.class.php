@@ -190,7 +190,11 @@ class waDbMysqliAdapter extends waDbAdapter
      */
     public function schema($table, $keys = false)
     {
-        $res = $this->query("SHOW FULL COLUMNS FROM " . $table);
+        try {
+            $res = $this->query("SHOW FULL COLUMNS FROM " . $table);
+        } catch (waDbException) {
+            $res = $this->query("DESCRIBE " . $table);
+        }
         if (!$res) {
             $this->exception();
         }
