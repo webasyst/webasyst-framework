@@ -190,7 +190,7 @@ class waDbMysqliAdapter extends waDbAdapter
      */
     public function schema($table, $keys = false)
     {
-        $res = $this->query("DESCRIBE ".$table);
+        $res = $this->query("SHOW FULL COLUMNS " . $table);
         if (!$res) {
             $this->exception();
         }
@@ -213,6 +213,10 @@ class waDbMysqliAdapter extends waDbAdapter
 
             if ($row['Default'] !== null) {
                 $field['default'] = $row['Default'];
+            }
+
+            if (!empty($row['Comment'])) {
+                $field['comment'] = $row['Comment'];
             }
 
             if ($row['Extra'] == 'auto_increment') {
@@ -434,6 +438,9 @@ class waDbMysqliAdapter extends waDbAdapter
                 }
                 if (!empty($field['autoincrement'])) {
                     $type .= ' AUTO_INCREMENT';
+                }
+                if (!empty($field['comment'])) {
+                    $type .= " COMMENT '" . $this->escape($field['comment']) . "'";
                 }
                 $fields[$field_id] = $this->escapeField($field_id)." ".$type;
             }
