@@ -342,7 +342,7 @@ class waInstallerApps
      * @param bool $action
      * @return boolean
      */
-    public static function checkRequirements(&$requirements, $update_config = false, $action = false)
+    public static function checkRequirements(&$requirements, $update_config = false, $action = false):bool
     {
         self::init();
         if (is_null($requirements)) {
