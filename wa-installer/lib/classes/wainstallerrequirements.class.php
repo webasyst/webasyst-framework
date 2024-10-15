@@ -12,10 +12,9 @@
  * @package wa-installer
  */
 
-class waInstallerRequirements
+final class waInstallerRequirements
 {
     private const INTERNAL_REQUIREMENT_KEYS = ['passed', 'note', 'warning', 'update'];
-    private const SUPPORTED_DB_SERVERS = ['mariadb', 'mysql'];
     private const DB_SERVER_NAMES = ['mariadb' => 'MariaDB', 'mysql' => 'MySQL'];
 
     private $root;
@@ -53,15 +52,21 @@ class waInstallerRequirements
      * Run test case
      * @param string|int $case
      * @param array $requirement
+     * @param int $level Deepness level
      * @throws Exception
      */
-    public static function test($case, &$requirement, $level = 0)
+    public static function test($case, &$requirement, int $level = 0)
     {
         $instance = self::getInstance();
 
         ['case' => $case, 'subject' => $subject] = $instance->extractCaseAndSubject($case, $requirement, $level);
 
-        $method = 'test' . ucfirst($case);
+        $camel_case = preg_split('/[-_]/', $case);
+        if($camel_case) {
+            $method = 'test' . implode('', array_map('ucfirst', $camel_case));
+        } else {
+            $method = 'test' . ucfirst($case);
+        }
 
         if (!method_exists($instance, $method)) {
             $method = 'testDefault';
@@ -71,9 +76,41 @@ class waInstallerRequirements
         return $instance->$method($subject, $requirement);
     }
 
-    private function testOneOf($subject, &$requirement): bool
+    /**
+     *
+     * @param string $subject
+     * @param array $requirement
+     * @return bool
+     * @throws Exception
+     */
+    private function testOneOf(string  $subject, array &$requirement): bool
     {
-        return false;
+        $internal_fields = [
+            'passed'  => $requirement['passed'],
+            'note'    => $requirement['note'],
+            'warning' => $requirement['warning'],
+            'update'  => $requirement['update']
+        ];
+
+        $result = false;
+
+        foreach ($requirement as $key => &$item) {
+            if (in_array($key, self::INTERNAL_REQUIREMENT_KEYS, true)) {
+                continue;
+            }
+            $item = array_merge($item, $internal_fields);
+            $result = self::test($key, $item, 1);
+            $requirement['passed'] = $result;
+            $requirement['note'] = $item['note'];
+            $requirement['warning'] = $item['warning'];
+            $requirement['update'] = $item['update'];
+            if ($item['passed']) {
+                break;
+            }
+        }
+        unset($item);
+
+        return $result;
     }
 
     /**
