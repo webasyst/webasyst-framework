@@ -5,6 +5,9 @@
 .icon16.ss.processing {
   background-position: -16px -32px;
 }
+.chips.s-chips-small li a {
+  font-size: 93.75%;
+}
 .s-installed-themes-section {
   margin-top: 20px;
 }
@@ -41,42 +44,42 @@
 }
 .s-installed-themes-section .s-themes-list {
   margin: 13px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  container-type: inline-size;
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper {
   display: inline-block;
   vertical-align: top;
-  margin: 0 20px 20px 0;
+  margin: 0 0 0.5rem;
+  flex: 0 0 clamp(160px, 15cqw, 243px);
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper .s-image-wrapper {
   display: inline-block;
   margin-bottom: 10px;
   background: #fff;
+  border-radius: 0.5rem;
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper .s-image-wrapper img {
   display: inline-block;
   vertical-align: top;
-  width: 300px;
-  height: 330px;
-  border-radius: 5px;
-  -webkit-box-shadow: 0 15px 35px -10px rgba(40,40,80,0.13), 0 5px 10px 0 rgba(0,0,0,0.07);
+  width: 200px;
+  height: 220px;
+  border-radius: 0.5rem;
   box-shadow: 0 15px 35px -10px rgba(40,40,80,0.13), 0 5px 10px 0 rgba(0,0,0,0.07);
-  -webkit-transition: 0.2s box-shadow;
-  -moz-transition: 0.2s box-shadow;
-  -o-transition: 0.2s box-shadow;
-  -ms-transition: 0.2s box-shadow;
   transition: 0.2s box-shadow;
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper .s-image-wrapper img:hover {
-  -webkit-box-shadow: 0 18px 35px -10px rgba(40,40,80,0.33), 0 5px 10px 0 rgba(0,0,0,0.013);
   box-shadow: 0 18px 35px -10px rgba(40,40,80,0.33), 0 5px 10px 0 rgba(0,0,0,0.013);
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper .s-name-wrapper {
-  font-size: 17px;
-  line-height: 20px;
-  font-family: 'StemText-Bold', sans-serif;
+  font-size: 1rem;
+  line-height: 1.25rem;
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper .s-name-wrapper .s-name {
   color: inherit;
+  font-weight: bold;
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper .s-statuses {
   margin-top: 2px;
@@ -84,8 +87,8 @@
   line-height: 17px;
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper .s-statuses .s-status.green {
-  color: #008000;
+  color: var(--green);
 }
 .s-installed-themes-section .s-themes-list .s-theme-wrapper .s-statuses .s-status.gray {
-  color: #777;
+  color: var(--gray);
 }

@@ -416,7 +416,7 @@ var WAThemeSettings = ( function($) {
 
     WAThemeSettings.prototype.initThemeStartUsingDialog = function() {
         let that = this,
-            $link = that.$wrapper.find('.js-theme-start-using'),
+            $link = $('.js-theme-sidebar').find('.js-theme-start-using'),
             $wrapper = that.$wrapper.find('#wa-theme-start-using-dialog'),
             href = "?module=design&action=themeUse";
 

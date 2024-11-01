@@ -140,7 +140,7 @@
 </style>
 
 {if $sidebar}
-    <div class="sidebar width-21rem bordered-right bordered-left blank">
+    <div class="sidebar width-21rem bordered-right bordered-left blank" style="{if $wa->isMobile()}position: relative; width:100%; height: auto !important; min-height: auto; top: 0;{/if}">
         {foreach $routes as $r => $route}
             {if (count($routes) > 1) && !$r && is_array($route.pages) && $route.pages}
                 {$unsettled_pages_count = count($route.pages)}

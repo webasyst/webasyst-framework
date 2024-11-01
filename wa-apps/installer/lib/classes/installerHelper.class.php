@@ -431,6 +431,9 @@ class installerHelper
             $license['status'] = !empty($product['license']);
             if (isset($product['license_expire'])) {
                 $license['expire_date'] = $product['license_expire'];
+                if ($license['expire_date'] < date('Y-m-d')) {
+                    $license['status'] = false;
+                }
             }
             if (isset($product['options'])) {
                 $license['options'] = $product['options'];

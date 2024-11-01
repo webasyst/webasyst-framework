@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-09-08 23:01+0300\n"
+"PO-Revision-Date: 2024-10-25 01:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.3.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -5693,10 +5693,10 @@ msgid "Copy a <strong>Server key</strong> and a <strong>Sender ID</strong> under
 msgstr "Скопируйте <strong>Ключ сервера</strong> и <strong>Идентификатор отправителя</strong> на вкладке «Cloud Messaging» в <a href=\"https://console.firebase.google.com/project/\" target=\"_blank\">настройках проекта<i class=\"icon16 new-window\"></i></a>."
 
 msgid "Installed themes"
-msgstr "Установленные"
+msgstr "Установленные темы дизайна"
 
 msgid "No installed themes."
-msgstr "Установленных тем нет."
+msgstr "Не установлено ни одной темы дизайна."
 
 msgid "Account ID"
 msgstr ""
@@ -5720,7 +5720,7 @@ msgid "Trial theme"
 msgstr "Пробная тема дизайна"
 
 msgid "Preview on my website"
-msgstr "Открыть предпросмотр"
+msgstr "Открыть предпросмотр на сайте"
 
 msgid "Your website will display this trial theme for you only."
 msgstr "Сайт откроется в пробной теме только для вас."
@@ -7188,3 +7188,27 @@ msgstr "Отсутствует обязательный параметр: «%s»
 
 msgid "Invalid subscriber data"
 msgstr "Неверные данные подписчика"
+
+msgid "Upload custom theme"
+msgstr "Загрузить свою тему"
+
+msgid "In use"
+msgstr "Используется"
+
+msgid "Not in use"
+msgstr "Не используется"
+
+msgid "Start using this theme"
+msgstr "Начать использовать тему"
+
+msgid "Actions with the theme"
+msgstr "Действия с темой дизайна"
+
+msgid "Theme status — trial"
+msgstr "Статус темы дизайна — пробный"
+
+msgid "Trial themes are for preview purposes only. Buy this theme to start using it for production."
+msgstr "Пробные темы дизайна доступны только для предпросмотра. Купите тему, чтобы начать использовать ее на рабочей версии сайта для всех пользователей."
+
+msgid "View your site"
+msgstr "Смотреть на сайте"

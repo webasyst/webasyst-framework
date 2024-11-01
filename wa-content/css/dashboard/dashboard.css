@@ -1666,7 +1666,7 @@
 }
 .widgets-list-wrapper-close {
   position: sticky;
-  z-index: 1;
+  z-index: -1;
   top: 1.5rem;
   margin-left: calc(100% - 4rem);
   width: 2.5rem;
@@ -1681,6 +1681,7 @@
   font-size: 1.5rem;
   box-shadow: 0 1px 0.25rem rgba(0,0,0,0.13);
   color: var(--text-color-hint) !important;
+  transition: opacity 300ms 1500ms linear;
 }
 .widgets-list-wrapper {
   position: absolute;
@@ -1801,6 +1802,7 @@
 .is-custom-edit-mode .widgets-list-wrapper-close {
   transform: translateX(0);
   opacity: 1;
+  z-index: 1;
 }
 .is-custom-edit-mode .widgets-list-wrapper {
   transform: translateX(0);

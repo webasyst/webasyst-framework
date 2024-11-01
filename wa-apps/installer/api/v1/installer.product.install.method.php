@@ -39,7 +39,7 @@ class installerProductInstallMethod extends waAPIMethod
                     break;
                 case 'license_required':
                     $status_code = 402;
-                    $error_description = 'License required to install this product';
+                    $error_description = _w('A license is required to install this product.');
                     break;
                 case 'check_installed_fail':
                 case 'product_not_found':

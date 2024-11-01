@@ -598,7 +598,7 @@ abstract class waContactField
                             $data = htmlspecialchars($data);
                         }
                     } else {
-                        if (!is_array($data)) {
+                        if (!empty($data) && !is_array($data)) {
                             $data = htmlspecialchars($data);
                         } else {
                             $data = '';

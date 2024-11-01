@@ -1,13 +1,49 @@
 {if !empty($app_themes)}
+    <ul class="chips s-chips-small rounded">
+        {foreach $routes as $r}
+            {$r.theme = $r.theme|default:'default'}
+            {$r.theme_mobile = $r.theme_mobile|default:'default'}
+
+            <li>
+                <a href="#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings" title="">
+                    <i class="fas fa-cog text-blue"></i>
+                    {sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}
+                    <span class="count">{$app_themes[$r.theme]->getName()|escape}</span>
+                </a>
+            </li>
+
+            {if $r.theme != $r.theme_mobile}
+                <li>
+                    <a href="#/design/theme={$r.theme_mobile}&domain={$r._domain}&route={$r._id}&action=settings" title="">
+                        <i class="fas fa-cog text-blue"></i>
+                        {sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}
+                        <span class="count">{$app_themes[$r.theme_mobile]->getName()|escape}</span>
+                        <span class="count"><i class="fas fa-mobile-alt"></i></span>
+                    </a>
+                </li>
+            {/if}
+
+        {/foreach}
+    </ul>
+
     <div class="s-installed-themes-section is-extended" id="js-installed-themes-section">
-        <div class="s-section-header">
-            <span class="s-title js-toggle">
+        <div class="s-section-header flexbox wrap middle">
+            <span class="s-title js-toggle wide">
                 <i class="s-icon fas fa-caret-right"></i> [`Installed themes`]
             </span>
+            {if $wa->user()->getRights('installer')}
+                <div class="box custom-mt-0">
+                    <a href="#" class="js-theme-upload-link button rounded light-gray small nowrap">
+                        <i class="fas fa-cloud-upload-alt text-blue custom-mr-4"></i>
+                        <span>[s`Upload custom theme`]</span>
+                    </a>
+                </div>
+            {/if}
         </div>
         <div class="s-hidden">
             <div class="s-themes-list">
                 {foreach $app_themes as $_theme}
+                    {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
                     {$_name = $_theme->getName()}
                     {$_cover_image = $_theme->getCover()}
                     {if empty($_cover_image)}
@@ -18,7 +54,7 @@
                     {$_theme_url = "`$design_url`theme=`$_theme_id`"}
                     {$_is_active = in_array($_theme_id, $used_app_themes)}
 
-                    <div class="s-theme-wrapper" data-id="{$_theme_id|escape}" data-load="?module=design&action=theme&theme={$_theme_id|escape}">
+                    <div class="s-theme-wrapper{if $_theme_is_trial} is-trial{/if}" data-id="{$_theme_id|escape}" data-load="?module=design&action=theme&theme={$_theme_id|escape}">
                         <a class="s-image-wrapper" href="{$_theme_url|escape}" title="{$_name|escape}">
                             <img src="{$_cover_image|escape}" alt="{$_name|escape}">
                         </a>
@@ -29,9 +65,9 @@
                         </div>
                         <div class="s-statuses">
                             {if !empty($_is_active)}
-                                <span class="s-status green"><i class="icon16 ss confirmed"></i>[`Used`]</span>
+                                <span class="s-status green bold"><i class="fas fa-check"></i> [`In use`]</span>
                             {else}
-                                <span class="s-status gray">[`Not used`]</span>
+                                <span class="s-status gray">[`Not in use`]</span>
                             {/if}
                         </div>
                     </div>
@@ -80,10 +116,126 @@
                     localStorage.setItem(storage_name, ( show ? "active" : "inactive") );
                 }
 
+
+                {if $wa->user()->getRights('installer')}
+                function handleError(data, $dialog) {
+                    let error = '';
+                    if (typeof data.errors == 'string') {
+                        error += (error ? '\n' : '') + data.errors;
+                    } else {
+                        for (let error_item in data.errors) {
+                            if(data.errors.hasOwnProperty(error_item)) {
+                                error += (error ? '\n' : '') + data.errors[error_item][0];
+                            }
+                        }
+                    }
+                    if ($dialog.length) {
+                        $dialog.find(".wa-theme-dialog-error").html(error + '<br><br>');
+                    } else if ($(".wa-theme-dialog-error:first:visible").length) {
+                        $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
+                    } else {
+                        alert('Error:' + error);
+                    }
+                    $dialog.find("[type=submit]").removeClass('disabled');
+                }
+
+                $(".js-theme-upload-link").on('click', function (e) {
+                    e.preventDefault();
+
+                    if (!waDesignConfirm()) return false;
+                    const $upload_dialog = $("#wa-theme-upload-dialog");
+
+                    $(".wa-theme-dialog-error").text('');
+
+                    $upload_dialog.find("div.loading").hide();
+                    let $wrapper = $upload_dialog.clone();
+                    $.waDialog({
+                        $wrapper,
+                        onOpen($dialog, dialog) {
+                            let $form = $dialog.find('form:first'),
+                                $input_file = $dialog.find("#wa-input-file"),
+                                $submit_btn = $dialog.find('[type="submit"]');
+
+                            $dialog.find(".upload-area").waUpload({
+                                is_uploadbox: true
+                            });
+
+                            $form.on('submit', function (e) {
+                                e.preventDefault();
+                                $submit_btn.addClass('disabled')
+                                $dialog.find("div.loading").show();
+                                const formData = new FormData(this);
+
+                                postData($(this).attr('action'), formData)
+                                    .then(
+                                        (res) => {
+                                            try {
+                                                let response = $.parseJSON(res);
+                                                if (response.status === 'fail') {
+                                                    $dialog.find("div.loading").hide();
+                                                    $input_file.val('');
+                                                    handleError(response, $dialog);
+                                                } else if (response.status === 'ok') {
+                                                    dialog.close();
+                                                    location.reload();
+                                                }
+                                            }catch (e){
+                                                let response = {
+                                                    'errors': []
+                                                };
+                                                let message = $(res).find('h1:first, h2:first');
+                                                if (message.length) {
+                                                    response.errors.push([message.text()]);
+                                                } else {
+                                                    response.errors.push(['JavaScript error: ' + e.message]);
+                                                }
+                                                $dialog.find("div.loading").hide();
+                                                $input_file.val('');
+                                                handleError(response, $dialog);
+                                            }
+
+                                        },
+                                        (error) => {
+                                            console.error(error)
+                                        }
+                                    );
+                            })
+                        }
+                    });
+                });
+                {/if}
             })(jQuery);
         </script>
     </div>
-
+{if $wa->user()->getRights('installer')}
+    <div class="dialog" id="wa-theme-upload-dialog">
+        <div class="dialog-background"> </div>
+        <form class="dialog-body" id="wa-theme-upload-form" method="post" action="?module=design&amp;action=themeUpload" enctype="multipart/form-data">
+            <h3 class="dialog-header">[s`Upload theme`]</h3>
+            <div class="dialog-content">
+                <span class="wa-theme-dialog-error bold" style="color: red;"></span>
+                <p class="small custom-mt-0">[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
+                <div class="upload-area">
+                    <div class="upload">
+                        <label class="link">
+                            <i class="fas fa-file-upload"></i>
+                            <span>[s`Select file`]</span>
+                            <input id="wa-input-file" type="file" name="theme_files[]" autocomplete="off">
+                        </label>
+                    </div>
+                </div>
+                {$wa->csrf()}
+                <div class="loading" style="display:none; margin-top: 10px">
+                    <i class="fas fa-spinner fa-spin"></i> [s`Uploading...`]
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <input type="submit" class="button green" value="[s`Upload`]">
+                <a href="{$themes_url}" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+            </div>
+        </form>
+    </div>
+{/if}
 {elseif isset($app_themes)}
     <div class="s-installed-themes-section">
         <div class="s-empty-message">[`No installed themes.`]</div>

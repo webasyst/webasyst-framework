@@ -4,6 +4,7 @@
     <div class="dialog-body">
         <div class="dialog-content">
             <div class="width-80 custom-mt-48 custom-mx-auto align-center">
+                <i class="fas fa-check-circle text-green js-update-success" style="display:none;font-size:5rem;"></i>
                 <h4>{strip}
                     {_w('Installing the application','Installing applications', count($queue_apps) - $count_installer_dependencies - 1)}
                     &nbsp;
@@ -23,7 +24,11 @@
                     {join(', ', $product_names)|escape}
                 {/strip}</h4>
             </div>
-            <div class="width-70 custom-mt-24 custom-mb-48 custom-mx-auto align-center">
+            <div class="width-80 custom-mt-24 custom-mb-48 custom-mx-auto align-center">
+                <div class="flexbox middle space-8 full-width wrap js-update-success" style="display: none;">
+                    <a href="javascript:void(0)" class="button green">[`Go to settings`]</a>
+                    <a href="javascript:void(0)" class="button light-gray">[`Continue shopping`]</a>
+                </div>
                 <div class="progressbar" id="installation-progressbar"></div>
             </div>
         </div>

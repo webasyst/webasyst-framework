@@ -13,22 +13,29 @@
 {if $options.js.editor}<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>{/if}
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design.css?{$wa->version()}">
 
-<div class="sidebar flexbox bordered-right bordered-left width-21rem{if $wa->isMobile()} height-auto{/if}"{if $wa->isMobile()} style="position: relative; width:100%; min-height: auto; top: 0"{/if}>
+<div class="sidebar flexbox bordered-right bordered-left width-21rem{if $wa->isMobile()} height-auto{/if} js-theme-sidebar" style="{if $wa->isMobile()}position: relative; width:100%; min-height: auto; top: 0;{/if}display:none;">
     <div class="sidebar-header box custom-pb-0">
-        <div class="blank box rounded dropdown custom-mt-4 flexbox middle js-theme-select-menu wa-theme-select-menu" >
-            <img src="{$wa_url}{$app.icon.48}" width="48" class="custom-mr-12">
-            <a href="#" class="dropdown-toggle wide" id="wa-theme-active">
-                <span class="js-url bold">
-                    {if $route}
-                        {$_route_label = $route._domain|cat:'/':$route.url}
-                    {else}
-                        {$_route_label = $theme.name}
-                    {/if}
-                    {str_replace('www.','',$_route_label)|truncate:23:'...':false:true}
+
+        <div class="custom-mt-12 align-center">
+            <h3 class="custom-mb-12">
+                <a href="#/design/themes/" title="[s`Back`]" class="back">
+                    <i class="fas fa-arrow-circle-left"></i>
+                </a>
+                <span data-href="#" class="disabled" id="wa-theme-active">
+                    <span class="js-url bold">
+                        {$theme.name|escape}
+                    </span>
                 </span>
-                <div class="hint bold js-hint nowrap">{if $route}{$theme.name}{/if}</div>
-            </a>
-            <div class="dropdown-body js-design-actions">
+            </h3>
+            {if $theme.preview_url}
+                <a data-url="{$theme.preview_url|regex_replace:'/http:|https:/':''|escape}" href="{$theme.preview_url|regex_replace:'/http:|https:/':''|escape}" rel="noopener" target="_blank" class="wa-theme-preview button rounded small" title="{if $theme.is_used}[s`View your site`]{else}[s`Preview`]{/if}">
+                    <span class="semibold">
+                        {if $theme.is_used}[s`View your site`]{else}[s`Preview`]{/if}
+                    </span>
+                    <i class="fas fa-external-link-alt fa-xs opacity-50"></i>
+                </a>
+            {/if}
+            <div class="hidden js-design-actions">
                 <ul id="wa-theme-list" class="menu js-theme-list">
                     {foreach $themes_routes as $r}
                         {if is_array($r)}
@@ -42,11 +49,10 @@
                             <li class="no-icon 2{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}"
                                 {if !empty($r._routing_url)} data-routing="{$r._routing_url}"{/if}
                                 data-id="{$_theme.id|escape}">
-                                <a{if $r@iteration === 1} class="js-is-first"{/if} href="{$_url}" title="{$_title}" data-preview-label="[s`Site`]" data-url="{$r._preview_url|escape}">
+                                <a{if $r@iteration === 1} class="js-is-first"{/if} href="{$_url}" title="{$_title}" data-preview-label="[s`View your site`]" data-url="{$r._preview_url|escape}">
                                 <span class="bold js-url">
-                                    {$_title|truncate:45:'...':false:true}
+                                    {$_theme.name|escape}
                                 </span>
-                                <span class="count js-hint">{$_theme.name|escape}</span>
                                 </a>
                             </li>
 
@@ -60,13 +66,12 @@
 
                                 <li class="no-icon 3{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}" {if !empty($r._routing_url)}data-routing="{$r._routing_url}"{/if} data-id="{$_theme.id|escape}">
                                     <a href="{$_url}" title="{$_title}" data-preview-label="[s`Preview`]"{if !empty($_theme.preview_url)} data-url="{$_theme.preview_url|escape}"{/if}>
-                                        <span class="count">
-                                            <i class="fas fa-mobile-alt"></i>
-                                        </span>
                                         <span class="bold js-url">
-                                            {$_title|truncate:45:'...':false:true}
+                                            <span class="count">
+                                                <i class="fas fa-mobile-alt"></i>
+                                            </span>
+                                            {$_theme.name|escape}
                                         </span>
-                                        <span class="count js-hint">{$_theme.name|escape}</span>
                                     </a>
                                 </li>
                             {/if}
@@ -83,24 +88,10 @@
                         {/if}
                     {/foreach}
                 </ul>
-                {if $wa->user()->getRights('installer')}
-                    <div class="box custom-mt-0" data-is-nav>
-                        <a class="wa-themes-link button webasyst-magic-wand full-width" href="{$themes_url}">
-                            <i class="icon"></i>
-                            <span>[s`Browse all themes`]</span>
-                        </a>
-                    </div>
-                    <div class="box custom-mt-0">
-                        <a href="#" class="js-theme-upload-link button nobutton smaller nowrap">
-                            <span>[s`Upload theme archive`]</span>
-                            <span class="hint">(.tar.gz)</span>
-                        </a>
-                    </div>
-                {/if}
             </div>
         </div>
 
-        <ul class="tabs custom-p-0 custom-mt-4 js-tabs-menu js-design-actions">
+        <ul class="tabs custom-p-0 custom-mt-8 js-tabs-menu js-design-actions" style="justify-content: center;">
             <li data-action="theme" class="info selected custom-pb-0" data-is-nav>
                 <a class="wa-themes-link semibold" href="{$design_url}theme={$theme.id}&action=theme">
                     <i class="fas fa-tasks"></i>
@@ -114,13 +105,6 @@
                     [s`Templates`]
                 </a>
             </li>
-            {if $theme.preview_url}
-                <li class="custom-pb-0 custom-ml-auto notab">
-                    <a data-url="{$theme.preview_url|escape}" data-id="{$theme.id|escape}" href="{$theme.preview_url|escape}" rel="noopener" target="_blank" class="wa-theme-preview gray" title="{if $theme.is_used}[s`Site`]{else}[s`Preview`]{/if}">
-                        <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </li>
-            {/if}
         </ul>
     </div>
     <div class="sidebar-body blank">
@@ -130,13 +114,10 @@
                 {skeleton_sidebar}
             </section>
 
-            <div class="js-design-actions box align-center">
-                <div data-action="settings" class="settings" data-is-nav>
-                    <a href="{$design_url}action=settings" class="button light-gray rounded small">
-                        <i class="fas fa-cog text-blue custom-mr-4"></i>
-                        <span>{if $_route_label}{sprintf('[s`Configure %s`]', "<span class=\"js-route-label\">`$_route_label`</span>")}{else}[s`Route settings`]{/if}</span>
-                    </a>
-                </div>
+            <div class="box align-center">
+                <a href="javascript:void(0)" class="button light-gray rounded small js-theme-info-link">
+                    <span>[s`About this theme`]</span>
+                </a>
             </div>
 
             {* Installer review widget *}
@@ -175,14 +156,24 @@
     </div>
 </div>
 {function skeleton}
-    <div class="not-blank skeleton article">
-        <div class="article-body">
-            {for $i=1 to 5}
-                <span class="skeleton-header"></span>
-                <span class="skeleton-line"></span>
-                <span class="skeleton-line"></span>
-                <span class="skeleton-line"></span>
-            {/for}
+    <div class="not-blank skeleton article wider">
+        <div class="article-body" style="width: 100%;">
+            <span class="skeleton-header"></span>
+            <span class="skeleton-line"></span>
+            <span class="skeleton-line"></span>
+            <span class="skeleton-line"></span>
+
+            <div class="flexbox wrap custom-mt-32 full-width" style="container-type: inline-size;gap:1rem;">
+                {for $i=1 to 10}
+                <div>
+                    <span class="skeleton-custom-box" style="width: calc(20cqw - 1rem); height: calc(20cqw - 1rem)"></span>
+                    <span class="skeleton-line"></span>
+                </div>
+                {/for}
+            </div>
+
+            <span class="skeleton-header"></span>
+            <span class="skeleton-line"></span>
         </div>
     </div>
 {/function}
@@ -202,7 +193,7 @@
                 <p>[s`The design theme preview will not work on your domain name <strong id="wa-preview-domain"></strong> if it is not available via HTTPS protocol. If so then please either install an SSL certificate for your domain name or log into your Webasyst backend on that domain to preview a design theme.`]</p>
             {/if}
             {if $theme.preview_url}
-                <a href="{$theme.preview_url|escape}" target="_blank" class="button green">
+                <a href="{$theme.preview_url|escape}" target="_blank" class="button green outlined js-preview-link">
                     <span>[s`Preview on my website`]</span><i class="fas fa-external-link-alt smaller custom-ml-4 opacity-50"></i>
                 </a>
             {/if}
@@ -219,7 +210,7 @@
             <h3 class="dialog-header">[s`Upload theme`]</h3>
             <div class="dialog-content">
                 <span class="wa-theme-dialog-error bold" style="color: red;"></span>
-                <p>[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
+                <p class="small custom-mt-0">[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
                 <div class="upload-area">
                     <div class="upload">
                         <label class="link">
@@ -250,10 +241,9 @@
         $design_container = $('.js-design-container'),
         $theme_list = $('.js-theme-list'),
         $theme_settings_section = $('.js-theme-settings-section'),
-        $theme_preview_link = $('.js-tabs-menu .wa-theme-preview'),
-        $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
-
-    var current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
+        $theme_preview_link = $('.js-theme-sidebar .wa-theme-preview'),
+        $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]'),
+        wa_set_theme_onload = sessionStorage.getItem('wa_set_theme_onload');
 
     var $bottombar = $('.bottombar');
 
@@ -275,19 +265,16 @@
         return true;
     }
     $(window).on('beforeunload', function () {
-    const $design_button = $("#wa-design-button");
-    if ($design_button.length && $design_button.hasClass('yellow')) {
-        return "[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]";
-    }
-});
-
-    /* Make Dropdown for Theme select menu */
-    var $theme_select_menu = $('.js-theme-select-menu').waDropdown();
+        const $design_button = $("#wa-design-button");
+        if ($design_button.length && $design_button.hasClass('yellow')) {
+            return "[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]";
+        }
+    });
 
     /* Switch between Appearance, Templates, Settings and Themes displays */
-    $design_actions.on('click', function (e) {
+    $design_actions.on('click', function (e, force_click) {
 
-        if(this.classList.contains('selected')) {
+        if(this.classList.contains('selected') && !force_click) {
             return;
         }
 
@@ -295,20 +282,8 @@
             tab_action = $tab.data('action'),
             $tab_content = $(`.js-tab-content[data-id="${ tab_action }"]`);
 
-        $tab.addClass('selected');
+        $tab.addClass('selected').siblings().removeClass('selected');
         $tab_content.addClass('selected').siblings().removeClass('selected');
-
-        if(!tab_action){
-            $theme_select_menu.removeClass('is-opened');
-        }
-
-        if (tab_action === 'settings') {
-            let $theme_settings_list = $('.js-theme-settings-list');
-
-            if ($theme_settings_list.length) {
-                $theme_settings_list.find('li').removeClass('selected');
-            }
-        }
 
         {if !$options.is_ajax}
             if ($(this).is('li')){
@@ -368,13 +343,18 @@
         }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (wa_set_theme_onload) {
+            sessionStorage.removeItem('wa_set_theme_onload');
+        }
     })
 
-    if (current_menu_id) {
-        $(document).on('wa_design_loaded', function () {
-        	$theme_settings_section.find('a[data-divider-id='+current_menu_id+']').trigger('click');
-        })
-    }
+    $(document).on('wa_design_loaded', function () {
+        const current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
+        if (current_menu_id) {
+            $theme_settings_section.find('a[data-divider-id=' + current_menu_id + ']').trigger('click');
+        }
+    })
 
     /**
      * TODO Remove when Site app will be ready for WA2
@@ -434,8 +414,6 @@
         let $self = $(this),
             href = $self.attr('href');
 
-        $theme_select_menu.removeClass('is-opened');
-
         $design_container.html(skeleton_template);
         if (!set_active_only) {
             $theme_settings_section.html(skeleton_sidebar);
@@ -448,20 +426,14 @@
 
         if (params['theme']) {
             const $theme_active = $("#wa-theme-active"),
-                $theme_active_url = $theme_active.find('.js-url'),
-                $theme_active_hint = $theme_active.find('.js-hint');
+                $theme_active_url = $theme_active.find('.js-url');
 
-            $theme_active_url.html($self.find('.js-url').clone().children().remove().end().text());
-            if ($self.find('.js-hint').length) {
-                $theme_active_hint.html($self.find('.js-hint').html());
-            } else {
-                $theme_active_hint.empty();
-            }
+            $theme_active_url.html($self.find('.js-url').clone().children().remove().end().html());
 
             let $menu_link = $('#wa-theme-active')
-            let menu_link_href = $theme_active.attr('href');
+            let menu_link_href = $theme_active.data('href');
             if (menu_link_href.indexOf('theme=') !== -1) {
-                $menu_link.attr('href', menu_link_href.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                $menu_link.data('href', menu_link_href.replace(/theme=[^&]+/, 'theme=' + params['theme']));
             }
 
 
@@ -477,9 +449,12 @@
                 }
             });
 
+            // Reload sidebar content
+            $design_actions.filter('[data-action="theme"]').trigger('click', true);
+
             // Setup preview link
             let preview_href = ($self.data('url')) ? $self.data('url') : $theme_preview_link.data('url');
-            $theme_preview_link.attr('href', preview_href).data('theme-id', params['theme']);
+            $theme_preview_link.attr('href', preview_href).data('theme-id', params['theme']).attr('data-theme-id', params['theme']);
             $theme_preview_link.find('span').text($self.data('preview-label'));
 
             if (set_active_only) {
@@ -520,7 +495,7 @@
     });
 
     /* Theme preview */
-    $('.js-tabs-menu, .js-design-container').on('click', ".wa-theme-preview", function (e) {
+    $('.js-theme-sidebar, .js-design-container').on('click', ".wa-theme-preview", function (e) {
     var $self = $(this),
         theme_id = $self.data('theme-id'),
         url = $self.attr('data-href') || $self.attr('href'),
@@ -559,6 +534,11 @@
             onOpen($dialog, dialog) {
                 const $form = $dialog.find('form');
 
+                const $dialog_preview_link = $form.find('.js-preview-link');
+                if ($dialog_preview_link.length && url) {
+                    $dialog_preview_link.attr('href', url);
+                }
+
                 $form.on('submit', function (e){
                     e.preventDefault();
                     if (url.indexOf('?theme_hash') === -1) {
@@ -578,6 +558,7 @@
 
     var site_routing_full = function () { };
     var wa_design_not_load = false;
+    var $theme_sidebar = $('.js-theme-sidebar');
 
     function waDesignLoad(hash) {
         {if $design_url && is_string($design_url) && $design_url != '#/'}
@@ -590,6 +571,12 @@
         {/if}
         var theme_is_trial = false,
             hash_params = waDesignParams(hash || location.hash);
+
+        if (hash_params.hasOwnProperty('themes') || (hash_params.hasOwnProperty('action') && hash_params['action'] == 'settings')) {
+            $theme_sidebar.hide();
+        }else{
+            $theme_sidebar.show();
+        }
 
         if (hash_params['theme']) {
             let $selected_theme_item = $theme_list.find('[data-id="'+ hash_params['theme'] +'"]');
@@ -630,7 +617,7 @@
 
             if (params['route'] && data_routing) {
                 $settings_design_menu_a.attr('href', $selected_theme_list_a.attr('href') + '&action=settings');
-                $settings_design_menu_a.find('.js-route-label').text($selected_theme_list_a.find('.js-url').text());
+                $settings_design_menu_a.find('.js-route-label').html($selected_theme_list_a.find('.js-url').html());
                 $settings_design_menu_li.show();
             } else {
                 $settings_design_menu_li.hide();
@@ -690,14 +677,19 @@
                         $design_container.load($li.data('routing') + '&reload_on_change=1&ui=2.0', function () {
                             reStyleSettingsPage('settings');
                             $design_container.find(".back").remove(); // deprecated?
+                            const $route_where = $('#s-route-where');
                             $(".s-route-core").hide();
                             $('.s-route-details .fields').
                                 prepend($('<div class="fields-group"></div>').
                                 append($('<div class="field"><div class="name">URL</div></div>').
-                                append($('<div class="value"></div>').html($('#s-route-where').html()))
+                                append($('<div class="value"></div>').html($route_where.html()))
                                 )
                             );
                             $design_container.find(".s-route-delete").closest('div').remove();
+
+                            const h1 = $route_where.text().trim() + $route_where.find('input').val();
+                            const $back_btn = '<a href="#design/themes/" class="back" title="[`Back`]"><span class="icon size-32"><i class="fas fa-arrow-circle-left"></i></span></a>';
+                            $('.s-app-settings').prepend('<h1 class="flexbox middle custom-mb-24 space-8">' + $back_btn + h1 + '</h1>');
                         });
 
                         $theme_settings_section.load("?module=design&action=theme&theme="+hash_params['theme']+"&onlySettings=1");
@@ -769,6 +761,8 @@
         } else {
             $theme_list.find("li:not([data-is-nav]) a:first").click();
         }
+
+
     }
 
     $(document).ready(function () {
@@ -866,6 +860,10 @@
             }
         });
     });
+
+    if (wa_set_theme_onload) {
+        $theme_list.find('[data-id="'+wa_set_theme_onload+'"] a').click();
+    }
 
 </script>
     {if !$wa->isMobile()}</div>{/if}

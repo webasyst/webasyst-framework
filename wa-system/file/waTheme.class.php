@@ -124,6 +124,7 @@ class waTheme implements ArrayAccess
      */
     public function __construct($id, $app_id = true, $force = false, $readonly = false)
     {
+        $id = (string) $id;
         $this->readonly = $readonly;
         if (strpos($id, ':') !== false) {
             list($app_id, $id) = explode(':', $id, 2);

@@ -254,7 +254,7 @@
                                             {$_is_calendar_group = isset($today_group.calendar)}
                                             {foreach $today_group.contacts as $birthday_user}
                                             <div>
-                                                <a href="{$wa_backend_url}contacts/#/contact/{$birthday_user.id}" class="userpic userpic48 outlined" style="z-index:{$user_count - $birthday_user@index}">
+                                                <a href="{$wa_backend_url}team/id/{$birthday_user.id}" class="userpic userpic48 outlined" style="z-index:{$user_count - $birthday_user@index}">
                                                     <img src="{$birthday_user.photo_url_48}" alt="{$birthday_user.formatted_name|escape}">
 
                                                     {if $birthday_user@last && $birthday_user@iteration < 5}
@@ -280,7 +280,7 @@
                                             {$contact_count = count($today_group.contacts)}
                                             {foreach $today_group.contacts as $contact}
                                             <div>
-                                                <a href="{$wa_backend_url}contacts/#/contact/{$contact.id}" class="userpic userpic48 outlined" style="z-index:{$contact_count - $contact@index}">
+                                                <a href="{$wa_backend_url}team/id/{$contact.id}" class="userpic userpic48 outlined" style="z-index:{$contact_count - $contact@index}">
                                                     <img src="{$contact.photo_url_48}" alt="{$contact.formatted_name|escape}">
                                                     {if $contact@last && $contact@iteration < 5}
                                                         <span class="userstatus" style="background-color:{$today_group.bg_color|escape};color:{$today_group.font_color|escape}">

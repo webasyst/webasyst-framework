@@ -153,7 +153,7 @@
                         <div class="image"><br>
                             <img class="transparent-sprite" src="{$_url}{$_setting.value}">
                             <br>
-                            <a class="small delete-image" href="#">[s`Delete`]</a>
+                            <a class="small delete-image text-red" href="#"><i class="fas fa-trash-alt"></i> [s`Delete`]</a>
                         </div>
                     {/if}
                     {if !empty($_setting.description)}
@@ -187,7 +187,6 @@
             {sprintf('[s`%s design theme`]', $theme.name|escape)}
             <span class="hint">
                 {$theme.version}
-                <span style="font-size: smaller;" title="[s`Theme ID`]">({$theme.id|escape})</span>
             </span>
         </h1>
 
@@ -195,7 +194,7 @@
 
             {* Theme actions *}
             <div class="dropdown js-theme-actions-dropdown custom-mb-24 custom-mr-24">
-                <button class="dropdown-toggle button light-1 {if $wa->isMobile()} full-width{/if}" type="button">[s`Actions`]</button>
+                <button class="dropdown-toggle button small outlined light-1 {if $wa->isMobile()} full-width{/if}" type="button">[s`Actions with the theme`]</button>
                 <div class="dropdown-body dd-long dd-wide">
                     <ul class="menu">
                         {if !$_is_trial}
@@ -229,8 +228,7 @@
                             <li class="gray">
                                 <a class="js-theme-parent" href="javascript:void(0);">
                                     <i class="fas fa-link"></i>
-                                    <span>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not selected`]{/if}</strong>.<br>
-                                        <!-- <span class="theme-parent js-theme-parent"><b>{if $theme.parent_theme_id}[s`Change theme`]{else}[s`Select`]{/if}</b></span> -->
+                                    <span>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not selected`]{/if}</strong>
                                         <span class="hint flexbox">[s`You can change the theme in settlement settings.`]</span>
                                     </span>
                                 </a>
@@ -303,7 +301,7 @@
                 <div class="search-setting-wrapper custom-mb-24 custom-mr-8">
                     <div class="state-with-inner-icon left width-100">
                         <span class="icon"><i class="fas fa-search"></i></span>
-                        <input type="search" class="js-search-setting width-100" autocomplete="off" placeholder="[s`Find setting`]" />
+                        <input type="search" class="small js-search-setting width-100" autocomplete="off" placeholder="[s`Find setting`]" />
                     </div>
                 </div>
             {/if}
@@ -312,10 +310,10 @@
             {if !empty($support) || !empty($instruction)}
                 <div class="wa-theme-help custom-mb-24">
                     {if !empty($instruction)}
-                        <a class="button nobutton" href="{$instruction|escape}" rel="noopener" target="_blank">[s`User manual`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+                        <a class="button nobutton small" href="{$instruction|escape}" rel="noopener" target="_blank">[s`User manual`] <i class="fas fa-external-link-alt fa-xs"></i></a>
                     {/if}
                     {if !empty($support)}
-                        <a class="button nobutton" href="{$support|escape}" rel="noopener" target="_blank">[s`User support`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+                        <a class="button nobutton small" href="{$support|escape}" rel="noopener" target="_blank">[s`User support`] <i class="fas fa-external-link-alt fa-xs"></i></a>
                     {/if}
                 </div>
             {/if}
@@ -328,24 +326,21 @@
                 {if $theme.type == waTheme::TRIAL}
 
                     {* Trial theme *}
-                    <div class="wa-theme-trial align-center">
-                        <strong><i class="fas fa-exclamation-circle"></i> {_ws('Trial theme')}</strong>
+                    <div class="box shadowed custom-mb-24 custom-py-24 blank rounded wa-theme-trial align-center">
+
+                        <h4><i class="fas fa-clock text-green"></i> <em>{_ws('Theme status — trial')}</em></h4>
 
                         {if !empty($preview_url)}
-                            <div style="margin: 16px 0 22px 0;">
-                                <a class="wa-theme-preview button smaller blue" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">[s`Preview on my website`]</a>
-                                <p>
-                                    <strong>[s`Your website will display this trial theme for you only.`]</strong>
-                                    [s`Other visitors will keep seeing existing theme with no change.`]
-                                </p>
-                            </div>
+                            <a class="wa-theme-preview button rounded light-gray" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">[s`Preview on my website`] <i class="fas fa-external-link-alt fa-xs opacity-50"></i></a>
                         {/if}
 
                         {if $wa->user()->isAdmin('installer')}
-                            <div style="margin:16px 0 12px 0;">
-                                <a href="{$wa_backend_url}installer/store/theme/{$theme.id|escape}/" class="button green">[s`Buy theme`]</a>
-                            </div>
+                            <a href="{$wa_backend_url}installer/store/theme/{$theme.id|escape}/" class="button green rounded">[s`Buy theme`]</a>
                         {/if}
+
+                        <p class="hint">
+                            [s`Trial themes are for preview purposes only. Buy this theme to start using it for production.`]
+                        </p>
                     </div>
 
                 {elseif $theme.type == waTheme::ORIGINAL}
@@ -373,7 +368,7 @@
                         {if !$theme.parent_theme || $theme.parent_theme.type == waTheme::ORIGINAL || $theme.parent_theme.version == $theme_parent_original_version}
                             {* Modified, but still the latest version *}
                             <div class="alert success">
-                                <i class="fas fa-thumbs-up bold"></i> <b>{sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}</b>
+                                <i class="fas fa-check bold"></i> <b>{sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}</b>
                                 <p class="custom-mt-8 hint">{sprintf('[s`Your customized version of %s theme is up to date.`]', $theme.name|escape)}</p>
                             </div>
                         {else}
@@ -440,29 +435,16 @@
                 {else}
 
                     {* No original (eg. cloned) theme with same ID *}
-                    <div class="wa-theme-orphan">
-                        <ul class="menu">
-                            <li>
-                                <b><i class="fas fa-copy"></i> {$theme.id}</b>
-                                <span class="hint"><br>{sprintf('[s`This design theme was either cloned from another, original, theme or was manually uploaded as an archive. It cannot be updated via the Installer app or reverted to an original version because there is no installed original theme with the same ID <strong>%s</strong>.`]', $theme.id)}</span>
-                            </li>
-                        </ul>
+                    <div class="wa-theme-orphan alert info">
+                        <strong><i class="fas fa-copy"></i> {$theme.id}</strong>
+                        <p class="hint custom-mt-8">{sprintf('[s`This design theme was either cloned from another, original, theme or was manually uploaded as an archive. It cannot be updated via the Installer app or reverted to an original version because there is no installed original theme with the same ID <strong>%s</strong>.`]', $theme.id)}</p>
                     </div>
 
                 {/if}
             </div>
 
             {if !$theme_routes && !$_is_trial}
-            <div class="wa-theme-use custom-mb-32">
-
-                {* THEME IS NOT IN USE *}
-                {if $wa->get('just_installed')}
-                    <p class="bold successmsg"><i class="fas fa-check-circle"></i>{sprintf(_ws('%s design theme has been successfully installed. Start using this theme by clicking the button below.'), $theme.name|escape)}</p>
-                {else}
-                    <p>
-                        {sprintf(_ws('%s design theme is currently not in use on your websites.'), $theme.name|escape)}
-                    </p>
-                {/if}
+            <div class="wa-theme-use custom-mb-24">
 
                 {if $cover}
                     <p>
@@ -488,19 +470,6 @@
                             <li><b>{$requirement.warning}</b></li>
                         {/foreach}
                     </ul>
-                {else}
-                    <p class="flexbox middle space-4">
-                        <a id="theme-start-using" href="#" class="button green js-theme-start-using">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
-                        {if !empty($preview_url)}
-                            <span>[s`or`]</span>
-                            <span class="nowrap">
-                                <a class="wa-theme-preview custom-ml-4" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">
-                                    [s`preview this theme`]
-                                    <i class="fas fa-external-link-alt fa-xs opacity-50 custom-ml-4"></i>
-                                </a>
-                            </span>
-                        {/if}
-                    </p>
                 {/if}
             </div>
             {/if}
@@ -508,71 +477,12 @@
             {* Theme usage *}
             <div class="wa-theme-usage fields">
 
-                <div class="fields-group">
-                    <div class="field">
-                        <div class="name">
-                            [s`Theme ID`]
-                        </div>
-                        <div class="value">
-                            {$theme.id|escape}
-                        </div>
+                {* Theme about *}
+                {if trim($theme.about)}
+                    <div class="small">
+                        {$theme.about}
                     </div>
-
-                    <div class="field">
-                        <div class="name">
-                            [s`Theme version`]
-                        </div>
-                        <div class="value">
-                            {$theme.version}
-                        </div>
-                    </div>
-
-                    {if !$_is_trial}
-                        <div class="field">
-                            <div class="name">
-                                [s`Theme path`]
-                            </div>
-                            <div class="value">
-                                {if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}<strong>{$theme.custom|escape}</strong>{/if}
-                                {if $theme.type ne waTheme::ORIGINAL}
-                                    <p class="hint">
-                                        [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
-                                    </p>
-                                {/if}
-                            </div>
-                        </div>
-
-                        {if count($theme_routes)}
-                            <div class="field">
-                                <div class="name">
-                                    [s`Theme usage`]
-                                </div>
-                                {$_theme_usages = []}
-                                <div class="value">
-                                    <ul>
-                                    {foreach $theme_routes as $_r}
-                                        <li>
-                                            {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
-                                                {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
-                                            {/if}
-                                            <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
-                                                {$_r._domain_decoded}/{$_r.url}
-                                                <i class="fas fa-external-link-alt fa-xs"></i>
-                                            </a>
-                                        </li>
-                                    {/foreach}
-                                    </ul>
-                                </div>
-                            </div>
-                        {/if}
-
-                        {if count($theme_routes) > 1}
-                            <p class="gray small">
-                                <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
-                            </p>
-                        {/if}
-                    {/if}
-                </div>
+                {/if}
 
                 {* Theme thumbs *}
                 {if !empty($theme.thumbs)}
@@ -585,13 +495,70 @@
                     </ul>
                 {/if}
 
-                {* Theme about *}
-                {if trim($theme.about)}
-                    <h6>[s`About this theme`]</h6>
-                    <div class="small">
-                        {$theme.about}
+                <div class="field">
+                    <div class="name">
+                        [s`Theme ID`]
                     </div>
+                    <div class="value">
+                        {$theme.id|escape}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="name">
+                        [s`Theme version`]
+                    </div>
+                    <div class="value">
+                        {$theme.version}
+                    </div>
+                </div>
+
+                {if !$_is_trial}
+                    <div class="field">
+                        <div class="name">
+                            [s`Theme path`]
+                        </div>
+                        <div class="value">
+                            {if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}<strong>{$theme.custom|escape}</strong>{/if}
+                            {if $theme.type ne waTheme::ORIGINAL}
+                                <p class="hint">
+                                    [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
+                                </p>
+                            {/if}
+                        </div>
+                    </div>
+
+                    {if count($theme_routes)}
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme usage`]
+                            </div>
+                            {$_theme_usages = []}
+                            <div class="value">
+                                <ul>
+                                {foreach $theme_routes as $_r}
+                                    <li>
+                                        {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
+                                            {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
+                                        {/if}
+                                        <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
+                                            {$_r._domain_decoded}/{$_r.url}
+                                            <i class="fas fa-external-link-alt fa-xs"></i>
+                                        </a>
+                                    </li>
+                                {/foreach}
+                                </ul>
+                            </div>
+                        </div>
+                    {/if}
+
+                    {if count($theme_routes) > 1}
+                        <p class="gray small">
+                            <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
+                        </p>
+                    {/if}
                 {/if}
+
             </div>
         </div>
 
@@ -633,7 +600,7 @@
             {if ($theme_routes || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
 
                 <ul class="menu js-theme-settings-list">
-                    <li class="{if !$is_only_settings}selected {/if}bottom-padded">
+                    <li class="{if !$is_only_settings}selected {/if}bottom-padded hidden">
                         <a href="javascript:void(0);" data-divider-id="-1">
                             <span>{$theme.name}</span>
                         </a>
@@ -647,10 +614,23 @@
                     {/foreach}
                 </ul>
             {else}
-                <div class="box js-theme-not-use">
-                    <p class="align-center gray small custom-mt-24">
+                <div class="box align-center js-theme-not-use">
+                    <p class="gray small custom-mt-16">
                         {sprintf(_ws('%s design theme is currently not in use on your websites.'), $theme.name|escape)}
                     </p>
+                </div>
+            {/if}
+
+            {if !$theme_routes
+            && !$_is_trial
+            && empty($theme_warning_requirements)
+            && empty($theme_original_warning_requirements)
+            && empty($theme_parent_warning_requirements)
+            }
+                <div class="align-center custom-px-12 custom-my-12">
+                    <a id="theme-start-using" href="#" class="button green small rounded js-theme-start-using">
+                        [s`Start using this theme`]
+                    </a>
                 </div>
             {/if}
 {if !$is_only_settings}
@@ -674,6 +654,15 @@
         const $theme_settings_section = $('.js-theme-settings-section'),
             $theme_settings_list = $('.js-design-container').find('.js-theme-settings-hidden-list');
         // invoke only once / bug(?) with several times invoke waDesignLoad
+
+        const url_params = waDesignParams(location.href);
+        let action = '&action=theme';
+        if (url_params.action) {
+            action = ''
+        }
+        $('.js-theme-info-link').attr('href', '#/design/theme={$theme.id|escape}' + action).on('click', () => sessionStorage.removeItem('wa_design_menu_id'));
+
+        $('.js-tabs-menu.js-design-actions').find('[data-action="theme"] a').attr('href', '#/design/theme={$theme.id|escape}');
 
         let menu_id = $theme_settings_section.data('menu-id');
         if(menu_id !== undefined) {

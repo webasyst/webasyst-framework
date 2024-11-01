@@ -58,10 +58,22 @@ class waSMS
      */
     protected function getAdapter($from = null)
     {
-        if (empty(self::$config)) {
+        $config = self::$config;
+        if (!empty($config)) {
+            $installed_adapters = self::getInstalledAdapterIds();
+            if (empty($installed_adapters)) {
+                return null;
+            }
+            $config = array_filter($config, function ($adapter_config) use ($installed_adapters) {
+                return in_array($adapter_config['adapter'], $installed_adapters);
+            });
+        }
+        
+        if (empty($config)) {
             $no_settings_adapter = self::getNoSettingsAdapter();
             if ($no_settings_adapter) {
-                self::$config = [ '*' => [ 'adapter' => $no_settings_adapter ] ];
+                self::$config = empty(self::$config) ? [] : self::$config;
+                self::$config['*'] = [ 'adapter' => $no_settings_adapter ];
                 $path = wa()->getConfig()->getPath('config', 'sms');
                 waUtils::varExportToFile(self::$config, $path);
             }

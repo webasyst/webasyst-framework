@@ -2537,7 +2537,7 @@
         Upload.prototype.initClass = function (options) {
             let that = this;
 
-            that.options = $.extend(true, $.fn['waUpload'].defaults, options);
+            that.options = $.extend({}, $.fn['waUpload'].defaults, options);
 
             if (that.options.is_uploadbox) {
                 that.$wrapper.addClass('box uploadbox');

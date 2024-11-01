@@ -11,7 +11,7 @@ class waSystemPluginModel extends waModel
         if (empty($this->table)) {
             $type = constant(get_class($plugin).'::PLUGIN_TYPE');
             $this->table = sprintf('wa_%s_%s', $type, $plugin->getId());
-            if (strlen($table)) {
+            if ($table !== null && strlen($table)) {
                 $this->table .= '_'.$table;
             }
         }

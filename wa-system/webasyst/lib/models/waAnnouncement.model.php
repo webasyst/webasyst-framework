@@ -17,6 +17,9 @@ class waAnnouncementModel extends waModel
         if ($before_id) {
             $where[] = "id < ?";
             $params[] = $before_id;
+        } else {
+            $where[] = "datetime <= ?";
+            $params[] = date('Y-m-d H:i:s');
         }
 
         $where[] = "(a.contact_id = ? OR a.access = 'all' OR ar.group_id IN (?))";
@@ -104,6 +107,7 @@ class waAnnouncementModel extends waModel
         if ($after_time) {
             $where .= "\nAND datetime >= '".$this->escape($after_time)."'";
         }
+        $where .= "\nAND datetime <= '".date('Y-m-d H:i:s')."'";
         $where .= "\nAND (ttl_datetime IS NULL OR ttl_datetime > '".$this->escape(date('Y-m-d H:i:s'))."')";
 
         // Global admin does not automatically see all announcements
@@ -126,5 +130,14 @@ class waAnnouncementModel extends waModel
         ";
 
         return $this->query($sql, $query_params)->fetchAll();
+    }
+
+    public function countByApps($app_ids)
+    {
+        if (!$app_ids) {
+            return 0;
+        }
+        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE app_id IN (?) AND datetime <= ?";
+        return (int) $this->query($sql, [$app_ids, date('Y-m-d H:i:s')])->fetchField();
     }
 }

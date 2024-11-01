@@ -47,7 +47,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Returns the contents of the first found record as a combination of a zero-indexed and associative array.
      *
-     * @return array
+     * @return array|null
      */
     public function fetch()
     {
@@ -57,7 +57,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Returns the contents of the first found record as a zero-indexed array.
      *
-     * @return array
+     * @return array|null
      */
     public function fetchArray()
     {
@@ -67,7 +67,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Returns the contents of the first found record as an associative array.
      *
-     * @return array
+     * @return array|null
      */
     public function fetchAssoc()
     {
@@ -77,7 +77,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Returns numeric array
      *
-     * @return array
+     * @return array|null
      */
     public function fetchRow()
     {
@@ -139,7 +139,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
      */
     public function count()
     {
-        return $this->iterator->count();
+        return (int)$this->iterator->count();
     }
 
     /**

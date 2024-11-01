@@ -340,12 +340,8 @@ var InstallerStore = (function ($) {
             fields.push({name: 'return_url', value: return_url});
         }
 
-        var confirm_message = that.options.locale['confirm_product_install'];
         if (data.trial) {
             fields.push({name: 'trial', value: data.trial});
-            if (that.options.locale['confirm_trial_theme_install']) {
-                confirm_message = that.options.locale['confirm_trial_theme_install'];
-            }
         }
 
         if (!that.options.in_app) {
@@ -353,14 +349,7 @@ var InstallerStore = (function ($) {
             return;
         }
 
-        // If the Store is open in app (not the Installer) -
-        // before installing show the confirm.
-        // App can cancel confirmations in the options!
-        if (confirm_message && !confirm(confirm_message)) {
-            return;
-        }
-
-        that.initInstallationDialog(fields);
+        that.initInstallationDialog(fields, data);
     };
 
     InstallerStore.prototype.bundleInstall = function (data) {
@@ -740,7 +729,7 @@ var InstallerStore = (function ($) {
         $form.appendTo('body').submit();
     };
 
-    InstallerStore.prototype.initInstallationDialog = function(fields) {
+    InstallerStore.prototype.initInstallationDialog = function(fields, data = null) {
         var that = this;
         $.post(that.options.app_url + '?module=update&action=managerDialog', fields).then(function(html) {
             new $.waDialog({
@@ -749,16 +738,71 @@ var InstallerStore = (function ($) {
                 onOpen($dialog, dialog) {
                     $dialog.trigger('installer_dialog_ready', [dialog, $dialog]);
                     $dialog.on('installer_installation_successfull', function() {
-                        setTimeout(function() {
-                            dialog.close();
-                        }, 1200);
-                        if (that.options.go_return_hash_after_installation) {
-                            const return_url = fields.find(f => f.name === 'return_url');
-                            if (return_url) {
-                                location.href = return_url.value;
+                        if (that.options.in_app) {
+                            dialog.$content.find('.progressbar').hide();
+                            dialog.$content.find('.js-update-success').show();
+                            dialog.resize();
+
+                            dialog.$content.find('.js-update-success .button.green').on('click', function() {
+                                if (data?.type === 'theme') {
+                                    sessionStorage.setItem('wa_set_theme_onload', data.id);
+                                }
+                                if (data?.type === 'plugin') {
+                                    sessionStorage.setItem('wa_set_plugin_onload', data.id);
+                                }
+                                location.reload();
+                                dialog.close();
+                            });
+
+/*                            if(data?.sources) {
+                                const source = Object.keys(data.sources)[0];
+                                if(source) {
+                                    const source_parts = source.split('/');
+                                    const product = source_parts[source_parts.length - 1];
+                                    const product_type = source_parts[source_parts.length - 2];
+                                    let href;
+
+                                    if (location.search) {
+                                        if (product_type === 'themes') {
+                                            href = `${location.search}#/design/theme=${product}`;
+                                        }
+                                        if (product_type === 'plugins') {
+                                            href = `${location.search}#/${product}`;
+                                        }
+                                    } else {
+                                        const hash_parts = location.hash.split('/');
+                                        const product = hash_parts[hash_parts.length - 1];
+                                        const product_type = hash_parts[hash_parts.length - 2];
+
+                                        if (product_type === 'plugins') {
+                                            href = `${location.search}#/${product}`;
+                                        }
+                                    }
+
+                                    if (href) {
+                                        dialog.$content.find('.js-update-success .button.green').attr('href', href);
+                                    }
+                                }
+                            }*/
+
+                            dialog.$content.find('.js-update-success .button').on('click', function() {
+                                if ($(this).hasClass('light-gray')) {
+                                    location.reload();
+                                }
+                                dialog.close();
+                            });
+                        } else {
+                            setTimeout(function() {
+                                dialog.close();
+                            }, 1200);
+                            if (that.options.go_return_hash_after_installation) {
+                                const return_url = fields.find(f => f.name === 'return_url');
+                                if (return_url) {
+                                    location.href = return_url.value;
+                                }
                             }
+                            location.reload();
                         }
-                        location.reload();
                     });
                 }
             });

@@ -1,31 +1,32 @@
-<div class="box contentbox wa-design-gray-toolbar">
+<div class="article wider wa-design-gray-toolbar">
+    <div class="article-body">
+        <h2>{$app.name|string_format:'[s`Design themes for %s app`]'|escape}{if $wa->user()->getRights('installer')} <i class="fas fa-spin fa-spinner"></i>{/if}</h2>
 
-    <h2>{$app.name|string_format:'[s`Design themes for %s app`]'|escape} <i class="fas fa-spin fa-spinner"></i></h2>
-    
-    <ul class="chips outlined">
-        <li id="themes-close" style="display: none">
-            <a href="#" class="cancel gray bold" title="[s`Close`]">
-                <i class="fas fa-times-circle"></i> [s`Close`]
-            </a>
-        </li>
-    </ul>
+        <ul class="chips outlined">
+            <li id="themes-close" style="display: none">
+                <a href="#" class="cancel gray bold" title="[s`Close`]">
+                    <i class="fas fa-times-circle"></i> [s`Close`]
+                </a>
+            </li>
+        </ul>
 
-    {include file="./Themes.installed_themes.html" inline}
+        {include file="./Themes.installed_themes.html" inline}
+    </div>
 </div>
-<div class="wa-themes">
+{if $wa->user()->getRights('installer')}
+<div class="article wider wa-themes">
     <script type="text/javascript">
     $('div.wa-themes:first').load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}&return_hash={"`$design_url`theme=%theme_id%"|escape:'url'}',function(){
-        $('.wa-design-gray-toolbar h4 svg').hide();
+        $('.wa-design-gray-toolbar h2 svg').hide();
     });
     $('#themes-close a').on('click', function (e) {
         e.preventDefault();
-        $('#wa-design-container').addClass('left200px').css('margin-left', '');
         $('.js-tab-content').show();
         $("#wa-theme-list li a:first").click();
     });
     </script>
 </div>
-
+{/if}
 <div class="dialog" id="wa-theme-start-using-dialog" data-url="{$design_url}">
     <div class="dialog-background"></div>
     <form class="dialog-body">

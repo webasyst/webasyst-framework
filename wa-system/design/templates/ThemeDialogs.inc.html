@@ -7,9 +7,9 @@
     <form class="dialog-body">
         <h3 class="dialog-header">[s`Revert to original`]</h3>
         <div class="dialog-content">
-            <p class="state-caution"><i class="fas fa-exclamation-triangle"></i> [s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?`]</p>
+            <p class="state-caution small"><i class="fas fa-exclamation-triangle"></i> [s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?`]</p>
             {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
-                <label>
+                <label class="small">
                     <span class="wa-checkbox">
                         <input type="checkbox" name="parent" value="1">
                         <span>
@@ -38,7 +38,7 @@
             <p class="small">{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
             <div class="fields">
                 {foreach $routes as $r name=_routeslist}
-                <div class="field custom-mt-0">
+                <div class="field custom-mt-8">
                     <div class="name for-checkbox">{if $smarty.foreach._routeslist.iteration == 1}[s`Existing route`]{/if}</div>
                     <div class="value">
                         <label>

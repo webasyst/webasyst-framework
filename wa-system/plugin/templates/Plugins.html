@@ -21,8 +21,8 @@
 {/if}
 
 {$plugin_names = array()}
-<div id="wa-plugins-container" class="content flexbox{if !empty($container_class)} {$container_class}{/if}">
-    <div class="sidebar flexbox blank width-21rem bordered-right bordered-left">
+<div id="wa-plugins-container" class="content flexbox wrap-mobile{if !empty($container_class)} {$container_class}{/if}">
+    <div class="sidebar flexbox blank width-21rem bordered-right bordered-left" style="{if $wa->isMobile()}position: relative; width:100%; height: auto !important; min-height: auto; top: 0;{/if}">
             <div class="sidebar-body{if empty($installer)} custom-pt-16{/if}">
 
                 {if $wa->user()->getRights('installer')}
@@ -98,7 +98,7 @@
             </div>
         </div>
     <div class="content">
-        <div class="article wider">
+        <div class="article wider"{if $wa->isMobile()} style="max-width: 100vw;"{/if}>
             <div id="wa-plugins-content" class="article-body">
                 {if !empty($plugins)||!empty($installer)}[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>{/if}
             </div>
@@ -541,6 +541,14 @@
             return false;
         });
     {/if}
+
+    const wa_set_plugin_onload = sessionStorage.getItem('wa_set_plugin_onload');
+    if (wa_set_plugin_onload) {
+        $('.js-plugin-list > li#plugin-' + wa_set_plugin_onload + ' > a').on('click', function  () {
+            $.plugins.dispatch($(this).attr('href'), true);
+            return false;
+        });
+    }
 
 })(jQuery);
 </script>

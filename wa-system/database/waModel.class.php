@@ -867,7 +867,7 @@ class waModel
      */
     public function countAll()
     {
-        return $this->query("SELECT COUNT(*) FROM ".$this->table)->fetchField();
+        return (int) $this->query("SELECT COUNT(*) FROM ".$this->table)->fetchField();
     }
 
     /**
@@ -1099,7 +1099,7 @@ class waModel
     {
         $sql = "SELECT COUNT(*) FROM ".$this->table;
         $sql .= " WHERE ".$this->getWhereByField($field, $value);
-        return $this->query($sql)->fetchField();
+        return (int)$this->query($sql)->fetchField();
     }
 
     /**

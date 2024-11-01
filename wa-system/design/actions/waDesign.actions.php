@@ -1002,7 +1002,7 @@ HTACCESS;
         $app = wa()->getAppInfo($app_id);
 
         $used_app_themes = [];
-        $app_themes = wa()->getThemes($app_id);
+        $app_themes = wa()->getThemes($app_id, true);
         $app_routes = wa()->getRouting()->getByApp($app_id);
         $route_themes = ['theme', 'theme_mobile'];
         foreach ($app_routes as $domain => $domain_routes) {

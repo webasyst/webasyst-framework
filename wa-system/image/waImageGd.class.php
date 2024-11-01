@@ -233,7 +233,7 @@ class waImageGd extends waImage
             case 'webp':
                 $save = 'imagewebp';
                 $type = IMAGETYPE_WEBP;
-                if ($quality == 100 && version_compare(PHP_VERSION, '8.1', '>=')) {
+                if ($quality == 100 && version_compare(PHP_VERSION, '8.1', '>=') && defined('IMG_WEBP_LOSSLESS')) {
                     $quality = IMG_WEBP_LOSSLESS;
                 }
                 break;

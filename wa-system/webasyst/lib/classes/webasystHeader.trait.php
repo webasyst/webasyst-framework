@@ -234,9 +234,7 @@ trait webasystHeaderTrait
             }
         }
 
-        $total_count = $announcement_model->countByField([
-            'app_id' => array_keys($wa->getUser()->getApps() + ['webasyst' => 1]),
-        ]);
+        $total_count = $announcement_model->countByApps(array_keys($wa->getUser()->getApps() + ['webasyst' => 1]));
 
         $notifications_load_more_url = $backend_url."webasyst/announcements/loadMore/";
         if ($notifications_count >= $total_count) {
