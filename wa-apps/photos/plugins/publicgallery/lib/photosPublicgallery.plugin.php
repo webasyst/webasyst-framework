@@ -231,12 +231,12 @@ class photosPublicgalleryPlugin extends photosPlugin
             }
 
             $html =  '<a class="hint" href="javascript:void(0);" id="photo-rate-votes-count" data-you-voted="'.(int)($your_rate > 0).'"><u>'.$votes_count_text.'</u></a>'.
-                    '<span id="p-your-rate-wrapper">'._wp('My vote: ').
+                    '<span id="p-your-rate-wrapper" class="custom-ml-8">'._wp('My vote: ').
                         '<a href="javascript:void(0);" id="your-rate" class="p-rate-photo" data-rate="'.$your_rate.'">'.
                             photosPhoto::getRatingHtml($your_rate, 10, true).
                         '</a></span>'.
                 '<a class="p-rate-clear small" href="javascript:void(0);" style="display:none;" id="clear-photo-rate">'._wp('cancel my vote').'</a>';
-            $html .= '<script>$.photos.publicgalleryInitYourRate();</script>';
+            $html .= '<script>$(function() { $.photos.publicgalleryInitYourRate(); });</script>';
             return array(
                 'after_rate' => $html
             );

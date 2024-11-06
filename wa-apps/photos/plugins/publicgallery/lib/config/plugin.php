@@ -4,7 +4,7 @@ return array(
     'name' => /*_wp*/('Public Gallery'),
     'description' => /*_wp*/('Enables the ability to upload and vote for photos in the app frontend'),
     'img' => 'img/publicgallery.png',
-    'version' => '1.1.2',
+    'version' => '1.1.3',
     'vendor' => 'webasyst',
     'rights' => false,
     'frontend' => true,
