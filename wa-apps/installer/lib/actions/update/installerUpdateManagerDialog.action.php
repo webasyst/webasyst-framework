@@ -11,6 +11,11 @@ class installerUpdateManagerDialogAction extends installerUpdateManagerAction
         exit;
     }
 
+    protected function errorNothingToUpdate()
+    {
+        throw new waException(_w('This product is already installed'));
+    }
+
     protected function ensureLayout()
     {
         // nothing to do

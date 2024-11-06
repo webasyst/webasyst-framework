@@ -208,9 +208,9 @@
             $(this).parent().addClass('selected');
             $.wa.setHash($(this).attr('href'));
             {if $options.is_ajax}
-            return false;
+                return false;
             {else}
-            waDesignLoad();
+                waDesignLoad();
             {/if}
         });
 
@@ -231,7 +231,7 @@
         {if $options.is_ajax}
             {if $file && $file.id}
                 document.title = "{$file.id|escape} — {$wa->appName()}";
-                {else}
+            {else}
                 document.title = "[`New file`] — {$wa->appName()}";
             {/if}
         {/if}
@@ -249,7 +249,15 @@
 
         waEditorAceInit(options);
 
-        $("#wa-design-form").on('submit', function (e) {
+        const $design_form = $("#wa-design-form");
+
+        $design_form.on('input', '.error', function (e) {
+            if (is_error) {
+                $design_form.find('.js-alert-error-close').click();
+            }
+        });
+
+        $design_form.on('submit', function (e) {
             const $form = $(this),
                 $status = $("#wa-editor-status"),
                 $submit_btn = $(".js-bb-submit");

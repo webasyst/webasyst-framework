@@ -743,52 +743,14 @@ var InstallerStore = (function ($) {
                             dialog.$content.find('.js-update-success').show();
                             dialog.resize();
 
-                            dialog.$content.find('.js-update-success .button.green').on('click', function() {
-                                if (data?.type === 'theme') {
-                                    sessionStorage.setItem('wa_set_theme_onload', data.id);
-                                }
-                                if (data?.type === 'plugin') {
-                                    sessionStorage.setItem('wa_set_plugin_onload', data.id);
-                                }
-                                location.reload();
-                                dialog.close();
-                            });
+                            dialog.$content.find('.js-go-to-settings').on('click', function() {
+                                $(document).trigger('installer_after_install_go_to_settings', {
+                                    type: data?.type,
+                                    id: data?.id,
+                                    is_payment: data?.slug.includes('/payment/'),
+                                    is_shipping: data?.slug.includes('/shipping/')
+                                });
 
-/*                            if(data?.sources) {
-                                const source = Object.keys(data.sources)[0];
-                                if(source) {
-                                    const source_parts = source.split('/');
-                                    const product = source_parts[source_parts.length - 1];
-                                    const product_type = source_parts[source_parts.length - 2];
-                                    let href;
-
-                                    if (location.search) {
-                                        if (product_type === 'themes') {
-                                            href = `${location.search}#/design/theme=${product}`;
-                                        }
-                                        if (product_type === 'plugins') {
-                                            href = `${location.search}#/${product}`;
-                                        }
-                                    } else {
-                                        const hash_parts = location.hash.split('/');
-                                        const product = hash_parts[hash_parts.length - 1];
-                                        const product_type = hash_parts[hash_parts.length - 2];
-
-                                        if (product_type === 'plugins') {
-                                            href = `${location.search}#/${product}`;
-                                        }
-                                    }
-
-                                    if (href) {
-                                        dialog.$content.find('.js-update-success .button.green').attr('href', href);
-                                    }
-                                }
-                            }*/
-
-                            dialog.$content.find('.js-update-success .button').on('click', function() {
-                                if ($(this).hasClass('light-gray')) {
-                                    location.reload();
-                                }
                                 dialog.close();
                             });
                         } else {

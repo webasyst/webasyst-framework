@@ -311,7 +311,7 @@ var InstallerStore = (function ($) {
     // If the Store is open in app (not the Installer) -
     // before installing show the confirm.
     // App can cancel confirmations in the options!
-    if (!that.in_app || (that.in_app && confirm(that.locale['confirm_product_install']))) {
+    if (!that.in_app) {
       that.initForm(url, fields);
     }
   };

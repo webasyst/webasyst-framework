@@ -145,6 +145,9 @@ msgstr "Темы дизайна"
 msgid "Please select items for update"
 msgstr "Выберите продукты для обновления"
 
+msgid "This product is already installed"
+msgstr "Этот продукт уже установлен"
+
 msgid "Design theme not deleted: .svn or .git folder located in the theme directory."
 msgstr "Тема дизайна не удалена: в директории есть папка с названием .svn или .git."
 
@@ -575,7 +578,7 @@ msgid "A license is required to install this product."
 msgstr "Для установки этого продукта требуется лицензия."
 
 msgid "Go to settings"
-msgstr "Перейти в настройкам"
+msgstr "Перейти к настройкам"
 
 msgid "Continue shopping"
 msgstr "Продолжить просмотр"

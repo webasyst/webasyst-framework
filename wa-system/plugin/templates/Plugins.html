@@ -542,12 +542,20 @@
         });
     {/if}
 
-    const wa_set_plugin_onload = sessionStorage.getItem('wa_set_plugin_onload');
-    if (wa_set_plugin_onload) {
-        $('.js-plugin-list > li#plugin-' + wa_set_plugin_onload + ' > a').on('click', function  () {
+    {* запоминаем к настройкам какого плагина нужно перейти после обновления страницы *}
+    $(document).on('installer_after_install_go_to_settings', function(e, data) {
+        if (data.type === 'plugin' && !data.is_payment && !data.is_shipping) {
+            sessionStorage.setItem('wa_plugin_onload', data.id);
+            location.reload();
+        }
+    });
+    const wa_plugin_onload = sessionStorage.getItem('wa_plugin_onload');
+    if (wa_plugin_onload) {
+        $('.js-plugin-list > li#plugin-' + wa_plugin_onload + ' > a').on('click', function  () {
+            sessionStorage.removeItem('wa_plugin_onload');
             $.plugins.dispatch($(this).attr('href'), true);
             return false;
-        });
+        }).click();
     }
 
 })(jQuery);

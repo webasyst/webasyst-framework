@@ -242,8 +242,7 @@
         $theme_list = $('.js-theme-list'),
         $theme_settings_section = $('.js-theme-settings-section'),
         $theme_preview_link = $('.js-theme-sidebar .wa-theme-preview'),
-        $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]'),
-        wa_set_theme_onload = sessionStorage.getItem('wa_set_theme_onload');
+        $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
 
     var $bottombar = $('.bottombar');
 
@@ -343,10 +342,6 @@
         }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        if (wa_set_theme_onload) {
-            sessionStorage.removeItem('wa_set_theme_onload');
-        }
     })
 
     $(document).on('wa_design_loaded', function () {
@@ -861,8 +856,18 @@
         });
     });
 
-    if (wa_set_theme_onload) {
-        $theme_list.find('[data-id="'+wa_set_theme_onload+'"] a').click();
+    {* запоминаем к настройкам какой темы нужно перейти после обновления страницы *}
+    $(document).on('installer_after_install_go_to_settings', function(e, data) {
+        if (data.type === 'theme') {
+            sessionStorage.setItem('wa_theme_onload', data.id);
+            location.reload();
+        }
+    });
+    const wa_theme_onload = sessionStorage.getItem('wa_theme_onload');
+    if (wa_theme_onload) {
+        $theme_list.find('[data-id="'+wa_theme_onload+'"] a').on('click', function  () {
+            sessionStorage.removeItem('wa_theme_onload');
+        }).click();
     }
 
 </script>

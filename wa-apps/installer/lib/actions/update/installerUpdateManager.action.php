@@ -168,7 +168,7 @@ class installerUpdateManagerAction extends waViewAction
 
                 if (!$queue_apps) {
                     $updater->flush();
-                    throw new waException(_w('Please select items for update'));
+                    return $this->errorNothingToUpdate();
                 }
 
                 $this->ensureLayout();
@@ -284,6 +284,11 @@ class installerUpdateManagerAction extends waViewAction
             'module' => $this->module,
             'msg'    => installerMessage::getInstance()->raiseMessage($msg, installerMessage::R_FAIL),
         ));
+    }
+
+    protected function errorNothingToUpdate()
+    {
+        throw new waException(_w('Please select items for update'));
     }
 
     protected function ensureLayout()
