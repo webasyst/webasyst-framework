@@ -8,19 +8,20 @@
 #photo-embedded-selector .album-list a .count { display: none; }
 #photo-embedded-selector .empty-album { margin-top: 50px; color: #aaa; text-align: center; }
 #photo-embedded-selector img.p-app16x16icon-menu { width: 16px; height: 16px; position: absolute; left: 2px; }
+#photo-embedded-selector .sidebar.scrolls-with-content { min-height: unset; }
 </style>
-<div id="photo-embedded-selector">
-    <aside class="sidebar scrolls-with-content right width-12rem">
+<div id="photo-embedded-selector" class="flexbox">
+    <aside class="sidebar scrolls-with-content width-12rem">
         <div class="block">
             {if $app_albums}
                 <div class="hierarchical">
                 <ul class="menu">
                     {foreach $app_albums as $item}
                         <li>
-                            <span class="count">{$item.count}</span>
                             <a href="#/app/{$item.id}/">
-                                <img class="p-app16x16icon-menu" src="{$item.icon}">
-                                {$item.name}
+                                <img class="icon" src="{$item.icon}">
+                                <span>{$item.name}</span>
+                                <span class="count">{$item.count}</span>
                             </a>
                         </li>
                     {/foreach}

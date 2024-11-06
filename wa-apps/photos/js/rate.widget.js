@@ -40,7 +40,9 @@
             settings.hold = _scalarToFunc(settings.hold);
         }
 
-        init.call(this);
+        setTimeout(() => {
+            waitFaLoaded().then(() => init.call(self));
+        }, 200)
 
         function init() {
             if (self.data('inited')) {  // has inited already. Don't init again
@@ -54,7 +56,7 @@
             self.find('svg:lt(' + self.attr('data-rate') + ')').removeClass('text-light-gray').addClass('text-yellow');
 
             self
-                .mouseover(function (e) {
+                .on('mouseover', function (e) {
                     if (settings.hold.call(self)) {
                         return;
                     }
@@ -80,7 +82,7 @@
                             .addClass('fa-star text-light-gray');
                     }
                 })
-                .mouseleave(function () {
+                .on('mouseleave', function () {
                     if (settings.hold.call(self)) {
                         return;
                     }
@@ -176,25 +178,26 @@
                     });
             }
 
-            this.data('inited', true);
+            self.data('inited', true);
         }
 
         function update(new_rate) {
             let rate = 0;
             this.find('svg')
                 .addClass('text-light-gray')
-                .removeClass('fa-star-half text-yellow').each(function () {
-                if (rate == new_rate) {
-                    return false;
-                }
-                rate++;
-                if (rate > new_rate) {
-                    if (rate - new_rate == 0.5) {
-                        $(this).removeClass('text-light-gray').addClass('fa-star-half text-yellow');
+                .removeClass('fa-star-half text-yellow')
+                .each(function () {
+                    if (rate == new_rate) {
+                        return false;
                     }
-                } else {
-                    $(this).removeClass('text-light-gray').addClass('text-yellow');
-                }
+                    rate++;
+                    if (rate > new_rate) {
+                        if (rate - new_rate == 0.5) {
+                            $(this).removeClass('text-light-gray').addClass('fa-star-half text-yellow');
+                        }
+                    } else {
+                        $(this).removeClass('text-light-gray').addClass('text-yellow');
+                    }
             });
             this.attr('data-rate', new_rate);
         }
@@ -203,6 +206,24 @@
             return function () {
                 return scalar;
             };
+        }
+
+        // wait for font-awesome to be loaded
+        function waitFaLoaded(timeout = 5000) {
+            return new Promise((resolve, reject) => {
+                const checkClass = () => {
+                    if (document.documentElement.classList.contains('fontawesome-i2svg-complete')) {
+                        resolve();
+                    } else if (timeout > 0) {
+                        setTimeout(checkClass, 100);
+                        timeout -= 100;
+                    } else {
+                        reject();
+                    }
+                };
+
+                checkClass();
+            });
         }
 
         return this;

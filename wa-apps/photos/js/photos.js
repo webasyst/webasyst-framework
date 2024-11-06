@@ -13,6 +13,7 @@
         photos_per_page:null,
         list_template:'template-photo-thumbs',           //template id
         photo_list_string:{},
+        photo_list_position: 0,
         init: function (options) {
             if (typeof($.History) != "undefined") {
                 $.History.bind(function () {
@@ -2101,6 +2102,7 @@
 
             $('.js-toolbar-close').on('click', function() {
                 $(this).closest('#wa-header').removeClass('has-toolbar').find('#p-toolbar').remove();
+                $(document).trigger('toolbar_close');
             });
 
             $(document).on('keyup', event => {
@@ -2992,6 +2994,10 @@
             if (!link.length) {
                 link = $app_sidebar.find('a[href^="#'+(href||'/')+'"]');
             }
+            if (!link.length && `#${href}`.startsWith('#/design/')) {
+                link = $app_sidebar.find('a[href="#/design/"]');
+            }
+
             if (link.length) {
                 link.parents('li:first').addClass('selected');
             }
@@ -3717,11 +3723,39 @@
                     }
                 }
             }
+        },
+
+        correctPhotoListPosition: function() {
+
+            $(document).on('click', '#photo-list > li img', function() {
+                $.photos.photo_list_position = document.documentElement.scrollTop.toString();
+            });
+
+            $(document).on('toolbar_close', function () {
+                $('#content').on('photos_list_chunk_render', function() {
+                    document.documentElement.scrollTop = parseInt($.photos.photo_list_position, 10);
+                });
+
+                let timeout = 5000;
+                const checkPosition = () => {
+                    if (document.documentElement.scrollHeight >= $.photos.photo_list_position) {
+                        document.documentElement.scrollTop = parseInt($.photos.photo_list_position, 10);
+                    } else if (timeout > 0) {
+                        document.documentElement.scrollTop = parseInt($.photos.photo_list_position, 10);
+                        setTimeout(checkPosition, 100);
+                        timeout -= 100;
+                    }
+                };
+
+                checkPosition();
+            });
         }
     };
 })(jQuery);
 
 $(function () {
+
+    $.photos.correctPhotoListPosition();
 
     $('.dialog').off().on('change_loading_status', function(e, status) {
         var status = status || false,

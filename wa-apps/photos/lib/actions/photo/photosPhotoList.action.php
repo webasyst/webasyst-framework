@@ -53,7 +53,7 @@ class photosPhotoListAction extends waViewAction
     {
         $template = parent::getTemplate();
         if ($this->getRequest()->isMobile() && wa()->whichUI() === '1.3') {
-            $template = str_replace('actions', 'actions-mobile', $template);
+            $template = str_replace('actions-legacy', 'actions-mobile', $template);
         }
         return $template;
     }
