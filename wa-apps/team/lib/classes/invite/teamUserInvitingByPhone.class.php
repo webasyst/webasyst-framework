@@ -67,6 +67,11 @@ class teamUserInvitingByPhone extends teamInviting
      */
     protected function createInvitationToken()
     {
+        $error = $this->runInviteUserHook(null, $this->phone, ifset($this->options, 'groups', []));
+        if (!empty($error)) {
+            return $this->fail('general', ['description' => $error]);
+        }
+        
         $error = $this->validatePhone($this->phone);
         if ($error) {
             return $this->fail($error);

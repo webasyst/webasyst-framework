@@ -48,7 +48,8 @@ class teamProfileInfoAction extends waViewAction
             "{$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js",
             "{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js",
             "{$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js",
-            "{$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js"
+            "{$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js",
+            "{$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js",
         );
     }
 

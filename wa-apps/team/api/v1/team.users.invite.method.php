@@ -6,6 +6,10 @@ class teamUsersInviteMethod extends waAPIMethod
 
     public function execute()
     {
+        if (!teamHelper::hasRights('add_users')) {
+            throw new waAPIException('Access denied', 403);
+        }
+
         $invitation_type = $this->post('type');
         $groups = waRequest::post('groups', [], waRequest::TYPE_ARRAY_TRIM);
         if ($invitation_type === 'code') {

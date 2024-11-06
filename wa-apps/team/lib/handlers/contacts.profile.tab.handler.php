@@ -48,7 +48,7 @@ class teamContactsProfileTabHandler extends waEventHandler
             }
 
             // User access
-            if ($is_superadmin) {
+            if ($is_superadmin && !wa()->isSingleAppMode()) {
                 $result[] = array(
                     'id' => 'access',
                     'title' => _w('User access'),

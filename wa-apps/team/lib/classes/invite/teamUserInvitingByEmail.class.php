@@ -106,6 +106,11 @@ class teamUserInvitingByEmail extends teamInviting
      */
     protected function createInvitationToken()
     {
+        $error = $this->runInviteUserHook($this->email, null, ifset($this->options, 'groups', []));
+        if (!empty($error)) {
+            return $this->fail('general', ['description' => $error]);
+        }
+
         $email = $this->email;
         $error = $this->validateEmail($email);
         if ($error) {

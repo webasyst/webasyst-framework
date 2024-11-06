@@ -977,7 +977,7 @@ msgid "Can edit self contact info"
 msgstr "Может редактировать свои данные"
 
 msgid "Can post announcements on dashboard"
-msgstr "Может писать анонсы на дашборде"
+msgstr "Может писать объявления на дашборде"
 
 msgid "Can add users"
 msgstr "Может добавлять сотрудников"
