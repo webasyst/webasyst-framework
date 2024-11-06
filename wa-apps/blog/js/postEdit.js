@@ -25,7 +25,6 @@
         },
 
         init : function(options) {
-
             var self = this;
 
             self.options = $.extend(self.options, options);
@@ -146,7 +145,7 @@
                 setEditDatetimeReady.call(this);
             });
 
-            $('.b-post-editor-toggle li a').click(this.editorTooggle);
+            $('.b-post-editor-toggle li a').click(this.handleToggleEditor);
 
             $(document).keydown(function(e) {
                   // ctrl + s
@@ -1560,10 +1559,27 @@
         getExtHeightShift: function() {
             return -70;
         },
-        editorTooggle : function(e) {
+        handleToggleEditor: function(e) {
             e.preventDefault();
-            const scrollY = window.scrollY
-            var self = $(this);
+            const toggleEditor = $.wa_blog.editor.toggleEditor.bind(this);
+            const { options } = $.wa_blog.editor;
+            if (options.can_use_smarty && this.id === 'redactor') {
+                $.waDialog.confirm({
+                    title: $_('Message'),
+                    text: options.locale['switch_to_WYSIWYG'],
+                    success_button_title: $_('Continue'),
+                    success_button_class: 'yellow',
+                    cancel_button_title: $_('Cancel'),
+                    cancel_button_class: 'light-gray',
+                    onSuccess: toggleEditor
+                });
+            } else {
+                toggleEditor();
+            }
+        },
+        toggleEditor: function() {
+            const scrollY = window.scrollY;
+            const self = $(this);
             if (!self.parent().hasClass('selected') && $.wa_blog.editor.selectEditor(self.attr('id'))) {
                 $('.b-post-editor-toggle li.selected').removeClass('selected');
                 self.parent().addClass('selected');
@@ -1571,7 +1587,7 @@
                 window.scrollTo(0, scrollY + 1);
             }
         },
-        selectEditor : function(id, external) {
+        selectEditor: function(id, external) {
             if (this.editors[id]) {
                 var $textarea = $("#" + this.options['content_id']);
                 if($textarea.length) {

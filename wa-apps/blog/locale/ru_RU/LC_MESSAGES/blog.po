@@ -1116,3 +1116,12 @@ msgstr "Подтвердить"
 
 msgid "OK"
 msgstr "OK"
+
+msgid "Message"
+msgstr "Сообщение"
+
+msgid "Continue"
+msgstr "Продолжить"
+
+msgid "WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?"
+msgstr "Редактор WYSIWYG может изменить ваш HTML-код. Это необходимо для правильного форматирования текста. Код Smarty может быть сломан, и устаревшие HTML-теги могут быть заменены на современные. Вы действительно хотите переключиться на WYSIWYG-редактор?"

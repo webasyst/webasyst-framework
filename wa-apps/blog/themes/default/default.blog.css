@@ -12,6 +12,9 @@
  * ... extends base Site app's default.css
  */
 
+ /* UI */
+a.button, button:not([type=submit]), input[type=button] { color: var(--link-color); }
+
 .sidebar .search { margin: 16px 26px 16px 16px; }
 .sidebar .search .search-wrapper { background: #fff; }
 .sidebar .search input { margin-bottom: 0; }

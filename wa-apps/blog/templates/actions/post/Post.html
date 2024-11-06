@@ -175,8 +175,7 @@
         </div>
 
         <div class="rounded-block {$blog.color|default:'b-white'}">
-            <a name="comments"></a>
-            <div class="b-comments">
+            <div id="comments" class="b-comments">
                 <h4 class="custom-mb-0">
                 <span class="b-comment-count"
                       {if $post.comment_count == 0}style="display: none;"{/if}>{$post.comment_count} {_w('comment', 'comments', $post.comment_count)}<!-- comment_count placeholder --></span>
@@ -254,3 +253,9 @@
 {wa_js file="js/blog-post.min.js"}
 {$wa_app_static_url}js/blogPost.js
 {/wa_js}
+
+<script>
+    $(function() {
+        document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth' });
+    });
+</script>

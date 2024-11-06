@@ -149,7 +149,7 @@
 
                     <a href="#" id="realtime-preview-toggle" title="[`Mirror mode`]"></a>
 
-                    <div class="flexbox middle wrap space-16" id="blogs-list">
+                    <div class="flexbox middle space-16" id="blogs-list">
                         <span>[`Blog`]:</span>
                         <div class="b-stream-title-drop dropdown js-b-stream-title-dropdown">
                             <a href="#{$post.blog_id}" class="dropdown-toggle button light-gray current-blog valign-middle nowrap">
@@ -457,6 +457,8 @@
                 "Confirm": "[`Confirm`]",
                 "Cancel": "[`Cancel`]",
                 "Ok": "[`OK`]",
+                "Message": "[`Message`]",
+                "Continue": "[`Continue`]",
             });
             $.wa_blog_options = $.extend(true, $.wa_blog_options, {
                 'photos_bridge_available': {json_encode(blogPhotosBridge::isAvailable())},
@@ -467,7 +469,11 @@
                     'wa_url':"{$wa_url}",
                     'wa_app_static_url':"{$wa_app_static_url}",
                     'cut_link_label_default': "[`Continue reading →`]",
-                    'version':'{$wa->version()}'
+                    'version':'{$wa->version()}',
+                    'can_use_smarty': {$wa->blog->option('can_use_smarty')|json_encode},
+                    'locale': {
+                        'switch_to_WYSIWYG': "[`WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?`]",
+                    }
                 }
             });
 
