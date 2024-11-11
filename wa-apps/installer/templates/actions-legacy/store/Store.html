@@ -5,7 +5,7 @@
     {if !$store_url}
         <div class="block double-padded i-message-fail">
             <i class="fas fa-times-circle"></i>
-            [`Failed to get the URL of the remote Store`]
+            [`Failed to connect to the Webasyst products catalog.`]
         </div>
     {/if}
 
@@ -42,7 +42,7 @@
 
 {capture assign="_product_review_dialog_template"}
     <link href="{$wa_url}wa-apps/installer/css/helper/review-widget.css?v={$wa->version()}" rel="stylesheet">
-    
+
     <div class="wa-dialog i-product-review-dialog">
         <div class="wa-dialog-background"></div>
         <div class="wa-dialog-body">

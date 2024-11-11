@@ -863,7 +863,7 @@
             location.reload();
         }
     });
-    const wa_theme_onload = sessionStorage.getItem('wa_theme_onload');
+    var wa_theme_onload = sessionStorage.getItem('wa_theme_onload');
     if (wa_theme_onload) {
         $theme_list.find('[data-id="'+wa_theme_onload+'"] a').on('click', function  () {
             sessionStorage.removeItem('wa_theme_onload');
