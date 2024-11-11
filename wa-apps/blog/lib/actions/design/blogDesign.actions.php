@@ -11,7 +11,10 @@ class blogDesignActions extends waDesignActions
         if (!$this->getRights('design')) {
             throw new waRightsException(_ws("Access denied"));
         }
-        $this->options['is_ajax'] = true;
+
+        if (wa('blog')->whichUI() !== '1.3') {
+            $this->options['is_ajax'] = true;
+        }
         $this->options['js']['storage'] = false;
     }
 
