@@ -308,12 +308,7 @@ var InstallerStore = (function ($) {
       fields.push({name: 'trial', value: data.trial});
     }
 
-    // If the Store is open in app (not the Installer) -
-    // before installing show the confirm.
-    // App can cancel confirmations in the options!
-    if (!that.in_app) {
-      that.initForm(url, fields);
-    }
+    that.initForm(url, fields);
   };
 
   InstallerStore.prototype.productUpdate = function (data) {

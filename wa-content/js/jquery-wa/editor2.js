@@ -464,7 +464,7 @@ jQuery.fn.waEditor2 = function () {
             }
             return false;
         });
-        $uploader_button.one('click', function () {
+        $uploader_button.on('click', function () {
             if (!$.fn.fileupload) {
                 return;
             }
@@ -498,7 +498,11 @@ jQuery.fn.waEditor2 = function () {
                 },
 
                 stop: function () {
-                    $dialog_wrapper.hide();
+                    if ($('html').hasClass('is-wa2')) {
+                        $dialog_wrapper.data('dialog').close();
+                    } else {
+                        $dialog_wrapper.hide();
+                    }
                     $dialog_wrapper.find("div.loading").hide();
                     $dialog_wrapper.find("input[type=submit]").removeAttr('disabled');
                 }

@@ -13,7 +13,7 @@
 {if $options.js.editor}<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>{/if}
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design.css?{$wa->version()}">
 
-<div class="sidebar flexbox bordered-right bordered-left width-21rem{if $wa->isMobile()} height-auto{/if} js-theme-sidebar" style="{if $wa->isMobile()}position: relative; width:100%; min-height: auto; top: 0;{/if}display:none;">
+<div class="sidebar overflow-visible flexbox bordered-right bordered-left width-21rem{if $wa->isMobile()} height-auto{/if} js-theme-sidebar" style="{if $wa->isMobile()}position: relative; width:100%; min-height: auto; top: 0;{/if}display:none;">
     <div class="sidebar-header box custom-pb-0">
 
         <div class="custom-mt-12 align-center">
@@ -28,12 +28,24 @@
                 </span>
             </h3>
             {if $theme.preview_url}
-                <a data-url="{$theme.preview_url|regex_replace:'/http:|https:/':''|escape}" href="{$theme.preview_url|regex_replace:'/http:|https:/':''|escape}" rel="noopener" target="_blank" class="wa-theme-preview button rounded small" title="{if $theme.is_used}[s`View your site`]{else}[s`Preview`]{/if}">
+                <div class="dropdown js-wa-preview-dd">
+                    <a
+                            data-url="{$theme.preview_url|regex_replace:'/http:|https:/':''|escape}"
+                            href="{$theme.preview_url|regex_replace:'/http:|https:/':''|escape}"
+                            rel="noopener"
+                            target="_blank"
+                            class="wa-theme-preview button rounded small"
+                            title="{if $theme.is_used}[s`View your site`]{else}[s`Preview`]{/if}"
+                    >
                     <span class="semibold">
                         {if $theme.is_used}[s`View your site`]{else}[s`Preview`]{/if}
                     </span>
-                    <i class="fas fa-external-link-alt fa-xs opacity-50"></i>
-                </a>
+                        <i class="fas fa-external-link-alt fa-xs opacity-50"></i>
+                    </a>
+                    <div class="dropdown-body dd-wide">
+                        <ul class="menu"></ul>
+                    </div>
+                </div>
             {/if}
             <div class="hidden js-design-actions">
                 <ul id="wa-theme-list" class="menu js-theme-list">
@@ -313,7 +325,6 @@
         }
 
         $li.addClass('selected').siblings().removeClass('selected');
-        $design_actions.removeClass('selected');
 
         if (!$bottombar.length) {
             $bottombar = $('.bottombar');

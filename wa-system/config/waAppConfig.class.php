@@ -1051,6 +1051,20 @@ class waAppConfig extends SystemConfig
         $m->deleteById($data['token']);
     }
 
+    /**
+     * Called during frontend dispatch before attempting to route request according to settlement rules.
+     * App has a chance to handle any request no matter the 'url' parameter in its settlement,
+     * if the settlement contains parameter 'priority_settlement' => true.
+     *
+     * @param array $route settlement that triggered the call
+     * @param string $url request URL relative to framework root
+     * @since 3.4.0
+     */
+    public function dispatchPrioritySettlement($route, $url)
+    {
+        return null;
+    }
+
     public function throwFrontControllerDispatchException()
     {
         // Called when route is not found in backend routing, see waFrontController.

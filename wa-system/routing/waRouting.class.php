@@ -213,7 +213,28 @@ class waRouting
         if (mb_check_encoding($decoded_url, 'UTF-8')) {
             $url = $decoded_url;
         }
-        $r = $this->dispatchRoutes($this->getRoutes(), $url);
+        $routes = $this->getRoutes();
+
+        // Priority route?
+        $apps_called = [];
+        $priority_route = null;
+        foreach(array_reverse($routes) as $r) {
+            if (!empty($r['priority_settlement']) && !empty($r['app']) && $this->system->appExists($r['app']) && empty($apps_called[$r['app']])) {
+                $priority_route = wa($r['app'])->getConfig()->dispatchPrioritySettlement($r, $url);
+                $apps_called[$r['app']] = true;
+                if ($priority_route) {
+                    foreach ($priority_route as $k => $v) {
+                        if ($k !== 'url') {
+                            waRequest::setParam($k, $v);
+                        }
+                    }
+                    $this->setRoute($priority_route);
+                    return $priority_route;
+                }
+            }
+        }
+
+        $r = $this->dispatchRoutes($routes, $url);
         if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
             $r2 = $this->dispatchRoutes($this->getRoutes(), $url.'/');
             if ($r2 && (!$r || $r2['url'] != '*')) {
@@ -372,7 +393,7 @@ class waRouting
                 continue;
             }
             $vars = array();
-            $pattern = str_replace(array(' ', '.', '('), array('\s', '\.', '(?:'), ifset($r, 'url', ''));
+            $pattern = str_replace(array(' ', '.', '(', '!'), array('\s', '\.', '(?:', '\!'), ifset($r, 'url', ''));
             $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
             if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $pattern, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
                 $offset = 0;
@@ -787,5 +808,10 @@ class waRouting
         } else {
             return null;
         }
+    }
+
+    public function getAllRoutes()
+    {
+        return $this->routes;
     }
 }

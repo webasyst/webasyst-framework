@@ -3,10 +3,16 @@
 {$show_header_flag = false}
 <header class="drawer-header bordered-bottom">
     <ul class="tabs custom-pl-0">
+        {if !empty($blocks)}
+            <li id="wa-helper-blocks-{$name}" class="selected">
+                <a href="#">[`Common blocks`]</a>
+            </li>
+            {$show_header_flag = true}
+        {/if}
         {if !empty($vars)}
             {foreach $vars as $id => $app_vars}
                 {if !empty($apps_info[$id])}
-                    <li id="wa-help-{$id}-vars-{$name}" {if $app_vars@first}class="selected"{/if}>
+                    <li id="wa-help-{$id}-vars-{$name}">
                         {$_tab_name = $tab_names[$id]|default:''|escape}
                         {if !$_tab_name}
                             {$_tab_name = $apps_info[$id]['name']|escape}
@@ -26,12 +32,6 @@
         {if !empty($smarty_vars)}
             <li id="wa-help-smarty-{$name}" {if !$show_header_flag} class="selected"{/if}>
                 <a href="#">Smarty</a>
-            </li>
-            {$show_header_flag = true}
-        {/if}
-        {if !empty($blocks)}
-            <li id="wa-helper-blocks-{$name}" {if !$show_header_flag} class="selected"{/if}>
-                <a href="#">[s`Blocks`]</a>
             </li>
             {$show_header_flag = true}
         {/if}
@@ -154,6 +154,3 @@
 
 </script>
 </div>
-<footer class="drawer-footer">
-    <button class="js-close-drawer button light-gray">[s`Close`]</button>
-</footer>

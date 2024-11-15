@@ -179,6 +179,8 @@ class installerConfig extends waAppConfig
 
         $init_url_params = array(
             'locale' => $locale,
+            'hash'   => $wa_installer->getHash(),
+            'domain' => $this->getDomainFromRouting(),
         );
 
         $init_url = $wa_installer->getInstallerInitUrl();

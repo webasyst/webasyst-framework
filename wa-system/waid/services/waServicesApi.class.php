@@ -2,10 +2,10 @@
 
 class waServicesApi extends waWebasystIDApi
 {
-    public const WS_CONNECT_SERVICE = 'WS_TOKEN';
-    public const WS_MESSAGE_SERVICE = 'WS_MESSAGE';
-    public const EMAIL_MESSAGE_SERVICE = 'EMAIL';
-    public const SMS_SERVICE = 'SMS';
+    const WS_CONNECT_SERVICE = 'WS_TOKEN';
+    const WS_MESSAGE_SERVICE = 'WS_MESSAGE';
+    const EMAIL_MESSAGE_SERVICE = 'EMAIL';
+    const SMS_SERVICE = 'SMS';
 
     public function __construct(array $options = [])
     {

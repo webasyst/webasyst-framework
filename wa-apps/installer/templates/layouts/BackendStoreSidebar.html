@@ -30,7 +30,7 @@
                     <li{if $_store_url == "/`$store_path`"} class="selected"{/if}>
                         <a href="{$_link|escape}" data-href="{$_store_url|escape|substr:1}" class="flexbox middle js-installer-route{if $_item@index == 0} js-selected{/if}">
                             <span class="icon"><i class="{$_item.icon|escape}"></i></span>
-                            <span class="semibold">{$_item.name|escape}</span>
+                            <span class="semibold">{$_item.name|escape}{if !empty($_item.badge)} <i class="badge small bold rounded red">{$_item.badge}</i>{/if}</span>
                         </a>
                     </li>
                 {/foreach}

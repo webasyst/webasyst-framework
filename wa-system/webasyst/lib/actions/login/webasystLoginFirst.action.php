@@ -129,7 +129,7 @@ class webasystLoginFirstAction extends waViewAction
                             $data[$domain][] = [
                                 'url' => '*',
                                 'app' => 'site',
-                                '_name' => _ws('About us')
+                                '_name' => _ws('Home page')
                             ];
                         }
                         waUtils::varExportToFile($data, $path.'/routing.php');

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-11-07 13:18+0300\n"
+"PO-Revision-Date: 2024-11-11 13:07+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -3676,6 +3676,9 @@ msgstr "Начать использовать тему «%s»"
 msgid "preview this theme"
 msgstr "открыть предпросмотр"
 
+msgid "Preview this theme"
+msgstr "Открыть предпросмотр"
+
 msgid "Theme path"
 msgstr "Путь к папке темы"
 
@@ -6556,8 +6559,8 @@ msgstr "Моя компания"
 msgid "Error while running update of %s.%s plugin: %s"
 msgstr "Ошибка во время выполнения метаобновления плагина %s.%s: %s"
 
-msgid "About us"
-msgstr "О нас"
+msgid "Home page"
+msgstr "Главная страница"
 
 msgid "Error while running update of %s app: %s"
 msgstr "Ошибка во время выполнения метаобновления приложения %s: %s"
@@ -6835,11 +6838,20 @@ msgstr "Текущее значение отсутствует среди дос
 msgid "Shipping will be restricted to the selected country."
 msgstr "Доставка будет ограничена выбранной страной."
 
+msgid "Installed plugins"
+msgstr "Установленные"
+
+msgid "Hide"
+msgstr "Скрыть"
+
 msgid "No web push provider is configured."
 msgstr "Нет настроенных провайдеров push-уведомлений."
 
 msgid "Web push provider “%s” not found."
 msgstr "Провайдер push-уведомлений «%s» не найден."
+
+msgid "All plugins"
+msgstr "Все плагины"
 
 msgid "Another notification"
 msgid_plural "%d more notifications"
@@ -7192,6 +7204,45 @@ msgstr "Отсутствует обязательный параметр: «%s»
 msgid "Invalid subscriber data"
 msgstr "Неверные данные подписчика"
 
+msgid "Start using"
+msgstr "Начать использовать"
+
+msgid "On the entire website"
+msgstr "На всем сайте"
+
+msgid "Currently in use"
+msgstr "Сейчас используется"
+
+msgid "Theme %s"
+msgstr "Тема %s"
+
+msgid "Using"
+msgstr "Использование"
+
+msgid "The theme is not installed."
+msgstr "Тема не установлена."
+
+msgid "My account. My subscriptions"
+msgstr "Личный кабинет. Мои подписки"
+
+msgid "Variables"
+msgstr "Переменные"
+
+msgid "Common blocks"
+msgstr "Общие блоки"
+
+msgid "Not supported by theme “%s”."
+msgstr "Не поддерживается темой «%s»."
+
+msgid "Start using theme"
+msgstr "Использовать тему"
+
+msgid "The theme cannot be used on the entire website. Below are marked pages and sections which are not supported by theme “%s”."
+msgstr "Тема не может использоваться на всем сайте. Ниже отмечены страницы или разделы, которые не поддерживаются темой «%s»."
+
+msgid "The use of a design theme can be selected only for top-level sections and pages in the site map. Any existing subpages inherit their theme selection."
+msgstr "Использование темы дизайна можно выбрать только для разделов и страниц верхнего уровня в карте сайта. Вложенные страницы наследуют выбранную тему от них."
+
 msgid "Upload custom theme"
 msgstr "Загрузить свою тему"
 
@@ -7215,3 +7266,10 @@ msgstr "Пробные темы дизайна доступны только д�
 
 msgid "View your site"
 msgstr "Смотреть на сайте"
+
+msgid "This design theme is also used in other sections of your sites. Editing its design templates will affect the appearance of all these site sections."
+msgstr "Эта тема дизайна также используется в других разделах ваших сайтов. Редактирование ее шаблонов дизайна приведёт к изменению внешнего вида всех этих разделов."
+
+msgid "Used by other applications."
+msgstr "Используется другими приложениями."
+

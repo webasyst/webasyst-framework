@@ -323,6 +323,21 @@ class waDesignActions extends waActions
         return md5($hash);
     }
 
+    protected function hasRouteAnyApp($theme_id)
+    {
+        foreach (wa()->getRouting()->getAllRoutes() as $domain => $routes) {
+            if (!is_array($routes)) {
+                continue;
+            }
+            foreach ($routes as $route_id => $r) {
+                if ((ifset($r, 'theme', null) === $theme_id) || (ifset($r, 'theme_mobile', null) === $theme_id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     protected function getRoutes($all = false)
     {
         $routes = wa()->getRouting()->getByApp($this->getAppId());
@@ -636,6 +651,26 @@ HTACCESS;
                 }
                 $routes[$domain] = array($route_id => $route) + $routes[$domain];
             }
+        } else if (wa()->whichUI() !== '1.3') {
+            $domain = waRequest::post('domain');
+            $route_id = null;
+            foreach ($routes[$domain] as $_id => $route) {
+                if ($route['url'] === '*') {
+                    $route_id = $_id;
+                    break;
+                }
+            }
+            $selected_routes = waRequest::post('routes', [], waRequest::TYPE_ARRAY);
+            if ($selected_routes) {
+                foreach ($selected_routes as $_id => $on) {
+                    if ($on && isset($routes[$domain][$_id])) {
+                        if (!waRequest::post('mobile_only')) {
+                            $routes[$domain][$_id]['theme'] = $theme_id;
+                        }
+                        $routes[$domain][$_id]['theme_mobile'] = $theme_id;
+                    }
+                }
+            }
         } else {
             list($domain, $route_id) = explode('|', $route);
             if (!waRequest::post('mobile_only')) {
@@ -777,7 +812,8 @@ HTACCESS;
             }
 
             $route_url = false;
-            if ($_d = waRequest::get('domain')) {
+            $_d = waRequest::get('domain');
+            if ($_d) {
                 $domain_routes = wa()->getRouting()->getByApp(wa()->getApp(), $_d);
                 if (isset($domain_routes[waRequest::get('route')])) {
                     $route_url = htmlspecialchars($_d.'/'.$domain_routes[waRequest::get('route')]['url']);
@@ -835,13 +871,38 @@ HTACCESS;
             }
 
             $only_settings = waRequest::get('onlySettings');
+            $domains = wa()->getRouting()->getDomains();
+            $apps = wa()->getApps();
+
+            // for UI 2.0
+            $settlements_by_domain = [];
+            $has_theme_usage = false;
+            if (wa()->whichUI() != '1.3') {
+                $all_blockpages = $this->getBlockpagesByDomain($domains);
+                foreach ($domains as $_domain) {
+                    list($settlements, $has_not_support_theme) = $this->workupSettlements($apps, $_domain, $parent_themes, $current_theme->id);
+                    $settlements_by_domain[$_domain] = compact('settlements', 'has_not_support_theme');
+                    $settlements_by_domain[$_domain]['blockpages'] = ifset($all_blockpages, $_domain, []);
+
+                    foreach ($settlements as $s) {
+                        $condition_theme_usage = $_d ? $_domain === $_d : $s['app']['id'] === $app_id;
+                        if (!$condition_theme_usage) {
+                            continue;
+                        }
+                        if ($s['theme'] === $current_theme->id || $s['theme_mobile'] === $current_theme->id) {
+                            $has_theme_usage = true;
+                            break;
+                        }
+                    }
+                }
+            }
 
             $this->setTemplate('Theme.html', true);
 
             $this->display(array(
                 'current_locale'                      => $current_locale,
                 'routes'                              => $routes,
-                'domains'                             => wa()->getRouting()->getDomains(),
+                'domains'                             => $domains,
                 'preview_url'                         => $preview_url,
                 'global_group_divideres'              => $global_group_divideres,
                 'settings'                            => $settings,
@@ -858,18 +919,212 @@ HTACCESS;
                 'options'                             => $this->options,
                 'parent_themes'                       => $parent_themes,
                 'theme_routes'                        => $theme_routes,
+                'has_theme_usage_any_app'             => $this->hasRouteAnyApp($theme_id),
                 'child_themes'                        => $child_themes,
                 'path'                                => waTheme::getThemesPath($app_id),
                 'cover'                               => $cover,
                 'route_url'                           => $route_url,
-                'apps'                                => wa()->getApps(),
+                'apps'                                => $apps,
                 'need_show_review_widget'             => $this->needShowReviewWidget($theme_id),
                 'only_settings'                       => $only_settings,
+                'current_domain'                      => $_d,
+                'settlements_by_domain'               => $settlements_by_domain,
+                'has_theme_usage'                     => $has_theme_usage,
             ));
         }
     }
 
-    /**
+    protected function workupSettlements(array $apps, string $domain, array $parent_themes, string $current_theme_id)
+    {
+        $routes_app_id_to_alias = [
+            'mailer' => _ws('My account. My subscriptions'),
+        ];
+        $routes = wa()->getRouting()->getRoutes($domain);
+
+        foreach ($apps as $app_id => $app) {
+            if (empty($app['id']) || empty($app['frontend'])) {
+                unset($apps[$app_id]);
+            }
+        }
+
+        $page_route_urls = [];
+        $app_pages_search = [];
+        foreach ($routes as $route_id => &$route) {
+            if (
+                !isset($route['app']) ||
+                $route['app'] === ':text' ||
+                !empty($route['redirect']) ||
+                empty($route['theme'])
+            ) {
+                unset($routes[$route_id]);
+                continue;
+            }
+
+            $app_id = $route['app'];
+            $route['route_id'] = $route_id;
+            $route['url_formatted'] = '/'.ltrim(rtrim($route['url'], '*'), '/');
+            $route['app'] = ifempty($apps, $app_id, [
+                'id' => $route['app'],
+                'disabled' => true,
+            ]);
+
+            // We need to fetch all top-level pages of all settlements we loop over.
+            // Each app has a different page model to fetch data from.
+            // Here we group settlements by app in order to minimize number of SQL queries.
+            if (empty($route['app']['disabled']) && wa()->appExists($app_id)) {
+                try {
+                    if (!isset($app_pages_search[$app_id])) {
+                        wa($app_id);
+                        $app_page_model_class = $app_id.'PageModel';
+                        if (class_exists($app_page_model_class)) {
+                            $app_page_model = new $app_page_model_class();
+                            if ($app_id == 'site') {
+                                if (!isset($domain_id_by_name)) {
+                                    $domain_id_by_name = array_flip(siteHelper::getDomains());
+                                }
+                                if (isset($domain_id_by_name[$domain])) {
+                                    $app_pages_search[$app_id] = [$app_page_model, [
+                                        'domain_id' => $domain_id_by_name[$domain],
+                                        'parent_id' => null,
+                                        'route' => [],
+                                    ]];
+                                }
+                            } else {
+                                $app_pages_search[$app_id] = [$app_page_model, [
+                                    'domain' => $domain,
+                                    'parent_id' => null,
+                                    'route' => [],
+                                ]];
+                            }
+                        }
+                    }
+
+                    if (isset($app_pages_search[$app_id])) {
+                        $app_pages_search[$app_id][1]['route'][] = $route['url'];
+                        $page_route_urls[$route['url']] = $route_id;
+                    }
+                } catch (waException $e) {}
+            }
+
+            $route['pages'] = [];
+            if (empty($route['_name'])) {
+                if (!empty($route['app']['name'])) {
+                    $route['_name'] = $route['app']['name'];
+                } else {
+                    $route['_name'] = $route['app']['id'];
+                }
+            }
+        }
+        unset($route);
+
+        // Fetch all top-level pages from DB
+        foreach ($app_pages_search as $app_id => $_) {
+            list($model, $search) = $_;
+            try {
+                $pages = $model->getByField($search, 'id');
+            } catch (waException $e) {
+                $pages = [];
+            }
+            if ($pages) {
+                uasort($pages, function($a, $b) {
+                    return $a['sort'] <=> $b['sort'];
+                });
+
+                foreach ($pages as $p) {
+                    if (!isset($page_route_urls[$p['route']])) {
+                        continue;
+                    }
+                    $route_id = $page_route_urls[$p['route']];
+                    $routes[$route_id]['pages'][] = [
+                        'id' => $p['id'],
+                        'name' => $p['name'],
+                        'status' => $p['status'],
+                        'url_formatted' => $routes[$route_id]['url_formatted'].$p['full_url'],
+                    ];
+                    if (($p['full_url'] === '' || $p['full_url'] === '/') && $p['name']) {
+                        $routes[$route_id]['_name'] = $p['name'];
+                    }
+                }
+            }
+        }
+
+        $has_not_support_theme = false;
+        foreach ($routes as &$r) {
+            $r['theme_mobile'] = ifset($r, 'theme_mobile', $r['theme']);
+            $r['used_theme'] = $current_theme_id === $r['theme'];
+            $r['used_theme_mobile'] = $current_theme_id === $r['theme_mobile'];
+
+            if (!isset($parent_themes[$r['app']['id']])) {
+                continue;
+            }
+            $available_themes = $parent_themes[$r['app']['id']]['themes'];
+            if (!$available_themes) {
+                continue;
+            }
+
+            if (!isset($available_themes[$current_theme_id])) {
+                $r['theme_not_supported'] = true;
+                $has_not_support_theme = true;
+            }
+
+            $r['theme_names'][] = $available_themes[$r['theme']] ?? '';
+            $r['theme_names'][] = $available_themes[$r['theme_mobile']] ?? '';
+            $r['theme_names'] = array_unique($r['theme_names']);
+
+            // replace route name
+            if ($routes_app_id_to_alias && isset($routes_app_id_to_alias[$r['app']['id']])) {
+                $r['_name'] = $routes_app_id_to_alias[$r['app']['id']];
+            }
+        }
+        unset($r);
+
+        return [array_reverse($routes), $has_not_support_theme];
+    }
+
+    protected function getBlockpagesByDomain($domains)
+    {
+        if (!wa()->appExists('site')) {
+            return [];
+        }
+        wa('site');
+        if (!class_exists('siteBlockpageModel')) {
+            return [];
+        }
+
+        $idna = new waIdna();
+        $domains = array_flip($domains);
+        foreach (array_keys($domains) as $d) {
+            $domains[$idna->decode($d)] = 1;
+        }
+
+        $domain_id_by_name = array_flip(siteHelper::getDomains());
+        $domain_id_by_name = array_intersect_key($domain_id_by_name, $domains);
+        $blockpage_model = new siteBlockpageModel();
+        $blockpages = $blockpage_model->getByField([
+            'domain_id' => array_values($domain_id_by_name),
+            'final_page_id' => null,
+            'parent_id' => null,
+        ], true);
+
+        $result = [];
+        $domains = array_flip($domain_id_by_name);
+        foreach($blockpages as $p) {
+            $d = $domains[$p['domain_id']];
+            $full_url = '/'.trim($p['full_url'], '/');
+            if ($full_url !== '/') {
+                $full_url .= '/';
+            }
+            $result[$d][] = [
+                'id' => $p['id'],
+                'name' => $p['name'],
+                'status' => $p['status'] == 'final_published' ? 1 : 0,
+                'url_formatted' =>  $full_url,
+            ];
+        }
+        return $result;
+    }
+
+    /**=
      * Convert flat list of theme settings into hierarchical tree structure
      * based on group divider levels.
      *
@@ -1017,11 +1272,25 @@ HTACCESS;
         }
         $used_app_themes = array_unique($used_app_themes);
 
+        $all_domains = wa()->getRouting()->getDomains();
+        $used_apps_themes = [];
+        foreach($all_domains as $d) {
+            foreach(wa()->getRouting()->getRoutes($d) as $route_id => $route) {
+                if (is_array($route) && isset($route['app']) && $route['app'] !== $app_id) {
+                    foreach(['theme', 'theme_mobile'] as $k) {
+                        if (isset($route[$k])) {
+                            $used_apps_themes[$route[$k]] = true;
+                        }
+                    }
+                }
+            }
+        }
+
         $this->setTemplate('Themes.html', true);
 
         $this->display(array(
             'routes'          => $this->getRoutes(),
-            'domains'         => wa()->getRouting()->getDomains(),
+            'domains'         => $all_domains,
             'design_url'      => $this->design_url,
             'themes_url'      => $this->themes_url,
             'template_path'   => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
@@ -1030,6 +1299,7 @@ HTACCESS;
             'app_themes'      => $app_themes,
             'used_app_themes' => $used_app_themes,
             'options'         => $this->options,
+            'used_apps_themes' => $used_apps_themes,
         ));
     }
 

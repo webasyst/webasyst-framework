@@ -4,6 +4,7 @@
             {$r.theme = $r.theme|default:'default'}
             {$r.theme_mobile = $r.theme_mobile|default:'default'}
 
+            {if isset($app_themes[$r.theme])}
             <li>
                 <a href="#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings" title="">
                     <i class="fas fa-cog text-blue"></i>
@@ -11,16 +12,17 @@
                     <span class="count">{$app_themes[$r.theme]->getName()|escape}</span>
                 </a>
             </li>
+            {/if}
 
-            {if $r.theme != $r.theme_mobile}
-                <li>
-                    <a href="#/design/theme={$r.theme_mobile}&domain={$r._domain}&route={$r._id}&action=settings" title="">
-                        <i class="fas fa-cog text-blue"></i>
-                        {sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}
-                        <span class="count">{$app_themes[$r.theme_mobile]->getName()|escape}</span>
-                        <span class="count"><i class="fas fa-mobile-alt"></i></span>
-                    </a>
-                </li>
+            {if isset($app_themes[$r.theme_mobile]) && $r.theme != $r.theme_mobile}
+            <li>
+                <a href="#/design/theme={$r.theme_mobile}&domain={$r._domain}&route={$r._id}&action=settings" title="">
+                    <i class="fas fa-cog text-blue"></i>
+                    {sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}
+                    <span class="count">{$app_themes[$r.theme_mobile]->getName()|escape}</span>
+                    <span class="count"><i class="fas fa-mobile-alt"></i></span>
+                </a>
+            </li>
             {/if}
 
         {/foreach}
@@ -66,6 +68,8 @@
                         <div class="s-statuses">
                             {if !empty($_is_active)}
                                 <span class="s-status green bold"><i class="fas fa-check"></i> [`In use`]</span>
+                            {elseif isset($used_apps_themes[$_theme_id])}
+                                <span class="s-status"><i class="fas fa-check"></i> [`Used by other applications.`]</span>
                             {else}
                                 <span class="s-status gray">[`Not in use`]</span>
                             {/if}
@@ -92,6 +96,10 @@
                 $wrapper.on("click", "a", function(event) {
                     let $theme = $(this).closest(".s-theme-wrapper");
                     $("#wa-design-container").load( $theme.data("load") );
+
+                    const $preview_dd = $('.js-wa-preview-dd');
+                    $preview_dd.find('.wa-theme-preview').removeClass('dropdown-toggle').find('.fa-external-link-alt').removeClass('hidden');
+                    $preview_dd.find('.dropdown-body > ul').empty();
                 });
 
                 showOnLoad();

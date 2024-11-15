@@ -724,6 +724,33 @@ HTML;
         return '';
     }
 
+    public function variable($id, $params = array())
+    {
+        if ($id && wa()->appExists('site')) {
+            wa('site');
+            if (!class_exists('siteVariableModel')) {
+                return ''; // old version of Site app
+            }
+            $variable = (new siteVariableModel())->getById($id);
+
+            if (!$variable) {
+                return '';
+            }
+
+            try {
+                $this->view->assign($params);
+                return $this->view->fetch('string:'.$variable['content']);
+            } catch (Exception $e) {
+                if (waSystemConfig::isDebug()) {
+                    return '<pre class="error">'.htmlentities($e->getMessage(), ENT_QUOTES, 'utf-8')."</pre>";
+                }
+
+                waLog::log($e->__toString());
+                return '<div class="error">'._ws('Syntax error at block').' '.$id.'</div>';
+            }
+        }
+    }
+
     public function snippet($id)
     {
         return $this->block($id);

@@ -183,18 +183,33 @@
     <div class="article-body">
 
         {* Theme name *}
-        <h1 class="wa-theme-name wide">
+        <h1 class="wa-theme-name wide custom-mb-16">
             {sprintf('[s`%s design theme`]', $theme.name|escape)}
             <span class="hint">
                 {$theme.version}
             </span>
         </h1>
 
-        <div class="wa-theme-name-section">
+        {if empty($show_theme_start_using)}
+            {$show_theme_start_using = !$theme_routes && empty($theme_warning_requirements) && empty($theme_original_warning_requirements) && empty($theme_parent_warning_requirements)}
+        {/if}
+        <div class="wa-theme-name-section custom-mb-24">
+
+            {if $has_theme_usage}
+                <a id="theme-start-using" href="#" class="js-theme-start-using button green small">[s`Using`]</a>
+            {elseif !empty($show_theme_start_using) && !$_is_trial}
+                <a id="theme-start-using" href="#" class="js-theme-start-using button green small">[s`Start using`]</a>
+            {/if}
+            {if !empty($preview_url)}
+                <a class="wa-theme-preview button dark-gray nowrap small" style="display:none;" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">
+                    {if $has_theme_usage}[s`View your site`]{else}[s`Preview`]{/if}
+                    <i class="fas fa-external-link-alt fa-xs custom-ml-4"></i>
+                </a>
+            {/if}
 
             {* Theme actions *}
-            <div class="dropdown js-theme-actions-dropdown custom-mb-24 custom-mr-24">
-                <button class="dropdown-toggle button small outlined light-1 {if $wa->isMobile()} full-width{/if}" type="button">[s`Actions with the theme`]</button>
+            <div class="dropdown js-theme-actions-dropdown custom-mr-8">
+                <button class="dropdown-toggle button small outlined light-1 {if $wa->isMobile()} full-width{/if}" type="button">[s`Actions`]</button>
                 <div class="dropdown-body dd-long dd-wide">
                     <ul class="menu">
                         {if !$_is_trial}
@@ -296,24 +311,24 @@
                 </div>
             </div>
 
-            {if ($theme_routes || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
+            {if ($has_theme_usage_any_app || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
                 {* Search settings *}
-                <div class="search-setting-wrapper custom-mb-24 custom-mr-8">
+                <div class="search-setting-wrapper">
                     <div class="state-with-inner-icon left width-100">
                         <span class="icon"><i class="fas fa-search"></i></span>
-                        <input type="search" class="small js-search-setting width-100" autocomplete="off" placeholder="[s`Find setting`]" />
+                        <input type="search" class="js-search-setting width-100 small" autocomplete="off" placeholder="[s`Find setting`]" />
                     </div>
                 </div>
             {/if}
 
             {* Theme help *}
             {if !empty($support) || !empty($instruction)}
-                <div class="wa-theme-help custom-mb-24">
+                <div class="wa-theme-help">
                     {if !empty($instruction)}
-                        <a class="button nobutton small" href="{$instruction|escape}" rel="noopener" target="_blank">[s`User manual`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+                        <a class="button nobutton small nowrap" href="{$instruction|escape}" rel="noopener" target="_blank">[s`User manual`] <i class="fas fa-external-link-alt fa-xs"></i></a>
                     {/if}
                     {if !empty($support)}
-                        <a class="button nobutton small" href="{$support|escape}" rel="noopener" target="_blank">[s`User support`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+                        <a class="button nobutton small nowrap" href="{$support|escape}" rel="noopener" target="_blank">[s`User support`] <i class="fas fa-external-link-alt fa-xs"></i></a>
                     {/if}
                 </div>
             {/if}
@@ -345,7 +360,7 @@
 
                 {elseif $theme.type == waTheme::ORIGINAL}
 
-                    {if $theme_routes && !empty($theme_warning_requirements)}
+                    {if $has_theme_usage_any_app && !empty($theme_warning_requirements)}
                         <div class="alert warning">
                             <ul class="menu">
                                 {foreach $theme_warning_requirements as $requirement}
@@ -443,34 +458,37 @@
                 {/if}
             </div>
 
-            {if !$theme_routes && !$_is_trial}
+            {if !$has_theme_usage && !$_is_trial && (!$has_theme_usage_any_app || $show_theme_start_using)}
             <div class="wa-theme-use custom-mb-24">
 
-                {if $cover}
-                    <p>
-                        <img src="{$cover}" class="wa-theme-cover" />
-                    </p>
+                {if !$has_theme_usage_any_app}
+                    {if $cover}
+                        <p>
+                            <img src="{$cover}" class="wa-theme-cover" />
+                        </p>
+                    {/if}
+
+                    {if !empty($theme_warning_requirements)}
+                        <ul>
+                            {foreach $theme_warning_requirements as $requirement}
+                                <li><b>{$requirement.warning}</b></li>
+                            {/foreach}
+                        </ul>
+                    {elseif !empty($theme_original_warning_requirements)}
+                        <ul>
+                            {foreach $theme_original_warning_requirements as $requirement}
+                                <li><b>{$requirement.warning}</b></li>
+                            {/foreach}
+                        </ul>
+                    {elseif !empty($theme_parent_warning_requirements)}
+                        <ul>
+                            {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
+                                <li><b>{$requirement.warning}</b></li>
+                            {/foreach}
+                        </ul>
+                    {/if}
                 {/if}
 
-                {if !empty($theme_warning_requirements)}
-                    <ul>
-                        {foreach $theme_warning_requirements as $requirement}
-                            <li><b>{$requirement.warning}</b></li>
-                        {/foreach}
-                    </ul>
-                {elseif !empty($theme_original_warning_requirements)}
-                    <ul>
-                        {foreach $theme_original_warning_requirements as $requirement}
-                            <li><b>{$requirement.warning}</b></li>
-                        {/foreach}
-                    </ul>
-                {elseif !empty($theme_parent_warning_requirements)}
-                    <ul>
-                        {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
-                            <li><b>{$requirement.warning}</b></li>
-                        {/foreach}
-                    </ul>
-                {/if}
             </div>
             {/if}
 
@@ -535,15 +553,15 @@
                             </div>
                             {$_theme_usages = []}
                             <div class="value">
-                                <ul>
+                                <ul class="js-wa-preview-dd-content">
                                 {foreach $theme_routes as $_r}
                                     <li>
                                         {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
                                             {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
                                         {/if}
                                         <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
-                                            {$_r._domain_decoded}/{$_r.url}
-                                            <i class="fas fa-external-link-alt fa-xs"></i>
+                                            <span>{$_r._domain_decoded}/{$_r.url|replace:'*':''}</span>
+                                            <span class="count small"><i class="fas fa-external-link-alt fa-xs"></i></span>
                                         </a>
                                     </li>
                                 {/foreach}
@@ -562,7 +580,7 @@
             </div>
         </div>
 
-        {if $theme_routes || $_is_trial}
+        {if $has_theme_usage_any_app || $_is_trial}
             {* THEME SETTINGS FORM *}
             {if !empty($settings.items)}
 
@@ -597,7 +615,7 @@
         {* Theme navigation *}
         <div class="js-theme-settings-hidden-list" id="wa-theme-settings-hidden-list" style="display: none">
 {/if}
-            {if ($theme_routes || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
+            {if ($has_theme_usage_any_app || $_is_trial || $has_theme_usage) && !empty($settings.items) && !empty($global_group_divideres)}
 
                 <ul class="menu js-theme-settings-list">
                     <li class="{if !$is_only_settings}selected {/if}bottom-padded hidden">
@@ -621,18 +639,6 @@
                 </div>
             {/if}
 
-            {if !$theme_routes
-            && !$_is_trial
-            && empty($theme_warning_requirements)
-            && empty($theme_original_warning_requirements)
-            && empty($theme_parent_warning_requirements)
-            }
-                <div class="align-center custom-px-12 custom-my-12">
-                    <a id="theme-start-using" href="#" class="button green small rounded js-theme-start-using">
-                        [s`Start using this theme`]
-                    </a>
-                </div>
-            {/if}
 {if !$is_only_settings}
         </div>
     </div>
@@ -647,6 +653,38 @@
     'collapse'      => _ws('Collapse'),
     'saving'        => _ws('Saving...')
 ]}
+
+{capture assign="_route_item"}
+<tr>
+    <td>
+        <label class="flexbox space-8">
+            <span class="wa-checkbox custom-mt-2">
+                <input class="js-route-theme-checkbox" type="checkbox" name="routes[{*ID*}]" value="1" checked data-used-theme data-used-theme-mobile>
+                <span>
+                    <span class="icon">
+                        <i class="fas fa-check"></i>
+                    </span>
+                </span>
+            </span>
+            <span class="js-route-theme-no-support icon custom-mt-2" title="{'[`Not supported by theme “%s”.`]'|sprintf:$theme.name|escape}">
+                <i class="fas fa-ban text-orange"></i>
+            </span>
+
+            <span class="custom-pt-2 flexbox space-4 break-word">
+                <span class="js-route-app-icon icon custom-pr-4"><img src="" alt=""></span>
+                <span class="js-route-name small"></span>
+                {*<span class="js-route-url small custom-ml-12"></span>*}
+            </span>
+        </label>
+    </td>
+    <td class="width-40 gray small">
+        <span class="js-route-used-themes">
+            {* <div><i class="fas fa-check fa-xs custom-mr-4"></i>Name theme</div> *}
+        </span>
+    </td>
+</tr>
+{/capture}
+
 <script>
     (function ($) {
 
@@ -660,7 +698,7 @@
         if (url_params.action) {
             action = ''
         }
-        $('.js-theme-info-link').attr('href', '#/design/theme={$theme.id|escape}' + action).on('click', () => sessionStorage.removeItem('wa_design_menu_id'));
+        $('.js-theme-info-link').attr('href', '{$design_url}theme={$theme.id|escape}' + action).on('click', () => sessionStorage.removeItem('wa_design_menu_id'));
 
         $('.js-tabs-menu.js-design-actions').find('[data-action="theme"] a').attr('href', '#/design/theme={$theme.id|escape}');
 
@@ -697,16 +735,47 @@
             $wrapper: $("#{$id}"),
             theme_id: {$theme.id|json_encode},
             theme_routes: {$theme_routes|json_encode},
+            has_child_themes: !{empty($child_themes)|json_encode},
             design_url: {$design_url|json_encode},
             locale: {$_locale|json_encode},
             wa_url: {$wa_url|json_encode},
+            has_theme_usage: {$has_theme_usage|json_encode},
+            current_domain: {$current_domain|json_encode},
+            data: {
+                settlements_by_domain: {$settlements_by_domain|json_encode}
+            },
             templates: {
-                toggle_group_all_settings: '<span class="button custom-ml-16 js-group-all-settings light-gray rounded smallest wa-theme-group-all-settings" style="font-size: 73%;padding: 3px 6px;">[s`Show all group’s settings`] <i class="js-icon fas fa-chevron-down"></i></span>'
+                toggle_group_all_settings: '<span class="button custom-ml-16 js-group-all-settings light-gray rounded smallest wa-theme-group-all-settings" style="font-size: 73%;padding: 3px 6px;">[s`Show all group’s settings`] <i class="js-icon fas fa-chevron-down"></i></span>',
+                using_dialog_route_item: {$_route_item|strip|json_encode}
+            },
+            locales: {
+                theme_not_installed: '[s`The theme is not installed.`]'
             }
         });
 
-
         $('#theme-settings [data-wa-tooltip-content]').waTooltip();
+
+        {if waRequest::get('show_start_using')}
+            $('.js-theme-start-using').trigger('click');
+        {/if}
+
+        const $preview_dd = $('.js-wa-preview-dd');
+        const $preview_btn = $preview_dd.find('.wa-theme-preview');
+        const $preview_btn_ext_icon = $preview_btn.find('.fa-external-link-alt');
+        const $preview_menu = $preview_dd.find('.dropdown-body > ul');
+        $preview_btn.removeClass('dropdown-toggle');
+        $preview_btn_ext_icon.removeClass('hidden');
+        $preview_menu.empty();
+        const $preview_dd_content = $('.js-wa-preview-dd-content li');
+        if ($preview_dd_content.length > 1) {
+            $preview_btn.addClass('dropdown-toggle');
+            $preview_btn_ext_icon.addClass('hidden');
+            $preview_menu.prepend($preview_dd_content.clone());
+
+            $preview_dd.waDropdown({
+                hover: false,
+            });
+        }
     })(jQuery);
 </script>
 
@@ -717,7 +786,7 @@
     [s`Scroll up`]
 </div>
 
-{if ($theme_routes || $_is_trial) && !empty($settings.items)}
+{if ($theme_routes || $_is_trial || $has_theme_usage_any_app) && !empty($settings.items)}
     {include file='./Bottombar.inc.html' _params=['form_id' => 'theme-settings'] inline}
 {/if}
 {/if}

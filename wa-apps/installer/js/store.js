@@ -736,6 +736,16 @@ var InstallerStore = (function ($) {
                 html,
                 esc: false,
                 onOpen($dialog, dialog) {
+                    if (html.includes('$.waDialog.alert')) {
+                        const textMatch = html.match(/text:\s*"(.*?)",\s*button_title:/s);
+                        const text = textMatch ? textMatch[1] : null;
+                        if (text) {
+                            console.error(JSON.parse(`"${text}"`))
+                        }
+                        dialog.close();
+                        $dialog.next('.dialog').remove();
+                    }
+
                     $dialog.trigger('installer_dialog_ready', [dialog, $dialog]);
                     $dialog.on('installer_installation_successfull', function() {
                         if (that.options.in_app) {
@@ -744,6 +754,11 @@ var InstallerStore = (function ($) {
                             dialog.resize();
 
                             dialog.$content.find('.js-go-to-settings').on('click', function() {
+
+                                if(typeof data?.id === 'number') {
+                                    data.id = data?.slug.split('/').pop();
+                                }
+
                                 $(document).trigger('installer_after_install_go_to_settings', {
                                     type: data?.type,
                                     id: data?.id,

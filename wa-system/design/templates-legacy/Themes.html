@@ -126,7 +126,7 @@
                                 {current($domains)}/{else}
                                 <select name="domain" class="create-new-route-control">
                                     {foreach $domains as $d}
-                                    <option value="{$d}">{str_replace('www.','',$d)|truncate:23:'...':false:true}</option>
+                                    <option value="{$d}">{str_replace('www.','',waIdna::dec($d))|truncate:23:'...':false:true}</option>
                                     {/foreach}
                                 </select>/
                                 {/if}

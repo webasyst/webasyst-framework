@@ -5,6 +5,7 @@ class waPluginsActions extends waActions
     protected $plugins_hash = '#/plugins';
     protected $is_ajax = true;
     protected $shadowed = false;
+    protected $is_no_sidebar_mode = false;
 
     public function defaultAction()
     {
@@ -25,7 +26,11 @@ class waPluginsActions extends waActions
     protected function getTemplatePath($action = null)
     {
         if (wa()->whichUI($this->getAppId()) == '2.0') {
-            $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates/';
+            if ($this->is_no_sidebar_mode) {
+                $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates-no-sidebar/';
+            } else {
+                $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates/';
+            }
         } else {
             $path = $this->getConfig()->getRootPath() . '/wa-system/plugin/templates-legacy/';
         }

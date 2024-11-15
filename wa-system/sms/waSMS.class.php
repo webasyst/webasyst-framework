@@ -41,11 +41,11 @@ class waSMS
         }
     }
 
-    public static function adapterExists($from = null)
+    public static function adapterExists($from = null, $do_filter_not_installed = false)
     {
         try {
             $sms = new self();
-            return !!$sms->getAdapter($from);
+            return !!$sms->getAdapter($from, $do_filter_not_installed);
         } catch (Exception $e) {
             return false;
         }
@@ -56,7 +56,7 @@ class waSMS
      * @throws waException
      * @return waSMSAdapter
      */
-    protected function getAdapter($from = null)
+    protected function getAdapter($from = null, $do_filter_not_installed = false)
     {
         $config = self::$config;
         if (!empty($config)) {
@@ -67,6 +67,9 @@ class waSMS
             $config = array_filter($config, function ($adapter_config) use ($installed_adapters) {
                 return in_array($adapter_config['adapter'], $installed_adapters);
             });
+            if ($do_filter_not_installed) {
+                self::$config = $config;
+            }
         }
         
         if (empty($config)) {

@@ -1757,7 +1757,7 @@ ul.tabs { list-style-type: none; margin: 0; padding: 0 0 0 1em; display: flex; o
 ul.tabs::-webkit-scrollbar { display: none; }
 ul.tabs > li { text-align: left; position: relative; flex: 0 0 auto; padding: 0; display: flex; align-items: center; }
 ul.tabs > li:not(:empty):not(:last-child) { margin-right: 1.5em; }
-ul.tabs > li > a { outline: none; font-style: normal; text-decoration: none; color: var(--menu-link-color); padding: 0.75em 0; cursor: pointer; flex: auto; border-bottom: 0.25em solid transparent; }
+ul.tabs > li > a { outline: none; font-style: normal; text-decoration: none; color: var(--menu-link-color); padding: 0.75em 0; cursor: pointer; flex: auto; border-bottom: 0.25em solid transparent; width: 100%; }
 ul.tabs > li > a i,
 ul.tabs > li > a svg,
 ul.tabs > li > a img { font-size: 1em; max-height: 1em; margin: 0 0.25em 0 0; }

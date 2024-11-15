@@ -42,6 +42,7 @@
                                         }
                                     });
                                 });
+                                return false;
                             });
                         </script>
                     </li>
@@ -202,7 +203,7 @@
 <script>
     $(document).ready(function () {
         let is_error = false;
-        $(".wa-theme-templates").on('click', 'a', function () {
+        $('.js-tab-content[data-id="edit"]').off('click.wa_theme').on('click.wa_theme', '.wa-theme-templates a', function () {
             if (!waDesignConfirm()) return false;
             $(".js-tab-content li.selected").removeClass('selected');
             $(this).parent().addClass('selected');

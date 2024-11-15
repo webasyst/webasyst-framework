@@ -32,79 +32,73 @@
 {* Theme Start using *}
 <div class="dialog" id="wa-theme-start-using-dialog">
     <div class="dialog-background"></div>
-    <form class="dialog-body">
-        <h1 class="dialog-header">{$theme.name}</h1>
+    <form class="dialog-body dynamic-content">
+        <h1 class="dialog-header break-word">[s`Start using theme`] {$theme.name}</h1>
         <div class="dialog-content">
-            <p class="small">{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
             <div class="fields">
-                {foreach $routes as $r name=_routeslist}
-                <div class="field custom-mt-8">
-                    <div class="name for-checkbox">{if $smarty.foreach._routeslist.iteration == 1}[s`Existing route`]{/if}</div>
+                <div class="field vertical">
+                    <div class="name bold custom-mb-8">[s`Site`]</div>
                     <div class="value">
-                        <label>
-                            <span class="wa-radio">
-                                <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
-                                <span></span>
-                            </span>
-                            {waIdna::dec($r._domain)}/{$r.url}
-                            <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
-                        </label>
-                    </div>
-                </div>
-                {foreachelse}
-                    <div class="field">
-                        <div class="name">[s`Existing route`]</div>
-                        <div class="value gray">
-                            {sprintf('[s`There are no routes for %s app on this site yet.`]', $app.name)}
-                        </div>
-                    </div>
-                {/foreach}
-                <div class="field">
-                    <div class="name for-input">[s`New route`]</div>
-                    <div class="value">
-                        <div class="nowrap">
-                            <label>
-                            <span class="wa-radio">
-                                <input name="route" id="create-new-route-choice" value="new" type="radio"{if !count($routes)} checked{/if}>
-                                <span></span>
-                            </span>
-                            </label>
-                            {if count($domains) == 1}
-                                <input name="domain" type="hidden" value="{current($domains)}" class="small">
-                                {current($domains)}/{else}
-                                <div class="wa-select small">
-                                    <select name="domain" class="create-new-route-control">
-                                        {foreach $domains as $d}
-                                            <option value="{$d}">{str_replace('www.','',$d)|truncate:23:'...':false:true}</option>
-                                        {/foreach}
-                                    </select>/
-                                </div>
-                            {/if}
-                            <input type="text" name="url" value="" placeholder="*" class="shorter create-new-route-control">
+                        <div class="wa-select large wide">
+                            <select name="domain" class="create-new-route-control text-ellipsis bold">
+                                {foreach $domains as $d}
+                                    <option value="{$d}"{if $d === $current_domain} selected{/if}>{str_replace('www.','',waIdna::dec($d))|truncate:64:'...':false:true}</option>
+                                {/foreach}
+                            </select>
                         </div>
                     </div>
                 </div>
 
-                <div class="small custom-mt-16 custom-pd-8">
-                    <hr>
-                    <label>
-                        <span class="wa-checkbox">
-                            <input type="checkbox" name="mobile_only" value="1" {if $theme.id == 'mobile'}checked{/if}>
-                            <span>
-                                <span class="icon">
-                                    <i class="fas fa-check"></i>
-                                </span>
-                            </span>
-                        </span>
-                        [s`Apply this theme for mobile devices only`]
-                    </label>
+                <div id="js-alert-has-not-support-theme" class="alert warning small custom-mt-20 hidden">
+                    <div class="flexbox space-8">
+                        <div><i class="fas fa-ban"></i></div>
+                        <div>{'[s`The theme cannot be used on the entire website. Below are marked pages and sections which are not supported by theme “%s”.`]'|sprintf:$theme.name|escape}</div>
+                    </div>
                 </div>
+
+                <p class="small custom-mt-20">[s`The use of a design theme can be selected only for top-level sections and pages in the site map. Any existing subpages inherit their theme selection.`]</p>
+
+                <table id="wa-theme-start-using-dialog-routes">
+                    <thead>
+                        <tr>
+                            <th>
+                                <label>
+                                    <span class="wa-checkbox">
+                                        <input type="checkbox" name="use_all_settlements" value="1"{if empty($has_theme_usage)} checked{/if}>
+                                        <span>
+                                            <span class="icon">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                        </span>
+                                    </span>
+                                    <span>[s`On the entire website`]</span>
+                                </label>
+                            </th>
+                            <th class="gray">[s`Currently in use`]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
 
             </div>
         </div>
         <div class="dialog-footer">
+            <div class="small custom-mb-24">
+                <label>
+                    <span class="wa-checkbox">
+                        <input type="checkbox" name="mobile_only" value="1" {if $theme.id == 'mobile'}checked{/if}>
+                        <span>
+                            <span class="icon">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </span>
+                    </span>
+                    [s`Apply this theme for mobile devices only`]
+                </label>
+            </div>
             <input type="hidden" name="theme" value="{$theme.id}">
-            <input type="submit" class="button green" value="{sprintf("[s`Start using %s theme`]", $theme.name)}">
+            <input type="submit" class="button green" value="[s`Start using`]">
             <a href="#" class="js-close-dialog button light-gray">[s`Cancel`]</a>
         </div>
     </form>
@@ -177,7 +171,7 @@
                                         <input name="related" type="radio" value="1" checked="checked">
                                         <span></span>
                                     </span>
-                                    {'[`All %s themes (recommended)`]'|sprintf:$theme.name|escape}
+                                    {'[s`All %s themes (recommended)`]'|sprintf:$theme.name|escape}
                                 </label>
                             </li>
                             <li>
@@ -186,7 +180,7 @@
                                         <input name="related" type="radio" value="0">
                                         <span></span>
                                     </span>
-                                    {'[`Only %s theme for this app (%s)`]'|sprintf:$theme.name:ifempty($apps[$theme.app]['name'],$theme.app)|escape}
+                                    {'[s`Only %s theme for this app (%s)`]'|sprintf:$theme.name:ifempty($apps[$theme.app]['name'],$theme.app)|escape}
                                 </label>
                             </li>
                         </ul>
@@ -210,7 +204,7 @@
             <ul class="zebra">
                 {foreach $theme.related_themes as $related_theme_id => $related_theme}
                     <li{if ($theme.app_id==$related_theme.app_id)||($theme.parent_theme_id==$related_theme_id)} class="bold"{/if}>
-                        <a href="?module=design&amp;action=themeDownload&amp;theme={$related_theme.id}&amp;app_id={$related_theme.app_id}">
+                        <a href="?module=design&amp;action=themeDownload&amp;theme={$related_theme.id}&amp;app_id={$related_theme.app_id}" download>
                             <i class="fas fa-save text-blue custom-mr-4"></i>
                             <span class="small">{sprintf('[s`%s theme (version %s) for %s app`]',$related_theme.name,$related_theme.version,ifempty($apps[$related_theme.app_id]['name'],$related_theme.app))|escape} <span class="hint">.tar.gz</span></span>
                         </a>
@@ -302,8 +296,8 @@
         <div class="dialog-content">
             <ol style="{if !empty($theme_routes) && !empty($child_themes)}padding-left: 16px;{else}padding-left: 0;list-style: none;{/if}">
                 {if !empty($theme_routes)}
-                    <li>
-                        <p class="small">
+                    <li{if !empty($child_themes)} class="custom-mb-32" {/if}>
+                        <p>
                             [s`This design theme is still in use on your website.`]<br>
                             [s`To delete this theme, first select another theme in the following settlements’ settings:`]
                         </p>
@@ -327,7 +321,7 @@
                         </p>
                         <ul class="zebra">
                             {foreach $child_themes as $_theme}
-                                <li>{sprintf('[`“%s” theme for the “%s” app`]', $_theme.name|escape, $_theme.app_name|escape)}</li>
+                                <li>{sprintf('[s`“%s” theme for the “%s” app`]', $_theme.name|escape, $_theme.app_name|escape)}</li>
                             {/foreach}
                         </ul>
                     </li>
