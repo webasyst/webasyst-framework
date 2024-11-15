@@ -15,7 +15,7 @@
             <div class="wa-field">
                 <div class="wa-name">{$info.name}</div>
                 <div class="wa-value">
-                    {if $info.type === 'Checkbox'}
+                    {if !empty($info.type) && $info.type === 'Checkbox'}
                         <input type="checkbox" {if $info.value}checked{/if} disabled style="font-size: 0.75em;">
                     {else}
                         {$info.value}

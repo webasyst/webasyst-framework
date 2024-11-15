@@ -1,0 +1,153 @@
+{if !empty($is_bp_header)}
+    <!-- css -->
+    <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+{/if}
+ <header class="globalheader"{if $theme_settings.header_custom_image} style="background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');"{/if}>
+
+     {if count($wa->apps())>0 || $wa->isAuthEnabled()}
+
+         <!-- GLOBAL NAVIGATION -->
+         <div id="globalnav"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};"{/if}>
+             <div class="container">
+                 <div class="globalnav-bar wa-flex align-items-center space-3">
+                     {if $theme_settings.header_sitename || $theme_settings.logo}
+                         <h2>
+                             <a href="{$wa_url}">
+                                 {if $theme_settings.logo}
+                                     <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
+                                     <span>{$wa->accountName()}</span>
+                                 {else}
+                                     {$wa->accountName()}
+                                 {/if}
+                             </a>
+                         </h2>
+                     {/if}
+                     {$_hide_cart = $wa->globals("hideCart")}
+
+                     <nav class="wa-flex wa-flex-fill overflow-hidden{if !empty($_hide_cart) && !$wa->isAuthEnabled()} wa-mr-0{/if}">
+                         {strip}
+                         <ul class="apps">
+                                 {$_links = []}
+                                 {if $theme_settings.header_links == 'site-pages'}
+                                     {if $wa->site}{$_links = $wa->site->pages()}{/if}
+                                 {elseif $theme_settings.header_links == 'shop-pages'}
+                                     {if $wa->shop}{$_links = $wa->shop->pages()}{/if}
+                                 {elseif $theme_settings.header_links == 'blog-pages'}
+                                     {if $wa->blog}{$_links = $wa->blog->pages()}{/if}
+                                 {elseif $theme_settings.header_links == 'photos-pages'}
+                                     {if $wa->photos}{$_links = $wa->photos->pages()}{/if}
+                                 {elseif $theme_settings.header_links == 'hub-pages'}
+                                     {if $wa->hub}{$_links = $wa->hub->pages()}{/if}
+                                 {elseif $theme_settings.header_links != 'none'}
+                                     {$_links = $wa->apps()}
+                                 {/if}
+                                 {foreach $_links as $a}
+                                 {* remove empty($is_bp_header) condition after fix urls *}
+                                     {if empty($is_bp_header) && !($a.url == $wa_url && $a.name == $wa->accountName())}
+                                         <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                                     {/if}
+                                 {/foreach}
+                             </ul>
+                         {/strip}
+                     </nav>
+
+                     <div class="wa-flex wa-ml-auto wa-mr-0">
+                         {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
+                         && !empty($theme_settings.show_cart) && empty($_hide_cart)}
+                             <!-- cart -->
+                             {$cart_total = $wa->shop->cart->total()}
+                             <div id="cart" class="cart wa-flex{if !$cart_total} empty{/if}">
+                                 <div class="container">
+                                 <a href="{$_cart_url}" class="cart-summary">
+                                     <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                         <use xlink:href="#img-cart"></use>
+                                     </svg>
+                                     <span class="wa-mr-8 wa-ml-4 h-cart-title">[s`Cart`]</span>
+                                     <strong class="s-badge s-badge-rounded cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                                 </a>
+                                 <div id="cart-content">
+                                     {* <div class="cart-just-added">
+                                        %s is now in your shopping cart
+                                     </div> *}
+                                 </div>
+                                 <a href="{$_cart_url}" class="cart-to-checkout" style="display: none;">
+                                     [s`View cart`]
+                                 </a>
+
+                                 {strip}
+                                     {capture assign="_loading_template"}
+                                         <div class="s-loading-section">
+                                             <div class="s-loading-content">
+                                                 <i class="icon16 loading"></i>
+                                             </div>
+                                         </div>
+                                     {/capture}
+                                 {/strip}
+
+                                 <script>
+                                     ( function($) {
+                                         var is_loading = false;
+                                         $("#cart").on("click", function() {
+                                             if (!is_loading) {
+                                                 is_loading = true;
+                                                 $("body").append({$_loading_template|json_encode});
+                                             }
+                                         });
+                                     })(jQuery);
+                                 </script>
+                                 </div>
+                             </div>
+                         {/if}
+
+                         {if $wa->isAuthEnabled()}
+                             <!-- user auth -->
+                             {strip}
+                                 <ul class="auth align-items-center space-05" id="js-header-auth-wrapper">
+                                     {if $wa->user()->isAuth()}
+                                         {if $wa->myUrl()}
+                                             <li>
+                                                 <a href="{$wa->myUrl()}"><i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i></a>
+                                             </li>
+                                         {else}
+                                             <li><strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></li>
+                                         {/if}
+                                         <li><a href="?logout" class="auth-logout">[s`Log out`]</a></li>
+                                     {else}
+                                         <li>
+                                             <a href="{$wa->loginUrl()}" class="not-visited text-white">
+                                                 <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                                     <use xlink:href="#img-person"></use>
+                                                 </svg>
+                                             </a>
+                                         </li>
+                                         <li>
+                                             <a href="{$wa->loginUrl()}" class="not-visited text-gray">[s`Log in`]</a>
+                                         </li>
+                                         {*<li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>*}
+                                     {/if}
+                                 </ul>
+                             {/strip}
+                         {/if}
+                     </div>
+                     <button id="mobile-nav-toggle">
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
+                     </button>
+                 </div>
+             </div>
+         </div>
+     {/if}
+
+     {if empty ($_is_order_page)}
+     <!-- APP NAVIGATION -->
+     <div class="container appnav wa-flex justify-content-between align-items-center" id="header-container"{if $theme_settings.header_scheme|strstr:'andgray'} style="border-top: 1px solid transparent;"{/if}>
+         {if $wa->globals('isMyAccount')}
+
+             {* focused personal accounts navigation *}
+             {$wa->myNav('pages')}
+
+         {else}
+             {include file="`$wa_active_theme_path`/header.html" inline}
+         {/if}
+     </div>
+     {/if}
+ </header>

@@ -1,0 +1,44 @@
+
+{$is_block = $data->data['is_block']}
+{$static_classes_props = 'site-block-custom-code style-wrapper f-w'}
+{if $is_block}
+    <section class="{$static_classes_props} p-t-20 p-b-20 m-l-a m-r-a" style="width: fit-content;" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+        {ifset($data->data, 'html', '')}
+    </section>
+{else}
+<div class="{$static_classes_props} p-t-10 p-b-10 m-l-a m-r-a" style="width: fit-content;" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    {ifset($data->data, 'html', '')}
+</div>
+{/if}
+<style id="style-tag">
+    {ifset($data->data, 'css', '')}
+</style>
+
+<script id="script-tag">$(function() { "use strict";
+    {ifset($data->data, 'js', '')}
+});
+</script>
+
+{if $is_backend}
+<script>$(function() { "use strict";
+
+    const block_id = {$data->getId()|json_encode};
+    const wrapper_class = '.site-block-custom-code[data-block-id="'+block_id+'"]';
+    const $wrapper_parent = $(wrapper_class).parent();
+
+    $wrapper_parent.on('block_data_updated', wrapper_class, function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (+updated_block_id === +block_id) {
+            //updateBlockStyles($(this), data, block_id);
+            $(this).html(data.html);
+        }
+    });
+});
+</script>
+{else}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.site-block-heading[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+});</script>
+{/if}

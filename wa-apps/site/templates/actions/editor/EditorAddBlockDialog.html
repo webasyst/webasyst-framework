@@ -1,0 +1,41 @@
+{*
+ * This goes inside #js-add-block-dialog .dialog-content
+ * see JS: SiteEditor.openAddBlockDialog()
+ *}
+
+<h1>[`Block library`]</h1>
+
+<ul id="js-list-of-blocks" class="separated menu">
+    {foreach $library as $category}
+        <li><h3>{$category.title|escape}</h3></li>
+        {foreach $category.blocks as $b}
+            {if !empty($b.image)}
+                {* !!! TODO $b.image is a 400x180 image *}
+            {/if}
+            <li><button data-type-id="{$b.id|escape}" {if !empty($b.disabled)}disabled{/if}>[`Add`] {$b.title|escape}</button></li>
+        {/foreach}
+    {/foreach}
+</ul>
+
+<script>(function() { "use strict";
+
+    const insert_place_params = {json_encode($insert_place_params)};
+
+    var $list_of_blocks = $('#js-list-of-blocks');
+    var $dialog_content = $list_of_blocks.closest('.dialog-content');
+    var dialog = $list_of_blocks.closest('.dialog').data('dialog');
+
+    $list_of_blocks.on('click', '[data-type-id]', function() {
+
+        const type_id = $(this).data('type-id');
+
+        $.post('?module=editor&action=addBlock', Object.assign({
+            type_id: type_id
+        }, insert_place_params), function(html) {
+            $dialog_content.trigger('site_block_added', [html]);
+            dialog.close();
+        });
+
+    });
+
+})();</script>

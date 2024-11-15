@@ -22,44 +22,90 @@ class siteConfig extends waAppConfig
 
     public function getRouting($route = array(), $dispatch = true)
     {
-        if ($this->_routes === null || $dispatch) {
+        if (empty($route['is_backend_route'])) {
+            $url_type = isset($route['url_type']) ? $route['url_type'] : 0;
+        } else {
+            $url_type = 'backend';
+        }
+
+        if (!isset($this->_routes[$url_type]) || $dispatch) {
             $routes = parent::getRouting($route);
-            /**
-             * Extend routing via plugin routes
-             * @event routing
-             * @param array $routes
-             * @return array routes collected for every plugin
-             */
-            $result = wa()->event(array('site', 'routing'), $routes);
-            $all_plugins_routes = array();
-            foreach ($result as $plugin_id => $routing_rules) {
-                if ($routing_rules) {
-                    $plugin = str_replace('-plugin', '', $plugin_id);
-                    if ($plugin == $plugin_id) {
-                        // apps can not add routes to other apps
-                        continue;
-                    }
-                    foreach ($routing_rules as $url => &$route) {
-                        if (!is_array($route)) {
-                            list($route_ar['module'], $route_ar['action']) = explode('/', $route);
-                            $route = $route_ar;
+            $routes = ifset($routes, $url_type, $routes[0]);
+
+            if ($routes) {
+                /**
+                 * Extend routing via plugin routes
+                 * @event routing
+                 * @param array $routes
+                 * @return array routes collected for every plugin
+                 */
+                $result = wa()->event(array('site', 'routing'), $routes);
+                $all_plugins_routes = array();
+                foreach ($result as $plugin_id => $routing_rules) {
+                    if ($routing_rules) {
+                        $plugin = str_replace('-plugin', '', $plugin_id);
+                        if ($plugin == $plugin_id) {
+                            // apps can not add routes to other apps
+                            continue;
                         }
-                        $route['plugin'] = $plugin;
-                        $route['app'] = $this->application;
-                        $all_plugins_routes[$url] = $route;
+                        foreach ($routing_rules as $url => &$route) {
+                            if (!is_array($route)) {
+                                list($route_ar['module'], $route_ar['action']) = explode('/', $route);
+                                $route = $route_ar;
+                            }
+                            $route['plugin'] = $plugin;
+                            $route['app'] = $this->application;
+                            $all_plugins_routes[$url] = $route;
+                        }
+                        unset($route);
                     }
-                    unset($route);
                 }
+                $routes = array_merge($all_plugins_routes, $routes);
             }
-            $routes = array_merge($all_plugins_routes, $routes);
             if ($dispatch) {
                 return $routes;
             }
-            $this->_routes = $routes;
+            $this->_routes[$url_type] = $routes;
         }
-        return $this->_routes;
+        return $this->_routes[$url_type];
     }
 
+    protected function getRoutingRules($route = array())
+    {
+        $routes = [];
+        $path = $this->getRoutingPath('frontend');
+        if (file_exists($path)) {
+            $routes[0] = include($path);
+        }
+
+        if ($this->getEnvironment() === 'backend') {
+            $path = $this->getRoutingPath('backend');
+            if ($path && file_exists($path)) {
+                $routes['backend'] = include($path);
+            } else {
+                // UI 1.3 does not use backend routing
+                $routes['backend'] = ['' => 'backend/'];
+            }
+        }
+
+        return $routes;
+    }
+
+    protected function getRoutingPath($type)
+    {
+        if ($type === null) {
+            $type = $this->getEnvironment();
+        }
+        if ($type === 'backend' && wa($this->application)->whichUI() == '1.3') {
+            return null;
+        }
+        $filename = ($type === 'backend') ? 'routing.backend.php' : 'routing.php';
+        $path = $this->getConfigPath($filename, true, $this->application);
+        if (!file_exists($path)) {
+            $path = $this->getConfigPath($filename, false, $this->application);
+        }
+        return $path;
+    }
 
     public function explainLogs($logs)
     {
@@ -97,6 +143,37 @@ class siteConfig extends waAppConfig
     public function onCount()
     {
 
+    }
+
+    public function dispatchPrioritySettlement($route, $url)
+    {
+        $domain_id = siteHelper::getDomainId();
+        if (!$domain_id) {
+            return;
+        }
+
+        // Preview?
+        $preview_hash = waRequest::request('preview_hash');
+        if ($preview_hash) {
+            // !!! TODO check hash
+            $status = ['draft', 'final_unpublished'];
+        } else {
+            // !!! TODO only ['final_published'];
+            $status = ['final_published', 'draft', 'final_unpublished'];
+        }
+
+        $blockpage_model = new siteBlockpageModel();
+        $page = $blockpage_model->getByUrl($domain_id, $url, $status);
+        if (!$page) {
+            return null;
+        }
+
+        return [
+            'url' => $url,
+            'page' => $page,
+            'module' => 'frontend',
+            'action' => 'blockpage',
+        ] + $route;
     }
 
     /**
@@ -210,5 +287,13 @@ class siteConfig extends waAppConfig
         $cache_domain->set($error_domains_data);
 
         return $error_domains_data;
+    }
+
+    public function throwFrontControllerDispatchException()
+    {
+        if (wa()->getEnv() == 'backend' && wa()->whichUI() == '1.3') {
+            wa()->getResponse()->redirect(wa()->getAppUrl('site'));
+        }
+        parent::throwFrontControllerDispatchException();
     }
 }

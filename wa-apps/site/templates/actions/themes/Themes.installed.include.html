@@ -1,0 +1,230 @@
+{$max_count_themes = 5}
+{if !empty($app_themes)}
+    <style>
+        .s-themes .s-themes-list-wrapper:not(.is-extended) .s-themes-list .s-theme-wrapper:nth-child(n+{$max_count_themes + 1}) {
+            display: none;
+        }
+    </style>
+    {$count_app_themes = $app_themes|count}
+    <div class="s-installed-themes-section">
+        <div class="s-section-header">
+            <span class="s-title">
+                <h4>[`Installed`]</h4>
+                <!-- TODO: loc -->
+            </span>
+            <button class="js-theme-upload-link button light-gray small" type="button"><i class="fas fa-cloud-upload-alt"></i> [`Upload custom theme`] <span class="hint">.tar.gz</span></button>
+            <!-- TODO: loc -->
+        </div>
+        <div id="js-installed-themes" class="s-themes-list-wrapper">
+            <div class="s-themes-list custom-my-24">
+                {foreach $app_themes as $_theme}
+                    {$_name = $_theme->getName()}
+                    {$_cover_image = $_theme->getCover()}
+                    {if empty($_cover_image)}
+                        {$_cover_image = "`$wa_url`wa-content/img/design/themes/no-image.png"}
+                    {/if}
+
+                    {$_theme_id = $_theme->id}
+                    {$_theme_url = "`$design_url`theme=`$_theme_id`&domain={$domain|urlencode}"}
+                    {if isset($used_domain_themes[$_theme_id])}
+                        {$_theme_url = "`$_theme_url`&route=`$used_domain_themes[$_theme_id]`"}
+                    {/if}
+
+                    <div class="s-theme-wrapper" data-id="{$_theme_id|escape}" data-load="?module=design&action=theme&theme={$_theme_id|escape}">
+                        <a class="s-image-wrapper card" href="{$_theme_url|escape}" title="{$_name|escape}">
+                            <img src="{$_cover_image|escape}" alt="{$_name|escape}">
+                        </a>
+                        <div class="s-name-wrapper">
+                            <a class="s-name" href="{$_theme_url}" title="{$_name|escape}">
+                                {$_name|escape}
+                            </a>
+                        </div>
+                        <div class="s-statuses small">
+                            {if isset($used_app_themes[$_theme_id])}
+                                {if isset($used_domain_themes[$_theme_id])}
+                                    <span class="s-status green"><i class="fas fa-check text-green"></i> [`Used`]</span>
+                                {else}
+                                    <span class="s-status"><i class="fas fa-check"></i> [`Used on other sites.`]</span>
+                                {/if}
+                            {else}
+                                <span class="s-status gray">[`Not used`]</span>
+                            {/if}
+                        </div>
+                    </div>
+                {/foreach}
+            </div>
+
+            {if $count_app_themes > $max_count_themes}
+                <button type="button" class="js-show-more-installed-themes button gray width-100" data-active="[`Show more`]" data-inactive="[`Hide`]"><span class="js-show-more-installed-themes-text">[`Show more`]</span> {$count_app_themes - $max_count_themes} <i class="fas fa-caret-down s-icon"></i></button>
+            {/if}
+        </div>
+
+        {* Dialogs *}
+        <div class="dialog" id="wa-theme-upload-dialog">
+            <div class="dialog-background"> </div>
+            <form class="dialog-body" id="wa-theme-upload-form" method="post" action="?module=design&amp;action=themeUpload" enctype="multipart/form-data">
+                <h3 class="dialog-header">[s`Upload theme`]</h3>
+                <div class="dialog-content">
+                    <span class="wa-theme-dialog-error state-error-hint"></span>
+                    <p>[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
+                    <div class="upload-area">
+                        <div class="upload">
+                            <label class="link">
+                                <i class="fas fa-file-upload"></i>
+                                <span>[s`Select file`]</span>
+                                <input id="wa-input-file" type="file" name="theme_files[]" autocomplete="off">
+                            </label>
+                        </div>
+                    </div>
+                    {$wa->csrf()}
+                    <div class="loading" style="display:none; margin-top: 10px">
+                        <i class="fas fa-spinner fa-spin"></i> [s`Uploading...`]
+                    </div>
+                </div>
+                <div class="dialog-footer">
+                    <input type="submit" class="button green" value="[s`Upload`]">
+                    <a href="{$themes_url}" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            (function($) {
+                const $installed_themes = $("#js-installed-themes"),
+                    $toggle = $installed_themes.find(".js-show-more-installed-themes"),
+                    active_class = "is-extended";
+
+                $toggle.on("click", function(event) {
+                    event.preventDefault();
+                    const is_active = $installed_themes.hasClass(active_class);
+                    toggle(!is_active);
+                });
+
+                function toggle(show) {
+                    const $icon = $toggle.find(".s-icon")[0],
+                        bottom_icon_class = "fa-rotate-180",
+                        $button = $('.js-show-more-installed-themes');
+
+                    if (!$icon) {
+                        return;
+                    }
+
+                    $button.find('.js-show-more-installed-themes-text').text($button.data(show ? 'inactive' : 'active'));
+                    if (show) {
+                        $icon.classList.add(bottom_icon_class);
+                        $installed_themes.addClass(active_class);
+                    } else {
+                        $icon.classList.remove(bottom_icon_class);
+                        $installed_themes.removeClass(active_class);
+                    }
+                }
+
+                $(".js-theme-upload-link").on('click', function (e) {
+                    e.preventDefault();
+
+                    const $upload_dialog = $("#wa-theme-upload-dialog");
+
+                    $(".wa-theme-dialog-error").text('');
+
+                    $upload_dialog.find("div.loading").hide();
+                    $.waDialog({
+                        $wrapper: $upload_dialog.clone(),
+                        onOpen($dialog, dialog) {
+                            let $form = $dialog.find('form:first'),
+                                $input_file = $dialog.find("#wa-input-file"),
+                                $submit_btn = $dialog.find('[type="submit"]');
+
+                            $dialog.find(".upload-area").waUpload({
+                                is_uploadbox: true
+                            });
+
+                            $form.on('submit', function (e) {
+                                e.preventDefault();
+                                $submit_btn.addClass('disabled')
+                                $dialog.find("div.loading").show();
+                                const formData = new FormData(this);
+
+                                postData($(this).attr('action'), formData)
+                                    .then(
+                                        (res) => {
+                                            try {
+                                                let response = $.parseJSON(res);
+                                                if (response.status === 'fail') {
+                                                    $dialog.find("div.loading").hide();
+                                                    $input_file.val('');
+                                                    handleError(response, $dialog);
+                                                } else if (response.status === 'ok') {
+                                                    dialog.close();
+                                                    location.reload();
+                                                }
+                                            }catch (e){
+                                                let response = {
+                                                    'errors': []
+                                                };
+                                                let message = $(res).find('h1:first, h2:first');
+                                                if (message.length) {
+                                                    response.errors.push([message.text()]);
+                                                } else {
+                                                    response.errors.push(['JavaScript error: ' + e.message]);
+                                                }
+                                                $dialog.find("div.loading").hide();
+                                                $input_file.val('');
+                                                handleError(response, $dialog);
+                                            }
+
+                                        },
+                                        (error) => {
+                                            console.error(error)
+                                        }
+                                    );
+                            })
+                        }
+                    });
+                });
+
+                async function postData(url, data) {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: data,
+                    });
+                    return await response.text();
+                }
+
+                function handleError(data, $dialog) {
+                    let error = '';
+                    if (typeof data.errors == 'string') {
+                        error += (error ? '\n' : '') + data.errors;
+                    } else {
+                        for (let error_item in data.errors) {
+                            if(data.errors.hasOwnProperty(error_item)) {
+                                error += (error ? '\n' : '') + data.errors[error_item][0];
+                            }
+                        }
+                    }
+                    if ($dialog.length) {
+                        $dialog.find(".wa-theme-dialog-error").html(error + '<br><br>');
+                    } else if ($(".wa-theme-dialog-error:first:visible").length) {
+                        $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
+                    } else {
+                        alert('Error:' + error);
+                    }
+                    $dialog.find("[type=submit]").removeClass('disabled');
+                }
+
+                {if empty($is_ajax)}
+                    $installed_themes.on('click', 'a', function  () {
+                        $.themes.dispatch($(this).attr('href'), true);
+                        return false;
+                    });
+                {/if}
+            })(jQuery);
+        </script>
+    </div>
+
+{elseif isset($app_themes)}
+    <div class="s-installed-themes-section">
+        <h4>[`Installed`]</h4>
+        <!-- TODO: loc -->
+        <div class="s-empty-message gray">[`No installed themes.`]</div>
+    </div>
+{/if}

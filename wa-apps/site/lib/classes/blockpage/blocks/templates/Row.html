@@ -1,0 +1,32 @@
+{$block_id = $data->getId()}
+{$static_main = "site-block-row rw f-w"}
+
+<div class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_main}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    {foreach $children as $c}
+        {$c.html}
+    {/foreach}
+</div>
+
+{if $is_backend}
+<script>
+    $(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $block_wrapper = $('.site-block-row[data-block-id="'+block_id+'"]');
+   
+    $block_wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (updated_block_id == block_id) {
+            updateBlockStyles($block_wrapper, data, block_id);
+        }
+    });
+    })
+
+</script>
+{else}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.site-block-row[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+});</script>
+{/if}

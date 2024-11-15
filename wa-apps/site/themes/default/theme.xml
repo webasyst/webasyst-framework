@@ -22,17 +22,25 @@
       <description locale="en_US">Site app's &lt;head&gt; instructions</description>
       <description locale="ru_RU">Блок &lt;head&gt; приложения «Сайт»</description>
     </file>
-    <file path="header.html" custom="0">
+    <file path="header.section.html" custom="0">
       <description locale="en_US">App specific header content</description>
       <description locale="ru_RU">Содержимое «шапки» приложения</description>
+    </file>
+    <file path="header.html" custom="0">
+      <description locale="en_US">Menu with pages</description>
+      <description locale="ru_RU">Меню страниц приложения</description>
     </file>
     <file path="main.html" custom="0">
       <description locale="en_US">Main layout for Site app content</description>
       <description locale="ru_RU">Основной вывод приложения «Сайт»</description>
     </file>
-    <file path="footer.html" custom="0">
+    <file path="footer.section.html" custom="0">
       <description locale="en_US">App specific footer content</description>
       <description locale="ru_RU">Содержимое футера приложения</description>
+    </file>
+    <file path="footer.html" custom="0">
+      <description locale="en_US">Нижняя часть футера приложения с информациекй о разработчике</description>
+      <description locale="ru_RU">Нижняя часть футера приложения с информациекй о разработчике</description>
     </file>
     <file path="page.html" custom="0">
       <description locale="en_US">Static page content and navigation</description>
@@ -62,6 +70,22 @@
       <description locale="en_US">404 and other errors</description>
       <description locale="ru_RU">404 и другие ошибки</description>
     </file>
+    <file path="blockpage.layout.html" custom="0">
+      <description locale="en_US">Лэйаут для блочных страниц</description>
+      <description locale="ru_RU">Лэйаут для блочных страниц</description>
+    </file>
+    <file path="blockpage.wrapper.html" custom="0">
+      <description locale="en_US">Оформление блочных страниц</description>
+      <description locale="ru_RU">Оформление блочных страниц</description>
+    </file>
+    <file path="blockpage.header.html" custom="0">
+      <description locale="en_US">Контент для блока Шапка внутри блочных страниц</description>
+      <description locale="ru_RU">Контент для блока Шапка внутри блочных страниц</description>
+    </file>
+    <file path="blockpage.footer.html" custom="0">
+      <description locale="en_US">Контент для блока Шапка внутри блочных страниц</description>
+      <description locale="ru_RU">Контент для блока Шапка внутри блочных страниц</description>
+    </file>
   </files>
   <about locale="en_US">
 &lt;p&gt;&lt;b&gt;Default&lt;/b&gt; is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Default (i.e. this) theme for the Site application. All Default design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main (i.e. this) theme.&lt;/p&gt;
@@ -74,13 +98,6 @@
 
     </about>
   <settings>
-    <setting var="admin_sidebar" control_type="checkbox">
-      <value>1</value>
-      <name locale="ru_RU">Боковая панель администратора</name>
-      <name locale="en_US">Admin sidebar</name>
-      <description locale="ru_RU">Боковая панель видна только авторизованным пользователям Webasyst и позволяет наглядно предпросматривать основные настройки темы дизайна «Дефолт 4.0» и переходить к редактированию данных в бекенд.</description>
-      <description locale="en_US">Admin sidebar allows you to quickly preview Default 4.0 theme base  settings and to easily proceed to backend for editing published data. Visible to Webasyst backend administrators only.</description>
-    </setting>
     <setting var="pagination" control_type="select">
       <value>lazyloading</value>
       <name locale="en_US">Displaying of long product lists</name>
@@ -337,15 +354,15 @@
     </setting>
     <setting var="use_shop_schedule" control_type="checkbox">
       <value>1</value>
-      <name locale="ru_RU">Показывать график работы магазина на текущую неделю из настроек Shop-Script</name>
-      <name locale="en_US">Show online store’s working schedule for current week from Shop-Script settings</name>
+      <name locale="ru_RU">Показывать в боковой панели витрины график работы магазина из настроек Shop-Script</name>
+      <name locale="en_US">Show online store’s working schedule from Shop-Script settings in the sidebar</name>
       <description locale="ru_RU">При включении игнорируется настройка «Сокращенный график работы».</description>
       <description locale="en_US">When enabled, “Brief working schedule” setting is ignored.</description>
     </setting>
     <setting var="manual_schedule" control_type="text">
       <value/>
-      <name locale="ru_RU">Сокращенный график работы</name>
-      <name locale="en_US">Brief working schedule</name>
+      <name locale="ru_RU">Сокращенный график работы, отображаемый в боковой панели витрины</name>
+      <name locale="en_US">Brief working schedule displayed in the sidebar</name>
       <description locale="ru_RU">Например: Пн—Сб 08:00–18:00</description>
       <description locale="en_US">Example: Mo—Sa 08:00–18:00</description>
     </setting>

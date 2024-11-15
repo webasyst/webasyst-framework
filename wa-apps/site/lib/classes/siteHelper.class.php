@@ -15,7 +15,6 @@ class siteHelper
         $not_install_text = '';
         $incorrect_text = '';
         $incorrect_ids = array();
-
         // Get from cache.
         $routing_error = wa('site')->getConfig()->getRoutingErrors();
 
@@ -30,8 +29,15 @@ class siteHelper
                         $not_install_id[] = $apps[$app_name]['name'];
                     }
                 }
-                $not_install_text = sprintf(_w('You have no rules set up for %s app.', 'You have no rules set up for %s apps.',
-                    count($not_install), false), implode(_w('”, “'), $not_install_id));
+                if (wa()->whichUI() === '1.3') {
+                    $not_install_text = sprintf(_w('You have no rules set up for %s app.', 'You have no rules set up for %s apps.',
+                        count($not_install), false), implode(_w('”, “'), $not_install_id));
+                } else {
+                    $count = count($not_install);
+                    $not_install_text = sprintf(_w('App %s has not been added and may not be working properly.', 'Apps %s have not been added and may not be working properly.',
+                        $count, false), implode($count > 2 ? ', ' : _w(' and '), $not_install_id));
+                }
+
             }
 
             $incorrect = ifset($routing_error, 'apps', $domain_id, 'incorrect', null);
@@ -336,5 +342,116 @@ class siteHelper
     {
         $e = explode('@', $email);
         return trim(preg_replace('/[^a-z0-9]/i', '', $e[0])).'wamail';
+    }
+
+    public static function getSitemapAppIds()
+    {
+        return ['site', 'shop', 'blog', 'hub', 'photos', 'helpdesk'];
+    }
+
+    public static function getAlternativeAppNames(string $app_id, string $def_app_name)
+    {
+        $names = [
+            'shop' => _w('Shop'),
+            'photos' => _w('Photo Gallery'),
+            'hub' => _w('Forum'),
+            'blog' => _w('Blog'),
+            'helpdesk' => _w('Helpdesk'),
+            'site' => _w('New page'),
+        ];
+        return ifset($names, $app_id, $def_app_name);
+    }
+
+    public static function getAlternativeAppUrl(string $app_id)
+    {
+        $urls = [
+            'photos' => 'photo-gallery',
+            'hub' => 'forum',
+            'site' => 'new-page',
+        ];
+        return ifset($urls, $app_id, $app_id);
+    }
+
+    public static function isBrokenAppRouteUrl($route)
+    {
+        if (empty($route['url'])) {
+            return true;
+        }
+        if ($route['url'] == '*') {
+            return false;
+        }
+        return $route['url'] != rtrim($route['url'], '/*').'/*';
+    }
+
+    public static function getBlocks()
+    {
+        $model = new siteBlockModel();
+        $blocks = $model->order('sort')->fetchAll('id');
+
+        $apps = wa()->getApps();
+        foreach ($apps as $app_id => $app) {
+            $site_config = self::getAppSiteConfig($app_id);
+            if (!empty($site_config['blocks'])) {
+                foreach ($site_config['blocks'] as $block_id => $block) {
+                    if (!is_array($block)) {
+                        $block = array('content' => $block, 'description' => '');
+                    }
+                    $block_id = $app_id.'.'.$block_id;
+                    if (!isset($blocks[$block_id])) {
+                        $block['id'] = $block_id;
+                        $block['app'] = $app;
+                        $blocks[$block_id] = $block;
+                    }
+                }
+            }
+        }
+
+        foreach ($blocks as $block_id => $block) {
+            if (empty($block['app'])) {
+                if (($pos = strpos($block_id, '.')) !== false) {
+                    $app_id = substr($block_id, 0, $pos);
+                    if (isset($apps[$app_id])) {
+                        $blocks[$block_id]['app_icon'] = $apps[$app_id]['icon'];
+                    }
+                }
+            }
+        }
+
+        return $blocks;
+    }
+
+    public static function getAppSiteConfig($app_id)
+    {
+        $site_config = array();
+        $path = wa()->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+        if (file_exists($path)) {
+            wa($app_id);
+            $site_config = include($path);
+            if (!is_array($site_config)) {
+                $site_config = array();
+            }
+        }
+        return $site_config;
+    }
+
+    public static function getPageModel(?string $app_id = null): ?waPageModel
+    {
+        if (waConfig::get('is_template')) {
+            return null;
+        }
+        if (!$app_id) {
+            $app_id = waRequest::request('app_id');
+        }
+        if (!$app_id || !wa()->appExists($app_id)) {
+            return null;
+        }
+
+        wa($app_id);
+        $page_model_class = $app_id.'PageModel';
+        if (!class_exists($page_model_class)) {
+            return null;
+        }
+
+        return new $page_model_class();
     }
 }

@@ -1,0 +1,261 @@
+<div class="flexbox editor-page" id="editor-page">
+    <div class="sidebar right width-17rem hidden block-settings-sidebar custom-p-16">
+        {include file="templates/actions/editor/includes/block_settings_drawer.html"}
+    </div>
+    <div class="content flexbox not-blank">
+        <div class="flexbox mq-wrapper blank">
+            <iframe src="{$wa_app_url}?module=editor&action=body&page_id={$page.id|escape}" class="main-editor-body" id="js-main-editor-body" frameborder="0"></iframe>
+        </div>
+
+    </div>
+</div>
+
+<div class="dialog" id="js-add-block-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body" style="width:70%;min-width:45rem;">
+        <a href="javascript:void(0)" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        <div class="dialog-content">
+            <div class="skeleton">
+                <div class="flexbox">
+                    <div class="sidebar blank height-auto" style="padding-right:1rem;">
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+                    </div>
+                    <div class="content">
+                        <span class="skeleton-header" style="width: 70%;"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+
+                        <span class="skeleton-header" style="width: 70%;"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+
+                        <span class="skeleton-header" style="width: 70%;"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{*
+ * see templates/actions/map/MapPageSettingsDialog.html
+ *}
+{$page_settings_dialog_html}
+
+<script>(function() { "use strict";
+
+    const domain_root_url = {$domain_root_url|json_encode};
+    const block_storage_data = {$block_data|json_encode};
+    const block_form_config_by_type = {$block_form_config|json_encode};
+    var page_data = {$page|json_encode};
+
+    updatePreviewLink(page_data);
+
+    const block_form_config_by_block_id = {};
+    for (var block_id in block_form_config_by_type) {
+        try {
+            block_form_config_by_block_id[block_id] = block_form_config_by_type[block_form_config_by_type[block_id].type];
+        } catch (e) {
+            console.log('Warning: unable to load block config for block', block_form_config_by_type[block_id]);
+        }
+    }
+
+    // This must happen before everything else on this page, this creates global SiteEditor.instance
+    var site_editor = $.wa.editor = new SiteEditor({
+        block_form_config: block_form_config_by_block_id,
+        block_storage_data: block_storage_data
+    });
+
+    // Undo and redo
+    (function() {
+
+        $('#js-wa-header-undo').click(function() {
+            site_editor.undoredo.undo();
+        });
+
+        $('#js-wa-header-redo').click(function() {
+            site_editor.undoredo.redo();
+        });
+
+    }());
+
+    // media query buttons
+    (function() {
+
+        var $mq_wrapper = $('.mq-wrapper');
+        var temp_param = 'desktop';
+
+        $('#js-wa-header-screen-toggle').waToggle({
+            use_animation: false,
+            change: function(event, target, toggle) {
+                const media_param = $(target).attr('id') || '';
+                //const editor_wrapper = $iframe.contents().find('.mq-wrapper');
+                $mq_wrapper.removeClass(temp_param);
+                $mq_wrapper.addClass(media_param);
+                temp_param = media_param;
+                $.wa.editor.resetMediaProp(media_param);
+            }
+        });
+
+    }());
+
+    //
+    // Left drawer
+    //
+    (function() {
+        const left_drawer_html = `<div class="drawer site-editor-left-drawer" id="js-left-drawer" data-load-url="{$wa_app_url}?module=map&action=overview&domain_id={$domain_id|escape}&sidebar_mode=1&page_id={$page.id|escape}">
+            <div class="drawer-background"></div>
+            <div class="drawer-body">
+                <a href="javascript:void(0)" class="drawer-close z-20 custom-mr-8 js-close-drawer"><i class="fas fa-times"></i></a>
+                <div class="drawer-block custom-p-0">
+                    <div class="drawer-content">
+                        <div class="box">
+                            <div class="skeleton width-80">
+                                <span class="skeleton-header"></span>
+                                <span class="skeleton-line"></span>
+                                <span class="skeleton-list"></span>
+                                <span class="skeleton-list"></span>
+                                <span class="skeleton-list"></span>
+
+                                <span class="skeleton-header"></span>
+                                <span class="skeleton-line"></span>
+                                <span class="skeleton-list"></span>
+                                <span class="skeleton-list"></span>
+                                <span class="skeleton-list"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        const $left_drawer_wrapper = $(left_drawer_html).appendTo('body');
+        let drawer;
+        let drawer_html;
+        let drawer_loaded = false;
+        let scroll_y;
+
+        $('#js-wa-header-hamburger').on('click', function() {
+            if (!drawer) {
+                drawer = $.waDrawer({
+                    $wrapper: $left_drawer_wrapper,
+                    direction: 'left',
+                    lock_body_scroll: true
+                });
+            } else {
+                $left_drawer_wrapper.find('.drawer-content').html(drawer_html);
+                drawer.show();
+                $left_drawer_wrapper.one('click', '.js-close-drawer', function() {
+                    drawer.hide();
+                })
+            }
+
+            if (!drawer_loaded) {
+                $.site.loadMap();
+            }
+        });
+
+        $.site.loadMap = function () {
+            const $drawer_content = $left_drawer_wrapper.find('.drawer-content');
+            scroll_y = $drawer_content.scrollTop();
+            $drawer_content.css('pointer-events', 'none');
+            $.get($left_drawer_wrapper.data('load-url')).then((html) => {
+                drawer_html = html;
+                $drawer_content.html(drawer_html);
+                $drawer_content.css('pointer-events', 'auto');
+                if (drawer_loaded && scroll_y !== undefined) {
+                    $drawer_content.scrollTop(scroll_y);
+                }
+                drawer_loaded = true;
+            }, () => {
+                alert($.site.opts.locale.unable_to_load);
+                drawer.hide();
+                drawer_loaded = false;
+            });
+        };
+    }());
+
+    //
+    // Resize iframe to always fit content
+    //
+    var resizeMainEditorBody = (function() {
+        var $iframe = $('#js-main-editor-body');
+        $iframe.on('load', resize);
+        $iframe.on('load', $.wa.editor.updateEmptyClassEditor);
+        $(document).on('resize', resize);
+        var interval = setInterval(function() {
+            resize();
+        }, 500);
+        return resize;
+
+        function resize() {
+            var iframe = $iframe[0];
+            if (!iframe?.contentWindow?.document?.body) {
+                // in case iframe is no longer part of the DOM
+                clearInterval(interval);
+                return;
+            }
+            iframe.width  = iframe.contentWindow.document.body.scrollWidth;
+            //iframe.height = iframe.contentWindow.document.body.scrollHeight;
+            //console.log('resize');
+        }
+    }());
+
+    //
+    // Page settings dialog
+    //
+    (function() {
+        const site_app_url = {$wa_app_url|json_encode};
+        const $wrapper = $('#js-page-settings-dialog');
+        const domain_url = site_app_url + "?module=map&action=overview&domain_id=" + page_data.domain_id;
+
+        // Open dialog when user clicks on settings button in wa-header
+        $('#js-wa-header-settings').on('click', function() {
+            openDialog();
+        });
+
+        // Immediately open settings dialog in case page was just created with an empty name
+        if (!page_data.name) {
+            openDialog();
+        }
+
+        // Leave screen when page is deleted
+        $wrapper.on('page_deleted', function() {
+            window.location = domain_url;
+        });
+
+        $wrapper.on('page_saved', function(e, data) {
+            page_data = data;
+            updatePreviewLink(page_data);
+        });
+
+        function openDialog() {
+            var dialog = $.waDialog({
+                $wrapper: $wrapper,
+                onClose: function() {
+                    dialog.hide();
+                    return false; // keep dialog in DOM when closed
+                }
+            });
+        }
+    }());
+
+    function updatePreviewLink(page_data) {
+        var $a = $('#js-wa-header-preview');
+        const $hamburger_label = $('.js-hamburger-label');
+        $a.attr('href', domain_root_url + page_data.full_url);
+        $hamburger_label.text(page_data.name);
+    }
+
+})();</script>

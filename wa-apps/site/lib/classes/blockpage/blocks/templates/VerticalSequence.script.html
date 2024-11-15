@@ -1,0 +1,337 @@
+{if $is_backend}
+<script>
+    (function() { "use strict";
+        var block_id = {$block_id|json_encode};
+        var $wrapper;
+        if (block_id) {
+            $wrapper = $('.js-seq-wrapper[data-block-id="'+block_id+'"]');
+        } else {
+            $wrapper = $('#js-global-seq');
+        }
+
+        $(function() {
+            var controller = siteVseqController({
+                $wrapper
+            });
+        });
+
+    })();
+
+    window.siteVseqController = (function() { "use strict";
+    const msg_error_deleting_block = {_w('Block deletion error.')|json_encode}
+    return siteVseqController;
+    function siteVseqController(opts) {
+        var self = {};
+        var $wrapper = opts.$wrapper;
+        var block_id = $wrapper.data('block-id');
+        var page_id = $wrapper.data('page-id');
+
+        const $dropdown_collection = $wrapper.children().find('> .js-add-element > .dropdown');
+        
+        //get elements list and initialize dropdown
+        $.each($dropdown_collection, function(i, d) {
+            const $dropdown_body = $(d).find('.dropdown-body');
+
+            let place = {};
+            if ($(d).parent().is('.seq-block-delimeter')) {
+                const $child = $(d).closest('.seq-child');
+
+                if ($(d).parent().is('.seq-block-delimeter-before')) {
+                    place = { before_block_id: $child.data('block-id') };
+                } else {
+                    place = { after_block_id: $child.data('block-id') };
+                }
+            } else if (block_id) {
+                place = { parent_block_id: block_id };
+            } else {
+                place = { page_id };
+            }
+
+            $.post('?module=editor&action=addElementsList', place, function(html) {
+                $dropdown_body.html(html);
+                $(d).waDropdown({
+                    hover: false,
+                    update_title : false,
+                    items: ".menu > li > a",
+                    change: function(dropdown_instance) {
+                        const type_id = $(dropdown_instance.currentTarget).data('type-id');
+                        const insert_place_params =  $dropdown_body.find('#js-list-of-elements').data('place-param');
+                        $wrapper.css('opacity', 0.5)
+                        $.post('?module=editor&action=addBlock', Object.assign({
+                            type_id: type_id
+                        }, insert_place_params), function(new_parent_block_html) {
+                            const wrapper_class = $wrapper.attr('class');
+                            const $wrapper_parent = $wrapper.parent();
+                            $wrapper.replaceWith(new_parent_block_html);
+                            $wrapper_parent.find('[data-block-id=' + block_id + ']').eq(0).attr('class', wrapper_class); //need for update wrapper_props
+                        });
+                    },
+                    open: function(dropdown_instance) {
+                        //set position of the block depending on the position of the window edge
+                        $(d).closest('.js-add-element').css('z-index', '11');
+                        alignmentDropdown($dropdown_body);
+                    },
+                    close: function(dropdown_instance) {
+                        $(d).closest('.js-add-element').css('z-index', '');
+                    }
+                })
+            })
+        });
+
+        // When user clicks on "Add block" button, open dialog in topmost frame
+        $wrapper.on('click', '.js-add-block', function(e) {
+            var $self = $(this), place;
+
+            // Ignore events from child vseq instances
+            if ($self.closest('.js-seq-wrapper')[0] !== $wrapper[0]) {
+                return;
+            }
+
+            e.stopPropagation();
+            e.preventDefault();
+
+            var $child = $self.closest('.seq-child');
+            if ($self.is('.seq-block-delimeter')) {
+                if ($self.is('.seq-block-delimeter-before')) {
+                    place = { before_block_id: $child.data('block-id') };
+                } else {
+                    place = { after_block_id: $child.data('block-id') };
+                }
+            } else if (block_id) {
+                place = { parent_block_id: block_id };
+            } else {
+                place = { page_id };
+            }
+
+            $.wa.editor.openAddBlockDialog(place).then(function(new_parent_block_html) {
+                $wrapper.replaceWith(new_parent_block_html);
+            });
+        });
+
+        $wrapper.on('click', '.js-add-column', function(e) {
+            var $self = $(this), place;
+
+            // Ignore events from child vseq instances
+            if ($self.closest('.js-seq-wrapper')[0] !== $wrapper[0]) {
+                return;
+            }
+
+            e.stopPropagation();
+            e.preventDefault();
+
+            var $child = $self.closest('.seq-child');
+            if ($self.is('.seq-block-delimeter')) {
+                if ($self.is('.seq-block-delimeter-before')) {
+                    place = { before_block_id: $child.data('block-id') };
+                } else {
+                    place = { after_block_id: $child.data('block-id') };
+                }
+            } else if (block_id) {
+                place = { parent_block_id: block_id };
+            } else {
+                place = { page_id };
+            }
+
+            $.post('?module=editor&action=addBlock', Object.assign({
+                type_name: 'site.NewColumn_',
+                }, place), function(new_parent_block_html) {
+                    const wrapper_class = $wrapper.attr('class');
+                    const $wrapper_parent = $wrapper.parent();
+                    $wrapper.replaceWith(new_parent_block_html);
+                    $wrapper_parent.find('[data-block-id=' + block_id + ']').eq(0).attr('class', wrapper_class); //need for update wrapper_props
+                });
+        });
+
+        // When user clicks on "Add Element" button, open dialog in topmost frame
+        //$wrapper.on('click', '.js-add-element', function(e) {
+            //move it to initialization
+        //});
+
+        // When user clicks on Delete button, remove block
+        $wrapper.on('click', '.js-delete-block', function(e) {
+            const $child = $(this).closest('.seq-child');
+            const child_block_id = $child.data('block-id');
+            if ($child.closest('.js-seq-wrapper')[0] !== $wrapper[0]) {
+                return; // Ignore events from child vseq instances
+            }
+            e.stopPropagation();
+            e.preventDefault();
+
+            $.wa.editor.api.removeBlock(child_block_id, $wrapper);
+        });
+
+        // When user clicks on Up or Down button, change block ordering
+        $wrapper.on('click', '.js-move-block-up, .js-move-block-down', function(e) {
+            const $child = $(this).closest('.seq-child');
+            if ($child.closest('.js-seq-wrapper')[0] !== $wrapper[0]) {
+                return; // Ignore events from child vseq instances
+            }
+
+            e.stopPropagation();
+            e.preventDefault();
+
+            const before_child_ids = $child.parent().children('.seq-child').map(function() {
+                return $(this).data('block-id');
+            }).get();
+
+            if ($(this).is('.js-move-block-up')) {
+                if (!$child.prev().is('.seq-child')) {
+                    return;
+                }
+                $child.prev().before($child);
+            } else {
+                if (!$child.next().is('.seq-child')) {
+                    return;
+                }
+                $child.next().after($child);
+            }
+
+            const child_ids = $child.parent().children('.seq-child').map(function() {
+                return $(this).data('block-id');
+            }).get();
+
+            $.wa.editor.api.reorderBlocks(page_id, block_id, before_child_ids, child_ids, $child.parent());
+        });
+
+        // When user clicks anywhere else within a block, select that block and show its settings in right drawer
+        $wrapper.on('click', '.seq-child', function(e) {
+            const $child = $(this);
+            parent.$('body').trigger('close_dropdown'); //close all settings dropdowns
+            let has_alt_down = $(document.body).hasClass('alt-down');
+            let no_child_seq = !$child.find('.js-seq-wrapper').length;
+            if (has_alt_down && no_child_seq) {
+                    let $selected_wrapper = $child.parent().closest('.seq-child');
+                    $.wa.editor.setSelectedBlock($selected_wrapper.data('block-id'), $selected_wrapper, e.target);
+                    return
+            }
+
+            if ($child.closest('.js-seq-wrapper')[0] !== $wrapper[0] ) return; // Ignore events from child vseq instances
+
+            //if ($(e.target).closest('.js-seq-wrapper')[0] !== $wrapper[0]) return; // Ignore events from child vseq instances
+            
+            const selection = window.getSelection()?.anchorNode?.parentElement;
+            const selection_id = selection?.dataset.blockId;
+            if (selection_id && window.getSelection().type === 'Range' && +selection_id !== $child.data('block-id')) return;
+            e.stopPropagation();
+            e.preventDefault();
+            $.wa.editor.setSelectedBlock($child.data('block-id'), $child, e.target);
+        });
+        
+        function alignmentDropdown($dropdown_body) {
+            let box = $dropdown_body[0].getBoundingClientRect();
+            let min_height = box.height/2;
+            let min_width = box.width/2;
+            (window.innerHeight - box.bottom) > min_height ? null : $dropdown_body.addClass('bottom').css('max-height', '');
+            (window.innerWidth - box.right) > min_width ? null : $dropdown_body.addClass('right');
+            box.left > min_width ? null : $dropdown_body.addClass('left');
+        }
+
+        updateNoChildrenClass();
+
+        function updateNoChildrenClass() {
+            if ($wrapper.children('.seq-child').length) {
+                $wrapper.removeClass('no-children');
+            } else {
+                $wrapper.addClass('no-children');
+            }
+        }
+
+        return self;
+
+    }
+
+})();
+</script>
+{/if}
+
+<script>
+    /**
+     * Called inside iframe to set styles to blocks and elements.
+     * data: Object.
+     *
+     * It is called during the initial rendering, when changing form of the settings, as well as when undo redo
+     */
+window.updateBlockStyles = function($block_wrapper, data, block_id) {
+
+    if (data.wrapper_props){ //set class props for vseq/hseq wrapper
+       let elem_classes = Object.values(data.wrapper_props).map((e) => (typeof e === 'object') ? e.value : e).join(' ');
+       let node = $block_wrapper.find('.js-seq-wrapper').eq(0);
+       let no_children = node.hasClass('no-children') ? 'no-children ' : '';
+       let elem_static_classes = node.data('static') || '';
+       node.attr('class', no_children + elem_static_classes + ' ' +elem_classes);
+   }
+    if (data.elements) { //For blocks with several wrappers
+        let elements = Object.values(data.elements);
+        //let temp_options = self.block_data?.[d]?.[type] || self.block_data?.[d]?.[self.selected_element]?.[type] || null;
+        $.each(elements, function(i, elem) {
+
+            let node = $block_wrapper.hasClass(elem) ? $block_wrapper : $block_wrapper.find('.'+elem);
+
+            if (data.block_props?.[elem]){
+                let elem_classes = Object.values(data.block_props[elem]).map((e) => (typeof e === 'object') ? e.value : e).join(' ');
+                let elem_static_classes = node.data('static') || '';
+                node.attr('class', elem_static_classes + ' ' + elem_classes);
+            };
+            if (data.inline_props?.[elem]){
+                let keys = Object.keys(data.inline_props[elem]);
+                let elem_styles = '';
+                $.each(keys, function(i, k) {
+                    elem_styles += k + ': ' + data.inline_props[elem][k]['value'] + ';';
+                })
+                node.attr('style', elem_styles);
+            }
+            else {
+                node.css('visibility', '');
+            }
+        })
+        /*if (data.columns){
+            const columns_array = Object.keys(data.columns);
+            $.each(columns_array, function(i, k) {
+                let column_num = k.split('-')[1];
+                let column_node = $block_wrapper.find('.site-block-columns-col[data-count=' + column_num + ']');
+                let column_static_classes = column_node.data('static') || '';
+                column_node.attr('class', column_static_classes + ' ' + data.columns[k]);
+            })
+        }*/
+
+        if (data.new_column){
+            const column_class = data.new_column;
+            let column_node = $block_wrapper.closest('.seq-child');
+            let selected_block = column_node.hasClass('selected-block') ? 'selected-block ' : '';
+            let column_static_classes = column_node.data('static') || '';
+            column_node.attr('class', selected_block + column_static_classes + ' ' + column_class);
+            column_node.attr('data-column-class', column_class);
+        }
+        return
+    }
+
+    if (data.block_props){
+        let elem_classes = Object.values(data.block_props).map((e) => (typeof e === 'object') ? e.value : e).join(' ');
+        let elem_static_classes = $block_wrapper.data('static') || '';
+        $block_wrapper.attr('class', elem_static_classes + ' ' +elem_classes);
+    }
+
+    if (data.inline_props){
+        let keys = Object.keys(data.inline_props);
+        let elem_styles = '';
+        $.each(keys, function(i, k) {
+            elem_styles += k + ': ' + data.inline_props[k]['value'] + ';';
+        })
+        $block_wrapper.attr('style', elem_styles);
+    }
+    else {
+        $block_wrapper.css('visibility', '');
+    }
+    if (data.tag){
+        if ($block_wrapper.prop("tagName").toLowerCase() === data.tag) return;
+        let new_element = document.createElement(data.tag);
+        new_element.innerHTML = $block_wrapper[0].innerHTML;
+        let attributes = $block_wrapper.prop("attributes");
+        $.each(attributes, function() {
+            $(new_element).attr(this.name, this.value);
+        });
+        $block_wrapper[0].parentNode.replaceChild(new_element, $block_wrapper[0]);
+    }
+
+}
+</script>

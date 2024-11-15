@@ -1,0 +1,100 @@
+<div class="article site-base">
+    <div class="article-body">
+        <div>
+            {include file="templates/actions/backend/includes/domain_tabs.html" selected=$selected inline}
+            <div class="s-{$path}">
+                {$content}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    if (location.hash && (new RegExp('#/{$path}/\\w+')).test(location.hash)) {
+        $.site.breadcrumbs.showAll();
+    } else {
+        $.site.breadcrumbs.showRoot()
+    }
+    $(function () {
+        const namespace = '{$path}';
+        const namespace_singular = namespace.slice(0,-1);
+        const events = {
+            load_all: 'load_all.wa_' + namespace,
+            load_one: 'load_' + namespace_singular + '.wa_' + namespace
+        };
+        const instance = $[namespace];
+        const open_plugin_map = new Map();
+        let prev_frame_src = '';
+
+        $(document).off(events.load_all).on(events.load_all, () => {
+            $.site.breadcrumbs.showRoot();
+        });
+        $(document).off(events.load_one).on(events.load_one, () => {
+            $.site.breadcrumbs.showAll();
+        });
+
+        $.site.breadcrumbs.on('click_parent', () => {
+            instance.showStoreHeader();
+            instance.showList();
+            instance.showStore();
+            if (open_plugin_map.get('page_loaded')) {
+                open_plugin_map.clear();
+
+                $('.wa-loading').removeClass('is-ready');
+                $('.wa-loading').remove();
+                if (history.state || !prev_frame_src) {
+                    history.back();
+                } else {
+                    $('.js-store-frame').prop('src', prev_frame_src + '&t=' + Date.now());
+                }
+            }
+        });
+
+        const handlerPostMessage = (event) => {
+            const message = getMessageData(event);
+            if (!message) {
+                return;
+            }
+
+            const { action } = message;
+            if (action === 'route_inner' && message.data && String(message.data.href).startsWith(namespace_singular + '/')) {
+                open_plugin_map.set(action, message.data.href);
+                return;
+            }
+
+            if (action === 'page_loaded' && open_plugin_map.get('route_inner')) {
+                if (message.current_path.includes(open_plugin_map.get('route_inner'))) {
+                    instance.hideStoreHeader();
+                    instance.hideList();
+                    $.site.breadcrumbs.showAll();
+                    open_plugin_map.set('page_loaded', true);
+
+                } else if (open_plugin_map.get('page_loaded')) {
+                    open_plugin_map.clear();
+                    $.site.breadcrumbs.showRoot();
+                }
+                window.scrollTo(0, 0);
+            }
+        };
+
+        $(window).off('message.wa_store').on('message.wa_store', (e) => {
+            handlerPostMessage(e.originalEvent);
+            if (!prev_frame_src) {
+                prev_frame_src = $('.js-store-frame').prop('src');
+            }
+        });
+
+        function getMessageData(event) {
+            const { data } = event;
+            if (!data) {
+                return;
+            }
+
+            let obj = null;
+            try {
+                obj = JSON.parse(data);
+            } catch { /* json parsing error */ }
+
+            return obj;
+        }
+    });
+</script>

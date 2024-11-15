@@ -7,3 +7,5 @@ if ($domain) {
         $domain_model->insert(array('name' => $domain));
     }
 }
+
+(new siteInstaller())->addDefaultVariables();

@@ -1,0 +1,96 @@
+{strip}<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
+{/strip}
+
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+    <script src="{$wa_app_static_url}js/jquery/jquery-ui.min.js"></script>
+    <script src="{$wa_app_static_url}js/compiled/site.min.js?v{$wa->version()}"></script>
+
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
+    <script src="{$wa_url}wa-content/js/pickr/pickr.min.js"></script>
+    <link rel="stylesheet" href="{$wa_url}wa-content/js/pickr/themes/classic.min.css">
+    <link rel="stylesheet" href="{$wa_url}wa-content/js/pickr/themes/nano.min.css">
+
+    <script>(function() { "use strict";
+        window.wa_app = {$wa->app()|json_encode}; // for editor2.js
+        //window.wa_url = {$wa_url|json_encode}; // for waEditorAceInit
+
+        $.site.initBeforeLoad({
+            wa_url: {$wa_url|json_encode},
+            app_url: {$wa_app_url|json_encode},
+            backend_url: {$wa_backend_url|json_encode},
+            is_debug: {$wa->debug()|json_encode},
+            title_pattern: '%s — ' + {$wa->accountName(false)|json_encode},
+            content_router_mode: {if empty($hide_wa_app_icons)}'xhr'{else}'reload'{/if},
+            rights: {json_encode($rights)},
+            locale: {json_encode([
+                "unable_to_load" => _w("Unable to get the page from the server.")
+            ])},
+            lang: '{if $wa->locale() == "ru_RU"}ru{else}en{/if}'
+        });
+    })();</script>
+    {* CSS *}
+    {$wa->css()}
+    <link href="{$wa_app_static_url}css/site.editor.css" rel="stylesheet">
+    <link href="{$wa_app_static_url}css/site.min.css?v={$wa->version()}" rel="stylesheet">
+    <link href="{$wa_app_static_url}js/jquery/jquery-ui.css?v={$wa->version()}" rel="stylesheet">
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v{$wa->version(true)}"></script>
+    {$wa->js()}
+    <script>
+        $.wa.locale = {json_encode([
+            "Close" => _w("Close"),
+            "Cancel" => _ws("Cancel"),
+            "Delete" => _w("Delete"),
+            "delete_route" => _w("Delete section?"),
+            "delete_page" => _w("Delete page?"),
+            "delete_nested_pages" => _w("Delete subpages?"),
+            "delete_rule_msg" => _w("The section will be removed from the site map. Continue?"),
+            "delete_page_msg" => _w("The page will be removed from the site map. Continue?"),
+            "delete_route_with_nested_pages_msg" => _w("With the selected section, its subpages will be deleted, too. Continue?"),
+            "delete_page_with_nested_pages_msg" => _w("With the selected page, its subpages will be deleted, too. Continue?"),
+            "delete_main_page_alert" => sprintf("<div class=\"alert danger\">%s</div>", _w('If you remove the homepage, the site will not be operating properly. Be sure to select a page or a section as the homepage right after that.'))
+        ])};
+    </script>
+</head>
+<body>
+<div id="wa">
+
+    {*
+     * Есть два основных лэйаута в бекенде 2.0. Точнее, два режима работы одного этого лэйаута.
+     *
+     * 1) Когда видно верхнее меню с иконками приложений. Так сделаны все экраны, кроме редактора блочных страниц.
+     * В этом режиме JS обрабатывает все ссылки и при клике подгружает контент в фоне.
+     * Кроме кликов по ссылкам на редактор (другой режим лэйаута), которые перезагружают всю страницу.
+     *
+     * 2) Режим редактора страниц, когда не видно иконок приложений, а вместо иконок инструменты самого редактора.
+     * Поскольку там другой вызов $wa->header(), переход между этими двумя режимами требует перезагрузки всей страницы.
+     * В режиме (2) клик по ссылкам (кроме тех, которые специально обрабатывает логика редактора) никак специально не обрабатывается.
+     * Клик заставляет браузер перейти по ссылке с перезагрузкой страницы.
+     *}
+    {if empty($hide_wa_app_icons)}
+        {$wa->header()}
+    {else}
+
+        {capture assign='wa_header_editor'}
+            {include file="templates/actions/editor/includes/wa_header.html" inline}
+        {/capture}
+
+        {$wa->header([
+            'custom' => [
+                'main' => $wa_header_editor,
+                'aux' => '<span id="js-wa-header-aux"></span>'
+            ]
+        ])}
+    {/if}
+
+    <div id="wa-app" class="blank">
+        {$content}
+    </div>
+
+</div>
+</body>
+</html>

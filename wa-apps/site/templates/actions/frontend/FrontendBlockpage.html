@@ -1,0 +1,22 @@
+{*
+ * Default layout for block page in frontend.
+ * Used in case design theme does not specify its own custom layout.
+ *
+ *}{strip}<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$page.title|escape}</title>
+{/strip}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+    <script src="{$wa_app_static_url}js/jquery/jquery-ui.min.js"></script>
+    <!-- Подумать какой css мы хотим вывести -->
+    <link href="{$wa_app_static_url}css/site.min.css?v={$wa->version()}" rel="stylesheet">
+    <style>
+        html body { --background-color: #fff; margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    {$rendered_page_html}
+</body>
+</html>

@@ -37,4 +37,14 @@ return array(
     'route_delete' => array(
         'name' => /*_w*/('deleted routing rule')
     ),
+
+    'variable_add' => array(
+        'name' => /*_w*/('added a new site variable')
+    ),
+    'variable_edit' => array(
+        'name' => /*_w*/('edited a site variable')
+    ),
+    'variable_delete' => array(
+        'name' => /*_w*/('deleted a site variable')
+    ),
 );

@@ -1,0 +1,1332 @@
+{* Когда показываем в левом сайдбаре в редакторе страниц, то внешние контейнеры рендерить не нужно *}
+{*wa_tpl_vars*}
+{function row_newposition row=[] offset=null}
+{$_offset = $offset|default:$row.offset_level|default:null}
+<tr class="drag-newposition"
+    data-app-id="{ifset($row, 'app_id', ifset($row, 'app', 'id', ''))|escape}"
+    data-row-type="{ifset($row, 'row_type', '')}"
+    {if empty($_offset)}data-root="1"{else}data-offset="{$_offset}"{/if}
+>
+    <td {if !empty($_offset)}style="padding-left: {$_offset*2}em;"{/if}><div></div></td>
+    <td colspan="3"><div></div></td>
+    <td style="display: none;">pos: {$_offset}</td>
+</tr>
+{/function}
+{capture assign="_main_page_icon"}
+<span class="s-main-page-icon"><i class="fas fa-home"></i></span>
+{/capture}
+{if empty($sidebar_mode)}
+<div class="article site-base">
+    <div class="article-body">
+{/if}
+    {include file="templates/actions/backend/includes/domain_tabs.html" selected='sitemap' inline}
+    <div class="site-map flexbox vertical s-map-page" id="s-map-page">
+        <div class="dropdown{if empty($sidebar_mode)} custom-mb-24{/if}{if !empty($sidebar_mode)} custom-p-16{/if} map-page-dropdown{if !empty($sidebar_mode)} custom-px-16{/if}" id="js-dropdown-add">
+            <button class="dropdown-toggle button small blue">
+                <i class="fas fa-plus"></i>
+                [`Add`]
+            </button>
+            <div class="dropdown-body">
+                <ul class="menu">
+                    {if $wa->site->config('dev_enable_blockpages')}
+                        <li>
+                            <a href="javascript:void(0);" id="js-add-blockpage">
+                                <i class="fas fa-layer-group"></i>
+                                <span class="nowrap">[`Block page`] <span class="badge green smaller">[`New`]</span></span>
+                            </a>
+                        </li>
+                    {/if}
+                    <li>
+                        <a href="javascript:void(0);" id="js-add-old-page" data-app-id="site">
+                            <i class="fas fa-file-alt"></i>
+                            <span>[`Page`]</span>
+                        </a>
+                    </li>
+                    {*
+                    <li>
+                        <a href="javascript:void(0);" id="js-add-directory" data-app-id="folder">
+                            <i class="fas fa-folder-open"></i>
+                            <span>[`Directory`]</span>
+                        </a>
+                    </li>
+                    *}
+                    <div>
+                        <span class="uppercase bold text-gray custom-py-8 custom-px-12 small">[`Section`]</span>
+                    </div>
+                    {foreach $apps_to_add as $app}
+                        {if $app.id != 'site'}
+                        <li>
+                            <a href="javascript:void(0);" class="js-add-app" data-app-id="{$app.id}">
+                                <i class="icon"><img src="{$wa_url}{$app.icon.24}" alt=""></i>
+                                <span>{$app.name}</span>
+                            </a>
+                        </li>
+                        {/if}
+                    {/foreach}
+                    <div>
+                        <hr>
+                    </div>
+                    <li>
+                        <a {if $auth_enabled}class="s-disabled"{/if} href="javascript:void(0);" id="js-add-personal">
+                            <i class="fas fa-key"></i>
+                            <span>[`My account`] <i class="fas fa-check custom-ml-4 s-icon-active"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        {include file="./MapOverviewAlerts.inc.html" inline}
+
+            <table class="site-map-tree-table borderless single-lined blank{if !empty($sidebar_mode)} custom-mt-0{/if}">
+                <tbody>
+                {foreach $table_rows as $n => $row}
+                    {$p = $row}
+
+                    {$c_page_id = 0}
+                    {if !empty($p.id) }
+                        {$c_page_id = $p.id}
+                    {elseif !empty($p.route_id)}
+                        {$c_page_id = $p.route_id}
+                    {/if}
+
+                    {if !empty($p.frontend_link) }
+                        {$frontend_link = $p.frontend_link}
+                    {else !empty($domain)}
+                        {if isset($p.full_url)}
+
+                                {$full_url = "/`$p.full_url`"}
+                                {if isset($p.route) }
+                                    {$full_url = "/`$p.route|rtrim:'*'``$p.full_url`"}
+                                {/if}
+                            {else}
+                                {$full_url = $p.url_formatted}
+                            {/if}
+                        {$frontend_link = "http://`$domain.name``$full_url`"}
+                    {/if}
+
+                    {if !$row@first}
+                        {row_newposition row=$row}
+                    {/if}
+
+                    {$js_settings_link_class = ''}
+                    {$app_disabled = !empty($row.app.disabled)}
+                    {$is_misconfigured_settlement = !empty($row.misconfigured_settlement)}
+                    {$is_main = !$is_misconfigured_settlement && $root_page && $row.url === $root_page.url}
+                    {$is_parent = empty($row.offset_level)}
+                    {$disable_set_main_page = false}
+                    {if $row['row_type'] === 'route_app' || $row['row_type'] === 'route_text'}
+                        {$route = $row}
+                        {$is_broken_route_url = !empty($row.is_broken_route_url) && $row.is_broken_route_url}
+                        {$is_hidden_route = !empty($route.private) && $route.private || !empty($route.disabled)}
+                        {$unpublished_page = (!empty($route.app) && !is_array($route.app)) || (!empty($route.root_page.id) && $route.root_page.status == '0')}
+                        <tr
+                            class="dr{if $app_disabled || $row['row_type'] === 'route_text'} disable-link{/if}{if $is_htmleditor && !empty($route.root_page.id) && ifset($row, 'app', 'id', '') == 'site' && $route.root_page.id == $page_id} selected{/if}{if $is_main} is-main{/if}"
+                            data-route-id="{$route.route_id}" {if !empty($route.root_page.id)}data-page-id="{$route.root_page.id}"{/if}
+                            {if ifset($route, 'app', 'id', '') == 'site'}data-html-page="1"{/if} data-app-id="{ifset($route, 'app', 'id', '')|escape}"
+                            data-row-type="{$row.row_type}"{if $is_parent} data-root{/if}{if !empty($route.url)} data-route="{$route.url}"{/if}
+                        >
+                            <td class="nowrap page-name {if $is_hidden_route || $app_disabled}gray{/if}">
+                                <div class="flexbox middle space-8 page-name-wrapper">
+                                    {if $row['row_type'] === 'route_app'}
+                                        {if $route.app.id == 'site'}
+                                            <span class="page-icon"><i class="fas fa-file-alt"></i></span>
+                                            <span class="text-ellipsis">{ifset($route, '_name', ifset($route.app, 'name', $route.app.id))|escape}</span>
+                                        {else}
+                                            <span class="page-icon">
+                                                {if !empty($route.app.icon)}
+                                                <img src="{$wa_url}{$route.app.icon.24}" alt="">
+                                                {else}
+                                                <i class="fas fa-question"></i>
+                                                {/if}
+                                            </span>
+                                            <span class="text-ellipsis">
+                                                {ifset($route, '_name', ifset($route.app, 'name', $route.app.id))|escape}
+                                            </span>
+                                        {/if}
+                                    {elseif $row['row_type'] === 'route_text'}
+                                        <span class="page-icon"><i class="fas fa-scroll"></i></span>
+                                        <span class="text">{$route.static_content|default:''|truncate:32|escape}</span>
+                                    {/if}
+                                    {if $unpublished_page}
+                                        <span class="icon small disabled-icon custom-mr-8"><i class="fas fa-eye-slash"></i></span>
+                                    {/if}
+                                    {if $app_disabled || $is_misconfigured_settlement || $is_broken_route_url}
+                                        <span class="js-misconfigured-settlement icon small"><i class="fas fa-exclamation-triangle"></i></span>
+                                    {/if}
+                                    {*if $is_main}
+                                        {$_main_page_icon}
+                                    {/if*}
+                                </div>
+                            </td>
+                            {if 1}
+                            <td class="page-route{if $app_disabled || $is_misconfigured_settlement} js-misconfigured-settlement strike gray{/if}">
+                                <div>
+                                    <a href="javascript:void(0)" data-href="{$frontend_link|escape}" class="gray">
+                                        {strip}
+                                        {if $is_main}
+                                            {$_main_page_icon}
+                                        {else}
+                                            {$route.url_formatted|truncate:30:'...':false:true|escape}
+                                        {/if}
+                                    {/strip}</a>
+                                    <i class="shortener"></i>
+                                </div>
+                            </td>
+                            {else}
+                            <td class="page-route min-width custom-p-0"></td>
+                            {/if}
+                            {$js_settings_link_class = 'js-section-settings'}
+                    {elseif $row['row_type'] === 'htmlpage'}
+                        <tr class="dr{if $is_htmleditor && ifset($p, 'app_id', '') == 'site' && $p.id == $page_id} selected{/if}" data-page-id="{$p.id}"
+                            data-parent-id="{$p.parent_id|default:''}" data-parent-route-id="{$p.route_params.route_id|default:''}"
+                            data-app-id="{$p.app_id}"{if !empty($row.offset_level)} data-offset="{$row.offset_level}"{/if}
+                            data-html-page="1" data-row-type="{$row.row_type}"
+                        >
+                            <td class="nowrap page-name{if !empty($p.private) && $p.private} gray{/if}" style="padding-left: {$row.offset_level*2}em">
+                                <div class="page-name-wrapper flexbox middle space-8">
+                                    <span class="page-icon"><i class="fas fa-file-alt"></i></span>
+                                    <span class="text-ellipsis">{$p.name|escape}</span>
+                                    {if $p.status == '0'}
+                                        <span class="icon small disabled-icon custom-mr-8"><i class="fas fa-eye-slash"></i></span>
+                                    {/if}
+                                </div>
+                            </td>
+
+                            {if 1}
+                            <td class="page-route">
+                                <div>
+                                    <a href="javascript:void(0)" data-href="{$frontend_link|escape}" class="gray">{strip}
+                                        /{$p.url|escape}
+                                    {/strip}</a>
+                                    <i class="shortener"></i>
+                                </div>
+                            </td>
+                            {else}
+                            <td class="page-route min-width custom-p-0"></td>
+                            {/if}
+                            {$js_settings_link_class = 'js-old-page-settings'}
+
+                    {elseif $row['row_type'] === 'blockpage'}
+                        {$disable_set_main_page = $p.status !== 'final_published'}
+                        <tr
+                            class="dr{if !$is_htmleditor && $p.id == $page_id} selected{/if}{if $is_main} is-main{/if}"
+                            data-page-id="{$p.id|escape}" {if !empty($row.offset_level)}data-offset="{$row.offset_level}"{/if}
+                            data-parent-id="{$p.parent_id|default:''}"
+                            data-row-type="{$row.row_type}"{if $is_parent} data-root{/if}
+                        >
+                            <td class="nowrap page-name"{if !empty($row.offset_level)} style="padding-left: {$row.offset_level*2}em"{/if}>
+                                <div class="page-name-wrapper flexbox middle space-8">
+                                    <span class="page-icon"><i class="fas fa-layer-group"></i></span>
+                                    <span class="text-ellipsis {if $p.id == $page_id}bold{/if}">{$p.name|escape}</span>
+                                </div>
+                            </td>
+                            {if 1}
+                            <td class="page-route">
+                                <div>
+                                    <a href="javascript:void(0)" data-href="{$frontend_link|escape}" class="gray">{strip}
+                                        {if $is_main}
+                                            {$_main_page_icon}
+                                        {else}
+                                            /{$p.url|escape}
+                                        {/if}
+                                    {/strip}</a>
+                                    <i class="shortener"></i>
+                                </div>
+                            </td>
+                            {else}
+                            <td class="page-route min-width custom-p-0"></td>
+                            {/if}
+                            {$js_settings_link_class = 'js-page-settings'}
+                    {/if}
+                            <td class="page-actions">
+                                <div class="dropdown dropdown-actions-li" id="dropdown-actions-li-{$n}-{$c_page_id}" style="height: auto;">
+                                    <a href="javascript:void(0)" class="dropdown-toggle without-arrow text-gray custom-p-0"><i class="icon fas fa-ellipsis-h"></i></a>
+                                    <div class="dropdown-body right">
+                                        <ul class="menu">
+                                            {if !$app_disabled}
+                                                <li>
+                                                    <a href="{$frontend_link|escape}" target="_blank">
+                                                        <i class="icon fas fa-globe smaller"></i> [`Preview`] <i class="fas fa-external-link-alt new-window custom-ml-auto"></i>
+                                                    </a>
+                                                </li>
+                                                {*<li><a id="s-map-add-inside" href="javascript:void(0)"><i class="icon fas fa-plus"></i>[`Add inside`] <i class="fas fa-caret-right add-menu custom-ml-auto"></i></a></li>*}
+                                                {if $row['row_type'] === 'route_app' || $row['row_type'] === 'htmlpage'}
+                                                    <li><a class="js-map-add-subpage" href="javascript:void(0)"><i class="icon fas fa-file-alt"></i>[`Add page`]</a></li>
+                                                {/if}
+                                                {if !$is_main && $is_parent && $row['row_type'] !== 'blockpage'}
+                                                    <li><a href="javascript:void(0)" class="js-map-set-main-page{if $disable_set_main_page} s-disabled{/if}"{if $disable_set_main_page} title="[`The homepage cannot be unpublished. Please select another section or page as the homepage.`]"{/if}><i class="icon fas fa-home"></i>[`Make the site’s homepage`]</a></li>
+                                                {/if}
+                                                {*<li><a id="s-map-duplicate" href="javascript:void(0)"><i class="icon fas fa-copy"></i>[`Duplicate`]</a></li>*}
+                                            {/if}
+                                            <li><a class="js-map-delete" href="javascript:void(0)"><i class="icon fas fa-trash-alt"></i>[`Delete`]</a></li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                                <script>
+                                    (function($) {
+                                        $("#dropdown-actions-li-{$n}-{$c_page_id}").waDropdown({
+                                            hover: false,
+                                            /*page_settings_skeleton_body: function(dropdown){
+                                                $menu = dropdown.$wrapper.find('.menu');
+                                                $menu.on('click', '#s-map-add-inside', function (e) {
+                                                    setTimeout(() => {
+                                                        $("#dropdown-add-inside-{$n}-{$c_page_id}").find('.dropdown-toggle').trigger('click')
+                                                    }, 50)
+                                                })
+                                            },*/
+                                        });
+                                    })(jQuery);
+                                </script>
+                                {* TODO: in the next release
+                                <div class="dropdown dropdown-actions-li" id="dropdown-add-inside-{$n}-{$c_page_id}" style="position: absolute; top: 29px; right: 0px;">
+                                    <a href="javascript:void(0);" class="dropdown-toggle without-arrow" type="button" style="display: none;">
+                                        <span class="icon size-14"><i class="fas fa-ellipsis-h"></i></span>
+                                    </a>
+                                    <div class="dropdown-body right">
+                                        <ul class="menu">
+                                            <li>
+                                                <a class="flexbox middle js-return-back" href="javascript:void(0);">
+                                                    <i class="icon fas fa-arrow-left"></i>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" id="js-add-blockpage">
+                                                    <i class="fas fa-layer-group"></i>
+                                                    <span class="nowrap">[`Block page`] <span class="badge green smaller">[`New`]</span></span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" id="js-add-textpage">
+                                                    <i class="fas fa-file-alt"></i>
+                                                    <span>[`Text page`]</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" id="js-add-directory">
+                                                    <i class="fas fa-folder-open"></i>
+                                                    <span>[`Directory`]</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <script>
+                                    (function($) {
+                                        $("#dropdown-add-inside-{$n}-{$c_page_id}").waDropdown({
+                                            hover: false,
+                                            ready: function(dropdown){
+                                                $menu = dropdown.$wrapper.find('.menu');
+                                                $menu.on('click', '.js-return-back', function (e) {
+                                                    setTimeout(() => {
+                                                        $("#dropdown-actions-li-{$n}-{$c_page_id}").find('.dropdown-toggle').trigger('click')
+                                                    }, 50)
+
+                                                })
+                                            }
+                                        })
+                                    })(jQuery);
+                                </script>
+                                *}
+                            </td>
+
+                            <td class="page-settings">
+                                {if $js_settings_link_class}
+                                <div>
+                                    <a class="{$js_settings_link_class}" href="javascript:void(0)"><i class="fas fa-cog"></i></a>
+                                </div>
+                                {/if}
+                            </td>
+                        </tr>
+                        {if !empty($row.offset_level)}
+                            {$_next_offset = ifset($table_rows[$n+1], 'offset_level', 0)}
+                            {if $_next_offset < $row.offset_level}
+                                {for $i=0 to $row.offset_level}
+                                    {$_offset = $row.offset_level-$i}
+                                    {if $_offset > 0 && $_offset > $_next_offset}
+                                        {row_newposition row=$row offset=$_offset}
+                                    {/if}
+                                {/for}
+                            {/if}
+                        {elseif $row.row_type === 'blockpage' && ifset($table_rows[$n+1], 'row_type', '') !== 'blockpage'}
+                            {row_newposition row=$row}
+                        {/if}
+                {/foreach}
+                {if $table_rows}
+                    {row_newposition row=$table_rows|@end}
+                {/if}
+            </tbody>
+
+            <tbody class="s-personal-pages{if $auth_enabled} s-personal-enabled{/if}">
+                {* Personal pages *}
+                <tr data-personal-id="main" data-enabled="1" data-personal>
+                    <td class="nowrap page-name js-personal-settings">
+                        <div class="flexbox middle space-8">
+                            <span class="page-icon"><i class="fas fa-key"></i></span>
+                            <span>[`My account`]</span>
+                        </div>
+                    </td>
+                    {if 0}
+                    <td class="js-personal-settings"><a href="javascript:void(0)" class="black">/my/</a></td>
+                    {else}
+                    <td class="page-route min-width custom-p-0"></td>
+                    {/if}
+                    <td class="page-link page-actions"><div><a id="js-personal-link" href="{$auth_link}" target="_blank" data-route="{$auth_route}"><i class="fas fa-external-link-alt fa-sm"></i></a></div></td>
+                    <td class="page-settings"><div><a class="js-personal-settings" href="javascript:void(0)"><i class="fas fa-cog text-gray"></i></a></div></td>
+                </tr>
+
+                <tr class="{if !empty($profile_disabled)}s-disabled{/if}" data-personal-id="profile" data-personal>
+                    <td class="nowrap page-name js-profile-settings">
+                        <div class="flexbox middle space-8">
+                            <div style="width: 1rem;"></div>
+                            <span class="page-icon icon size-18"><i class="fas fa-user-circle"></i></span>
+                            <span>[`My profile`]</span>
+                            <i class="fas fa-ban s-icon-disable"></i>
+                        </div>
+                    </td>
+                    {if 0}
+                    <td class="js-profile-settings"><a href="javascript:void(0)" class="black">/my/profile/</a></td>
+                    {else}
+                    <td class="page-route min-width custom-p-0"></td>
+                    {/if}
+                    <td class="page-link page-actions"></td>
+                    <td class="page-settings"><div><a class="js-profile-settings" href="javascript:void(0)"><i class="fas fa-cog text-gray"></i></a></div></td>
+                </tr>
+
+                {foreach $auth_apps as $app_id => $app}
+                    {$_route_name = $app.items[0]}
+                    {$_disabled = $app.state === 'disabled'}
+                    <tr class="{if $_disabled}s-disabled{/if}" data-app-id="{$app.id}" data-personal data-link="{$app.link}">
+                        <td class="nowrap page-name js-personal-app-settings">
+                            <div class="flexbox middle space-8">
+                                {if $app.state === 'no_route' || empty($app.link)}
+                                    <div style="width: 1rem;"></div>
+                                {else}
+                                    <div class="js-sort s-sort" style="width: 1rem;"><i class="fas fa-grip-vertical text-light-gray"></i></div>
+                                {/if}
+                                <span class="page-icon icon size-20"><img src="{$wa_static_url}{$app.icon.24}" alt="{$app.name|escape}"></span>
+                                <span>{$_route_name|escape}</span>
+                                <i class="fas fa-ban s-icon-disable"></i>
+                            </div>
+                        </td>
+                        {if 0}
+                        <td class="js-personal-app-settings">
+                            {if !empty($app.link)}
+                                <a href="javascript:void(0)" class="black" title="{$app.link_path|escape}">{$app.link_path|escape}</a>
+                            {/if}
+                        </td>
+                        {else}
+                        <td class="page-route min-width custom-p-0"></td>
+                        {/if}
+                        <td class="page-link page-actions">{*{if !empty($app.link)}<a href="{$app.link}" target="_blank"><i class="fas fa-external-link-alt fa-sm"></i></a>{/if}*}</td>
+                        <td class="page-settings"><div><a class="js-personal-app-settings" href="javascript:void(0)"><i class="fas fa-cog text-gray"></i></a></div></td>
+                    </tr>
+                {/foreach}
+
+            </tbody>
+        </table>
+    </div>
+
+
+{* Когда показываем в левом сайдбаре в редакторе страниц, то внешние контейнеры рендерить не нужно *}
+{if empty($sidebar_mode)}
+    </div>
+</div>
+{/if}
+
+
+<script>
+(function() { "use strict";
+    const site_app_url = {$wa_app_url|json_encode};
+    const domain_id = {$domain_id|json_encode};
+    const editor_page_url = {$wa_app_url|json_encode} + 'editor/page/%s/?domain_id='+domain_id;
+    const editor_html_page_url = {$wa_app_url|json_encode} + 'htmleditor/page/%s/?domain_id='+domain_id;
+    const $table = $('.site-map-tree-table');
+    const page_settings_skeleton_header = '<h1>'+{_w('Page settings')|json_encode} + '</h1>';
+    const section_settings_skeleton_header = '<h1>'+{_w('Section settings')|json_encode} + '</h1>';
+    const page_settings_skeleton_body = '<div class="skeleton"><span class="skeleton-header"></span><span class="skeleton-line"></span><span class="skeleton-line"></span></div>';
+
+    if (typeof $.site.loadMap === 'undefined') {
+        $.site.loadMap = $.site.reload;
+    }
+
+    $("#js-dropdown-add").waDropdown({
+        hover: false,
+        ready: function(dropdown) {
+                const $menu = dropdown.$wrapper.find('.menu');
+                $menu.on('click', '.js-add-app,#js-add-old-page', function(e){
+                    const params = new URLSearchParams({
+                        domain_id: domain_id,
+                        app: $(this).data('app-id'),
+                    });
+                    $.get(site_app_url+'?module=map&action=sectionSettingsDialog&' + params, function(html) {
+                        $.waDialog({
+                            html: html
+                        });
+                    });
+                    return false;
+                })
+                {* TODO: in the future
+                $menu.on('click', '#js-add-directory', function(e){
+                    const data = {
+                        domain_id: domain_id,
+                        //app: $(this).data('app-id'),
+                    }
+                    $.post(site_app_url+'?module=map&action=dirSettingsDialog', data, function(html) {
+                        $.waDialog({
+                            html: html
+                        });
+                    });
+                    return false;
+                })
+                *}
+                $menu.on('click', '#js-add-personal', function(e){
+                    $.get(site_app_url+'?module=map&action=personalSettingsDialog&domain_id=' + domain_id, function(html) {
+                        $.waDialog({
+                            html: html,
+                        });
+                    });
+                    return false;
+                })
+                $menu.on('click', '#js-add-blockpage', function(e){
+                    $.post('?module=map&action=createBlockPage', { domain_id }, function(result) {
+                        var page_id = result.data.id;
+                        window.location.href = editor_page_url.replace('%s', page_id);
+                    });
+                })
+            }
+    });
+
+    // autoscroll to line in drawer
+    {if $page_id}
+        const $row = $table.find('.dr.selected');
+        if ($row.length) {
+            $('#js-left-drawer .drawer-content').get(0).scrollTo(
+                0,
+                $row.offset().top - $('#js-left-drawer .s-site-tabs').height() - $row.height()
+            );
+        }
+    {/if}
+
+    // Show page settings dialog when user clicks on a cog
+    $table.on('click', '.js-personal-settings', function(e) {
+        $.site.helper.preventDupeRequest(() => {
+            return $.post(site_app_url+'?module=map&action=personalSettingsDialog&domain_id=' + domain_id, function(html) {
+                $.waDialog({
+                    html: html,
+                });
+            });
+        });
+        return false;
+    });
+    $table.on('click', '.js-profile-settings', function(e) {
+        $.site.helper.preventDupeRequest(() => {
+            return $.get(site_app_url+'?module=map&action=personalProfileDialog&domain_id=' + domain_id, function(html) {
+                $.waDialog({
+                    html: html,
+                });
+            });
+        });
+        return false;
+    });
+    $table.on('click', '.js-personal-app-settings', function(e) {
+        $.site.helper.preventDupeRequest(() => {
+            const $tr = $(this).closest('tr');
+            const params = new URLSearchParams({
+                app_id: $tr.data('app-id'),
+                domain_id
+            });
+
+            return $.get(site_app_url+'?module=map&action=personalAppDialog&' + params, function(html) {
+                const d = $.waDialog({
+                    html: html,
+                });
+                setTimeout(() => {
+                    d.resize();
+                });
+            });
+        });
+        return false;
+    })
+
+    const onPageDelete = (dialog, callback) => {
+        dialog.$wrapper.off('page_deleted').on('page_deleted', function() {
+            dialog.close();
+            if (typeof callback === 'function') {
+                callback();
+            }
+        });
+    };
+    $table.on('click', '.js-page-settings', function() {
+        $.site.helper.preventDupeRequest(() => {
+            const $tr = $(this).closest('tr');
+            // show skeleton while loading content
+            const skele_dialog = $.waDialog({
+                header: page_settings_skeleton_header,
+                content: page_settings_skeleton_body
+            });
+
+            return $.post(site_app_url+'?module=map&action=pageSettingsDialog', {
+                page_id: $tr.data('page-id')
+            }, function(html) {
+                skele_dialog.close();
+                skele_dialog.$wrapper.remove();
+
+                const dialog = $.waDialog({
+                    html: html
+                });
+
+                dialog.$wrapper.on('page_saved', function(event, page_data) {
+                    $.site.loadMap();
+                });
+
+                onPageDelete(dialog, () => { removePagesRecursiveByRow($tr); });
+            });
+        });
+
+        return false;
+    });
+
+    $table.on('click', '.js-old-page-settings', function() {
+        $.site.helper.preventDupeRequest(() => {
+            const $item = $(this).closest('.dr');
+            const params = {
+                page_id: $item.data('page-id') || 0,
+                parent_id: $item.data('parent-id') || 0,
+                app_id: $item.data('app-id') || 'site',
+            };
+            return htmlPageSettingsDialog(params, $item);
+        });
+
+        return false;
+    });
+    function htmlPageSettingsDialog (params, $item) {
+        params = params || {};
+        const full_params = new URLSearchParams({
+            domain_id: domain_id,
+            ...params
+        });
+
+        return $.get(site_app_url+'?module=map&action=htmlPageSettingsDialog&' + full_params, function(html) {
+            const dialog = $.waDialog({
+                html: html
+            });
+
+            onPageDelete(dialog, () => { removePagesRecursiveByRow($item); });
+        });
+    }
+
+    // Show page settings dialog when user clicks on a cog
+    $table.on('click', '.js-section-settings', function() {
+        $.site.helper.preventDupeRequest(() => {
+            const $tr = $(this).closest('tr');
+            const params = new URLSearchParams({
+                domain_id: domain_id,
+                route: $tr.data('route-id'),
+                page: $tr.data('page-id') ?? 0,
+                details: 1
+            });
+            return $.get(site_app_url+'?module=map&action=sectionSettingsDialog&' + params, function(html) {
+                const dialog = $.waDialog({
+                    html: html
+                });
+                onPageDelete(dialog, () => { removePagesRecursiveByRow($tr); });
+            });
+        });
+        return false;
+    });
+
+        // Open page when user clicks on a row in table
+        $table.find('tbody:first').on('click', '.page-name,.page-route', function(e) {
+            const $self = $(this).closest('tr');
+            if ($self.hasClass('disable-link')) {
+                return false;
+            }
+
+            const app_id = $self.data('app-id');
+
+             //for old pages
+            if ($self.data('html-page')) {
+                if (app_id && app_id !== 'site') { //for old apps pages
+                    let page_app_href = '#/pages/';
+                    if (app_id === 'shop') {
+                        page_app_href = '?action=storefronts#/pages/';
+                    }
+                    if (app_id === 'blog') {
+                        page_app_href = '?module=pages#/';
+                    }
+                    const app_href = site_app_url.replace('site', app_id) + page_app_href + $self.data('page-id');
+                    window.open(app_href, '_blank')
+                    return
+                }
+                window.location.href = editor_html_page_url.replace('%s', $self.data('page-id')); //for old site pages
+                return
+            }
+            //link for Apps
+            if (app_id && app_id !== 'site') {
+                window.open(site_app_url.replace('site', app_id), '_blank')
+                return
+            }
+            //for block pages
+            window.location.href = editor_page_url.replace('%s', $self.data('page-id'));
+        });
+
+        $table.on('click', '.js-map-add-subpage', function (e) {
+            e.preventDefault();
+
+            const $item = $(this).closest('.dr');
+
+            const params = {
+                parent_id: $item.data('page-id') || 0,
+                app_id: $item.data('app-id') || 'site'
+            };
+            if ($item.data('row-type') === 'route_app') {
+                params.route_id = $item.data('route-id') || 0;
+            }
+            htmlPageSettingsDialog(params);
+        });
+
+        $(document).off('personal_account_state_changed.map').on('personal_account_state_changed.map', (_, active) => {
+            $table.find('.s-personal-pages').toggleClass('s-personal-enabled', active);
+            $('#js-add-personal').toggleClass('s-disabled', active);
+            $('[data-personal]', $table).toggleClass('hidden', !active);
+        });
+        $(document).off('personal_account_change_route.map').on('personal_account_change_route.map', (_, new_route) => {
+            const $personal_link = $('#js-personal-link');
+
+            const prev_route_path = $personal_link.data('route').replace(/\/?\*$/, '');
+            const new_route_path = new_route.replace(/\/?\*$/, '') ? '/' + new_route.replace(/\/?\*$/, '') : '';
+            const domain_url = $personal_link.attr('href').replace(prev_route_path, '').replace(/\/?\/my\//, '');
+            $personal_link
+                .attr('href', domain_url + new_route_path + '/my/')
+                .data('route', new_route).attr('data-route', new_route);
+        });
+
+        $(document).off('personal_app_state_changed.map').on('personal_app_state_changed.map', (_, { app_id, active }) => {
+            $('[data-personal][data-app-id="'+app_id+'"]', $table).toggleClass('s-disabled', !active);
+        });
+
+        $.site.helper.loadSortableJS().then(() => {
+            $table.find('tbody.s-personal-pages').sortable({
+                animation: 150,
+                handle: '.js-sort',
+                draggable: '[data-personal][data-app-id]:not(.s-disabled)',
+                onEnd: function () {
+                    const apps = [];
+                    $('[data-personal][data-app-id]', $table).each(function () {
+                        apps.push($(this).data('app-id'));
+                    });
+
+                    $('#wa-app').trigger('wa_before_load');
+                    $.post("?module=personal&action=appMove&domain_id={$domain_id}" , { apps }, function () {
+                        $('#wa-app').trigger('wa_loaded');
+                    }, "json");
+                }
+            });
+        });
+
+        $table.on('click', '.js-map-set-main-page', function () {
+            if ($(this).hasClass('s-disabled')) {
+                return false;
+            }
+            const $item = $(this).closest('.dr');
+            const page_id = $item.data('page-id');
+            const route_id = $item.data('route-id');
+            const app_id = $item.data('app-id');
+            const payload = { type: $item.data('row-type') };
+
+            if (app_id !== undefined) { payload.app_id = app_id; }
+            if (route_id !== undefined) { payload.route_id = route_id; }
+            if (page_id !== undefined) { payload.page_id = page_id; }
+            $.post(site_app_url+'?module=map&action=setMainPage&domain_id='+domain_id, payload, function (r) {
+                if (r && r.status === 'ok') {
+                    $.site.loadMap();
+                }
+            }, "json");
+        });
+
+        $table.on('click', '.js-map-delete', function () {
+            const $item = $(this).closest('.dr');
+
+            let is_route = false;
+            let delete_url = '';
+            let payload = {};
+            switch ($item.data('row-type')) {
+                case 'route_app':
+                case 'route_text':
+                    is_route = true;
+                    delete_url = '?module=configure&action=redirectDelete&domain_id=' + domain_id;
+                    payload = { route: $item.data('route-id') };
+                    break;
+                case 'blockpage':
+                    delete_url = '?module=editor&action=pageDelete&domain_id=' + domain_id;
+                    payload = { id: $item.data('page-id') };
+                    break;
+                case 'htmlpage':
+                    delete_url = '?module=htmlPages&action=pageDelete&domain_id=' + domain_id;
+                    payload = { id: $item.data('page-id') };
+            }
+
+            const app_id = $item.data('app-id');
+            if (app_id) {
+                delete_url += '&app_id=' + app_id;
+            }
+
+            const onSuccess = function (d) {
+                const $loading = $('<span><i class="fas fa-spinner fa-spin"></i></span>');
+                d.$block.find('.dialog-footer').append($loading);
+                payload = Object.assign(payload, { confirm_multiple_delete: 1 });
+                $.post(site_app_url + delete_url, payload, function (r) {
+                    if (r?.status === 'ok') {
+                        removePagesRecursiveByRow($item);
+                    }
+                }, "json").always(function() {
+                    $loading.remove();
+                });
+            };
+            const main_page_alert_msg = $item.closest('.is-main').length ? $_('delete_main_page_alert') : '';
+            const is_site = app_id === 'site';
+            $.waDialog.confirm({
+                title: is_route && !is_site ? $_('delete_route') : $_('delete_page'),
+                text: main_page_alert_msg + (is_route && !is_site ? $_('delete_rule_msg') : $_('delete_page_msg')),
+                success_button_title: $_('Delete'),
+                success_button_class: 'danger',
+                cancel_button_title: $_('Cancel'),
+                cancel_button_class: 'light-gray',
+                onSuccess: function (d) {
+                    const cur_offset = $item.data('offset')||0;
+                    if (cur_offset < ($item.nextAll('.dr:first').data('offset')||0)) {
+                        $.waDialog.confirm({
+                            title: $_('delete_nested_pages'),
+                            text: is_route && !is_site ? $_('delete_route_with_nested_pages_msg') : $_('delete_page_with_nested_pages_msg'),
+                            success_button_title: $_('Delete'),
+                            success_button_class: 'danger',
+                            cancel_button_title: $_('Cancel'),
+                            cancel_button_class: 'light-gray',
+                            onSuccess: onSuccess
+                        });
+                    } else {
+                        onSuccess(d);
+                    }
+                }
+            });
+        });
+
+        function removePagesRecursiveByRow ($tr) {
+            const removeDragPos = ($el) => {
+                $el.prev('.drag-newposition').remove();
+                const prev_offset = $el.prev().data('offset') || 0;
+                $el.nextUntil('.dr').slice(0, -1).filter(function () {
+                    return ($(this).data('offset')||0) > prev_offset;
+                }).remove();
+            }
+            removeDragPos($tr);
+
+            let page_id = $tr.data('page-id');
+            let children_selector = `[data-parent-id="${ page_id }"]`;
+            if ($tr.data('row-type') === 'route_app') {
+                children_selector = `[data-parent-route-id="${ $tr.data('route-id') }"]`;
+            }
+
+            const app_id = $tr.data('app-id');
+            const app_id_selector = app_id ? `[data-app-id="${ app_id }"]` : '';
+            const removeChildren = (children_selector) => {
+                $tr.nextAll(children_selector + app_id_selector).each(function () {
+                    const $child = $(this);
+                    removeDragPos($child);
+                    $child.remove();
+                    removeChildren(`[data-parent-id="${ $child.data('page-id') }"]${ app_id_selector }`);
+                });
+            };
+            removeChildren(children_selector);
+
+            $tr.remove();
+
+            // main page is deleted
+            if (!$('.site-map-tree-table tbody:first tr.is-main').length) {
+                $.site.loadMap();
+            }
+        }
+    })();
+</script>
+{* Drag & Drop *}
+<script>(function() {
+    const domain_id = {$domain.id|json_encode};
+    const domain = {$domain.name|json_encode};
+    if (!jQuery.fn.liveDraggable) {
+        jQuery.fn.liveDraggable = function (opts) {
+            this.each(function(i,el) {
+                var self = $(this);
+                if (self.data('init_draggable')) {
+                    self.off("mouseover", self.data('init_draggable'));
+                }
+            });
+            this.on("mouseover", function() {
+                var self = $(this);
+                if (!self.data("init_draggable")) {
+                    self.data("init_draggable", arguments.callee).draggable(opts);
+                }
+            });
+        };
+    }
+    if (!jQuery.fn.liveDroppable) {
+        jQuery.fn.liveDroppable = function (opts) {
+            this.each(function(i,el) {
+                var self = $(this);
+                if (self.data('init_droppable')) {
+                    self.off("mouseover", self.data('init_droppable'));
+                }
+            });
+
+            var init = function() {
+                var self = $(this);
+                if (!self.data("init_droppable")) {
+                    self.data("init_droppable", arguments.callee).droppable(opts);
+                    self.mouseover();
+                }
+            };
+            init.call(this);
+            this.off("mouseover", init).on("mouseover", init);
+        };
+    }
+
+    $.ui.intersect = function() {
+        const oldIntersect = $.ui.intersect;
+        function t(t, e, i) {
+            return t >= e && e + i > t
+        }
+
+        return function(e, i, s, n) {
+            if (!i.offset)
+                return !1;
+
+            if (s === 'long-pointer') {
+                var h = i.offset.left
+                  , c = i.offset.top;
+                return (t(n.pageY, c, i.proportions().height) || t(n.pageY, c, i.proportions().height + 5)) && t(n.pageX, h, i.proportions().width);
+            } else {
+                return oldIntersect(e, i, s, n);
+            }
+        }
+    }();
+
+        {literal}
+        (function () {
+            const table_selector = '.site-map-tree-table tbody:first ';
+            const $list = $('.site-map-tree-table tbody:first');
+            const droppable_bonded_elements = [];
+            let is_above_newposition = false;
+
+            $("tr.dr:not(:first)", $list).liveDraggable({
+                refreshPositions: true,
+                revert: "invalid",
+                cursor: "move",
+                handle: "td:first",
+                opacity: 0.75,
+                zIndex: 9999,
+                distance: 3,
+                cursorAt: { left: 24 },
+                helper: function() {
+                    const $self = $(this);
+                    const $new_tr = $('<tr/>').append('<table class="s-map-draggable-list" />');
+                    const $new_table = $new_tr.find('table').css({ 'min-width': '550px', 'width': '70%' });
+
+                    $self.prev().addClass('disable-drop');
+                    $new_table.append(calcPaddingLeft($self.addClass('disable-drop').clone()));
+
+                    const addChildrens = ($self, offset = 1) => {
+                        const page_id = $self.data('page-id');
+                        const route_id = $self.data('route-id');
+                        let needs_children_selector = '';
+                        if (route_id) {
+                            needs_children_selector = `[data-parent-route-id="${route_id}"][data-parent-id=""]`;
+                        } else if (page_id) {
+                            needs_children_selector = `[data-parent-id="${page_id}"]`;
+                        }
+                        if (!needs_children_selector) {
+                            return;
+                        }
+
+                        // find pages
+                        let selector = `${table_selector}${needs_children_selector}`;
+                        if ($self.data('row-type') === 'blockpage') {
+                            selector += '[data-row-type="blockpage"]';
+                        } else {
+                            selector += '[data-html-page]';
+                        }
+                        const app_id = $self.data('app-id');
+                        if (app_id) {
+                            selector += `[data-app-id="${app_id}"]`;
+                        }
+                        $(selector).each(function () {
+                            const $child = $(this).addClass('disable-drop');
+                            $child.prev().addClass('disable-drop');
+                            $new_table.append(calcPaddingLeft($child.clone(), offset));
+                            addChildrens($child, offset + 1);
+                        });
+                    };
+                    addChildrens($self);
+
+                    $new_tr.find('.dr').addClass('ui-dragging');
+
+                    return $new_tr.addClass('ui-draggable helper').css({
+                        position: 'relative'
+                    }).appendTo($self.closest('tbody'));
+                },
+                start: function (_, ui) {
+                    is_above_newposition = false;
+                    const $dr = $(this);
+                    const row_type = $dr.data('row-type');
+                    const app_id = $dr.data('app-id');
+                    const is_root = !!$dr.prev().data('root');
+                    const is_html_page = !!$dr.data('html-page');
+
+                    // define: new positions
+                    let $new_positions = $();
+                    if (row_type === 'blockpage') {
+                        $new_positions = $dr.prevAll('.drag-newposition[data-row-type="blockpage"]:not(.disable-drop)')
+                            .add($dr.nextAll(`[data-offset="${$dr.data('offset')}"]:first,[data-row-type="blockpage"]:not([data-offset]):first`)
+                                .nextAll('.drag-newposition[data-row-type="blockpage"]:not(.disable-drop)')
+                            );
+                    } else {
+                        // another page types
+                        // const $all_new_positions = $(table_selector+'.dr:not([data-row-type="blockpage"])')
+                        //     .prev('.drag-newposition:not(.disable-drop)')
+                        const $all_new_positions =
+                            $dr.prevAll('.drag-newposition:not(.disable-drop)')
+                            .add($dr.nextAll(`[data-offset="${$dr.data('offset')}"]:first,.drag-newposition[data-root]:not(.disable-drop):first`)
+                                .nextAll('.drag-newposition:not(.disable-drop)')
+                            );
+
+                        let filter_selector = (is_root ? '[data-root]' : `[data-app-id="${ app_id }"]`);
+                        if (row_type !== 'route_app' && is_html_page) {
+                            filter_selector += ':not([data-root])';
+                        }
+                        $new_positions = $all_new_positions.filter(filter_selector+':not([data-row-type="blockpage"])');
+                    }
+                    if ($new_positions.length) {
+                        droppable_bonded_elements.push($new_positions);
+                        liveDroppableNewPosition($new_positions);
+                    }
+
+                    // define: where to put it
+                    const enable_drag_avobe_el = row_type === 'blockpage' || (!is_root && is_html_page);
+                    if (enable_drag_avobe_el) {
+                        let elements_selector = table_selector+'tr.dr:not(.disable-drop)';
+
+                        if (row_type === 'blockpage') {
+                            elements_selector += '[data-row-type="blockpage"]';
+                        } else {
+                            elements_selector += `[data-app-id="${ app_id }"]`;
+                        }
+
+                        const $over_elements = $(elements_selector);
+                        droppable_bonded_elements.push($over_elements);
+                        liveDroppableAboveElement($over_elements);
+                    }
+                },
+                stop: function () {
+                    $(table_selector+'.disable-drop').removeClass('disable-drop');
+
+                    if (droppable_bonded_elements.length) {
+                        const destroyDroppable = (el) => {
+                            $(el).each(function () {
+                                const $el =  $(this);
+                                if ($el.hasClass('ui-droppable')) {
+                                    $el.droppable("destroy")
+                                        .removeData('init_droppable')
+                                        .off("mouseover");
+                                }
+                            });
+                        };
+                        droppable_bonded_elements.forEach(destroyDroppable);
+                        droppable_bonded_elements.length = 0;
+                    }
+                }
+            });
+
+            /**
+             * позиции, куда можно перемещать
+             **/
+            function liveDroppableNewPosition ($el) {
+                $el.liveDroppable({
+                    accept: '.dr',
+                    tolerance: 'long-pointer',
+                    greedy: true,
+                    hoverClass: 'active',
+                    out: function(event, ui) {
+                        is_above_newposition = false;
+                    },
+                    over: function(event, ui) {
+                        is_above_newposition = true;
+                        $(this).css('height', '24px');
+                        $(table_selector+'.drag-newparent').removeClass('drag-newparent');
+                    },
+                    deactivate: function(event, ui) {
+                        var self = $(this);
+                        if (self.hasClass('dragging') || self.hasClass('ui-droppable')) {
+                            self.stop().animate({ height: '0' }, 300, null, function() { self.removeClass('dragging'); });
+                        }
+                    },
+                    drop: function(event, ui) {
+                        const self = $(this);
+                        const dr = ui.draggable;
+                        const dr_row_type = dr.data('row-type');
+                        let id = dr.data('page-id');
+                        let before_id = 0;
+
+                        const before_filter_selector = self.data('offset') ? `[data-offset="${ self.data('offset') }"]` : '';
+                        const before = self.nextUntil(before_filter_selector ? '[data-root]' : '').filter(`.dr${before_filter_selector}:first`);
+
+                        if (before.length && !before.hasClass('helper')) {
+                            before_id = before.data('page-id');
+                        }
+
+                        const sep = dr.prev();
+                        // means that actually nothing will be changed
+                        if ((id && id == before_id) || sep.get(0) == self.get(0) || dr.get(0) == self.prev().get(0)) {
+                            return false;
+                        }
+
+                        // update parent-id only children.
+                        if (dr_row_type === 'blockpage' || dr.data('html-page')) {
+                            const self_offset = self.data('offset');
+                            const dr_offset = dr.data('offset');
+                            if (self_offset !== dr_offset) {
+                                let new_parent_id = 0;
+                                if (self_offset > 1) {
+                                    new_parent_id = self.prevAll(`.dr[data-offset="${self_offset-1}"]:first`).data('page-id');
+                                }
+                                dr.data('parent-id', new_parent_id).attr('data-parent-id', new_parent_id);
+                            }
+                        }
+
+                        const finish = finishDroppable.bind(this, ui);
+                        // finish();
+
+                        const callbacks_args = [
+                            function() { finish(); },
+                            function() {}
+                        ];
+                        if (dr_row_type === 'route_app') {
+                            const data = {
+                                route_id: dr.data('route-id'),
+                                before_route_id: before.data('route-id') || 0
+                            };
+                            routeMove(data, ...callbacks_args);
+                        } else {
+                            const route = self.prevAll(`[data-app-id="${self.data('app-id')}"][data-root]:first`).data('route') || '';
+                            const data = {
+                                id: id,
+                                route,
+                                parent_id: dr.data('parent-id') || 0,
+                                before_id: before_id,
+                                app_id: dr_row_type === 'blockpage' ? 'site_blockpage' : dr.data('app-id'),
+                                page_ids: getDraggablePageIds(ui)
+                            };
+                            pageMove(data, ...callbacks_args);
+                        }
+                    }
+                });
+            }
+
+            /**
+             * перенос над элементом
+             **/
+             function liveDroppableAboveElement($el) {
+                $el.liveDroppable({
+                    accept: 'tr.dr',
+                    tolerance: 'pointer',
+                    greedy: true,
+                    out: function() {
+                        $(this).removeClass('drag-newparent');
+                    },
+                    over: function(event, ui) {
+                        var self = $(this); // tr
+                        self.addClass('drag-newparent');
+                        var dr = ui.draggable;
+                        var drSelector = '.dr[data-page-id!="'+dr.attr('data-page-id')+'"]';
+                        var nearby = $();
+
+                        // helper to widen all spaces below the current tr and above next tr (which may be on another tree level, but not inside current)
+                        var addBelow = function(nearby, current) {
+                            if (!current.length) {
+                                return nearby;
+                            }
+                            nearby = nearby.add(current.nextUntil(drSelector).filter('tr.drag-newposition:not(.disable-drop)'));
+                            if (current.nextAll(drSelector).length > 0) {
+                                return nearby;
+                            }
+                            return arguments.callee(nearby, current.parent().closest('tr'));
+                        }
+
+                        // widen all spaces above the current tr and below the prev tr (which may be on another tree level)
+                        var above = self.prevAll(drSelector+':first');
+                        if(above.length > 0) {
+                            nearby = addBelow(nearby, above);
+                        }
+
+                        var old = $('.drag-newposition:animated, .drag-newposition.dragging').not(nearby);
+
+                        // old.stop().animate({height: '2px'}, 300, null, function(){old.removeClass('dragging');});
+                        nearby.stop().animate({height: '10px'}, 300, null, function(){nearby.addClass('dragging');});
+                    },
+                    drop: function(event, ui) {
+                        if (is_above_newposition) {
+                            return;
+                        }
+
+                        var self = $(this).removeClass('drag-newparent'); // tr
+                        var parent_id = self.data('page-id') || 0;
+                        var parent_offset = self.data('offset') || 0;
+                        var parent_type = self.data('row-type');
+                        var dr = ui.draggable;
+
+                        // check
+                        var id = dr.data('page-id');
+                        // if (id == parent_id || (!self.data('html-page') && parent_type !== dr.data('row-type'))) {
+                        if (id == parent_id) {
+                            return false;
+                        }
+
+                        const finish = finishDroppable.bind(this, ui, true);
+                        const route = self.data('route') || self.prevAll(`[data-app-id="${self.data('app-id')}"][data-root]:first`).data('route') || '';
+                        const data = {
+                            id,
+                            route,
+                            parent_id,
+                            before_id: 0,
+                            app_id: dr.data('row-type') === 'blockpage' ? 'site_blockpage' : dr.data('app-id'),
+                            page_ids: getDraggablePageIds(ui)
+                        };
+                        // finish();
+                        pageMove(data, function() { finish() }, function() {});
+                    }
+                });
+            }
+        })();
+
+        function calcPaddingLeft (dr, offset) {
+            var css_offset = offset ? (offset)*2 + 'em' : '';
+            dr.find('td:first').css('padding-left', css_offset) //to do: if have child UPD add offset
+            return dr;
+        }
+        function updateOffset ($el, offset) {
+            $el.data('offset', offset).attr('data-offset', offset);
+            calcPaddingLeft($el, offset);
+        }
+        function finishDroppable (ui, place_to_end = false) {
+            const $drag_newposition = place_to_end ? $(this).removeClass('drag-newparent') : $(this);
+            const dr = ui.draggable;
+            const offset = ($drag_newposition.data('offset') || 0) + (place_to_end ? 1 : 0);
+            const prev_offset = dr.data('offset') || 0;
+            const sep  = dr.prev();
+
+            updateOffset(dr, offset);
+            updateOffset(sep, offset);
+            if (place_to_end) {
+                let $last_sibling = $drag_newposition;
+                let $last = $();
+                let page_id = $last_sibling.data('page-id');
+                const dr_page_id = dr.data('page-id');
+                let parent_selector = $last_sibling.data('row-type') === 'route_app'
+                    ? `[data-parent-route-id="${$last_sibling.data('route-id')}"]`
+                    : `[data-parent-id="${page_id}"]`;
+                let part_selector = $last_sibling.data('row-type') === 'blockpage' ? '[data-row-type="blockpage"]' : `[data-app-id="${$last_sibling.data('app-id')}"]`;
+                while (($last = $last_sibling.nextAll(`${parent_selector}:not([data-page-id="${dr_page_id}"])${part_selector}:last`)).length) {
+                    $last_sibling = $last;
+                    parent_selector = `[data-parent-id="${$last.data('page-id')}"]`;
+                }
+                sep.insertAfter($last_sibling);
+                dr.insertAfter(sep);
+            } else {
+                sep.insertAfter($drag_newposition);
+                dr.insertAfter($drag_newposition);
+            }
+
+            if (ui.helper.find('tr').length > 1) {
+                let $prev_row = dr;
+                const $list = $('.site-map-tree-table tbody:first');
+                ui.helper.find('tr:not(:first)').each(function () {
+                    const $fake_child = $(this);
+                    const page_id = $fake_child.data('page-id');
+                    const app_id = $fake_child.data('app-id');
+
+                    let part_selector = $fake_child.data('row-type') === 'blockpage' ? '[data-row-type="blockpage"]' : `[data-app-id="${app_id}"]`;
+                    const $child = $list.find(`${part_selector}[data-page-id="${page_id}"]:first`);
+                    const $child_sep = $child.prev();
+                    const new_offset = offset + ($child.data('offset') - prev_offset);
+
+                    updateOffset($child, new_offset);
+                    updateOffset($child_sep, new_offset);
+                    $child_sep.insertAfter($prev_row);
+                    $child.insertAfter($child_sep);
+                    $prev_row = $child;
+                });
+            }
+        }
+
+        function getDraggablePageIds (ui) {
+            return $.map(ui.helper.find('tr[data-page-id]'), function (el) {
+                return Number(el.dataset.pageId);
+            }).filter(Boolean);
+        }
+
+        function pageMove(data, success, error) {
+            $.site.log('pageMove', data);
+            const payload = Object.assign(data, { domain_id });
+            $('#wa-app').trigger('wa_before_load');
+            $.post("?module=map&action=move", payload, function (r) {
+                $.site.log('move:response', r);
+                if (r?.status == 'ok') {
+                    const { id, full_url, old_full_url } = r.data;
+                    if (full_url && old_full_url) {
+                        let add_selector = '';
+                        if (payload.app_id === 'site_blockpage') {
+                            add_selector = '[data-row-type="blockpage"]';
+                        } else {
+                            add_selector = `[data-app-id="${payload.app_id}"]`;
+                        }
+                        payload.page_ids.forEach(page_id => {
+                            const $a = $(`[data-page-id="${page_id}"]${add_selector} .page-route a`);
+                            if ($a.length) {
+                                if (id == page_id) {
+                                    $a.attr('title', '/' + full_url);
+                                } else {
+                                    // update $a.text() for old logic
+                                    const _full_url = '/' + full_url + (full_url.length > 0 && full_url.substr(-1) != '/' ? '/' : '') + $a.attr('title').substr(old_full_url.length + 1);
+                                    $a.attr('title', _full_url);
+                                }
+                            }
+                        });
+                    }
+
+                    $('#wa-app').trigger('wa_loaded');
+                    success();
+                    $.site.loadMap();
+                } else {
+                    $('#wa-app').trigger('wa_load_fail');
+                    error();
+                }
+            }, "json");
+        }
+
+        function routeMove(payload, success, error) {
+            $.site.log('routeMove', payload);
+            $('#wa-app').trigger('wa_before_load');
+            $.post("?module=map&action=move&app_id=site_route&domain_id="+domain_id, payload, function (r) {
+                $.site.log('move:response', r);
+                if (r?.status == 'ok') {
+                    $('#wa-app').trigger('wa_loaded');
+                    success();
+                    $.site.loadMap();
+                } else {
+                    $('#wa-app').trigger('wa_load_fail');
+                    error();
+                }
+            }, "json");
+        }
+        {/literal}
+})();
+</script>

@@ -1,0 +1,111 @@
+{$block_id = $data->getId()}
+{$is_horizontal = ifset($data->data['is_horizontal'], false)}
+{$is_columns = ifset($data->data['is_complex'], 0) === 'only_columns'}
+{$is_indestructible = ifset($data->data['indestructible'], false)}
+{$static_main = "js-seq-wrapper"}
+{$add_button_class = 'js-add-block'}
+{if $block_id}
+    {$add_button_class = 'js-add-element'}
+{/if}
+{if $is_columns}
+    {$add_button_class = 'js-add-column'}
+{/if}
+
+<div class="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" data-static="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" {if $block_id}data-block-id="{$block_id|escape}"{else}id="js-global-seq"{/if} data-page-id="{$data->getPageId()}">
+    {foreach $children as $c}
+        {function _add_button value='1'}
+            {if !$is_indestructible} 
+                {if $is_columns}
+                    <div class="dropdown">
+                        <button class="button smaller">
+                            <span class="icon size-12">+</span>
+                        </button>
+                    </div> 
+                {elseif $block_id}
+                    <div class="dropdown" id="dropdown-{$value}-{$c.id|escape}">
+                        <button class="button smaller circle dropdown-toggle without-arrow">
+                            <span class="icon size-12">+</span>
+                        </button>
+                        <div class="dropdown-body">
+                            <div class="animation-box box">
+                                <i class="fas fa-spinner wa-animation-spin speed-1000"></i>
+                            </div>
+                        </div>
+                    </div>
+                {else}
+                    <button class="button smaller">
+                        <span class="icon size-12">+</span>
+                    </button>
+                {/if}
+            {/if}
+        {/function}
+
+        <div class="seq-child" data-block-id="{$c.id|escape}" data-static="seq-child">
+            {if $is_horizontal}
+                <div class="seq-block-delimeter hseq-block-delimeter-top"></div>
+                <div class="seq-block-delimeter hseq-block-delimeter-left seq-block-delimeter-before {$add_button_class}">
+                    {_add_button}
+                </div>
+                    {$c.html}
+                <div class="seq-block-delimeter hseq-block-delimeter-right seq-block-delimeter-after {$add_button_class}">
+                    {_add_button value="2"}
+                </div>
+                <div class="seq-block-delimeter hseq-block-delimeter-bottom"></div>
+            {else}
+                <div class="seq-block-delimeter vseq-block-delimeter-top seq-block-delimeter-before {$add_button_class}">
+                    {_add_button}
+                </div>
+                <div class="seq-block-delimeter vseq-block-delimeter-left">
+                </div>
+                    {$c.html}
+                <div class="seq-block-delimeter vseq-block-delimeter-right">
+                </div>
+                <div class="seq-block-delimeter vseq-block-delimeter-bottom seq-block-delimeter-after {$add_button_class}">
+                    {_add_button value="2"}
+                </div>
+            {/if}
+
+
+            {* This updates block data after new block has been added to page and whole VerticalSequence is reloaded *}
+            <script>$(() => setTimeout(function(){
+                $.wa.editor.updateBlockData({$c.id|json_encode}, {json_encode($c.data->data, constant('JSON_FORCE_OBJECT'))} || {});
+                {foreach $c.data->files as $file_key => $file}
+                    $.wa.editor.updateBlockFile({$c.id|json_encode}, {$file_key|json_encode}, {json_encode($file, constant('JSON_FORCE_OBJECT'))} || {});
+                {/foreach}
+                $.wa.editor.updateBlockSettingsFormConfig({$c.id|json_encode}, {json_encode($c.data->block_type->getBlockSettingsFormConfig(), constant('JSON_FORCE_OBJECT'))} || {});
+            }, 0));</script>
+        </div>
+    {/foreach}
+
+    <div class="empty-seq">
+        {if $block_id}
+        <div class="seq-block-delimeter seq-block-delimeter-empty">
+        </div>
+        <div class="empty-seq-add {if $is_columns}js-add-column{else}js-add-element{/if}">
+            <div class="dropdown" id="dropdown-empty-{$block_id}">
+                <button class="button smaller circle dropdown-toggle without-arrow">
+                    <span class="icon size-12">+</span>
+                </button>
+                <div class="dropdown-body">
+                    <div class="animation-box box">
+                        <i class="fas fa-spinner wa-animation-spin speed-1000"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {else}
+        <div class="js-add-block">
+            <button class="button small light-gray">
+                <span class="icon size-12 custom-mr-4">+</span> [`Add block to page`]
+            </button>
+        </div>
+        {/if}
+    </div>
+
+</div>
+
+<script>
+
+</script>
+
+{include file="./VerticalSequence.script.html" is_backend=$is_backend inline}

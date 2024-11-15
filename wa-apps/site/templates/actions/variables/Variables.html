@@ -1,0 +1,302 @@
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
+{if !empty($is_block_page)}
+<script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version()}"></script>
+{/if}
+<script type="text/javascript">
+    document.title = {if $variable && $variable.id}'[`Variable`] ' + {json_encode($variable.id)}{else}'[`New variable`]'{/if} + ' — {$wa->appName()}';
+</script>
+
+<div class="flexbox custom-pl-24">
+    <div class="sidebar flexbox height-auto blank bordered-right">
+        <div class="sidebar-header custom-pr-24 custom-pt-24">
+            <div class="flexbox middle full-width custom-pb-8">
+                <h3 class="custom-mb-0">[s`Variables`]</h3>
+                <a href="javascript:void(0);" class="button circle js-add-variable smallest" title="[`New variable`]">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-body custom-pr-24 custom-pb-24" style="max-height: 84vh;scrollbar-color: initial;scrollbar-width: thin;">
+            <ul id="ul-variables" class="menu">
+                {foreach $variables as $b}
+                    <li data-variable-id="{$b.id}" class="rounded{if !isset($b.app)} sortable{/if}{if $variable && $b.id == $variable.id} selected{/if}">
+                        <a href="javascript:void(0);">
+                            {if isset($b.app) || isset($b.app_icon)}
+                                <span class="icon">
+                                    <img src="{$wa_url}{if isset($b.app)}{$b.app.icon.16}{else}{$b.app_icon.16}{/if}" alt="">
+                                </span>
+                            {else}
+                                <i class="fas fa-dollar-sign"></i>
+                            {/if}
+                            <span class="flexbox vertical">
+                                {if $b.description}
+                                    <span>{$b.description|escape}</span>
+                                {/if}
+                                <span class="hint">{$b.id|escape}</span>
+                            </span>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        </div>
+    </div>
+    <div class="content js-variable-editor flexbox vertical full-width" style="overflow: auto; max-height: 95vh;">
+        <form id="site-form" class="custom-py-24 custom-px-24 fields" method="post" action="{$wa_backend_url}site/?module=variables&action=save{if $variable && !isset($variable.app)}&id={$variable.id|escape}{/if}" style="visibility: hidden;">
+
+            <div class="field">
+                <div class="value">
+                    <h4 class="heading custom-mb-8 custom-mx-0">[`Description`]</h4>
+                    <input type="text" class="bold full-width" name="info[description]" value="{if $variable}{$variable.description|escape}{/if}">
+                    <p class="hint">[`Not visible on the site.`]</p>
+                </div>
+            </div>
+            <div class="field">
+                <div class="value">
+                    <h4 class="heading custom-mb-8 custom-mx-0">[`Identifier`]</h4>
+                    <input name="info[id]" type="text" class="full-width{if !$variable && !$is_new_variable} state-error{/if}" value="{if $variable}{$variable.id|escape}{/if}" />
+                    <p class="hint">[`Use Latin letters, and hyphens instead of whitespaces; e.g., “company-name”.`]</p>
+                </div>
+            </div>
+
+            {if $variable}
+                <h4 class="heading custom-mb-8 custom-mx-0">[`Add the variable to a site page or a design template`]</h4>
+                <div class="alert info small">
+                    <div class="flexbox middle full-width">
+                        <strong>&#123;$wa-&gt;variable("{$variable.id|escape}")&#125;</strong>
+                        <button type="button" class="button js-copy-to-clipboard" data-clipboard-text="&#123;$wa-&gt;variable(&quot;{$variable.id|escape}&quot;)&#125;">
+                            <i class="fas fa-copy"></i>
+                            <span class="custom-ml-4">[`Copy to clipboard`]</span>
+                        </button>
+                    </div>
+                </div>
+            {/if}
+
+            <h4 class="heading custom-mb-8 custom-mx-0">[`Contents displayed to website visitors instead of the variable`]</h4>
+            <div class="s-editor-core-wrapper bordered custom-mt-16 custom-p-0 box rounded" style="overflow: hidden;">
+                <div class="ace">
+                    <textarea id="content" name="info[content]" class="s-entire-core">{if $variable}{$variable.content|escape}{/if}</textarea>
+                </div>
+            </div>
+        </form>
+        <div class="buttons bordered-top custom-px-24 custom-py-16 blank" style="position: sticky; bottom: 0; z-index: 4;">
+            <div class="flexbox middle space-8">
+                <button type="submit" form="site-form" class="button" id="s-editor-save-button">[`Save`]</button>
+                <button type="button" class="button light-gray js-close-dialog" id="s-variable-close">[`Close`]</button>
+                {if empty($is_block_page)}
+                <button type="button" class="button nobutton js-cheatsheet-show" id="s-variable-close"><i class="fas fa-code"></i> [s`Cheat sheet`]</button>
+                {/if}
+                {if $variable && !isset($variable.app) && !isset($variable.original)}
+                    <button type="button" class="button nobutton red custom-ml-auto" id="s-variable-delete"><i class="fas fa-trash-alt"></i> [`Delete`]</button>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var $block_list = $("#ul-variables");
+    var dialog = $block_list.closest('.dialog').data('dialog');
+    var cheatsheet_name = dialog.$content.data('cheatsheet-name');
+
+    waEditorAceInit({
+        id: 'content',
+        ace_editor_container: 'wa-ace-editor-variables-dialog',
+    });
+    wa_editor.setOption('fontSize', 14);
+    wa_editor.setOption('minLines', 3);
+
+    dialog.resize();
+
+    $("#site-form").on('submit',function () {
+        waEditorUpdateSource({ 'id': 'content'});
+        const form = $(this);
+        $("#wa-editor-status1").html("<i class='fas fa-spin fa-spinner'></i> [`Saving...`]").fadeIn("slow");
+        $.post(form.attr('action'), form.serialize(), function (response) {
+            if (response.status == 'ok') {
+                $(".state-error").removeClass('state-error');
+                $("#wa-editor-status").html('<i class="fas fa-check-circle text-green"></i> [`Saved`]').fadeOut('slow');
+                $('#s-editor-save-button').removeClass('yellow').removeClass('red').addClass('green');
+
+                var blockHtml = function(b) {
+                    var icon = '';
+                    if (b.app_icon) {
+                        icon = '<span class="icon"><img src="{$wa_url}' + b.app_icon['16'] + '" alt=""></span>';
+                    } else {
+                        icon = '<i class="fas fa-dollar-sign"></i>';
+                    }
+
+                    return '<li data-variable-id="' + b.id + '" class="rounded selected sortable">' +
+                        '<a href="javascript:void(0);">' + icon +
+                        ' <span class="flexbox vertical"><span>' + b.description + '</span><span class="hint">' + b.id + '</span></span></a></li>';
+                }
+
+                var blocks_ul = $("#ul-variables");
+                {if !$variable || isset($variable.app)}
+                    form.attr('action', form.attr('action') + '&id=' + response.data.id);
+                    var b = response.data;
+
+                    {if $variable}
+                        blocks_ul.find('li[data-variable-id="' + b.id + '"]').remove();
+                    {/if}
+
+                    blocks_ul.find("li.selected").removeClass('selected');
+
+                    var insert_target = blocks_ul.find("li.sortable:last");
+                    if (insert_target.length) {
+                        insert_target.after(blockHtml(b));
+                    } else {
+                        insert_target = blocks_ul.find("li:first");
+                        if (insert_target.length) {
+                            insert_target.before(blockHtml(b));
+                        } else {
+                            blocks_ul.append(blockHtml(b));
+                        }
+                    }
+
+                    {if !$variable}
+                        blocks_ul.find("li[data-variable-id='" + b.id + "'] a").click();
+                    {/if}
+                {else}
+                    form.attr('action', form.attr('action') + '&id=' + response.data.id);
+                    var b = response.data;
+                    var li = blocks_ul.find('li[data-variable-id="' + (b.old_id || b.id) + '"]');
+                    if (b.old_id) {
+                        li.replaceWith(blockHtml(b));
+                    } else {
+                        const $hint = li.find('.hint');
+                        if ($hint.prev('span').length) {
+                            $hint.prev('span').text(b.description);
+                        }else{
+                            $hint.before('<span>' + b.description + '</span>');
+                        }
+                    }
+                {/if}
+            } else if (response.status == 'fail') {
+                if ($.isArray(response.errors)) {
+                    var e = response.errors[0];
+                    $(response.errors[1]).addClass('state-error');
+                } else {
+                    var e = response.errors;
+                }
+                $("#wa-editor-status").html('<b style="color:red">' + (e ? e : '[`An error occurred while saving`]') + '</b>');
+                $('#s-editor-save-button').removeClass('yellow').removeClass('green').addClass('red');
+            }
+        }, "json");
+        return false;
+    });
+
+    if (window.Sortable === undefined) {
+        const $script = $("#wa-header-js");
+        const path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
+
+        const urls = [
+            "wa-content/js/sortable/sortable.min.js",
+            "wa-content/js/sortable/jquery-sortable.min.js",
+        ];
+
+        const loadScript = (url) => {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    cache: true,
+                    dataType: "script",
+                    url: path + url,
+                    success: resolve,
+                    error: reject
+                });
+            });
+        };
+
+        loadScript(urls[0])
+            .then(() => loadScript(urls[1]))
+            .then(() => sortBlocks())
+            .catch(error => console.error(error));
+    } else {
+        sortBlocks()
+    }
+    function sortBlocks() {
+        $block_list.sortable({
+            animation: 150,
+            draggable: 'li.sortable',
+            onEnd: function (event) {
+                const li = $(event.item);
+                const id = li.data('variable-id');
+                const pos = li.prevAll('li.sortable').length + 1;
+                $.post("{$wa_backend_url}site/?module=variables&action=sort", { id: id, pos: pos}, function () {
+                }, "json");
+            }
+        });
+    }
+
+    {if isset($variable.original)}
+        {$confirm_message = '[`This will reset all changes you have applied to this variable. Are you sure?`]'}
+    {else}
+        {$confirm_message = '[`This will permanently delete this snippet. Are you sure?`]'}
+    {/if}
+
+    {if !empty($variable.id)}
+        $("#s-variable-delete").on('click', function () {
+            if (confirm('{$confirm_message}')) {
+                $.post("{$wa_backend_url}site/?module=variables&action=delete", { id: "{$variable.id|escape}"}, function (response) {
+                    if (response.status == 'ok') {
+                        const $ul_blocks = $("#ul-variables");
+                        $(".js-variable-editor").empty();
+                        $ul_blocks.find('li[data-variable-id="{$variable.id|escape}"]').remove();
+
+                        if($ul_blocks.find('li').length) {
+                            $ul_blocks.find('li:first a').click();
+                        }
+                    }
+                }, "json");
+            }
+            return false;
+        });
+
+        $('.js-copy-to-clipboard').on('click', async function () {
+            const $btn = $(this);
+            const $icon = $btn.find('[data-icon]');
+            const $btn_text_wrapper = $btn.find('span');
+            const $btn_text = $btn_text_wrapper.text();
+
+            try {
+                await $.wa.copyToClipboard($(this).data('clipboard-text'));
+
+                $btn.addClass('green');
+                $icon.attr('data-icon', 'check-circle');
+                $btn_text_wrapper.text('[`Copied`]');
+            } catch (e) {
+                console.error(e);
+
+                $btn.addClass('red');
+                $icon.attr('data-icon', 'times-circle');
+                $btn_text_wrapper.text('[`Copying error`]');
+            } finally {
+                setTimeout(() => {
+                    $btn.removeClass('green red');
+                    $btn.find('[data-icon]').attr('data-icon', 'copy');
+                    $btn_text_wrapper.text($btn_text);
+                }, 1000)
+            }
+        });
+    {/if}
+
+
+    /* Переключение блоков */
+    $block_list.on('click', 'a', function(){
+        dialogContentUpdate($(this).parent().data('variable-id'));
+    });
+    $('.js-add-variable').on('click', () => dialogContentUpdate('', true));
+    function dialogContentUpdate(id = '', is_new_variable = false) {
+        $.get('{$wa_backend_url}site/?module=variables&id=' + id + '&is_block_page={$is_block_page|default:false}&is_new_variable=' + (is_new_variable ? 1 : 0), function(html) {
+            dialog.$content.html(html);
+            dialog.$content.find('#site-form').css('visibility', 'visible');
+            setTimeout(() => dialog.resize(), 100);
+        });
+    }
+
+    /* Показываем шпаргалку */
+    $('.js-cheatsheet-show').on('click', function(e) {
+        dialog.$wrapper.css('z-index', '1039');
+        $('#wa-editor-help-link-' + cheatsheet_name).click();
+        setTimeout(() => $('#wa-editor-help-' + cheatsheet_name).show());
+    });
+</script>

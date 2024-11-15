@@ -25,6 +25,9 @@ msgstr "Файлы"
 msgid "New folder"
 msgstr "Новая папка"
 
+msgid "New page"
+msgstr "Новая страница"
+
 msgid "Upload files"
 msgstr "Загрузить файлы"
 
@@ -47,10 +50,7 @@ msgid "File"
 msgstr "Файл"
 
 msgid "Modified"
-msgstr "Изменен"
-
-msgid "Size"
-msgstr "Размер"
+msgstr "Изменено"
 
 msgid "Create"
 msgstr "Создать"
@@ -125,13 +125,13 @@ msgid "Automatically define the navigation menu according to the routing rules"
 msgstr "Меню навигации будет сформировано автоматически согласно правилам маршрутизации этого сайта"
 
 msgid "Set up manually"
-msgstr "Настроить"
+msgstr "Настроить вручную"
 
 msgid "Edit"
 msgstr "Редактировать"
 
 msgid "When you have finished editing, click “Save” to apply changes."
-msgstr "После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
+msgstr "После завершения редактирования нажмите на кнопку «Сохранить»."
 
 msgid "Add link"
 msgstr "Добавить ссылку"
@@ -148,6 +148,12 @@ msgstr "Сохранено"
 msgid "Redirect"
 msgstr "Перенаправление"
 
+msgid "Redirect rule"
+msgstr "Правило перенаправления"
+
+msgid "Redirects"
+msgstr "Перенаправления"
+
 msgid "This will delete the link from the menu. Are you sure?"
 msgstr "Ссылка будет удалена из меню. Продолжить?"
 
@@ -156,6 +162,9 @@ msgstr "Правило будет удалено из структуры сай�
 
 msgid "Page name"
 msgstr "Название страницы"
+
+msgid "Name"
+msgstr "Название"
 
 msgid "Block"
 msgstr "Блок"
@@ -397,6 +406,9 @@ msgstr "Введите URL нового сайта. Вы должны быть �
 msgid "Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param(\"key\")&#125;</em>. Each key=value pair must be specified on a separate line."
 msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться шаблонах дизайна и страницах этого поселения как <em>&#123;$wa->param(\"key\")&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
 
+msgid "Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this application as <em>&#123;$wa->param(\"key\")&#125;</em>. Each key=value pair must be specified on a separate line."
+msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться шаблонах дизайна и страницах этого приложения как <em>&#123;$wa->param(\"key\")&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
+
 msgid "Select a route to manage its settings"
 msgstr "Выберите правило маршрутизации для редактирования его настроек"
 
@@ -411,6 +423,9 @@ msgstr "Например, <em>domain.ru</em>, если Webasyst устанавл
 
 msgid "Site alias displayed in the site selection menu (in the top left corner) and used as the anchor name in the <em>$wa->apps()</em> navigation menu array in the frontend."
 msgstr "Псевдоним сайта, используемый в меню выбора сайтов (в верхнем левом углу) и в качестве текста ссылки в меню навигации фронтенда <em>$wa->apps()</em>."
+
+msgid "It can be used in the backend in the site selection section and on the site itself in the navigation menu"
+msgstr "Может использоваться в бекенде в разделе выбора сайтов и на самом сайте в меню навигации"
 
 msgid "Background"
 msgstr "Фон"
@@ -436,8 +451,14 @@ msgstr "Дополнительный JavaScript-код для вставки п�
 msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"https://support.webasyst.com/5556/third-party-auth-setup/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
 msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Фейсбук» или «Твиттер». <a href=\"https://support.webasyst.ru/5554/third-party-auth-setup/\" target=\"_blank\">Документация по настройке</a> <i class=\"icon10 new-window\"></i>"
 
+msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"https://support.webasyst.com/5556/third-party-auth-setup/\" target=\"_blank\">Setup instructions <i class=\"icon size-10 fas fa-external-link-alt new-window\"></i></a>"
+msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Фейсбук» или «Твиттер». <a href=\"https://support.webasyst.ru/5554/third-party-auth-setup/\" target=\"_blank\">Документация по настройке <i class=\"icon size-10 fas fa-external-link-alt new-window\"></i></a>"
+
 msgid "To enable authorization on this website, install and settle at least one app that supports authorization forms."
 msgstr "Чтобы сделать доступной авторизацию на этом сайте, установите хотя бы одно приложение, которое поддерживает формы авторизации,  и настройте для него маршрутизацию."
+
+msgid "To enable authorization on this site, add at least one section of an app that supports authorization forms."
+msgstr "Чтобы сделать доступной авторизацию на этом сайте, добавьте хотя бы один раздел с приложением, которое поддерживает формы авторизации."
 
 msgid "This will delete entire website including all its pages without the ability to recover. Are you sure?"
 msgstr "Будет удален весь сайт со всеми страницами без возможности восстановления. Удалить?"
@@ -480,6 +501,9 @@ msgstr "Скрытое поселение"
 
 msgid "When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines."
 msgstr "При включении этой настройки поселение будет считаться скрытым (не публичным). Оно будет доступно по своему прямому адресу, но не будет включено в массив $wa->apps и основной Sitemap-файл. Скрытыми удобно делать временные поселения, например, страницы «Сайт находится в разработке», и поселения, которые не должны быть включены в основное меню навигации либо индексироваться поисковыми системами."
+
+msgid "When section is enabled, the section is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary sections, such as “Under Construction” pages, and for other sections which should not be included in the core website navigation menu or indexed by search engines."
+msgstr "При выключении раздел будет считаться скрытым (не публичным). Он будет доступен по своему прямому адресу, но не будет включен в массив $wa->apps и основной Sitemap-файл. Скрытыми удобно делать временные разделы, например, страницы «Сайт находится в разработке», и разделы, которые не должны быть включены в основное меню навигации либо индексироваться поисковыми системами."
 
 msgid "We are using <a href=\"http://www.webasyst.com/\">Webasyst</a>"
 msgstr "Мы используем <a href=\"http://www.webasyst.ru\">Webasyst</a>"
@@ -527,19 +551,16 @@ msgid "Welcome to your new site!"
 msgstr "Добро пожаловать на ваш новый сайт!"
 
 msgid "Open “<a href=\"%s\">Pages</a>” section and add a new page with an empty address. You will see its contents here."
-msgstr "Перейдите в раздел «<a href=\"%s\">Страницы</a>» и создайте страницу с пустым адресом. Здесь вы увидите её текст."
+msgstr "Перейдите в раздел «<a href=\"%s\">Страницы</a>» и создайте страницу с пустым адресом. Здесь вы увидите ее текст."
 
-msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website."
-msgstr "Сайт с доменным именем %s уже зарегистрирован в этой установке Вебасиста. Удалите сайт %s (приложение «Сайт» > %s > Настройки), чтобы подключить этот домен к другому сайту."
+msgid "A website with domain name %s already exists in this Webasyst account. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website."
+msgstr "Сайт с доменным именем %s уже существует в этом аккаунте Webasyst. Удалите сайт %s (приложение «Сайт» > %s > Настройки), чтобы подключить этот домен к другому сайту."
 
 msgid "Incorrect domain URL: %s"
 msgstr "Неправильный адрес домена: %s"
 
 msgid "My profile"
 msgstr "Мой профиль"
-
-msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > Settings > %s) to be able to use it's domain name for another website."
-msgstr "Сайт с доменным именем %s уже зарегистрирован в этой установке Вебасиста. Удалите сайт %s (приложение «Сайт» > %s > Настройки), чтобы подключить этот домен к другому сайту."
 
 msgid "My account"
 msgstr "Личный кабинет"
@@ -593,13 +614,13 @@ msgid "Setup routing"
 msgstr "Настроить маршрутизацию"
 
 msgid "Disabled"
-msgstr "Выключена"
+msgstr "Выключено"
 
 msgid "Redirect disabled"
 msgstr "Выключено"
 
 msgid "Enabled"
-msgstr "Включена"
+msgstr "Включено"
 
 msgid "Redirect enabled"
 msgstr "Включено"
@@ -667,6 +688,9 @@ msgstr "Файл apple-touch-icon.png обнаружен в каталоге у�
 msgid "Files with extension *.png are allowed only."
 msgstr "Разрешена загрузка только PNG-файлов."
 
+msgid "Files with extension *.ico are allowed only."
+msgstr "Разрешена загрузка только ICO-файлов."
+
 msgid "Touch icon for iOS"
 msgstr "Фавиконка для iOS"
 
@@ -697,6 +721,9 @@ msgstr "Введите адрес CDN (Content Delivery Network), чтобы в�
 msgid "Alias (mirror site) for"
 msgstr "Зеркало сайта"
 
+msgid "Alias (mirror) for the site"
+msgstr "Это зеркало для сайта"
+
 msgid "This is a mirror site (alias) for <strong>%s</strong>."
 msgstr "Это зеркало сайта <strong>%s</strong>"
 
@@ -718,8 +745,11 @@ msgstr "Безопасность"
 msgid "Redirect to HTTPS"
 msgstr "Перенаправлять на HTTPS"
 
-msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection within this settlement."
-msgstr "Перенаправлять посетителей сайта с обычного HTTP- на безопасное HTTPS-подключение в пределах этого поселения."
+msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection within this section."
+msgstr "Перенаправлять посетителей сайта с обычного HTTP- на безопасное HTTPS-подключение в пределах этого раздела."
+
+msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection within this application."
+msgstr "Перенаправлять посетителей сайта с обычного HTTP- на безопасное HTTPS-подключение в пределах этого приложения."
 
 msgid "This option will work only if an SSL certificate is installed for your domain name."
 msgstr "Эта настройка будет работать, только если для вашего доменного имени установлен SSL-сертификат."
@@ -857,10 +887,10 @@ msgid "Fields"
 msgstr "Поля"
 
 msgid "authorization enabled"
-msgstr "включен"
+msgstr "Включен"
 
 msgid "authorization disabled"
-msgstr "выключен"
+msgstr "Выключен"
 
 msgid "Set up how website visitors will log in and sign up on your website."
 msgstr "Настройте, как посетители будут входить и регистрироваться на сайте."
@@ -959,7 +989,7 @@ msgid "The [%s] app deleted or disabled."
 msgstr "Приложение [%s] удалено или отключено."
 
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 msgid "Phone"
 msgstr "Телефон"
@@ -1022,7 +1052,7 @@ msgstr[1] "%d правила «Перенаправление» настроен
 msgstr[2] "%d правил «Перенаправление» настроены неправильно."
 
 msgid "Homepage"
-msgstr "Главная страница"
+msgstr "главная страница"
 
 msgid "Invalid value: %s."
 msgstr "Недопустимое значение: %s."
@@ -1033,5 +1063,651 @@ msgstr "Приложение [%s] отключено."
 msgid "Google Analytics 4"
 msgstr "Google Analytics 4"
 
+msgid "Menu for sections"
+msgstr "Меню для разделов"
+
+msgid "Sites"
+msgstr "Сайты"
+
+msgid "Customize the menu view in sections (Catalog, Blog, Photo Gallery, Hub) that do not yet support editing in Block designer mode."
+msgstr "Настройте вид меню в разделах (Каталог, Блог, Фотогалерея, Хаб), которые еще не поддерживают редактирование в режиме конструктора блоков."
+
+msgid "The navigation menu will be generated automatically from the main sections of the site map."
+msgstr "Меню навигации будет сформировано автоматически из главных разделов карты сайта."
+
+msgid "Display links to sections of the site map"
+msgstr "Выводить ссылки на разделы карты сайта"
+
+msgid "Manual settings"
+msgstr "Ручные настройки"
+
+msgid "If not specified, the link will not be displayed."
+msgstr "Если не указано, то ссылка не отобразится."
+
+msgid "Link text"
+msgstr "Текст ссылки"
+
+msgid "Favicon (.ico)"
+msgstr "Фавиконка (.ico)"
+
+msgid "Touch icon for iOS (.png)"
+msgstr "Фавиконка для iOS (.png)"
+
+msgid "Old address"
+msgstr "Старый адрес"
+
+msgid "New address"
+msgstr "Новый адрес"
+
+msgid "Permanent (301)"
+msgstr "Постоянное (301)"
+
+msgid "Temporary (302)"
+msgstr "Временное (302)"
+
+msgid "Permanent redirect with response code 301 is the sign for search engines that the new URL should be indexed instead of the old one. Use a temporary redirect with the server response code 302 if you are planning to cancel it later."
+msgstr "Постоянное перенаправление с кодом ответа 301 сообщает поисковым системам, что новый URL должен индексироваться вместо старого. Используйте временное перенаправление с кодом ответа 302, если вы планируете отменить его в будущем."
+
+msgid "Select"
+msgstr "Выбрать"
+
+msgid "Selected"
+msgstr "Выбрано"
+
+msgid "Folder name"
+msgstr "Название"
+
+msgid "Folder path"
+msgstr "Расположение"
+
+msgid "Open"
+msgstr "Открыть"
+
+msgid "Site map"
+msgstr "Карта сайта"
+
+msgid "Design themes"
+msgstr "Темы дизайна"
+
+msgid "Plugins"
+msgstr "Плагины"
+
+msgid "Block page"
+msgstr "Страницу-конструктор"
+
+msgid "Text page"
+msgstr "Текстовую страницу"
+
+msgid "Page"
+msgstr "Страницу"
+
+msgid "Directory"
+msgstr "Папку"
+
+msgid "Section"
+msgstr "Раздел"
+
+msgid "New"
+msgstr "Новое"
+
+msgid "Preview"
+msgstr "Просмотр"
+
+msgid "Add inside"
+msgstr "Добавить внутри"
+
+msgid "Duplicate"
+msgstr "Дублировать"
+
+msgid "Make the site’s homepage"
+msgstr "Сделать главной страницей сайта"
+
+msgid "Section settings"
+msgstr "Настройки раздела"
+
+msgid "Page settings"
+msgstr "Настройки страницы"
+
+msgid "Section name"
+msgstr "Название раздела"
+
+msgid "Publication"
+msgstr "Публикация"
+
+msgid "Published"
+msgstr "Опубликовано"
+
+msgid "Unpublished"
+msgstr "Не опубликовано"
+
+msgid "New section"
+msgstr "Новый раздел"
+
+msgid "Apps on the site"
+msgstr "Приложения на сайте"
+
 msgid "The block is too large. Reduce it or create several blocks instead of one."
 msgstr "Содержимое блока слишком большое. Сократите его или создайте несколько блоков."
+
+msgid "Subsections of the personal account (“My orders”, “My requests”, “My subscriptions”, “My profile”) are determined by the connected applications."
+msgstr "Подразделы личного кабинета («Мои заказы», «Мои запросы», «Мои подписки», «Мой профиль») определяются подключенными приложениями."
+
+msgid "View instructions"
+msgstr "Смотреть инструкцию"
+
+msgid "Edit the list in section"
+msgstr "Измените список в разделе"
+
+msgid "“Email templates”"
+msgstr "«Email-шаблоны»"
+
+msgid "“SMS templates”"
+msgstr "«SMS-шаблоны»"
+
+msgid "Adding a folder"
+msgstr "Добавление папки"
+
+msgid "Folder settings"
+msgstr "Настройки папки"
+
+msgid "Add block to page"
+msgstr "Добавить блок на страницу"
+
+msgid "Font"
+msgstr "Шрифт"
+
+msgid "Alignment"
+msgstr "Выравнивание"
+
+msgid "Columns alignment"
+msgstr "Выравнивание колонок"
+
+msgid "Margin"
+msgstr "Отступы снаружи"
+
+msgid "Padding"
+msgstr "Отступы внутри"
+
+msgid "Inner"
+msgstr "Внутренние"
+
+msgid "Outer"
+msgstr "Внешние"
+
+msgid "Line height"
+msgstr "Высота строк"
+
+msgid "Visibility on devices"
+msgstr "Видимость на устройствах"
+
+msgid "Whole block"
+msgstr "Весь блок"
+
+msgid "Container with content"
+msgstr "Контейнер с содержимым"
+
+msgid "Container"
+msgstr "Контейнер"
+
+msgid "Whole column"
+msgstr "Вся колонка"
+
+msgid "Content in column"
+msgstr "Контент в колонке"
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "Style"
+msgstr "Стиль"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Angle"
+msgstr "Углы"
+
+msgid "Shadows"
+msgstr "Тени"
+
+msgid "Border"
+msgstr "Обводка"
+
+msgid "Not set"
+msgstr "Не задан"
+
+msgid "Upload custom theme"
+msgstr "Загрузить свою тему"
+
+msgid "Show more"
+msgstr "Показать еще"
+
+msgid "Hide"
+msgstr "Скрыть"
+
+msgid "All themes"
+msgstr "Все темы"
+
+msgid "Used on other sites."
+msgstr "Используется на других сайтах."
+
+msgid "Add app"
+msgstr "Добавить приложение"
+
+msgid "This subsection is not available in the client account because Mailer app is not added to the site settings."
+msgstr "Этот подраздел недоступен в личном кабинете, потому что приложение «Рассылки» не добавлено в «Настройках» сайта."
+
+msgid "This subsection is not available in the client account because %s app is not added to the site map."
+msgstr "Этот подраздел недоступен в личном кабинете, так как приложение «%s» не добавлено в карту сайта."
+
+msgid "Subsection is enabled"
+msgstr "Подраздел включен"
+
+msgid "Subsection is disabled"
+msgstr "Подраздел выключен"
+
+msgid "%s personal account URL: <a id=\"s-app-frontend-link\" href=\"%s\" target=\"_blank\"><span class=\"break-all\">%s</span> <i class=\"fas fa-external-link-alt fa-xs\"></i></a>"
+msgstr "«%s» в личном кабинете: <a id=\"s-app-frontend-link\" href=\"%s\" target=\"_blank\"><span class=\"break-all\">%s</span> <i class=\"fas fa-external-link-alt fa-xs\"></i></a>"
+
+msgid "Redirects and the settings of apps not affecting the website contents or appearance have been moved to the “Settings” section."
+msgstr "Перенаправления и настройки приложений, не относящихся к внешнему виду сайта, переехали в раздел «Настройки»."
+
+msgid "This site’s settings contain redirects. They may cause visitors open other addresses than those currently available on your site or that used to be available before."
+msgstr "В настройках сайта есть перенаправления. Из-за них посетители могут попадать на другие адреса вместо страниц или разделов, которые есть или были ранее в карте сайта."
+
+msgid "View settings"
+msgstr "Смотреть настройки"
+
+msgid "Client accounts are enabled"
+msgstr "Личный кабинет включен"
+
+msgid "Client accounts are disabled"
+msgstr "Личный кабинет выключен"
+
+msgid "This section was set up with an error in the old interface and, therefore, is not available on the website. You can fix that error in the old interface or right here."
+msgstr "В старом интерфейсе этот раздел был задан с ошибкой и поэтому недоступен на сайте. Исправить ошибку можно в старом интерфейсе или прямо здесь."
+
+msgid "Fix it"
+msgstr "Исправить"
+
+msgid "My sites"
+msgstr "Мои сайты"
+
+msgid " and "
+msgstr " и "
+
+msgid "App %s has not been added and may not be working properly."
+msgid_plural "Apps %s have not been added and may not be working properly."
+msgstr[0] "Приложение %s не добавлено и может работать некорректно."
+msgstr[1] "Приложения %s не добавлены и могут работать некорректно."
+msgstr[2] "Приложения %s не добавлены и могут работать некорректно."
+
+msgid "This section’s URL was saved with an error in the old interface; therefore, you cannot edit it here. You can fix the error in the old interface or in file <em>wa-config/routing.php</em>."
+msgstr "URL этого раздела был задан с ошибкой в старом интерфейсе, поэтому нельзя изменить его здесь. Исправить ошибку можно в старом интерфейсе или в файле <em>wa-config/routing.php</em>."
+
+msgid "Generate automatically from top-level sections and pages in the site map"
+msgstr "Формировать автоматически из разделов и страниц верхнего уровня в карте сайта"
+
+msgid "Delete page"
+msgstr "Удалить страницу"
+
+msgid "Design theme for this subsection is set up in Mailer app’s settings via the <a class=\"%s\" href=\"%s\">site settings <i class=\"fas fa-external-link-alt fa-sm\"></i></a>."
+msgstr "Тема дизайна для этого подраздела меняется в настройках приложения «Рассылки» через <a class=\"%s\" href=\"%s\">настройки сайта <i class=\"fas fa-external-link-alt fa-sm\"></i></a>."
+
+msgid "Invalid value in field “%s”."
+msgstr "Недопустимое значение в поле «%s»."
+
+msgid "Shop"
+msgstr "Онлайн-магазин"
+
+msgid "Photo Gallery"
+msgstr "Фотогалерея"
+
+msgid "Forum"
+msgstr "Форум"
+
+msgid "Blog"
+msgstr "Блог"
+
+msgid "Helpdesk"
+msgstr "Поддержка"
+
+msgid "Decoration"
+msgstr "Оформление"
+
+msgid "The specified URL already exists."
+msgstr "Указанный URL уже существует."
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Select site"
+msgstr "Выберите сайт"
+
+msgid "App settings"
+msgstr "Настройки приложения"
+
+msgid "If published, can be used in the site’s <em>&#123;$wa-apps()&#125;</em> navigation menu."
+msgstr "Если опубликовано,  может быть использовано в меню навигации сайта <em>&#123;$wa-apps()&#125;</em>."
+
+msgid "When disabled, the app is available at its direct address but is not indexed by search engines and is not included in the main menu <em>&#123;$wa-apps()&#125;</em>."
+msgstr "Когда выключено, приложение доступно по своему прямому адресу, но не индексируется поисковыми системами и не включается в главное меню <em>&#123;$wa-apps()&#125;</em>."
+
+msgid "Links in the site navigation menu"
+msgstr "Ссылки в меню навигации по сайту"
+
+msgid "Visual appearance can be supplemented or completely modified by design settings."
+msgstr "Внешний вид меню может быть дополнен или полностью изменен настройками темы дизайна."
+
+msgid "Redirect website visitors from outdated addresses to new ones."
+msgstr "Перенаправляют посетителей сайта со старых, неактуальных адресов на новые."
+
+msgid "Publish"
+msgstr "Опубликовать"
+
+msgid "View"
+msgstr "Посмотреть"
+
+msgid "Block library"
+msgstr "Библиотека блоков"
+
+msgid "Variable"
+msgstr "Переменная"
+
+msgid "New variable"
+msgstr "Новая переменная"
+
+msgid "Not visible on the site."
+msgstr "Не отображается на сайте."
+
+msgid "Identifier"
+msgstr "Идентификатор"
+
+msgid "Use Latin letters, and hyphens instead of whitespaces; e.g., “company-name”."
+msgstr "Используйте латинские буквы и дефис (вместо пробела), например, «company-name»."
+
+msgid "Add the variable to a site page or a design template"
+msgstr "Добавьте переменную в страницу или в шаблон дизайна"
+
+msgid "Copy to clipboard"
+msgstr "Скопировать в буфер обмена"
+
+msgid "Contents displayed to website visitors instead of the variable"
+msgstr "Содержимое, которое будет видно сайте вместо переменной"
+
+msgid "This will reset all changes you have applied to this variable. Are you sure?"
+msgstr "Будут потеряны все изменения, которые вы внесли в эту переменную. Продолжить?"
+
+msgid "Copied"
+msgstr "Скопировано"
+
+msgid "Copying error"
+msgstr "Ошибка копирования"
+
+msgid "Enable"
+msgstr "Включить"
+
+msgid "Disable"
+msgstr "Выключить"
+
+msgid "The site is not operating properly because no homepage is selected."
+msgstr "Сайт работает неправильно, потому что не выбрана главная страница."
+
+msgid "Add page"
+msgstr "Добавить страницу"
+
+msgid "The homepage cannot be unpublished. Please select another section or page as the homepage."
+msgstr "Главную страницу нельзя сделать неопубликованной. Сделайте главными другой раздел или страницу."
+
+msgid "Used as the page title. Can be displayed on the site if allowed by design settings."
+msgstr "Используется в качестве заголовка страницы. Может отображаться на сайте в зависимости от настроек дизайна."
+
+msgid "Main menu title"
+msgstr "Название в меню верхнего уровня"
+
+msgid "Used in the top-level navigation menu <em>&#123;$wa->apps()&#125;</em>. Can be displayed on the site if allowed by design settings."
+msgstr "Используется в меню навигации по разделам и страницам верхнего уровня <em>&#123;$wa->apps()&#125;</em>. Может отображаться на сайте в зависимости от настроек дизайна."
+
+msgid "Visibility of this page and its subpages"
+msgstr "Видимость этой и вложенных страниц"
+
+msgid "When disabled, the page and all its subpages are excluded from the top-level <em>&#123;$wa->apps()&#125;</em> menu and are not indexed by search engines, but are still available at their direct addresses."
+msgstr "Когда выключено, страница и вложенные в нее подстраницы исключаются из меню верхнего уровня <em>&#123;$wa->apps()&#125;</em> и не индексируются поисковыми системами, но доступны по своему прямому адресу."
+
+msgid "Visibility on the site and in search engines"
+msgstr "Видимость на сайте и в поисковых системах"
+
+msgid "When disabled, the section and all its subpages are excluded from the top-level <em>&#123;$wa->apps()&#125;</em> menu and are not indexed by search engines, but are still available at their direct addresses."
+msgstr "Когда выключено, раздел и его подстраницы исключаются из меню верхнего уровня <em>&#123;$wa->apps()&#125;</em> и не индексируются поисковыми системами, но доступны по своему прямому адресу."
+
+msgid "Installed themes"
+msgstr "Установленные темы"
+
+msgid "Browse all themes"
+msgstr "Посмотреть все темы"
+
+msgid "Theme settings"
+msgstr "Настройки темы"
+
+msgid "Use another theme for mobile phones"
+msgstr "Использовать другую тему для мобильных телефонов"
+
+msgid "Custom page parameters"
+msgstr "Дополнительные параметры страницы"
+
+msgid "Optional set of custom <em>key=value</em> parameters, which can be used in design templates, as well as in the page and all its subpages, as <em>&#123;$wa->param(\"key\")&#125;</em>. Each key=value pair must be specified on a separate line."
+msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться в шаблонах дизайна, текущей и вложенных страницах как <em>&#123;$wa->param(\"key\")&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
+
+msgid "Visibility"
+msgstr "Видимость"
+
+msgid "Page title"
+msgstr "Заголовок страницы"
+
+msgid "Page URL"
+msgstr "URL страницы"
+
+msgid "Use Latin letters, and underscores instead of whitespaces; e.g., “company_name”."
+msgstr "Используйте латинские буквы и подчеркивание (вместо пробела), например, «company_name»."
+
+msgid "Switch"
+msgstr "Переключить"
+
+msgid "Installed"
+msgstr "Установленные"
+
+msgid "Used"
+msgstr "Используемая"
+
+msgid "Not used"
+msgstr "Неиспользуемая"
+
+msgid "No installed themes."
+msgstr "Нет установленных тем."
+
+msgid "Unable to get the page from the server."
+msgstr "Не удалось загрузить страницу с сервера."
+
+msgid "Delete section?"
+msgstr "Удалить раздел?"
+
+msgid "Delete page?"
+msgstr "Удалить страницу?"
+
+msgid "Delete subpages?"
+msgstr "Удалить вложенные страницы?"
+
+msgid "The section will be removed from the site map. Continue?"
+msgstr "Раздел будет удален из карты сайта. Продолжить?"
+
+msgid "With the selected section, its subpages will be deleted, too. Continue?"
+msgstr "Вместе с выбранным разделом будут удалены вложенные в него страницы. Продолжить?"
+
+msgid "With the selected page, its subpages will be deleted, too. Continue?"
+msgstr "Вместе с выбранной страницей будут удалены вложенные в нее страницы. Продолжить?"
+
+msgid "If you remove the homepage, the site will not be operating properly. Be sure to select a page or a section as the homepage right after that."
+msgstr "Если удалить главную страницу сайта, он будет работать неправильно. Сразу после удаления выберите другую главную страницу или главный раздел."
+
+msgid "This field is required."
+msgstr "Это обязательное поле."
+
+msgid "Only Latin letters, numbers, hyphens and underscore characters are allowed."
+msgstr "Можно использовать только латинские буквы, дефисы и символы подчеркивания."
+
+msgid "The variable is too large. Reduce it or create several variables instead of one."
+msgstr "Слишком большая переменная. Сократите ее или создайте несколько переменных вместо одной."
+
+msgid "A variable with ID “%s” already exists."
+msgstr "Переменная с ID «%s» уже существует."
+
+msgid "Access denied."
+msgstr "Доступ запрещен."
+
+msgid "Site header block"
+msgstr "Блок шапки сайта"
+
+msgid "Site footer block"
+msgstr "Блок подвала сайта"
+
+msgid "One column"
+msgstr "Одна колонка"
+
+msgid "Two columns"
+msgstr "Две колонки"
+
+msgid "Three columns"
+msgstr "Три колонки"
+
+msgid "Four columns"
+msgstr "Четыре колонки"
+
+msgid "Cards"
+msgstr "Карточки"
+
+msgid "Menu"
+msgstr "Меню"
+
+msgid "Heading"
+msgstr "Заголовок"
+
+msgid "Paragraph of text"
+msgstr "Абзац текста"
+
+msgid "Custom HTML"
+msgstr "Свой HTML-код"
+
+msgid "Button or link"
+msgstr "Кнопка или ссылка"
+
+msgid "Image"
+msgstr "Изображение"
+
+msgid "Horizontal ruler"
+msgstr "Горизонтальная линия"
+
+msgid "Row"
+msgstr "Ряд"
+
+msgid "Apps block"
+msgstr "Блок приложений"
+
+msgid "Font header"
+msgstr ""
+
+msgid "Font style"
+msgstr "Стиль шрифта"
+
+msgid "Color"
+msgstr "Цвет"
+
+msgid "Tabs"
+msgstr "Вкладки"
+
+msgid "SEO"
+msgstr "SEO"
+
+msgid "Column"
+msgstr "Колонка"
+
+msgid "Footer bottom"
+msgstr "Низ подвала"
+
+msgid "Footer toggle"
+msgstr "Переключатель подвала"
+
+msgid "Footer top"
+msgstr "Верх подвала"
+
+msgid "Column bottom"
+msgstr "Низ колонки"
+
+msgid "Block deletion error."
+msgstr "Ошибка при удалении блока."
+
+msgid "Footer"
+msgstr "Подвал"
+
+msgid "Columns"
+msgstr "Колонки"
+
+msgid "Card"
+msgstr "Карточка"
+
+msgid "Whole card"
+msgstr "Целая карточка"
+
+msgid "Menu item"
+msgstr "Пункт меню"
+
+msgid "Logo"
+msgstr "Логотип"
+
+msgid "Burger"
+msgstr "Гамбургер"
+
+msgid "Menu toggle"
+msgstr "Переключатель меню"
+
+msgid "added a new site variable"
+msgstr "добавил новую переменную для сайта"
+
+msgid "edited a site variable"
+msgstr "отредактировал переменную для сайта"
+
+msgid "deleted a site variable"
+msgstr "удалил переменную для сайта"
+
+msgid "Editing published pages is unavailable."
+msgstr "Редактирование опубликованных страниц недоступно."
+
+msgid "The page will be removed from the site map. Continue?"
+msgstr "Страница будет удалена из карты сайта. Продолжить?"
+
+msgid "https://support.webasyst.com/2879/client-account/"
+msgstr "https://support.webasyst.ru/3313/client-account/"
+
+msgid "Please enter a valid URL. Ensure that it starts with <mark>http://</mark> or <mark>https://</mark> has the correct format."
+msgstr "Введите корректный URL-адрес. Убедитесь, что он начинается с <mark>http://</mark> или <mark>https://</mark> и имеет правильный формат."
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "Please fill required fields"
+msgstr "Необходимо заполнить все требуемые поля"
+
+msgid "The redirect will removed from the site. Continue?"
+msgstr "Перенаправление будет удалено из сайта. Продолжить?"
+
+msgid "Redirect deletion"
+msgstr "Удаление перенаправления"
+
+msgid "Home page"
+msgstr "Главная страница"
+
+msgid "Section is not available for the site mirror"
+msgstr "Раздел не доступен для зеркала сайта"
+
+msgid "Maximun 63 characters"
+msgstr "Максимум 63 символа"
+

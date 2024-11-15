@@ -1,0 +1,571 @@
+{*wa_tpl_vars*}
+
+    <script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
+
+<style type="text/css">
+    .wa-page-editor { display: flex; justify-content: center;}
+    .wa-page-editor #wa-page-form{ width: -webkit-fill-available;}
+    .wa-page-editor #wa-page-form ul.tabs { padding: 0; }
+    .wa-page-editor #wa-page-form .contentbox { padding: 1.5em 0; }
+    .wa-editor-core-wrapper .redactor-box { background: var(--background-color-blank); /*overflow: hidden;*/ }
+    .wa-editor-core-wrapper .redactor-toolbar { box-shadow: none; border-bottom: 1px solid var(--border-color-soft); background: var(--background-color-blank); }
+    .wa-editor-core-wrapper .redactor-layer { border: 0 none; background: var(--background-color-blank); /*max-height: calc(100vh - 21rem);*/}
+    .wa-editor-core-wrapper .redactor-switch-box { position: sticky; top: 4rem; z-index: 20; background: var(--background-color-blank);}
+    .wa-editor-core-wrapper .redactor-toolbar-box { position: sticky; top: 7em; z-index: 20; }
+</style>
+<div class="article htmleditor">
+    <div class="article-body">
+        <div class="wa-page-editor">
+            <form id="wa-page-form" method="post" action="?module=pages&action=save{if $page}&id={$page.id}{/if}">
+                {if !empty($options)}
+                    {foreach $options.data as $k => $v}
+                        <input type="hidden" name="{$k}" value="{$v|escape}">
+                    {/foreach}
+                {/if}
+                <div class="box contentbox wa-page-gray-toolbar flexbox vertical hidden">
+                    <div class="flexbox wrap full-width hidden" style="align-items: center;">
+                        <div class="">
+                            <h2 class="wa-page-name">{if $page}{$page.name|escape}{else}[s`New page`]{/if}</h2>
+                            {if !$page.status} <span class="wa-page-draft badge light-gray squared smaller">[s`draft`]</span>{/if}
+                        </div>
+                        {if $page}
+                            <ul class="unstyled flexbox space-32 custom-pt-4 custom-mr-16">
+
+                                <!-- plugin hook: 'backend_page_edit.action_button_li' -->
+                                {* @event backend_page_edit.%plugin_id%.action_button_li *}
+                                {*foreach $backend_page_edit as $_}{ifset($_.action_button_li)}{/foreach*}
+
+                                <!--{if !empty($page.update_datetime)}
+                                    <li>
+                                        <span class="hint bold">{$page.update_datetime|wa_datetime:"humandatetime"}</span>
+                                    </li>
+                                {/if}
+                                <li>
+                                    <a href="javascript:void(0);" class="small js-page-settings-toggle" id="wa-page-settings-toggle">
+                                        <i class="fas fa-edit"></i> [s`Page settings`]
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="small wa-page-delete js-page-delete" href="?module=pages&action=delete">
+                                        <i class="fas fa-trash-alt text-red"></i> [s`Delete`]
+                                    </a>
+                                </li>-->
+                            </ul>
+                        {/if}
+                        <div class="wa-page-urls small width-100">
+                            {if $page}
+                                {if !empty($url)}
+                                    <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" rel="noopener" target="_blank">{$url_decoded|escape}{$page.url}</a>
+                                    <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" target="_blank"><i class="fas fa-external-link-alt fa-sm"></i></a>
+                                {elseif !empty($page.domain) and $page.route !== null}
+                                    {$page_route=waRouting::clearUrl($page.route)}
+                                    <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" rel="noopener" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
+                                    <a href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}"><i class="fas fa-external-link-alt fa-sm"></i></a>
+                                {/if}
+                            {/if}
+                        </div>
+                    </div>
+                    <div id="wa-page-settings" class="fields" style="display: none;">
+                        <div>
+                            <div class="field">
+                                <div class="name for-input">[s`Page name`]</div>
+                                <div class="value">
+                                    <input type="text" class="bold long large" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="value submit">
+                                    <span class="switch smaller" id="draft-switch1">
+                                        <input type="checkbox" id="wa-page-v" name="info[status]" {if !$page || $page.status}checked="checked"{/if} />
+                                    </span>
+                                    <label for="wa-page-v" class="small" data-text-draft="[s`Draft`]" data-text-published="[s`Published`]">
+                                        [s`Published`]
+                                    </label>
+                                </div>
+                            </div>
+                            {if !empty($page.id)}
+                                <div class="field">
+                                    <div class="value submit gray">
+                                        id: <strong>{$page.id}</strong>
+                                    </div>
+                                </div>
+                            {/if}
+
+                            <div class="field wa-page-url">
+                                <div class="name">[s`Page URL`]</div>
+                                <div class="value wa-page-app-url small">
+                                    {if !empty($url)}{$url_decoded|escape}{/if}<input type="text" class="short" name="info[url]" value="{if $page}{$page.url|escape}{/if}" />
+
+                                    {if !empty($warnings)}
+                                        <p class="state-caution-hint">
+                                            {if isset($warnings.no_site_storefront)}
+                                                [s`This page will not be published because there is no settlement, or routing rule, for this app in the site structure settings. Set up a settlement in Site app’s “Structure” section to publish this page.`]
+                                            {elseif isset($warnings.deleted_site_storefront)}
+                                                [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Set up a settlement in Site app’s “Structure” section to publish this page.`]
+                                            {elseif isset($warnings.several_site_storefront)}
+                                                [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
+                                            {/if}
+                                        </p>
+                                    {/if}
+                                </div>
+                            </div>
+                            {if empty($url) && empty($warnings)}
+                            <div class="field">
+                                <div class="value submit">
+                                    <p class="state-caution-hint">
+                                        [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
+                                    </p>
+                                </div>
+                            </div>
+                            {/if}
+                        </div>
+
+                        {if !$page || !$page.id}
+                            <a id="wa-page-advanced-params-link" href="javascript:void(0);" class="small gray">
+                                [s`more`]
+                                <i class="fas fa-caret-down"></i>
+                            </a>
+                        {/if}
+                        <div id="wa-page-advanced-params" {if !$page || !$page.id} style="display:none"{/if}>
+                            <div class="">
+                                <div class="field">
+                                    <div class="name for-input">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
+                                    <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold long" /></div>
+                                </div>
+                                {foreach $params as $n => $p}
+                                <div class="field">
+                                    <div class="name for-input">{$vars[$n]}</div>
+                                    {if $n == 'description'}
+                                    <div class="value"><textarea name="params[{$n}]">{$p|escape}</textarea></div>
+                                    {else}
+                                    <div class="value"><input type="text" name="params[{$n}]" value="{$p|escape}" /></div>
+                                    {/if}
+                                </div>
+                                {/foreach}
+                                <div class="field">
+                                    <div class="name">[s`Social sharing`]</div>
+                                    <div class="value">
+                                        <label>
+                                            <span class="wa-checkbox">
+                                                <input class="og-checkbox" type="checkbox"{if empty($og_params)} checked{/if}>
+                                                <span>
+                                                    <span class="icon">
+                                                        <i class="fas fa-check"></i>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                            [s`Use these meta tags for social sharing too`]
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="custom-mt-24 og-group" {if empty($og_params)}style="display: none;"{/if}>
+                                <div class="field">
+                                    <div class="name for-input">[s`Social sharing title`] <span class="hint">og:title</span></div>
+                                    <div class="value">
+                                        <input type="text" name="og[title]" class="long bold" value="{ifset($og_params.title, '')|escape}" {if empty($og_params)}disabled{/if}>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name for-input">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
+                                    <div class="value">
+                                        <input type="text" name="og[image]" class="long" value="{ifset($og_params.image, '')|escape}" {if empty($og_params)}disabled{/if}>
+                                        <p class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</p>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name for-input">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
+                                    <div class="value">
+                                        <input type="text" name="og[video]" class="long" value="{ifset($og_params.video, '')|escape}" {if empty($og_params)}disabled{/if}>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name for-input">[s`Social sharing description`] <span class="hint">og:description</span></div>
+                                    <div class="value">
+                                        <textarea name="og[description]"{if empty($og_params)} disabled{/if}>{ifset($og_params.description, '')|escape}</textarea>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name">[s`Social sharing type`] <span class="hint">og:type</span></div>
+                                    <div class="value">
+                                        <input type="text" name="og[type]" placeholder="" value="{ifset($og_params.type, '')}" {if empty($og_params)}disabled{/if}>
+                                        <p class="hint">[s`Please refer to <a href="http://ogp.me" rel="noopener" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {if !empty($page_edit)}
+                                <div class="custom-mt-24">
+                                    {foreach $page_edit as $_}{$_}{/foreach}
+                                </div>
+                            {/if}
+
+                            <div class="custom-mt-24">
+                                <div class="field">
+                                    <div class="name for-input">[s`Page custom parameters`]</div>
+                                    <div class="value">
+                                        <textarea name="other_params" class="small">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
+                                {/foreach}{/if}</textarea>
+                                        <p class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a> <i class="fas fa-external-link-alt"></i></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wa-editor-core-wrapper">
+                    <div class="flexbox full-width middle redactor-switch-box">
+                        <ul class="tabs semibold overflow-dropdown wa-editor-wysiwyg-html-toggle">
+                            <li class="selected">
+                                <a class="wysiwyg js-is-wa2" href="javascript:void(0);">[s`WYSIWYG`]</a>
+                            </li>
+                            <li><a class="html" href="javascript:void(0);">HTML</a></li>
+                        </ul>
+                        <div class="wa-cheatsheet">
+                            {$wa->getCheatSheetButton(["app" => {$wa->app()}, 'page_id' => {$page.id|default:''}])}
+                        </div>
+                    </div>
+
+                    <div style="clear:both">
+                        <div class="wa-editor-upload-img hidden" title="[s`Upload image`]">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
+                        {$wa->csrf()}
+                    </div>
+                </div>
+                {$wa->csrf()}
+            </form>
+        </div>
+    </div>
+</div>
+<div class="dialog" id="s-upload-dialog">
+    <div class="dialog-background"></div>
+    <form id="s-upload-form" class="dialog-body" method="post" action="?module=pages&action=uploadimage&r=2" enctype="multipart/form-data">
+        {$wa->csrf()}
+        <h3 class="dialog-header">[s`Upload image`]</h3>
+        <div class="dialog-content">
+            <div id="redactor-droparea" style="text-align: center;">
+                <p class="hint">
+                    [s`Only image files can be uploaded`]
+                </p>
+                <input id="s-input-file" type="file" name="file" multiple>
+                <input type="hidden" name="path" id="s-upload-path" value="" />
+                <div class="loading" style="display:none; margin-top: 10px">
+                    <i class="fas fa-spinner fa-spin"></i> [s`Uploading...`]
+                </div>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <input type="submit" class="button" value="[s`Upload`]">
+            <a href="javascript:void(0);" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+        </div>
+    </form>
+</div>
+
+<div class="dialog" id="s-switch-editor">
+    <div class="dialog-background"></div>
+    <form class="dialog-body">
+        <div class="dialog-content">
+            [s`<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?`]
+        </div>
+        <div class="dialog-footer">
+            <input type="submit" class="button orange" value="[`Switch`]" />
+            <a href="javascript:void(0);" class="js-close-dialog button light-gray">[`Cancel`]</a>
+        </div>
+    </form>
+</div>
+<div class="drawer site-editor-left-drawer" id="js-left-drawer" data-load-url="{$wa_app_url}?module=map&action=overview&domain_id={$page.domain_id|escape}&sidebar_mode=1&page_id={$page.id|escape}&htmleditor=1">
+    <div class="drawer-background"></div>
+    <div class="drawer-body">
+        <a href="javascript:void(0)" class="drawer-close z-20 custom-mr-8 js-close-drawer"><i class="fas fa-times"></i></a>
+        <div class="drawer-block custom-p-0">
+            <div class="drawer-content">
+
+                <div class="box">
+                    <div class="skeleton width-80">
+                        <span class="skeleton-header"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-list"></span>
+                        <span class="skeleton-list"></span>
+                        <span class="skeleton-list"></span>
+
+                        <span class="skeleton-header"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-list"></span>
+                        <span class="skeleton-list"></span>
+                        <span class="skeleton-list"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript">
+        $(function () {
+            "use strict";
+            var lang = {$lang|json_encode};
+            var wa_url = {$wa_url|json_encode};
+            var framework_version = {$wa->version(true)|json_encode};
+            var page_status = {$page.status|escape};
+            var page_private = {if !empty($page.private) && $page.private}1{else}0{/if};
+
+            function updatePreview() {
+                var $page_urls_link = $(".wa-page-urls a");
+                var $page_name_text = $(".wa-page-name").text();
+                var $a = $('#js-wa-header-preview');
+                const $hamburger_label = $('.js-hamburger-label');
+                $('.js-show-cheatsheet').addClass('gray');
+                $a.attr('href', $page_urls_link.attr('href'));
+                $hamburger_label.text($page_name_text);
+                if (!page_status) {
+                    $("#js-wa-header-hamburger .disabled-icon").removeClass('hidden')
+                }
+                if (page_private) {
+                    $hamburger_label.addClass('gray');
+                }
+            }
+            updatePreview();
+            //
+            // Left drawer
+            //
+            (function() {
+                const $left_drawer_wrapper = $('#js-left-drawer').appendTo('body');
+                let drawer;
+                let drawer_html;
+                let drawer_loaded = false;
+                let scroll_y;
+
+                $('#js-wa-header-hamburger').on('click', function() {
+                    if (!drawer) {
+                        drawer = $.waDrawer({
+                            $wrapper: $left_drawer_wrapper,
+                            direction: 'left',
+                            lock_body_scroll: true
+                        });
+                    } else {
+                        $left_drawer_wrapper.find('.drawer-content').html(drawer_html);
+                        drawer.show();
+                        $left_drawer_wrapper.one('click', '.js-close-drawer', function() {
+                            drawer.hide();
+                        })
+                    }
+
+                    if (!drawer_loaded) {
+                        $.site.loadMap();
+                    }
+                });
+
+                $.site.loadMap = function () {
+                    const $drawer_content = $left_drawer_wrapper.find('.drawer-content');
+                    scroll_y = $drawer_content.scrollTop();
+                    $drawer_content.css('pointer-events', 'none');
+                    $.get($left_drawer_wrapper.data('load-url')).then((html) => {
+                        drawer_html = html;
+                        $drawer_content.html(drawer_html);
+                        $drawer_content.css('pointer-events', 'auto');
+                        if (drawer_loaded && scroll_y !== undefined) {
+                            $drawer_content.scrollTop(scroll_y);
+                        }
+                        drawer_loaded = true;
+                    }, () => {
+                        alert($.site.opts.locale.unable_to_load);
+                        drawer.hide();
+                        drawer_loaded = false;
+                    });
+                };
+            }());
+
+            (function() {
+                $('#js-wa-header-settings').on('click',  function() {
+                    let params = '';
+                    {if empty($page.parent_id) && str_replace('/', '', $page.url) === ''}
+                        params = new URLSearchParams({
+                            action: 'sectionSettingsDialog',
+                            domain_id: {if !empty($page.domain_id)}{$page.domain_id}{else}''{/if},
+                            page: {if !empty($page.id)}{$page.id}{else}''{/if},
+                            route: {$route_id|json_encode},
+                            details: 1
+                        });
+                    {else}
+                        params = new URLSearchParams({
+                            action: 'htmlPageSettingsDialog',
+                            domain_id: {if !empty($page.domain_id)}{$page.domain_id}{else}''{/if},
+                            parent_id: {if !empty($page.parent_id)}{$page.parent_id}{else}''{/if},
+                            page_id: {if !empty($page.id)}{$page.id}{else}''{/if},
+                            details: 1
+                        });
+                    {/if}
+
+                    $.site.helper.preventDupeRequest(() => {
+                        return $.get('{$wa_app_url}?module=map&' + params, function(html) {
+                            $.waDialog({
+                                html: html
+                            });
+                        });
+                    });
+
+                    return false;
+                })
+            }());
+
+            // This promise is resolved when all WYSIWYG files are loaded
+            // and $.fn.waEditor() function is ready.
+            $.wa_editor_ready = (function() {
+                // Load $.wa.loadFiles() if not loaded already
+                if (!$.wa || !$.wa.loadFiles) {
+                    return $.ajax({
+                        url: wa_url+"wa-content/js/jquery-wa/wa.core.js?v"+framework_version,
+                        dataType: "script",
+                        cache: true
+                    });
+                } else {
+                    return $.Deferred().resolve().promise();
+                }
+            }()).then(function() {
+                var to_load = [];
+                var load_locale = false;
+
+                // Load Redactor II unless already loaded by application
+                if (!$.Redactor) {
+                    to_load.push(wa_url+"wa-content/js/redactor/2/redactor.css?v"+framework_version);
+                    to_load.push(wa_url+"wa-content/js/redactor/2/redactor.min.js?v"+framework_version);
+                    load_locale = lang !== 'en';
+                }
+
+                if(!$.fileupload) {
+                    to_load.push(wa_url+"wa-content/js/jquery-plugins/fileupload/jquery.fileupload.js?v"+framework_version);
+                }
+
+                return $.wa.loadFiles(to_load).then(function() {
+                    if (load_locale) {
+                        // Load Redactor II locale when its ready
+                        return $.wa.loadFiles(wa_url+"wa-content/js/redactor/2/"+lang+".js?v"+framework_version);
+                    } else {
+                        return true;
+                    }
+                }).then(function() {
+                    if ($.Redactor.VERSION.substr(0, 3) == '10.') {
+                        // Old RedactorI used by legacy application
+                        return $.wa.loadFiles(wa_url+"wa-content/js/jquery-wa/editor.js?v"+framework_version).then(function() {
+                            return 'waEditor';
+                        });
+                    } else {
+                        // New RedactorII
+                        return $.wa.loadFiles(wa_url+"wa-content/js/jquery-wa/editor2.js?v"+framework_version).then(function() {
+                            return 'waEditor2';
+                        });
+                    }
+                });
+            });
+
+
+            //let wa_url = window.wa_url = {$wa_url|json_encode};
+            let wa_app = window.wa_app = {$wa->app()|json_encode};
+            let page_delete_confirm_msg = "[s`This will delete entire page. Are you sure?`]";
+
+            let $page_form = $('#wa-page-form');
+
+            initSubmitChanged($page_form);
+
+            {if !empty($options) && $options.is_ajax}
+                {if $page}
+                    document.title = {$page.name|json_encode} + " — " + {$wa->appName(false)|json_encode};
+                {else}
+                    document.title = "[s`New page`] — " + {$wa->appName(false)|json_encode};
+                {/if}
+            {/if}
+
+            // Initialize editor when JS is loaded
+            $.wa_editor_ready.then(function(method) {
+                $('#wa-page-content')[method]({
+                    lang: $.Redactor.opts.langs["{$lang}"] ? "{$lang}" : 'en',
+                    toolbarFixed: false,
+                    //toolbarFixedTarget: $('#wa-app'),
+                    //toolbarFixedTopOffset: 0, // pixels
+                    smarty_wysiwyg_msg: {_ws('WYSIWYG editor is disabled because page source contains Smarty code tags.')|json_encode},
+                    modification_wysiwyg_msg: $('#s-switch-editor'),
+                    saveButton: '#wa-page-button',
+                    upload_img_dialog: '#s-upload-dialog',
+                    uploadFields: {
+                        '_csrf': "{waRequest::cookie('_csrf', '')}"
+                    },
+                    locales: {
+                        'close': "[`Close`]"
+                    }
+                });
+            });
+
+            // Save the page via XHR when the form is submitted
+            const $page_button_submit = $('.js-page-submit-button');
+
+            $page_button_submit.on('click', function (e) {
+                e.preventDefault();
+                $page_form.submit();
+            })
+
+            $page_form.submit(function (e) {
+                e.preventDefault();
+                const $form = $(this),
+                    $page_settings = $('#wa-page-settings'),
+                    $page_content = $('#wa-page-content'),
+                    $editor_status = $('#wa-editor-status'),
+                    $page_button = $('#wa-page-button');
+                    //$page_urls_link = $(".wa-page-urls a"),
+                    //$li = $(".block-pages ul li.selected");
+
+                let page_url, page_attr_url, error;
+
+                $.wa_editor_ready.then(function(method) {
+                    /*if ($('#wa-page-settings input[name="info[name]"]').is(":focus") && !$("#wa-page-form-translit").length) {
+                        $form.append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+                    }*/
+
+                    $page_content[method]('sync');
+
+                    $editor_status.html("<i class='fas fa-spin fa-spinner'></i> [s`Saving...`]").fadeIn("slow");
+
+                    $.post($form.attr('action'), $form.serialize(), function (response) {
+
+                        if (response.status === 'ok') {
+                            $(".state-error").removeClass('state-error');
+
+                            $editor_status.html('<i class="fas fa-check-circle"></i> [s`Saved`]').fadeOut('slow');
+
+                            const p = response.data;
+
+                        } else if (response.status === 'fail') {
+                            if ($.isArray(response.errors)) {
+                                error = response.errors[0];
+                                $(response.errors[1]).addClass('state-error');
+                            } else {
+                                error = response.errors;
+                            }
+                            $editor_status.html('<b style="color:red">' + (error ? error : $_('An error occurred while saving')) + '</b>');
+                            $page_button.removeClass('yellow').removeClass('green').addClass('red');
+                        }
+                    }, "json");
+                });
+            });
+
+            function initSubmitChanged($form) {
+                const $submit = $('#wa-page-button');
+                let is_changed = false;
+
+                const submitChanged = () => {
+                    if (is_changed) return true;
+
+                    $submit.removeClass('green').addClass('yellow');
+                    is_changed = true;
+                };
+
+                $form.on('change', submitChanged);
+                $(':input:not(:submit)', $form).on('input', submitChanged);
+
+                $submit.on('click', function() {
+                    $submit.removeClass('yellow').removeClass('red').addClass('green');
+                    is_changed = false;
+                });
+            }
+        });</script>

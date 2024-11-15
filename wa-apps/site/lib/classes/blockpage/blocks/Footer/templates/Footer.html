@@ -1,0 +1,36 @@
+{$block_id = $data->getId()}
+
+{$static_main = "footer-class f-w"}
+
+
+<footer class="{$static_main}" data-block-id="{$block_id|escape}" data-page-id="{$data->getPageId()|escape}" data-static="{$static_main}" >
+    {foreach $children as $c}
+        {$c.html}
+    {/foreach}
+</footer>
+
+
+{if $is_backend}
+<script>
+    $(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $block_wrapper = $('.footer-class[data-block-id="'+block_id+'"]');
+   
+    $block_wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (updated_block_id == block_id) {
+            //console.log('footer style update')
+            //updateBlockStyles($block_wrapper, data, block_id);
+        }
+    });
+    })
+
+</script>
+{else}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.footer-class[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    //updateBlockStyles($wrapper, data, block_id);
+});</script>
+{/if}

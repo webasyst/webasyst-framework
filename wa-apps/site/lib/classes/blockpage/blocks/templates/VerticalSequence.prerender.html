@@ -1,0 +1,94 @@
+<style>
+    #js-global-seq.js-seq-wrapper.no-children { display: flex; flex-direction: column; align-items: center; justify-content: center;  }
+    .js-seq-wrapper .empty-seq { display: none; position: relative;}
+    .js-seq-wrapper [contenteditable] { outline: 0px solid transparent; }
+    .js-seq-wrapper.no-children { width: 100%; }
+    .js-seq-wrapper.no-children .empty-seq { display: flex; opacity: 0; justify-content: center; align-items: center; width: 100%}
+    .seq-child { position: relative; display: flex; border: 0px dashed transparent; }
+    /*.empty-seq { position: relative; display: none; border: 0px dashed transparent; }*/
+    .empty-seq > .seq-block-delimeter-empty { position: absolute; cursor: pointer; width: 100%; z-index: 9; border: 1px dashed #1a9afe; border-width: 1px 0}
+    .empty-seq > .empty-seq-add, .empty-seq > .js-add-block { position: relative; z-index: 9; }
+    .seq-block-controls { position: absolute; top: 3px; right: 3px; display: none; }
+    .seq-child > .seq-block-delimeter { display: none; position: absolute; cursor: pointer; width: 100%; z-index: 10; border: 1px dashed #1a9afe; border-width: 1px 0}
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-left { width: 0; height: 100%; left: 0; top: 0; border-width: 0 0px 0 2px;}
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-right { width: 0; height: 100%; right: 0; border-width: 0 2px 0 0px; bottom: 0;}
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-top { top: 0; }
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-bottom { bottom: 0; }
+
+    .vseq-wrapper > .seq-child > .seq-block-delimeter.vseq-block-delimeter-top > .dropdown > .dropdown-toggle.without-arrow { border-bottom-right-radius: 0; border-bottom-left-radius: 0; }
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-bottom > .dropdown > .dropdown-toggle { border-top-right-radius: 0; border-top-left-radius: 0; }
+
+    .seq-child > .seq-block-delimeter.js-add-block .button .icon { vertical-align: 0; }
+    .empty-seq .empty-seq-add .button .icon { vertical-align: 0.0625em; }
+    .seq-child > .seq-block-delimeter.js-add-element .button .icon { vertical-align: 0; }
+    .js-add-block .button .icon.size-12, .js-add-element .button .icon.size-12 { font-size: 1.5rem; }
+    .js-add-block .button .icon, .js-add-element .button .icon { display: inline-block; background: transparent 50% no-repeat; background-size: contain; font-size: 1em; line-height: 1em; vertical-align: -0.0625em; text-align: center; width: 1em; height: 1em; }
+    .js-add-block .button .icon > *, .js-add-element .button .icon > * { display: inline-block; vertical-align: top; width: 1em; height: 1em; background-size: contain; }
+    .js-add-element .button.circle { border-radius: 50%; padding: 0; width: 2.125em; height: 2.125em; }
+    .js-add-column > .dropdown > .button, .empty-seq > .empty-seq-add.js-add-column { padding: .25em .75em; border-radius: .05em; min-height: unset; }
+    .empty-seq > .empty-seq-add.js-add-column .dropdown .button { padding: .25em .45em; border-radius: .05em; min-height: unset; }
+
+    .js-add-block .button.smaller, .js-add-element .button.smaller { font-size: 87.5%; }
+    .js-add-block .button, .js-add-element .button, .js-add-column .button { color: #fff; user-select: none; background-color: #1a9afe; outline: 0 none; box-shadow: 0 0.25em 0.75em -0.25em rgba(0, 0, 0, 0.2); transition: color .1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out; border-radius: .5em; padding: .4375em .75em;}
+    #js-global-seq > .seq-child:has(.seq-child.selected-block) .js-add-block .button { opacity: 0; }
+    .seq-child > .seq-block-delimeter .dropdown > .dropdown-body, .js-seq-wrapper .empty-seq  .dropdown > .dropdown-body { left: -85px;}
+    .seq-child > .seq-block-delimeter .dropdown > .dropdown-body > .menu, .empty-seq .dropdown > .dropdown-body > .menu { margin: 0.25rem 0;}
+    .seq-child > .seq-block-delimeter .dropdown > .dropdown-toggle.without-arrow { text-overflow: unset;} 
+    .vseq-wrapper > .seq-child > .seq-block-delimeter > .dropdown > .dropdown-toggle.without-arrow { padding-right: 0; }
+    .vseq-wrapper > .empty-seq > .empty-seq-add > .dropdown > .dropdown-toggle.without-arrow { padding-right: 0; padding-left: 0;}
+    .seq-child.selected-block .js-seq-wrapper.no-children > .empty-seq, .seq-child:hover .js-seq-wrapper.no-children > .empty-seq, #js-global-seq.js-seq-wrapper.no-children > .empty-seq { opacity: 1; }
+    /*.seq-child:hover { border: 2px dashed var(--accent-color); }*/
+ 
+    .seq-child.selected-block:has(> .site-block-column):hover > .seq-block-delimeter { display: block; border-style: solid;}
+    .seq-child.selected-block > .seq-block-delimeter { display: block; border-style: solid; }
+    .alt-down .seq-child:has(> .site-block-column):hover > .seq-block-delimeter { display: block; }
+    
+    .alt-down .site-block-column .seq-child:has(> .site-block-row):hover > .seq-block-delimeter { display: block; }
+    .alt-down .site-block-column .seq-child:hover > .seq-block-delimeter, .alt-down .site-block-row .seq-child:hover > .seq-block-delimeter { display: none; }
+
+    .seq-child:has(> .site-block-column):hover > .seq-block-delimeter { display: none; }
+
+    .seq-child:hover > .seq-block-delimeter { display: block;}
+    .seq-child.selected-block > .seq-block-controls { display: block; }
+
+    .seq-child > .js-add-block.seq-block-delimeter > button  { position: absolute; left: calc(50% - 21.5px);}
+
+    .seq-child > .seq-block-delimeter > button, .seq-child > .seq-block-delimeter > .dropdown  { position: absolute; }
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-top > .dropdown { left: calc(50% - 15px);}
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-bottom > .dropdown { left: calc(50% - 15px);}
+
+    .seq-child > .seq-block-delimeter button:hover, .empty-seq > .empty-seq-add button:hover { background: #1a9afe }
+    .seq-child > .seq-block-delimeter button:hover::after, .empty-seq > .empty-seq-add button:hover::after { background-color: #1a9afe; opacity: 1; }
+    .seq-child > .seq-block-delimeter > button, .seq-child > .seq-block-delimeter > .dropdown  { display: none; }
+    .seq-child:hover > .seq-block-delimeter > button, .seq-child:hover > .seq-block-delimeter > .dropdown  { display: block; }
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-top > button { top: -1.35rem; }
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-top > .dropdown { top: -1.8rem; }
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-bottom > button { top: -1.25rem; }
+    .seq-child > .seq-block-delimeter.vseq-block-delimeter-bottom > .dropdown { top: 0; }
+    .seq-child.selected-block > .js-add-block .button, .seq-child.selected-block > .empty-seq-add .button { opacity: 1; }
+    .selected-block:not(.seq-child) { border: 2px solid #1a9afe; }
+    .js-seq-wrapper .dropdown  { max-width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; }
+    .js-seq-wrapper .dropdown > .dropdown-toggle  { position: relative; padding-right: 1.75em; margin: 0; overflow: hidden; text-overflow: ellipsis; max-width: 100%; box-sizing: border-box; }
+    .js-seq-wrapper .dropdown.is-opened > .dropdown-body  { display: block; z-index: 110; }
+    .js-seq-wrapper .dropdown > .dropdown-body  { display: none; position: absolute; top: 100%; left: 0; width: 200px; min-width: 100%; max-width: 500px; max-height: 500px; overflow: auto; overscroll-behavior-y: contain; padding: 0; margin: 0; background: #fff; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 0.5rem; box-shadow: 0 0.25rem 1rem -0.25rem rgba(0, 0, 0, 0.1); animation: wa-animation-dropdown-unfold 150ms ease-in-out forwards; }
+    .js-seq-wrapper .dropdown > .dropdown-body > ul.menu  { list-style-type: none; margin: 1rem 0; padding: 0; font-size: 0.875rem; word-break: break-word; }
+    .js-seq-wrapper .dropdown > .dropdown-body > ul.menu > li  { text-align: left; display: block; line-height: 1rem; position: relative; }
+    .js-seq-wrapper .dropdown > .dropdown-body > ul.menu > li > a:hover  { background: rgba(0, 20, 80, 0.06); }
+    .js-seq-wrapper .dropdown > .dropdown-body > ul.menu > li > a  { outline: none; font-style: normal; text-decoration: none; color: #334; display: flex; padding: 0.5rem 0.75rem; cursor: pointer; }
+    .js-seq-wrapper .dropdown > .dropdown-body > ul.menu > li > a .icon { flex: 0 0 1rem; max-width: 1rem; max-height: 1rem; font-size: 1rem; margin: 0 0.625rem 0 0.125rem; }
+    .js-seq-wrapper .dropdown > .dropdown-body > ul.menu > li > a .icon > svg { flex: 0 0 1.25rem; font-size: 1rem; max-width: 1.25rem; position: relative; color: #bcd; }
+
+    /* Horizontal rules */
+    .seq-child > .seq-block-delimeter.hseq-block-delimeter-left { width: 0; height: 100%; left: 0; top: 0; border-width: 0 0px 0 2px;}
+    .seq-child > .seq-block-delimeter.hseq-block-delimeter-right { width: 0; height: 100%; right: 0; border-width: 0 2px 0 0px; bottom: 0;}
+    .seq-child > .seq-block-delimeter.hseq-block-delimeter-top { top: 0;}
+    .seq-child > .seq-block-delimeter.hseq-block-delimeter-bottom { bottom: 0;}
+    
+    .seq-child > .seq-block-delimeter.hseq-block-delimeter-left > .dropdown > .dropdown-toggle { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    .seq-child > .seq-block-delimeter.hseq-block-delimeter-right > .dropdown > .dropdown-toggle { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+    
+    .hseq-wrapper .dropdown > .dropdown-toggle.without-arrow, .hseq-wrapper .vseq-wrapper > .seq-child > .seq-block-delimeter > .dropdown > .dropdown-toggle.without-arrow  { position: relative; padding-left: 0.95em; padding-right: 0.95em; margin: 0; overflow: hidden; text-overflow: ellipsis; max-width: 100%; box-sizing: border-box; }
+    .hseq-wrapper > .seq-child > .seq-block-delimeter > .dropdown  { position: absolute; top: calc(50% - 15px);}
+    .seq-child > .seq-block-delimeter.hseq-block-delimeter-left > .dropdown { left: -30px; }
+    .seq-child > .seq-block-delimeter.hseq-block-delimeter-right > .dropdown { left: 0; }
+</style>    

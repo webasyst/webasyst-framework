@@ -84,4 +84,28 @@ class siteViewHelper extends waAppViewHelper
             return array();
         }
     }
+
+    public function getThemeFileTemplate($template_name = 'header.html', $app_id = 'site', $theme_id = null)
+    {
+        try {
+            if (!$theme_id) {
+                $theme_id = waRequest::getTheme();
+            }
+            $theme = new waTheme($theme_id, $app_id);
+            $view = new waSmarty3View(wa($app_id));
+            if(!$view->setThemeTemplate($theme, $template_name)) {
+                return '';
+            }
+            /*$view->assign([
+                'products' => $products,
+            ]);*/
+            return $view->fetch($template_name);
+
+        } catch (Exception $e) {
+            
+            if (waSystemConfig::isDebug() && wa()->getUser()->get('is_user') > 0) {
+                return $e->getMessage()."\n<br><br>\n<pre>".$e."</pre>";
+            }
+        }
+    }
 }

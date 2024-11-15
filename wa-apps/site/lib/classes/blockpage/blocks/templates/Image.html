@@ -1,0 +1,41 @@
+{$default_empty_image_url = "`$wa_app_static_url`img/image.svg"}
+{$img_src = $data->getFileUrl('')}
+{if empty($img_src)}
+    {if !empty($data->data['default_image_url'])}
+        {$img_src = $data->data['default_image_url']}
+    {/if}
+{/if}
+{$static_classes_props = 'style-wrapper img'}
+<picture class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}">
+    <img src="{$img_src|default:''|escape}" >
+</picture>
+{if $is_backend}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('picture.img[data-block-id="'+block_id+'"]');
+    const $image = $wrapper.find('img');
+    const empty_url = {$default_empty_image_url|json_encode};
+    $wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (updated_block_id == block_id) {
+            updateBlockStyles($wrapper, data, block_id);
+        }
+    });
+    $wrapper.on('block_file_updated', function(event, updated_block_id, key, file) {
+        if (updated_block_id == block_id && key == '') {
+            if (file && file.url) {
+            $image.prop('src', file.url);
+            } else {
+                $image.prop('src', empty_url);
+            }
+        }
+    });
+});</script>
+{else}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('picture.img[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+});</script>
+{/if}

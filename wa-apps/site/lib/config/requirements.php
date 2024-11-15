@@ -2,10 +2,10 @@
 return array(
     'php' => array(
         'strict'  => true,
-        'version' => '>=5.6.25',
+        'version' => '>=7.4.24',
     ),
     'app.installer'=>array(
-        'version' => 'latest', // >=1.14.11
+        'version' => 'latest', // >=2.9.8
         'strict'  => true,
     ),
 );

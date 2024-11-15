@@ -1,0 +1,603 @@
+{* Auth endpoints (app and urls) list *}
+{function auth_endpoints_select}
+
+    {$_selected_route_url = ''}
+    {$_selected_endpoint = []}
+    {$_selected_app = []}
+    {$_selected_app_id = $_selected_app.id|default:''}
+
+    {if !empty($auth_config.route_url) && isset($auth_endpoints[$auth_config.route_url])}
+        {$_selected_endpoint = $auth_endpoints[$auth_config.route_url]}
+        {$_selected_route_url = $auth_config.route_url|default:''}
+        {$_selected_app = $_selected_endpoint.app|default:[]}
+    {/if}
+
+    <div class="field">
+        <div class="name">[`Site section for login and signup`]</div>
+        <div class="value">
+            <div class="s-small custom-mb-8">[`Select a site section where visitors will sign up and log into their personal accounts.`]</div>
+            <div class="dropdown s-small s-auth-apps-select js-auth-apps-select" id="js-auth-apps-select">
+                <a class="dropdown-toggle s-selected-app" href="javascript:void(0);">
+                    <span class="icon size-20"><img class="js-selected-app-icon" src="{if $_selected_app}{$wa_url}{$_selected_app.icon.16}{/if}"></span>
+                    <span class="js-selected-app-name">
+                        {if $_selected_app}
+                            {$_selected_app.name|escape} <span class="hint">({$_selected_route_url|escape})</span>
+                        {else}
+                            [`Select app`]
+                        {/if}
+                    </span>
+                </a>
+                <div class="dropdown-body">
+                    <ul class="menu with-icons">
+                        {strip}
+                            {foreach $auth_endpoints as $_route_url => $_endpoint}
+                                {$_app = $_endpoint.app|default:[]}
+                                {$_icon = "`$wa_url``$_app.icon.16`"}
+                                <li class="s-auth-app{if $_selected_route_url === $_route_url} selected{/if}">
+                                    <a class="js-auth-app" href="javascript:void(0);"
+                                    data-route-url="{$_route_url|escape}"
+                                    data-id="{$_app.id|escape}"
+                                    data-name="{$_app.name|escape}"
+                                    data-icon="{$_icon}"
+                                    data-login-url="{$_endpoint.login_url}"
+                                    data-signup-url="{$_endpoint.signup_url}">
+                                        <span class="icon size-20 custom-pr-4"><img class="s-app16x16icon-menu-v" src="{$_icon}"></span>
+                                        <span class="s-app-name">{$_app.name|escape} <span class="hint" title="{$_route_url|escape}">({$_route_url|escape})</span></span>
+                                    </a>
+                                </li>
+                            {/foreach}
+                        {/strip}
+                    </ul>
+                    <input class="js-selected-app-id" type="hidden" name="route_url" value="{if $_selected_route_url}{$_selected_route_url|escape}{/if}" />
+                </div>
+            </div>
+            <div class="hint js-endpoint-login-url custom-mb-0">{$_selected_endpoint.login_url|default:null}</div>
+            <div class="hint js-endpoint-signup-url custom-mt-0">{$_selected_endpoint.signup_url|default:null}</div>
+        </div>
+    </div>
+{/function}
+
+{* Password system *}
+{function password_system}
+    <div class="s-password-system">
+        <div class="field">
+            <div class="name">[`Passwords type`]</div>
+            <div class="value no-shift-field">
+                <div class="flexbox vertical space-12 js-auth-type-select">
+                    {$_auth_type = $auth_config.auth_type|default:waAuthConfig::AUTH_TYPE_USER_PASSWORD}
+                    {if $no_channels}
+                        {$_auth_type = waAuthConfig::AUTH_TYPE_USER_PASSWORD}
+                    {/if}
+                    {foreach $auth_types as $_auth_type_id => $_auth_type_info}
+                        {$_name = $_auth_type_info.name}
+                        {$_is_checked = $_auth_type == $_auth_type_id}
+                        <div class="js-auth-type">
+                            <label >
+                                <span class="wa-radio">
+                                    <input type="radio" name="auth_type" value="{$_auth_type_id}"{if $_is_checked} checked="checked"{/if}{if $no_channels && !$_is_checked} disabled{/if}>
+                                    <span></span>
+                                </span>
+                                <span class="s-small">{$_name|escape}</span>
+                            </label>
+                            {* Signup Confirm *}
+                            {if $_auth_type_id == waAuthConfig::AUTH_TYPE_USER_PASSWORD}
+                                <div class="js-auth-type-fields" style="margin: 10px 20px 0 20px;{if $_auth_type !== waAuthConfig::AUTH_TYPE_USER_PASSWORD} display: none;{/if}">
+                                    {$_confirm = $auth_config.signup_confirm|default:false}
+                                    <label >
+                                        {* The logic of this checkbox is also in JS !!! *}
+                                        <span class="wa-checkbox">
+                                            <input type="hidden" name="signup_confirm" value="0">
+                                            <input class="js-signup-confirm" type="checkbox" name="signup_confirm" value="1"{if $_confirm && !$no_channels} checked="checked"{/if}{if $no_channels} disabled{/if}>
+                                            <span>
+                                                <span class="icon">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                            </span>
+                                        </span>
+                                        <span class="s-small">[`Confirm signup`]</span>
+                                    </label>
+                                    <div class="hint custom-mt-8">[`A signup confirmation link or code will be sent in a notification.`]<br>
+                                        [`A registered website visitor will be able to log in only with an email address or phone number confirmed.`]</div>
+                                </div>
+                            {/if}
+                        </div>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`Successful signup notification`]</div>
+            <div class="value">
+                {$_notify = $auth_config.signup_notify|default:null || $_auth_type == waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD}
+                <label class="s-small">
+                    <span class="wa-checkbox">
+                        <input type="hidden" name="signup_notify" value="0">
+                        <input type="checkbox" name="signup_notify" value="1" class="js-signup-notify"{if $_notify && !$no_channels} checked="checked"{/if}{if ($no_channels || $_auth_type == waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD)} disabled="disabled"{/if}>
+                        <span>
+                            <span class="icon">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </span>
+                    </span>
+                    [`Send successful signup notifications to users`]
+                </label>
+            </div>
+        </div>
+    </div>
+{/function}
+
+{function timeout}
+    <div class="field field-timeout">
+        <div class="name">[`Verification code re-sending`]</div>
+        <div class="value">
+            <div >
+                <label class="s-small">
+                    [`Waiting period in seconds before sending next verification code:`]
+                    <input type="text" class="shortest custom-mt-8" name="timeout" value="{$auth_config.onetime_password_timeout}">
+                </label>
+            </div>
+        </div>
+    </div>
+{/function}
+
+{function auth_by_login}
+    <div class="field field-authbylogin">
+        <div class="name">
+            <label for="s-auth-by-login">[`Authorization by login name`]</label>
+        </div>
+        <div class="value">
+            <div class="switch-with-text custom-pt-4">
+                <span class="switch smaller js-auth-by-login" id="switch-auth-by-login">
+                    <input type="hidden" name="can_login_by_contact_login" value="0">
+                    <input id="s-auth-by-login" name="can_login_by_contact_login" class="" type="checkbox" value="1"
+                    {if $auth_config.can_login_by_contact_login} checked="checked"{/if}>
+                </span>
+                <label class="s-small" for="s-auth-by-login" data-active-text="[`Enable`]" data-inactive-text="[`Disable`]">{if $auth_config.can_login_by_contact_login}[`Enable`]{else}[`Disable`]{/if}</label>
+            </div>
+            <div class="hint">[`Enable to allow backend users to log in on the website with their login names. Only login names different from phone numbers, i.e. containing characters other than digits, are supported.`]</div>
+        </div>
+    </div>
+{/function}
+
+{* Email settings *}
+{function email_settings}
+{$_email_used = in_array(waAuthConfig::AUTH_METHOD_EMAIL, $used_auth_methods)}
+<div class="field-group custom-py-20" >
+    <div class="header-wrapper flexbox middle full-width">
+        <h3 class="name custom-mb-0 {if !$_email_used}text-gray{/if}">[`Email`]</h3>
+        <div class="nowrap links">
+            <a href="javascript:void(0);" class="s-small custom-pr-16 link-options js-settings-link"{if !$_email_used} style="display: none"{/if}><i class="icon size-12 fas fa-cog settings"></i> [`Settings`]</a>
+            <span class="switch smaller js-auth-method-toogle" id="switch-auth-email-toogle">
+                <input name="used_auth_methods[{waAuthConfig::AUTH_METHOD_EMAIL}]" data-method="{waAuthConfig::AUTH_METHOD_EMAIL}" data-registration-linked-field="email" type="checkbox"{if $_email_used} checked="checked"{/if}>
+            </span>
+        </div>
+    </div>
+    <div class="s-settings-wrapper js-settings-wrapper custom-mt-16" style="display: none;">
+        {* Email template select *}
+        <div class="">
+            <div class="field">
+                <div class="name">[`User notifications`]</div>
+                <div class="value">
+                    <span class="s-small ">[`Select a group of notification templates to be used for sending login, signup, and password recovery notifications.`]</span>
+                    <div class="custom-mt-12">
+                        {if $no_channels}
+                            {sprintf('[`No sender email address specified in “<a href="%s">Email settings</a>” section of Settings app.`]', "`$wa_backend_url`webasyst/settings/email/")}
+                        {else}
+                            <div class="wa-select">
+                                <select name="verification_channel_ids[0]" class="js-template">
+                                    <option value="">[s`Select template`]</option>
+                                    {foreach $email_channels as $_id => $_channel}
+                                        <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                            <div class="s-template-link custom-mt-8"><span class="s-template-link-hint">[`Edit the list in section`]</span> <a href="{$wa_backend_url}webasyst/settings/email/template/">[`“Email templates”`] <span class="icon size-12"><i class="fas fa-external-link-alt"></i></span>.</a></div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/function}
+
+{* Social networks settings *}
+{function social_networks_settings}
+{$_social_used = in_array(waAuthConfig::AUTH_METHOD_SOCIAL, $used_auth_methods)}
+<div class="field-group custom-py-20" >
+    <div class="header-wrapper flexbox middle full-width">
+        <h3 class="name custom-mb-0 {if !$_social_used}text-gray{/if}">[`Social networks (additional authorization option)`]</h3>
+        <div class="nowrap links">
+            <a href="javascript:void(0);" class="s-small custom-pr-16 link-options js-settings-link"{if !$_social_used} style="display: none"{/if}><i class="icon size-12 fas fa-cog settings"></i> [`Settings`]</a>
+            <span class="switch smaller js-auth-method-toogle" id="switch-auth-social-toogle">
+                <input name="used_auth_methods[{waAuthConfig::AUTH_METHOD_SOCIAL}]" data-method="{waAuthConfig::AUTH_METHOD_SOCIAL}" type="checkbox"{if $_social_used} checked="checked"{/if}>
+            </span>
+        </div>
+    </div>
+    <div class="s-settings-wrapper js-settings-wrapper custom-mt-16" style="display: none;">
+        <div class="s-small">[`Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href="https://support.webasyst.com/5556/third-party-auth-setup/" target="_blank">Setup instructions <i class="icon size-10 fas fa-external-link-alt new-window"></i></a>`]</div>
+        <div class="">
+            <ul class="chips flexbox vertical space-12">
+                {foreach $auth_adapters as $adapter_id => $adapter}
+                    <li>
+                        <label for="s-auth-adapter-{$adapter_id}" class="flexbox middle space-8">
+                            <span class="wa-checkbox">
+                                <input class="adapter" id="s-auth-adapter-{$adapter_id}" name="adapter_ids[]" value="{$adapter_id}" type="checkbox" {if !empty($auth_config['adapters'][$adapter_id])}checked="checked"{/if}>
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </span>
+                            </span>
+                            <img class="social-img" alt="{$adapter->getName()}" src="{$adapter->getIcon('')}">
+                            {$adapter->getName()}
+                        </label>
+                        <div class="s-adapter-controls js-adapter-controls"{if empty($auth_config['adapters'][$adapter_id])} style="display:none"{/if}>
+                            {foreach $adapter->getControls() as $control_id => $control_name}
+                                <div class="field custom-ml-24 custom-mt-8">
+                                    <div class="name social-name">
+                                        <span class="">{$control_name}</span>
+                                    </div>
+                                    <div class="value">
+                                        <input class="long small" type="text" name="adapters[{$adapter_id}][{$control_id}]" value="{if !empty($auth_config['adapters'][$adapter_id])}{$auth_config['adapters'][$adapter_id][$control_id]}{/if}">
+                                    </div>
+                                </div>
+                            {/foreach}
+                        </div>
+                    </li>
+                {/foreach}
+            </ul>
+        </div>
+    </div>
+</div>
+{/function}
+
+{* Phone settings *}
+{function phone_settings}
+{$_sms_used = in_array(waAuthConfig::AUTH_METHOD_SMS, $used_auth_methods)}
+<div class="field-group custom-py-20" >
+    <div class="header-wrapper flexbox middle full-width">
+        <h3 class="name custom-mb-0 {if !$_sms_used}text-gray{/if}">[`Phone`]</h3>
+        <div class="nowrap links">
+            <a href="javascript:void(0);" class="s-small custom-pr-16 link-options js-settings-link"{if !$_sms_used} style="display: none"{/if}><i class="icon size-12 fas fa-cog settings"></i> [`Settings`]</a>
+            <span class="switch smaller js-auth-method-toogle" id="switch-auth-phone-toogle">
+                <input name="used_auth_methods[{waAuthConfig::AUTH_METHOD_SMS}]" data-method="{waAuthConfig::AUTH_METHOD_SMS}" data-registration-linked-field="phone" type="checkbox"{if $_sms_used} checked="checked"{/if}>
+            </span>
+        </div>
+    </div>
+    <div class="s-settings-wrapper js-settings-wrapper custom-mt-16" style="display: none;">
+        {* Phone template select *}
+        <div class="field">
+            <div class="name">[`User notifications`]</div>
+            <div class="value">
+                <span class="s-small">[`Select a group of notification templates to be used for sending login, signup, and password recovery notifications.`]</span>
+                <div class="custom-mt-12">
+                    <div class="wa-select">
+                        <select name="verification_channel_ids[1]" class="js-template">
+                            <option value="">[s`Select template`]</option>
+                            {foreach $sms_channels as $_id => $_channel}
+                                <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="s-template-link custom-mt-8"><span class="s-template-link-hint">[`Edit the list in section`]</span> <a href="{$wa_backend_url}webasyst/settings/sms/template/">[`“SMS templates”`] <span class="icon size-12"><i class="fas fa-external-link-alt"></i></span>.</a></div>
+                </div>
+                <div class="custom-mt-12">
+                    {$_priority = $auth_config.priority_auth_method|default:null}
+                    <label>
+                        <span class="wa-checkbox">
+                            <input type="hidden" name="priority_auth_method" value="">
+                            <input type="checkbox" name="priority_auth_method" value="sms"{if $_priority === waAuthConfig::AUTH_METHOD_SMS} checked="checked"{/if}>
+                            <span>
+                                <span class="icon">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </span>
+                        </span>
+                        <span class="s-small">[`Prefer SMS over email for sending notifications. In case of SMS sending failure, email will be sent as a replacement.`]</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`National direct-dialing code (NDD)`]</div>
+            {$_phone_transform_prefix = $auth_config.phone_transform_prefix|default:[]}
+            <div class="value">
+                {$_input_code = $_phone_transform_prefix['input_code']|default:''}
+                <input type="text" class="shortest" name="phone_transform_prefix[input_code]" value="{$_input_code}">
+                <div class="hint" style="margin-top: 10px;">
+                    [`Enter the NDD code which is used for making calls within your country.`]<br>
+                    [`The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers.`]
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`Country code`]</div>
+            <div class="value">
+                {$_output_code = $_phone_transform_prefix['output_code']|default:''}
+                + <input type="text" class="shortest" name="phone_transform_prefix[output_code]" value="{$_output_code}">
+                <div class="hint" style="margin-top: 10px;">
+                    [`Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD.`]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/function}
+
+{* Register form *}
+{function register_form}
+<div class="field-group custom-py-20 js-register-form-wrapper" >
+    <div class="header-wrapper flexbox middle full-width">
+        <h3 class="name custom-mb-0">[`Signup form`]</h3>
+        <div class="nowrap links">
+            <a href="javascript:void(0);" class="link-options js-settings-link s-small"><i class="icon size-12 fas fa-cog settings"></i> [`Settings`]</a>
+        </div>
+    </div>
+    <div class="s-settings-wrapper js-settings-wrapper custom-mt-16" style="display: none;">
+    {* Register form wrapper *}
+        {* Personal data processing *}
+        <div class="field s-data-processing js-data-processing-wrapper">
+            <div class="name">[`Personal data processing`]</div>
+            <div class="value s-small">
+                {* Variant 1 *}
+                <div class="custom-mb-8">
+                    <label>
+                        <span class="wa-radio">
+                            <input type="radio" name="params[service_agreement]" value=""{if empty($params.service_agreement)} checked{/if}>
+                            <span></span>
+                        </span>
+                        [`Do not require consent to personal data protection policy`]
+                    </label>
+                </div>
+                {* Variant 2 *}
+                <div class="custom-mb-8">
+                    {$link_tag = sprintf('<a href="%s" target="_blank">', _w('---INSERT A LINK HERE!---'))}
+                    <label data-default-text="{sprintf_wp('By submitting this form I agree to %spersonal data protection policy%s', $link_tag, '</a>')|escape}">
+                        <span class="wa-radio">
+                            <input type="radio" name="params[service_agreement]" value="notice"{if ifset($params.service_agreement) == 'notice'} checked{/if}>
+                            <span></span>
+                        </span>
+                        [`Show only notice and link to policy`]
+                    </label>
+                </div>
+                {* Variant 3 *}
+                <div class="custom-mb-8">
+                    <label data-default-text="{sprintf_wp('I agree to %spersonal data protection policy%s', $link_tag, '</a>')|escape}">
+                        <span class="wa-radio">
+                            <input type="radio" name="params[service_agreement]" value="checkbox"{if ifset($params.service_agreement) == 'checkbox'} checked{/if}>
+                            <span></span>
+                        </span>
+                        [`Show mandatory checkbox, notice, and link`]
+                    </label>
+                </div>
+                {* Service agreement text *}
+                <div class="s-agreement-text js-text-editor width-100 custom-my-12 custom-ml-16">
+                    <textarea class="js-agreement-text-textarea width-100" name="params[service_agreement_text]">{ifset($params.service_agreement_text)|escape}</textarea>
+                    <div class="custom-mt-4">
+                        <a href="javascript:void(0)" class="js-restore-text"><i class="icon size-10 fas fa-undo sort"></i> [`Restore original text`]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {* Signup captcha *}
+        <div class="field s-signup-captcha">
+            <div class="name">
+                [`Captcha`]
+                <div class="hint">[`A user must enter characters shown in an image`]</div>
+            </div>
+            <div class="value">
+                <div class="switch-with-text custom-pt-4">
+                    <span class="switch smaller js-signup-captcha-toogle" id="switch-signup-captcha-toogle">
+                        <input id="s-signup-captcha" name="signup_captcha" class=" " type="checkbox" value="1"{if $signup_captcha} checked="checked"{/if}>
+                        <input type="hidden" name="signup_captcha" value="0">
+                    </span>
+                    <label class="s-small" for="s-signup-captcha" data-active-text="[`Enabled`]" data-inactive-text="[`Disabled`]">{if $signup_captcha}[`Enabled`]{else}[`Disabled`]{/if}</label>
+                </div>
+            </div>
+        </div>
+        {* Fields *}
+        <div class="field vertical">
+            <div class="name">[`Fields`]</div>
+            <div class="value s-fields js-fields">
+                {* Fields list *}
+                <div class="s-available-fields-list js-available-fields-list custom-my-8">
+                    {* Available fields *}
+                    {foreach $available_fields as $_a_field}
+                        <div class="s-form-available-field">
+                            <label class="js-available-field" data-id="{$_a_field.id}">
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" data-field-id="{$_a_field.id|escape}"{if $_a_field.checked} checked{/if}{if $_a_field.disabled} disabled{/if}>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </span>
+                                </span>
+                                {$_a_field.name|escape}
+                            </label>
+                        </div>
+                    {/foreach}
+                </div>
+                {* Register form constructor *}
+                <div class="card s-enabled-fields-list s-register-form-constructor js-register-form-constructor shadowed">
+                    <div class="fields-checkboxes">
+                        {* Enable fields *}
+                        {foreach $enable_fields as $_e_field}
+                            {$_required_checked = isset($_e_field.required) || $_e_field.disabled}
+                            {$_required_disabled = !$_e_field.checked || $_e_field.disabled}
+                            <div data-field-id="{$_e_field.id|escape}" class="flexbox middle space-12 width-100 sortable js-sortable-field{if !$_e_field.checked} hidden{/if}" style="position: relative;">
+
+                                <span class="icon sort"><i class="fas fa-grip-vertical"></i></span>
+                                <label>
+                                    <span class="wa-checkbox">
+                                        <input title="[`Required field`]" type="checkbox" name="fields[{$_e_field.id}][required]"{if $_required_checked} checked{/if} value="true" {if $_required_disabled} disabled{/if}/>
+                                        <span>
+                                            <span class="icon">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </label>
+                                <div class="s-field-name name">
+                                    <div class="js-editable-wrapper" title="[`Edit field label`]">
+                                        <label class="s-editable-item s-editable-text js-editable-item">
+                                            {if isset($_e_field.caption)}
+                                                {$_e_field.caption|escape}
+                                            {else}
+                                                {$_e_field.name|escape}
+                                            {/if}
+                                        </label>
+                                        <input type="text" class="shorter s-editable-field-label hidden" name="fields[{$_e_field.id|escape}][caption]" value="{if isset($_e_field.caption)}{$_e_field.caption|escape}{else}{$_e_field.name|escape}{/if}"{if !$_e_field.checked} disabled{/if}/>
+                                    </div>
+                                </div>
+                                <div class="value s-field-value placeholder" title="[`Edit hint for this field`]">
+                                    <input type="text" class="fill s-placeholder-input" name="fields[{$_e_field.id|escape}][placeholder]" value="{if isset($_e_field.placeholder)}{$_e_field.placeholder|escape}{/if}"{if !$_e_field.checked} disabled{/if}/>
+                                </div>
+                            </div>
+                        {/foreach}
+                    </div>
+                    {* Agreement preview *}
+                    <div class="s-preview-agreement-text-wrapper js-preview-agreement-text-wrapper s-small">
+                        <label>
+                            <span class="wa-checkbox">
+                                <input type="checkbox" checked disabled>
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </span>
+                            </span>
+                        </label>
+
+                        <div class="js-preview-text"></div>
+                    </div>
+                    {* Captcha *}
+                    <div class="js-captcha-preview"{if !$signup_captcha} style="display: none;"{/if}>
+                        {if $demo_captcha->getOption('invisible')}
+                            <div class="hint">[`Invisible captcha will be used`]</div>
+                        {else}
+                            {$demo_captcha->getHtml()}
+                        {/if}
+                    </div>
+                    {* Editable signup submit button *}
+                    <div class="js-editable-wrapper editable-button">
+                        <input type="button" class="s-editable-button button gray js-editable-item js-editable-button custom-mr-0" value="{$params.button_caption|default:'[`Sign up`]'|escape}" title="[`Edit button label`]">
+                        <input type="text" class="hidden" name="params[button_caption]" value="{$params.button_caption|default:'[`Sign up`]'|escape}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/function}
+
+{* Login form *}
+{function login_form}
+<div class="field-group custom-py-20 js-register-form-wrapper" >
+    <div class="header-wrapper flexbox middle full-width">
+        <h3 class="name custom-mb-0">[`Login form`]</h3>
+        <div class="nowrap links">
+            <a href="javascript:void(0);" class="link-options js-settings-link s-small"><i class="icon size-12 fas fa-cog settings"></i> [`Settings`]</a>
+        </div>
+    </div>
+    <div class="s-settings-wrapper js-settings-wrapper js-login-form-wrapper custom-mt-16" style="display: none;">
+        {* Field captcha *}
+        <div class="field js-captcha-wrapper">
+            <div class="name">
+                [`Captcha`]
+                <div class="hint">[`A user must enter characters shown in an image`]</div>
+            </div>
+            <div class="value s-small">
+                {foreach $login_captcha_variants as $_variant_val => $_variant_info}
+                    {$_name = $_variant_info.name}
+                    {$_is_checked = $auth_config.login_captcha === $_variant_val}
+                    <div class="custom-mb-8">
+                        <label>
+                            <span class="wa-radio">
+                                <input type="radio" name="login_captcha" value="{$_variant_val}"{if $_is_checked} checked="checked"{/if}>
+                                <span></span>
+                            </span>
+                            {$_name|escape}
+                        </label>
+                    </div>
+                {/foreach}
+
+            </div>
+        </div>
+        {* "Remember me" checkbox *}
+        <div class="field s-rememberme-auth">
+            <div class="name">
+                [`Auto-login`]
+                <div class="hint">[s`“Remember me” option`]</div>
+            </div>
+            <div class="value">
+                <div class="switch-with-text custom-pt-4">
+                    <span class="switch smaller js-rememberme-auth-toogle" id="switch-rememberme-auth-toogle">
+                        <input id="s-rememberme-auth" name="rememberme" class="" type="checkbox" value="1"{if $rememberme} checked="checked"{/if}>
+                        <input type="hidden" name="rememberme" value="0">
+                    </span>
+                    <label class="s-small" for="s-rememberme-auth" data-active-text="[`Enabled`]" data-inactive-text="[`Disabled`]">{if $rememberme}[`Enabled`]{else}[`Disabled`]{/if}</label>
+                </div>
+            </div>
+        </div>
+
+        {* Login form preview *}
+        <div class="s-login-form-preview shadowed">
+            <div class="card s-login-form-constructor js-login-form-constructor">
+                <div class="fields-checkboxes ">
+                    {* Login*}
+                    <div data-field-id="login" class="flexbox middle space-12 width-100" style="position: relative;">
+                        <div class="s-field-name name">
+                            <div class="js-editable-wrapper" title="[`Edit field label`]">
+                                <label class="s-editable-item s-editable-text js-editable-item">
+                                    {$auth_config.login_caption|escape}
+                                </label>
+                                <input type="text" class="shorter s-editable-field-label hidden" name="login_caption" value="{$auth_config.login_caption|escape}"/>
+                            </div>
+                        </div>
+                        <div class="value placeholder" title="[`Edit hint for this field`]">
+                            <input type="text" class="fill s-placeholder-input" name="login_placeholder" value="{$auth_config.login_placeholder|escape}"/>
+                        </div>
+                    </div>
+                    {* Password *}
+                    <div class="flexbox middle space-12 width-100">
+                        <div class="s-field-name name">[s`Password`]</div>
+                        <div class="value">
+                            <input class="fill s-placeholder-input" type="text" name="password_placeholder" placeholder="{$auth_config.password_placeholder|escape}" />
+                        </div>
+                    </div>
+                </div>
+                {* Remember me *}
+                <div class="js-remember-me-preview"{if !$rememberme} style="display: none;"{/if}>
+                    <div class="value">
+                        <label>
+                            <span class="wa-checkbox">
+                                <input type="checkbox" checked="checked" disabled>
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </span>
+                            </span>
+                            <span class="s-small">[s`Remember me`]</span>
+                        </label>
+                    </div>
+                </div>
+                {* Captcha *}
+                <div class="s-captcha-preview js-captcha-preview"{if $auth_config.login_captcha !== waAuthConfig::LOGIN_CAPTCHA_ALWAYS} style="display: none;"{/if}>
+                    {if $demo_captcha->getOption('invisible')}
+                        <div class="hint">[`Invisible captcha will be used`]</div>
+                    {else}
+                        {$demo_captcha->getHtml()}
+                    {/if}
+                </div>
+                {* Submit *}
+                <div class="editable-button">
+                    <input class="button gray" type="button" value="[s`Sign In`]" disabled />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/function}

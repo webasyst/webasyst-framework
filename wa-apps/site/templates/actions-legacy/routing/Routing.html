@@ -34,11 +34,7 @@
                             {/if}
                         </td>
                         <td class="s-actions align-right">
-                            {if empty($route.temporarily_off)}
                             <a href="#" class="s-route-action s-route-settings" title="[`Settings`]"><i class="icon16 settings"></i></a>
-                            {else}
-                            <i class="icon16 broom-bw"></i>
-                            {/if}
                             <i class="icon16 lock {if $route.ssl_all|default:false}{else}hidden{/if}" title="[`Redirect to HTTPS`]"></i>
                         </td>
                     </tr>

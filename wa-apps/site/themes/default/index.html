@@ -48,6 +48,9 @@
     {/if}
 
     <!-- css -->
+    {if !empty($is_blockpage)}
+    <link href="{$wa_app_static_url}css/site.min.css?v={$wa->version()}" rel="stylesheet">
+    {/if}
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
     {$wa->css()} {* links active plugins CSS *}
     {if !empty($theme_settings.font_family) && ($theme_settings.font_family != 'Trebuchet MS' || $theme_settings.font_family != 'Verdana' || $theme_settings.font_family != 'Georgia, Times')}
@@ -155,160 +158,18 @@
             .color_scheme_white header .pages li a,
             .color_scheme_white header .pages li a:hover { color: {$theme_settings.color_custom_links} !important; }
         {/if}
+        {if $is_blockpage}
+            .maincontent > .container { margin: 0; max-width: unset; }
+        {/if}
+        .appfooter .webasyst-magic-wand { z-index: unset; }
         {if trim($theme_settings.style_custom)}{$theme_settings.style_custom}{/if}
     </style>
 
 </head>
 
 <body>
-    <header class="globalheader"{if $theme_settings.header_custom_image} style="background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');"{/if}>
-
-        {if count($wa->apps())>0 || $wa->isAuthEnabled()}
-
-            <!-- GLOBAL NAVIGATION -->
-            <div id="globalnav"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};"{/if}>
-                <div class="container">
-                    <div class="globalnav-bar wa-flex align-items-center space-3">
-                        {if $theme_settings.header_sitename || $theme_settings.logo}
-                            <h2>
-                                <a href="{$wa_url}">
-                                    {if $theme_settings.logo}
-                                        <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
-                                        <span>{$wa->accountName()}</span>
-                                    {else}
-                                        {$wa->accountName()}
-                                    {/if}
-                                </a>
-                            </h2>
-                        {/if}
-                        {$_hide_cart = $wa->globals("hideCart")}
-
-                        <nav class="wa-flex wa-flex-fill overflow-hidden{if !empty($_hide_cart) && !$wa->isAuthEnabled()} wa-mr-0{/if}">
-                            {strip}
-                                <ul class="apps">
-                                    {$_links = []}
-                                    {if $theme_settings.header_links == 'site-pages'}
-                                        {if $wa->site}{$_links = $wa->site->pages()}{/if}
-                                    {elseif $theme_settings.header_links == 'shop-pages'}
-                                        {if $wa->shop}{$_links = $wa->shop->pages()}{/if}
-                                    {elseif $theme_settings.header_links == 'blog-pages'}
-                                        {if $wa->blog}{$_links = $wa->blog->pages()}{/if}
-                                    {elseif $theme_settings.header_links == 'photos-pages'}
-                                        {if $wa->photos}{$_links = $wa->photos->pages()}{/if}
-                                    {elseif $theme_settings.header_links == 'hub-pages'}
-                                        {if $wa->hub}{$_links = $wa->hub->pages()}{/if}
-                                    {elseif $theme_settings.header_links != 'none'}
-                                        {$_links = $wa->apps()}
-                                    {/if}
-                                    {foreach $_links as $a}
-                                        {if !($a.url == $wa_url && $a.name == $wa->accountName())}
-                                            <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
-                                        {/if}
-                                    {/foreach}
-                                </ul>
-                            {/strip}
-                        </nav>
-
-                        <div class="wa-flex wa-ml-auto wa-mr-0">
-                            {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
-                            && !empty($theme_settings.show_cart) && empty($_hide_cart)}
-                                <!-- cart -->
-                                {$cart_total = $wa->shop->cart->total()}
-                                <div id="cart" class="cart wa-flex{if !$cart_total} empty{/if}">
-                                    <div class="container">
-                                    <a href="{$_cart_url}" class="cart-summary">
-                                        <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
-                                            <use xlink:href="#img-cart"></use>
-                                        </svg>
-                                        <span class="wa-mr-8 wa-ml-4 h-cart-title">[s`Cart`]</span>
-                                        <strong class="s-badge s-badge-rounded cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
-                                    </a>
-                                    <div id="cart-content">
-                                        {* <div class="cart-just-added">
-                                           %s is now in your shopping cart
-                                        </div> *}
-                                    </div>
-                                    <a href="{$_cart_url}" class="cart-to-checkout" style="display: none;">
-                                        [s`View cart`]
-                                    </a>
-
-                                    {strip}
-                                        {capture assign="_loading_template"}
-                                            <div class="s-loading-section">
-                                                <div class="s-loading-content">
-                                                    <i class="icon16 loading"></i>
-                                                </div>
-                                            </div>
-                                        {/capture}
-                                    {/strip}
-
-                                    <script>
-                                        ( function($) {
-                                            var is_loading = false;
-                                            $("#cart").on("click", function() {
-                                                if (!is_loading) {
-                                                    is_loading = true;
-                                                    $("body").append({$_loading_template|json_encode});
-                                                }
-                                            });
-                                        })(jQuery);
-                                    </script>
-                                    </div>
-                                </div>
-                            {/if}
-
-                            {if $wa->isAuthEnabled()}
-                                <!-- user auth -->
-                                {strip}
-                                    <ul class="auth align-items-center space-05" id="js-header-auth-wrapper">
-                                        {if $wa->user()->isAuth()}
-                                            {if $wa->myUrl()}
-                                                <li>
-                                                    <a href="{$wa->myUrl()}"><i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i></a>
-                                                </li>
-                                            {else}
-                                                <li><strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></li>
-                                            {/if}
-                                            <li><a href="?logout" class="auth-logout">[s`Log out`]</a></li>
-                                        {else}
-                                            <li>
-                                                <a href="{$wa->loginUrl()}" class="not-visited text-white">
-                                                    <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
-                                                        <use xlink:href="#img-person"></use>
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="{$wa->loginUrl()}" class="not-visited text-gray">[s`Log in`]</a>
-                                            </li>
-                                            {*<li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>*}
-                                        {/if}
-                                    </ul>
-                                {/strip}
-                            {/if}
-                        </div>
-                        <button id="mobile-nav-toggle">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        {/if}
-
-        {if empty ($_is_order_page)}
-        <!-- APP NAVIGATION -->
-        <div class="container appnav wa-flex justify-content-between align-items-center" id="header-container"{if $theme_settings.header_scheme|strstr:'andgray'} style="border-top: 1px solid transparent;"{/if}>
-            {if $wa->globals('isMyAccount')}
-
-                {* focused personal accounts navigation *}
-                {$wa->myNav('pages')}
-
-            {else}
-                {include file="`$wa_active_theme_path`/header.html" inline}
-            {/if}
-        </div>
-        {/if}
-    </header>
+    <!-- HEADER -->
+     {include file="header.section.html" inline}
 
     <!-- APP CONTENT -->
     <main class="maincontent">
@@ -318,156 +179,12 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="globalfooter">
-        {if !empty($theme_settings.footer_subscribe_form_use) && $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
-            <div class="mailer-subscribe">
-                <div class="container">
-                    <div class="s-subscribe-section row cols1-mobile" id="js-subscribe-section">
-                        {if !empty($theme_settings.footer_subscribe_form_title)}
-                            <p class="col w5 s-subscribe-section--title wa-mb-4 wa-pl-4">{$theme_settings.footer_subscribe_form_title}</p>
-                        {/if}
-                        <form class="col w7">
-                            <div class="row">
-                                <input class="wa-flex-fill wa-mr-16 wa-mt-4 js-email-field" type="email" name="email" placeholder="your@email.here" required>
-                                <button class="text-white js-submit-button wa-mt-4" type="submit">[s`Subscribe`]</button>
-                            </div>
-                            <div class="s-hidden">{$wa->captcha(['app_id'=>'mailer'])}</div>
-                        </form>
-
-                        <p class="js-success-message" style="display:none">
-                            <i>[s`Thank you! We’ll keep you posted.`]</i>
-                        </p>
-                        <script>
-                            ( function($) {
-                                new SubscribeSection({
-                                    $wrapper: $("#js-subscribe-section"),
-                                    request_uri: "{$wa->getUrl('mailer/frontend/subscribe')}"
-                                })
-                            })(jQuery);
-                        </script>
-                    </div>
-                    {if !empty($theme_settings.footer_subscribe_personal_data)}
-                        <div class="s-subscribe-personal-data wa-mt-24">{$theme_settings.footer_subscribe_personal_data}</div>
-                    {/if}
-                </div>
-            </div>
-        {/if}
-        <div class="container">
-            {if !empty($theme_settings.footer_links)}
-            <div class="row gap20 cols4 cols1-mobile cols2-tablet">
-
-                <div class="footer-block contact-us col w3">
-                    <div class="social">
-                        {if $wa->blog && $rss}
-                            <a class="wa-mb-0" href="{$rss}" title="[s`RSS`]">
-                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
-                                    <use xlink:href="#img-rss"></use>
-                                </svg>
-                            </a>
-                        {/if}
-                        {if !empty($theme_settings.facebook)}
-                            <a class="wa-mb-0" href="{$theme_settings.facebook}" title="[s`Facebook`]">
-                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
-                                    <use xlink:href="#img-facebook"></use>
-                                </svg>
-                            </a>
-                        {/if}
-                        {if !empty($theme_settings.twitter)}
-                            <a class="wa-mb-0" href="{$theme_settings.twitter}" title="[s`Twitter`]">
-                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
-                                    <use xlink:href="#img-twitter"></use>
-                                </svg>
-                            </a>
-                        {/if}
-                        {if !empty($theme_settings.vk)}
-                            <a class="wa-mb-0" href="{$theme_settings.vk}" title="[s`VK`]">
-                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
-                                    <use xlink:href="#img-vk"></use>
-                                </svg>
-                            </a>
-                        {/if}
-                        {if !empty($theme_settings.instagram)}
-                            <a class="wa-mb-0" href="{$theme_settings.instagram}" title="[s`Instagram`]">
-                                <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
-                                    <use xlink:href="#img-instagram"></use>
-                                </svg>
-                            </a>
-                        {/if}
-                        {if !empty($theme_settings.youtube)}
-                            <a class="wa-mb-0" href="{$theme_settings.youtube}" title="[s`Youtube`]">
-                                <svg width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
-                                    <use xlink:href="#img-youtube"></use>
-                                </svg>
-                            </a>
-                        {/if}
-                    </div>
-
-                    {if $wa->shop}
-                        <p class="wa-flex align-items-center wa-mb-8">[`Phone`]: <a class="wa-ml-4 wa-mb-0" href="tel:{$wa->shop->settings('phone')|replace:[' ', '(', ')', '-']:''}">{$wa->shop->settings('phone')}</a></p>
-                        <p class="wa-flex align-items-center wa-mb-16">Email: <a class="wa-ml-4 wa-mb-0" href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a></p>
-                    {/if}
-                </div>
-
-                {if $wa->shop}
-                    <div class="footer-block col w3">
-                        <a href="{$wa->getUrl('shop/frontend')}" class="top">[s`Shop`]</a>
-                        <a href="{$_cart_url}">[s`Cart`]</a>
-                    </div>
-                {/if}
-
-                {if $wa->photos}
-                    <div class="footer-block col w3">
-                        <a href="{$wa->getUrl('photos/frontend')}" class="top">[s`Photos`]</a>
-                        <a href="{$wa->getUrl('photos/frontend')}">[s`Photostream`]</a>
-                        <a href="{$wa->getUrl('photos/frontend')}favorites/">[s`Favorites`]</a>
-                    </div>
-                {/if}
-
-                {if $wa->blog}
-                    <div class="footer-block col w3">
-                        <a href="{$wa->getUrl('blog/frontend')}" class="top">[s`Blog`]</a>
-                        <a href="{$wa->blog->rssUrl()}">[s`RSS`]</a>
-                        {$blogs = $wa->blog->blogs()}
-                        {foreach $blogs as $b}
-                            <a href="{$b.link}">{$b.name}</a>
-                        {/foreach}
-                    </div>
-                {/if}
-
-            </div>
-            {/if}
-
-
-            {if !empty($theme_settings.footer_note)}
-                <p class="footer-note">
-                    {$theme_settings.footer_note}
-                </p>
-            {/if}
-
-        </div>
-
-        <div class="appfooter">
-            <div class="container">
-                <div class="row gap16 justify-content-between align-items-center">
-                    <div class="copyright">
-                        &copy; {time()|wa_datetime:"Y"}
-                        <a href="{$wa_url}">{$wa->accountName()}</a>
-                    </div>
-                    {include file="`$wa_active_theme_path`/footer.html" inline}
-                </div>
-
-                {if empty($theme_settings.footer_notice)}
-                    <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
-                {/if}
-            </div>
-        </div>
-
-    </footer>
+    {include file="footer.section.html" inline}
 
     {* admin-only slideout sidebar for nice and smooth real time theme customizations *}
-    {if $theme_settings.admin_sidebar}
-        {if $wa->user()->isAdmin()}{include file="admin-sidebar.html" inline}{/if}
-    {/if}
+    {* DEPRECATED if $wa->user()->isAdmin()}
+        {include file="admin-sidebar.html" inline}
+    {/if *}
 
     <svg display="none">
         <defs>
@@ -476,24 +193,6 @@
             </g>
             <g id="img-star-5">
                 <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M7.5 0L9.7042 4.46619L14.6329 5.18237L11.0665 8.65881L11.9084 13.5676L7.5 11.25L3.09161 13.5676L3.93354 8.65881L0.367076 5.18237L5.2958 4.46619L7.5 0Z"/>
-            </g>
-            <g id="img-rss">
-                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" fill-rule="evenodd" d="M6.24256 6.06711C6.17996 6.1034 6.09868 6.18658 6.06193 6.25199C5.99602 6.36924 5.99521 6.39034 6.00384 7.7768C6.0124 9.15027 6.01412 9.18477 6.07837 9.27093C6.21546 9.45478 6.28856 9.47378 6.97107 9.503C10.0733 9.63584 12.8849 10.8906 15.0611 13.1136C17.1822 15.2802 18.3646 18.0056 18.494 21.0259C18.5232 21.7084 18.5422 21.7815 18.726 21.9186C18.8122 21.9828 18.8467 21.9846 20.2202 21.9931C21.6085 22.0018 21.6276 22.001 21.7455 21.9347C21.8112 21.8978 21.8947 21.8147 21.9311 21.7499C22.0089 21.6114 22.0154 21.3961 21.9658 20.6088C21.833 18.5053 21.3417 16.6269 20.4373 14.7655C20.0638 13.9969 19.8412 13.6068 19.385 12.9217C18.7924 12.0316 18.3166 11.4482 17.529 10.6459C16.7241 9.8261 16.0104 9.23455 15.0753 8.61192C14.3901 8.15575 14.0001 7.93312 13.2315 7.55971C11.3701 6.65528 9.49166 6.16393 7.38814 6.03118C6.60647 5.98186 6.37712 5.98905 6.24256 6.06711ZM6.25378 11.643C6.19737 11.6722 6.12003 11.7398 6.0819 11.7932C6.01312 11.8897 6.01252 11.9009 6.00415 13.2967C5.99621 14.6202 5.99915 14.7094 6.05421 14.8124C6.16021 15.0106 6.259 15.0515 6.69082 15.0758C8.41238 15.1727 9.85913 15.8056 11.0253 16.9717C12.1914 18.1378 12.8242 19.5846 12.9212 21.3061C12.9455 21.7378 12.9865 21.8371 13.1841 21.9421C13.2853 21.9959 13.3897 22 14.6638 22C16.1787 22 16.1758 22.0003 16.3181 21.8008C16.3835 21.7092 16.3877 21.6722 16.3856 21.2031C16.379 19.7442 15.9305 18.0826 15.1791 16.7343C14.7072 15.8873 14.2287 15.2615 13.4821 14.5149C12.9063 13.9391 12.5148 13.6135 11.9346 13.2276C10.4354 12.2306 8.66498 11.6636 6.87198 11.6064C6.4265 11.5921 6.34237 11.5971 6.25378 11.643ZM7.89584 17.4676C7.03464 17.6245 6.35422 18.2364 6.08627 19.0948C5.9818 19.4296 5.9818 20.0078 6.08627 20.3426C6.18565 20.6609 6.30669 20.891 6.50316 21.1349C6.80507 21.5097 7.18067 21.7628 7.65434 21.9107C7.98913 22.0152 8.56739 22.0152 8.90218 21.9107C9.67994 21.6679 10.2306 21.1177 10.4701 20.3437C10.5748 20.0054 10.5751 19.4279 10.4707 19.0937C10.2299 18.3224 9.68088 17.7697 8.9189 17.5314C8.67436 17.4549 8.14622 17.422 7.89584 17.4676Z" clip-rule="evenodd"/>
-            </g>
-            <g id="img-vk">
-                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M23.7359 18.1369C23.1783 17.2566 22.5026 16.4605 21.7287 15.7718C20.6543 14.7509 20.6543 14.7509 21.7287 13.3556L22.3867 12.5049C24.0524 10.2759 24.094 9.53574 23.9441 9.10186C23.7026 8.42126 22.6948 8.50633 22.5449 8.52335H19.7215C19.5008 8.49251 19.2762 8.53422 19.0802 8.64245C18.8898 8.77273 18.7396 8.95568 18.6471 9.16992C18.1308 10.5737 16.7149 13.177 16.1486 13.4237C15.9673 12.7798 15.9275 12.1029 16.032 11.4414C16.1236 10.0462 16.2235 8.46379 15.0659 8.17454C14.5943 8.05919 14.1095 8.01053 13.625 8.02991C12.7535 7.94346 11.8739 8.04491 11.0432 8.32767C10.7183 8.48932 10.2853 8.89768 10.3436 9.28902C10.3669 9.3863 10.417 9.47476 10.4878 9.54406C10.5585 9.61336 10.6472 9.66064 10.7433 9.68037C10.9572 9.69513 11.1585 9.78888 11.3097 9.9441C11.6045 11.1046 11.6045 12.3227 11.3097 13.4832C10.76 13.3131 9.40243 10.8374 8.81111 9.29753C8.73051 9.09771 8.60155 8.92207 8.43632 8.78708C8.23006 8.64357 7.99291 8.5531 7.74505 8.52335H4.99663C4.67815 8.5302 4.37427 8.66106 4.14711 8.88917C4.06574 9.02274 4.01652 9.17411 4.00349 9.33086C3.99046 9.48762 4.01399 9.6453 4.07215 9.79097C4.16377 9.99515 6.2709 14.8359 8.71949 17.4477C9.35051 18.1715 10.132 18.7419 11.0067 19.1173C11.8814 19.4926 12.8272 19.6634 13.7749 19.6172C14.4377 19.6211 15.0991 19.5555 15.7488 19.4215C15.9922 19.0827 16.1102 18.6667 16.0819 18.2474C16.0819 17.6349 16.1652 17.3967 16.4234 17.3542C16.6816 17.3116 17.1813 18.0092 17.4395 18.307C17.784 18.7549 18.1812 19.1578 18.6222 19.5066C19.0221 19.8068 19.5005 19.9786 19.9964 20H22.7198C22.9493 19.9931 23.174 19.9319 23.3763 19.8212C23.5787 19.7104 23.7531 19.5532 23.8858 19.3619C23.9766 19.1641 24.0107 18.9441 23.9842 18.7273C23.9577 18.5105 23.8716 18.3058 23.7359 18.1369Z"/>
-            </g>
-            <g id="img-twitter">
-                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M22.454 8.6792C23.3504 8.14329 24.0212 7.29944 24.341 6.3052C23.4986 6.805 22.577 7.15708 21.616 7.3462C20.2836 5.93673 18.1725 5.59373 16.4624 6.50886C14.7523 7.42399 13.8665 9.37069 14.3 11.2612C10.8496 11.088 7.63497 9.45812 5.456 6.7772C4.31884 8.73862 4.89995 11.246 6.784 12.5072C6.10271 12.4853 5.43653 12.3008 4.841 11.9692C4.841 11.9872 4.841 12.0052 4.841 12.0232C4.84139 14.0664 6.28137 15.8263 8.284 16.2312C7.65206 16.4031 6.98921 16.4284 6.346 16.3052C6.9092 18.0525 8.51955 19.2495 10.355 19.2852C8.83483 20.4783 6.95748 21.1254 5.025 21.1222C4.68247 21.1227 4.34021 21.103 4 21.0632C5.96239 22.3242 8.24637 22.9936 10.579 22.9912C13.8242 23.0135 16.943 21.7341 19.2377 19.4392C21.5324 17.1443 22.8116 14.0254 22.789 10.7802C22.789 10.5942 22.7847 10.4092 22.776 10.2252C23.6165 9.6178 24.3418 8.86535 24.918 8.0032C24.135 8.35026 23.3045 8.57812 22.454 8.6792Z"/>
-            </g>
-            <g id="img-facebook">
-                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M4 13.9986C4.00116 18.918 7.5784 23.1067 12.437 23.8776V16.8886H9.9V13.9986H12.44V11.7986C12.3265 10.7562 12.6825 9.71722 13.4116 8.96356C14.1408 8.2099 15.1674 7.81964 16.213 7.89863C16.9635 7.91075 17.7122 7.97759 18.453 8.09863V10.5576H17.189C16.7538 10.5006 16.3164 10.6443 15.9998 10.9483C15.6832 11.2522 15.5218 11.6835 15.561 12.1206V13.9986H18.332L17.889 16.8896H15.561V23.8776C20.8155 23.0472 24.5001 18.2484 23.9455 12.9577C23.3909 7.667 18.7913 3.73656 13.4788 4.0138C8.16636 4.29105 4.00084 8.67893 4 13.9986Z"/>
-            </g>
-            <g id="img-instagram">
-                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M17.7774 5H10.2316C6.95397 5 5 6.953 5 10.229V17.762C5 21.047 6.95397 23 10.2316 23H17.7684C21.046 23 23 21.047 23 17.771V10.229C23.009 6.953 21.055 5 17.7774 5ZM14.0045 17.492C12.0775 17.492 10.5107 15.926 10.5107 14C10.5107 12.074 12.0775 10.508 14.0045 10.508C15.9314 10.508 17.4982 12.074 17.4982 14C17.4982 15.926 15.9314 17.492 14.0045 17.492ZM19.3351 9.392C19.2901 9.5 19.2271 9.599 19.146 9.689C19.056 9.77 18.957 9.833 18.8489 9.878C18.7408 9.923 18.6238 9.95 18.5067 9.95C18.2636 9.95 18.0385 9.86 17.8674 9.689C17.7864 9.599 17.7233 9.5 17.6783 9.392C17.6333 9.284 17.6063 9.167 17.6063 9.05C17.6063 8.933 17.6333 8.816 17.6783 8.708C17.7233 8.591 17.7864 8.501 17.8674 8.411C18.0745 8.204 18.3897 8.105 18.6778 8.168C18.7408 8.177 18.7949 8.195 18.8489 8.222C18.9029 8.24 18.957 8.267 19.011 8.303C19.056 8.33 19.101 8.375 19.146 8.411C19.2271 8.501 19.2901 8.591 19.3351 8.708C19.3802 8.816 19.4072 8.933 19.4072 9.05C19.4072 9.167 19.3802 9.284 19.3351 9.392Z"/>
-            </g>
-            <g id="img-youtube">
-                <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M25.199 11.362A2.412 2.412 0 0 0 23.5 9.654C22.004 9.25 16 9.25 16 9.25s-6.004 0-7.501.404A2.412 2.412 0 0 0 6.8 11.362c-.4 1.508-.4 4.652-.4 4.652s0 3.144.401 4.651a2.378 2.378 0 0 0 1.698 1.681c1.497.404 7.501.404 7.501.404s6.004 0 7.501-.404a2.377 2.377 0 0 0 1.698-1.681c.401-1.507.401-4.651.401-4.651s0-3.145-.401-4.652Zm-11.163 7.506v-5.71l5.019 2.856-5.019 2.854Z"/>
             </g>
             <g id="img-dropndownarrow">
                 <path xmlns="http://www.w3.org/2000/svg" fill="currentColor" d="M8.20744 11C8.41292 10.9941 8.60078 10.9178 8.75342 10.7534L13.2153 6.18591C13.3444 6.05675 13.4149 5.89237 13.4149 5.69863C13.4149 5.31115 13.1096 5 12.7221 5C12.5342 5 12.3523 5.07632 12.2172 5.21135L8.21331 9.32681L4.19765 5.21135C4.06262 5.08219 3.8865 5 3.69276 5C3.30528 5 3 5.31115 3 5.69863C3 5.89237 3.07045 6.05675 3.19961 6.18591L7.66732 10.7534C7.82583 10.9178 8.00196 11 8.20744 11Z"/>

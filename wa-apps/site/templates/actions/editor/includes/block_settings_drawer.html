@@ -1,0 +1,31 @@
+<div class="site-editor-block-settings" id="js-site-editor-block-settings">
+    <h3>Block #<span class="js-block-id"></span></h3>
+</div>
+
+
+<script>(function() { "use strict";
+
+    //
+    // Once the drawer is ready (after vue init or whatever) this JS must trigger
+    // jQ event 'block_settings_form_ready' on '#js-site-editor-block-settings' containing interface object
+    // to communicate with the drawer.
+    //
+    // Code inside SiteEditor listens to this event, takes the object and uses
+    // its methods to open drawer, update its state etc.
+    //
+
+    var $wrapper = $('#js-site-editor-block-settings');
+
+    // !!! тут setTimeout() нужен только чтобы сделать вид, что инициализация сложной формы
+    // занимает какое-то время (vue.js, загрузка скриптов и т.п.)
+    setTimeout(() => {
+
+        var interface_object = new BlockSettingsDrawer({
+            $wrapper: $wrapper
+        });
+
+        $wrapper.trigger('block_settings_form_ready', [interface_object]);
+
+    }, 100);
+
+})();</script>

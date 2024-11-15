@@ -1,0 +1,211 @@
+<div class="article site-base">
+  <div class="article-body">
+    <div class="s-domains-page" id="s-domains-page">
+        <div class="s-domains-header flexbox wrap full-width custom-my-20">
+            <h1 class="wide">[`My sites`]</h1>
+            <button class="s-domains-add js-domains-add custom-mr-0">
+                <i class="fas fa-plus"></i>
+                [`New site`]
+            </button>
+
+            <button class="light-gray hidden">
+                <i class="fas fa-check-square"></i>
+                [`Select site`]
+            </button>
+        </div>
+
+        <div class="s-domains-list" id="js-domains-list">
+        {if waRequest::isHttps()}
+        {$protocol = 'https://'}
+        {else}
+        {$protocol = 'http://'}
+        {/if}
+        {foreach $domains as $domain_id => $d}
+            {$is_alias = $d.is_alias}
+            {if !empty($d.frontend_link) }
+                {$frontend_link = $d.frontend_link}
+            {elseif !empty($d)}
+                {$full_url = ''}
+                {if isset($d.full_url)}
+                    {$full_url = "/`$d.full_url`"}
+                    {if isset($d.route) }
+                        {$full_url = "/`$d.route|rtrim:'*'``$d.full_url`"}
+                    {/if}
+                {elseif isset($d.url_formatted)}
+                    {$full_url = $d.url_formatted}
+                {/if}
+                {$frontend_link = "`$protocol``$d.name``$full_url`"}
+            {/if}
+
+            <div data-domain-id="{$domain_id|escape}" class="flexbox">
+                {if $is_alias}
+                    {$main_link = "`$wa_app_url`?module=configure&domain_id=`$domain_id|escape`"}
+                {else}
+                    {$main_link = "`$wa_app_url`?module=map&action=overview&domain_id=`$domain_id|escape`"}
+                {/if}
+                <div class="card cursor-pointer">
+                    <div class="s-domain-view flex">
+                        {if !$is_alias}
+                            <div class="image s-frame-wrapper" id="s-frame-wrapper-{$domain_id|escape}" style="visibility: hidden;position: absolute;">
+                                <div class="blank-cover"></div>
+                                <iframe sandbox="allow-scripts" scrolling="no" loading="lazy" onload="onIframeDomainLoaded(this)" src="{$frontend_link|escape}">
+                                </iframe>
+                            </div>
+                            <span class="icon size-48">
+                                <i class="fas fa-globe text-light-gray"></i>
+                            </span>
+                        {else}
+                            <span class="icon size-48">
+                                <i class="fas fa-clone text-light-gray"></i>
+                            </span>
+                        {/if}
+                    </div>
+                    <div class="s-domain-title flexbox full-width custom-pt-12">
+                        <h4 class="title wide custom-m-0">
+                            <a href="{$main_link}">
+                                {waIdna::dec($d.title|escape)}
+                            </a>
+                        </h4>
+
+                        <div class="box">
+                            <a href="{$main_link}" class="js-main-link">  </a>
+                        </div>
+                        <div class="favicon-icon flexbox custom-mt-4">
+                                <i class="icon custom-mt-2" style="background-image: url('{if !empty($d.favicon)}{$d.favicon}{/if}');"></i>
+                        </div>
+                        <div class="box hidden"><a class="dropdown-toggle">
+                            <i class="fas fa-ellipsis-h gray"></i>
+                        </a></div>
+                    </div>
+
+                </div>
+            </div>
+
+        {/foreach}
+        </div>
+    </div>
+
+    {* Template for dialogue adding a new site *}
+    <div id="s-addsite-dialog-wrapper">
+        <div class="dialog" id="s-addsite-dialog">
+            <div class="dialog-background"> </div>
+            <div class="dialog-body">
+                <form>
+                    <header class="dialog-header"><h1>[`New site`]</h1></header>
+                    <div class="dialog-content">
+                        <div class="custom-pb-20">
+                            <span class="bold custom-pr-4">http://</span><input type="text" id="domain-name" name="name" class="bold long" value="" placeholder="mydomain.ru">
+                            <div class="hint custom-pt-4">[`E.g., mydomain.com, www.mydomain.com, subdomain.mydomain.com`]</div>
+                        </div>
+                        <div class="custom-pb-20 s-small">[`Enter the URL of your new website. You should own the domain name and be able to configure it to point to your Webasyst installation. Contact your hosting provider on how to map your domain name to this server.`]
+                            <a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">
+                                [`Help`] <i class="icon fas fa-external-link-alt new-window"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <div class="s-add-menu">
+                                <div class="custom-pb-12">
+                                    <label>
+                                        <span class="wa-radio">
+                                            <input type="radio" name="alias" value="0" checked>
+                                            <span></span>
+                                        </span>
+                                        [`New site`]
+                                    </label>
+                                </div>
+                                <div class="custom-pb-8">
+                                    <label>
+                                        <span class="wa-radio">
+                                            <input type="radio" name="alias" value="1">
+                                            <span></span>
+                                        </span>
+                                        [`Alias (mirror site) for`]
+                                        <span class="wa-select custom-ml-8">
+                                            <select id="alias-domain" name="domain">
+                                                {foreach $domains as $d_id => $d}
+                                                    {if empty($d.is_alias)}
+                                                        <option value="{$d.name|escape}">{waIdna::dec($d.name)}</option>
+                                                    {/if}
+                                                {/foreach}
+                                            </select>
+                                        </span>
+                                        <script type="text/javascript">
+                                            $('#alias-domain').on('change', function () {
+                                                $('#alias-domain').parent().find('input').attr('checked', 'checked');
+                                            });
+                                        </script>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="dialog-footer">
+                        <div class="flexbox middle wrap space-8">
+                            <input type="submit" class="button" value="[`Create site`]">
+                            <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+                            <span class="state-error-hint"></span>
+                        </div>
+                    </footer>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    function onIframeDomainLoaded(iframe) {
+        const $parent = iframe.closest('.s-domain-view');
+        const $frame_wrapper = iframe.closest('.s-frame-wrapper');
+        $parent.classList.remove('flex');
+        $frame_wrapper.style.visibility = null;
+        $frame_wrapper.style.position = null;
+        $parent.querySelector('span').remove();
+    }
+
+    (function() { "use strict";
+    const $wrapper = $('#s-domains-page');
+    const $domains_wrapper = $wrapper.find('#js-domains-list');
+
+    $wrapper.on('click', '.js-domains-add', function(e) {
+        const dialog_html = $wrapper.siblings("#s-addsite-dialog-wrapper").html();
+        const add_url = '?module=domains&action=save';
+        $.waDialog({
+            html: dialog_html,
+            onOpen: function ($dialog, dialog_instance) {
+                const $form = $dialog.find("form");
+                $form.on('submit', function () {
+                        $dialog.find(".state-error-hint").empty().hide();
+                        const $is_alias_selected = !!+$form.find('.s-add-menu input[type=radio]:checked').val();
+                        $.post(add_url, $form.serialize(), function (response) {
+                            if (response.status === 'ok') {
+                                if ($is_alias_selected) {
+                                    $.site.navigate('{$wa_app_url}?module=configure&domain_id=' + response.data.id);
+                                } else {
+                                    $.site.navigate('{$wa_app_url}?module=map&action=overview&domain_id=' + response.data.id);
+                                }
+                                dialog_instance.close();
+                            } else if (response.status === 'fail') {
+                                $dialog.find(".state-error-hint").html(response.errors).show();
+                            }
+
+                        }, "json");
+                        return false;
+                    })
+            }
+        });
+    })
+
+    $domains_wrapper.on('click', '[data-domain-id]', function(e) {
+        e.preventDefault();
+        var $a = $(e.target).closest('a[href]');
+        if ($a.length) {
+            return true;
+        }
+        var $el = $(this);
+        var domain_id = $el.data('domain-id');
+        $.site.navigate($el.find('a[href].js-main-link').prop('href'));
+        return false;
+    });
+
+})();</script>

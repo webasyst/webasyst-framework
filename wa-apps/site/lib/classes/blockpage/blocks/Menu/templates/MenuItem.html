@@ -1,0 +1,50 @@
+{$block_props = []}
+{$href = ''}
+{$target = ''}
+{$tag = 'a'}
+{if !empty($data->data['tag'])}
+    {$tag = $data->data['tag']}
+{/if}
+
+{if !empty($data->data['link_props'])}
+    {$link_props = $data->data['link_props']}
+    {if !empty($link_props.href)}
+        {$href = $link_props.href}
+    {/if}
+    {if !empty($link_props.target)}
+        {$target = $link_props.target}
+    {/if}
+{/if}
+{$static_classes_props = 'style-wrapper btn'}
+<{$tag} href="{$href}" class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}"{if $is_backend} contenteditable="true"{/if} {if !empty($target)}target="{$target}"{/if}>
+    {$data->data['html']}
+</{$tag}>
+
+{if $is_backend}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.btn[data-block-id="'+block_id+'"]');
+    $wrapper.on('input', function() {
+        $.wa.editor.saveBlockData(block_id, {
+            html: $wrapper.html(),
+            block_props: {$data->data['block_props']|default:[]|json_encode}
+        });
+    });
+
+    $wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (updated_block_id == block_id) {
+            updateBlockStyles($wrapper, data, block_id);
+            $wrapper.html(data.html);
+        }
+    });
+
+});</script>
+{else}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.btn[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+});</script>
+{/if}

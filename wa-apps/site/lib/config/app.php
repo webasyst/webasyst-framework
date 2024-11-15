@@ -5,8 +5,8 @@ return array(
     'icon'       => 'img/site512.png',
     'sash_color' => '#49a2e0',
     'frontend'   => true,
-    'version'    => '2.6.2',
-    'critical'   => '2.6.0',
+    'version'    => '3.0.0', // developer preview
+    'critical'   => '3.0.0',
     'vendor'     => 'webasyst',
     'system'     => true,
     'rights'     => true,
@@ -16,4 +16,8 @@ return array(
     'auth'       => true,
     'csrf'       => true,
     'my_account' => true,
+    'routing_params'   => array(
+        'priority_settlement' => true,
+    ),
+    'ui'         => '2.0,1.3',
 );

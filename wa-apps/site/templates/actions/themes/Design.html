@@ -1,0 +1,880 @@
+<div class="s-design content flexbox">
+    {if !$wa->isMobile()}<div class="content flexbox space-16">{/if}
+        {function skeleton_sidebar}
+            <div class="skeleton box flexbox vertical">
+                <span class="skeleton-line"></span>
+                <span class="skeleton-header"></span>
+                {for $i=1 to 3}
+                    <span class="skeleton-list"></span>
+                {/for}
+            </div>
+        {/function}
+
+        {if $options.js.ace}<script src="{$wa_url}wa-content/js/ace/ace.js"></script>{/if}
+        {if $options.js.editor}<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>{/if}
+        <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design.css?{$wa->version()}">
+
+        <div class="sidebar blank flexbox width-16rem{if $wa->isMobile()} height-auto{/if}"{if $wa->isMobile()} style="position: relative; width:100%; min-height: auto; top: 0"{/if}>
+            <div class="sidebar-header box custom-py-0">
+
+                {* TODO: cut in the future *}
+                <div class="blank box rounded dropdown flexbox middle js-theme-select-menu wa-theme-select-menu hidden">
+                    <img src="{$wa_url}{$app.icon.48}" width="48" class="custom-mr-12">
+                    <a href="#" class="dropdown-toggle wide" id="wa-theme-active">
+                        <span class="js-url bold">
+                            {if $route}
+                                {$_route_label = $route._domain|cat:'/':$route.url}
+                            {else}
+                                {$_route_label = $theme.name}
+                            {/if}
+                            {str_replace('www.','',$_route_label)|truncate:23:'...':false:true}
+                        </span>
+                        <div class="hint bold js-hint nowrap">{if $route}{$theme.name}{/if}</div>
+                    </a>
+                    <div class="dropdown-body js-design-actions">
+
+                        <ul id="wa-theme-list" class="menu js-theme-list">
+                            {foreach $themes_routes as $r}
+                                {if is_array($r)}
+                                    {*Themes with settlements*}
+                                    {$_theme = $themes[$r.theme]}
+                                    {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+                                    {$_url = "{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}"}
+                                    {$_r_label = waIdna::dec($r._domain)|cat:'/':$r.url}
+                                    {$_title = str_replace('www.','',$_r_label)}
+
+                                    <li class="no-icon 2{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}"
+                                        {if !empty($r._routing_url)} data-routing="{$r._routing_url}"{/if}
+                                        data-id="{$_theme.id|escape}">
+                                        <a{if $r@iteration === 1} class="js-is-first"{/if} href="{$_url}" title="{$_title}" data-preview-label="[s`Site`]" data-url="{$r._preview_url|escape}">
+                                        <span class="bold js-url">
+                                            {$_title|truncate:45:'...':false:true}
+                                        </span>
+                                        <span class="count js-hint">{$_theme.name|escape}</span>
+                                        </a>
+                                    </li>
+
+                                    {*Mobile theme*}
+                                    {if !empty($r.theme_mobile) && ($r.theme_mobile != $r.theme) && !empty($themes[$r.theme_mobile])}
+                                        {$_theme = $themes[$r.theme_mobile]}
+                                        {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+                                        {$_url = "{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}"}
+                                        {$_r_label = waIdna::dec($r._domain)|cat:'/':$r.url}
+                                        {$_title = str_replace('www.','',$_r_label)}
+
+                                        <li class="no-icon 3{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}" {if !empty($r._routing_url)}data-routing="{$r._routing_url}"{/if} data-id="{$_theme.id|escape}">
+                                            <a href="{$_url}" title="{$_title}" data-preview-label="[s`Preview`]"{if !empty($_theme.preview_url)} data-url="{$_theme.preview_url|escape}"{/if}>
+                                                <span class="count">
+                                                    <i class="fas fa-mobile-alt"></i>
+                                                </span>
+                                                <span class="bold js-url">
+                                                    {$_title|truncate:45:'...':false:true}
+                                                </span>
+                                                <span class="count js-hint">{$_theme.name|escape}</span>
+                                            </a>
+                                        </li>
+                                    {/if}
+                                {else}
+                                    {*Themes without settlements*}
+                                    {$_theme = $themes[$r]}
+                                    {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+                                    {$_url = "{$design_url}theme={$_theme.id}"}
+                                    <li class="no-icon 1{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}" data-id="{$_theme.id|escape}">
+                                        <a href="{$design_url}theme={$_theme.id}" data-preview-label="[s`Preview`]"{if !empty($_theme.preview_url)} data-url="{$_theme.preview_url|escape}"{/if}>
+                                            <span class="js-url">{$_theme.name|escape}</span>
+                                        </a>
+                                    </li>
+                                {/if}
+                            {/foreach}
+                        </ul>
+                        {if $wa->user()->getRights('installer')}
+                            <div class="box custom-mt-0" data-is-nav>
+                                <a class="wa-themes-link button webasyst-magic-wand full-width" href="{$themes_url}">
+                                    <i class="icon"></i>
+                                    <span>[s`Browse all themes`]</span>
+                                </a>
+                            </div>
+                            <div class="box custom-mt-0">
+                                <a href="#" class="js-theme-upload-link button nobutton smaller nowrap">
+                                    <span>[s`Upload theme archive`]</span>
+                                    <span class="hint">(.tar.gz)</span>
+                                </a>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+
+                <ul class="tabs custom-p-0 js-tabs-menu js-design-actions bordered-bottom small">
+                    <li data-action="theme" class="info selected custom-pb-0" data-is-nav>
+                        <a class="wa-themes-link semibold" href="{$design_url}theme={$theme.id}&action=theme">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.3125 1.3125C1.05291 1.3125 0.799154 1.38948 0.583315 1.5337C0.367475 1.67792 0.199249 1.8829 0.0999087 2.12273C0.000568688 2.36256 -0.0254232 2.62646 0.0252199 2.88106C0.075863 3.13566 0.200867 3.36952 0.384423 3.55308C0.567979 3.73663 0.801845 3.86164 1.05644 3.91228C1.31104 3.96292 1.57494 3.93693 1.81477 3.83759C2.0546 3.73825 2.25959 3.57003 2.4038 3.35419C2.54802 3.13835 2.625 2.88459 2.625 2.625C2.625 2.2769 2.48672 1.94306 2.24058 1.69692C1.99444 1.45078 1.6606 1.3125 1.3125 1.3125ZM1.3125 5.6875C1.05291 5.6875 0.799154 5.76448 0.583315 5.9087C0.367475 6.05292 0.199249 6.2579 0.0999087 6.49773C0.000568688 6.73756 -0.0254232 7.00146 0.0252199 7.25606C0.075863 7.51066 0.200867 7.74452 0.384423 7.92808C0.567979 8.11163 0.801845 8.23664 1.05644 8.28728C1.31104 8.33792 1.57494 8.31193 1.81477 8.21259C2.0546 8.11325 2.25959 7.94503 2.4038 7.72919C2.54802 7.51335 2.625 7.25959 2.625 7C2.625 6.6519 2.48672 6.31806 2.24058 6.07192C1.99444 5.82578 1.6606 5.6875 1.3125 5.6875ZM1.3125 10.0625C1.05291 10.0625 0.799154 10.1395 0.583315 10.2837C0.367475 10.4279 0.199249 10.6329 0.0999087 10.8727C0.000568688 11.1126 -0.0254232 11.3765 0.0252199 11.6311C0.075863 11.8857 0.200867 12.1195 0.384423 12.3031C0.567979 12.4866 0.801845 12.6116 1.05644 12.6623C1.31104 12.7129 1.57494 12.6869 1.81477 12.5876C2.0546 12.4883 2.25959 12.32 2.4038 12.1042C2.54802 11.8883 2.625 11.6346 2.625 11.375C2.625 11.0269 2.48672 10.6931 2.24058 10.4469C1.99444 10.2008 1.6606 10.0625 1.3125 10.0625ZM13.5625 10.5H4.8125C4.69647 10.5 4.58519 10.5461 4.50314 10.6281C4.42109 10.7102 4.375 10.8215 4.375 10.9375V11.8125C4.375 11.9285 4.42109 12.0398 4.50314 12.1219C4.58519 12.2039 4.69647 12.25 4.8125 12.25H13.5625C13.6785 12.25 13.7898 12.2039 13.8719 12.1219C13.9539 12.0398 14 11.9285 14 11.8125V10.9375C14 10.8215 13.9539 10.7102 13.8719 10.6281C13.7898 10.5461 13.6785 10.5 13.5625 10.5ZM13.5625 1.75H4.8125C4.69647 1.75 4.58519 1.79609 4.50314 1.87814C4.42109 1.96019 4.375 2.07147 4.375 2.1875V3.0625C4.375 3.17853 4.42109 3.28981 4.50314 3.37186C4.58519 3.45391 4.69647 3.5 4.8125 3.5H13.5625C13.6785 3.5 13.7898 3.45391 13.8719 3.37186C13.9539 3.28981 14 3.17853 14 3.0625V2.1875C14 2.07147 13.9539 1.96019 13.8719 1.87814C13.7898 1.79609 13.6785 1.75 13.5625 1.75ZM13.5625 6.125H4.8125C4.69647 6.125 4.58519 6.17109 4.50314 6.25314C4.42109 6.33519 4.375 6.44647 4.375 6.5625V7.4375C4.375 7.55353 4.42109 7.66481 4.50314 7.74686C4.58519 7.82891 4.69647 7.875 4.8125 7.875H13.5625C13.6785 7.875 13.7898 7.82891 13.8719 7.74686C13.9539 7.66481 14 7.55353 14 7.4375V6.5625C14 6.44647 13.9539 6.33519 13.8719 6.25314C13.7898 6.17109 13.6785 6.125 13.5625 6.125Z"/>
+                            </svg>
+                            [s`Appearance`]
+                        </a>
+                    </li>
+
+                    <li data-action="edit" class="templates custom-pb-0" style="display: none;" data-is-nav>
+                        <a href="{$design_url}theme={$theme.id}&action=edit" class="semibold">
+                            <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.87612 13.9858L6.20815 13.5018C6.03315 13.4526 5.93472 13.2694 5.98394 13.0944L9.71636 0.237362C9.76558 0.0623624 9.94878 -0.0360751 10.1238 0.0131437L11.7917 0.497128C11.9667 0.546347 12.0652 0.72955 12.016 0.90455L8.28354 13.7616C8.23159 13.9366 8.05112 14.0378 7.87612 13.9858ZM4.75893 10.9178L5.94839 9.64908C6.07417 9.5151 6.06597 9.30182 5.92651 9.17877L3.44917 6.99947L5.92651 4.82018C6.06597 4.69713 6.0769 4.48385 5.94839 4.34986L4.75893 3.08111C4.63589 2.94986 4.42808 2.94166 4.29409 3.06744L0.353857 6.75885C0.214404 6.88736 0.214404 7.10885 0.353857 7.23736L4.29409 10.9315C4.42808 11.0573 4.63589 11.0518 4.75893 10.9178ZM13.7058 10.9342L17.646 7.2401C17.7855 7.11158 17.7855 6.8901 17.646 6.76158L13.7058 3.06471C13.5746 2.94166 13.3667 2.94713 13.241 3.07838L12.0515 4.34713C11.9257 4.48111 11.9339 4.69439 12.0734 4.81744L14.5507 6.99947L12.0734 9.17877C11.9339 9.30182 11.923 9.5151 12.0515 9.64908L13.241 10.9178C13.364 11.0518 13.5718 11.0573 13.7058 10.9342Z"/>
+                            </svg>
+                            [s`Templates`]
+                        </a>
+                    </li>
+                    {*
+                    {if $theme.preview_url}
+                        <li class="custom-pb-0 custom-ml-auto notab">
+                            <a data-url="{$theme.preview_url|escape}" data-id="{$theme.id|escape}" href="{$theme.preview_url|escape}" rel="noopener" target="_blank" class="wa-theme-preview gray" title="{if $theme.is_used}[s`Site`]{else}[s`Preview`]{/if}">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </li>
+                    {/if}
+                    *}
+                </ul>
+            </div>
+            <div class="sidebar-body blank">
+                <div class="js-tab-content tab-content flexbox vertical height-100 selected" data-id="theme">
+
+                    <section class="wa-theme-settings js-theme-settings-section">
+                        {skeleton_sidebar}
+                    </section>
+
+                    <div class="box align-center">
+                        <a href="javascript:void(0)" class="button light-gray rounded small js-theme-info-link">
+                            <span>[s`About this theme`]</span>
+                        </a>
+                    </div>
+
+                    <div class="js-design-actions box align-center">
+                        <div data-action="settings" class="settings" data-is-nav>
+                            <a href="{$design_url}action=settings" class="button light-gray rounded small">
+                                <i class="fas fa-cog text-blue custom-mr-4"></i>
+                                <span>{if $_route_label}{sprintf('[s`Configure %s`]', "<span class=\"js-route-label\">`$_route_label`</span>")}{else}[s`Route settings`]{/if}</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div id="wa-design-sidebar" class="js-tab-content tab-content" data-id="edit">
+                    <div class="wa-theme-block custom-mt-0">
+                        {if $edit_data.theme_usages && $edit_data.route_url}
+                            <div class="alert warning small custom-mx-16 custom-mt-16">
+                                <i class="fas fa-exclamation-triangle fa-sm"></i> [s`This design theme is also used in other sections of your sites. Editing its design templates will affect the appearance of all these site sections.`]
+                            </div>
+                        {/if}
+                        <ul class="menu wa-theme-templates">
+                            {foreach $edit_data.theme_files as $f_id => $f}
+                                <li class="{if $f_id == $edit_data.file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
+                                    <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f_id|escape}">
+                                        <i class="{if substr($f_id, -4)=='.css'}fab fa-css3{elseif substr($f_id, -3)=='.js'}fab fa-js-square{else}fas fa-file-code{/if}"></i>
+                                        <span>{$f_id|escape|truncate:25:'...':false:true}</span>
+                                        <span class="count small">{if !empty($f.parent_exists)}<i class="fas fa-link" title="{if !empty($f.parent_exists)}[s`parent theme file`]{/if}"></i>{/if}</span>
+                                    </a>
+                                </li>
+                            {/foreach}
+                            <li class="top-padded">
+                                <a class="small" href="{$design_url}theme={$theme.id}&file=" title="[s`New file`]">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>[s`New file`]</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {function skeleton}
+            <div class="not-blank skeleton article">
+                <div class="article-body">
+                    {for $i=1 to 5}
+                        <span class="skeleton-header"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+                    {/for}
+                </div>
+            </div>
+        {/function}
+        <!-- theme navigation -->
+        <div id="wa-design-container" class="content not-blank js-design-container">
+            {skeleton}
+        </div>
+
+        <div class="dialog" id="wa-design-preview">
+            <div class="dialog-background"></div>
+            <form class="dialog-body">
+                <h3 class="dialog-header custom-pb-16">[s`Theme preview`]</h3>
+                <div class="dialog-content custom-pb-8">
+                    <input type="hidden" id="wa-preview-key" value="" />
+                    <p class="custom-mt-4"><i class="fas fa-check-circle text-green"></i> [s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
+                    {if waRequest::isHttps()}
+                        <p>[s`The design theme preview will not work on your domain name <strong id="wa-preview-domain"></strong> if it is not available via HTTPS protocol. If so then please either install an SSL certificate for your domain name or log into your Webasyst backend on that domain to preview a design theme.`]</p>
+                    {/if}
+                    {if $theme.preview_url}
+                        <a href="{$theme.preview_url|escape}" target="_blank" class="button green">
+                            <span>[s`Preview on my website`]</span><i class="fas fa-external-link-alt smaller custom-ml-4 opacity-50"></i>
+                        </a>
+                    {/if}
+                </div>
+                <div class="dialog-footer">
+                    <input type="submit" class="button outlined orange" value="[s`Finish preview session`]">
+                </div>
+            </form>
+        </div>
+
+        <div class="dialog" id="wa-theme-upload-dialog">
+                <div class="dialog-background"> </div>
+                <form class="dialog-body" id="wa-theme-upload-form" method="post" action="?module={$module_name}&amp;action=themeUpload" enctype="multipart/form-data">
+                    <h3 class="dialog-header">[s`Upload theme`]</h3>
+                    <div class="dialog-content">
+                        <span class="wa-theme-dialog-error bold" style="color: red;"></span>
+                        <p>[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
+                        <div class="upload-area">
+                            <div class="upload">
+                                <label class="link">
+                                    <i class="fas fa-file-upload"></i>
+                                    <span>[s`Select file`]</span>
+                                    <input id="wa-input-file" type="file" name="theme_files[]" autocomplete="off">
+                                </label>
+                            </div>
+                        </div>
+                        {$wa->csrf()}
+                        <div class="loading" style="display:none; margin-top: 10px">
+                            <i class="fas fa-spinner fa-spin"></i> [s`Uploading...`]
+                        </div>
+                    </div>
+                    <div class="dialog-footer">
+                        <input type="submit" class="button green" value="[s`Upload`]">
+                        <a href="{$themes_url}" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+                    </div>
+                </form>
+            </div>
+
+        <script type="text/javascript">
+
+            var skeleton_template = {skeleton|json_encode},
+                skeleton_sidebar = {skeleton_sidebar|json_encode},
+                $design_actions = $('.js-design-actions').find('[data-is-nav]'),
+                $design_container = $('.js-design-container'),
+                $theme_list = $('.js-theme-list'),
+                $theme_settings_section = $('.js-theme-settings-section'),
+                $theme_preview_link = $('.js-tabs-menu .wa-theme-preview'),
+                $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
+
+            var current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
+
+            var $bottombar = $('.bottombar');
+
+
+            async function postData(url, data) {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: data,
+                });
+                return await response.text();
+            }
+
+            function waDesignConfirm() {
+                if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow') || $("#bb_submit").length && $('#bb_submit').hasClass('yellow') ) {
+                    if (!confirm("[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]")) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            $(window).on('beforeunload', function () {
+                const $design_button = $("#wa-design-button");
+                if ($design_button.length && $design_button.hasClass('yellow')) {
+                    return "[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]";
+                }
+            });
+
+            /* Make Dropdown for Theme select menu */
+            var $theme_select_menu = $('.js-theme-select-menu').waDropdown();
+
+            /* Switch between Appearance, Templates, Settings and Themes displays */
+            $design_actions.on('click', function (e) {
+                if(this.classList.contains('selected')) {
+                    return;
+                }
+
+                let $tab = $(this),
+                    tab_action = $tab.data('action'),
+                    $tab_content = $(`.js-tab-content[data-id="${ tab_action }"]`);
+
+                $tab.addClass('selected');
+                $tab_content.addClass('selected').siblings().removeClass('selected');
+
+                if(!tab_action){
+                    $theme_select_menu.removeClass('is-opened');
+                }
+
+                if (tab_action === 'settings') {
+                    let $theme_settings_list = $('.js-theme-settings-list');
+
+                    if ($theme_settings_list.length) {
+                        $theme_settings_list.find('li').removeClass('selected');
+                    }
+                }
+
+                {if !$options.is_ajax}
+                    if ($(this).is('li')){
+                        waDesignLoad($(this).find('a').attr('href')?.replace(/.*?#\//, '')?.replace(/\/$/, ''));
+                    }else{
+                        waDesignLoad($(this).attr('href')?.replace(/.*?#\//, '')?.replace(/\/$/, ''));
+                    }
+                {/if}
+            });
+
+            /* Switch theme settings menu */
+            $theme_settings_section.on('click', '.js-theme-settings-list a', function (e, id) {
+                let $self = $(this),
+                    $li = $self.parent(),
+                    $theme_info_section = $('.js-theme-info-section'),
+                    menu_id = $self.data('divider-id'),
+                    $settings_section = $('.js-settings-list'),
+                    $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`);
+
+                let hash = waDesignHash(location.hash)
+                if (hash.length) {
+                    if (hash == 'themes' || !!~hash.indexOf('action=settings')) {
+                        let hash = $design_actions.filter('[data-action="theme"]').find('a').attr('href')
+                        $.wa.setHash(hash);
+                        waDesignLoad(hash.replace(/.*?#\//, '').replace(/\/$/, ''));
+                        $theme_settings_section.data('menu-id', menu_id)
+                    }
+                }
+
+                $li.addClass('selected').siblings().removeClass('selected');
+
+                if (!$bottombar.length) {
+                    $bottombar = $('.bottombar');
+                }
+
+                $(document).on('wa_design_loaded', function () {
+                    $bottombar = $('.bottombar');
+                    if (menu_id >= 0) {
+                        $bottombar.show();
+                    } else {
+                        $bottombar.hide();
+                    }
+                })
+
+                if (menu_id >= 0) {
+                    $theme_info_section.hide();
+                    $settings_section.show();
+                    $settings_section_selected.addClass('selected').siblings().removeClass('selected');
+                    $bottombar.show();
+                    sessionStorage.setItem('wa_design_menu_id', menu_id);
+                } else {
+                    $settings_section.hide();
+                    $theme_info_section.show();
+                    $bottombar.hide();
+                    sessionStorage.removeItem('wa_design_menu_id');
+                }
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            })
+
+            if (current_menu_id) {
+                $(document).on('wa_design_loaded', function () {
+                    $theme_settings_section.find('a[data-divider-id='+current_menu_id+']').trigger('click');
+                })
+            }
+
+            /**
+             * TODO Remove when Site app will be ready for WA2
+             * @param action
+             */
+            function reStyleSettingsPage(action) {
+                if(action === 'settings') {
+                    let $save_panel = $('.wa-design-save-panel'),
+                        $design_container = $('.js-design-container'),
+                        $design_container_field_group = $design_container.find('.field-group');
+
+                    $design_container_field_group.removeClass('field-group').addClass('fields-group')
+
+                    $design_container.append('<div class="bottombar sticky bordered-top box flexbox middle space-16"></div>');
+                    let $design_container_bottombar = $design_container.find('.bottombar');
+
+                    $save_panel
+                        .appendTo($design_container_bottombar)
+                        .removeClass('wa-design-save-panel block bordered-top')
+                        .addClass('article width-100 flexbox middle space-16')
+                        .find('[type="submit"]')
+                        .attr('form', '#s-settings-form');
+
+                    $bottombar = $design_container_bottombar;
+                }
+            }
+
+            var waDesignHash = function (url) {
+                if (!url || !url.length) {
+                    return '';
+                }
+                url = url.replace(/\/$/, '').replace(/^#/, '')
+                var urls = url.split('/');
+                var n = urls.length;
+                url = urls[n - 1];
+                var i = n - 2;
+                while (i >= 0 && urls[i].indexOf('=') !== -1) {
+                    url = urls[i] + '/' + url;
+                    i--;
+                }
+                return url;
+            };
+
+            var waDesignParams = function (url) {
+                url = waDesignHash(url);
+                var params_ar = url.split('&');
+                var params = { };
+                for (var i = 0; i < params_ar.length; i++) {
+                    var tmp = params_ar[i].split('=');
+                    params[tmp[0]] = tmp[1];
+                }
+                return params;
+            };
+
+            /* Select any theme into menu */
+            $theme_list.find("li:not([data-is-nav]) a").on('click', function (e, set_active_only) {
+                let $self = $(this),
+                    href = $self.attr('href');
+
+                $theme_select_menu.removeClass('is-opened');
+
+                $design_container.html(skeleton_template);
+                if (!set_active_only) {
+                    $theme_settings_section.html(skeleton_sidebar);
+                }
+                $theme_list.find("li").removeClass('selected');
+
+                $self.parent().addClass('selected');
+
+                const params = waDesignParams(href);
+
+                if (params['theme']) {
+                    const $theme_active = $("#wa-theme-active"),
+                        $theme_active_url = $theme_active.find('.js-url'),
+                        $theme_active_hint = $theme_active.find('.js-hint');
+
+                    $theme_active_url.html($self.find('.js-url').clone().children().remove().end().text());
+                    if ($self.find('.js-hint').length) {
+                        $theme_active_hint.html($self.find('.js-hint').html());
+                    } else {
+                        $theme_active_hint.empty();
+                    }
+
+                    let $menu_link = $('#wa-theme-active')
+                    let menu_link_href = $theme_active.attr('href');
+                    if (menu_link_href.indexOf('theme=') !== -1) {
+                        $menu_link.attr('href', menu_link_href.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                    }
+
+
+                    $design_actions.find('a').each(function () {
+                        let $menu_link = $(this);
+                        if ($menu_link.parent().data('action')) {
+                            $menu_link.attr('href', href + '&action=' + $menu_link.parent().data('action'));
+                        } else {
+                            let menu_link_href = $menu_link.attr('href');
+                            if (menu_link_href.indexOf('theme=') !== -1) {
+                                $menu_link.attr('href', menu_link_href.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                            }
+                        }
+                    });
+
+                    // Setup preview link
+                    let preview_href = ($self.data('url')) ? $self.data('url') : $theme_preview_link.data('url');
+                    $theme_preview_link.attr('href', preview_href).data('theme-id', params['theme']);
+                    $theme_preview_link.find('span').text($self.data('preview-label'));
+
+                    if (set_active_only) {
+                        return false;
+                    }
+                    let hash = location.hash;
+                    const ls_id = 'wa_{$app.id}_current_theme_hash';
+                    if (hash.indexOf('theme=') !== -1) {
+                        if (!params['route']) {
+                            hash = hash.replace(/&route=[^&]+/, '');
+                        } else if (hash.indexOf('route=') !== -1) {
+                            hash = hash.replace(/route=[^&]+/, 'route=' + params['route']);
+                        } else {
+                            hash = hash + '&route=' + params['route'];
+                        }
+                        if (!params['domain']) {
+                            hash = hash.replace(/&domain=[^&]+/, '');
+                        } else if (hash.indexOf('domain=') !== -1) {
+                            hash = hash.replace(/domain=[^&]+/, 'domain=' + params['domain']);
+                        } else {
+                            hash = hash + '&domain=' + params['domain'];
+                        }
+                        $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                        localStorage.setItem(ls_id, location.hash);
+                    } else {
+                        const theme_hash = localStorage.getItem(ls_id);
+                        if (theme_hash){
+                            location.href = theme_hash;
+                        }else{
+                            location.href = href;
+                        }
+                    }
+
+                    {if !$options.is_ajax}waDesignLoad();{/if}
+                    return false;
+                }
+            });
+
+            /* Theme preview */
+            $('.js-tabs-menu, .js-design-container').on('click', ".wa-theme-preview", function (e) {
+                var $self = $(this),
+                    theme_id = $self.data('theme-id'),
+                    url = $self.attr('data-href') || $self.attr('href'),
+                    $selected_href = $theme_list.find('li.selected a').attr('href'),
+                    tmp_params = waDesignParams($selected_href);
+
+                if (!tmp_params['route']) {
+                    e.preventDefault();
+                    var href = "?module={$module_name}&action=setPreview",
+                        data = {
+                            theme_id: theme_id
+                        };
+
+                    $.post(href, data, function () {
+                        window.open(url, "_blank");
+                    });
+
+                    $('#wa-current-theme').html($('#wa-theme-active .js-url').html());
+
+                    // Warn user that preview only works when opened via HTTPS
+                    // (when current domain opened via HTTPS and is different from target storefront domain)
+                    var $https_warning = $('#wa-preview-domain');
+                    if ($https_warning.length) {
+                        var origin = $('<a>').attr('href', url)[0].origin;
+                        if (origin == location.origin) {
+                            $https_warning.closest('p').hide();
+                        } else {
+                            $https_warning.closest('p').show();
+                            $https_warning.text(origin);
+                        }
+                    }
+
+                    const $d_wrapper = $("#wa-design-preview").clone();
+                    $.waDialog({
+                        $wrapper: $d_wrapper,
+                        onOpen($dialog, dialog) {
+                            const $form = $dialog.find('form');
+
+                            $form.on('submit', function (e){
+                                e.preventDefault();
+                                if (url.indexOf('?theme_hash') === -1) {
+                                    url += '?theme_hash=&set_force_theme=';
+                                }
+                                $("body")
+                                    .append($('<iframe style="display:none" src="' + url.replace(/(set_force_theme=).*$/, '$1') + '" />')
+                                        .on('load', function () {
+                                            $(this).remove();
+                                        }));
+                                dialog.close();
+                            })
+                        }
+                    });
+                }
+            });
+
+            var site_routing_full = function () { };
+            var wa_design_not_load = false;
+
+            function waDesignLoad(hash) {
+                {if $design_url && is_string($design_url) && $design_url != '#/'}
+                var design_url = {$design_url|json_encode}.replace(/.*?#\//, '');
+                if (design_url && design_url.length && hash && hash.length) {
+                    if (hash.substr(0, design_url.length) == design_url) {
+                        hash = hash.substr(design_url.length);
+                    }
+                }
+                {/if}
+                var theme_is_trial = false,
+                    hash_params = waDesignParams(hash || location.hash);
+
+                if (hash_params['theme']) {
+                    let $selected_theme_item = $theme_list.find('[data-id="'+ hash_params['theme'] +'"]');
+                    if ($selected_theme_item.hasClass('is-trial')) {
+                        theme_is_trial = true;
+                        hash_params['action'] = 'theme';
+                        $theme_edit_link.hide();
+                        $theme_preview_link.addClass('is-trial');
+                    } else {
+                        $theme_edit_link.show();
+                        $theme_preview_link.removeClass('is-trial');
+                    }
+
+                    let current_theme_url_build = 'theme=' + hash_params['theme'];
+                    if (hash_params['domain']) {
+                        current_theme_url_build += '&domain=' + hash_params['domain'];
+                    }
+                    if (hash_params['route']) {
+                        current_theme_url_build += '&route=' + hash_params['route'];
+                    }
+
+                    let current_theme_url = $theme_list.find('[href="{$design_url}' + current_theme_url_build + '"]');
+                    if (current_theme_url.length) {
+                        current_theme_url.trigger('click', [true]);
+                    } else {
+                        $theme_list.find('[href^="{$design_url}theme=' + hash_params['theme'] + '"]:first').trigger('click', [true]);
+                    }
+                }
+
+                let $selected_theme_list_li = $theme_list.find('.selected:not([data-is-nav])'),
+                    $selected_theme_list_a = $selected_theme_list_li.find('a');
+
+                if ($selected_theme_list_a.length) {
+                    let params = waDesignParams($selected_theme_list_a.attr('href')),
+                        data_routing = $selected_theme_list_li.data('routing'),
+                        $settings_design_menu_li = $design_actions.filter('.settings'),
+                        $settings_design_menu_a = $settings_design_menu_li.find('a');
+
+                    if (params['route'] && data_routing) {
+                        $settings_design_menu_a.attr('href', $selected_theme_list_a.attr('href') + '&action=settings');
+                        $settings_design_menu_a.find('.js-route-label').text($selected_theme_list_a.find('.js-url').text());
+                        $settings_design_menu_li.show();
+                    } else {
+                        $settings_design_menu_li.hide();
+                    }
+                }
+
+                if (wa_design_not_load) {
+                    wa_design_not_load = false;
+                    return;
+                }
+
+                if (hash === undefined) {
+                    hash = waDesignHash(location.hash);
+                }
+
+                if (hash.length) {
+
+                    if (hash == 'themes') {
+                        $design_actions.filter('.selected').removeClass('selected');
+                        $design_actions.filter('.themes').addClass('selected');
+                        //$theme_settings_section.empty();
+                        $design_container.load("?module={$module_name}&action=themes");
+                    } else if (!!~hash.indexOf('action=settings')) {
+
+                        let $selected_theme_list_li = $theme_list.find('.selected:not([data-is-nav])'),
+                            $li = $theme_list.find(':not([data-is-nav]):first');
+
+                        if ($selected_theme_list_li.length) {
+                            $li = $selected_theme_list_li;
+                        }
+
+                        let hash_params = waDesignParams(hash);
+
+                        if ($li.data('routing')) {
+                            let li_route = $li.data('routing').replace(/.*route=([^&]+).*?/i, '$1');
+                            if (hash_params['route'] && (hash_params['route'] != li_route)) {
+                                let $tmp_li = $theme_list.find('[data-routing$="route=' + hash_params['route'] + '"]:first');
+                                if ($tmp_li.length) {
+                                    $tmp_li.find('a').click();
+                                }
+                            } else {
+                                $design_container.load($li.data('routing') + '&reload_on_change=1&ui=2.0', function () {
+                                    reStyleSettingsPage('settings');
+                                    $design_container.find(".back").remove(); // deprecated?
+                                    $(".s-route-core").hide();
+                                    $('.s-route-details .fields').
+                                        prepend($('<div class="fields-group"></div>').
+                                        append($('<div class="field"><div class="name">URL</div></div>').
+                                        append($('<div class="value"></div>').html($('#s-route-where').html()))
+                                        )
+                                    );
+                                    $design_container.find(".s-route-delete").closest('div').remove();
+                                });
+
+                                $theme_settings_section.load("?module={$module_name}&action=theme&theme="+hash_params['theme']+"&onlySettings=1");
+                            }
+                        } else {
+                            if (hash_params['route']) {
+                                let $tmp_li = $theme_list.find('[data-routing$="route=' + hash_params['route'] + '"]:first');
+                                if ($tmp_li.length) {
+                                    $tmp_li.find('a').click();
+                                }
+                            } else {
+                                $.wa.setHash(location.hash.replace(/&?action=settings/, ''));
+                            }
+                        }
+                    } else {
+                        if (!~hash.indexOf('action=')) {
+                            if (!~hash.indexOf('file=')) {
+                                hash = 'action=theme&' + hash;
+                            }else{
+                                hash = 'action=edit&' + hash;
+                            }
+                        }
+
+                        if (!!~hash.indexOf('theme=')) {
+                            let params = hash.split('&'),
+                                $theme_files_sidebar = $('.js-tab-content[data-id="edit"]');
+
+                            for (var j = 0; j < params.length; j++) {
+                                var tmp = params[j].split('=');
+
+                                if (tmp[0] == 'theme') {
+                                    $theme_files_sidebar.find('.selected').removeClass('selected')
+                                    $theme_files_sidebar.find('[href="' + location.hash + '"]').closest('li').addClass('selected')
+                                }
+                            }
+                        }
+
+                        if (!!~hash.indexOf('action=edit')) {
+                            $design_actions.filter('.selected').removeClass('selected');
+                            if (theme_is_trial) {
+                                hash = hash.replace('action=edit', 'action=theme');
+                                $design_actions.filter('.info').addClass('selected');
+                            } else {
+                                $design_actions.filter('.templates').addClass('selected');
+                                $('.js-tab-content').removeClass('selected');
+                                $('.js-tab-content[data-id="edit"]').addClass('selected');
+                                let _hash = hash.replace('action=edit', 'action=editFiles');
+                                $("#wa-design-sidebar").load("?module={$module_name}&action=editFiles&" + _hash);
+                            }
+                        } else if (!!~hash.indexOf('action=theme')) {
+                            $design_actions.filter('.selected').removeClass('selected');
+                            $design_actions.filter('.info').addClass('selected');
+                        }
+                        // Save theme settings
+                        $design_container.load("?module={$module_name}&domain_id={waRequest::request('domain_id', '', 'int')|escape}&" + hash, function (responseText) {
+                            $(document).trigger('wa_design_loaded', true)
+                            try {
+                                let response = $.parseJSON(responseText);
+                                if (response) {
+                                    if (response.data && response.data.redirect) {
+                                        let href = location.href.replace(/#.*$/, '') + response.data.redirect;
+                                        location.replace(href);
+                                    }
+                                }
+                            } catch (e) {
+                            }
+                        });
+                    }
+                } else {
+                    $theme_list.find("li:not([data-is-nav]) a:first").click();
+                }
+            }
+
+            $(document).ready(function () {
+                let $a = $('.js-tab-content .wa-theme-block a[href="' + location.hash + '"]:first');
+                if ($a.length) {
+                    $a.parent().addClass('selected');
+                }
+                {if !$options.is_ajax}
+                    waDesignLoad();
+                {/if}
+            });
+
+            function handleError(data, $dialog) {
+                let error = '';
+                if (typeof data.errors == 'string') {
+                    error += (error ? '\n' : '') + data.errors;
+                } else {
+                    for (let error_item in data.errors) {
+                        if(data.errors.hasOwnProperty(error_item)) {
+                            error += (error ? '\n' : '') + data.errors[error_item][0];
+                        }
+                    }
+                }
+                if ($dialog.length) {
+                    $dialog.find(".wa-theme-dialog-error").html(error + '<br><br>');
+                } else if ($(".wa-theme-dialog-error:first:visible").length) {
+                    $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
+                } else {
+                    alert('Error:' + error);
+                }
+                $dialog.find("[type=submit]").removeClass('disabled');
+            }
+
+            $(".js-theme-upload-link").on('click', function (e) {
+                e.preventDefault();
+
+                if (!waDesignConfirm()) return false;
+                const $upload_dialog = $("#wa-theme-upload-dialog");
+
+                $(".wa-theme-dialog-error").text('');
+
+                $upload_dialog.find("div.loading").hide();
+                let $wrapper = $upload_dialog.clone();
+                $.waDialog({
+                    $wrapper,
+                    onOpen($dialog, dialog) {
+                        let $form = $dialog.find('form:first'),
+                            $input_file = $dialog.find("#wa-input-file"),
+                            $submit_btn = $dialog.find('[type="submit"]');
+
+                        $dialog.find(".upload-area").waUpload({
+                            is_uploadbox: true
+                        });
+
+                        $form.on('submit', function (e) {
+                            e.preventDefault();
+                            $submit_btn.addClass('disabled')
+                            $dialog.find("div.loading").show();
+                            const formData = new FormData(this);
+
+                            postData($(this).attr('action'), formData)
+                                .then(
+                                    (res) => {
+                                        try {
+                                            let response = $.parseJSON(res);
+                                            if (response.status === 'fail') {
+                                                $dialog.find("div.loading").hide();
+                                                $input_file.val('');
+                                                handleError(response, $dialog);
+                                            } else if (response.status === 'ok') {
+                                                dialog.close();
+                                                location.reload();
+                                            }
+                                        }catch (e){
+                                            let response = {
+                                                'errors': []
+                                            };
+                                            let message = $(res).find('h1:first, h2:first');
+                                            if (message.length) {
+                                                response.errors.push([message.text()]);
+                                            } else {
+                                                response.errors.push(['JavaScript error: ' + e.message]);
+                                            }
+                                            $dialog.find("div.loading").hide();
+                                            $input_file.val('');
+                                            handleError(response, $dialog);
+                                        }
+
+                                    },
+                                    (error) => {
+                                        console.error(error)
+                                    }
+                                );
+                        })
+                    }
+                });
+            });
+
+            $(function () {
+                $(document).trigger('wa_design_inited');
+            });
+
+            {* запоминаем к настройкам какой темы нужно перейти после обновления страницы *}
+            $(document).on('installer_after_install_go_to_settings', function(e, data) {
+                if (data.type === 'theme') {
+                    sessionStorage.setItem('wa_theme_onload', data.id);
+                    location.reload();
+                }
+            });
+            var wa_theme_onload = sessionStorage.getItem('wa_theme_onload');
+            if (wa_theme_onload) {
+                $theme_list.find('[data-id="'+wa_theme_onload+'"] a').on('click', function  () {
+                    sessionStorage.removeItem('wa_theme_onload');
+                }).click();
+            }
+
+        </script>
+            {if !$wa->isMobile()}</div>{/if}
+</div>
