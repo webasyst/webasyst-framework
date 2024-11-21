@@ -30,7 +30,7 @@ class waException extends Exception
             $code = $previous->getCode();
         }
 
-        parent::__construct($message, $code);
+        parent::__construct($message, $code, $previous);
         $this->prev_exception = $previous;
 
         if (defined('ENT_SUBSTITUTE')) {
