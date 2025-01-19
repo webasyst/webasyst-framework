@@ -106,6 +106,9 @@ class teamUser
 
         // Order by
         $order_by = ifset($options['order']);
+        if (!$order_by) {
+            $order_by = 'name ASC';
+        }
         if ($order_by === 'from_user_settings') {
             $order_by = wa()->getUser()->getSettings(wa()->getApp(), 'sort', 'last_seen');
             if (!$order_by) {
@@ -119,9 +122,6 @@ class teamUser
                 break;
             case 'last_seen':
                 $order_by = 'last_datetime DESC';
-                break;
-            default:
-                $order_by = 'name ASC';
                 break;
         }
 
