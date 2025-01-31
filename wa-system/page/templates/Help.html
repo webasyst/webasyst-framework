@@ -3,7 +3,7 @@
 {$show_header_flag = false}
 <header class="drawer-header bordered-bottom">
     <ul class="tabs custom-pl-0">
-        {if !empty($blocks)}
+        {if !waRequest::request('hide_common_blocks') && !empty($blocks)}
             <li id="wa-helper-blocks-{$name}" class="selected">
                 <a href="#">[`Common blocks`]</a>
             </li>

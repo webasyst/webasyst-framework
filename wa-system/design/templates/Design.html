@@ -501,7 +501,10 @@
     });
 
     /* Theme preview */
-    $('.js-theme-sidebar, .js-design-container').on('click', ".wa-theme-preview", function (e) {
+    $('.js-theme-sidebar, .js-design-container').on('click auxclick', ".wa-theme-preview", function (e) {
+        if (e.which === 3) {
+            return;
+        }
     var $self = $(this),
         theme_id = $self.data('theme-id'),
         url = $self.attr('data-href') || $self.attr('href'),

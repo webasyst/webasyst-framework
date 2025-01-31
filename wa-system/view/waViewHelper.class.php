@@ -21,12 +21,14 @@ class waViewHelper
     protected $view;
     protected $version;
     protected $app_id;
+    protected $options;
     protected static $helpers = array();
     protected static $params = array();
 
-    public function __construct(waView $view)
+    public function __construct(waView $view, array $options=[])
     {
         $this->view = $view;
+        $this->options = $options;
         $this->app_id = wa()->getApp();
     }
 
@@ -103,7 +105,7 @@ class waViewHelper
 
     public function apps()
     {
-        if (wa()->getEnv() == 'frontend') {
+        if ($this->getEnv() == 'frontend') {
             $domain = wa()->getRouting()->getDomain(null, true);
             $domain_config_path = $this->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
             if (file_exists($domain_config_path)) {
@@ -428,7 +430,7 @@ HTML;
         $ui_version = $this->whichUI();
 
         $css = '';
-        if (wa()->getEnv() == 'backend' || wa()->getEnv() == 'api') {
+        if ($this->getEnv() == 'backend' || $this->getEnv() == 'api') {
 
             if ($ui_version != '2.0') {
                 return $this->legacyCss($strict);
@@ -528,9 +530,19 @@ HTML;
 
     public function domainUrl()
     {
-        if (wa()->getEnv() === 'cli') {
+        $env = $this->getEnv();
+        if ($env === 'cli') {
             $app_settings_model = new waAppSettingsModel();
             return $app_settings_model->get('webasyst', 'url', '#');
+        } else if ($env === 'frontend') {
+            if (waRequest::isHttps()) {
+                $proto = 'https://';
+            } else {
+                $proto = 'http://';
+            }
+            $host = wa()->getRouting()->getDomain();
+            $host = ifempty($host, 'localhost');
+            return $proto.$host;
         } else {
             return $this->getConfig()->getHostUrl();
         }
@@ -680,6 +692,9 @@ HTML;
 
     public function getEnv()
     {
+        if (!empty($this->options['is_frontend'])) {
+            return 'frontend';
+        }
         return wa()->getEnv();
     }
 
@@ -1496,7 +1511,7 @@ HTML;
     public function getContactTabs($id)
     {
         $id = (int)$id;
-        $env = wa()->getEnv();
+        $env = $this->getEnv();
         if (!$id || !in_array($env, ['backend', 'api'])) {
             return array();
         }

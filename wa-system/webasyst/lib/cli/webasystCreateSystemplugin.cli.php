@@ -11,7 +11,7 @@ class webasystCreateSystempluginCli extends webasystCreateCliController
     public function showHelp()
     {
         $help = <<<HELP
-Usage: php wa.php createSystemPlugin type plugin_id [parameters]
+Usage: php wa.php createSystemplugin type plugin_id [parameters]
     type - Plugin type: shipping, payment, or sms
     plugin_id - Plugin ID (string in lower case)
 Optional parameters:
@@ -22,7 +22,7 @@ Optional parameters:
     -db (supports plugin's database tables)
 
     -prototype (plugin id which will be used as prototype, by default it 'wapattern')
-Example: php wa.php createSystemPlugin shipping myshipping -name 'My shipping' -version 1.0.0 -vendor 123456
+Example: php wa.php createSystemplugin shipping myshipping -name 'My shipping' -version 1.0.0 -vendor 123456
 HELP;
         print $help."\n";
         parent::showHelp();

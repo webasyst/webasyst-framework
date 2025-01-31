@@ -1,5 +1,5 @@
 <div class="flexbox custom-ml-auto"{if $data.is_block_page|default:false} style="display: none;"{/if}>
-    <button class="button nobutton js-show-variables gray"><i class="fas fa-file-code"></i> [s`Variables`]</button>
+    <button class="button nobutton js-show-variables gray"><i class="fas fa-dollar-sign"></i> [s`Variables`]</button>
     <button class="button nobutton js-show-cheatsheet gray" id="wa-editor-help-link-{$cheat_sheet_name|escape}"><i class="fas fa-code"></i> [s`Cheat sheet`]</button>
 </div>
 
@@ -24,7 +24,9 @@
                                     <div class="drawer-block"></div>
                                 </div>
                             </div>`;
-                document.querySelector("body").insertAdjacentHTML('beforeend', $cheatsheet_drawer_template);
+                if (!$('#wa-editor-help-{$cheat_sheet_name|escape}').length) {
+                    document.querySelector("body").insertAdjacentHTML('beforeend', $cheatsheet_drawer_template);
+                }
                 $cheatsheet_drawer = $('#wa-editor-help-{$cheat_sheet_name|escape}')
             },
             getHelpEvent: function () {
@@ -69,6 +71,9 @@
                         $wrapper: $cheatsheet_drawer,
                         onOpen($drawer) {
                             $.cheatsheet[cheat_sheet_name].insertVarEvent($drawer)
+                        },
+                        onBgClick() {
+                            this.close();
                         }
                     });
 
@@ -126,29 +131,31 @@
         $.cheatsheet[cheat_sheet_name].init();
 
         const variables_template = html => `
-            <div class="dialog">
+            <div class="dialog" style="z-index:1030;">
                 <div class="dialog-background"></div>
-                <div class="dialog-body" style="width: 850px;">
+                <div class="dialog-body" style="width: 900px;">
                     <div class="dialog-content custom-p-0" data-cheatsheet-name="{$cheat_sheet_name|escape}">${ html }</div>
                 </div>
             </div>`;
 
+        let is_loading = false;
         $('.js-show-variables').on('click', function(e) {
+            if (is_loading) {
+                return false;
+            }
+            is_loading = true;
             e.preventDefault();
-            $.get('{$wa_backend_url}site/?module=variables&is_block_page={$data.is_block_page|default:false}', function(html) {
+            $.get('{$wa_backend_url}site/?module=variables&is_block_page={$data.is_block_page|default:false}&is_dialog=1', function(html) {
                 $.waDialog({
                     html: variables_template(html),
-                    onOpen($dialog) {
-                        /* Делаем активным первый пункт из списка */
-                        if($dialog.find('#ul-variables > li').length) {
-                            $dialog.find('#ul-variables > li:first a').click();
-                        }else{
-                            $dialog.find('#site-form').css('visibility', 'visible');
-                        }
+                    onClose() {
+                        const $cheatsheet_drawer = $('.js-cheatsheet-drawer');
+                        const is_hide = !$cheatsheet_drawer.length || $cheatsheet_drawer.is(':hidden');
+                        return is_hide;
                     }
                 });
+                is_loading = false;
             });
         });
-
     }());
 </script>

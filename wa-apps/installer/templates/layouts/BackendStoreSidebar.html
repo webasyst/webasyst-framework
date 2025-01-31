@@ -137,7 +137,7 @@
             </a>
         </li>
 
-        <li{if $module == 'update'} class="selected"{/if} id="i-apply-updates-sidebar-item">
+        <li{if $module == 'update' || waRequest::get('module') == 'update'} class="selected"{/if} id="i-apply-updates-sidebar-item">
             <a href="{$wa_app_url}updates/" class="flexbox middle js-router">
                 {if $update_counter > 0}
                     <span class="count i-count">{$update_counter}</span>

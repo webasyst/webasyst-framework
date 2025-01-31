@@ -61,11 +61,21 @@ CLI;
 
     public function installDefaultVerificationChannel()
     {
+        // Create default Email channel (model does this internally) and set it as default
         $vcm = new waVerificationChannelModel();
         $channel = $vcm->getDefaultSystemEmailChannel();
         $channel_id = isset($channel['id']) ? $channel['id'] : null;
         $this->setVerificationChannelForDomainConfigs($channel_id);
         $this->setVerificationChannelForBackendConfig($channel_id);
+
+        // Create SMS channel
+        // (wa-config/sms.php is not written here, see waSms::getNoSettingsAdapter())
+        $vcm->addChannel(array(
+            'name' => _ws('System templates'),
+            'type' => waVerificationChannelModel::TYPE_SMS,
+            'address' => '*',
+            'system' => 0,
+        ));
     }
 
     protected function setVerificationChannelForDomainConfigs($channel_id)

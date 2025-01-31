@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-11-11 13:07+0300\n"
+"PO-Revision-Date: 2024-12-10 12:26+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -6244,8 +6244,8 @@ msgstr "Не настроен системный email-адрес отправи
 msgid "Disable sign-in with Webasyst ID"
 msgstr "Отключить вход с Webasyst ID"
 
-msgid "This page will not be published because there is no settlement, or routing rule, for this app in the site structure settings. Set up a settlement in Site app’s “Structure” section to publish this page."
-msgstr "Страница не будет опубликована, потому что в настройках структуры сайта нет ни одного поселения (правила маршрутизации) для этого приложения. Настройте поселение для публикации страницы в разделе «Структура» приложения «Сайт»."
+msgid "This page will not be published because there is no section of this app in the site map. Add at least one section to publish the page."
+msgstr "Страница не будет опубликована, потому что в карте сайта нет ни одного раздела этого приложения. Добавьте хотя бы один раздел, чтобы опубликовать страницу."
 
 msgid "This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Set up a settlement in Site app’s “Structure” section to publish this page."
 msgstr "Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Настройте поселение для публикации этой страницы в разделе «Структура» приложения «Сайт»."
@@ -7270,6 +7270,17 @@ msgstr "Смотреть на сайте"
 msgid "This design theme is also used in other sections of your sites. Editing its design templates will affect the appearance of all these site sections."
 msgstr "Эта тема дизайна также используется в других разделах ваших сайтов. Редактирование ее шаблонов дизайна приведёт к изменению внешнего вида всех этих разделов."
 
-msgid "Used by other applications."
+msgid "Used by other apps."
 msgstr "Используется другими приложениями."
 
+msgid "Returns the value of an option <em>$name</em> from configuration file <em>config.php</em> of the specified app."
+msgstr "Возвращает значение параметра <em>$name</em> из конфигурационного файла <em>config.php</em> указанного приложения."
+
+msgid "Apps not in site map"
+msgstr "Приложения вне карты сайта"
+
+msgid "These apps can display certain content on the site or provide individual links to various content but cannot form a fully functional site section."
+msgstr "Эти приложения отвечают за содержимое, которое может быть видно на сайте или быть доступно по отдельной ссылке, но не могут формировать полноценный раздел сайта."
+
+msgid "Theme “%s” cannot be used all over this site. Below are listed the pages, sections, and apps not supported by this theme."
+msgstr "Тема «%s» не может использоваться на всем сайте. Ниже отмечены страницы, разделы или приложения, которые не поддерживаются этой темой."

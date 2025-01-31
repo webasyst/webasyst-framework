@@ -78,7 +78,7 @@
                         {if !empty($warnings)}
                             <p class="state-caution-hint">
                                 {if isset($warnings.no_site_storefront)}
-                                    [s`This page will not be published because there is no settlement, or routing rule, for this app in the site structure settings. Set up a settlement in Site app’s “Structure” section to publish this page.`]
+                                    [s`This page will not be published because there is no section of this app in the site map. Add at least one section to publish the page.`]
                                 {elseif isset($warnings.deleted_site_storefront)}
                                     [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Set up a settlement in Site app’s “Structure” section to publish this page.`]
                                 {elseif isset($warnings.several_site_storefront)}

@@ -150,35 +150,39 @@ class waRouting
         if ($domain) {
             return $domain;
         }
-        if ($this->domain === null || !$return_alias) {
-            $this->domain = $this->getDomainNoAlias();
-            if ($this->domain === null) {
-                return null;
-            }
+        if ($return_alias && $this->domain) {
+            return $this->domain;
         }
 
-        if ($check && !isset($this->routes[$this->domain])) {
-            if (substr($this->domain, 0, 4) == 'www.') {
-                $domain = substr($this->domain, 4);
+        $result = $this->getDomainNoAlias();
+        if ($result === null) {
+            return $this->domain;
+        }
+
+        if ($check && !isset($this->routes[$result])) {
+            if (substr($result, 0, 4) == 'www.') {
+                $domain = substr($result, 4);
             } else {
-                $domain = 'www.'.$this->domain;
+                $domain = 'www.'.$result;
             }
             if (isset($this->routes[$domain])) {
-                $this->domain = $domain;
+                $result = $domain;
                 if (wa()->getEnv() == 'frontend' && !waRequest::param('no_domain_www_redirect')) {
                     $url = 'http'.(waRequest::isHttps()? 's' : '').'://';
                     $url .= $this->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
                     wa()->getResponse()->redirect($url, 301);
                 }
             }
-            return $this->domain;
         }
 
-        if ($return_alias && isset($this->aliases[$this->domain])) {
-            $this->domain = $this->aliases[$this->domain];
+        if ($return_alias && isset($this->aliases[$result])) {
+            $result = $this->aliases[$result];
         }
 
-        return $this->domain;
+        if (!$this->domain && ($return_alias || !isset($this->aliases[$result]))) {
+            $this->domain = $result;
+        }
+        return $result;
     }
 
     protected function getDomainNoAlias()
@@ -219,9 +223,13 @@ class waRouting
         $apps_called = [];
         $priority_route = null;
         foreach(array_reverse($routes) as $r) {
-            if (!empty($r['priority_settlement']) && !empty($r['app']) && $this->system->appExists($r['app']) && empty($apps_called[$r['app']])) {
-                $priority_route = wa($r['app'])->getConfig()->dispatchPrioritySettlement($r, $url);
-                $apps_called[$r['app']] = true;
+            if (!empty($r['priority_settlement']) && !empty($r['app']) && empty($apps_called[$r['app']])) {
+                try {
+                    $apps_called[$r['app']] = true;
+                    $priority_route = wa($r['app'])->getConfig()->dispatchPrioritySettlement($r, $url);
+                } catch (Throwable $e) {
+                    continue;
+                }
                 if ($priority_route) {
                     foreach ($priority_route as $k => $v) {
                         if ($k !== 'url') {
@@ -241,6 +249,21 @@ class waRouting
                 $this->system->getResponse()->redirect($this->system->getRootUrl().$url.'/', 301);
             }
         }
+
+        // While figuring out priority settlement, some apps could have been initialized
+        // before route locale became known. Reset locale for those apps.
+        if ($apps_called) {
+            $locale = waRequest::param('locale');
+            if ($locale && $locale !== wa()->getLocale()) {
+                $locale = wa()->getUser()->getLocale();
+                foreach ($apps_called as $app_id => $_) {
+                    if (waSystem::isLoaded($app_id)) {
+                        wa($app_id)->setLocale($locale);
+                    }
+                }
+            }
+        }
+
         // if route found and app exists
         if ($r && isset($r['app']) && $r['app'] && $this->system->appExists($r['app'])) {
             $this->setRoute($r);
@@ -359,7 +382,7 @@ class waRouting
                 (!isset($r['module']) || $r['module'] != $this->route['module'])) {
                 continue;
             }
-            $pattern = str_replace(array(' ', '.', '('), array('\s', '\.', '(?:'), ifset($r, 'url', ''));
+            $pattern = str_replace(array(' ', '.', '(', '!'), array('\s', '\.', '(?:', '\!'), ifset($r, 'url', ''));
             $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
             if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $pattern, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
                 $offset = 0;

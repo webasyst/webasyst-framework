@@ -1,10 +1,16 @@
 <div class="wa-design-editor">
     <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape:'url'}&action=save">
         <div class="box wa-design-gray-toolbar flexbox wrap full-width middle blank bordered-bottom">
-            <h4 class="custom-mb-0">
-                {$file.id|escape}
-                {if isset($file.description)}<span id="wa-design-desc" class="hint">{$file.description|escape}</span>{/if}
-            </h4>
+            <div class="wa-design-header">
+                {* Theme name *}
+                <h1 class="wa-theme-name wide custom-mb-16" style="display: none;">
+                    {sprintf('[s`%s design theme`]', $theme.name|escape)}
+                </h1>
+                <h4 class="custom-my-0">
+                    {$file.id|escape}
+                    {if isset($file.description)}<span id="wa-design-desc" class="hint">{$file.description|escape}</span>{/if}
+                </h4>
+            </div>
             {if $file.id}
                 <ul class="chips custom-my-0 small">
                 {if !empty($file.has_original)}

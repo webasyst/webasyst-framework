@@ -167,12 +167,11 @@ var WAThemeSettings = ( function($) {
                                     } else {
                                         location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
                                     }
-                                    location.reload();
-                                } else {
-                                    location.reload();
                                 }
+                                location.reload();
                             } else {
                                 alert(response.errors);
+                                $button.attr('disabled', false).prop('disabled', false);
                             }
                         }, "json");
                     })
@@ -253,7 +252,13 @@ var WAThemeSettings = ( function($) {
             $dialog_wrapper = that.$wrapper.find('#wa-theme-update-dialog'),
             href = '?module=design&action=themeUpdate&theme='+that.theme_id;
 
-        $dialog_wrapper.load(href);
+        $.ajax({
+            method: 'GET',
+            url: href,
+            global: false, // 403 for trial themes which is safe to ignore here
+        }).then(function(html) {
+            $dialog_wrapper.html(html);
+        });
 
         $link.on('click', function (e) {
             e.preventDefault();
@@ -430,6 +435,7 @@ var WAThemeSettings = ( function($) {
             $link = that.$wrapper.find('.js-theme-start-using'),
             $wrapper = that.$wrapper.find('#wa-theme-start-using-dialog'),
             href = "?module=design&action=themeUse";
+        const $tbody = $('#wa-theme-start-using-dialog-routes').find('tbody');
 
         $link.on('click', function (e) {
             e.preventDefault();
@@ -442,15 +448,16 @@ var WAThemeSettings = ( function($) {
                         const $use_all_settlements = $d.find('[name="use_all_settlements"]:checkbox');
 
                         const disableSubmit = (disabled) => {
-                            $button.prop('disabled', !!disabled);
+                            $button.prop('disabled', disabled);
                         };
                         const checkedRoutesLength = () => {
-                            return $d.find('.js-route-theme-checkbox:enabled:checked').length;
+                            return $d.find('label:not(.disabled) .js-route-theme-checkbox:enabled:checked').length;
                         };
 
                         // SELECT
                         $select_domain.on('change', function () {
-                            renderRoutesByDomain($(this).val());
+                            const domain = $(this).val();
+                            renderRoutesByDomain(domain);
 
                             $d.trigger('resize');
                             $d.find('.js-route-theme-checkbox').on('change', function () {
@@ -515,61 +522,81 @@ var WAThemeSettings = ( function($) {
 
         function renderRoutesByDomain (domain) {
             const { settlements_by_domain } = that.data;
-            const { settlements, has_not_support_theme } = settlements_by_domain[domain];
+            const { sitemap_apps, settings_apps, has_not_support_theme } = settlements_by_domain[domain];
 
             $('#js-alert-has-not-support-theme').toggleClass('hidden', !has_not_support_theme);
+            $tbody.empty();
 
-            const $tbody = $('#wa-theme-start-using-dialog-routes').find('tbody').empty();
-            for (const route of settlements) {
-
-                const $route_template = $(that.templates.using_dialog_route_item);
-                const $checkbox = $route_template.find('.js-route-theme-checkbox');
-                if (route.theme_not_supported) {
-                    $route_template.find('.js-route-name').parent().addClass('opacity-50');
-                    $checkbox.parent().remove();
-                } else {
-                    $checkbox
-                        .attr('name', 'routes['+route.route_id+']')
-                        .prop('disabled', !!route.app.disabled);
-                    if (that.has_theme_usage) {
-                        $checkbox
-                            .prop('checked', route.used_theme)
-                            .data('used-theme', route.used_theme).attr('data-used-theme', route.used_theme)
-                            .data('used-theme-mobile', route.used_theme_mobile).attr('data-used-theme-mobile', route.used_theme_mobile)
-                            .closest('label').toggleClass('disabled', route.used_theme)
-                    } else if (route.app.disabled) {
-                        $checkbox.prop('checked', false);
-                    }
-                    $route_template.find('.js-route-theme-no-support').remove();
-                }
-
-                $route_template.find('.js-route-name').text(route._name);
-                if (route.app.icon && route.app.icon['16']) {
-                    $route_template.find('.js-route-app-icon img').attr('src', wa_url + route.app.icon['16']);
-                } else {
-                    $route_template.find('.js-route-app-icon img').replaceWith('<i class="fas fa-question text-gray"></i>');
-                }
-
-                if (Array.isArray(route.theme_names)) {
-                    const getDeviceIcon = (index) => {
-                        if (route.theme_names.length === 1) {
-                            return '';
-                        }
-                        return '<i class="fas fa-'+ (index > 0 ? 'mobile-alt' : 'desktop') +' fa-xs custom-ml-4"></i>';
-                    };
-                    route.theme_names.forEach((name, i) => {
-                        if (name) {
-                            name = '<i class="fas fa-check fa-xs custom-mr-4"></i>' + name;
-                        } else {
-                            name = '<i class="fas fa-exclamation-triangle fa-sm text-orange custom-mr-4"></i><span class="text-red">' + that.locales.theme_not_installed + '</span>';
-                        }
-                        name += getDeviceIcon(i);
-                        $route_template.find('.js-route-used-themes').append('<div>' + name + '</div>');
-                    });
-                }
-
-                $tbody.append($route_template);
+            if (sitemap_apps) {
+                sitemap_apps.forEach(renderRow);
             }
+
+            if (settings_apps) {
+                $tbody.append(`
+                    <tr>
+                        <td colspan="2" style="background: var(--background-color-blank);">
+                            <div class="align-left semibold custom-mt-12">
+                                <span>${that.locales['apps_outside_sitemap_title']}</span>
+                                <span data-wa-tooltip-content="${that.locales['apps_outside_sitemap_hint']}">
+                                    <i class="fas fa-question-circle fa-sm text-light-gray"></i>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                $tbody.find('[data-wa-tooltip-content]').waTooltip();
+                settings_apps.forEach(renderRow);
+            }
+        }
+
+        function renderRow (route) {
+            const $route_template = $(that.templates.using_dialog_route_item);
+            const $checkbox = $route_template.find('.js-route-theme-checkbox');
+            if (route.theme_not_supported) {
+                $route_template.find('.js-route-name').parent().addClass('opacity-50');
+                $checkbox.parent().remove();
+            } else {
+                $checkbox
+                    .attr('name', 'routes['+route.route_id+']')
+                    .prop('disabled', !!route.app.disabled);
+                if (that.has_theme_usage) {
+                    $checkbox
+                        .prop('checked', route.used_theme)
+                        .data('used-theme', route.used_theme).attr('data-used-theme', route.used_theme)
+                        .data('used-theme-mobile', route.used_theme_mobile).attr('data-used-theme-mobile', route.used_theme_mobile)
+                        .closest('label').toggleClass('disabled', route.used_theme)
+                } else if (route.app.disabled) {
+                    $checkbox.prop('checked', false);
+                }
+                $route_template.find('.js-route-theme-no-support').remove();
+            }
+
+            $route_template.find('.js-route-name').text(route._name);
+            if (route.app.icon && route.app.icon['16']) {
+                $route_template.find('.js-route-app-icon img').attr('src', wa_url + route.app.icon['16']);
+            } else {
+                $route_template.find('.js-route-app-icon img').replaceWith('<i class="fas fa-question text-gray"></i>');
+            }
+
+            if (Array.isArray(route.theme_names)) {
+                const getDeviceIcon = (index) => {
+                    if (route.theme_names.length === 1) {
+                        return '';
+                    }
+                    return '<i class="fas fa-'+ (index > 0 ? 'mobile-alt' : 'desktop') +' fa-xs custom-ml-4"></i>';
+                };
+                route.theme_names.forEach((name, i) => {
+                    if (name) {
+                        name = '<i class="fas fa-check fa-xs custom-mr-4"></i>' + name;
+                    } else {
+                        name = '<i class="fas fa-exclamation-triangle fa-sm text-orange custom-mr-4"></i><span class="text-red">' + that.locales.theme_not_installed + '</span>';
+                    }
+                    name += getDeviceIcon(i);
+                    $route_template.find('.js-route-used-themes').append('<div>' + name + '</div>');
+                });
+            }
+
+            $tbody.append($route_template);
         }
     };
 

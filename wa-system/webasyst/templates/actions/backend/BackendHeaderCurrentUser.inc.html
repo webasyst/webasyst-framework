@@ -52,12 +52,10 @@
     </a>
     <div class="dropdown-body{if empty($dropdown_body_left)} right{/if}">
         <div class="bricks custom-mt-12">
-            {if empty($without_link_profile)}
             <a class="brick selected" href="{$backend_url}?module=profile">
                 <span class="icon"><i class="userpic size-24" style="background-image: url('{$user->getPhoto(96)}');"></i></span>
                 <span>[s`Profile`]</span>
             </a>
-            {/if}
             <a href="javascript:void(0)" class="brick selected" data-wa-mode-toggle>
                 <span class="icon"><i class="fas fa-adjust"></i></span>
                 <span>[s`Light`]</span>

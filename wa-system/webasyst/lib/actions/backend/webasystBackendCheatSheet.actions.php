@@ -422,6 +422,7 @@ class webasystBackendCheatSheetActions extends waActions
             '$wa-><em>app_id</em>->themeUrl(<em>$theme_id</em>)'                          => _ws('Returns the current URL of a design theme directory of a specified app.'),
             '$wa-><em>app_id</em>->page(<em>$id</em>)'                                    => _ws('Returns the data array of an app’s page.'),
             '$wa-><em>app_id</em>->pages(<em>$parent_id</em>, <em>$with_params</em>)'     => _ws('Returns the array of published pages of a specified app.<br><br><em>$parent_id</em> is the ID of the parent page whose subpages must be returned. <em>0</em> means that all app’s pages must be returned.<br><br><em>$with_params</em> means whether pages must be returned with custom parameters specified in their settings.'),
+            '$wa-><em>app_id</em>->config(<em>$name</em>)'                                => _ws('Returns the value of an option <em>$name</em> from configuration file <em>config.php</em> of the specified app.'),
         );
     }
 

@@ -190,6 +190,8 @@ class installerAnnouncementList
             'app_id' => null
         ];
 
+        $row_value = $this->handleVariables($row_value);
+
         // default (protocol 1) variant case
         $data = array_merge($default_data, [
             'html' => [
@@ -204,8 +206,9 @@ class installerAnnouncementList
                 $data = array_merge($default_data, $json);
                 if (isset($data['html'])) {
                     if (is_scalar($data['html'])) {
+                        $html = $this->handleVariables($data['html']);
                         $data['html'] = [
-                            self::PLACE_HEADER_TOP => $data['html']
+                            self::PLACE_HEADER_TOP => $html
                         ];
                     }
                     if (!is_array($data['html'])) {
@@ -218,6 +221,23 @@ class installerAnnouncementList
         }
 
         return $data;
+    }
+
+    private function handleVariables($str)
+    {
+        $str = str_replace(
+            '%BACKEND_URL%',
+            wa()->getConfig()->getBackendUrl(true),
+            $str
+        );
+
+        $str = str_replace(
+            '%INSTALLER_URL%',
+            wa()->getConfig()->getBackendUrl(true) . 'installer/',
+            $str
+        );
+
+        return $str;
     }
 
     private function getFromCache($key, $loader)

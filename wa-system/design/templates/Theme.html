@@ -698,7 +698,9 @@
         if (url_params.action) {
             action = ''
         }
-        $('.js-theme-info-link').attr('href', '{$design_url}theme={$theme.id|escape}' + action).on('click', () => sessionStorage.removeItem('wa_design_menu_id'));
+        $('.js-theme-info-link')
+            .attr('href', '{$design_url}theme={$theme.id|escape}' + action)
+            .off('click.wa_theme_info_link').on('click.wa_theme_info_link', () => sessionStorage.removeItem('wa_design_menu_id'));
 
         $('.js-tabs-menu.js-design-actions').find('[data-action="theme"] a').attr('href', '#/design/theme={$theme.id|escape}');
 
@@ -749,7 +751,9 @@
                 using_dialog_route_item: {$_route_item|strip|json_encode}
             },
             locales: {
-                theme_not_installed: '[s`The theme is not installed.`]'
+                theme_not_installed: '[s`The theme is not installed.`]',
+                apps_outside_sitemap_title: '[s`Apps not in site map`]',
+                apps_outside_sitemap_hint: '[s`These apps can display certain content on the site or provide individual links to various content but cannot form a fully functional site section.`]'
             }
         });
 

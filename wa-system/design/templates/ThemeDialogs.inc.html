@@ -52,11 +52,11 @@
                 <div id="js-alert-has-not-support-theme" class="alert warning small custom-mt-20 hidden">
                     <div class="flexbox space-8">
                         <div><i class="fas fa-ban"></i></div>
-                        <div>{'[s`The theme cannot be used on the entire website. Below are marked pages and sections which are not supported by theme “%s”.`]'|sprintf:$theme.name|escape}</div>
+                        <div>{'[s`Theme “%s” cannot be used all over this site. Below are listed the pages, sections, and apps not supported by this theme.`]'|sprintf:$theme.name|escape}</div>
                     </div>
                 </div>
 
-                <p class="small custom-mt-20">[s`The use of a design theme can be selected only for top-level sections and pages in the site map. Any existing subpages inherit their theme selection.`]</p>
+                <p class="hint custom-mt-16">[s`The use of a design theme can be selected only for top-level sections and pages in the site map. Any existing subpages inherit their theme selection.`]</p>
 
                 <table id="wa-theme-start-using-dialog-routes">
                     <thead>
