@@ -32,6 +32,8 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         'USD' => 840,
     );
 
+    protected static $supported_tax_rates = [0, 5, 7, 10, 18, 20];
+
     const CHESTNYZNAK_PRODUCT_CODE = 'chestnyznak';
 
     /**
@@ -1172,7 +1174,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                     }
                 }
 
-                if (!empty($item['tax_rate']) && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18, 20)))) {
+                if (!empty($item['tax_rate']) && (!$item['tax_included'] || !in_array($item['tax_rate'], self::$supported_tax_rates))) {
                     return null;
                 }
             }
@@ -1191,7 +1193,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                     'PaymentMethod' => $this->payment_method_type,
                     'Tax'           => $this->getTaxId($item),
                 );
-                if (!empty($item['tax_rate']) && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18, 20)))) {
+                if (!empty($item['tax_rate']) && (!$item['tax_included'] || !in_array($item['tax_rate'], self::$supported_tax_rates))) {
                     return null;
                 }
             }
@@ -1206,18 +1208,27 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     {
         $tax = 'none';
         if (array_key_exists('tax_rate', $item) && array_key_exists('tax_included', $item) && $item['tax_rate'] !== null) {
+            // https://www.tinkoff.ru/kassa/dev/widget/index.html#section/Inicializaciya-platezha-cherez-platezhnyj-vidzhet/Ustanovka-vidzheta-s-chekom
             if ($item['tax_rate'] == 0) {
                 $tax = 'vat0';
+            } elseif ($item['tax_included'] && $item['tax_rate'] == 5) {
+                $tax = 'vat5';
+            } elseif ($item['tax_included'] && $item['tax_rate'] == 7) {
+                $tax = 'vat7';
             } elseif ($item['tax_included'] && $item['tax_rate'] == 10) {
                 $tax = 'vat10';
             } elseif ($item['tax_included'] && $item['tax_rate'] == 18) {
-                $tax = 'vat18';
+                $tax = 'vat18'; // устарело?..
             } elseif ($item['tax_included'] && $item['tax_rate'] == 20) {
                 $tax = 'vat20';
+            } elseif (!$item['tax_included'] && $item['tax_rate'] == 5) {
+                $tax = 'vat105';
+            } elseif (!$item['tax_included'] && $item['tax_rate'] == 7) {
+                $tax = 'vat107';
             } elseif (!$item['tax_included'] && $item['tax_rate'] == 10) {
                 $tax = 'vat110';
             } elseif (!$item['tax_included'] && $item['tax_rate'] == 18) {
-                $tax = 'vat118';
+                $tax = 'vat118'; // устарело?..
             } elseif (!$item['tax_included'] && $item['tax_rate'] == 20) {
                 $tax = 'vat120';
             }

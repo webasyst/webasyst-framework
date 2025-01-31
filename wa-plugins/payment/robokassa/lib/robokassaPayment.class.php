@@ -525,9 +525,24 @@ HTML;
                 throw new waPaymentException('Фискализация товаров с налогом, не включенным в стоимость, не поддерживается. Обратитесь к администратору магазина.');
             }
 
+            // https://docs.robokassa.ru/fiscalization/
             switch ($rate) {
                 case 0:
                     $tax = 'vat0';//НДС по ставке 0%;
+                    break;
+                case 5:
+                    if ($tax_included) {
+                        $tax = 'vat5';// НДС по ставке 5%
+                    } else {
+                        $tax = 'vat105';// НДС чека по расчетной ставке 5/105
+                    }
+                    break;
+                case 7:
+                    if ($tax_included) {
+                        $tax = 'vat7';// НДС по ставке 7%
+                    } else {
+                        $tax = 'vat107';// НДС чека по расчетной ставке 7/107
+                    }
                     break;
                 case 10:
                     if ($tax_included) {
@@ -536,7 +551,7 @@ HTML;
                         $tax = 'vat110';// НДС чека по расчетной ставке 10/110;
                     }
                     break;
-                case 18:
+                case 18: // неактуально в 2025?..
                     if ($tax_included) {
                         $tax = 'vat18';//НДС чека по ставке 18%;
                     } else {
