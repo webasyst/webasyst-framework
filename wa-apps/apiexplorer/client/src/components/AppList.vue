@@ -36,7 +36,7 @@
 
 <script>
 import SwaggerClient from 'swagger-client';
-import { swaggerUrl } from '@/funcs'
+import { swaggerUrl } from '@/funcs.js';
 export default {
     name: "AppList",
     emits: ["apps-loaded", "app-selected"],

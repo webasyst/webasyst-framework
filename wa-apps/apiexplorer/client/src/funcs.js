@@ -3,5 +3,5 @@ export const appStaticUrl = (app_id = 'apiexplorer') => {
 }
 
 export const swaggerUrl = (app_id, version = 'v1') => {
-    return appStaticUrl(app_id) + '/api/swagger/' + version + '.yaml';
+    return window.appState.baseUrl + '?module=swaggerFile&app_id=' + app_id + '&version=' + version;
 }

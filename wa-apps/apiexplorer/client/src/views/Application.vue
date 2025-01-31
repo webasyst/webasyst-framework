@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import MethodList from '@/components/MethodList';
+import MethodList from '@/components/MethodList.vue';
 export default {
   components: {
     MethodList

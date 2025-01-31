@@ -18,8 +18,15 @@ class apiexplorerBackendAction extends waViewAction
         if (!$installer_apps) {
             return self::$default_central_url;
         }
-        $url = $installer_apps->getEndpointsUrl() . '?app=apibaza';
-        $endpoints = $this->requestEndpoints($url);
+        
+        $endpoints = null;
+        try {
+            $url = $installer_apps->getEndpointsUrl() . '?app=apibaza';
+            $endpoints = $this->requestEndpoints($url);
+        } catch (Exception $ex) {
+            return self::$default_central_url;
+        }
+        
         if (empty($endpoints) || empty(ifset($endpoints, 0, 'api', null))) {
             return self::$default_central_url;
         }

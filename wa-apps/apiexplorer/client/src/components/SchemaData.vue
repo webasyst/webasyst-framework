@@ -1,52 +1,64 @@
 <template>
     <div v-if="isEmpty(value)">
-        <em class="grey">
-            &lt;{{ $t('empty') }}&gt;
-        </em>
-        <div class="hint" v-if="description" v-html="descriptionMarkdown"></div>
-        <div class="hint" v-if="schema.type === 'array' && 'items' in schema && schema.items.description" v-html="markdown(schema.items.description)"></div>
+        <span class="badge squared light-gray small">{{ $t('empty') }}</span>
+        <div class="hint description" v-if="description" v-html="descriptionMarkdown"></div>
+        <div class="hint description" v-if="effective_schema.type === 'array' && 'items' in effective_schema && effective_schema.items.description" v-html="markdown(effective_schema.items.description)"></div>
+        <p v-if="!description && !(effective_schema.type === 'array' && 'items' in effective_schema && effective_schema.items.description)"></p>
     </div>
-    <div v-else-if="schema.type === 'string' || schema.type === 'integer' || schema.type === 'number' || schema.type === 'boolean'">
-        <span v-if="schema.type === 'string' && schema.format === 'date-time'">
+    <div v-else-if="effective_schema.type === 'string' || effective_schema.type === 'integer' || effective_schema.type === 'number' || effective_schema.type === 'boolean'">
+        <span v-if="effective_schema.type === 'string' && effective_schema.format === 'date-time'">
             {{ (new Date(value)).toLocaleString() }}
         </span>
-        <span v-else-if="schema.type === 'string' && schema.format === 'date'">
+        <span v-else-if="effective_schema.type === 'string' && effective_schema.format === 'date'">
             {{ (new Date(value)).toLocaleDateString() }}
         </span>
-        <span v-else-if="schema.type === 'string' && schema.format === 'uri'">
+        <span v-else-if="effective_schema.type === 'string' && effective_schema.format === 'uri'">
             <a :href="value">{{ value }}</a>
         </span>
-        <span v-else>{{ value }}</span>
-        <div class="hint" v-if="description" v-html="descriptionMarkdown"></div>
+        <span v-else :class="(effective_schema.type === 'integer' || effective_schema.type === 'number') 
+            ? ['json-number'] : ( effective_schema.type === 'boolean' ? ['json-boolean'] : ['json-string'])">{{ value }}</span>
+        <div class="hint description" v-if="description" v-html="descriptionMarkdown"></div>
+        <p v-else></p>
     </div>
-    <div v-else-if="schema.type === 'object'">
-        <div class="hint custom-pt-4" v-if="description" v-html="descriptionMarkdown"></div>
+    <div v-else-if="effective_schema.type === 'object'">
+        <div class="hint description" v-if="description" v-html="descriptionMarkdown"></div>
         <div v-if="typeof value === 'object' && !Array.isArray(value)" class="fields-group">
             <div v-for="[param, val] of Object.entries(value)" :key="param">
-                <div v-if="doCollapseNestedArrayDeep(param, val)">
-                    <h5 class="custom-mb-4">{{ param }}</h5>
-                    <div class="hint custom-mb-4" v-if="schema.properties[param].description" v-html="markdown(schema.properties[param].description)"></div>
-                    <div class="custom-ml-32 custom-pb-32">
+                <div v-if="(isArrayNested(param) || isObjectNested(param)) && !isEmpty(val)" :class="!collapsed(param) ? ['compressed'] : []">
+                    <div class="field">
+                        <div class="name">
+                            <span :class="!collapsed(param) ? ['button', 'white', 'small', 'label', 'disabled'] : []">{{ param }}:</span>
+                        </div>
+                        <div class="value">
+                            <a href="javascript:void(0);" @click="toggleCollapse(param)" class="button light-gray small">
+                                <span v-if="isArrayNested(param)">{{ $t("list") }}</span>
+                                <span v-else>{{ $t("data") }}</span>
+                                <span class="custom-ml-8 icon" v-if="collapsed(param)"><i class="fas fa-caret-right"></i></span>
+                                <span class="custom-ml-8 icon" v-else><i class="fas fa-caret-down"></i></span>
+                            </a>
+                            <div class="hint description" v-if="effective_schema.properties[param].description" v-html="markdown(effective_schema.properties[param].description)"></div>
+                            <p v-else></p>
+                        </div>
+                    </div>
+                    <div v-if="!collapsed(param)">
                         <schema-data 
-                            :schema="schema.properties[param]"
+                            :schema="effective_schema.properties[param]"
                             :value="val"
                             :deep="new_deep"
                         />
-                        <hr class="custom-mt-16"/>
                     </div>
                 </div>
                 <div v-else class="field">
                     <div class="name">
                         {{ param }}:
-                        <div class="hint" v-if="isArrayNested(param) && schema.properties[param].description" v-html="markdown(schema.properties[param].description)"></div>
                     </div>
                     <div class="value">
                         <schema-data 
-                            :schema="schema.properties[param]"
+                            :schema="effective_schema.properties[param]"
                             :value="val"
                             :deep="new_deep"
-                            :description="isArrayNested(param) ? '' : schema.properties[param].description"
-                            v-if="'properties' in schema && param in schema.properties"
+                            :description="effective_schema.properties[param].description"
+                            v-if="'properties' in effective_schema && param in effective_schema.properties"
                         />
                         <pre v-else class="small" v-html="prettifyJson(val)"></pre>
                     </div>
@@ -55,33 +67,29 @@
         </div>
         <pre v-else class="small" v-html="prettifyJson(value)"></pre>
     </div>
-    <div v-else-if="schema.type === 'array'">
-        <div class="hint custom-pb-8 custom-pt-4" v-if="description" v-html="descriptionMarkdown"></div>
-        <div class="hint custom-pb-8 custom-pt-4" v-if="'items' in schema && schema.items.description" v-html="markdown(schema.items.description)"></div>
+    <div v-else-if="effective_schema.type === 'array'">
+        <div class="hint description" v-if="description" v-html="descriptionMarkdown"></div>
+        <div class="hint description" v-if="'items' in effective_schema && effective_schema.items.description" v-html="markdown(effective_schema.items.description)"></div>
         <div v-if="Array.isArray(value)">
             <div v-for="(val, index) in value" :key="index">
                 <schema-data 
-                    :schema="schema.items"
+                    :schema="effective_schema.items"
                     :value="val"
                     :deep="new_deep"
-                    v-if="'items' in schema"
+                    v-if="'items' in effective_schema"
                 />
                 <pre v-else class="small" v-html="prettifyJson(val)"></pre>
-                <hr v-if="index < value.length - 1" :class="[isSimpleItemsArray ? 'custom-my-4' : 'custom-my-16']"/>
-                <div v-else class="custom-my-16"></div>
             </div>
-            <em v-if="value === null || value.length === 0" class="grey">
-                &lt;{{ $t('empty') }}&gt;
-            </em>
+            <span v-if="value === null || value.length === 0" class="badge squared light-gray small">{{ $t('empty') }}</span>
         </div>
         <pre v-else class="small" v-html="prettifyJson(value)"></pre>
     </div>
     <div v-else>
         <p>
-            {{ $t('Unknown field type') }} - <strong>{{ schema.type }}</strong>. 
+            {{ $t('Unknown field type') }} - <strong>{{ effective_schema.type }}</strong>. 
             {{ $t('There is no interface for it yet :(') }}.
         </p>
-        <div class="hint" v-if="description" v-html="descriptionMarkdown"></div>
+        <div class="hint description" v-if="description" v-html="descriptionMarkdown"></div>
         <pre class="small" v-html="prettifyJson(value)"></pre>
     </div>
 </template>
@@ -99,7 +107,9 @@ export default {
     },
     data() {
         return {
-            new_deep: this.deep + 1
+            new_deep: this.deep + 1,
+            effective_schema: this.schema,
+            collapse: {}
         };
     },
     computed: {
@@ -112,6 +122,12 @@ export default {
                 && this.schema.items.type !== 'array'
         },
     },
+    mounted() {
+        // handle oneOf case
+        if (!('type' in this.schema) && ('oneOf' in this.schema || 'anyOf' in this.schema)) {
+            this.effective_schema = this.checkType(this.schema, this.value, true);
+        }
+    },
     methods: {
         markdown(str) {
             if (!str) {
@@ -122,27 +138,108 @@ export default {
         prettifyJson(obj) {
             return prettyPrintJson.toHtml(obj);
         },
-        doCollapseNestedArrayDeep(param, val) {
-            return this.isArrayNested(param)
-                && 'items' in this.schema.properties[param]
-                && this.schema.properties[param].items.type === 'object'
-                && !this.isEmpty(val)
-        },
         isArrayNested(param) {
             return 'properties' in this.schema 
                 && param in this.schema.properties 
                 && this.schema.properties[param].type === 'array'
+        },
+        isObjectNested(param) {
+            return 'properties' in this.schema 
+                && param in this.schema.properties 
+                && this.schema.properties[param].type === 'object'
         },
         isEmpty(val) {
             return val === null
                 || val === ''
                 || Array.isArray(val) && val.length === 0
                 || typeof val === 'object' && Object.entries(val).length === 0
+        },
+        checkType(schema, val, goRecursive = false) {
+            if (!('type' in schema)) {
+                const oneOf = 'oneOf' in schema ? schema.oneOf :
+                    ('anyOf' in schema ? schema.anyOf : []);
+                for (const el of oneOf) {
+                    const res = this.checkType(el, val);
+                    if (res !== null) {
+                        return res;
+                    }
+                }
+                return null;
+            }
+            if (val === null && (schema.type === 'null' || schema.nullable)) {
+                return schema;
+            }
+            if (typeof val === 'string' && schema.type === 'string') {
+                return schema;
+            }
+            if (typeof val === 'number' && schema.type === 'number') {
+                return schema;
+            }
+            if (typeof val === 'number' && Number.isInteger(val) && schema.type === 'integer') {
+                return schema;
+            }
+            if (Array.isArray(val) && schema.type === 'array') {
+                return schema;
+            }
+            if (typeof val === 'object' && schema.type === 'object') {
+                for (const [key, value] of Object.entries(val)) {
+                    if (!(key in schema.properties)) {
+                        return null;
+                    }
+                    if (!goRecursive) {
+                        continue;
+                    }
+                    if (this.checkType(schema.properties[key], value) === null) {
+                        return null;
+                    }
+                }
+                return schema;
+            }
+            return null;
+        },
+        collapsed(param) {
+            if (!(param in this.collapse)) {
+                this.collapse[param] = true;
+            }
+            return this.collapse[param];
+        },
+        toggleCollapse(param) {
+            this.collapse[param] = !this.collapsed(param);
         }
     }
 }
 </script>
 
+<style>
+.description {
+    margin-bottom: 0.5em;
+}
+.description p, .description ul {
+    margin: 0;
+}
+.description ul {
+    padding-left: 1.25rem;
+}
+</style>
 <style scoped>
-.hint p, .hint ul { margin: 0; }
+.fields-group {
+    padding: 1rem 0.75rem;
+    border-radius: 0.5rem;
+}
+.fields-group:not(:first-child) {
+    margin-top: 1rem;
+}
+.compressed {
+    color: var(--text-color);
+    padding: 1rem 0.75rem;
+    background: var(--background-color-blockquote);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.hint.description {
+    color: var(--text-color-hint-strong);
+}
+.label {
+    text-align: left;
+}
 </style>

@@ -3,38 +3,38 @@
   "version": "1.0.3",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build && npm run copycss && npm run copyjs && npm run copymanifest",
-    "lint": "vue-cli-service lint",
-    "copycss": "copyfiles dist/css/*.css ../css --flat",
-    "copyjs": "copyfiles dist/js/*.js ../js --flat",
-    "copymanifest": "copyfiles dist/manifest.json ../js --flat"
+    "dev": "vite",
+    "build": "vite build && npm run copycss && npm run copyjs",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "copycss": "copyfiles dist/assets/*.css ../css --flat",
+    "copyjs": "copyfiles dist/assets/*.js ../js --flat"
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.2",
+    "@intlify/unplugin-vue-i18n": "^0.10.0",
+    "@popperjs/core": "^2.11.6",
     "axios": "^0.21.4",
     "copyfiles": "^2.4.1",
-    "core-js": "^3.20.3",
-    "marked": "^4.0.10",
+    "core-js": "^3.27.1",
+    "jquery": "^3.6.0",
+    "marked": "^4.2.5",
     "mitt": "^3.0.0",
-    "pretty-print-json": "^1.1.2",
-    "swagger-client": "^3.18.1",
+    "pretty-print-json": "^1.3.1",
+    "swagger-client": "^v3.19.8",
     "v-calendar": "^3.0.0-alpha.6",
-    "vue": "^3.2.27",
+    "vue": "^3.2.45",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.5",
-    "vuex": "^4.0.2"
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.5.15",
-    "@vue/cli-plugin-eslint": "^4.5.15",
-    "@vue/cli-plugin-router": "^4.5.15",
-    "@vue/cli-plugin-vuex": "^4.5.15",
-    "@vue/cli-service": "^4.5.15",
-    "@vue/compiler-sfc": "^3.2.27",
+    "@rollup/plugin-inject": "^5.0.3",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/compiler-sfc": "^3.2.45",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-vue": "^7.20.0"
+    "eslint-plugin-vue": "^7.20.0",
+    "vite": "^4.3.8",
+    "vite-plugin-html-env": "^1.2.8"
   },
   "eslintConfig": {
     "root": true,
