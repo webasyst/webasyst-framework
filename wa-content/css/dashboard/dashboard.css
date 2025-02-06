@@ -1972,20 +1972,23 @@
   margin-bottom: 0.75rem;
 }
 #wa_announcement .wa-announcement-group.is-expanded:not(.is-collapsed) .wa-announcement-list {
-  overflow: hidden;
   background: var(--background-color);
-  padding-bottom: 0.125rem;
 }
-#wa_announcement .wa-announcement-group.is-expanded:not(.is-collapsed) .wa-announcement-list .wa-announcement-item-inner:hover {
+#wa_announcement .wa-announcement-group.is-expanded:not(.is-collapsed) .wa-announcement-list .wa-announcement-item:first-child .wa-announcement-item-inner {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}
+#wa_announcement .wa-announcement-group.is-expanded:not(.is-collapsed) .wa-announcement-list .wa-announcement-item:last-child .wa-announcement-item-inner {
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+#wa_announcement .wa-announcement-group.is-expanded:not(.is-collapsed) .wa-announcement-list .wa-announcement-item .wa-announcement-item-inner:hover {
   background-color: var(--background-color-btn-light-gray);
 }
 #wa_announcement .wa-announcement-group.is-collapsed {
   cursor: pointer;
 }
 #wa_announcement .wa-announcement-group.is-collapsed .wa-announcement-item:not(:first-child) {
-  display: none;
-}
-#wa_announcement .wa-announcement-group.is-collapsed .wa-announcement-item .wa-announcement-controls {
   display: none;
 }
 #wa_announcement .wa-announcement-preview-group .cursor-pointer {
@@ -2072,6 +2075,68 @@
 #wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-content > p:first-child {
   display: inline;
   margin-top: 0;
+}
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls {
+  margin-left: 0.25rem;
+}
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .wa-announcement-reaction-list {
+  display: contents;
+}
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls button {
+  color: var(--text-color-strong);
+  padding-block: 0.25rem;
+}
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls button span:first-child {
+  font-size: 0.875rem;
+}
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown .dropdown-body {
+  width: fit-content;
+}
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown .menu {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr);
+}
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown .menu > li {
+  line-height: 1.5;
+}
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown .menu > li a {
+  font-size: 1.5rem;
+}
+@media screen and (max-width: 760px) {
+  #wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown {
+    position: static;
+  }
+  #wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown .dropdown-body {
+    left: 0;
+    right: 0;
+  }
+  #wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown .dropdown-body .menu {
+    justify-items: center;
+    margin: 0.5rem 0 !important;
+  }
+}
+#wa_announcement .wa-announcement-item .comment:not(.is-editing):has(.comment-edit) .comment-bubble-arrow {
+  margin-bottom: -2px;
+}
+#wa_announcement .wa-announcement-item .comment:not(.is-editing) .comment-bubble {
+  background: rgba(0,0,0,0.07);
+  padding: 7px 11px;
+  border-radius: 13px;
+  font-size: 0.875rem;
+  position: relative;
+  line-height: 1.4em;
+  margin: 0 0 0 -16px;
+}
+#wa_announcement .wa-announcement-item .comment:not(.is-editing) .comment-bubble-arrow {
+  margin-top: 0;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(0,0,0,0.07);
+  vertical-align: top;
+  margin-left: 5px;
+  margin-bottom: 3px;
 }
 #wa_announcement .fields-group {
   margin: 0 -0.75rem 0.75rem;

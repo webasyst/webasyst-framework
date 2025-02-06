@@ -30,14 +30,14 @@ class webasystConfig extends waAppConfig
         wa('webasyst');
         webasystHelper::backgroundClearCache();
 
-        $n = array(
-            //'settings' => 1,
-        );
-
         (new waWebasystIDConfig())->keepEndpointsSynchronized();
         (new waServicesApiUrlConfig())->keepEndpointsSynchronized();
 
-        return $n;
+        $counts = array();
+        if (waSystemConfig::isDebug()) {
+            $counts['settings'] = '<i class="fas fa-code"></i>';
+        }
+        return $counts;
     }
 
     public function initUserWidgets($force = false, waContact $contact = null)

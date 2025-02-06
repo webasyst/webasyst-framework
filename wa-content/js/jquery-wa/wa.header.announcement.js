@@ -6,6 +6,8 @@ class WaHeaderAnnouncement {
         this.loading_html = '<span class="js-loading"><i class="fas fa-spinner wa-animation-spin"></i></span>';
         this.editing_data = null;
         this.notify_users_dropdown = null;
+        this.sms_counter_timer_id = null;
+        this.count_sms_per_user = null;
 
         this.init();
         this.bindEvents();
@@ -265,6 +267,17 @@ class WaHeaderAnnouncement {
 
             return true;
         });
+
+        $('input[name="data[is_notify_sms]"]').on('change', function () {
+            that.calcSMSPerUser(true);
+        });
+
+        $('#wa-header').on('click', '.js-show-hidden-announcements', function() {
+            $.get(backend_url+'webasyst/announcements/loadMore/?dashboardtmpl=1&limit=30', function(r) {
+                that.$announcement_groups.append(r);
+                that.$announcement_groups.find('.js-announcement-toggle-group').click();
+            });
+        });
     }
 
     initRedactor () {
@@ -274,7 +287,13 @@ class WaHeaderAnnouncement {
             maxHeight: 100,
             lang: $('#js-announcement-textarea').data('lang'),
             buttons: ['bold', 'italic', 'underline', 'deleted', 'link'],
-            focus: true
+            focus: true,
+            linkSize: 1000,
+            callbacks: {
+                change: () => {
+                    this.calcSMSPerUser();
+                }
+            }
         });
     }
     initTooltip ($wrapper) {
@@ -316,6 +335,8 @@ class WaHeaderAnnouncement {
 
             this.$form.find('[name="data[is_notify]"]:checkbox').prop('disabled', !sum);
             $counter.text(sum);
+
+            this.updateSMSTotal();
         };
         const unselect = (list_id) => {
             const dropdown = $dropdown.data('dropdown');
@@ -384,12 +405,6 @@ class WaHeaderAnnouncement {
             hover: false,
             hide: false,
             items: 'ul > li',
-            open: function () {
-                $('.js-announcement-group.is-expanded:first').children().css('overflow', 'visible');
-            },
-            close: function () {
-                $('.js-announcement-group.is-expanded:first').children().css('overflow', 'hidden');
-            },
             change: function (_, target) {
                 const $li = $(target);
                 $li.removeClass('selected');
@@ -447,6 +462,15 @@ class WaHeaderAnnouncement {
             return false
         }
 
+        if ($('#js-announcement-datetime-date').val()) {
+            const $time =  $('#js-announcement-datetime-time');
+            if (!$time.val()) {
+                $time.addClass('state-error');
+                bindResetError($time);
+                return false
+            }
+        }
+
         if ($('#js-announcement-ttl-date').val()) {
             const $time =  $('#js-announcement-ttl-time');
             if (!$time.val()) {
@@ -461,25 +485,40 @@ class WaHeaderAnnouncement {
     }
     resetErrors () {
         this.$form.find('.state-error').removeClass('state-error');
-        this.$form.find('.state-error-hint').remove();
+        this.$form.find('.state-error-hint:not(#js-announcement-error)').remove();
         $('#js-announcement-error').addClass('hidden');
     }
     handleError (error) {
-        let $control = this.$form.find(`[name="${error.field}"]`);
-        if (error.field === 'data[text]') {
-            $control = $control.redactor('core.box');
-        }
+        if (error.field) {
+            let $control = this.$form.find(`[name="${error.field}"]`);
+            if (error.field === 'data[text]') {
+                $control = $control.redactor('core.box');
+            }
+            if (error.field === 'data[datetime]') {
+                $control = this.$form.find('#js-announcement-datetime-date,#js-announcement-datetime-time');
+            }
 
-        $control.addClass('state-error');
-        if (error.error_description) {
-            $(`<div class="state-error-hint">${error.error_description}<div>`).insertAfter($control);
+            $control.addClass('state-error');
+            if (error.error_description) {
+                $(`<div class="state-error-hint">${error.error_description}<div>`).insertAfter($control.last());
+            }
+        } else {
+            this.handleSaveError(error.error_description);
         }
     }
-    handleSaveError (response) {
-        if (typeof response === 'object') {
-            console.error(`${response.status}: ${response.responseText || response.statusText}`);
+    handleSaveError (r) {
+        let error_msg = null;
+        if (typeof r === 'string') {
+            error_msg = r;
+        } else if (typeof r === 'object' && r.status) {
+            error_msg = `${r.status}: ${r.responseText || r.statusText}`;
         }
-        $('#js-announcement-error').removeClass('hidden');
+
+        const $error = $('#js-announcement-error');
+        if (error_msg) {
+            $error.text(error_msg);
+        }
+        $error.removeClass('hidden');
     }
 
     setTextarea (text = '') {
@@ -516,6 +555,10 @@ class WaHeaderAnnouncement {
         const ttl_date = $('#js-announcement-ttl-date').val();
         if (ttl_date) {
             form_data.data.ttl_datetime = `${ttl_date} ${$('#js-announcement-ttl-time').val()}:00`;
+        }
+        const dt_date = $('#js-announcement-datetime-date').val();
+        if (dt_date) {
+            form_data.data.datetime = `${dt_date} ${$('#js-announcement-datetime-time').val()}:00`;
         }
         if (
             (form_data.group_ids && form_data.group_ids.length) ||
@@ -602,6 +645,9 @@ class WaHeaderAnnouncement {
             $item.attr('data-app-id', data.app_id);
             $item.attr('data-id', data.id);
             $item.find('.js-announcement-time').text(data.humandatetime);
+            if (data.is_unpublished) {
+                $content.addClass('hint');
+            }
         }
 
         this.toggleGroupCollapseExpandButton($item);
@@ -647,15 +693,12 @@ class WaHeaderAnnouncement {
             return;
         }
         this.editing_data = response_data;
-        const { text, is_pinned, ttl_datetime, access, access_contact_ids, access_group_ids } = response_data;
+        const { text, is_pinned, datetime, ttl_datetime, access, access_contact_ids, access_group_ids } = response_data;
 
         this.setTextarea(text);
         this.$form.find('[name="data[is_pinned]"]').prop('checked', is_pinned === '1');
-        if (ttl_datetime) {
-            const [, date, time] = ttl_datetime.match(/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/);
-            this.$form.find('#js-announcement-ttl-date').val(date);
-            this.$form.find('#js-announcement-ttl-time').val(time);
-        }
+        setDateTime(ttl_datetime, this.$form.find('#js-announcement-ttl-date'), this.$form.find('#js-announcement-ttl-time'));
+        setDateTime(datetime, this.$form.find('#js-announcement-datetime-date'), this.$form.find('#js-announcement-datetime-time'));
 
         if (access === 'limited') {
             if (access_group_ids.length) {
@@ -664,6 +707,15 @@ class WaHeaderAnnouncement {
             if (access_contact_ids.length) {
                 this.notify_users_dropdown.selectGroupsOrContactsByIds('contacts', access_contact_ids);
             }
+        }
+
+        function setDateTime(datetime, $date_field, $time_field) {
+            if (!datetime) {
+                return;
+            }
+            const [, date, time] = datetime.match(/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/);
+            $date_field.val(date);
+            $time_field.val(time);
         }
     }
     hideAndResetForm (callback) {
@@ -686,5 +738,489 @@ class WaHeaderAnnouncement {
             this.resetForm();
             this.editing_data = null;
         })
+    }
+
+    calcSMSPerUser (immediate = false) {
+        const that = this;
+        const is_notify = that.$form.find('[name="data[is_notify_sms]"]').is(':checked');
+        const $counter = that.$form.find('.js-sms-counter-value');
+        const $loading = that.$form.find('.js-sms-counter-loading');
+
+        that.$form.find('.js-sms-counter').toggleClass('hidden', !is_notify);
+
+        if (that.sms_counter_timer_id) {
+            clearInterval(that.sms_counter_timer_id);
+        }
+
+        if (!is_notify) {
+            $counter.hide().children().text('0');
+            $loading.hide();
+            return;
+        }
+
+        const calc = (cb) => {
+            const $textarea = that.$form.find('#js-announcement-textarea');
+
+            $counter.hide();
+            $loading.show();
+            $.post(this.url_api + 'countSMS', { text: $textarea.val() }, function (r) {
+                $loading.hide();
+                if (r.status === 'ok') {
+                    that.count_sms_per_user = r.data;
+                    that.updateSMSTotal();
+                }
+                if (typeof cb === 'function') {
+                    cb();
+                }
+            });
+        };
+
+        if (immediate) {
+            calc();
+            return;
+        }
+
+        that.sms_counter_timer_id = setTimeout(() => {
+            calc(() => that.sms_counter_timer_id = null);
+        }, 1000);
+    }
+
+    updateSMSTotal () {
+        if (typeof this.count_sms_per_user !== 'number') {
+            return;
+        }
+
+        const is_all_users = !!$('#toggle-groups-or-users').find('[data-type="all"].selected').length;
+        const count_users = $(`#notify-to-users-list [data-has-phone="1"]${is_all_users ? '' : ' input:checked'}`).length;
+        const total_sms = count_users * this.count_sms_per_user;
+
+        const $counter = this.$form.find('.js-sms-counter-value');
+        $counter.show().children().text(total_sms);
+    }
+}
+
+class WaAnnouncementReactions {
+    constructor (opts) {
+        opts = opts || {}
+        this.url_api = backend_url + 'webasyst/announcements/';
+        this.user_id = opts.user_id;
+        this.highlighting_class = opts.highlighting_class;
+        this.reaction_list = opts.reaction_list;
+        this.templates = opts.templates || {};
+
+        this.$announcement_groups = $('#js-announcement-groups');
+        this.$current_announcement = $();
+
+        this.init();
+    }
+
+    init () {
+        const that = this;
+        const dropdown_add = this.initReactionListDropdown();
+
+        that.$announcement_groups.on('click', '.js-announcement-add-reaction', function () {
+            that.$current_announcement = $(this).closest('.js-wa-announcement');
+            if (dropdown_add.is_opened) {
+                return;
+            }
+
+            $(this).before(dropdown_add.$wrapper.detach());
+            setTimeout(() => {
+                dropdown_add.toggleMenu(true);
+                $('body').one('click', function () {
+                    dropdown_add.toggleMenu(false)
+                });
+            });
+        });
+
+        that.$announcement_groups.on('click', '.js-announcement-reaction', function () {
+            that.$current_announcement = $(this).closest('.js-wa-announcement');
+
+            const emoji = $(this).find('[data-emoji]').data('emoji');
+            const users = $(this).data('users') || [];
+            that.updateReactionCount(emoji, users);
+        });
+
+        dropdown_add.on.change = (e, target) => {
+            const $item = $(target);
+            const emoji = $item.text();
+
+            const $reaction_list = that.$current_announcement.find('.js-announcement-reaction-list');
+            const $reaction = $reaction_list.find(`[data-emoji="${emoji}"]`).parent();
+            const users = $reaction.data('users') || [];
+            if (!users.includes(that.user_id)) {
+                that.updateReactionCount(emoji, users);
+            }
+        };
+    }
+
+    updateReactionCount (emoji, users) {
+        const that = this;
+        const announcement_id = that.$current_announcement.data('id');
+
+        if (users.includes(that.user_id)) {
+            that.removeReaction(announcement_id, emoji).then((r) => that.renderReactions(r));
+        } else {
+            that.addReaction(announcement_id, emoji).then((r) => that.renderReactions(r));
+        }
+    }
+
+    renderReactions (reactions) {
+        if (!reactions) return;
+
+        const that = this;
+        const $reaction_list = that.$current_announcement.find('.js-announcement-reaction-list');
+
+        // remove missing reactions
+        $reaction_list.children().each(function () {
+            if (!reactions[$(this).find('[data-emoji]').text()]) {
+                $(this).remove();
+            }
+        })
+
+        // update exists or create
+        for (const emoji in reactions) {
+            const users = reactions[emoji] || [];
+            let $r = $reaction_list.find(`[data-emoji="${emoji}"]`).parent();
+
+            if ($r.length) {
+                $r.removeClass(that.highlighting_class);
+                if (!users.length) {
+                    $r.remove();
+                } else {
+                    const $counter = $r.find('[data-count]');
+                    $counter.data('count', users.length).text(users.length);
+                    $r.data('users', users);
+                    if (users.includes(that.user_id)) {
+                        $r.addClass(that.highlighting_class);
+                    }
+                }
+            } else {
+                $r = $(that.templates['reaction_item'])
+                    .data('users', users);
+
+                $r
+                    .find('[data-emoji]')
+                    .attr('data-emoji', emoji)
+                    .text(emoji);
+
+                $r.find('[data-count]')
+                    .data('count', users.length)
+                    .text(users.length);
+
+                if (users.includes(that.user_id)) {
+                    $r.addClass(that.highlighting_class);
+                }
+                $reaction_list.append($r);
+            }
+        }
+    }
+
+    initReactionListDropdown () {
+        const dropdown_html = `<div class="dropdown">
+            <div class="dropdown-body">
+                <ul class="menu">
+                    ${this.reaction_list.map(e => {
+                        return `<li><a href="javascript:void(0)">${e}</a></li>`;
+                    }).join('')}
+                </ul>
+            </div>
+        </div>`;
+
+        return $(dropdown_html).waDropdown({
+            hover: false,
+            items: '.menu > li > a'
+        }).data('dropdown');
+    }
+
+    // API
+    removeReaction (id, emoji) {
+        return this.apiRequest ('removeReaction/', id, emoji);
+    }
+
+    addReaction (id, emoji) {
+        return this.apiRequest ('addReaction/', id, emoji);
+    }
+
+    apiRequest (action, id, emoji) {
+        const dfd = $.Deferred();
+
+        $.post(this.url_api + action, { id, emoji } , (r) => {
+            if (r?.status === 'ok') {
+                dfd.resolve(r.data.reactions);
+            }
+        });
+
+        return dfd.promise();
+    }
+}
+
+class WaAnnouncementComments {
+    constructor () {
+        this.url_api = backend_url + 'webasyst/announcements/';
+        this.$announcement_groups = $('#js-announcement-groups');
+        this.$announcement = $();
+        this.$wrapper = $();
+        this.$place_for_errors = $();
+
+        $.wa_announcemnt_comments = this.init();
+    }
+
+    init () {
+        const that = this;
+
+        that.$announcement_groups.on('click', '.js-announcement-toggle-comments', function () {
+            const $self = $(this);
+            if ($self.find('.js-loading').length) {
+                return false;
+            }
+            if (that.$wrapper.length) {
+                that.closeAndDestroyForm();
+                return false;
+            }
+
+            const $icon = $self.find('.js-icon').hide();
+            const $loading = $('<span class="js-loading"><i class="fas fa-spinner fa-spin text-gray"></i></span>').prependTo($self);
+
+            that.$announcement = $(this).closest('.js-wa-announcement');
+            const announcement_id = that.$announcement.data('id');
+            that.showComments(announcement_id).then(() => {
+                $loading.remove();
+                $icon.show();
+            });
+        });
+
+        return that;
+    }
+
+    showComments (announcement_id) {
+        return this.fetchComments(announcement_id).then(html => {
+            const $comments_block = $(html).hide();
+
+            this.$announcement.append($comments_block);
+            setTimeout(() => $comments_block.slideDown());
+
+            this.counter().setValue($comments_block.find('[data-id]').length);
+        })
+    }
+
+    initBlock ({ $wrapper, templates, locales }) {
+        const that = this;
+        that.$wrapper = $wrapper;
+        that.templates = templates || {};
+        that.locales = locales || {};
+
+        const $form = $wrapper.find('form');
+
+        // main form
+        that.bindEditForm({
+            $form,
+            onSuccess: (html) => {
+                that.$wrapper.find('.js-no-comments').remove();
+                that.$wrapper.find('ul.list').append(html);
+                that.counter().increment();
+            },
+            onClose: () => {
+                that.closeAndDestroyForm()
+            }
+        });
+
+        // edit comment
+        that.$wrapper.on('click', '.js-announcement-comment-edit', function (e) {
+            e.preventDefault();
+            const $comment = $(this).closest('[data-id]');
+            if ($comment.hasClass('is-editing')) {
+                return false;
+            }
+
+            $comment.addClass('is-editing');
+            const $comment_text = $comment.find('.js-announcement-comment-text').hide();
+            const $edit_form = $(that.templates['edit_from']);
+
+            $edit_form.prepend(`<input type="hidden" name="id" value="${$comment.data('id')}">`);
+            $edit_form.find('[name=text]').val($comment_text.html());
+            $edit_form.insertAfter($comment_text);
+
+            // comment form
+            that.bindEditForm({
+                $form: $edit_form,
+                onSuccess: (new_html) => {
+                    $edit_form.remove();
+                    $comment.removeClass('is-editing');
+                    $comment.replaceWith(new_html);
+                },
+                onClose: () => {
+                    $edit_form.remove();
+                    $comment.removeClass('is-editing');
+                    $comment_text.show();
+                }
+            });
+        });
+
+        // delete comment
+        that.$wrapper.on('click', '.js-announcement-comment-remove', function () {
+            const $comment = $(this).closest('[data-id]');
+
+            $.waDialog.confirm({
+                title: that.locales['confirm_delete'],
+                text: '',
+                success_button_title: that.locales['delete'],
+                success_button_class: 'danger',
+                cancel_button_title: that.locales['cancel'],
+                cancel_button_class: 'light-gray',
+                onSuccess: () => {
+                    that.removeComment($comment.data('id'))
+                        .then(() => {
+                            $comment.hide(100, () => $comment.remove())
+                            that.counter().decrement();
+                        });
+                }
+            })
+        });
+    }
+
+    bindEditForm ({ $form, onSuccess, onClose }) {
+        const that = this;
+        that.$place_for_errors = $form.find('.js-place-for-errors');
+
+        that.initRedactor($form);
+
+        // save comment
+        $form.on('submit', function (e) {
+            e.preventDefault();
+            if (!isValid()) {
+                return false;
+            }
+
+            that.saveComment($(this))
+                .then(comment_html => {
+                    $form.find('[name=text]').redactor('code.set', '');
+                    if (typeof onSuccess === 'function') {
+                        onSuccess(comment_html);
+                    }
+                });
+        });
+
+        // close form
+        $form.find('.js-close-form').one('click', () => {
+            if (typeof onClose === 'function') {
+                onClose();
+            }
+        });
+
+        function isValid () {
+            resetErrors();
+
+            const $textarea = $form.find('[name=text]');
+            if (!$textarea.val() || !$textarea.val().trim()) {
+                $textarea.redactor('core.box').addClass('state-error');
+                $textarea.redactor('core.editor').one('input', () => resetErrors());
+                return false
+            }
+
+            return true;
+
+            function resetErrors () {
+                $form.find('.state-error').removeClass('state-error');
+                $form.find('.state-error-hint').hide().empty();
+            }
+        }
+    }
+
+    initRedactor ($form) {
+        const $textarea = $form.find('[name=text]');
+        $textarea.redactor({
+            toolbarFixed: false,
+            minHeight: 40,
+            maxHeight: 100,
+            lang: $textarea.data('lang'),
+            buttons: ['bold', 'italic', 'underline', 'deleted', 'link'],
+            focus: true
+        });
+        setTimeout(() => $textarea.redactor('focus.end'), 100);
+    }
+
+    closeAndDestroyForm ($wrapper) {
+        $wrapper = $wrapper || this.$wrapper;
+        $wrapper.slideUp();
+        setTimeout(() => {
+            $wrapper.remove();
+            $wrapper.length = 0;
+        }, 500);
+    }
+
+    counter () {
+        const $counter = this.$announcement.find('.js-announcement-toggle-comments .js-count');
+        return {
+            setValue: (val) => $counter.text(val),
+            increment: () => $counter.text(parseInt($counter.text()) + 1),
+            decrement: () => $counter.text(Math.max(parseInt($counter.text()), 0) - 1)
+        }
+    }
+
+    // API
+    fetchComments (id) {
+        const dfd = $.Deferred();
+
+        $.get(this.url_api + `comments/?id=${id}`, function (r) {
+            if (r) {
+                dfd.resolve(r);
+            }
+        }).fail((r) => {
+            this.handleSaveError(r);
+        });
+
+        return dfd.promise();
+    }
+
+    saveComment ($form) {
+        const dfd = $.Deferred();
+
+        this.$place_for_errors.hide().empty();
+        const $submit = $form.find('[type=submit]');
+        const $loading_icon = $submit.find('.js-loading');
+
+        $submit.prop('disabled', true);
+        $loading_icon.show();
+
+        $.post(this.url_api + 'saveComment/', $form.serialize(), (r) => {
+            if (r) {
+                dfd.resolve(r);
+            }
+        }).always(() => {
+            $submit.prop('disabled', false);
+            $loading_icon.hide();
+        }).fail((r) => {
+            this.handleSaveError(r);
+        });
+
+        return dfd.promise();
+    }
+
+    removeComment (comment_id) {
+        const dfd = $.Deferred();
+
+        $.get(this.url_api + `removeComment/?id=${comment_id}`, (r) => {
+            if (r?.status === 'ok') {
+                dfd.resolve();
+            }
+        }).fail((r) => {
+            this.handleSaveError(r);
+        });
+
+        return dfd.promise();
+    }
+
+    handleSaveError (r) {
+        let error_msg = null;
+        if (typeof r === 'string') {
+            error_msg = r;
+        } else if (typeof r === 'object' && r.status) {
+            error_msg = `${r.status}: ${r.responseText || r.statusText}`;
+        }
+
+        if (error_msg) {
+            this.$place_for_errors.text(error_msg).show();
+        }
     }
 }

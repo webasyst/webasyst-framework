@@ -34,7 +34,11 @@
     {else}
         <div class="align-center gray">
             <p class="bold">{$plugin_info.name|default:$plugin_id|string_format:'[s`Plugin %s is installed and working.`]'}</p>
-            <p>[s`No configuration options are available for this plugin.`]</p>
+            {if !empty($settings_disclaimer_html)}
+                {$settings_disclaimer_html}
+            {else}
+                <p>[s`No configuration options are available for this plugin.`]</p>
+            {/if}
         </div>
     {/if}
 

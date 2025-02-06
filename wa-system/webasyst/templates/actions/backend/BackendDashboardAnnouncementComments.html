@@ -1,0 +1,53 @@
+{function _edit_from comment_id=null text='' submit_name=_ws('Save')}
+<form class="custom-py-16">
+    <input type="hidden" name="announcement_id" value="{$announcement_id}">
+    {if $comment_id}
+        <input type="hidden" name="id" value="{$comment_id}">
+    {/if}
+
+    <div class="width-70 width-90-mobile" style="border:1px solid var(--background-color);border-radius:0.5rem;">
+        <textarea name="text" data-lang="{substr($wa->locale(), 0, 2)}">{$text}</textarea>
+    </div>
+
+    <div class="flexbox middle wrap space-8 custom-mt-16">
+        <button type="submit" class="button smaller">
+            <span>{$submit_name|escape}</span>
+            <span class="js-loading" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
+        </button>
+        <button type="button" class="js-close-form button light-gray smaller">[s`Close`]</button>
+        <div class="js-place-for-errors state-error-hint" style="display: none;"></div>
+    </div>
+</form>
+{/function}
+
+<div class="js-wa-announcement-comments-wrapper custom-pl-40">
+    <ul class="list custom-my-4 custom-mx-16">
+        {include file="./BackendDashboardAnnouncementComment.inc.html" inline}
+        {foreach $comments as $c}
+            {renderComment comment=$c}
+        {foreachelse}
+            <li class="js-no-comments">
+            </li>
+        {/foreach}
+    </ul>
+
+    {_edit_from submit_name=_ws('Add comment')}
+</div>
+
+<script class="hidden">
+$(function () {
+    if ($.wa_announcemnt_comments) {
+        $.wa_announcemnt_comments.initBlock({
+            $wrapper: $('.js-wa-announcement-comments-wrapper'),
+            templates: {
+                edit_from: {_edit_from|json_encode}
+            },
+            locales: {
+                confirm_delete: '[s`Are you sure?`]',
+                delete: '[s`Delete`]',
+                cancel: '[s`Cancel`]'
+            }
+        });
+    }
+})
+</script>

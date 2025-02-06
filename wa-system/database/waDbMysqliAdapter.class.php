@@ -73,26 +73,29 @@ class waDbMysqliAdapter extends waDbAdapter
     {
         try {
             $r = @$this->handler->query($query);
-        } catch (Exception $ee) {
+        } catch (Throwable $ee) {
             $r = 0;
         }
         if (!$r) {
             switch ($this->handler->errno) {
-                case 2006:
-                    // check error MySQL server has gone away
-                    $ping = $this->handler->ping();
-                    if (!$ping && $this->settings) {
+                case 2006: // MySQL server has gone away
+                    if ($this->settings) {
                         $this->close();
                         sleep(1);
                         $this->handler = $this->connect($this->settings);
-                        $ping = $this->handler->ping();
+                        try {
+                            $r = @$this->handler->query($query);
+                        } catch (Throwable $ee) {
+                        }
                     }
-                    $r = $ping ? @$this->handler->query($query) : false;
                     break;
                 case 1104:
                     // try set sql_big_selects
                     $this->handler->query('SET SQL_BIG_SELECTS=1');
-                    $r = @$this->handler->query($query);
+                    try {
+                        $r = @$this->handler->query($query);
+                    } catch (Throwable $ee) {
+                    }
                     break;
             }
         }
@@ -166,10 +169,23 @@ class waDbMysqliAdapter extends waDbAdapter
 
     public function ping()
     {
-        if (!@$this->handler->ping()) {
-            return $this->reconnect();
+        try {
+            if (version_compare(PHP_VERSION, '8.2', '>=')) {
+                $r = $this->handler->query('SELECT 1');
+                if ($r) {
+                    return true;
+                } else if ($this->handler->errno != 2006) {
+                    throw new waDbException('Unable to reconnect to MySQL', $this->handler->errno);
+                }
+            } else if (@$this->handler->ping()) {
+                return true;
+            }
+        } catch (Exception $e) {
+            if ($this->handler->errno != 2006) {
+                throw new waDbException('Unable to reconnect to MySQL', $this->handler->errno, $e);
+            }
         }
-        return true;
+        return $this->reconnect();
     }
 
     public function error()

@@ -230,6 +230,8 @@ class WASettingsEmail {
         //
         that.initAddRemoveItem();
         //
+        that.initMakeDefault();
+        //
         that.initSubmit();
     }
 
@@ -379,6 +381,22 @@ class WASettingsEmail {
         }
     }
 
+    initMakeDefault() {
+        let that = this;
+
+        that.$wrapper.on('click', '.js-make-default', function (e) {
+            e.preventDefault();
+            if (that.is_locked) {
+                return;
+            }
+
+            let $item = $(this).closest(that.item_class);
+            $.post('?module=settingsEmail&action=makeDefault', { key: $(this).data('key') }, function(r) {
+                location.reload();
+            }, 'json');
+        });
+    }
+
     initAddRemoveItem () {
         let that = this;
 
@@ -444,6 +462,7 @@ class WASettingsEmail {
                     setTimeout(function(){
                         that.$button.empty().html($button_text);
                     },2000);
+                    that.$form.trigger('wa_settings_email_saved');
                 } else if (res.errors) {
                     $.each(res.errors, function (i, error) {
                         if (error.field) {
@@ -544,7 +563,7 @@ class WASettingsEmailTemplate {
         //
         let $sidebar = $('#js-sidebar-wrapper');
         $sidebar.find('ul li').removeClass('selected');
-        $sidebar.find('[data-id="email-template"]').addClass('selected');
+        $sidebar.find('[data-id="email"]').addClass('selected');
 
         if (that.$template_text.length) {
             that.initAce();

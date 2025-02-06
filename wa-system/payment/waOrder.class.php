@@ -193,8 +193,8 @@ class waOrder implements ArrayAccess
                             $item += array(
                                 'total' => $item['price'] * $item['quantity'],
                             );
-                            unset($item);
                         }
+                        unset($item);
 
                         break;
                 }
@@ -208,13 +208,19 @@ class waOrder implements ArrayAccess
             }
         }
 
-        $subtotal = 0.0 + $this->total;
-        if ($this->tax_included !== true) {
-            $subtotal -= $this->tax;
+        $subtotal = 0.0;
+        if (isset($this->data['items'])) {
+            foreach ($this->data['items'] as $item) {
+                $subtotal += $item['total'];
+            }
+        } else {
+            $subtotal += $this->total;
+            if ($this->tax_included !== true) {
+                $subtotal -= $this->tax;
+            }
+            $subtotal += $this->discount;
+            $subtotal -= $this->shipping;
         }
-
-        $subtotal += $this->discount;
-        $subtotal -= $this->shipping;
 
         $this->subtotal = $subtotal;
         $this->init();

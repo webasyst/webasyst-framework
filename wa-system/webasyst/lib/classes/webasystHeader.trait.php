@@ -147,11 +147,33 @@ trait webasystHeaderTrait
                         'app_id' => 'installer',
                         'text' => $notification,
                         'datetime' => date('Y-m-d H:i:s'),
+                        'is_unpublished' => false,
                         'is_virtual' => true,
                     ] + $empty_row);
                     $virtual_id++;
                 }
             }
+        }
+
+        if (empty($options['keep_unpublished'])) {
+            $data = array_filter($data, function($n) {
+                return empty($n['is_unpublished']);
+            });
+        }
+        if (!empty($options['load_reactions'])) {
+            $ids = array_column($data, 'id');
+
+            $announcement_reactions_model = new waAnnouncementReactionsModel();
+            $reactions = $announcement_reactions_model->getReactionsByAnnouncement($ids);
+
+            $announcement_comments_model = new waAnnouncementCommentsModel();
+            $comments_count = $announcement_comments_model->countByAnnouncement($ids);
+
+            foreach ($data as &$row) {
+                $row['reactions'] = ifset($reactions, $row['id'], []);
+                $row['comments_count'] = (int) ifset($comments_count, $row['id'], 0);
+            }
+            unset($row);
         }
 
         $contact_ids = array_keys(array_flip(array_filter(array_map(function($row) {

@@ -741,6 +741,12 @@
   height: 1em;
   display: inline-block;
 }
+.s-general-settings-page .s-settings-debug-mode .switch.is-active {
+  background: var(--red);
+}
+.s-general-settings-page .s-settings-debug-mode:has(.switch.is-active) .hint strong {
+  color: var(--red);
+}
 .s-email-settings-page .s-settings-items .s-item:not(:last-child) {
   border-bottom: 1px solid #ccc;
   margin-bottom: 20px;
@@ -1483,4 +1489,7 @@
 }
 .s-waid-settings-page .s-force-description .s-force-save-status {
   display: none;
+}
+.s-waid-settings-page .s-force-auth-switch.is-active {
+  background: var(--green);
 }

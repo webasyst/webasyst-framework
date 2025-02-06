@@ -1,5 +1,6 @@
-<div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper hide-scrollbar{if $has_new_notifications && $has_old_notifications} visible-only-unread{/if}"
+<div class="alert-fixed-box large d-notification-wrapper js-notification-wrapper hide-scrollbar{if $has_new_notifications && $has_old_notifications} visible-only-unread{/if}"
     id="d-notification-wrapper"
+    style="display: none;"
 >
     <style>
         #wa-header .visible-only-unread > .wa-notification:not(.is-unread-group),
@@ -56,19 +57,18 @@
                     $('.js-announcement-group').removeClass(['is-unread-group', 'is-group']);
                     $('.js-announcement-group .is-unread').removeClass('is-unread');
                     $(this).parent().remove();
-                    if (BellAnnouncement && typeof BellAnnouncement.setSeen === 'function') {
-                        BellAnnouncement.setSeen();
+                    if (window.WaBellAnnouncement && typeof WaBellAnnouncement.setSeen === 'function') {
+                        WaBellAnnouncement.setSeen();
                     }
                 });
             })
         </script>
-    {else}
-        <div class="alert wa-notification wa-notification-empty">
-            <div class="wa-notification-body-empty">
-                [s`No new notifications.`]
-            </div>
-        </div>
     {/if}
+    <div class="alert wa-notification wa-notification-empty"{if !empty($notifications)} style="display: none;"{/if}>
+        <div class="wa-notification-body-empty">
+            [s`No new notifications.`]
+        </div>
+    </div>
 
     {if $notifications_load_more_url}
         <div class="wa-notification-bottom wa-notification-bottom-load-more">
@@ -86,7 +86,7 @@
                     $loaded_groups.find('.js-announcement-close').remove();
 
                     const $exists_groups = $('#d-notification-wrapper .alert.wa-notification');
-                    if ($exists_groups.hasClass('wa-notification-empty')) {
+                    if ($exists_groups.filter('.wa-notification-empty:visible').length) {
                         $loaded_groups.insertAfter($exists_groups);
                         $exists_groups.remove();
                     } else if ($exists_groups.length > 0) {

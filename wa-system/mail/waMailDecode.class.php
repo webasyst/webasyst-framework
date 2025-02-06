@@ -179,12 +179,14 @@ class waMailDecode
                 $result['text/plain'] = trim(strip_tags($result['text/html']));
             }
         }
+
         if (isset($this->body['text/plain'])) {
             $result['text/plain'] = trim($this->body['text/plain']);
             if (!isset($this->body['text/html'])) {
                 $result['text/html'] = nl2br($result['text/plain']);
             }
         }
+
         // return attachments
         $result['attachments'] = $this->attachments;
         if ($full_response) {
@@ -229,6 +231,7 @@ class waMailDecode
 
         // remove tags
         $html = trim(strip_tags($html, "<a><p><div><br><b><blockquote><strong><i><em><s><u><span><img><sup><font><sub><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><hr><center>"));
+
         // realign javascript href to onclick
         $html = preg_replace("/href=(['\"]).*?javascript:(.*)?\\1/i", "onclick=' $2 '", $html);
 
@@ -253,6 +256,7 @@ class waMailDecode
         while (preg_match($pattern, $html)) {
             $html = preg_replace($pattern, "<$1$3>", $html);
         }
+
         return $html;
     }
 

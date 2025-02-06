@@ -18,8 +18,8 @@ if (!headers_sent()) {
     header('Connection: close');
 }
 
-if (version_compare(PHP_VERSION, '5.6', '<')) {
-    print sprintf("PHP version 5.6 or greater required, but current is %s", PHP_VERSION);
+if (version_compare(PHP_VERSION, '7.4', '<')) {
+    print sprintf("PHP version 7.4 or greater required, but current is %s", PHP_VERSION);
     exit;
 }
 
@@ -117,11 +117,11 @@ if (isset($_GET['source']) && ($_GET['source'] == 'ajax')) {
 
     $log = parseLog($installer->getFullState('raw'), $wa_locale);
     $response = <<<HTML
-<h1>{$wa_locale->_('Files')}&nbsp;<i class="icon16 loading"></i></h1>
-<div class="i-log" id="ajax-log">{$log}</div>
-<!--
-<p>{$wa_locale->_('Extracting Webasyst archive...')}</p>
--->
+    <div class="content-header">
+        <h1>{$wa_locale->_('Files')}&nbsp;<i class="icon16 loading"></i></h1>
+        <p>{$wa_locale->_('Extracting Webasyst archive...')}</p>
+    </div>
+    <div class="i-log" id="ajax-log">{$log}</div>
 HTML;
     print 'PROGRESS:'.$response;
     exit;
@@ -180,9 +180,9 @@ HTML;
 HTML;
         }
         $locales = waInstallerLocale::listAvailable();
-        $select_locale = '';
+        $select_locale = '<div class="wa-select bg-white">';
         if ($locales) {
-            $select_locale .= '<br><select name="lang" id="wa-installer-locale-select">';
+            $select_locale .= '<select name="lang" id="wa-installer-locale-select">';
             foreach ($locales as $locale) {
                 $t_item = new waInstallerLocale($locale);
                 $selected = ($locale == $lang) ? ' selected="selected"' : '';
@@ -190,7 +190,7 @@ HTML;
 <option value="{$locale}"{$selected}>{$t_item->_($locale)}</option>
 HTML;
             }
-            $select_locale .= '</select>';
+            $select_locale .= '</select></div>';
         } else {
             $select_locale = <<<HTML
 <input type="hidden" value="{$lang}" name="lang">
@@ -333,16 +333,27 @@ HTML;
         $host_decoded[0] = implode('.', $host_decoded[0]);
         $host_decoded = implode('/', $host_decoded);
 
+        $webasyst_wand_img_path = dirname(__FILE__).'/img/webasyst-wand-default.svg';
+        $inline_webasyst_wand_img = '';
+        if (file_exists($webasyst_wand_img_path)) {
+            $inline_webasyst_wand_img = file_get_contents($webasyst_wand_img_path);
+        }
         $content = <<<HTML
 <!-- welcome text -->
 <div class="i-welcome">
-    <h1 class="i-url" title="{$host}"><span>http://</span>{$host_decoded}</h1>
-    <p>{$wa_locale->_('Webasyst Installer will deploy archive with Webasyst system files and apps in this folder.')}<br></p>
-    {$extra}
-    <input type="submit" value="{$wa_locale->_('Install Webasyst')}" class="button green large" id="wa-installer-submit">
-    <br>
-    <br>
-    {$select_locale}
+    <div class="align-center">{$inline_webasyst_wand_img}</div>
+    <!-- <h2 class="i-url custom-mt-32" title="{$host}"><span>http://</span>{$host_decoded}</h2> -->
+    <div class="custom-mt-8">{$extra}</div>
+    <div class="custom-mt-32">
+        <input type="submit" value="{$wa_locale->_('Install Webasyst')}" class="button large rounded" id="wa-installer-submit">
+    </div>
+    <p class="hint custom-mt-16">{$wa_locale->_('Webasyst Installer will deploy archive with Webasyst system files and apps in this folder.')}<br></p>
+    <div class="custom-mt-32">
+        {$select_locale}
+    </div>
+    <style>
+        #wa-installer .content { height: auto; }
+    </style>
 </div>
 HTML;
         break;
@@ -381,7 +392,7 @@ HTML;
                     $passed = false;
                     $requirements_output .= <<<HTML
     <li>
-        <i class="icon16 no"></i><strong class="large">{$ex->getMessage()}</strong>
+        <i class="icon12 no"></i><strong class="large">{$ex->getMessage()}</strong>
     </li>
 HTML;
                 }
@@ -398,7 +409,7 @@ HTML;
                     $success = false;
                     $requirements_output .= <<<HTML
     <li>
-        <i class="icon16 no"></i><strong class="large">{$requirement['name']}</strong>
+        <i class="icon12 no"></i><strong class="large">{$requirement['name']}</strong>
         <span class="hint i-error">{$requirement['warning']}<!-- placeholder --></span>
         <br>
         <span class="hint">{$requirement['description']}<!-- placeholder --></span>
@@ -408,7 +419,7 @@ HTML;
                     if (!$requirement['warning']) {
                         $requirements_output .= <<<HTML
     <li>
-        <i class="icon16 yes"></i><strong class="large">{$requirement['name']} <span class="hint">{$requirement['note']}<!-- placeholder --></span></strong>
+        <i class="icon12 yes"></i><strong class="large">{$requirement['name']} <span class="hint">{$requirement['note']}<!-- placeholder --></span></strong>
         <br>
         <span class="hint">{$requirement['description']}<!-- placeholder --></span>
     </li>
@@ -416,7 +427,7 @@ HTML;
                     } else {
                         $requirements_output .= <<<HTML
     <li>
-        <i class="icon16 no-bw"></i><strong class="large">{$requirement['name']}</strong>
+        <i class="icon12 no-bw"></i><strong class="large">{$requirement['name']}</strong>
         <span class="hint">{$requirement['warning']}<!-- placeholder --></span>
         <br>
         <span class="hint">{$requirement['description']}<!-- placeholder --></span>
@@ -431,25 +442,31 @@ HTML;
                 $next_step = $step + 1;
                 $next = $steps[$step]['next'];
                 $content = <<<HTML
-<h1>{$wa_locale->_('Web Server')}</h1>
-                {$extra}
-<p class="">{$wa_locale->_('Server fully satisfies Webasyst system requirements.')}</p>
-                {$requirements_output}
+    <div class="content-header">
+        <h1>{$wa_locale->_('Web Server')}&nbsp;<i class="icon16 yes"></i></h1>
+        {$extra}
+        <p class="i-success">{$wa_locale->_('Server fully satisfies Webasyst system requirements.')}</p>
+    </div>
+    {$requirements_output}
 HTML;
             } else {
                 $content = <<<HTML
-<h1>{$wa_locale->_('Web Server')}</h1>
-                {$extra}
-<p class="i-error">{$wa_locale->_('Server does not meet Webasyst system requirements. Installer can not proceed with the installation unless all requirements are satisfied.')}</p>
-                {$requirements_output}
+    <div class="content-header">
+        <h1>{$wa_locale->_('Web Server')}&nbsp;<i class="icon16 no"></i></h1>
+        {$extra}
+        <p class="i-error">{$wa_locale->_('Server does not meet Webasyst system requirements. Installer can not proceed with the installation unless all requirements are satisfied.')}</p>
+    </div>
+    {$requirements_output}
 HTML;
             }
         } catch (Exception $e) {
             $content = <<<HTML
-<h1>{$wa_locale->_('Web Server')}</h1>
-            {$extra}
-<p class="i-error">{$wa_locale->_('An error occurred while attempting to validate system requirements')}</p>
-<p>{$e->getMessage()}</p>
+    <div class="content-header">
+        <h1>{$wa_locale->_('Web Server')}&nbsp;<i class="icon16 no"></i></h1>
+        {$extra}
+        <p class="i-error">{$wa_locale->_('An error occurred while attempting to validate system requirements')}</p>
+    </div>
+    <p>{$e->getMessage()}</p>
 HTML;
         }
         break;
@@ -571,16 +588,20 @@ HTML;
             $next_step = $step + 1;
             $next = $steps[$step]['next'];
             $content = <<<HTML
-<h1>{$wa_locale->_('Files')}&nbsp;<i class="icon16 yes"></i></h1>
-<div class="i-log">{$log}</div>
-<p class="i-success">{$wa_locale->_('All files successfully extracted. Click "Continue" button below.')}&nbsp;<i class="icon16 yes"></i></p>
+    <div class="content-header">
+        <h1>{$wa_locale->_('Files')}&nbsp;<i class="icon16 yes"></i></h1>
+        <p class="i-success">{$wa_locale->_('All files successfully extracted. Click "Continue" button below.')}</p>
+    </div>
+    <div class="i-log">{$log}</div>
 HTML;
 
         } catch (Exception $e) {
             $content = <<<HTML
-<h1>{$wa_locale->_('Files')}&nbsp;<i class="icon16 no"></i></h1>
-<p class="i-error">{$wa_locale->_('An error occurred during the installation')}</p>
-<p>{$e->getMessage()}</p>
+    <div class="content-header">
+        <h1>{$wa_locale->_('Files')}&nbsp;<i class="icon16 no"></i></h1>
+        <p class="i-error">{$wa_locale->_('An error occurred during the installation')}</p>
+    </div>
+    <p>{$e->getMessage()}</p>
 HTML;
         }
         break;
@@ -775,7 +796,7 @@ HTACCESS;
 {$error}
 
 <div class="fields form">
-    <div class="field-group">
+    <div class="field-group custom-mt-32">
         <div class="field">
             <div class="name">{$wa_locale->_('Host')}:</div>
             <div class="value">
@@ -804,7 +825,7 @@ HTACCESS;
     <input type="hidden" name="config[mod_rewrite]" value="{$mod_rewrite}" id="input_mod_rewrite">
     <input type="hidden" name="config[default_host_domain]" value="{$default_host_domain}" id="default_host_domain">
 </div>
-<p class="clear-left i-hint">{$wa_locale->_('If you do not know what should be entered here, please contact your hosting provider technical support.')}</p>
+<p class="i-hint">{$wa_locale->_('If you do not know what should be entered here, please contact your hosting provider technical support.')}</p>
 HTML;
 
         if ($checked) {
@@ -868,23 +889,25 @@ PHP;
             $content = <<<HTML
 
 <div class="i-welcome">
+    <i class="icon64 yes"></i>
     <h1>{$wa_locale->_('Installed!')}</h1>
-    <p>{$wa_locale->_('Webasyst is installed and ready.')}</p>
+    <p class="semibold">{$wa_locale->_('Webasyst is installed and ready.')}</p>
 
-    <p><a id="redirect_url" href="//{$host}{$login_path}?lang={$lang}" class="large"><strong>{$url}://{$host}<span class="highlighted underline">{$login_path}</span></strong></a> <i class="icon10 yes"></i></p>
-    <p class="clear-left i-hint">{$wa_locale->_('Remember this address. This is the address for logging into your Webasyst backend.')}</p>
+    <p class="custom-mt-48"><a id="redirect_url" href="//{$host}{$login_path}?lang={$lang}" class="large"><strong>{$url}://{$host}<span class="highlighted underline">{$login_path}</span></strong></a></p>
+    <p class="i-hint">{$wa_locale->_('Remember this address. This is the address for logging into your Webasyst backend.')}</p>
 
-    <br><br><br>
-    <p id="redirect_message" style="display:none;">{$wa_locale->_('Finalizing installation...')} <i class="icon16 loading"></i></p>
+    <p id="redirect_message" class="custom-mt-32" style="display:none;">{$wa_locale->_('Finalizing installation...')} <i class="icon16 loading"></i></p>
     <p>{$warning}</p>
 </div>
 HTML;
             $next_step = $step + 1;
         } catch (Exception $e) {
             $content = <<<HTML
-<h1>{$wa_locale->_('Files')}&nbsp;<i class="icon16 no"></i></h1>
-<p class="i-error">{$wa_locale->_('An error occurred during the installation')}</p>
-<p>{$e->getMessage()}</p>
+    <div class="content-header">
+        <h1>{$wa_locale->_('Files')}&nbsp;<i class="icon16 no"></i></h1>
+        <p class="i-error">{$wa_locale->_('An error occurred during the installation')}</p>
+    </div>
+    <p>{$e->getMessage()}</p>
 HTML;
         }
         break;
@@ -897,10 +920,16 @@ $progress = '';
 $count = count($steps);
 
 if ($step > 0 && $step < $count) {
+    $color = (($next_step > $step && !$error) || (in_array($step, array(3)) && !$error)) ? '' : 'grey';
     $progress .= <<<HTML
-<div class="dialog-buttons">
-<div class="dialog-buttons-gradient">
-<div class="i-progress-indicator">
+<div class="form-buttons flexbox middle full-width custom-pt-16">
+    <div>
+        <input type="submit" value="{$next}" class="button {$color} rounded" id="wa-installer-submit">
+        <a href="{$wa_locale->_('install_guide_url')}" target="_blank" class="wa-help-link">
+            <span>{$wa_locale->_('Installation Guide')}</span> <i class="icon10 new-window"></i>
+        </a>
+    </div>
+    <div class="i-progress-indicator">
 HTML;
     for ($i = 1; $i < $steps_count; $i++) {
         $class = ($i < $step) ? 'passed' : (($i == $step) ? 'current' : 'next');
@@ -908,14 +937,9 @@ HTML;
         <span id="i-progress-step-{$i}" class="{$class}" title="{$steps[$i]['title']}">{$i}</span>
 HTML;
     }
-    $color = (($next_step > $step && !$error) || (in_array($step, array(3)) && !$error)) ? 'green' : 'grey';
+
     $progress .= <<<HTML
-        </div>
-        <input type="submit" value="{$next}" class="button {$color}" id="wa-installer-submit">
-        <a href="{$wa_locale->_('install_guide_url')}" target="_blank" class="wa-help-link">
-            <span>{$wa_locale->_('Installation Guide')}</span> <i class="icon10 new-window"></i>
-        </a>
-    </div>
+</div>
 </div>
 HTML;
 }
@@ -945,8 +969,8 @@ if (file_exists($js_path)) {
 wai.options.lang='{$lang}';
 </script>
 JS;
-
 }
+$_with_progress_class = in_array($step, [1,2,3]) ? ' with-progress' : '';
 $index = <<<HTML
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -958,24 +982,21 @@ $index = <<<HTML
 {$inline_js}
 </head>
 <body>
-    <div id="wa-installer">
-        <div class="dialog" id="wa-install-dialog">
-            <div class="dialog-background"></div>
-            <div class="dialog-window">
+    <div id="wa-installer" class="wa-installer{$_with_progress_class}" data-step="{$step}">
+        <div class="content">
             <form action="install.php" method="POST" id="install_form">
-                <div class="dialog-content" id="dialog-content">
+                <div class="form-content" id="form-content">
                 <input type="hidden" name="step" value="{$next_step}">
                 <input type="hidden" name="lang" value="{$lang}">
                 <input type="hidden" name="complete" value="0" id="install_form_complete">
-                    <div class="dialog-content-indent" id="content-wrapper">
+                    <div id="content-wrapper">
                         {$content}
                     </div>
                 </div>
                 {$progress}
             </form>
-            </div>
-        </div> <!-- .dialog -->
-    </div> <!-- #wa-login -->
+        </div>
+    </div>
 </body>
 </html>
 HTML;

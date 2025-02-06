@@ -16,6 +16,29 @@ return array(
             'app_datetime' => array('datetime', 'app_id'),
         ),
     ),
+    'wa_announcement_comments' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'announcement_id' => array('int', 11, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'update_datetime' => array('datetime'),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'text' => array('text'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'announcement_datetime' => array('announcement_id', 'create_datetime'),
+        ),
+    ),
+    'wa_announcement_reactions' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'announcement_id' => array('int', 11, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'reaction' => array('varchar', 1),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'announcement_reaction_contact' => array('announcement_id', 'reaction', 'contact_id', 'unique' => 1),
+        ),
+    ),
     'wa_announcement_rights' => array(
         'group_id' => array('int', 11, 'null' => 0),
         'announcement_id' => array('int', 11, 'null' => 0),

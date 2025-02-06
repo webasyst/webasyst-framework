@@ -3,24 +3,24 @@
     <div class="field">
         <div class="name field-password">[s`Enter a new password`]</div>
         <div class="value">
-            <input name="{$renderer->getInputName('password')}" type="password" class="wa-login-text-input">
+            <input name="{$renderer->getInputName('password')}" type="password" class="wa-login-text-input large">
         </div>
     </div>
     <div class="field field-password">
         <div class="name">[s`Re-enter password`]</div>
         <div class="value">
-            <input name="{$renderer->getInputName('password_confirm')}" type="password" class="wa-login-text-input">
+            <input name="{$renderer->getInputName('password_confirm')}" type="password" class="wa-login-text-input large">
         </div>
     </div>
 
     {$renderer->renderCaptcha()}
 
-    <div class="field">
+    <div class="field custom-mt-32">
 
         {$renderer->renderUncaughtErrors()}
 
         <div class="value wa-submit">
-            <input type="submit" class="button green" value="[s`Save and log in`]">
+            <input type="submit" class="button green width-100-mobile" value="[s`Save and log in`]">
         </div>
     </div>
 

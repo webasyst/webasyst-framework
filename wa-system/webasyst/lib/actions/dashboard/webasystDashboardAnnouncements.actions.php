@@ -7,12 +7,17 @@ class webasystDashboardAnnouncementsActions extends waActions
 {
     use webasystHeaderTrait;
 
+    // константы длины SMS
+    private const UTF_LIMITS = [70, 67];
+    private const LATIN_LIMITS = [160, 153];
+
     protected function preExecute()
     {
+        if (in_array($this->action, ['read', 'loadMore', 'addReaction', 'removeReaction', 'saveComment', 'removeComment', 'comments'])) {
+            return;
+        }
         if (!wa()->getUser()->getRights('team', 'edit_announcements')) {
-            if ($this->action !== 'read' && $this->action !== 'loadMore') {
-                throw new waRightsException();
-            }
+            throw new waRightsException();
         }
     }
 
@@ -37,13 +42,24 @@ class webasystDashboardAnnouncementsActions extends waActions
         }
         unset($data['link']);
 
+        $should_notify_contacts = array_intersect_key($data, [
+            'is_notify_email' => false,
+            'is_notify_sms' => false,
+        ]);
+        $data = array_diff_key($data, $should_notify_contacts);
+
+        if ($should_notify_contacts && !empty($data['datetime']) && strtotime($data['datetime']) > time()) {
+            $errors[] = [
+                'field' => 'data[datetime]',
+                'error_code' => 'inconsistent',
+                'error_description' => _ws("Scheduled publication can not be used along with email or SMS notifications enabled."),
+            ];
+        }
+
         if ($errors) {
             $this->displayJson(null, $errors);
             return;
         }
-
-        $should_notify_contacts = !empty($data['is_notify']);
-        unset($data['is_notify']);
 
         $group_ids = $this->getGroupIdsFromPost();
         if ($group_ids) {
@@ -70,7 +86,7 @@ class webasystDashboardAnnouncementsActions extends waActions
         if ($should_notify_contacts) {
             $this->notifyContacts([
                 'text' => $prepared_announcement['text'],
-            ] + $announcement + $prepared_announcement);
+            ] + $announcement + $prepared_announcement, $should_notify_contacts);
         }
     }
 
@@ -130,6 +146,20 @@ class webasystDashboardAnnouncementsActions extends waActions
         }
         unset($data['link']);
 
+        $should_notify_contacts = array_intersect_key($data, [
+            'is_notify_email' => false,
+            'is_notify_sms' => false,
+        ]);
+        $data = array_diff_key($data, $should_notify_contacts);
+
+        if ($should_notify_contacts && !empty($data['datetime']) && strtotime($data['datetime']) > time()) {
+            $errors[] = [
+                'field' => 'data[datetime]',
+                'error_code' => 'inconsistent',
+                'error_description' => _ws("Scheduled publication can not be used along with email or SMS notifications enabled."),
+            ];
+        }
+
         if ($errors) {
             $this->displayJson(null, $errors);
             return;
@@ -141,9 +171,6 @@ class webasystDashboardAnnouncementsActions extends waActions
             $announcement_rights_model = new waAnnouncementRightsModel();
             $announcement_rights_model->set($id, $group_ids);
         }
-
-        $should_notify_contacts = !empty($data['is_notify']);
-        unset($data['is_notify']);
 
         if ($data) {
             $row = [
@@ -159,7 +186,7 @@ class webasystDashboardAnnouncementsActions extends waActions
         if ($should_notify_contacts) {
             $this->notifyContacts([
                 'text' => $prepared_announcement['text'],
-            ] + $announcement + $prepared_announcement);
+            ] + $announcement + $prepared_announcement, $should_notify_contacts);
         }
     }
 
@@ -232,6 +259,7 @@ class webasystDashboardAnnouncementsActions extends waActions
             unset($notification);
 
             $notifications = $this->getAnnouncements([
+                'load_reactions' => true,
                 'data' => $data,
             ]);
             if (count($data) >= $limit) {
@@ -240,14 +268,153 @@ class webasystDashboardAnnouncementsActions extends waActions
             }
         }
 
+        $template_path = 'templates/actions/dashboard/DashboardAnnouncementLoadMore.html';
+        if (waRequest::request('dashboardtmpl')) {
+            $template_path = 'templates/actions/dashboard/DashboardAnnouncementLoadMoreDashboard.html';
+        }
+
         $this->display([
             'root_url'           => wa()->getRootUrl(),
             'apps'               => wa()->getUser()->getApps(),
             'backend_url'        => $backend_url,
             'user'               => wa()->getUser(),
             'notifications'      => $notifications,
+            'is_admin'           => wa()->getUser()->isAdmin('webasyst'),
             'notifications_load_more_url' => $notifications_load_more_url,
-        ], 'templates/actions/dashboard/DashboardAnnouncementLoadMore.html');
+        ], $template_path);
+    }
+
+    public function countSMSAction()
+    {
+        $text = waRequest::post('text', '', 'string');
+
+        $sanitizer = new waHtmlSanitizer();
+        $text = $sanitizer->toPlainText($text);
+        $text = wa()->getUser()->getName().": ".$text;
+
+        $count = self::sizeFactor($text);
+
+        $this->displayJson($count);
+    }
+
+    public function addReactionAction()
+    {
+        $announcement_id = waRequest::request('id', null, 'int');
+        $emoji = waRequest::request('emoji', null, 'string');
+
+        $announcement_reactions_model = new waAnnouncementReactionsModel();
+        if ($announcement_id && $emoji) {
+            $announcement_reactions_model->addReaction($announcement_id, $emoji, wa()->getUser()->getId());
+        }
+
+        $reactions = $announcement_reactions_model->getReactionsByAnnouncement([$announcement_id]);
+        $this->displayJson([
+            'reactions' => ifset($reactions, $announcement_id, []),
+        ], null);
+    }
+
+    public function removeReactionAction()
+    {
+        $announcement_id = waRequest::request('id', null, 'int');
+        $emoji = waRequest::request('emoji', null, 'string');
+
+        $announcement_reactions_model = new waAnnouncementReactionsModel();
+        if ($announcement_id && $emoji) {
+            $announcement_reactions_model->removeReaction($announcement_id, $emoji, wa()->getUser()->getId());
+        }
+
+        $reactions = $announcement_reactions_model->getReactionsByAnnouncement([$announcement_id]);
+        $this->displayJson([
+            'reactions' => ifset($reactions, $announcement_id, []),
+        ], null);
+    }
+
+    public function saveCommentAction()
+    {
+        $comment_id = waRequest::request('id', null, 'int');
+        $announcement_id = waRequest::request('announcement_id', null, 'int');
+        $text = waRequest::request('text', null, 'string');
+
+
+        $announcement_comments_model = new waAnnouncementCommentsModel();
+        if ($comment_id) {
+            $comment = $announcement_comments_model->getById($comment_id);
+            if (!$comment || $comment['contact_id'] != wa()->getUser()->getId()) {
+                throw new waRightsException();
+            }
+            $announcement_comments_model->updateById($comment_id, [
+                'update_datetime' => date('Y-m-d H:i:s'),
+                'text' => $text,
+            ]);
+        } else {
+            if (!$announcement_id) {
+                throw new waException('`announcement_id` or comment `id` is required', 400);
+            }
+            $comment_id = $announcement_comments_model->insert([
+                'announcement_id' => $announcement_id,
+                'contact_id' => wa()->getUser()->getId(),
+                'create_datetime' => date('Y-m-d H:i:s'),
+                'text' => $text,
+            ]);
+        }
+
+        $comment = $announcement_comments_model->getById($comment_id);
+
+        $col = new waContactsCollection('id/'.$comment['contact_id']);
+        $contacts = $col->getContacts('id,name,photo_url_32');
+
+        $this->display([
+                'comment' => $comment,
+                'contacts' => $contacts ?? [],
+            ],
+            wa()->getAppPath('templates/actions/backend/BackendDashboardAnnouncementComment.inc.html', 'webasyst')
+        );
+    }
+
+    public function removeCommentAction()
+    {
+        $comment_id = waRequest::request('id', null, 'int');
+
+        $announcement_comments_model = new waAnnouncementCommentsModel();
+        if ($comment_id) {
+            $comment = $announcement_comments_model->getById($comment_id);
+            if (!$comment || $comment['contact_id'] != wa()->getUser()->getId()) {
+                throw new waRightsException();
+            }
+            $announcement_comments_model->deleteById($comment_id);
+        }
+
+        $this->displayJson([], null);
+    }
+
+    public function commentsAction()
+    {
+        $announcement_id = waRequest::request('id', null, 'int');
+        if (!$announcement_id) {
+            throw new waException('`id` of announcement is required', 400);
+        }
+        $announcement_comments_model = new waAnnouncementCommentsModel();
+
+        $wa = wa('webasyst');
+        $contacts = [];
+        $comments = $announcement_comments_model->getByAnnouncement($announcement_id);
+
+        if ($comments) {
+            $contact_ids = array_map(function ($c) {
+                return $c['contact_id'];
+            }, $comments);
+
+            $col = new waContactsCollection('id/'.join(',', array_unique($contact_ids)));
+            $contacts = $col->getContacts('id,name,photo_url_32', 0, 500);
+        }
+
+        $this->display([
+                'announcement_id' => $announcement_id,
+                'comments' => $comments ?? [],
+                'contacts' => $contacts ?? [],
+            ],
+            $wa->getAppPath('templates/actions/backend/BackendDashboardAnnouncementComments.html')
+        );
     }
 
     protected function getIdFromPost()
@@ -281,7 +448,8 @@ class webasystDashboardAnnouncementsActions extends waActions
             'datetime' => '',
             'ttl_datetime' => '',
             'is_pinned' => '0',
-            'is_notify' => false,
+            'is_notify_email' => false,
+            'is_notify_sms' => false,
         ]);
         return $data;
     }
@@ -333,6 +501,7 @@ class webasystDashboardAnnouncementsActions extends waActions
     protected function prepareOutput($announcement_data)
     {
         $announcement_data += [
+            'is_unpublished' => !empty($announcement_data['datetime']) && strtotime($announcement_data['datetime']) > time(),
             'humandatetime' => waDateTime::format('humandatetime', $announcement_data['datetime'])
         ];
 
@@ -355,7 +524,7 @@ class webasystDashboardAnnouncementsActions extends waActions
         return $announcement_data;
     }
 
-    protected function notifyContacts($announcement)
+    protected function notifyContacts($announcement, $channels)
     {
         if ($announcement['access'] == 'all') {
             $recipients = self::getAnnouncementNotificationRecipients();
@@ -371,7 +540,7 @@ class webasystDashboardAnnouncementsActions extends waActions
         }
 
         $sms_message = null;
-        if (waSMS::adapterExists()) {
+        if (!empty($channels['is_notify_sms']) && waSMS::adapterExists()) {
             try {
                 $sms_message = self::formatSmsNotification($announcement, wa()->getUser());
             } catch (Exception $e) {
@@ -379,10 +548,13 @@ class webasystDashboardAnnouncementsActions extends waActions
             }
         }
 
-        try {
-            list($email_subject, $email_body) = self::formatEmailNotification($announcement, wa()->getUser());
-        } catch (Exception $e) {
-            waLog::log('Unable to notify users about announcement: '.$e->getMessage()."\n:".$e->getTraceAsString(), 'mail.log');
+        $email_subject = $email_body = null;
+        if (!empty($channels['is_notify_email'])) {
+            try {
+                list($email_subject, $email_body) = self::formatEmailNotification($announcement, wa()->getUser());
+            } catch (Exception $e) {
+                waLog::log('Unable to notify users about announcement: '.$e->getMessage()."\n:".$e->getTraceAsString(), 'mail.log');
+            }
         }
 
         foreach($recipients as $c) {
@@ -485,5 +657,13 @@ class webasystDashboardAnnouncementsActions extends waActions
         }
         unset($c);
         return $contacts;
+    }
+
+    private static function sizeFactor($text)
+    {
+        $len = mb_strlen($text);
+        preg_match('/[а-яА-Я]+/', $text, $matches);
+        $limits = (sizeof($matches) > 0) ? self::UTF_LIMITS : self::LATIN_LIMITS;
+        return ($len <= $limits[0]) ? 1 : ceil($len / $limits[1]);
     }
 }

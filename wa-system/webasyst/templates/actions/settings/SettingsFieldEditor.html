@@ -16,29 +16,29 @@
                 {/if}
                 {foreach $f->getOptions() as $value => $label}
                     <tr class="item-row">
-                        <td class="min-width"><i class="fas fa-bars ui-sortable-handle" style="cursor: move;"></i></td>
+                        <td class="min-width"><i class="fas fa-bars gray ui-sortable-handle" style="cursor: move;"></i></td>
                         <td>
                             <input type="text" name="{$prefix}[{$fid}][options][{$value|escape}]" value="{$label|escape}" class="full-width smallest">
                             {if $ftype == 'branch'}
                                 <input type="hidden" name="{$prefix}[{$fid}][hide][{$value|escape}]" value="{implode(',', ifempty($hide[$value], array()))}">
                             {/if}
                         </td>
-                        <td class="min-width"><a href="javascript:void(0);" title="[s`Delete`]" class="js-delete-subitem"><i class="fas fa-trash-alt"></i></a></td>
+                        <td class="min-width"><a href="javascript:void(0);" title="[s`Delete`]" class="js-delete-subitem"><i class="fas fa-trash-alt text-light-gray"></i></a></td>
                     </tr>
                 {/foreach}
             {/if}
             <tr class="hidden item-row template">
-                <td class="min-width"><i class="fas fa-bars ui-sortable-handle" style="cursor: move;"></i></td>
+                <td class="min-width"><i class="fas fa-bars gray ui-sortable-handle" style="cursor: move;"></i></td>
                 <td>
                     <input type="text" name="{$prefix}[{$fid}][options][]" class="full-width smallest">
                     {if $ftype == 'branch'}
                         <input type="hidden" name="{$prefix}[{$fid}][hide][]" value="">
                     {/if}
                 </td>
-                <td class="min-width"><a href="#" title="[s`Delete`]" class="js-delete-subitem"><i class="fas fa-trash-alt"></i></a></td>
+                <td class="min-width"><a href="#" title="[s`Delete`]" class="js-delete-subitem"><i class="fas fa-trash-alt text-light-gray"></i></a></td>
             </tr>
             <tr>
-                <td colspan="3"><a class="js-add-item small" href="#"><i class="fas fa-plus-circle"></i> <b><i>[s`Add item`]</i></b></a></td>
+                <td colspan="3"><a class="js-add-item button nobutton smaller" href="#"><i class="fas fa-plus-circle text-green custom-mr-4"></i> [s`Add item`]</a></td>
             </tr>
         </tbody>
     </table>
@@ -157,7 +157,7 @@
 
     <input type="hidden" name="{$prefix}[{$fid}][hide_unmatched]" value="{$f->getParameter('hide_unmatched')}">
     <div class="show-always hide-when-modified">
-        <a href="javascript:void(0)" class="small" id="{$uniqid}" style="margin-top: 5px;"><i class="icon10 settings"></i> [s`Manage conditions`]</a>
+        <a href="javascript:void(0)" class="small button light-gray custom-mt-8" id="{$uniqid}"><i class="fas fa-cog custom-mr-4"></i> [s`Manage conditions`]</a>
     </div>
     <div class="hidden show-when-modified"><span class="highlighted small italic">[s`Click “Save” button below to commit changes.`]</span></div>
 
@@ -175,4 +175,3 @@
     </script>
 
 {/if}
-

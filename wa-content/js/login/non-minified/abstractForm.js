@@ -177,9 +177,25 @@ var WaLoginAbstractForm = ( function($) {
             $(window).one('wa_recaptcha_loaded wa_captcha_loaded', function () {
                 that.triggerEvent('wa_auth_form_loaded');
                 that.triggerEvent('wa_auth_form_change_view');
+                that.captchaInitialized = true;
+                that.processPendingSubmit();
             });
+
+            if ($wrapper.find('.wa-captcha-field').find('[name="g-recaptcha-response"]').length) {
+                const observer = new MutationObserver(mutations => {
+                    for(let mutation of mutations) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                            that.captchaInitialized = true;
+                            that.processPendingSubmit();
+                        }
+                    }
+                })
+                observer.observe($wrapper.find('.wa-captcha-field').find('[name="g-recaptcha-response"]')[0], {attributes: true});
+            }
         } else {
             that.triggerEvent('wa_auth_form_loaded');
+            that.captchaInitialized = true;
+            that.processPendingSubmit();
         }
     };
 
@@ -614,7 +630,7 @@ var WaLoginAbstractForm = ( function($) {
             }
         };
     };
-    
+
     Self.prototype.onDoneSubmit = function (r) {
         var that = this,
             handlers = that.onDoneSubmitHandlers(),
@@ -675,6 +691,14 @@ var WaLoginAbstractForm = ( function($) {
         $loading.show();
         $button.attr('disabled', true);
 
+        if (!that.captchaInitialized) {
+            // Если капча еще не инициализирована, откладываем выполнение submit
+            that.pendingSubmit = function() {
+                that.submit(options);
+            };
+            return;
+        }
+
         return that.jsonPost(url, data)
             .done(function (r) {
                 if (!that.isRedirectResponse(r)) {
@@ -691,6 +715,13 @@ var WaLoginAbstractForm = ( function($) {
             .fail(function () {
                 $button.attr('disabled', false);
             });
+    };
+
+    Self.prototype.processPendingSubmit = function () {
+        if (this.pendingSubmit) {
+            this.pendingSubmit();
+            this.pendingSubmit = null;
+        }
     };
 
     Self.prototype.onSubmit = function (e) {

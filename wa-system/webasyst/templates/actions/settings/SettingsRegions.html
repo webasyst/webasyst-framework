@@ -2,6 +2,7 @@
 <div class="article s-regions-settings-page" id="s-regions-settings-page">
   <div class="article-body">
     <h1 class="s-page-header">[s`Countries & regions`]</h1>
+    <p class="s-description small">[s`System-wide country & regions configuration for all installed Webasyst apps.`]</p>
     <div class="s-regions-settings-fields-block">
         <form action="?module=settingsRegions" class="fields vertical">
             <div class="fields-group blank">
@@ -29,6 +30,7 @@
                         <a class="js-country-fav-icon" href="javascript:void(0)" style="position:relative; top:0; left:5px;" title="[s`Clone on top of the list`]">
                             <input class="js-contry-fav-input" type="hidden" name="country_fav" value="{ifset($country.fav_sort, '')}">
                             <i class="{if $country.fav_sort === null}far{else}fas{/if} fa-star"></i>
+                            <span class="small">[`Clone on top of the list`]</span>
                         </a>
                     </div>
                 </div>
@@ -36,9 +38,9 @@
             {if $country.iso3letter}
             <div class="fields-group blank">
                 <input type="hidden" name="country" value="{$country.iso3letter|escape}">
-                <div class="field">
+                <div class="field custom-mt-0">
                     <div class="name">
-                        [s`Regions`]
+                        <h4>{$country.name}</h4>
                     </div>
                     <div class="value">
                         <div style="display: block; max-width: calc(100vw - 2rem); overflow-x: auto; -webkit-overflow-scrolling: touch">
@@ -57,7 +59,7 @@
                                     <td><input type="text" class="js-input-required" name="region_names[]" placeholder="[s`Region name`]" value="{$r.name|escape}"
                                                rel="{$r.name|escape}"></td>
                                     <td><input type="text" class="js-input-required shorter" name="region_codes[]" placeholder="[s`Region code`]" value="{$r.code|escape}"></td>
-                                    <td><input type="text" name="region_centers[]" placeholder="[s`Administrative center`]" value="{ifempty($r.region_center, '')|escape}"></td>
+                                    <td><input type="text" name="region_centers[]" placeholder="[s`City name`]" value="{ifempty($r.region_center, '')|escape}"></td>
                                     {strip}<td><a class="nowrap js-action-fav custom-mr-16" href="javascript:void(0)">
                                             {if $r.fav_sort === null}
                                                 <input type="hidden" name="region_favs[]" value="">
@@ -68,7 +70,7 @@
                                             {/if}
                                     </a>
                                         <a class="nowrap js-action-del" href="javascript:void(0)">
-                                            <i class="fas fa-times del"></i>
+                                            <i class="fas fa-trash-alt text-light-gray del"></i>
                                         </a></td>{/strip}
                                 </tr>
                                 {foreachelse}
@@ -83,17 +85,17 @@
                                 <td colspan="4">
                                     <div class="box">
                                         {if empty($regions)}
-                                        <a href="javascript:void(0)" class="js-fill-regions-link button rounded green">
+                                        <a href="javascript:void(0)" class="js-fill-regions-link button light-gray">
                                             <span>
-                                                <i class="fas fa-plus-circle"></i>
-                                                [s`Fill in default region list`]
+                                                <i class="fas fa-magic text-purple custom-mr-4"></i>
+                                                [s`Autofill`]
                                             </span>
                                         </a>
                                         {/if}
-                                        <a href="javascript:void(0)" class="js-add-region-link button rounded outlined dark-gray">
+                                        <a href="javascript:void(0)" class="js-add-region-link button nobutton gray">
                                             <span>
-                                                <i class="fas fa-plus-circle"></i>
-                                                [s`Add region`]
+                                                <i class="fas fa-plus-circle text-green custom-mr-4"></i>
+                                                [s`Add region manually`]
                                             </span>
                                         </a>
                                     </div>
@@ -104,10 +106,10 @@
                             <tr class="hidden just-added js-template-new">
                                 <td><input type="text" class="js-input-required" name="region_names[]" value="" placeholder="[s`Region name`]"></td>
                                 <td><input type="text" class="js-input-required shorter" name="region_codes[]" value="" placeholder="[s`Region code`]"></td>
-                                <td><input type="text" name="region_centers[]" value="" placeholder="[s`Administrative center`]"></td>
+                                <td><input type="text" name="region_centers[]" value="" placeholder="[s`City name`]"></td>
                                 <td><a class="js-action-del" href="javascript:void(0)">
                                         <input type="hidden" name="region_favs[]" value="">
-                                        <i class="fas fa-times del"></i>
+                                        <i class="fas fa-trash-alt text-light-gray del"></i>
                                     </a></td>
                             </tr>
 
@@ -137,7 +139,7 @@
             country_iso3letter: '{$country.iso3letter}',
             locales: {
                 'confirm_region_not_saved': '[s`Regions are not saved. Are you sure you want to leave current page?`]',
-                'country_is_not_list': '[s`The country is not in the list.`]'
+                'country_is_not_list': '[s`No regions are defined for this country in the fallback config, sorry :(`]'
             }
         });
         $.wa.title.set({$_title|json_encode});

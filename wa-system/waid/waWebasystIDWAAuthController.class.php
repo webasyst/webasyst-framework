@@ -581,13 +581,28 @@ class waWebasystIDWAAuthController extends waViewController
 
 
         $name_fields = ['firstname', 'lastname', 'middlename'];
-        $is_empty_name = true;
-        foreach ($name_fields as $name_field) {
-            if (!empty($contact[$name_field])) {
-                $is_empty_name = false;
-                break;
+        $non_empty_name_fields = array_reduce($name_fields, function ($res, $field) use ($contact) {
+            if (!empty($contact[$field])) {
+                $res[$field] = $contact[$field];
+            }
+            return $res;
+        }, []);
+
+        if (count($non_empty_name_fields) === 1 && isset($non_empty_name_fields['firstname'])) {
+            // automatically generated contact name considered as empty
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $non_empty_name_fields['firstname'])) {
+                $non_empty_name_fields = [];
+            } elseif (!empty($contact_emails)) {
+                foreach ($contact_emails as $email) {
+                    if ($email === $non_empty_name_fields['firstname'] || strpos($email, $non_empty_name_fields['firstname'] . '@') === 0) {
+                        $non_empty_name_fields = [];
+                        break;
+                    }
+                }
             }
         }
+
+        $is_empty_name = empty($non_empty_name_fields);
 
         // if all three part on names is empty then is allowed to update all three name's parts
         if ($is_empty_name) {

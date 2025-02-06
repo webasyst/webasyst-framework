@@ -10,10 +10,16 @@
 
         {$renderer->renderCaptcha()}
 
-        {$renderer->renderRememberMe()}
+        <div class="flexbox middle full-width nowrap custom-mt-16">
+            {$renderer->renderRememberMe()}
+
+            {if $forgotpassword_url && empty($is_api_oauth)}
+                <a href="{$forgotpassword_url}{if $force_login_form}&force_login_form=1{/if}" class="wa-forgotpassword underline" data-type="forgotpassword">[s`Forgot password?`]</a>
+            {/if}
+        </div>
 
         <div class="field wa-buttons">
-            <div class="value wa-submit">
+            <div class="value wa-submit align-center">
 
                 {$renderer->renderMessages()}
 
@@ -29,16 +35,12 @@
                         <a href="javascript:void(0);" class="js-back-to-simple-login underline">[s`Sign in without Webasyst ID`]</a>
                     </div>
                 {else}
-                    <input type="submit" value="[s`Sign In`]" class="button wa-login-submit">
+                    <input type="submit" value="[s`Sign In`]" class="wa-login-submit button large">
                     {if !empty($is_api_oauth)}
                         [s`or`]
                         <a href="javascript:void(0);" class="wa-login-cancel gray underline">[s`cancel`]</a>
                     {/if}
-                    <i class="icon16 loading wa-loading" style="display: none;"></i>
-
-                    {if $forgotpassword_url && empty($is_api_oauth)}
-                        <a href="{$forgotpassword_url}{if $force_login_form}&force_login_form=1{/if}" class="wa-forgotpassword underline" data-type="forgotpassword">[s`Forgot password?`]</a>
-                    {/if}
+                    <i class="icon size-16 loading wa-loading" style="display: none;"></i>
                 {/if}
 
             </div>

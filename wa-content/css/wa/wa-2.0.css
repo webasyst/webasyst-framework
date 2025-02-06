@@ -324,7 +324,7 @@ html[data-theme='dark'] {
 
 }
 html[data-theme='dark'] img.dark-mode-inverted { filter: invert(100%) hue-rotate(180deg); mix-blend-mode: screen;}
-html[data-theme='dark'] .button.black { box-shadow: 0 2px 10px -2px rgba(255, 255, 255, 0.34); }
+html[data-theme='dark'] .button.black { box-shadow: 0 2px 10px -2px rgba(255, 255, 255, 0.34); color: var(--text-color-input); }
 /* end dark mode styles */
 
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
@@ -698,7 +698,7 @@ textarea.largest { font-size: 150%; height: 11em; }
 .wa-select { position: relative; display: inline-block; background: var(--background-color-input); border-radius: 0.5em; margin-right: 0.25em; transition: 0.1s; max-width: 100%; }
 .wa-select:before { content: ""; display: block; position: absolute; top: 50%; right: 0.75em; margin: -0.125em 0 0; border: solid transparent; border-width: 0.375em; border-top-color: var(--text-color-hint); }
 .wa-select select { position: relative; display: inline-block; padding: 0.1875em 2.25em 0.1875em 0.375em; line-height: 1.5em; margin: 0; border: 0.125em solid var(--border-color-input); border-radius: 0.5em; color: var(--text-color-input); -webkit-appearance: none; appearance: none; outline: none; background: transparent; box-sizing: border-box; cursor: pointer; font-size: 100%; min-width: 100%; }
-[data-theme="dark"] .wa-select select option { background-color: var(--background-color-blank); }
+[data-theme="dark"] .wa-select select option, [data-theme="dark"] .wa-select select optgroup { background-color: var(--background-color-blank); }
 
 .wa-select:hover { background: var(--background-color-input-solid); }
 

@@ -38,7 +38,7 @@ class installerUpdateManagerAction extends waViewAction
                 $msg = _w('Unable to update the product (developer mode is on).');
             }
             $msg .= "\n"._w("A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file.");
-            return $this->signalFailMessage($msg);
+            return $this->signalFailMessage($msg, 'dev_mode_is_on');
         }
     }
 
@@ -213,10 +213,10 @@ class installerUpdateManagerAction extends waViewAction
 
             } else {
                 $msg = _w('Update is already in progress. Please wait while the current update session is completed before starting a new session.');
-                return $this->signalFailMessage($msg);
+                return $this->signalFailMessage($msg, 'update_in_progress');
             }
         } catch (Exception $ex) {
-            return $this->signalFailMessage($ex->getMessage());
+            return $this->signalFailMessage($ex->getMessage(), $ex->getCode());
         }
     }
 
@@ -278,7 +278,7 @@ class installerUpdateManagerAction extends waViewAction
     }
 
     // Overriden in installerUpdateManagerDialogAction
-    protected function signalFailMessage($msg)
+    protected function signalFailMessage($msg, $msg_code = null)
     {
         $this->redirect(array(
             'module' => $this->module,

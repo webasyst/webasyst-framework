@@ -156,8 +156,8 @@ return array(
     => 'Web server',
 
 
-    'Use friendly URLs'
-    => 'User-friendly URLs will be supported',
+        'Use friendly URLs'
+    => 'SEO-friendly URLs are supported; e.g., /page/1/',
     'Check archives and files checksum'
     => 'Validation of Webasyst system file and app archive checksum',
     'Check folder rights for installation &amp; updates'

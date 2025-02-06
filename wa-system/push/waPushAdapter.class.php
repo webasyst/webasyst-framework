@@ -102,11 +102,15 @@ abstract class waPushAdapter
             $settings = $this->getSettingsModel()->get('webasyst', $this->getSettingsKey(), '{}');
             $this->settings = json_decode($settings, true);
             foreach ($this->settings as $key => $value) {
-                // decode non string values
-                if (!is_numeric($value)) {
-                    $json = json_decode($value, true);
-                    if (is_array($json)) {
-                        $this->settings[$key] = $json;
+                if (is_array($value)) {
+                    $this->settings[$key] = $value;
+                } else {
+                    // decode non string values
+                    if (!is_numeric($value)) {
+                        $json = json_decode($value, true);
+                        if (is_array($json)) {
+                            $this->settings[$key] = $json;
+                        }
                     }
                 }
             }

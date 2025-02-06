@@ -2,21 +2,22 @@
 <div class="article s-captcha-settings-page" id="s-captcha-settings-page">
   <div class="article-body">
     <h1 class="s-page-title">[s`Captcha settings`]</h1>
-    <p class="s-description">[s`Select a type of captcha to be used on your websites.`]</p>
+    <p class="s-description small">[s`Protects your public site data collections forms from spam and bots.`]</p>
     <div class="s-captcha-settings-fields-block">
         <form action="?module=settingsCaptchaSave" class="fields">
             <div class="fields-group blank">
                 <div class="field">
-                    <div class="name for-checkbox">[s`Captcha type`]</div>
+                    <div class="name for-checkbox">[s`Captcha`]</div>
                     <div class="value">
                         <ul>
                             <li>
                                 <label>
-                            <span class="wa-radio">
-                                <input type="radio" name="captcha" {if ifset($captcha) == 'waPHPCaptcha' || empty($captcha)}checked{/if} value="waPHPCaptcha">
-                            <span></span>
-                            </span>
+                                    <span class="wa-radio">
+                                        <input type="radio" name="captcha" {if ifset($captcha) == 'waPHPCaptcha' || empty($captcha)}checked{/if} value="waPHPCaptcha">
+                                        <span></span>
+                                    </span>
                                     [s`Webasyst Captcha`]
+                                    <span class="hint">[s`simple & free`]</span>
                                 </label>
                             </li>
                             <li>
@@ -26,18 +27,19 @@
                                     <span></span>
                                     </span>
                                     [s`Google reCAPTCHA`]
-                                    <div{if ifset($captcha) != 'waReCaptcha'} style="display: none"{/if} class="js-captcha-adapter-settings fields-group blank">
+                                </label>
+                                <div{if ifset($captcha) != 'waReCaptcha'} style="display: none"{/if} class="js-captcha-adapter-settings fields custom-m-20">
                                     <div class="field">
-                                        <div class="name">[s`Site Key`]</div>
+                                        <div class="name for-input">[s`Site Key`]</div>
                                         <div class="value">
-                                            <input type="text" name="captcha_options[sitekey]" value="{$captcha_options.sitekey|default:''|escape}">
+                                            <input type="text" class="long" name="captcha_options[sitekey]" value="{$captcha_options.sitekey|default:''|escape}">
                                         </div>
                                     </div>
                                     <div class="field">
-                                        <div class="name">[s`Secret`]</div>
+                                        <div class="name for-input">[s`Secret`]</div>
                                         <div class="value">
-                                            <input type="text" name="captcha_options[secret]" value="{$captcha_options.secret|default:''|escape}"><br>
-                                            <p class="hint"><a href="https://www.google.com/recaptcha" target="_blank">[s`Get values for your website`]</a> <i class="fas fa-external-link-alt"></i></p>
+                                            <input type="text" class="long" name="captcha_options[secret]" value="{$captcha_options.secret|default:''|escape}"><br>
+                                            <p class="small custom-mt-4"><a href="https://www.google.com/recaptcha" target="_blank">[s`Get values for your website`] <i class="fas fa-external-link-alt fa-xs opacity-50"></i></a></p>
                                         </div>
                                     </div>
                                     <div class="field">
@@ -45,54 +47,54 @@
                                             <label for="invisible">[s`Invisible mode`]</label>
                                         </div>
                                         <div class="value">
-                                            <span class="switch" id="invisible">
+                                            <span class="switch smaller" id="invisible">
                                                 <input id="invisible" type="checkbox" name="captcha_options[invisible]" value="true"{if ifset($captcha_options.invisible)} checked{/if}>
                                             </span>
                                         </div>
                                     </div>
-                    </div>
-                    </label>
+                                </div>
                             </li>
                             <li>
                                 <label>
                                     <span class="wa-radio">
                                         <input type="radio" name="captcha"{if ifset($captcha) == 'waSmartCaptcha'} checked{/if} value="waSmartCaptcha">
-                                    <span></span>
+                                        <span></span>
                                     </span>
                                     [s`Yandex SmartCaptcha`]
-                                    <div{if ifset($captcha) != 'waSmartCaptcha'} style="display: none"{/if} class="js-smart-captcha-adapter-settings fields-group blank">
-                                        <div class="field">
-                                            <div class="name">[s`Client key`]</div>
-                                            <div class="value">
-                                                <input type="text" name="captcha_options[client_key]" value="{$captcha_options.client_key|default:''|escape}">
-                                            </div>
-                                        </div>
-                                        <div class="field">
-                                            <div class="name">[s`Server key`]</div>
-                                            <div class="value">
-                                                <input type="text" name="captcha_options[server_key]" value="{$captcha_options.server_key|default:''|escape}"><br>
-                                                <p class="hint">
-                                                    <a href="[s`https://cloud.yandex.com/en/services/smartcaptcha`]" target="_blank">[s`Get values for your website`]</a> <i class="fas fa-external-link-alt"></i>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="field">
-                                            <div class="name">
-                                                <label for="smart_invisible">[s`Invisible mode`]</label>
-                                            </div>
-                                            <div class="value">
-                                            <span class="switch" id="smart_invisible">
-                                                <input id="smart_invisible" type="checkbox" name="captcha_options[smart_invisible]" value="true"{if ifset($captcha_options.smart_invisible)} checked{/if}>
-                                            </span>
-                                            </div>
+                                </label>
+                                <div{if ifset($captcha) != 'waSmartCaptcha'} style="display: none"{/if} class="js-smart-captcha-adapter-settings fields custom-m-20">
+                                    <div class="field">
+                                        <div class="name for-input">[s`Client key`]</div>
+                                        <div class="value">
+                                            <input type="text" class="long" name="captcha_options[client_key]" value="{$captcha_options.client_key|default:''|escape}">
                                         </div>
                                     </div>
-                                </label>
+                                    <div class="field">
+                                        <div class="name for-input">[s`Server key`]</div>
+                                        <div class="value">
+                                            <input type="text" class="long" name="captcha_options[server_key]" value="{$captcha_options.server_key|default:''|escape}"><br>
+                                            <p class="small custom-mt-4">
+                                                <a href="[s`https://cloud.yandex.com/en/services/smartcaptcha`]" target="_blank">[s`Get values for your website`] <i class="fas fa-external-link-alt fa-xs opacity-50"></i></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name">
+                                            <label for="smart_invisible">[s`Invisible mode`]</label>
+                                        </div>
+                                        <div class="value">
+                                        <span class="switch smaller" id="smart_invisible">
+                                            <input id="smart_invisible" type="checkbox" name="captcha_options[smart_invisible]" value="true"{if ifset($captcha_options.smart_invisible)} checked{/if}>
+                                        </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
+            <p class="s-description small gray">{sprintf('[s`To enable protection for Webasyst backend sign in form, make sure to <a href="%s"><u>enable captcha in its settings</u></a> too.`]',$wa_app_url|cat:'webasyst/settings/auth/')}</p>
 
             {include file="./SettingsSaveBtn.inc.html" settings_page="captcha" inline}
         </form>

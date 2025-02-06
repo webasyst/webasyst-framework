@@ -60,19 +60,34 @@ class WASettingsWaID {
     initForceAuthToggle() {
         const that = this;
         const $toggleWrapper = that.$wrapper.find('.js-force-auth-wrapper');
-        const $toggle = that.$wrapper.find('.js-force-auth-toggler');
-        const $status = that.$wrapper.find('.js-force-save-status');
-
-        $toggle.on('change', function () {
+        const $toggle = $toggleWrapper.find('.js-force-auth-toggler');
+        const $status = $toggleWrapper.find('.js-force-save-status');
+        const save = () => {
             const url = that.wa_backend_url + "?module=settingsWaID&action=save";
-            $.post(url, $toggle.serialize())
+            const payload = $toggle.serialize();
+            $.post(url, payload)
                 .done(function () {
                     $status.show();
+                    $toggleWrapper.next('.hint:first').find('b').toggleClass('text-green', !!payload);
 
                     setTimeout(function () {
                         $status.hide();
                     }, 2000);
                 });
+        };
+
+        $toggleWrapper.find('.js-force-auth-switch').waSwitch({
+            change: function(is_active, wa_switch) {
+                if (is_active) {
+                    save();
+                } else {
+                    setTimeout(() => wa_switch.set(true, false));
+                    $.wa.confirmOptionDeactivation(() => {
+                        wa_switch.set(false, false);
+                        save();
+                    });
+                }
+            }
         });
 
         if ($toggle.attr('disabled')) {
@@ -186,7 +201,7 @@ class WASettingsWaID {
 
         $.get('?module=settings&action=waIDConnectDialog', function (html) {
             $wrapper.append(html);
-            $('.js-waid-connect-dialog:visible').one('connected', function (e, data, dialog) {
+            $('.js-waid-connect-dialog').one('connected', function (e, data, dialog) {
                 dialog.dialog.close();
 
                 if (upgrade_all) {

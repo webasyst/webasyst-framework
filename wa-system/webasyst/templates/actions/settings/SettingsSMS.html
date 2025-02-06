@@ -1,10 +1,20 @@
 {$_title = "[s`SMS providers`] — {$wa->accountName(false)}"}
 <div class="article s-sms-settings-page" id="s-sms-settings-page">
   <div class="article-body">
-    <h1 class="s-page-title">[s`SMS providers`]</h1>
+    <div class="flexbox full-width">
+        <div class="wide"><h1 class="s-page-header">[s`SMS providers`]</h1></div>
+        <div><a href="{$wa_app_url}webasyst/settings/sms/template/" class="button outlined light-gray small custom-mt-4"><i class="fas fa-file-alt custom-mr-6"></i>[s`SMS templates`]</a></div>
+    </div>
 
     {* Incoming / outgoing emails *}
     <form action="?module=settingsSMSSave" class="fields">
+
+    {if !empty($install_wa_sms_link)}
+        <div class="s-sms-adapter fields-group blank">
+            <p><i class="icon webasyst-magic-wand"></i> {sprintf_wp("Get free %sWebasyst SMS plugin%s via the Installer.", "<a href=\"`$install_wa_sms_link`\">", '</a>')}</p>
+        </div>
+    {/if}
+
     {if count($sms_adapters)}
         {foreach $sms_adapters as $i => $a}
         <div class="s-sms-adapter fields-group blank">

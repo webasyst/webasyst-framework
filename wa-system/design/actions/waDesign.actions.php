@@ -73,23 +73,37 @@ class waDesignActions extends waActions
             $current_url .= '&domain='.urlencode($route['_domain']).'&route='.$route['_id'];
         }
 
-        $this->setTemplate('Design.html', true);
+        if (waRequest::get('onlyThemeList')) {
+            $this->setTemplate('ThemesList.html', true);
 
-        $this->display([
-            'current_url'             => $current_url,
-            'design_url'              => $this->design_url,
-            'themes_url'              => $this->themes_url,
-            'theme'                   => $theme,
-            'route'                   => $route,
-            'themes'                  => $themes,
-            'themes_routes'           => $themes_routes,
-            'app_id'                  => $app_id,
-            'app'                     => $app,
-            'routing_url'             => $routing_url,
-            'options'                 => $this->options,
-            'need_show_review_widget' => $this->needShowReviewWidget($t_id),
-            'edit_data'               => $this->getThemesEditData(['theme' => $t_id])
-        ]);
+            $this->getView()->assign([
+                'current_url'             => $current_url,
+                'design_url'              => $this->design_url,
+                'themes'                  => $themes,
+                'themes_routes'           => $themes_routes,
+            ]);
+            /* костыль с displayJson ибо через display в приложении Блог вываливается весь лайаут и экран уходит в вечную перезагрузку */
+            $this->displayJson(['html' => $this->getView()->fetch($this->getTemplate())]);
+        } else {
+            $this->setTemplate('Design.html', true);
+
+            $this->display([
+                'current_url'             => $current_url,
+                'design_url'              => $this->design_url,
+                'themes_url'              => $this->themes_url,
+                'theme'                   => $theme,
+                'route'                   => $route,
+                'themes'                  => $themes,
+                'themes_routes'           => $themes_routes,
+                'app_id'                  => $app_id,
+                'app'                     => $app,
+                'routing_url'             => $routing_url,
+                'options'                 => $this->options,
+                'need_show_review_widget' => $this->needShowReviewWidget($t_id),
+                'edit_data'               => $this->getThemesEditData(['theme' => $t_id])
+            ]);
+        }
+
     }
 
     public function editAction()
@@ -385,7 +399,11 @@ class waDesignActions extends waActions
                 } else {
                     $file = waRequest::post('file');
                     if ($this->checkFile($file, $errors)) {
-                        $theme->addFile($file, waRequest::post('description'));
+                        if (isset($theme['files'][$file])) {
+                            $errors = _ws('A file with this name already exists. Please enter a different file name.');
+                        } else {
+                            $theme->addFile($file, waRequest::post('description'));
+                        }
                     }
                 }
                 if (!$errors) {
@@ -909,7 +927,7 @@ HTACCESS;
 
             $this->setTemplate('Theme.html', true);
 
-            $this->display(array(
+            $this->display([
                 'current_locale'                      => $current_locale,
                 'routes'                              => $routes,
                 'domains'                             => $domains,
@@ -940,7 +958,7 @@ HTACCESS;
                 'current_domain'                      => $_d,
                 'settlements_by_domain'               => $settlements_by_domain,
                 'has_theme_usage'                     => $has_theme_usage,
-            ));
+            ]);
         }
     }
 

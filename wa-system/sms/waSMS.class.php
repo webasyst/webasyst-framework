@@ -62,7 +62,7 @@ class waSMS
         if (!empty($config)) {
             $installed_adapters = self::getInstalledAdapterIds();
             if (empty($installed_adapters)) {
-                return null;
+                throw new waException('No SMS adapters installed');
             }
             $config = array_filter($config, function ($adapter_config) use ($installed_adapters) {
                 return in_array($adapter_config['adapter'], $installed_adapters);

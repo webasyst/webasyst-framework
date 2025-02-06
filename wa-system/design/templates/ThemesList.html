@@ -1,0 +1,52 @@
+<ul id="wa-theme-list" class="menu js-theme-list">
+    {foreach $themes_routes as $r}
+        {if is_array($r)}
+            {*Themes with settlements*}
+            {$_theme = $themes[$r.theme]}
+            {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+            {$_url = "{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}"}
+            {$_r_label = waIdna::dec($r._domain)|cat:'/':$r.url}
+            {$_title = str_replace('www.','',$_r_label)}
+
+            <li class="no-icon 2{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}"
+                    {if !empty($r._routing_url)} data-routing="{$r._routing_url}"{/if}
+                data-id="{$_theme.id|escape}">
+                <a{if $r@iteration === 1} class="js-is-first"{/if} href="{$_url}" title="{$_title}" data-preview-label="[s`View your site`]" data-url="{$r._preview_url|escape}">
+                                    <span class="bold js-url">
+                                        {$_theme.name|escape}
+                                    </span>
+                </a>
+            </li>
+
+            {*Mobile theme*}
+            {if !empty($r.theme_mobile) && ($r.theme_mobile != $r.theme) && !empty($themes[$r.theme_mobile])}
+                {$_theme = $themes[$r.theme_mobile]}
+                {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+                {$_url = "{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}"}
+                {$_r_label = waIdna::dec($r._domain)|cat:'/':$r.url}
+                {$_title = str_replace('www.','',$_r_label)}
+
+                <li class="no-icon 3{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}" {if !empty($r._routing_url)}data-routing="{$r._routing_url}"{/if} data-id="{$_theme.id|escape}">
+                    <a href="{$_url}" title="{$_title}" data-preview-label="[s`Preview`]"{if !empty($_theme.preview_url)} data-url="{$_theme.preview_url|escape}"{/if}>
+                                            <span class="bold js-url">
+                                                <span class="count">
+                                                    <i class="fas fa-mobile-alt"></i>
+                                                </span>
+                                                {$_theme.name|escape}
+                                            </span>
+                    </a>
+                </li>
+            {/if}
+        {else}
+            {*Themes without settlements*}
+            {$_theme = $themes[$r]}
+            {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+            {$_url = "{$design_url}theme={$_theme.id}"}
+            <li class="no-icon 1{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}" data-id="{$_theme.id|escape}">
+                <a href="{$design_url}theme={$_theme.id}" data-preview-label="[s`Preview`]"{if !empty($_theme.preview_url)} data-url="{$_theme.preview_url|escape}"{/if}>
+                    <span class="js-url">{$_theme.name|escape}</span>
+                </a>
+            </li>
+        {/if}
+    {/foreach}
+</ul>

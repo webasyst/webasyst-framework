@@ -12,7 +12,7 @@
     {strip}
         <div class="s-item {if $is_template} js-template{else}js-item{/if}">
             {if $is_template}
-            <div class="fields-group blank">
+            <div>
             {/if}
 
             {* KEY *}
@@ -24,10 +24,19 @@
                         <input class="js-key long bold" placeholder="[s`Email or domain`]" data-name="key" value="{$key|escape}" type="text" autocomplete="off">
                         <p class="hint">[s`Enter an <strong>email address</strong> to set up a transport <em>for one sender email</em>.<br>Enter a <strong>domain name</strong> to set up a transport <em>for all sender emails on that domain</em>.`]</p>
                     </div>
+                    {if !$is_template && $_transport && $config}
+                        <div>
+                            <div class="s-make-default custom-mr-8 js-make-default" data-key="{$key|escape}">
+                                <a href="javascript:void(0);" class="button smaller rounded light-gray nowrap">
+                                    <span>[s`Set as default`]</span>
+                                </a>
+                            </div>
+                        </div>
+                    {/if}
                     <div>
                         <div class="s-remove js-remove">
-                            <a href="javascript:void(0);" class="button nobutton small red outlined nowrap">
-                                <span><i class="fas fa-times-circle"></i>&nbsp;[s`Remove`]</span>
+                            <a href="javascript:void(0);" class="button smaller rounded light-gray nowrap">
+                                <span><i class="fas fa-trash-alt text-red"></i></span>
                             </a>
                         </div>
                     </div>
@@ -82,25 +91,25 @@
                     <div class="field">
                         <div class="name for-input">[s`Host`]</div>
                         <div class="value">
-                            <input type="text" data-name="host" value="{$config.host|default:null|escape}" />
+                            <input type="text" data-name="host" class="long" value="{$config.host|default:null|escape}" />
                         </div>
                     </div>
                     <div class="field">
                         <div class="name for-input">[s`Port`]</div>
                         <div class="value">
-                            <input type="text" placeholder="25" data-name="port" value="{$config.port|default:null|escape}" />
+                            <input type="text" placeholder="25" data-name="port" class="shorter number" value="{$config.port|default:null|escape}" />
                         </div>
                     </div>
                     <div class="field">
                         <div class="name for-input">[s`Login name`]</div>
                         <div class="value">
-                            <input type="text" data-name="login" value="{$config.login|default:null|escape}" />
+                            <input type="text" data-name="login" class="long" value="{$config.login|default:null|escape}" />
                         </div>
                     </div>
                     <div class="field">
                         <div class="name for-input">[s`Password`]</div>
                         <div class="value">
-                            <input type="text" data-name="password" value="{$config.password|default:null|escape}" />
+                            <input type="text" data-name="password" class="long" value="{$config.password|default:null|escape}" />
                         </div>
                     </div>
                     <div class="field">
@@ -127,7 +136,7 @@
                         <div class="field">
                             <div class="name for-input">[s`POP3 port`]</div>
                             <div class="value">
-                                <input type="text" data-name="pop3_port" value="{$config.pop3_port|default:null|escape}" />
+                                <input type="text" class="shorter number" data-name="pop3_port" value="{$config.pop3_port|default:null|escape}" />
                             </div>
                         </div>
                     {/if}
@@ -139,7 +148,7 @@
                     <div class="field">
                         <div class="name for-input">[s`Command`]</div>
                         <div class="value">
-                            <input type="text" placeholder="/usr/sbin/sendmail -bs" data-name="command" value="{ifset($config.command)|escape}" />
+                            <input type="text" placeholder="/usr/sbin/sendmail -bs" class="long" data-name="command" value="{ifset($config.command)|escape}" />
                         </div>
                     </div>
                 </div>
@@ -182,7 +191,7 @@
                         <div class="value submit">
                             <div class="js-dkim-info"{if !isset($config.dkim)} style="display:none;"{/if}>
                                 <div class="field">
-                                    <p>
+                                    <p class="small">
                                         [s`Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name`]
                                         &nbsp;<span class="js-sender-domain-0" style="font-weight: bold;">{ifset($config.domain)|escape}</span>
                                     </p>
@@ -231,14 +240,39 @@
 {/function}
 <div class="article s-email-settings-page" id="s-email-settings-page">
   <div class="article-body">
-    <h1 class="s-page-header">[s`Email settings`]</h1>
+    <div class="flexbox full-width">
+        <div class="wide"><h1 class="s-page-header custom-mb-0">[s`Email settings`]</h1></div>
+        <div><a href="{$wa_app_url}webasyst/settings/email/template/" class="button light-gray small outlined custom-mt-4"><i class="fas fa-file-alt custom-mr-6"></i>[s`Email templates`]</a></div>
+    </div>
 
     {* Incoming / outgoing emails *}
     <form action="?module=settingsEmailSave" class="fields">
+        {if $wa_sender_html}
+        <div class="fields-group blank">
+            <h3>[s`Webasyst Email`]</h3>
+            {$wa_sender_html}
+        </div>
+        {/if}
+
+        {* Editor for wa-config/mail.php *}
+        <div class="fields-group blank s-settings-items">
+            <div class="field">
+                <div class="name for-input">
+                    <label for="config-sender">[s`Default sender`]</label>
+                </div>
+                <div class="value">
+                    <input type="text" class="long bold" name="sender" value="{$sender|escape}" id="config-sender" placeholder="noreply@email"><br>
+                    <p class="hint">[s`Reply-To address for system email notifications sent by Webasyst.`]</p>
+                    <p class="hint s-error js-error-place"></p>
+                </div>
+            </div>
+           {_renderConfig key='default' config=$main_configs.default is_template=false}
+        </div>
+
         <div class="fields-group blank">
             <div class="field">
-                <div class="name">
-                    <label for="config-email">[s`Email address for notifications`]</label>
+                <div class="name for-input">
+                    <label for="config-email">[s`Inbox for notifications`]</label>
                 </div>
                 <div class="value">
                     <input type="text" class="long" name="email" value="{$email|escape}" id="config-email" placeholder="your@email"><br>
@@ -246,40 +280,29 @@
                     <p class="hint s-error js-error-place"></p>
                 </div>
             </div>
-
-            <div class="field">
-                <div class="name">
-                    <label for="config-sender">[s`Sender email address`]</label>
-                </div>
-                <div class="value">
-                    <input type="text" class="long" name="sender" value="{$sender|escape}" id="config-sender" placeholder="noreply@email"><br>
-                    <p class="hint">[s`Reply-To address for system email notifications sent by Webasyst.`]</p>
-                    <p class="hint s-error js-error-place"></p>
-                </div>
-            </div>
         </div>
 
-        {* Editor for wa-config/mail.php *}
-
-        <h4 class="heading black">[s`Default sending parameters`]</h4>
-        <p class="hint">{sprintf(_ws('The email sending parameters specified below are used by default for all outgoing email messages. If you need to use other parameters for all or certain sender addresses or domains then add extra rules using the “<strong>%s</strong>” button.'), _ws('Add email sending rule'))}</p>
-
-        <div class="fields-group blank s-settings-items">
-           {_renderConfig key='default' config=$main_configs.default is_template=false}
-        </div>
-
-        <h4 class="heading black">[s`Additional sending parameters`]</h4>
-
-        <a href="javascript:void(0);" class="button gray rounded outlined s-add-item js-add-item"><span><i class="fas fa-plus-circle"></i> [s`Add email sending rule`]</span></a>
 {strip}
-        <div class="fields-group blank s-settings-items js-settings-items">
-            {foreach $main_configs as $key => $config}
-                {if $key !== 'default'}
-                    {_renderConfig key=$key config=$config is_template=false}
-                {/if}
-            {/foreach}
+        <div class="fields-group blank">
+
+            <h4 class="heading">[s`Additional sending parameters`]</h4>
+            <p class="small">[s`Rules below always override the defaults when applicable.`]
+
+            <div class="custom-mb-20">
+                <a href="javascript:void(0);" class="button light-gray small s-add-item custom-mt-0 js-add-item"><span><i class="fas fa-plus-circle text-green custom-mr-4"></i> [s`Add email sending rule`]</span></a>
+            </div>
+
+            <div class="s-settings-items js-settings-items">
+                {foreach $main_configs as $key => $config}
+                    {if $key !== 'default'}
+                        {_renderConfig key=$key config=$config is_template=false}
+                    {/if}
+                {/foreach}
+            </div>
+
         </div>
 {/strip}
+
         {include file="./SettingsSaveBtn.inc.html" settings_page="email" inline}
     </form>
     {_renderConfig key=null is_template=true}

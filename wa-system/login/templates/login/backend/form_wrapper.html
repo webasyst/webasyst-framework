@@ -55,7 +55,7 @@
     {$classes = join(' ', $classes)}
 
     <div class="{$classes}" id="{$wrapper_id}">
-        <h1 class="wa-login-form-title">{$renderer->getTitle()|truncate:20:'...'|escape}</h1>
+        <h1 class="wa-login-form-title custom-mt-8 break-word">{$renderer->getTitle()|truncate:32:'...'|escape}</h1>
         {$html}
     </div>
 

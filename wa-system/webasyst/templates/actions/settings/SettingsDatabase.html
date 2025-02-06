@@ -10,7 +10,12 @@
                     [s`MySQL version`]
                 </div>
                 <div class="value">
-                    {$mysql_version} <span class="hint">{if $mb4_is_supported}[s`supports emoji`]{else}[s`does not support emoji`]{/if}</span>
+                    {$mysql_version}
+                    {if $mb4_is_supported}
+                        <p class="state-success-hint"><i class="fas fa-check-circle"></i> [s`supports emoji`]</p>
+                    {else}
+                        <p class="state-caution-hint"><i class="fas fa-times-circle"></i> [s`does not support emoji`]</p>
+                    {/if}
                 </div>
             </div>
 
@@ -20,7 +25,7 @@
                    [s`Database`]
                 </div>
                 <div class="value">
-                    {$db_name}
+                    <code>{$db_name}</code>
                 </div>
             </div>
 
@@ -32,24 +37,28 @@
                         [s`Connection charset`]
                     </div>
                     <div class="value">
-                        {$connection_charset}
+                        <code>{$connection_charset}</code>
                     </div>
                 </div>
 
             {/if}
 
-            {*  *}
             {if $mb4_is_supported}
+
+                <hr class="custom-mt-16">
                 <div class="field">
-                    <div class="name">
-                        [s`Tables and fields without emoji support`]
+                    <div class="name for-input">
+                        [s`Emojies won’t display?`]
                     </div>
 
                     <div class="value">
                         {if $is_debug}
-                            <a href="javascript:void(0);" class="{if $wa->isMobile()}smallest {/if}inline-link js-show-list button rounded gray"><i class="fas fa-plus-circle"></i> [s`Proceed to adding emoji support`]</a>
+                            <a href="javascript:void(0);" class="{if $wa->isMobile()}smallest {/if}inline-link js-show-list button small outlined gray"><i class="fas fa-cogs"></i> [s`Tables and fields without emoji support`]</a>
                         {else}
-                            <p>[s`To add emoji support enable <b>Debug mode</b> in <b>General settings</b>.`]</p>
+                            <p class="small state-caution">
+                                <i class="fas fa-code"></i>
+                                [s`To add emoji support enable <b>Debug mode</b> in <b>General settings</b>.`]
+                            </p>
                         {/if}
                     </div>
                 </div>

@@ -67,6 +67,9 @@ class waPluginsActions extends waActions
 
                 $vars['plugin_id'] = $plugin_id;
                 $vars['settings_controls'] = $settings_controls;
+                if (!$settings_controls) {
+                    $vars['settings_disclaimer_html'] = $plugin->getSettingsDisclaimerHtml();
+                }
             }
             waSystem::popActivePlugin();
         }

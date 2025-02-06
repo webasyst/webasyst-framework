@@ -390,6 +390,15 @@ class waPlugin
     }
 
     /**
+     * @return string HTML to show on empty plugin settings page below "Plugin is installed and working."
+     * @since 3.5.0
+     */
+    public function getSettingsDisclaimerHtml()
+    {
+        return '';
+    }
+
+    /**
      * Returns plugin's settings values.
      * @param string|null $name Optional key to return one setting's value. If empty, all settings' values are returned.
      * @return mixed

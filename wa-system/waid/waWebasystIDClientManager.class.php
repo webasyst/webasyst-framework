@@ -45,7 +45,7 @@ class waWebasystIDClientManager
     {
         $credentials = $this->getAppSettingsModel()->get('webasyst', 'waid_credentials');
         $credentials = json_decode($credentials, true);
-        if (is_array($credentials) && isset($credentials['client_id']) && isset($credentials['client_secret'])) {
+        if (is_array($credentials) && isset($credentials['client_id']) && isset($credentials['client_secret']) && wa()->appExists('installer')) {
             return $credentials;
         }
         return null;
@@ -94,6 +94,10 @@ class waWebasystIDClientManager
      */
     public function connect()
     {
+        if (!wa()->appExists('installer')) {
+            throw new waException(_ws('Installer app is required to use Webasyst ID'));
+        }
+
         $options = [
             'timeout' => 30,
             'format' => waNet::FORMAT_JSON
@@ -112,7 +116,15 @@ class waWebasystIDClientManager
                 'method' => __METHOD__,
                 'debug' => $net->getResponseDebugInfo()
             ]);
-            return $this->packFailResult("fail_" . $e->getCode(), $e->getMessage());
+
+            $error_code = 'fail_' . $e->getCode();
+            $error_message = $e->getMessage();
+            $error_data = json_decode($error_message, true);
+            if (!empty($error_data)) {
+                $error_code = ifempty($error_data, 'errors', 'error', $error_code);
+                $error_message = ifempty($error_data, 'errors', $error_code, ifempty($error_data, 'errors', 'error_description', $error_message));
+            }
+            return $this->packFailResult($error_code, $error_message);
         }
 
         // No response from API
@@ -263,8 +275,8 @@ class waWebasystIDClientManager
     public function getSystemAccessToken($force_refresh = false)
     {
         $system_access_token = $this->getAppSettingsModel()->get('webasyst', 'waid_system_access_token');
-        if (!empty($system_access_token) && 
-            !(new waWebasystIDAccessTokenManager)->isTokenExpired($system_access_token) && 
+        if (!empty($system_access_token) &&
+            !(new waWebasystIDAccessTokenManager)->isTokenExpired($system_access_token) &&
             !$force_refresh
         ) {
             return $system_access_token;

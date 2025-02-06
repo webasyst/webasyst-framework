@@ -29,16 +29,20 @@ class webasystHelper
 
         $items = array(
             'general'        => array(
-                'name' => _ws('General settings'),
+                'name' => _ws('General'),
                 'url'  => $app_url,
             ),
-            'field'          => array(
-                'name' => _ws('Contact fields'),
-                'url'  => $app_url.'field/',
+            'email'          => array(
+                'name' => _ws('Email'),
+                'url'  => $app_url.'email/',
             ),
-            'regions'        => array(
-                'name' => _ws('Countries & regions'),
-                'url'  => $app_url.'regions/',
+            'sms'            => array(
+                'name' => _ws('SMS'),
+                'url'  => $app_url.'sms/',
+            ),
+            'push'           => array(
+                'name' => _ws('Push'),
+                'url'  => $app_url.'push/',
             ),
             'maps'           => array(
                 'name' => _ws('Maps'),
@@ -48,38 +52,26 @@ class webasystHelper
                 'name' => _ws('Captcha'),
                 'url'  => $app_url.'captcha/',
             ),
-            'push'           => array(
-                'name' => _ws('Web push notifications'),
-                'url'  => $app_url.'push/',
+            'field'          => array(
+                'name' => _ws('Contact fields'),
+                'url'  => $app_url.'field/',
             ),
-            'email'          => array(
-                'name' => _ws('Email settings'),
-                'url'  => $app_url.'email/',
-            ),
-            'email-template' => array(
-                'name' => _ws('Email templates'),
-                'url'  => $app_url.'email/template/',
-            ),
-            'sms'            => array(
-                'name' => _ws('SMS providers'),
-                'url'  => $app_url.'sms/',
-            ),
-            'sms-template'   => array(
-                'name' => _ws('SMS templates'),
-                'url'  => $app_url.'sms/template/',
+            'regions'        => array(
+                'name' => _ws('Countries & regions'),
+                'url'  => $app_url.'regions/',
             ),
             'auth'           => array(
                 'name' => _ws('Backend authorization'),
                 'url'  => $app_url.'auth/',
             ),
+            'db'             => array(
+                'name' => _w('Database'),
+                'url'  => $app_url.'db/',
+            ),
             'waid'          => array(
                 'name' => _w('Webasyst ID'),
                 'url'  => $app_url.'waid/',
             ),
-            'db'             => array(
-                'name' => _w('Database'),
-                'url'  => $app_url.'db/',
-            )
         );
 
         /**

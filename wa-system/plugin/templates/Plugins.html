@@ -17,6 +17,7 @@
         top: .5rem;
         right: .5rem;
     }
+    [data-theme="dark"] #wa-plugin-list > li .hint { color: var(--text-color-hint-strong); }
     </style>
 {/if}
 
@@ -32,7 +33,10 @@
                     <div class="box custom-mt-8 custom-mb-0">
                         <a href="{$plugins_hash}/" data-url="{$plugins_list_url|escape}" class="button webasyst-magic-wand shadowed full-width js-plugins-list custom-py-8">
                             <i class="icon"></i>
-                            {sprintf('[s`All plugins for %s`]', $wa->appName())}
+                            {sprintf(
+                                '[s`All plugins › %s`]',
+                                sprintf('<strong>%s</strong>', $wa->appName())
+                            )}
                         </a>
                     </div>
                 {/if}

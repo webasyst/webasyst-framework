@@ -62,11 +62,27 @@
                 <p class="wa-header-sitename flexbox middle space-16">
                     <span class="h2 wa-sitename{if $request_uri == $backend_url || $request_uri == "`$backend_url`/"} is-main-dashboard{/if}">{$wa->accountName()|truncate:42}</span>
                 </p>
-                {if $has_dasboard && $wa->user()->getRights('team', 'edit_announcements')}
-                    <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new larger button rounded light-gray small">
-                        <i class="fas fa-bell text-gray custom-mr-4"></i>
-                        [`Add announcement`]
-                    </a>
+                {if $has_dasboard}
+                    {if $wa->user()->getRights('team', 'edit_announcements')}
+                        <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new larger button rounded light-gray small">
+                            <i class="fas fa-bell text-gray custom-mr-4"></i>
+                            [`Add announcement`]
+                        </a>
+                    {/if}
+                    <div class="dropdown" id="wa-announcement-links">
+                        <span class="dropdown-toggle without-arrow">
+                            <i class="fas fa-ellipsis-h custom-ml-4 text-gray"></i>
+                        </span>
+                        <div class="dropdown-body right">
+                            <ul class="menu">
+                                <li>
+                                    <a href="javascript:void(0)" class="js-show-hidden-announcements">
+                                        <span>[s`Show read items`]</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 {/if}
             </div>
             {if $has_dasboard}
@@ -233,7 +249,7 @@
     <script>
         $(function () {
             new WaHeader();
-            new BellAnnouncement();
+            new WaBellAnnouncement();
 
             /* Active All Notifications On Main Dashboard */
             {* old logic {if !empty($notifications) && ($request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard)} *}
@@ -249,6 +265,12 @@
                     $(this).next('.alert-fixed-box').toggle().removeClass('hidden');
                 });
             {/if}
+
+            $("#wa-announcement-links").waDropdown({
+                {if $wa->isMobile()}
+                    hover: false
+                {/if}
+            });
 
             /* Frontend links */
             $("#wa-frontend-links").waDropdown({

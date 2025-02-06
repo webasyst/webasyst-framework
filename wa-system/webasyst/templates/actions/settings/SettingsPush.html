@@ -2,7 +2,7 @@
 <div class="article s-push-settings-page" id="s-push-settings-page">
   <div class="article-body">
     <h1 class="s-page-title">[s`Web push notifications`]</h1>
-    <p class="s-description">[s`Select and configure a service for sending web push notifications.`]</p>
+    <p class="s-description small">[s`Selected service provider will be used as a default across all Webasyst apps.`]</p>
     <form action="?module=settingsPushSave" class="fields">
         <div class="fields-group blank">
             <div class="field">
@@ -19,30 +19,29 @@
                             </label>
                         </li>
 
-                            {if !empty($push_adapters)}
+                        {if !empty($push_adapters)}
                             {foreach $push_adapters as $_adapter}
-                            {$_adapter_id = $_adapter->getId()}
-                            {$_adapter_name = $_adapter->getName()}
-                            {$_adapter_settings = $_adapter->getSettingsHtml(['namespace'=>'push_settings'])}
-                        <li>
-                            <label>
-                                <span class="wa-radio">
-                                    <input type="radio" name="push_adapter" {if $_adapter_id == $selected_push_adapter}checked{/if} value="{$_adapter_id}">
-                                    <span></span>
-                                </span>
-                                {$_adapter_name|escape}
-                            </label>
-                            {if !empty($_adapter_settings)}
-                            <div class="js-push-adapter-settings small box" data-adapter-id="{$_adapter_id}" style="display: none;">
-                                {$_adapter_settings}
-                            </div>
-                        </li>
-                            {/if}
+                                {$_adapter_id = $_adapter->getId()}
+                                {$_adapter_name = $_adapter->getName()}
+                                {$_adapter_settings = $_adapter->getSettingsHtml(['namespace'=>'push_settings'])}
+                                <li>
+                                    <label>
+                                        <span class="wa-radio">
+                                            <input type="radio" name="push_adapter" {if $_adapter_id == $selected_push_adapter}checked{/if} value="{$_adapter_id}">
+                                            <span></span>
+                                        </span>
+                                        {$_adapter_name|escape}
+                                    </label>
+                                    {if !empty($_adapter_settings)}
+                                        <div class="js-push-adapter-settings custom-m-20" data-adapter-id="{$_adapter_id}" style="display: none;">
+                                            {$_adapter_settings}
+                                        </div>
+                                    {/if}
+                                </li>
                             {/foreach}
-                            {else}
+                        {else}
                             [s`No web push notifications services available`]
-                            {/if}
-
+                        {/if}
                     </ul>
                 </div>
             </div>

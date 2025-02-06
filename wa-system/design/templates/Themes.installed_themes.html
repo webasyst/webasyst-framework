@@ -94,8 +94,21 @@
                 });
 
                 $wrapper.on("click", "a", function(event) {
+                    event.stopPropagation();
                     let $theme = $(this).closest(".s-theme-wrapper");
-                    $("#wa-design-container").load( $theme.data("load") );
+
+                    $("#wa-design-container").load( $theme.data("load"), function (responseText) {
+                        try {
+                            let response = $.parseJSON(responseText);
+                            if (response) {
+                                if (response.data && response.data.redirect) {
+                                    let href = location.href.replace(/#.*$/, '') + response.data.redirect;
+                                    location.replace(href);
+                                }
+                            }
+                        } catch (e) {
+                        }
+                    });
 
                     const $preview_dd = $('.js-wa-preview-dd');
                     $preview_dd.find('.wa-theme-preview').removeClass('dropdown-toggle').find('.fa-external-link-alt').removeClass('hidden');

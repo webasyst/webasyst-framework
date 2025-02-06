@@ -1186,6 +1186,51 @@ HTML;
         };
 
         var initDatePicker = function () {
+
+            var updateTimeSelectorAvailableOptions = function(date) {
+                if (!date || !interval || !interval.length) {
+                    return;
+                }
+
+                /** @var int day week day (starts from 0) */
+                var day = (date.getDay() + 6) % 7;
+                var timestamp = date.getTime();
+                var day_type = dayType(date);
+                /** filter select by days */
+                var value = typeof(interval.val()) !== 'undefined';
+                var matched = null;
+                interval.find('option').each(function () {
+                    /** @this HTMLOptionElement */
+                    var option = $(this);
+
+                    var disabled = !this.value || intervalAllowed(option, timestamp, day, day_type) ? null: 'disabled';
+                    option.attr('disabled', disabled);
+                    if (disabled) {
+                        if (this.selected) {
+                            value = false;
+                        }
+                    } else {
+                        matched = this;
+                        if (!value) {
+                            this.selected = true;
+                            value = !!this.value;
+                            if (typeof(interval.highlight) === 'function') {
+                                interval.highlight();
+                            }
+                        }
+                    }
+                });
+
+                if (value) {
+                    interval.removeClass('error');
+                } else if (matched) {
+                    matched.selected = true;
+                    interval.removeClass('error');
+                } else {
+                    interval.addClass('error');
+                }
+            };
+
             var container = $('#{$calendar_id}');
             container.datepicker({
                 "altField": (multiple_dates === false?('#{$date_formatted_params['id']}'):null),
@@ -1216,43 +1261,7 @@ HTML;
                     } else {
                         input_date.val(dateText);
                         if (date && interval && interval.length) {
-                            /** @var int day week day (starts from 0) */
-                            var day = (date.getDay() + 6) % 7;
-                            var timestamp = date.getTime();
-                            var day_type = dayType(date);
-                            /** filter select by days */
-                            var value = typeof(interval.val()) !== 'undefined';
-                            var matched = null;
-                            interval.find('option').each(function () {
-                                /** @this HTMLOptionElement */
-                                var option = $(this);
-
-                                var disabled = !this.value || intervalAllowed(option, timestamp, day, day_type) ? null: 'disabled';
-                                option.attr('disabled', disabled);
-                                if (disabled) {
-                                    if (this.selected) {
-                                        value = false;
-                                    }
-                                } else {
-                                    matched = this;
-                                    if (!value) {
-                                        this.selected = true;
-                                        value = !!this.value;
-                                        if (typeof(interval.highlight) === 'function') {
-                                            interval.highlight();
-                                        }
-                                    }
-                                }
-                            });
-
-                            if (value) {
-                                interval.removeClass('error');
-                            } else if (matched) {
-                                matched.selected = true;
-                                interval.removeClass('error');
-                            } else {
-                                interval.addClass('error');
-                            }
+                            updateTimeSelectorAvailableOptions(date);
                         }
                     }
                 },
@@ -1287,6 +1296,10 @@ HTML;
                     return [available, css_class.length?css_class.join(' '):'', tooltip.length?tooltip.join('\\n'):null]
                 }
             });
+
+            setTimeout(function() {
+                updateTimeSelectorAvailableOptions(container.datepicker('getDate'));
+            }, 0);
 
             container.find(".ui-datepicker").each( function() {
                 $(this).css({ zIndex: 1000 });

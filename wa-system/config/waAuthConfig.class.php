@@ -458,7 +458,7 @@ abstract class waAuthConfig
                 'name' => _ws('Never require'),
             ),
             waAuthConfig::LOGIN_CAPTCHA_ALWAYS => array(
-                'name' => _ws('Require at once'),
+                'name' => _ws('Always require'),
             )
         );
     }

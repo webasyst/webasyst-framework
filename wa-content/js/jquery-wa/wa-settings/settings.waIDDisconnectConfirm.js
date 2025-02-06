@@ -30,7 +30,9 @@ class WASettingsWaIDDisconnectConfirm {
             onOpen: function () {
                 that.$button.on('click', function (e) {
                     e.preventDefault();
-                    that.disconnect();
+                    $.wa.confirmOptionDeactivation(() => {
+                        that.disconnect();
+                    });
                 });
             },
             onClose: function () {

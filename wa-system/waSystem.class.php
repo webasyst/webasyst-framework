@@ -925,6 +925,17 @@ class waSystem
                 waFiles::create($this->getConfig()->getPath('cache').'/config');
                 $all_apps = include($this->getConfig()->getPath('config', 'apps'));
                 $all_apps['webasyst'] = true;
+
+                // Force enable Installer app in case Webasyst ID is used.
+                // Installer is required for WAID to work properly.
+                if (empty($all_apps['installer'])) {
+                    try {
+                        $waid_enabled = $this->getSetting('waid_credentials', null, 'webasyst');
+                        $all_apps['installer'] = !!$waid_enabled;
+                    } catch (Throwable $e) {
+                    }
+                }
+
                 self::$apps = array();
                 foreach ($all_apps as $app => $enabled) {
                     if ($enabled) {

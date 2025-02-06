@@ -149,7 +149,7 @@ class webasystBackendActions extends waViewActions
             $groups = teamHelper::getVisibleGroups() + teamHelper::getVisibleLocations();
 
             $contacts = teamUser::getList('users', array(
-                'fields' => 'id,name,photo_url_96',
+                'fields' => 'id,name,photo_url_96,phone',
                 'order' => 'name',
             ));
 
@@ -159,7 +159,7 @@ class webasystBackendActions extends waViewActions
                 $groups = $group_model->getAll();
 
                 $col = new waContactsCollection('users');
-                $contacts = $col->getContacts('id,name,photo_url_96', 0, 500);
+                $contacts = $col->getContacts('id,name,photo_url_96,phone', 0, 500);
             } else {
                 $groups = [];
                 $contacts = [];
@@ -168,12 +168,19 @@ class webasystBackendActions extends waViewActions
         foreach($groups as &$g) {
             $g['contact_ids'] = [];
         }
+        unset($g);
         $user_groups_model = new waUserGroupsModel();
         foreach($user_groups_model->getAll() as $row) {
             if (!empty($groups[$row['group_id']])) {
                 $groups[$row['group_id']]['contact_ids'][] = $row['contact_id'];
             }
         }
+
+        foreach($contacts as &$c) {
+            $c['has_phone'] = !empty($c['phone']);
+            unset($c['phone']);
+        }
+        unset($c);
 
         $this->view->assign([
             'current_app'              => wa()->getApp(),
@@ -189,7 +196,11 @@ class webasystBackendActions extends waViewActions
             'activity_load_more'       => $activity_load_more,
             'activity'                 => $activity,
             'is_admin'                 => $is_admin,
-            'notifications'            => $this->getAnnouncements(['backend_header_notification' => true]),
+            'notifications'            => $this->getAnnouncements([
+                                              'backend_header_notification' => true,
+                                              'keep_unpublished' => true,
+                                              'load_reactions' => true,
+                                          ]),
             'request_uri'              => waRequest::server('REQUEST_URI'),
             'show_tutorial'            => !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'),
             'public_dashboards'        => $this->getPublicDashboards(),

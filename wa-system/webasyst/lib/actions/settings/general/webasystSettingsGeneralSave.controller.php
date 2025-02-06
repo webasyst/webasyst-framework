@@ -94,6 +94,7 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
         }
 
         if ($flush) {
+            wa()->getStorage()->del('apps-count');
             wa()->getConfig()->clearCache();
         }
 

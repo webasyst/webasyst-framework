@@ -54,7 +54,7 @@ class WASettingsWaIDConnectDialog {
                     that.$success_block.show();
                     that.$process_block.hide();
                     that.$dialog.trigger('connected', [r.data, that]);
-
+                    $('#wa-app-navigation .js-balance-wrapper').remove();
                     return;
                 }
 

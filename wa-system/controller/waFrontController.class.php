@@ -128,6 +128,10 @@ class waFrontController
 
     protected function executeWidget($action = null)
     {
+        // Old UI 1.3 is now disabled on dashboard
+        waRequest::setParam('check_app_info', 0);
+        waRequest::setParam('force_ui_version', '2.0');
+
         $widget = $this->system->getWidget(waRequest::get('id'));
         if (!$widget->isAllowed()) {
             throw new waException(_ws('You don’t have permissions to view this widget'), 403);

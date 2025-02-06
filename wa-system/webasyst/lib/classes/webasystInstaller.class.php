@@ -140,7 +140,13 @@ CLI;
     public function connectToWaid($source='install.php')
     {
         if (!class_exists('waWebasystIDClientManager')) {
-            return; // paranoid
+            // paranoid
+            return [
+                'status' => false,
+                'details' => [
+                    'error_code' => 'class_not_exists',
+                ]
+            ];
         }
         try {
             $manager = new waWebasystIDClientManager();
@@ -157,6 +163,7 @@ CLI;
                     $log[] = "Error code {$error_code}: {$error_message}";
                     $log[] = wa_dump_helper($result);
                     waLog::log(join("\n", $log), 'webasyst/waWebasystIDClientManager.log');
+                    return $result;
                 }
             }
         } catch (waException $e) {
@@ -166,8 +173,15 @@ CLI;
             $log[] = "Call stack:";
             $log[] = $e->getFullTraceAsString();
             waLog::log(join("\n", $log), 'webasyst/waWebasystIDClientManager.log');
+            return [
+                'status' => false,
+                'details' => [
+                    'error_code' => $e->getCode(),
+                    'error_message' => $e->getMessage(),
+                ]
+            ];
         }
-
+        return ['status' => true];
     }
 
     protected function populateTable($table)

@@ -9,7 +9,8 @@ class waAnnouncementModel extends waModel
         $ignore_list = $this->getByApps($contact_id, $apps);
         $ignore_ids = array_column($ignore_list, 'id');
 
-        $where = $params = [];
+        $where = [];
+        $params = [date('Y-m-d H:i:s')]; // is_unpublished in SELECT
         if ($ignore_ids) {
             $where[] = "id NOT IN (?)";
             $params[] = $ignore_ids;
@@ -18,8 +19,9 @@ class waAnnouncementModel extends waModel
             $where[] = "id < ?";
             $params[] = $before_id;
         } else {
-            $where[] = "datetime <= ?";
+            $where[] = "(a.datetime <= ? OR (a.contact_id = ? AND a.app_id = 'webasyst' AND a.type = 'markdown'))";
             $params[] = date('Y-m-d H:i:s');
+            $params[] = wa()->getUser()->getId();
         }
 
         $where[] = "(a.contact_id = ? OR a.access = 'all' OR ar.group_id IN (?))";
@@ -34,7 +36,7 @@ class waAnnouncementModel extends waModel
         $limit = ifempty($limit, 15);
 
         $sql = "
-            SELECT a.*
+            SELECT a.*, a.datetime > ? AS is_unpublished
             FROM {$this->table} AS a
                 LEFT JOIN wa_announcement_rights AS ar
                     ON ar.announcement_id=a.id
@@ -96,7 +98,9 @@ class waAnnouncementModel extends waModel
             }
         }
 
-        $query_params = [];
+        $query_params = [
+            date('Y-m-d H:i:s'), // is_unpublished in SELECT
+        ];
 
         if ($where) {
             $where  = "(".implode("\nOR ", $where).")";
@@ -105,10 +109,14 @@ class waAnnouncementModel extends waModel
         }
 
         if ($after_time) {
-            $where .= "\nAND datetime >= '".$this->escape($after_time)."'";
+            $where .= "\nAND datetime >= ?";
+            $query_params[] = $after_time;
         }
-        $where .= "\nAND datetime <= '".date('Y-m-d H:i:s')."'";
-        $where .= "\nAND (ttl_datetime IS NULL OR ttl_datetime > '".$this->escape(date('Y-m-d H:i:s'))."')";
+        $where .= "\nAND (a.datetime <= ? OR (a.contact_id = ? AND a.app_id = 'webasyst' AND a.type = 'markdown'))";
+        $query_params[] = date('Y-m-d H:i:s');
+        $query_params[] = wa()->getUser()->getId();
+        $where .= "\nAND (ttl_datetime IS NULL OR ttl_datetime > ?)";
+        $query_params[] = date('Y-m-d H:i:s');
 
         // Global admin does not automatically see all announcements
         //if ((new waContactRightsModel())->get($contact_id, 'webasyst', 'backend') <= 0) {
@@ -120,7 +128,7 @@ class waAnnouncementModel extends waModel
         //}
 
         $sql = "
-            SELECT a.*
+            SELECT a.*, a.datetime > ? AS is_unpublished
             FROM {$this->table} AS a
                 LEFT JOIN wa_announcement_rights AS ar
                     ON ar.announcement_id=a.id
@@ -137,7 +145,7 @@ class waAnnouncementModel extends waModel
         if (!$app_ids) {
             return 0;
         }
-        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE app_id IN (?) AND datetime <= ?";
-        return (int) $this->query($sql, [$app_ids, date('Y-m-d H:i:s')])->fetchField();
+        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE app_id IN (?) AND (`datetime` <= ? OR (`contact_id` = ? AND `app_id` = 'webasyst' AND `type` = 'markdown'))";
+        return (int) $this->query($sql, [$app_ids, date('Y-m-d H:i:s'), wa()->getUser()->getId()])->fetchField();
     }
 }

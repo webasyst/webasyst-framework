@@ -1606,7 +1606,7 @@ HTML;
     }
 
     /**
-     * @since 10.0.1
+     * @since 3.0.1
      */
     public function headerSingleAppUser()
     {

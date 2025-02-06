@@ -1,183 +1,185 @@
 {$_is_trial = $theme.type === waTheme::TRIAL}
 {$is_only_settings = $only_settings|default:false}
-{if !$is_only_settings}
+
 <script src="{$wa_url}wa-content/js/jquery-wa/design/theme.settings.js?v{$wa->version()}"></script>
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design/theme.settings.css?{$wa->version()}">
 {function name="_renderThemeSetting" _setting_var=_setting_var _setting=[]}
-{$_h_level = $_setting.level + 2}
-{strip}
-    {* GROUP DIVIDER *}
-    {if $_setting.control_type == 'group_divider'}
-        {$_global_divider = $_setting.level == 1}
-        {$_not_empty_global_divider = $_global_divider && !empty($_setting.items)}
+    {strip}
+        {$_h_level = $_setting.level + 2}
 
-        <div class="fields-group{if !empty($_setting.invisible)} invisible-setting{/if}"{if $_global_divider} data-divider-id="{$_setting_var}"{/if}>
-            {* Group divider name *}
-            <h{$_h_level} class="wa-theme-setting-divider-name js-divider-name js-search-item"
-                          data-name="{$_setting.name|escape}"
-                          data-divider-level="{$_setting.level}"
-                          data-search="{strip_tags($_setting.name)}">
-                <span class="{if $_setting.var === waTheme::OBSOLETE_SETTINGS_DIVIDER}gray {/if}js-search-item-name">{$_setting.name}</span>
-            </h{$_h_level}>
+        {* GROUP DIVIDER *}
+        {if $_setting.control_type == 'group_divider'}
+            {$_global_divider = $_setting.level == 1}
+            {$_not_empty_global_divider = $_global_divider && !empty($_setting.items)}
 
-            {* Group divider tooltip *}
-            {if !empty($_setting.tooltip)}
-            <span class="custom-ml-4" data-wa-tooltip-content="{$_setting.tooltip}">
-                <i class="fas fa-info-circle fa-xs divider-tooltip-{$_setting.level}"></i>
-            </span>
-            {/if}
+            <div class="fields-group{if !empty($_setting.invisible)} invisible-setting{/if}"{if $_global_divider} data-divider-id="{$_setting_var}"{/if}>
+                {* Group divider name *}
+                <h{$_h_level} class="wa-theme-setting-divider-name js-divider-name js-search-item"
+                              data-name="{$_setting.name|escape}"
+                              data-divider-level="{$_setting.level}"
+                              data-search="{strip_tags($_setting.name)}">
+                    <span class="{if $_setting.var === waTheme::OBSOLETE_SETTINGS_DIVIDER}gray {/if}js-search-item-name">{$_setting.name}</span>
+                </h{$_h_level}>
 
-            {* Group divider settings *}
-            {if !empty($_setting.items)}
-                <div class="wa-theme-settings-group js-settings-group custom-ml-0" data-divider-level="{$_setting.level}">
-                    {foreach $_setting.items as $_var => $_item}
-                        {_renderThemeSetting _setting_var=$_var _setting=$_item}
-                    {/foreach}
-                </div>
-            {/if}
-        </div>
-
-    {* PARAGRAPH *}
-    {elseif $_setting.control_type == 'paragraph'}
-        <div class="js-search-item" data-search="">
-            <div class="wa-theme-paragraph hint">{$_setting.name}</div>
-        </div>
-
-    {* SETTING *}
-    {else}
-        <div class="field{if !empty($_setting.invisible)} invisible-setting{/if} js-search-item"
-             data-name="{$_setting.name|escape}"
-             data-search="{strip_tags($_setting.name)}">
-            <div class="name">
-                {if $_setting.control_type == 'checkbox'}
-                    {$_field_name = "{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]"}
-                    <label class="js-search-item-name" for="{$_field_name}">{$_setting.name}</label>
-                {else}
-                    <span class="js-search-item-name">{$_setting.name}</span>
+                {* Group divider tooltip *}
+                {if !empty($_setting.tooltip)}
+                <span class="custom-ml-4" data-wa-tooltip-content="{$_setting.tooltip}">
+                    <i class="fas fa-info-circle fa-xs divider-tooltip-{$_setting.level}"></i>
+                </span>
                 {/if}
 
-                {if !empty($_setting.tooltip)}
-                    <span class="custom-ml-4" data-wa-tooltip-content="{$_setting.tooltip}">
-                        <i class="fas fa-info-circle fa-xs"></i>
-                    </span>
+                {* Group divider settings *}
+                {if !empty($_setting.items)}
+                    <div class="wa-theme-settings-group js-settings-group custom-ml-0" data-divider-level="{$_setting.level}">
+                        {foreach $_setting.items as $_var => $_item}
+                            {_renderThemeSetting _setting_var=$_var _setting=$_item}
+                        {/foreach}
+                    </div>
                 {/if}
             </div>
-            <div class="value{if in_array($_setting.control_type, ['select', 'radio', 'checkbox', 'file'])} no-shift{/if}">
 
-                {* SELECT *}
-                {if $_setting.control_type == 'select'}
-                    <div class="wa-select small">
-                        <select name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">
-                            {html_options options=$_setting.options selected=ifset($_setting.value)}
-                        </select>
-                    </div>
-                    {if !empty($_setting.description)}
-                        <div class="hint">{$_setting.description}</div>
+        {* PARAGRAPH *}
+        {elseif $_setting.control_type == 'paragraph'}
+            <div class="js-search-item" data-search="">
+                <div class="wa-theme-paragraph hint">{$_setting.name}</div>
+            </div>
+
+        {* SETTING *}
+        {else}
+            <div class="field{if !empty($_setting.invisible)} invisible-setting{/if} js-search-item"
+                 data-name="{$_setting.name|escape}"
+                 data-search="{strip_tags($_setting.name)}">
+                <div class="name">
+                    {if $_setting.control_type == 'checkbox'}
+                        {$_field_name = "{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]"}
+                        <label class="js-search-item-name" for="{$_field_name}">{$_setting.name}</label>
+                    {else}
+                        <span class="js-search-item-name">{$_setting.name}</span>
                     {/if}
 
-                {* RADIO *}
-                {elseif $_setting.control_type == 'radio'}
-                    {foreach $_setting.options as $v => $o}
-                        <label>
-                            <span class="wa-radio">
-                                <input {if ifset($_setting.value)==$v}checked{/if} type="radio" value="{$v}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" >
-                                 <span></span>
-                            </span>
-                            {$o.name}
-                            {if !empty($o.description)}
-                                <p class="hint">{$o.description}</p>
-                            {/if}
-                        </label>
-                    {/foreach}
-
-                {* COLOR *}
-                {elseif $_setting.control_type == 'color'}
-                    <input class="color small" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
-                    {if !empty($_setting.description)}
-                        <div class="hint">{$_setting.description}</div>
+                    {if !empty($_setting.tooltip)}
+                        <span class="custom-ml-4" data-wa-tooltip-content="{$_setting.tooltip}">
+                            <i class="fas fa-info-circle fa-xs"></i>
+                        </span>
                     {/if}
+                </div>
+                <div class="value{if in_array($_setting.control_type, ['select', 'radio', 'checkbox', 'file'])} no-shift{/if}">
 
-                {* CHECKBOX *}
-                {elseif $_setting.control_type == 'checkbox'}
-                    {$_field_name = "{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]"}
-                    <input type="hidden" name="{$_field_name}" value="">
-                    <label for="{$_field_name}">
-                        <span class="wa-checkbox">
-                            <input type="checkbox" name="{$_field_name}" id="{$_field_name}" {if $_setting.value}checked{/if} value="1">
-                            <span>
-                                <span class="icon">
-                                    <i class="fas fa-check"></i>
+                    {* SELECT *}
+                    {if $_setting.control_type == 'select'}
+                        <div class="wa-select small">
+                            <select name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">
+                                {html_options options=$_setting.options selected=ifset($_setting.value)}
+                            </select>
+                        </div>
+                        {if !empty($_setting.description)}
+                            <div class="hint">{$_setting.description}</div>
+                        {/if}
+
+                    {* RADIO *}
+                    {elseif $_setting.control_type == 'radio'}
+                        {foreach $_setting.options as $v => $o}
+                            <label>
+                                <span class="wa-radio">
+                                    <input {if ifset($_setting.value)==$v}checked{/if} type="radio" value="{$v}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" >
+                                     <span></span>
+                                </span>
+                                {$o.name}
+                                {if !empty($o.description)}
+                                    <p class="hint">{$o.description}</p>
+                                {/if}
+                            </label>
+                        {/foreach}
+
+                    {* COLOR *}
+                    {elseif $_setting.control_type == 'color'}
+                        <input class="color small" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
+                        {if !empty($_setting.description)}
+                            <div class="hint">{$_setting.description}</div>
+                        {/if}
+
+                    {* CHECKBOX *}
+                    {elseif $_setting.control_type == 'checkbox'}
+                        {$_field_name = "{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]"}
+                        <input type="hidden" name="{$_field_name}" value="">
+                        <label for="{$_field_name}">
+                            <span class="wa-checkbox">
+                                <input type="checkbox" name="{$_field_name}" id="{$_field_name}" {if $_setting.value}checked{/if} value="1">
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
                                 </span>
                             </span>
-                        </span>
-                    </label>
-                    {if !empty($_setting.description)}
-                        <div class="hint">{$_setting.description}</div>
-                    {/if}
-
-                {* IMAGE SELECT *}
-                {elseif $_setting.control_type == 'image_select'}
-                    <ul class="wa-theme-image-select thumbs">
-                        {if !empty($_setting.parent)}
-                            {$_url = $theme.parent_theme->getUrl()}
-                        {else}
-                            {$_url = $theme->getUrl()}
+                        </label>
+                        {if !empty($_setting.description)}
+                            <div class="hint">{$_setting.description}</div>
                         {/if}
-                        {foreach $_setting.options as $k => $v}
-                            <li{if $_setting.value == $k} class="selected"{/if} data-value="{$k}"><a href="#" class="transparent-sprite"><img src="{$_url}{$k}"></a></li>
-                        {/foreach}
-                    </ul>
-                    <input type="hidden" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
-                    {if !empty($_setting.description)}
-                        <div class="hint">{$_setting.description}</div>
-                    {/if}
 
-                {* IMAGE *}
-                {elseif $_setting.control_type == 'image'}
-                    <input type="hidden" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{ifset($_setting.value)}">
-                    <div class="upload-control">
-                        <div class="upload">
-                            <label class="link">
-                                <i class="fas fa-file-upload"></i>
-                                <span>[s`Select file`]</span>
-                                <input type="file" name="{if !empty($_setting.parent)}parent_{/if}image[{$_setting_var}]" autocomplete="off">
-                            </label>
+                    {* IMAGE SELECT *}
+                    {elseif $_setting.control_type == 'image_select'}
+                        <ul class="wa-theme-image-select thumbs">
+                            {if !empty($_setting.parent)}
+                                {$_url = $theme.parent_theme->getUrl()}
+                            {else}
+                                {$_url = $theme->getUrl()}
+                            {/if}
+                            {foreach $_setting.options as $k => $v}
+                                <li{if $_setting.value == $k} class="selected"{/if} data-value="{$k}"><a href="#" class="transparent-sprite"><img src="{$_url}{$k}"></a></li>
+                            {/foreach}
+                        </ul>
+                        <input type="hidden" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
+                        {if !empty($_setting.description)}
+                            <div class="hint">{$_setting.description}</div>
+                        {/if}
+
+                    {* IMAGE *}
+                    {elseif $_setting.control_type == 'image'}
+                        <input type="hidden" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{ifset($_setting.value)}">
+                        <div class="upload-control">
+                            <div class="upload">
+                                <label class="link">
+                                    <i class="fas fa-file-upload"></i>
+                                    <span>[s`Select file`]</span>
+                                    <input type="file" name="{if !empty($_setting.parent)}parent_{/if}image[{$_setting_var}]" autocomplete="off">
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    {if !empty($_setting.value)}
-                        {if !empty($_setting.parent)}
-                            {$_url = $theme.parent_theme->getUrl()}
-                        {else}
-                            {$_url = $theme->getUrl()}
+                        {if !empty($_setting.value)}
+                            {if !empty($_setting.parent)}
+                                {$_url = $theme.parent_theme->getUrl()}
+                            {else}
+                                {$_url = $theme->getUrl()}
+                            {/if}
+                            <div class="image"><br>
+                                <img class="transparent-sprite" src="{$_url}{$_setting.value}">
+                                <br>
+                                <a class="small delete-image text-red" href="#"><i class="fas fa-trash-alt"></i> [s`Delete`]</a>
+                            </div>
                         {/if}
-                        <div class="image"><br>
-                            <img class="transparent-sprite" src="{$_url}{$_setting.value}">
-                            <br>
-                            <a class="small delete-image text-red" href="#"><i class="fas fa-trash-alt"></i> [s`Delete`]</a>
-                        </div>
-                    {/if}
-                    {if !empty($_setting.description)}
-                        <div class="hint">{$_setting.description}</div>
-                    {/if}
+                        {if !empty($_setting.description)}
+                            <div class="hint">{$_setting.description}</div>
+                        {/if}
 
-                {* OTHER *}
-                {else}
-                    <div>
-                        {if !$_setting.value || strlen($_setting.value) <= 50}
-                            <input class="flexible small" id="flex-settings-{$_setting_var}" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value|escape}">
-                        {else}
-                            <textarea class="flexible small" id="flex-settings-{$_setting_var}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">{$_setting.value|escape}</textarea>
+                    {* OTHER *}
+                    {else}
+                        <div>
+                            {if !$_setting.value || strlen($_setting.value) <= 50}
+                                <input class="flexible small" id="flex-settings-{$_setting_var}" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value|escape}">
+                            {else}
+                                <textarea class="flexible small" id="flex-settings-{$_setting_var}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">{$_setting.value|escape}</textarea>
+                            {/if}
+                        </div>
+                        {if !empty($_setting.description)}
+                            <div class="hint">{$_setting.description}</div>
                         {/if}
-                    </div>
-                    {if !empty($_setting.description)}
-                        <div class="hint">{$_setting.description}</div>
                     {/if}
-                {/if}
+                </div>
             </div>
-        </div>
-    {/if}
-{/strip}
+        {/if}
+    {/strip}
 {/function}
+
 {$id = uniqid("wa-theme-id`$theme.id`")}
 <div class="wa-theme article wider" id="{$id}">
     <div class="article-body">
@@ -459,37 +461,37 @@
             </div>
 
             {if !$has_theme_usage && !$_is_trial && (!$has_theme_usage_any_app || $show_theme_start_using)}
-            <div class="wa-theme-use custom-mb-24">
+                <div class="wa-theme-use custom-mb-24">
 
-                {if !$has_theme_usage_any_app}
-                    {if $cover}
-                        <p>
-                            <img src="{$cover}" class="wa-theme-cover" />
-                        </p>
+                    {if !$has_theme_usage_any_app}
+                        {if $cover}
+                            <p>
+                                <img src="{$cover}" class="wa-theme-cover" />
+                            </p>
+                        {/if}
+
+                        {if !empty($theme_warning_requirements)}
+                            <ul>
+                                {foreach $theme_warning_requirements as $requirement}
+                                    <li><b>{$requirement.warning}</b></li>
+                                {/foreach}
+                            </ul>
+                        {elseif !empty($theme_original_warning_requirements)}
+                            <ul>
+                                {foreach $theme_original_warning_requirements as $requirement}
+                                    <li><b>{$requirement.warning}</b></li>
+                                {/foreach}
+                            </ul>
+                        {elseif !empty($theme_parent_warning_requirements)}
+                            <ul>
+                                {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
+                                    <li><b>{$requirement.warning}</b></li>
+                                {/foreach}
+                            </ul>
+                        {/if}
                     {/if}
 
-                    {if !empty($theme_warning_requirements)}
-                        <ul>
-                            {foreach $theme_warning_requirements as $requirement}
-                                <li><b>{$requirement.warning}</b></li>
-                            {/foreach}
-                        </ul>
-                    {elseif !empty($theme_original_warning_requirements)}
-                        <ul>
-                            {foreach $theme_original_warning_requirements as $requirement}
-                                <li><b>{$requirement.warning}</b></li>
-                            {/foreach}
-                        </ul>
-                    {elseif !empty($theme_parent_warning_requirements)}
-                        <ul>
-                            {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
-                                <li><b>{$requirement.warning}</b></li>
-                            {/foreach}
-                        </ul>
-                    {/if}
-                {/if}
-
-            </div>
+                </div>
             {/if}
 
             {* Theme usage *}
@@ -614,7 +616,6 @@
 
         {* Theme navigation *}
         <div class="js-theme-settings-hidden-list" id="wa-theme-settings-hidden-list" style="display: none">
-{/if}
             {if ($has_theme_usage_any_app || $_is_trial || $has_theme_usage) && !empty($settings.items) && !empty($global_group_divideres)}
 
                 <ul class="menu js-theme-settings-list">
@@ -638,8 +639,6 @@
                     </p>
                 </div>
             {/if}
-
-{if !$is_only_settings}
         </div>
     </div>
 </div>
@@ -687,10 +686,10 @@
 
 <script>
     (function ($) {
-
         // remove theme settings to sidebar
-        const $theme_settings_section = $('.js-theme-settings-section'),
-            $theme_settings_list = $('.js-design-container').find('.js-theme-settings-hidden-list');
+        const $theme_settings_section = $('.js-theme-settings-section');
+        const $theme_settings_list = $('.js-design-container').find('.js-theme-settings-hidden-list');
+
         // invoke only once / bug(?) with several times invoke waDesignLoad
 
         const url_params = waDesignParams(location.href);
@@ -793,4 +792,4 @@
 {if ($theme_routes || $_is_trial || $has_theme_usage_any_app) && !empty($settings.items)}
     {include file='./Bottombar.inc.html' _params=['form_id' => 'theme-settings'] inline}
 {/if}
-{/if}
+

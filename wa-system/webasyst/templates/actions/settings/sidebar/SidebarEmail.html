@@ -1,10 +1,13 @@
 {strip}
     {$class = "s-email-template-sidebar-wrapper"}
     {$id = uniqid($class)}
-    <aside class="sidebar js-sidebar scrolls-with-content blank bordered-right width-23rem {$class}" id="{$id}"{if $wa->isMobile()} style="position: relative; width: 100%; min-height: auto; top: 0"{/if}>
+    <aside class="sidebar js-sidebar scrolls-with-content blank width-23rem {$class}" id="{$id}"{if $wa->isMobile()} style="position: relative; width: 100%; min-height: auto; top: 0"{/if}>
+        <div class="custom-m-12">
+            <a href="{$wa_app_url}webasyst/settings/email/" class="button outlined light-gray full-width small"><i class="fas fa-arrow-left small"></i> [s`Email settings`]</a>
+        </div>
         <h5 class="heading custom-mt-20 custom-mb-12">
             <span>[s`New template group`]</span>
-            <a href="#" class="js-new-templates count action"><i class="fas fa-plus-circle"></i></a>
+            <a href="#" class="js-new-templates count action"><i class="fas fa-plus-circle text-green"></i></a>
         </h5>
 
             {foreach $channels as $_id => $_channel}
@@ -14,10 +17,10 @@
                  data-name="{$_channel.name|escape}"
                  data-email="{$_channel.address|escape}"
                  data-system="{$_channel.system}">
-            <header class="heading{if $_id == $channel->getId()} black{/if} js-expand-collapse">
+            <header class="heading js-expand-collapse">
                 <span>
                     <span class="caret js-expand-collapse-icon rarr">
-                        <i class="fas fa-caret-down"></i>
+                        <i class="fas fa-caret-down custom-mr-4"></i>
                     </span>
                     {$_channel.name|escape}
                 </span>
@@ -55,7 +58,7 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-input">
                         [s`Sender`]
                     </div>
                     <div class="value">
@@ -74,7 +77,7 @@
 
             <div class="dialog-footer">
                 <input type="submit" class="button js-submit-button" value="[s`Save`]">
-                &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="js-close-dialog">[s`cancel`]</a>
+                <a href="javascript:void(0);" class="button light-gray js-close-dialog">[s`Cancel`]</a>
                 <i class="fas fa-spinner fa-spin loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
             </div>
         </form>
@@ -97,7 +100,7 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-input">
                         [s`Sender`]
                     </div>
                     <div class="value">
@@ -116,12 +119,12 @@
             <div class="dialog-footer flexbox full-width middle">
                 <div class="s-dialog-actions">
                     <input type="submit" class="button js-submit-button" value="[s`Save`]">
-                    &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="js-dialog-close">[s`cancel`]</a>
-                    <i class="fas fa-spinner fa-spin loading s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+                    <a href="javascript:void(0);" class="button light-gray js-dialog-close">[s`Cancel`]</a>
+                    <i class="fas fa-spinner fa-spin loading s-loading text-light-gray" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
                 </div>
                 <div class="channel-actions flexbox">
                     <a href="javascript:void(0);" class="js-duplicate button nobutton outlined small gray"><span><i class="fas fa-copy"></i> [s`Duplicate`]</span></a>
-                    <a href="javascript:void(0);" class="js-delete button nobutton outlined small red" style="display: none;"><span><i class="fas fa-times-circle"></i> [s`Delete`]</span></a>
+                    <a href="javascript:void(0);" class="js-delete button nobutton outlined small red" style="display: none;"><span><i class="fas fa-trash-alt"></i> [s`Delete`]</span></a>
                 </div>
             </div>
         </form>

@@ -41,7 +41,7 @@
     <script type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.bell-announcement.js?{$wa->version(true)}"></script>
     <script>
         $(function() {
-            new BellAnnouncement();
+            new WaBellAnnouncement();
             {if $has_new_notifications}
                 $('.js-notifications-bell').trigger('click', { disable_set_seen: true });
             {/if}

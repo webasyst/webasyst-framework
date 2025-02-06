@@ -1,8 +1,8 @@
-class BellAnnouncement {
+window.WaBellAnnouncement = class {
     static is_setted_seen = false;
 
     constructor () {
-        this.$notification_wrapper = $('.js-notification-wrapper,.js-wa-announcement');
+        this.$notification_wrapper = $('.js-notification-wrapper,.js-wa-announcement').first();
         this.$notification_close_selector = '.js-announcement-close';
 
         this.initToggleByBell();
@@ -10,7 +10,7 @@ class BellAnnouncement {
     }
 
     static setSeen () {
-        if (BellAnnouncement.is_setted_seen) {
+        if (WaBellAnnouncement.is_setted_seen) {
             return;
         }
 
@@ -19,14 +19,13 @@ class BellAnnouncement {
             name: 'wa_announcement_seen',
             value: 'now()'
         }, (r) => {
-            BellAnnouncement.is_setted_seen = (r && r.status === 'ok');
+            WaBellAnnouncement.is_setted_seen = (r && r.status === 'ok');
         });
     }
 
     initToggleByBell () {
         /* Notification Actions */
-        const $notifications_bell = $('.js-notifications-bell');
-        $notifications_bell.on('click', function (e, params) {
+        $('.js-notifications-bell').on('click', function (e, params) {
             e.preventDefault();
             params = params || { disable_set_seen: false };
 
@@ -39,15 +38,14 @@ class BellAnnouncement {
             }
 
             const $notifications_wrapper = $(this).next('.js-notification-wrapper');
-            $notifications_wrapper.toggle().removeClass('hidden');
-            if (!$notifications_wrapper.hasClass('hidden')) {
-                const $notifications_dropdown = $('#wa-notifications-dropdown');
-                $notifications_dropdown.is(':hidden') && $notifications_dropdown.show();
+            if (!params.disable_set_seen && $notifications_wrapper.is(':visible')) {
+                WaBellAnnouncement.setSeen();
             }
 
-            if (!params.disable_set_seen && $notifications_wrapper.is(':visible')) {
-                BellAnnouncement.setSeen();
-            }
+            $notifications_wrapper.toggle();
+
+            const $notifications_dropdown = $('#wa-notifications-dropdown');
+            $notifications_dropdown.is(':hidden') && $notifications_dropdown.show();
         });
     }
 
@@ -93,6 +91,12 @@ class BellAnnouncement {
 
                 if (!$('.js-announcement-group.is-unread-group').length) {
                     $('#js-show-all-notifications').remove();
+                }
+
+                // if notifications are empty
+                if (!$('.js-wa-announcement:visible').length) {
+                    that.$notification_wrapper.removeClass('visible-only-unread').hide();
+                    that.$notification_wrapper.find('.wa-notification-empty').show();
                 }
 
                 if (key && app_id === 'installer') {

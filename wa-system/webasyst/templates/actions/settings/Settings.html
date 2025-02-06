@@ -5,7 +5,7 @@
   <div class="article-body">
     <h1 class="s-page-title">[s`General settings`]</h1>
         <form action="?module=settingsGeneralSave" enctype="multipart/form-data" class="fields">
-            <div class="fields-group blank">
+            <div class="fields-group custom-pt-20 blank">
                 {* COMPANY NAME *}
                 <div class="field">
                     <div class="name for-input">
@@ -184,7 +184,7 @@
                                         <img src="{$logo.image.thumbs['128x128'].url}" style="max-height: 66px">
                                     {/if}
                                 </div>
-                                <div class="logo-input flexbox vertical space-8 file-upload">
+                                <div class="logo-input flexbox vertical space-8 file-upload custom-mt-4">
                                     <div class="upload">
                                         <label class="link">
                                             <i class="fas fa-image"></i>
@@ -203,58 +203,40 @@
                     </div>
                 </div>
 
-                {* Webasyst locale *}
+                {* Installer *}
                 {if $locales}
                     <div class="field">
-                        <div class="name middle">
-                            <label for="config-locale">[s`Locale of software available for installation`]</label>
-                        </div>
-                        <div class="value">
-                            <div class="wa-select small">
-                            <select name="locale" id="config-locale">
-                                {foreach $locales as $_locale => $_locale_name}
-                                    <option value="{$_locale|escape}"{if $settings.locale == $_locale} selected="selected"{/if}>{$_locale_name|escape}</option>
-                                {/foreach}
-                            </select>
-                        </div>
-                        </div>
-                    </div>
-                {/if}
-
-                {* Locale adapter *}
-                {if $locale_adapter !== false}
-                    <div class="field">
                         <div class="name for-input">
-                            <label for="config-locale-adapter">
-                                [s`Localization engine`]
-                            </label>
+                            <label for="config-locale">[s`Installer`]</label>
                         </div>
                         <div class="value">
                             <div class="wa-select small">
-                            <select name="locale_adapter" id="config-locale-adapter">
-                                {foreach $locale_adapters_list as $_adapter => $_name}
-                                    <option{if $_adapter == $locale_adapter} selected{/if} value="{$_adapter}">{$_name}</option>
-                                {/foreach}
-                            </select>
-                        </div>
+                                <select name="locale" id="config-locale">
+                                    {foreach $locales as $_locale => $_locale_name}
+                                        <option value="{$_locale|escape}"{if $settings.locale == $_locale} selected="selected"{/if}>{$_locale_name|escape}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                            <p class="hint">[s`Locale of software available for installation`]</p>
                         </div>
                     </div>
                 {/if}
 
-                {* Image adapter *}
-                <div class="field">
-                    <div class="name">[s`Image processing library`]</div>
-                    <div class="value no-shift">
-                        <div class="wa-select small">
-                        <select name="config[image_adapter]">
-                            {foreach $image_adapters_list as $_adapter => $_params}
-                                <option {if $_adapter == $image_adapter}selected{/if}
-                                        {if !$_params.enabled}disabled{/if} value="{$_adapter}">
-                                    {$_params.name|escape} {if !$_params.enabled}([`not installed`]){/if}
-                                </option>
-                            {/foreach}
-                        </select>
+
+            </div>
+            <div class="fields-group custom-pt-20 blank">
+
+                {* Debug mode *}
+                <div class="field s-settings-debug-mode">
+                    <div class="name for-checkbox">[s`For developers`]</div>
+                    <div class="value">
+                        <div class="switch-with-text">
+                            <span class="switch middle smaller shift-3" id="debug">
+                                <input type="checkbox" name="config[debug]" value="1"{if isset($config.debug) && $config.debug} checked="checked"{/if} id="config-debug-checkbox">
+                            </span>
+                            <label for="config-debug-checkbox">[s`Developer mode`]</label>
                         </div>
+                        <p class="hint">[s`Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development.`] <strong>[`Do not enable debug in the production mode as it lowers your site performance.`]</strong></p>
                     </div>
                 </div>
 
@@ -269,22 +251,12 @@
                     </div>
                 </div>
 
-                {* Debug mode *}
-                <div class="field">
-                    <div class="name for-checkbox">[s`For developers`]</div>
-                    <div class="value">
-                        <div class="switch-with-text">
-                            <span class="switch middle smaller shift-3" id="debug">
-                                <input type="checkbox" name="config[debug]" value="1"{if isset($config.debug) && $config.debug} checked="checked"{/if} id="config-debug-checkbox">
-                            </span>
-                            <label for="config-debug-checkbox">[s`Developer mode`]</label>
-                        </div>
-                        <p class="hint">[s`Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development.`]</p>
-                    </div>
-                </div>
+            </div>
+
+            <div class="fields-group blank custom-pt-20">
 
                 {* UI version select *}
-                <div class="field custom-my-24">
+                <div class="field custom-mb-24">
                     <div class="name for-checkbox">[s`UI mode`]</div>
                     <div class="value">
                         <label>
@@ -292,8 +264,8 @@
                                 <input type="radio"{if !empty($config.ui_disallow_legacy) || !isset($config.ui)} checked{/if} name="config[ui]" value="">
                                 <span></span>
                             </span>
-                            [s`Newest`] (2.0)
-                            <span class="hint">[s`older apps with 1.3 UI will still work`] <i class="fas fa-thumbs-up text-green"></i></span>
+                            [s`Newest`] 2.0 ([s`recommended`])
+                            <span class="hint">[s`older apps with 1.3 UI will still work`]</span>
                         </label>
                         <br>
                         <label>
@@ -310,11 +282,52 @@
                                 <input type="radio"{if isset($config.ui) && $config.ui === '1.3'} checked{/if} name="config[ui]" value="1.3">
                                 <span></span>
                             </span>
-                            1.3 ([s`old`])
-                            <span class="hint">2011—2020</span>
+                            1.3 ([s`legacy`])
+                            <span class="hint">[s`not supported by most apps`]</span>
                         </label>
                     </div>
                 </div>
+
+                {* Locale adapter *}
+                {if $locale_adapter !== false}
+                    <div class="field">
+                        <div class="name for-input">
+                            <label for="config-locale-adapter">
+                                [s`Localization`]
+                            </label>
+                        </div>
+                        <div class="value">
+                            <div class="wa-select small">
+                            <select name="locale_adapter" id="config-locale-adapter">
+                                {foreach $locale_adapters_list as $_adapter => $_name}
+                                    <option{if $_adapter == $locale_adapter} selected{/if} value="{$_adapter}">{$_name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                        </div>
+                    </div>
+                {/if}
+
+                {* Image adapter *}
+                <div class="field">
+                    <div class="name">[s`Image processing`]</div>
+                    <div class="value no-shift">
+                        <div class="wa-select small">
+                        <select name="config[image_adapter]">
+                            {foreach $image_adapters_list as $_adapter => $_params}
+                                <option {if $_adapter == $image_adapter}selected{/if}
+                                        {if !$_params.enabled}disabled{/if} value="{$_adapter}">
+                                    {$_params.name|escape} {if !$_params.enabled}([`not installed`]){/if}
+                                </option>
+                            {/foreach}
+                        </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="fields-group custom-pt-0">
 
                 {* Framework version *}
                 <div class="field">
@@ -347,6 +360,7 @@
     (function($) {
         new WASettingsGeneral({
             $wrapper: $('#s-general-settings-page'),
+            $sidebar: $('#js-sidebar-wrapper'),
             local: {
                 "save": "[`Save`]",
                 "cancel": "[`Cancel`]"

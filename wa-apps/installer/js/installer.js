@@ -346,12 +346,20 @@ String.prototype.translate = function () {
                     sources: data.sources
                 }).appendTo('#update-raw');
 
+                // if any new app is installed, delay showing result for additional 5 seconds
+                const any_app_installed = $('#update-result-apps .update-result-apps-list li').length > 0;
+                if (any_app_installed) {
+                    $('#update-result').hide().after('<div class="spinner custom-p-8"></div>');
+                }
+
                 setTimeout(function () {
                     var targetOffset = $('div.i-app-update-screen :last').offset().top;
                     $('div.i-app-update-screen').scrollTop(targetOffset);
+                    $('#update-result').show().siblings('.spinner').remove();
+
                     self.redirectOnComplete(data);
                     self.animateOnInstall();
-                }, 500);
+                }, any_app_installed ? 5500 : 500);
             }, 500);
         },
 

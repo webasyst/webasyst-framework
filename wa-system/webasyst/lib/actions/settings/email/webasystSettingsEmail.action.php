@@ -25,6 +25,7 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
             'sender'               => $sender,
             'main_configs'         => $main_configs,
             'available_transports' => $this->getAvailableTransports(),
+            'wa_sender_html'       => $this->getWaSenderHtml(false, $main_configs),
             'ssl_is_set'           => extension_loaded('openssl'),
             'php_version_ok'       => version_compare(PHP_VERSION, '5.3') >= 0,
             'php_version'          => PHP_VERSION,
@@ -60,11 +61,10 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
             );
         }
 
-        $wa_sender_html = $this->getWaSenderHtml();
-        if (!empty($wa_sender_html)) {
+        if ($this->getWaSenderHtml(true) === true) {
             $senders['wasender'] = array(
                 'name' => _ws('Webasyst Email'),
-                'description' => $wa_sender_html
+                'description' => ''
             );
         }
 
@@ -72,28 +72,39 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
         return $senders;
     }
 
-    public function getWaSenderHtml()
+    public function getWaSenderHtml($only_check_auth, $main_configs = [])
     {
-        $wa_service_api = new waServicesApi();
-        if (!$wa_service_api->isConnected()) {
-            return '<p>'.
-            sprintf_wp(
-                '<a href="%s">Connect to Webasyst ID</a> to use the Webasyst Email.',
-                wa()->getConfig()->getBackendUrl(true) . 'webasyst/settings/waid/'
-            ) . '</p>';
-        }
-        $res = $wa_service_api->getBalance(waServicesApi::EMAIL_MESSAGE_SERVICE);
-        if ($res['status'] != 200) {
+        try {
+            $wa_service_api = new waServicesApi();
+        } catch (Throwable $e) {
             return null;
         }
-       
+
+        static $res = [];
+
+        if (empty($res)) {
+            if (!$wa_service_api->isConnected()) {
+                return '<p class="small">'.
+                sprintf_wp(
+                    '<a href="%s">Connect to Webasyst ID</a> to use the Webasyst Email.',
+                    wa()->getConfig()->getBackendUrl(true) . 'webasyst/settings/waid/'
+                ) . '</p>';
+            }
+            $res = $wa_service_api->getBalance(waServicesApi::EMAIL_MESSAGE_SERVICE);
+            if ($res['status'] != 200) {
+                return null;
+            }
+        }
+        if ($only_check_auth) {
+            return true;
+        }
+
         $balance_amount = ifset($res, 'response', 'amount', 0);
         $price_value = ifset($res, 'response', 'price', 0);
-        $currency_id = ifset($res, 'response', 'currency_id', wa()->getLocale() === 'ru_RU' ? 'RUB' : 'USD');
-        $balance = wa_currency_html($balance_amount, $currency_id);
-        $price = wa_currency_html($price_value, $currency_id);
         $free_limits = ifset($res, 'response', 'free_limits', '');
-        $remaining_free_calls = ifset($res, 'response', 'remaining_free_calls', []);
+        $remaining_free_calls = ifempty($res, 'response', 'remaining_free_calls', []);
+        $remaining_pack = ifset($remaining_free_calls, 'pack', 0);
+        unset($remaining_free_calls['pack']);
         if ($balance_amount > 0 && $price_value > 0) {
             $messages_count = intval(floor($balance_amount / $price_value));
         }
@@ -103,16 +114,24 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
         $is_allowed_ip = ifset($res, 'response', 'is_allowed_ip', true);
         $current_ip = ifset($res, 'response', 'your_ip', '');
 
+        $is_show_connect = !array_filter($main_configs, function($config) {
+            return ifset($config['type']) == 'wasender';
+        });
+        $waid_balance_show_email_notice = !$is_show_connect && ifset($main_configs, 'default', 'type', '') !== 'wasender';
+
         $view = wa()->getView();
         $view->assign([
-            'wa_balance'        => ifset($balance, '—'),
-            'wa_price'          => ifset($price, '—'),
+            'wa_total'          => ifset($messages_count, 0)
+                                    + ifset($remaining_free_calls, 'total', 0) // min(array_values($remaining_free_calls) ?: [0])
+                                    + ifset($remaining_pack, 0),
             'wa_free_limits'    => ifset($free_limits, []),
             'wa_white_list'     => ifset($white_list, []),
             'wa_is_allowed_ip'  => ifset($is_allowed_ip, true),
             'wa_current_ip'     => ifset($current_ip, ''),
             'wa_remaining_free_calls' => ifset($remaining_free_calls, []),
-            'wa_messages_count'  => ifset($messages_count, 0),
+            'service'           => waServicesApi::EMAIL_MESSAGE_SERVICE,
+            'is_show_connect'   => $is_show_connect,
+            'waid_balance_show_email_notice' => $waid_balance_show_email_notice,
         ]);
         $template_path = wa()->getConfig()->getAppsPath('webasyst').'/templates/actions/services/balance.html';
         return $view->fetch($template_path);

@@ -713,6 +713,10 @@ var InstallerStore = (function ($) {
     };
 
     InstallerStore.prototype.initForm = function (url, fields) {
+        this.postMessage({
+            action: 'product_install_pong'
+        });
+
         var $form = $('<form>', {
             action: url,
             method: 'post'
@@ -732,11 +736,23 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.initInstallationDialog = function(fields, data = null) {
         var that = this;
         $.post(that.options.app_url + '?module=update&action=managerDialog', fields).then(function(html) {
-            new $.waDialog({
+            $.waDialog({
                 html,
                 esc: false,
                 onOpen($dialog, dialog) {
-                    if (html.includes('$.waDialog.alert')) {
+                    const search_msg_code = '/*msg_code=';
+                    let enable_alert = false;
+
+                    if (html.includes(search_msg_code)) {
+                        const allowed_msg_code = ['update_in_progress', 'dev_mode_is_on']
+                        const start_index = html.indexOf(search_msg_code) + search_msg_code.length;
+                        const end_index = html.indexOf('*/', start_index);
+                        const msg_code = end_index !== -1 ? html.slice(start_index, end_index) : null;
+
+                        enable_alert = allowed_msg_code.includes(msg_code);
+                    }
+
+                    if (!enable_alert) {
                         const textMatch = html.match(/text:\s*"(.*?)",\s*button_title:/s);
                         const text = textMatch ? textMatch[1] : null;
                         if (text) {
@@ -782,6 +798,10 @@ var InstallerStore = (function ($) {
                         }
                     });
                 }
+            });
+
+            that.postMessage({
+                action: 'product_install_pong'
             });
         });
     };

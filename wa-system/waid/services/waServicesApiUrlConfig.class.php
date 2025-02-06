@@ -5,7 +5,7 @@ class waServicesApiUrlConfig extends waWebasystIDConfig
 
     const SERVICES_ENDPOINTS_SYNC_TIME_KEY = 'services_endpoints_sync_time';
 
-	protected function getConfigPath()
+    protected function getConfigPath()
     {
         return waConfig::get('wa_path_config') . '/services.php';
     }
