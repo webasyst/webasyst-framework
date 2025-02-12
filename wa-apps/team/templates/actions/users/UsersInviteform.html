@@ -48,8 +48,8 @@
             {else}
             <div class="fields">
                 <div class="toggle rounded js-invite-type">
-                    <span class="selected" data-type="email"><i class="fas fa-envelope"></i> [`By email`]</span>
-                    <span data-type="link"><i class="fas fa-link"></i> [`By link`]</span>
+                    <span class="selected" data-type="link"><i class="fas fa-link"></i> [`By link`]</span>
+                    <span data-type="email"><i class="fas fa-envelope"></i> [`By email`]</span>
                     {if !empty($is_waid_enabled)}
                         <span data-type="code"><i class="fas fa-mobile-alt"></i> [`By code`]</span>
                     {/if}
@@ -59,7 +59,7 @@
                     <span data-type="nobackend"><i class="fas fa-eye-slash"></i> [`Without access`]</span>
                 </div>
 
-                <div class="js-by-email">
+                <div class="js-by-email hidden">
 
                     <p class="small by-email-hint js-by-email-hint custom-mt-24"><strong>[`Invite by email.`]</strong> [`Send the new user an email with a private one-time invitation link to join your team on Webasyst.`]</p>
                     <p class="small by-login-hint js-by-login-hint hidden custom-mt-24"><strong>[`Add manually.`]</strong> [`Enter a login name and a password for this user without sending an invitation.`]</p>
@@ -97,11 +97,11 @@
                     </div>
                 </div>
 
-                <div class="custom-mt-24 js-by-link hidden">
+                <div class="custom-mt-24 js-by-link">
 
                     <p class="small by-link-hint custom-mt-24"><strong>[`Invite by link.`]</strong> [`Generate a private one-time invitation link and send it to the new user via your favorite messaging app.`]</p>
 
-                    <div class="field js-c-group">
+                    <div class="field js-c-group hidden">
                         <div class="value">
                             <input class="short bold custom-mr-8 custom-mt-8" type="text" name="firstname" placeholder="[`First name`]" autocomplete="new-password">
                             <input class="short bold custom-mt-8" type="text" name="lastname" placeholder="[`Last name`]" autocomplete="new-password">
@@ -152,7 +152,7 @@
 
                 <div class="t-groups-wrapper custom-mt-32 js-groups">
                     {if $groups}
-                        <div class="field">
+                        <div class="field js-is-groups-items">
                             <div class="name custom-pt-0">[`Groups`]</div>
                             <div class="value">
                                 <ul class="small">
@@ -298,10 +298,10 @@
             {/if}
             <div class="action-buttons">
                 {if !$invite_html}
-                    <button type="submit" class="button js-submit-button js-by-email">[`Send invitation`]</button>
-                    <button type="button" class="button light-gray js-close-dialog js-by-email">[`Close`]</button>
+                    <button type="submit" class="button js-submit-button hidden js-by-email">[`Send invitation`]</button>
+                    <button type="button" class="button light-gray js-close-dialog hidden js-by-email">[`Close`]</button>
 
-                    <div class="flexbox middle js-by-link hidden">
+                    <div class="flexbox middle js-by-link">
                         <input type="text" class="wide short js-invite-link text-gray hidden">
                         <button type="button" class="button outlined js-get-link">
                             <i class="fas fa-link"></i> [`Create link`]<span class="hidden js-loading-indicator">...&nbsp;
@@ -446,6 +446,9 @@
             });
 
             $(".js-invite-type").waToggle({
+                ready: function () {
+                    $form.find('.js-is-groups-items [type="checkbox"]').click();
+                },
                 change: function (event, target)  {
                     const $by_email = $dialog.find('.js-by-email')
                     const $by_link = $dialog.find('.js-by-link')
@@ -459,6 +462,7 @@
 
                     let is_login = (target.dataset.type === 'login');
                     let is_nobackend = (target.dataset.type === 'nobackend');
+                    let is_link = (target.dataset.type === 'link');
                     $form.find('.t-create-user-credentials').toggleClass('hidden', !is_login).find(':input').attr('disabled', !is_login);
                     $button.text(is_login ? locales["add_user"] : locales["send_invitation"]);
                     $by_email[0].classList.toggle('is-by-login', is_login);
@@ -485,6 +489,7 @@
                         $form.find('.js-groups [type="checkbox"]').attr('checked', false).prop('checked', false);
                         form_action = "?module=users&action=createNobackend";
                     }
+
                     $dialog.find('.js-groups').toggleClass('hidden', is_nobackend)
                     $dialog.find('.js-ext-info').toggleClass('hidden', !is_nobackend);
                     $dialog.find('.js-ext-info > p').toggleClass('hidden', is_nobackend);
@@ -499,7 +504,6 @@
             function updateExtInfoForm() {
                 const selected_type = $('.js-invite-type .selected[data-type]').data('type');
                 const $ext_info = $dialog.find('.js-ext-info')
-                $ext_info.find('[name*="firstname"], [name*="lastname"]').attr('disabled', selected_type === 'link');
                 $ext_info.find('[name*="email"]').attr('disabled', selected_type === 'email' || selected_type === 'login');
             }
 

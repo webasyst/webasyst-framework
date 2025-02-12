@@ -572,6 +572,10 @@ var Sidebar = ( function($) {
                 $item = that.$body.find('[data-inactive-item]');
                 break;
 
+            case 'no-access':
+                $item = that.$body.find('[data-no-access-item]');
+                break;
+
             case 'search':
                 $item = that.$body.find('#all-users-sidebar-link');
                 break;
