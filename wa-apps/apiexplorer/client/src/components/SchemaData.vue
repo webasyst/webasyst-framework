@@ -36,7 +36,14 @@
                                 <span class="custom-ml-8 icon" v-if="collapsed(param)"><i class="fas fa-caret-right"></i></span>
                                 <span class="custom-ml-8 icon" v-else><i class="fas fa-caret-down"></i></span>
                             </a>
-                            <div class="hint description" v-if="effective_schema.properties[param].description" v-html="markdown(effective_schema.properties[param].description)"></div>
+                            <span v-if="isArrayNested(param)">
+                                <span v-if="Array.isArray(val)" class="hint">{{ val.length }}</span>
+                                <span v-else class="hint">not valid content</span>
+                            </span>
+                            <div v-if="effective_schema.properties[param].description" 
+                                v-html="markdown(effective_schema.properties[param].description)"
+                                class="hint description"
+                            ></div>
                             <p v-else></p>
                         </div>
                     </div>
