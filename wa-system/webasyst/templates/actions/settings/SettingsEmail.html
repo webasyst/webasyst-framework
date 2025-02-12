@@ -155,7 +155,7 @@
             {/if}
 
             {* DKIM *}
-            {if $key !== 'default' && $_transport != 'wasender'}
+            {if $_transport != 'wasender'}
                 <div class="s-dkim-field js-dkim-field custom-mt-16">
                     <div class="field">
                         <div class="name for-checkbox">
@@ -193,7 +193,9 @@
                                 <div class="field">
                                     <p class="small">
                                         [s`Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name`]
-                                        &nbsp;<span class="js-sender-domain-0" style="font-weight: bold;">{ifset($config.domain)|escape}</span>
+                                        {if $key !== 'default'}
+                                            &nbsp;<span class="js-sender-domain-0" style="font-weight: bold;">{ifset($config.domain)|escape}</span>
+                                        {/if}
                                     </p>
                                 </div>
                                 <div class="field">
@@ -209,10 +211,12 @@
                                         </code>
                                     </div>
                                 </div>
-                                <div class="field">
-                                    <div class="name">[s`Domain`]</div>
-                                    <div class="value"><span class="js-domain">{ifset($config.domain)|escape}</span></div>
-                                </div>
+                                {if $key !== 'default'}
+                                    <div class="field">
+                                        <div class="name">[s`Domain`]</div>
+                                        <div class="value"><span class="js-domain">{ifset($config.domain)|escape}</span></div>
+                                    </div>
+                                {/if}
                                 <div class="field">
                                     <div class="name">[s`Record type`]</div>
                                     <div class="value">

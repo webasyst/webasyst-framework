@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-02-03 18:16+0300\n"
+"PO-Revision-Date: 2025-02-11 09:50+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -6934,7 +6934,7 @@ msgstr "Статус на %s"
 msgid "The announcement will become visible at the specified time."
 msgstr "Объявление будет опубликовано для всех в указанное время."
 
-msgid "Scheduled publication can not be used along with email or SMS notifications enabled."
+msgid "Scheduled publication cannot be used along with email or SMS notifications enabled."
 msgstr "Отложенную публикацию нельзя использовать одновременно с включенным уведомлением по email или SMS."
 
 msgid "The announcement will automatically disappear at the specified time."
@@ -7039,8 +7039,8 @@ msgstr "Код отправлен на email-адрес %s."
 msgid "Response code: %s."
 msgstr "Код ответа: %s."
 
-msgid "Webasyst API error"
-msgstr "Ошибка API Webasyst"
+msgid "No access to Webasyst API."
+msgstr "Нет доступа к API Webasyst."
 
 msgid "<a href=\"%s\">Connect to Webasyst ID</a> to use the Webasyst Email."
 msgstr "<a href=\"%s\">Подключите Webasyst ID</a>, чтобы пользоваться отправителем Webasyst Email."
@@ -7354,16 +7354,16 @@ msgstr "Службы Webasyst"
 msgid "Add credit"
 msgstr "Пополнить баланс"
 
-msgid "Emojies won’t display?"
+msgid "Emojis won’t display?"
 msgstr "Эмодзи не работают?"
 
 msgid "All tables"
 msgstr "Все таблицы"
 
-msgid "Emojies supported"
+msgid "Emojis supported"
 msgstr "Эмодзи поддерживаются"
 
-msgid "Emojies not supported"
+msgid "Emojis not supported"
 msgstr "Эмодзи не поддерживаются"
 
 msgid "Encoding"
@@ -7402,10 +7402,10 @@ msgstr "простая и бесплатная"
 msgid "Protects your public site data collections forms from spam and bots."
 msgstr "Защищает формы сбора данных на сайте от спама и ботов."
 
-msgid "To enable protection for Webasyst backend sign in form, make sure to <a href=\"%s\"><u>enable captcha in its settings</u></a> too."
+msgid "To enable protection for the Webasyst backend sign-in form, make sure to <a href=\"%s\"><u>enable captcha in its settings</u></a>, too."
 msgstr "Для защиты формы входа в бекенд Webasyst необходимо также <a href=\"%s\"><u>включить капчу в ее настройках</u></a>."
 
-msgid "Selected service provider will be used as a default across all Webasyst apps."
+msgid "The selected service provider will be used as the default one across all Webasyst apps."
 msgstr "Выбранный сервис будет по умолчанию использоваться всеми установленными приложениями Webasyst."
 
 msgid "System-wide country & regions configuration for all installed Webasyst apps."
@@ -7417,8 +7417,8 @@ msgstr "Заполнить из справочника"
 msgid "Add region manually"
 msgstr "Добавить регион вручную"
 
-msgid "No regions are defined for this country in the fallback config, sorry :("
-msgstr "Увы, для этой страны нет конфига с предзаполненными регионами :("
+msgid "No regions are defined for this country in the fallback config yet."
+msgstr "Для этой страны еще нет встроенного справочника регионов."
 
 msgid "City name"
 msgstr "Название города"
@@ -7442,7 +7442,7 @@ msgid "Disable all Webasyst services"
 msgstr "Отключить все службы Webasyst"
 
 msgid "All Webasyst services including Webasyst Email, SMS, and Webasyst ID authentication will be permanently disabled."
-msgstr "Все службы Webasyst, включая Email, SMS и авторизацию с Webasyst ID будут полностью отключены для всех пользователей аккаунта."
+msgstr "Все службы Webasyst, включая Email, SMS и авторизацию с Webasyst ID, будут полностью отключены для всех пользователей аккаунта."
 
 msgid "Pre-paid account credit may be permanently lost!"
 msgstr "Предоплаченный баланс аккаунта может быть безвозвратно потерян!"
@@ -7474,7 +7474,7 @@ msgstr "Службы Webasyst отключены"
 msgid "Allow secure Webasyst ID auth only"
 msgstr "Вход только с Webasyst ID"
 
-msgid "Unified mobile-ready secure Webasyst ID sign in for everyone on your team."
+msgid "Unified mobile-ready secure Webasyst ID sign-in for everyone on your team."
 msgstr "Единый способ входа Webasyst ID с поддержкой мобильных приложений для всех сотрудников."
 
 msgid "%sHow it works?%s"
@@ -7495,14 +7495,14 @@ msgstr "Требовать всегда"
 msgid "Switch"
 msgstr "Переключить"
 
-msgid "Sign in to your Webasyst backend is secured with a unified mobile-ready Webasyst ID authentication."
+msgid "Sign-in to your Webasyst backend is secured with a unified mobile-ready Webasyst ID authentication."
 msgstr "Вход в бекенд Webasyst подключен к единому способу авторизации с Webasyst ID."
 
-msgid "Sign in to your Webasyst backend is available via Webasyst ID and as configured below."
-msgstr "Вход в бекенд Webasyst осуществляется по Webasyst ID или согласно настройкам ниже."
+msgid "Sign-in to your Webasyst backend is available with Webasyst ID or as configured below."
+msgstr "Вход в бекенд Webasyst выполняется с Webasyst ID или согласно настройкам ниже."
 
-msgid "Enable in case of issues with brute force attempts and bots."
-msgstr "Включите в случае брутфорса и попыток входа в бекенд ботов."
+msgid "Enable in case of brute force attack attempts; e.g., using bots."
+msgstr "Включите в случае попыток взлома доступа, например, ботами."
 
 msgid "Configure captcha"
 msgstr "Настроить капчу"
@@ -7510,10 +7510,10 @@ msgstr "Настроить капчу"
 msgid "Enable Webasyst ID and services"
 msgstr "Включить Webasyst ID и службы"
 
-msgid "Transactional email, SMS, secure mobile-ready Webasyst ID authentication, more."
-msgstr "Отправка email и SMS, Webasyst ID, авторизация в мобильных приложений и другие полезные службы для бизнеса."
+msgid "Transactional email, SMS, secure mobile-ready Webasyst ID authentication, and more."
+msgstr "Отправка email и SMS, Webasyst ID, авторизация в мобильных приложениях и другие полезные службы для бизнеса."
 
-msgid "Enable services free"
+msgid "Enable services for free"
 msgstr "Подключите службы бесплатно"
 
 msgid "Rules below always override the defaults when applicable."
@@ -7537,7 +7537,7 @@ msgstr "Настраивайте и следите за использовани
 msgid "Try free"
 msgstr "Пробуйте бесплатно"
 
-msgid "Webasyst Email is not currently in use because another email transport is configured below. Configure Webasyst Email in the form below or enable it as a default using the button above."
+msgid "Webasyst Email is not currently in use because another email transport is configured below. Configure Webasyst Email in the form below or enable it as the default one using the button above."
 msgstr "Webasyst Email не используется в данный момент, так как для отправки писем выбран другой транспорт. Выберите Webasyst Email в форме ниже или включите его по умолчанию с помощью кнопки выше."
 
 msgid "%d email"
@@ -7546,8 +7546,8 @@ msgstr[0] "%d сообщение"
 msgstr[1] "%d сообщения"
 msgstr[2] "%d сообщений"
 
-msgid "Get free %sWebasyst SMS plugin%s via the Installer."
-msgstr "Установите бесплатный %sплагин Webasyst SMS%s в Инсталлере."
+msgid "Get free %sWebasyst SMS plugin%s via Installer."
+msgstr "Установите бесплатный %sплагин Webasyst SMS%s в «Инсталлере»."
 
 msgid "Add comment"
 msgstr "Добавить комментарий"
@@ -7558,8 +7558,47 @@ msgstr "Вы уверены?"
 msgid "Enable Webasyst Email"
 msgstr "Включить Webasyst Email"
 
-msgid "This will activate Webasyst Email as a default email sending provider for all Webasyst apps. You will be able to rollback to your custom settings any time in just few clicks."
-msgstr "Webasyst Email будет включен в качестве отправителя по умолчанию для всех установленных приложений Webasyst. При необходимости вы сможете вернуть свои кастомные правила отправки почты в любой момент в несколько кликов."
+msgid "This will activate Webasyst Email as the default email sending provider for all Webasyst apps. You will be able to rollback to your custom settings any time in just a few clicks."
+msgstr "Webasyst Email будет включен в качестве отправителя по умолчанию для всех установленных приложений Webasyst. При необходимости вы сможете в любой момент быстро снова включить собственные правила отправки почты."
 
 msgid "Set as default"
 msgstr "Включить по умолчанию"
+
+msgid "The Installer app is required to use Webasyst ID."
+msgstr "Для использования Webasyst ID необходимо приложение «Инсталлер»."
+
+msgid "Unknown authorization error. Continue with the form below."
+msgstr "Неизвестная ошибка авторизации. Продолжите с формой ниже."
+
+msgid "URL"
+msgstr "URL"
+
+msgid "%d SMS"
+msgid_plural "%d SMS"
+msgstr[0] "%d SMS"
+msgstr[1] "%d SMS"
+msgstr[2] "%d SMS"
+
+msgid "%d call"
+msgid_plural "%d calls"
+msgstr[0] "%d вызов"
+msgstr[1] "%d вызова"
+msgstr[2] "%d вызовов"
+
+msgid "Waiting period in seconds before sending next verification code:"
+msgstr "Период ожидания в секундах перед отправкой следующего кода подтверждения:"
+
+msgid "Webasyst ID auth error"
+msgstr "Ошибка авторизации с Webasyst ID"
+
+msgid "Unable to sign in with Webasyst ID."
+msgstr "Не удалось войти с Webasyst ID."
+
+msgid "Webasyst API transport connection error."
+msgstr "Ошибка подключения к серверу Webasyst ID."
+
+msgid "https://www.webasyst.com/pricing/#services"
+msgstr "https://www.webasyst.ru/pricing/#services"
+
+msgid "Pricing"
+msgstr "Цены"

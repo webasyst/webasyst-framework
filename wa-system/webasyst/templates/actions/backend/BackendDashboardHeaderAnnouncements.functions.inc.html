@@ -1,4 +1,4 @@
-{$can_edit_notifications = $wa->user()->getRights('team', 'edit_announcements')}
+{assign "can_edit_notifications" $wa->user()->getRights('team', 'edit_announcements') scope="root"}
 
 {function announcement_reaction emoji='' users=[]}
 <button type="button" class="js-announcement-reaction light-gray rounded smallest custom-px-4{if $users && in_array($wa->userId(), $users)} highlighted blue{/if}" data-users="{$users|json_encode}">

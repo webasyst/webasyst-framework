@@ -11,6 +11,10 @@ class installerBackendStoreLayout extends waLayout
     {
         $messages = $this->getMessages();
 
+        if (wa()->isSingleAppMode() && wa()->isSingleAppMode() !== 'installer') {
+            return wa()->getResponse()->redirect(installerStoreHelper::getStoreUrl().installerStoreHelper::getStorePath());
+        }
+
         $this->view->assign(array(
             'messages'            => $messages,
             'update_counter'      => $this->getUpdateCounter(),

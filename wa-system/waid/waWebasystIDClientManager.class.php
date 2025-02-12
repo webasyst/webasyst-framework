@@ -95,7 +95,7 @@ class waWebasystIDClientManager
     public function connect()
     {
         if (!wa()->appExists('installer')) {
-            throw new waException(_ws('Installer app is required to use Webasyst ID'));
+            throw new waException(_ws('The Installer app is required to use Webasyst ID.'));
         }
 
         $options = [

@@ -48,7 +48,7 @@ class webasystLoginFirstAction extends waViewAction
             if (empty($waid_contact_info) || (empty($waid_contact_info['email']) && empty($waid_contact_info['phone']))) {
                 $this->view->assign('webasyst_id_auth_result', [
                     'details' => [
-                        'error_message' => _ws('Unable login with Webasyst ID')
+                        'error_message' => _ws('Unable to sign in with Webasyst ID.')
                     ]
                 ]);
                 return;
@@ -77,7 +77,7 @@ class webasystLoginFirstAction extends waViewAction
             if (!empty($user['locale'])) {
                 wa()->setLocale($user['locale']);
             }
-            
+
             if ($errors = $this->createFirstUser($user, $login)) {
                 $result = array();
                 foreach ($errors as $k => $v) {
@@ -156,7 +156,7 @@ class webasystLoginFirstAction extends waViewAction
             $user['firstname'] = $firstname ? $firstname : $login;
             $user['lastname'] = waRequest::post('lastname');
             $user['email'] = $email;
-            
+
             if ($errors = $this->createFirstUser($user, $login, $password, waRequest::post('account_name'))) {
                 $result = array();
                 foreach ($errors as $k => $v) {
@@ -203,7 +203,7 @@ class webasystLoginFirstAction extends waViewAction
             $result['all'] = implode("\r\n", $result['all']);
             return $result;
         }
-        
+
         $user->setRight('webasyst', 'backend', 1);
         waSystem::getInstance()->getAuth()->auth(array(
             'login' => $login,
@@ -277,7 +277,7 @@ class webasystLoginFirstAction extends waViewAction
         if (!$auth->isClientConnected()) {
             return null;
         }
-        
+
         $webasyst_id_auth_url = $auth->getUrl() . '&backend_auth=1';
 
         $current_url = $this->getCurrentUrl();

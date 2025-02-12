@@ -109,7 +109,10 @@
 
                 $.wa.content = new ContentRouter({
                     $content: $("#s-content-block"),
-                    app_url: {"`$wa_backend_url`webasyst/settings/"|json_encode}
+                    app_url: {"`$wa_backend_url`webasyst/settings/"|json_encode},
+                    onLoad: function() {
+                        $("html, body").scrollTop(0);
+                    }
                 });
 
                 const $sidebar = $('#wa-app-navigation');

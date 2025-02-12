@@ -68,14 +68,15 @@
     </div>
 
     <div class="custom-my-4">
-        <a href="javascript:void(0)" class="button small custom-mt-8 green" id="js-connect-button"{if empty($is_show_connect)} style="display:none;"{/if}>{if ifset($service, null) === waServicesApi::EMAIL_MESSAGE_SERVICE}[s`Enable Webasyst Email`]{else}[s`Enable services free`]{/if}</a>
+        <a href="javascript:void(0)" class="button small custom-mt-8 green" id="js-connect-button"{if empty($is_show_connect)} style="display:none;"{/if}>{if ifset($service, null) === waServicesApi::EMAIL_MESSAGE_SERVICE}[s`Enable Webasyst Email`]{else}[s`Enable services for free`]{/if}</a>
         <a href="javascript:void(0)" class="button small custom-mt-8 green" id="js-balance-button"{if !empty($is_show_connect)} style="display:none;"{/if}>[s`Add credit`]</a>
+        <a href="[s`https://www.webasyst.com/pricing/#services`]" target="_blank" class="button small custom-mt-8 nobutton text-gray">[s`Pricing`] <i class="fas fa-external-link-alt fa-xs opacity-30 custom-ml-2"></i></a>
     </div>
 
     {if !empty($is_show_connect)}
     <p class="gray small custom-mb-0">
         <i class="fas fa-exclamation-triangle small state-caution"></i>
-        [s`Webasyst Email is not currently in use because another email transport is configured below. Configure Webasyst Email in the form below or enable it as a default using the button above.`]
+        [s`Webasyst Email is not currently in use because another email transport is configured below. Configure Webasyst Email in the form below or enable it as the default one using the button above.`]
     </p>
     {/if}
     {if !empty($waid_balance_show_sms_notice)}
@@ -252,7 +253,7 @@
 
         $.waDialog.confirm({
             title: '[s`Enable Webasyst Email`]',
-            text: '<i class="fas fa-check-circle text-green custom-mr-4"></i> ' + '[s`This will activate Webasyst Email as a default email sending provider for all Webasyst apps. You will be able to rollback to your custom settings any time in just few clicks.`]',
+            text: '<i class="fas fa-check-circle text-green custom-mr-4"></i> ' + '[s`This will activate Webasyst Email as the default email sending provider for all Webasyst apps. You will be able to rollback to your custom settings any time in just a few clicks.`]',
             success_button_title: '[s`Enable`]',
             success_button_class: 'green',
             cancel_button_title: '[s`Cancel`]',

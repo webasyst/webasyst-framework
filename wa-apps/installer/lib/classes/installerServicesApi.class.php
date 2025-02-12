@@ -196,7 +196,7 @@ class installerServicesApi extends waWebasystIDApi
         );
         if ($api_result['status'] >= 300) {
             $this->logError($api_result);
-            throw new waException(_w('Webasyst WebSocket API error.'));
+            throw new waException(_w('Webasyst API access error.'));
         } else {
             return ifset($api_result, 'response', 'ws_url', null);
         }
@@ -214,7 +214,7 @@ class installerServicesApi extends waWebasystIDApi
         );
         if ($api_result['status'] >= 300) {
             $this->logError($api_result);
-            throw new waException(_w('Webasyst WebSocket API error.'));
+            throw new waException(_w('Webasyst API access error.'));
         }
     }
 

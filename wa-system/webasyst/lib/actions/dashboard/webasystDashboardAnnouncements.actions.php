@@ -52,7 +52,7 @@ class webasystDashboardAnnouncementsActions extends waActions
             $errors[] = [
                 'field' => 'data[datetime]',
                 'error_code' => 'inconsistent',
-                'error_description' => _ws("Scheduled publication can not be used along with email or SMS notifications enabled."),
+                'error_description' => _ws("Scheduled publication cannot be used along with email or SMS notifications enabled."),
             ];
         }
 
@@ -156,7 +156,7 @@ class webasystDashboardAnnouncementsActions extends waActions
             $errors[] = [
                 'field' => 'data[datetime]',
                 'error_code' => 'inconsistent',
-                'error_description' => _ws("Scheduled publication can not be used along with email or SMS notifications enabled."),
+                'error_description' => _ws("Scheduled publication cannot be used along with email or SMS notifications enabled."),
             ];
         }
 

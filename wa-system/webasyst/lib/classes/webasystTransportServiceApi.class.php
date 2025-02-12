@@ -16,7 +16,7 @@ class webasystTransportServiceApi extends waServicesApi
         }
         $api_result = $this->isBalanceEnough($service, ifset($params['count'], 1), $params['locale']);
         if ($api_result['status'] != 200) {
-            throw new waException(_w('Webasyst API transport connection error'));
+            throw new waException(_w('Webasyst API transport connection error.'));
         } else {
             return !empty($api_result['response']['is_enough']);
         }

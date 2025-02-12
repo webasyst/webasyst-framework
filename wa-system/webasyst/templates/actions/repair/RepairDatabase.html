@@ -18,7 +18,7 @@
                 <ul class="menu menu-v">
                     {foreach $apps as $app_id=>$app}
                         <li>
-                            <a href="./#{$app_id}">
+                            <a href="javascript:void(0);" onclick="document.querySelectorAll('[data-app]').forEach(e => e.classList.toggle('hidden', e.dataset.app !== '{$app_id}'));">
                                 <i class="icon16 apps fas fa-cubes"></i>
                                 <span>{$app.name}</span>
                                 <span class="count">{$app.errors|default:''}</span>
@@ -57,9 +57,9 @@
                 </tr>
                 {/if}
                 {if $run_sql}
-                    <tr><th colspan="7"><a href="./">View other tables</a></th></tr>
+                    <tr><th colspan="7"><a href="javascript:void(0);" onclick="location.replace(location.href)">View other tables</a></th></tr>
                 {elseif !empty($sync)}
-                <tr><th colspan="7"><input type="submit" class="button" value="Run SQL queries"><input name="run" type="hidden" value="1">{$wa->csrf()} [`or`] <a href="./">[`cancel`]</a></th></tr>
+                <tr><th colspan="7"><input type="submit" class="button" value="Run SQL queries"><input name="run" type="hidden" value="1">{$wa->csrf()} [`or`] <a href="javascript:void(0);" onclick="location.replace(location.href)">[`cancel`]</a></th></tr>
                 {else}
                 <tr><th colspan="7"><input type="submit" class="button" value="View SQL queries">{$wa->csrf()}</th></tr>
             {/if}
@@ -86,12 +86,12 @@
                                     {if empty($sync)||isset($sync[$table][$column])}
                                         {if strpos($column,':') === 0}
                                             {foreach $info as $key=>$key_fields}
-                                                <tr>
+                                                <tr data-app="{$app_id}">
                                                     <td>
                                                         {if !$app_anchor_done}<a name="{$app_id}"></a>{$app_anchor_done=true}{/if}
-                                                        {if $info@first}<i class="icon16 folder"></i>{$table}{/if}
+                                                        {if $info@first}<i class="icon16 folder fas fa-folder custom-mr-4 text-blue"></i>{$table}{/if}
                                                     </td>
-                                                    <td><i class="icon16 lightning"></i></td>
+                                                    <td><i class="icon16 lightning fas fa-lightbulb text-yellow"></i></td>
                                                     <td>&nbsp;</td>
                                                     <td>&nbsp;</td>
                                                     <td>{$key}</td>
@@ -100,13 +100,13 @@
                                             {/foreach}
                                         {else}
                                             {$current_info = $app.current_tables[$table][$column]}
-                                            <tr{if $info.status} class="error" title="{$info.status|join:', '}" {else}{/if}>
+                                            <tr{if $info.status} class="error" title="{$info.status|join:', '}" {else}{/if} data-app="{$app_id}">
 
                                                 <td>
                                                     {if !$app_anchor_done}<a name="{$app_id}"></a>{$app_anchor_done=true}{/if}
-                                                    {if $info@first}<i class="icon16 folder"></i>{$table}{/if}
+                                                    {if $info@first}<i class="icon16 folder fas fa-folder custom-mr-4 text-blue"></i>{$table}{/if}
                                                 </td>
-                                                <td>{if $info.status}<i class="icon10 status-red"></i>{else}{/if}</td>
+                                                <td>{if $info.status}<i class="icon10 status-red fas fa-circle text-red"></i>{else}{/if}</td>
                                                 <td>{if !empty($info.status.name)}
                                                         <label>
                                                             <input type="checkbox" name="sync[{$table}][{$column}][name]" {if empty($sync) || !empty($sync[$table][$column]['name'])} checked{/if}>
@@ -136,8 +136,8 @@
                                                     {/if}
                                                 </td>
                                                 <td class="hint min-width">
-                                                    {if !empty($info.status.type)}<i class="icon10 status-yellow-tiny sync" title="{$info.type}"></i>{/if}{$current_info.type}{if $current_info.params}({if !empty($info.status.params)}
-                                                        <i class="icon10 status-yellow-tiny sync" title="{$info.params}"></i>
+                                                    {if !empty($info.status.type)}<i class="icon10 status-yellow-tiny sync fas fa-circle text-yellow small custom-mr-4" title="{$info.type}"></i>{/if}{$current_info.type}{if $current_info.params}({if !empty($info.status.params)}
+                                                        <i class="icon10 status-yellow-tiny sync fas fa-circle text-yellow small custom-mr-4" title="{$info.params}"></i>
                                                     {/if}{$current_info.params}){/if}{if !empty($current_info.autoincrement)}(autoincrement){/if}
                                                 </td>
                                                 <td class="hint">

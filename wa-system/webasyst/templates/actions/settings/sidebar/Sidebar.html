@@ -39,7 +39,7 @@
                     <div class="js-balance-toggle-content">
                         {if $waid_is_connected}
                             {if $wa_api_errors}
-                                <p class="state-caution-hint custom-mt-8"><i class="fas fa-exclamation-triangle"></i> [`Webasyst API error`]</p>
+                                <p class="state-caution-hint custom-mt-8"><i class="fas fa-exclamation-triangle"></i> [`No access to Webasyst API.`]</p>
                                 {foreach $wa_api_errors as $_err}
                                     {if !empty($_err)}
                                         <p class="state-error-hint custom-my-8"><i class="fas fa-exclamation-triangle"></i> {$_err}</p>
@@ -66,9 +66,9 @@
                             {/if}
                         {else}
                             <p class="hint custom-mt-4 custom-mb-12">
-                                [`Transactional email, SMS, secure mobile-ready Webasyst ID authentication, more.`]
+                                [`Transactional email, SMS, secure mobile-ready Webasyst ID authentication, and more.`]
                             </p>
-                            <a href="{$wa_backend_url}webasyst/settings/waid/" class="button light-gray smallest custom-mb-4">[`Enable services free`]</a>
+                            <a href="{$wa_backend_url}webasyst/settings/waid/" class="button light-gray smallest custom-mb-4">[`Enable services for free`]</a>
                         {/if}
                     </div>
                 </div>

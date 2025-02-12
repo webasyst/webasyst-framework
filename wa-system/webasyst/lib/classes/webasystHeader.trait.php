@@ -247,7 +247,7 @@ trait webasystHeaderTrait
             }
             foreach ($n['rows'] as $row) {
                 $notifications_count++;
-                if (!empty($announcement_seen_ts) && strtotime($row['datetime']) > $announcement_seen_ts) {
+                if (!empty($announcement_seen_ts) && strtotime($row['datetime']) > $announcement_seen_ts && $row['contact_id'] != wa()->getUser()->getId()) {
                     $has_new_notifications = true;
                     $new_notification_group_id_to_id[$n['id']][$row['id']] = 1;
                 } else {

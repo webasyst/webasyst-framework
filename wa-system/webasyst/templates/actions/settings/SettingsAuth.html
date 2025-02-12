@@ -60,12 +60,12 @@
         <form action="?module=settingsAuthSave" class="fields">
             {if $is_waid_connected && $is_backend_auth_forced}
 
-                <p class="small"><i class="fas fa-check-circle text-green custom-mr-4"></i> [`Sign in to your Webasyst backend is secured with a unified mobile-ready Webasyst ID authentication.`]</p>
+                <p class="small"><i class="fas fa-check-circle text-green custom-mr-4"></i> [`Sign-in to your Webasyst backend is secured with a unified mobile-ready Webasyst ID authentication.`]</p>
 
             {else}
 
                 {if $is_waid_connected}
-                    <p class="small"><i class="fas fa-check-circle text-green custom-mr-4"></i> [`Sign in to your Webasyst backend is available via Webasyst ID and as configured below.`]</p>
+                    <p class="small"><i class="fas fa-check-circle text-green custom-mr-4"></i> [`Sign-in to your Webasyst backend is available with Webasyst ID or as configured below.`]</p>
                 {/if}
 
                 <div class="js-force-save-fields">
@@ -243,7 +243,7 @@
                                     {/foreach}
                                 </ul>
                                 <p class="hint">
-                                    [s`Enable in case of issues with brute force attempts and bots.`]
+                                    [s`Enable in case of brute force attack attempts; e.g., using bots.`]
                                     {sprintf('<a href="%s">[s`Configure captcha`]</a>', "{$wa_backend_url}webasyst/settings/captcha/")}
                                 </p>
                             </div>
