@@ -5,7 +5,7 @@ return array(
     'icon'            => 'img/tinkoff.svg',
     'logo'            => 'img/tinkoff.png?v2',
     'vendor'          => 'webasyst',
-    'version'         => '1.1.2',
+    'version'         => '1.1.3',
     'type'            => waPayment::TYPE_ONLINE,
     'partial_refund'  => true,
     'partial_capture' => true,

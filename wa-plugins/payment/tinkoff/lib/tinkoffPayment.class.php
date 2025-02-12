@@ -1111,15 +1111,22 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             if (!($email = $order->getContactField('email'))) {
                 $email = $this->getDefaultEmail();
             }
+            $order_number = $order->id_str;
+            if (empty($order_number)) {
+                $order_number = $order->id;
+            }
             $this->receipt = array(
                 'Items'    => array(),
                 'Taxation' => $this->getSettings('taxation'),
                 'Email'    => $email,
                 'AddUserProp' => [
                     'Name'  => 'Номер заказа',
-                    'Value' => $order->id_str
+                    'Value' => $order_number,
                 ]
             );
+            if (empty($this->receipt['AddUserProp']['Value'])) {
+                unset($this->receipt['AddUserProp']);
+            }
             if ($phone = $order->getContactField('phone')) {
                 $this->receipt['Phone'] = sprintf('+%s', preg_replace('/^8/', '7', $phone));
             }
