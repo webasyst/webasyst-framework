@@ -215,6 +215,10 @@ HTML;
                 'address' => $address,
                 'sensor'  => 'false',
             );
+            
+            if ($key = $this->getSettings('key')) {
+                $params['key'] = $key;
+            }
 
             $options = array(
                 'format'  => waNet::FORMAT_JSON,
