@@ -1,6 +1,10 @@
+{if empty($_cart_url) && $wa->shop}
+    {$_cart_url = $wa->getUrl('shop/frontend/order')}
+{/if}
 {if !empty($is_bp_header)}
-    <!-- css -->
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+    <script src="{$wa_theme_url}js/waTheme.js?v={$wa_theme_version}"></script>
+    <script src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
 {/if}
  <header class="globalheader"{if $theme_settings.header_custom_image} style="background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');"{/if}>
 
@@ -42,8 +46,7 @@
                                      {$_links = $wa->apps()}
                                  {/if}
                                  {foreach $_links as $a}
-                                 {* remove empty($is_bp_header) condition after fix urls *}
-                                     {if empty($is_bp_header) && !($a.url == $wa_url && $a.name == $wa->accountName())}
+                                     {if !($a.url == $wa_url && $a.name == $wa->accountName())}
                                          <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
                                      {/if}
                                  {/foreach}

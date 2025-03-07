@@ -16,6 +16,8 @@ class siteEditorBodyAction extends waViewAction
             throw new waExeption('Page not found', 404);
         }
 
+        $this->setRoutingDomain($page['domain_id']);
+
         $page = (new siteBlockPage($page))->getDraftPage();
 
         $this->setLayout(new siteBlockPageLayout());
@@ -23,5 +25,25 @@ class siteEditorBodyAction extends waViewAction
             'page' => $page,
             'rendered_page_html' => $page->renderBackend(),
         ]);
+    }
+
+    /** Prepare routing to pretend it's a frontend page view. */
+    protected function setRoutingDomain($domain_id)
+    {
+        $domains = siteHelper::getDomains(true);
+        $domain = ifset($domains, $domain_id, null);
+        if (!empty($domain['name'])) {
+            wa()->getRouting()->setRoute(null, $domain['name']);
+        }
+        $route = ['url' => '*', 'app' => 'site'];
+        foreach(wa()->getRouting()->getRoutes() as $r) {
+            if (ifset($r, 'app', null) === 'site') {
+                $route = $r;
+                if ($r['url'] == '*') {
+                    break;
+                }
+            }
+        }
+        wa()->getRouting()->setRoute($route);
     }
 }

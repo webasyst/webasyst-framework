@@ -1,27 +1,82 @@
+<script>
+    document.title = "{$wa->appName()} — " + {$wa->accountName(false)|json_encode};
+</script>
 <div class="article site-base">
   <div class="article-body">
-    <div class="s-domains-page" id="s-domains-page">
-        <div class="s-domains-header flexbox wrap full-width custom-my-20">
+    <div class="s-domains-page" id="s-domains-page" data-view="grid">
+        <div class="s-domains-header flexbox wrap full-width custom-my-20 space-12">
             <h1 class="wide">[`My sites`]</h1>
             <button class="s-domains-add js-domains-add custom-mr-0">
                 <i class="fas fa-plus"></i>
-                [`New site`]
+                <span class="desktop-and-tablet-only">[`New site`]</span>
             </button>
 
-            <button class="light-gray hidden">
-                <i class="fas fa-check-square"></i>
-                [`Select site`]
-            </button>
+            <div id="dropdown-sort" class="dropdown">
+                <button type="button" class="dropdown-toggle button light-gray">
+                    <span class="icon">{$sort_types[$sort].icon}</span>
+                    <span class="name desktop-and-tablet-only">{$sort_types[$sort].title}</span>
+                </button>
+                <div class="dropdown-body right custom-mt-8">
+                    <ul class="menu">
+                        {foreach $sort_types as $_id => $_type}
+                        <li{if $sort === $_id} class="selected"{/if}>
+                            <a href="javascript:void(0)" data-id="{$_id}">
+                                <span class="icon">{$_type.icon}</span>
+                                <span class="name">{$_type.title}</span>
+                            </a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="toggle" id="toggle-list-view">
+                <span data-toggle-id="grid">
+                    <svg width="18" height="18" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.99998 2.3999H13.8C14.1313 2.3999 14.4 2.66853 14.4 2.9999V6.9999C14.4 7.33128 14.1313 7.5999 13.8 7.5999H8.99998C8.6686 7.5999 8.39998 7.33128 8.39998 6.9999V2.9999C8.39998 2.66853 8.6686 2.3999 8.99998 2.3999ZM6.99998 2.3999H2.19998C1.8686 2.3999 1.59998 2.66853 1.59998 2.9999V6.9999C1.59998 7.33128 1.8686 7.5999 2.19998 7.5999H6.99998C7.33135 7.5999 7.59998 7.33128 7.59998 6.9999V2.9999C7.59998 2.66853 7.33135 2.3999 6.99998 2.3999ZM1.59998 8.9999V12.9999C1.59998 13.3313 1.8686 13.5999 2.19998 13.5999H6.99998C7.33135 13.5999 7.59998 13.3313 7.59998 12.9999V8.9999C7.59998 8.66853 7.33135 8.3999 6.99998 8.3999H2.19998C1.8686 8.3999 1.59998 8.66853 1.59998 8.9999ZM8.99998 13.5999H13.8C14.1313 13.5999 14.4 13.3313 14.4 12.9999V8.9999C14.4 8.66853 14.1313 8.3999 13.8 8.3999H8.99998C8.6686 8.3999 8.39998 8.66853 8.39998 8.9999V12.9999C8.39998 13.3313 8.6686 13.5999 8.99998 13.5999Z" fill="currentColor" />
+                    </svg>
+                </span>
+                <span data-toggle-id="list">
+                    <svg width="18" height="18" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 2.5C2.44772 2.5 2 2.94772 2 3.5C2 4.05228 2.44772 4.5 3 4.5H13C13.5523 4.5 14 4.05228 14 3.5C14 2.94772 13.5523 2.5 13 2.5H3Z" fill="currentColor" />
+                        <path d="M3 8.5C2.44772 8.5 2 8.94772 2 9.5C2 10.0523 2.44772 10.5 3 10.5H13C13.5523 10.5 14 10.0523 14 9.5C14 8.94772 13.5523 8.5 13 8.5H3Z" fill="currentColor" />
+                        <path d="M2 6.5C2 5.94772 2.44772 5.5 3 5.5H13C13.5523 5.5 14 5.94772 14 6.5C14 7.05228 13.5523 7.5 13 7.5H3C2.44772 7.5 2 7.05228 2 6.5Z" fill="currentColor" />
+                        <path d="M3 11.5C2.44772 11.5 2 11.9477 2 12.5C2 13.0523 2.44772 13.5 3 13.5H13C13.5523 13.5 14 13.0523 14 12.5C14 11.9477 13.5523 11.5 13 11.5H3Z" fill="currentColor" />
+                    </svg>
+                </span>
+            </div>
+            <script>
+                (function($) {
+                    const $toggle_list_view = $('#toggle-list-view');
+                    let skip_update = true;
+
+                    $toggle_list_view.waToggle({
+                        change(event, target, toggle) {
+                            const toggle_id = toggle.$active.data('toggle-id');
+                            $('#s-domains-page').attr('data-view', toggle_id);
+
+                            if (!skip_update) {
+                                const action = toggle_id === 'list' ? 'set' : 'delete';
+                                $.post('?module=domains&action=listView', { action });
+                            }
+                            skip_update = false;
+                        }
+                    });
+
+                    $toggle_list_view.find(`[data-toggle-id="{if !empty($is_list_view)}list{else}grid{/if}"]`).trigger('click');
+                })(jQuery);
+            </script>
         </div>
 
         <div class="s-domains-list" id="js-domains-list">
         {if waRequest::isHttps()}
-        {$protocol = 'https://'}
+            {$protocol = 'https://'}
         {else}
-        {$protocol = 'http://'}
+            {$protocol = 'http://'}
         {/if}
         {foreach $domains as $domain_id => $d}
             {$is_alias = $d.is_alias}
+            {$redirect = (empty($d.redirect)) ? null : $d.redirect}
             {if !empty($d.frontend_link) }
                 {$frontend_link = $d.frontend_link}
             {elseif !empty($d)}
@@ -45,7 +100,15 @@
                 {/if}
                 <div class="card cursor-pointer">
                     <div class="s-domain-view flex">
-                        {if !$is_alias}
+                        {if $is_alias}
+                            <span class="icon size-48">
+                                <i class="fas fa-clone text-light-gray"></i>
+                            </span>
+                        {elseif !empty($d.redirect)}
+                            <span class="icon size-48">
+                                <i class="fas fa-sign-in-alt text-light-gray"></i>
+                            </span>
+                        {else}
                             <div class="image s-frame-wrapper" id="s-frame-wrapper-{$domain_id|escape}" style="visibility: hidden;position: absolute;">
                                 <div class="blank-cover"></div>
                                 <iframe sandbox="allow-scripts" scrolling="no" loading="lazy" onload="onIframeDomainLoaded(this)" src="{$frontend_link|escape}">
@@ -54,28 +117,43 @@
                             <span class="icon size-48">
                                 <i class="fas fa-globe text-light-gray"></i>
                             </span>
-                        {else}
-                            <span class="icon size-48">
-                                <i class="fas fa-clone text-light-gray"></i>
-                            </span>
                         {/if}
                     </div>
-                    <div class="s-domain-title flexbox full-width custom-pt-12">
-                        <h4 class="title wide custom-m-0">
-                            <a href="{$main_link}">
-                                {waIdna::dec($d.title|escape)}
-                            </a>
-                        </h4>
+                    <div class="s-domain-title flexbox full-width space-8 custom-pt-12">
+                        <div class="box-icon icon">
+                            {if $is_alias}
+                            <i class="fas fa-copy"></i>
+                            {elseif $redirect}
+                            <i class="fas fa-sign-in-alt"></i>
+                            {elseif !empty($d.favicon)}
+                            <i style="background-image: url('{$d.favicon}');"></i>
+                            {else}
+                            <i class="fas fa-globe"></i>
+                            {/if}
+                        </div>
+                        <div class="title-wrapper wide">
+                            <h4 class="title custom-m-0">
+                                <a href="{$main_link}">{$d.title|escape}</a>
+                            </h4>
+                        </div>
 
-                        <div class="box">
-                            <a href="{$main_link}" class="js-main-link">  </a>
+                        <div>
+                            <a href="{$main_link}" class="js-main-link"></a>
                         </div>
                         <div class="favicon-icon flexbox custom-mt-4">
-                                <i class="icon custom-mt-2" style="background-image: url('{if !empty($d.favicon)}{$d.favicon}{/if}');"></i>
+                            <i class="icon custom-mt-2" style="background-image: url('{if !empty($d.favicon)}{$d.favicon}{/if}');"></i>
                         </div>
                         <div class="box hidden"><a class="dropdown-toggle">
                             <i class="fas fa-ellipsis-h gray"></i>
                         </a></div>
+                    </div>
+
+                    <div class="s-domain-hint s-grid">
+                        {if $is_alias}
+                            <div class="hint text-ellipsis">{sprintf_wp('This is a mirror site (alias) for <strong>%s</strong>.', waIdna::dec($d.is_alias|escape)|replace:'www.':'')}</div>
+                        {elseif $redirect}
+                            <div class="hint text-ellipsis">{sprintf_wp('Redirected to <strong>%s</strong>', waIdna::dec($redirect|replace:['http://','https://','www.']:''|escape))}</div>
+                        {/if}
                     </div>
 
                 </div>
@@ -94,12 +172,12 @@
                     <header class="dialog-header"><h1>[`New site`]</h1></header>
                     <div class="dialog-content">
                         <div class="custom-pb-20">
-                            <span class="bold custom-pr-4">http://</span><input type="text" id="domain-name" name="name" class="bold long" value="" placeholder="mydomain.ru">
+                            <span class="bold custom-pr-4">http://</span><input type="text" id="domain-name" name="name" class="bold long" value="" placeholder="[`mydomain.com`]">
                             <div class="hint custom-pt-4">[`E.g., mydomain.com, www.mydomain.com, subdomain.mydomain.com`]</div>
                         </div>
-                        <div class="custom-pb-20 s-small">[`Enter the URL of your new website. You should own the domain name and be able to configure it to point to your Webasyst installation. Contact your hosting provider on how to map your domain name to this server.`]
-                            <a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">
-                                [`Help`] <i class="icon fas fa-external-link-alt new-window"></i>
+                        <div class="custom-pb-20 s-small">[`The domain name must be registered and set up to point to this Webasyst account.`]
+                            <a href="[`https://support.webasyst.com/47317/get-domain-name/`]" target="_blank" class="nowrap">
+                                [`Help`] <i class="icon fas fa-external-link-alt smaller"></i>
                             </a>
                         </div>
                         <div>
@@ -124,7 +202,7 @@
                                             <select id="alias-domain" name="domain">
                                                 {foreach $domains as $d_id => $d}
                                                     {if empty($d.is_alias)}
-                                                        <option value="{$d.name|escape}">{waIdna::dec($d.name)}</option>
+                                                        <option value="{$d.name|escape}">{waIdna::dec($d.name|escape)|replace:'www.':''}</option>
                                                     {/if}
                                                 {/foreach}
                                             </select>
@@ -204,8 +282,24 @@
         }
         var $el = $(this);
         var domain_id = $el.data('domain-id');
-        $.site.navigate($el.find('a[href].js-main-link').prop('href'));
+        var href = $el.find('a[href].js-main-link').prop('href');
+        $.site.helper.preventDupeRequest(() => {
+            return $.site.navigate(href);
+        }, href);
         return false;
+    });
+
+    $('#dropdown-sort').waDropdown({
+        hover: false,
+        items: '.menu > li > a',
+        update_title: false,
+        change: function (e, target, dropdown) {
+            dropdown.$button.find('.name').text(dropdown.$active.find('.name').text());
+            dropdown.$button.find('.icon').html(dropdown.$active.find('.icon').html());
+
+            const sort = dropdown.$active.data('id');
+            $.site.loadContent('{$wa_app_url}?list&sort=' + sort, null, true);
+        }
     });
 
 })();</script>

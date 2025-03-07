@@ -247,7 +247,7 @@ var FormConstructor = ( function($) {
                             'ButtonSizeToggle': that.vue_components['component-toggle'],
                           },
                     },
-                    "ColumnsGroup": {
+                    "OldColumnsGroup": {
                         props: {
                             group_config: { type: Object },
                             block_data: { type: Object, default: {} },
@@ -300,7 +300,7 @@ var FormConstructor = ( function($) {
                             }
                         }
                     },
-                    "NewColumnsGroup": {
+                    "ColumnsGroup": {
                         props: {
                             group_config: { type: Object },
                             block_data: { type: Object, default: {} },
@@ -315,7 +315,7 @@ var FormConstructor = ( function($) {
                             $.each(self.columns_nodes, function(i, node) {
                                 const column_id = $(node).attr('data-block-id');
                                 const column_data = $.wa.editor.block_storage.getData(column_id);
-                                columns_data.push(column_data.new_column);
+                                columns_data.push(column_data.column);
                                 if (column_data?.indestructible) indestructible_cols = true;
                             });
                             let arr_options = that.storage_data['ColumnsGroup'].values;
@@ -343,7 +343,7 @@ var FormConstructor = ( function($) {
 
                                 let column_id = that.$target_wrapper.find('.js-seq-wrapper').eq(0).find('> .seq-child').eq(column_num - 1).data('block-id');
                                 const column_data = $.wa.editor.block_storage.getData(column_id);
-                                column_data.new_column = temp_active_options.join(' ');
+                                column_data.column = temp_active_options.join(' ');
                                 self.columns_data[column_num - 1] = temp_active_options.join(' ');
                                 $.wa.editor.saveBlockData(column_id, column_data, {
                                     notify_editor_inside_iframe: true,
@@ -367,7 +367,7 @@ var FormConstructor = ( function($) {
                                 $block_wrapper.css('opacity', 0.5)
                                 let column_data = {}
                                 if (column_id) column_data = { duplicate_block_id: column_id };
-                                else column_data = { parent_block_id: $block_wrapper.data('block-id'), type_name: 'site.NewColumn_' };
+                                else column_data = { parent_block_id: $block_wrapper.data('block-id'), type_name: 'site.Column_' };
                                 $.post('?module=editor&action=addBlock', column_data).then(function(new_parent_block_html) {
                                     $block_wrapper.replaceWith(new_parent_block_html);
                                 });

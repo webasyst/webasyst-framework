@@ -1,28 +1,75 @@
+{$is_custom_text = $app_id === ':text'}
+{function _render_field_url}
+<div class="field field-url">
+    <div class="name for-input">URL</div>
+    <div class="value">
+    {if strlen($route_id)}
+
+        <!-- existing route -->
+        <div class="s-route-block flexbox wrap middle space-4 full-width" id="s-route-where">
+        <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
+        <input type="text" name="params[url]" value="{if $is_custom_text}{$route.url|escape}{else}{$route.url|rtrim:'/*'|escape}{/if}" class="js-url small full-width">
+        {if !$is_custom_text}<span>/</span>{/if}
+        </div>
+
+    {else}
+
+        <!-- new route -->
+        <div class="s-route-block flexbox wrap middle space-4 full-width" id="s-route-where">
+        <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
+        <input type="text" name="params[url]" value="{$app_url}" class="js-url small full-width">
+        {if !$is_custom_text}<span>/</span>{/if}
+        <input type="hidden" name="params[app]" value="{$app_id}">
+        </div>
+    {/if}
+    </div>
+</div>
+{/function}
 
 <div class="dialog s-section-settings-dialog" id="js-section-settings-dialog">
     <div class="dialog-background"></div>
     <div class="dialog-body">
-
-        <header class="dialog-header flexbox middle full-width custom-mb-16">
+        <header class="dialog-header flexbox middle full-width">
             {if strlen($route_id)}
-            <h1 class="custom-mb-0">[`App settings`]</h1>
-            {else}
-            <h1 class="custom-mb-0"> [`Add app`]
-                {if !empty($app.name)}
-                    {$app.name}
+            <h1 class="custom-mb-0">{strip}
+                {if $is_custom_text}
+                    [`Rule settings`]
                 {else}
-                    {$route.app|escape|default:''}
+                    [`App settings`]
                 {/if}
-            </h1>
-            <img class="icon size-32" src="{$wa_url}{$app.icon.24}" />
+            {/strip}</h1>
+            {else}
+            <h1 class="custom-mb-0">{strip}
+                {if $is_custom_text}
+                    [`Add`] [`Custom text`]
+                {else}
+                    {if !empty($app.name)}
+                        [`Add app`] {$app.name}
+                    {else}
+                        [`Add app`] {$route.app|escape|default:''}
+                    {/if}
+                </span>
+                {/if}
+            {/strip}</h1>
+
+                {if $is_custom_text}
+                <i class="fas fa-file-code largest text-gray"></i>
+                {else}
+                <img class="icon size-32" src="{$wa_url}{$app.icon.24}" />
+                {/if}
             {/if}
         </header>
         <div class="dialog-content">
             <form>
             {include file="templates/layouts/includes/alert_misconfigured_settlement.html" misconfigured_settlement=$misconfigured_settlement inline}
             <div class="fields">
-                {$themes=siteHelper::getThemes($app_id, true)}
                 {if $app}
+                    {if !empty($route.priority_settlement)}
+                        <input type="hidden" name="params[priority_settlement]" value="1">
+                    {/if}
+                    {if !empty($route.old_url)}
+                        <input type="hidden" name="params[old_url]" value="{$route.old_url}">
+                    {/if}
                     <div class="custom-mb-16">
                         <div class="field">
                             <div class="name custom-pt-4">[`Name`]</div>
@@ -33,10 +80,10 @@
                         </div>
 
                         <div class="field field-redirect-disabled">
-                            <div class="name">
+                            <div class="name custom-pt-0">
                                 [`Publication`]
                             </div>
-                            <div class="value" style="vertical-align: bottom;">
+                            <div class="value">
                                 {if !empty($route.private)}
                                     {$route_disabled = null}
                                 {else}
@@ -81,31 +128,8 @@
                                 <div class="hint">[`When disabled, the app is available at its direct address but is not indexed by search engines and is not included in the main menu <em>&#123;$wa-apps()&#125;</em>.`]</div>
                             </div>
                         </div>
-                        <div class="field field-url">
-                            <div class="name for-input">URL</div>
-                            <div class="value">
-                            {if strlen($route_id)}
 
-                                <!-- existing route -->
-                                <div class="s-route-block flexbox wrap middle space-4 full-width" id="s-route-where">
-                                <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
-                                <input type="text" name="params[url]" value="{$route.url|rtrim:'/*'|escape}" class="js-url small full-width">
-                                <span class="">/</span>
-                                </div>
-
-                            {else}
-
-                                <!-- new route -->
-                                <div class="s-route-block flexbox wrap middle space-4 full-width" id="s-route-where">
-                                <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
-                                <input type="text" name="params[url]" value="{$app_url}" class="js-url small full-width">
-                                <span class="">/</span>
-                                <input type="hidden" name="params[app]" value="{$app_id}">
-                                </div>
-                            {/if}
-                            </div>
-                        </div>
-
+                        {_render_field_url}
 
                         {if $themes}
                             <div class="field">
@@ -141,24 +165,26 @@
                         <div class="field">
                             <div class="name for-switch">[`Security`]</div>
                             <div class="value">
-                                <label>
-                            <span class="wa-checkbox">
-                                <input type="checkbox" value="1" id="ssl_all" name="params[ssl_all]" {if !empty($route.ssl_all)} checked{/if} {if empty($is_https)}disabled{/if}>
-                                <span>
-                                    <span class="icon">
-                                        <i class="fas fa-check"></i>
+                            <label>
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" value="1" id="ssl_all" name="params[ssl_all]" {if !empty($route.ssl_all)} checked{/if} {if empty($is_https)}disabled{/if}>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
                                     </span>
                                 </span>
-                            </span>
-                                    <span class="s-small">[`Redirect to HTTPS`]</span><br>
-                                    <span class="hint ssl_server_https bold" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]<br></span>
-                                    <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></span>
-                                    <span class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this application.`]
-                            <br>
-                            [`This option will work only if an SSL certificate is installed for your domain name.`]
-                            <br>
-                            {sprintf(_w('To enable redirect to HTTPS for <em>all</em> website settlements, change this option in <a href="%s#/settings/">common site settings</a>.'), $site_url)}</span>
-                                </label>
+                                <span class="s-small">[`Redirect to HTTPS`]</span><br>
+                                <span class="hint ssl_server_https bold" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]<br></span>
+                                <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></span>
+                                <span class="hint">
+                                    [`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this application.`]
+                                    <br>
+                                    [`This option will work only if an SSL certificate is installed for your domain name.`]
+                                    <br>
+                                    [`To enable redirect to HTTPS for <em>all</em> website settlements, change this option in common site settings.`]
+                                </span>
+                            </label>
                             </div>
                         </div>
                     </div>
@@ -184,15 +210,25 @@
                         <div class="field">
                             <div class="name">[`Custom parameters`]</div>
                             <div class="value">
-                                <textarea class="small width-100" name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled')) && substr($key, 0, 1) != '_' && !isset($params[$key]) && is_scalar($value)}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
-
-                            {/if}{/foreach}</textarea>
+                                <textarea class="small width-100" name="other_params">{strip}
+                                    {foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled', 'is_broken_route_url', 'priority_settlement', 'old_url')) && substr($key, 0, 1) != '_' && !isset($params[$key]) && is_scalar($value)}
+                                            {$key|escape}={if $value===false}0{else}{$value|escape}{/if}{"\n"}
+                                    {/if}{/foreach}{/strip}</textarea>
                                 <p class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this application as <em>&#123;$wa->param("key")&#125;</em>. Each key=value pair must be specified on a separate line.`] <a href="[`https://developers.webasyst.com/docs/templates/design-themes/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></p>
                             </div>
                         </div>
                     </div>
                 {elseif $app_id === ':text'}
-                    <div class="">
+                    <div class="custom-text-fields">
+                        <div class="field">
+                            <div class="name custom-pt-4">[`Name`]</div>
+                            <div class="value">
+                                <input type="text" name="params[_name]" value="{$route_name|escape}" class="bold small width-100" />
+                            </div>
+                        </div>
+
+                        {_render_field_url}
+
                         <div class="field">
                             <div class="name">[`Custom text`]</div>
                             <div class="value">
@@ -202,22 +238,14 @@
                         <div class="field">
                             <div class="name">[`Content type`]</div>
                             <div class="value">
-                                <select name="params[static_content_type]">
-                                    <option value=""{if empty($route.static_content_type)} selected{/if}>[`file`]</option>
-                                    <option value="text/plain" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/plain')} selected{/if}>[`text (text/plain)`]</option>
-                                    <option value="text/html" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/html')} selected{/if}>[`HTML code (text/html)`]</option>
-                                </select>
-                                <br>
-                                <span class="hint">[`If content type “file” is selected, downloading of a file will start automatically if there is no extension in its name.`]</span>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="name">[`Privacy`]</div>
-                            <div class="value">
-                                <label>
-                                    <input type="checkbox" value="1" name="params[private]"{if !empty($route.private) || !strlen($route_id)} checked{/if}> [`Private settlement`]<br />
-                                    <span class="hint">[`When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines.`]</span>
-                                </label>
+                                <div class="wa-select small">
+                                    <select name="params[static_content_type]">
+                                        <option value=""{if empty($route.static_content_type)} selected{/if}>[`file`]</option>
+                                        <option value="text/plain" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/plain')} selected{/if}>[`text (text/plain)`]</option>
+                                        <option value="text/html" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/html')} selected{/if}>[`HTML code (text/html)`]</option>
+                                    </select>
+                                </div>
+                                <div class="hint">[`If content type “file” is selected and the URL does not end with a name extension then requesting this URL will automatically start downloading of a file.`]</div>
                             </div>
                         </div>
                     </div>
@@ -273,7 +301,8 @@
     const wa_loading = $.waLoading();
     const $place_for_errors = $wrapper.find('.js-place-for-errors');
     var dialog;
-    initToggle()
+
+    initToggle();
 
     function initToggle() {
         setTimeout(() => {
@@ -299,15 +328,16 @@
 
     // Delete page when user clicks on Delete button
     $wrapper.on('click', '.js-delete', function() {
+        const is_custom_text = '{$app_id}' === ':text';
         let last_app_route = {$last_app_route|json_encode},
-            content = $_('delete_rule_msg');
+            content = is_custom_text ? '[`The rule will be removed from the site settings. Continue?`]' : '[`The app will be removed from the site settings. Continue?`]';
 
         if (last_app_route) {
             content = '{sprintf('[`You are about to delete the only routing rule set up for <b>%s</b> app.`]', ifempty($app.name, $app_id))}</p><p>[`This will limit its functionality. Delete the rule?`]';
         }
 
         $.waDialog.confirm({
-            title: $_('delete_route'),
+            title: is_custom_text ? '[`Delete rule?`]' : '[`Delete app?`]',
             text: content,
             success_button_title: $_('Delete'),
             success_button_class: 'danger',
@@ -326,7 +356,7 @@
         $.post(delete_url, { route: $route_id }).then(function(r) {
             handleResponse(r, () => {
                 $wrapper.data('dialog').close();
-                $.site.reload();
+                $.site.reloadWithScrollTo();
             });
         }, function(r) {
             console.log('Error saving page settings', arguments);
@@ -337,7 +367,7 @@
     }
 
     // Rule address contains unsupported character, regexp for define it
-    const invalid_url_regexp = /(\&|\$|\+|\,|\:|\;|\=|\?|\@|\#|\<|\>|\[|\]|\}|\||\^|\%)/;
+    const invalid_url_regexp = /(\&|\$|\+|\,|\;|\=|\?|\@|\#|\[|\]|\}|\||\^|\%)/;
 
     let errors = [];
 
@@ -406,7 +436,7 @@
             wa_loading.done();
             handleResponse(r, () => {
                 $wrapper.data('dialog').close();
-                $.site.reload();
+                $.site.reloadWithScrollTo();
             });
         }, function() {
             console.log('Error saving page settings', arguments);

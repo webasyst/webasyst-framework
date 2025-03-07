@@ -200,7 +200,7 @@
                                     </label>
                                     <p class="hint ssl_server_https bold" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]</p>
                                     <p class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></p>
-                                    <p class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this settlement.`]
+                                    <p class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this section.`]
                                 <br>
                                 [`This option will work only if an SSL certificate is installed for your domain name.`]
                                 <br>
@@ -252,7 +252,7 @@
                                         <option value="text/html" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/html')} selected{/if}>[`HTML code (text/html)`]</option>
                                     </select>
                                     <br>
-                                    <span class="hint">[`If content type “file” is selected, downloading of a file will start automatically if there is no extension in its name.`]</span>
+                                    <span class="hint">[`If content type “file” is selected and the URL does not end with a name extension then requesting this URL will automatically start downloading of a file.`]</span>
                                 </div>
                             </div>
                             <div class="field">

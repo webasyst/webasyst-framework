@@ -1,7 +1,14 @@
 {if $wa->blog}
     <!-- rss -->
     {$rss=$wa->blog->rssUrl()}
-
+{/if}
+{if empty($_cart_url) && $wa->shop}
+    {$_cart_url = $wa->getUrl('shop/frontend/order')}
+{/if}
+{if !empty($is_bp_header)}
+    <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+    <script src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
+    <script src="{$wa_theme_url}js/waTheme.js?v={$wa_theme_version}"></script>
 {/if}
     <footer class="globalfooter">
         {if !empty($theme_settings.footer_subscribe_form_use) && $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
@@ -24,10 +31,10 @@
                         </p>
                         <script>
                             ( function($) {
-                                /*new SubscribeSection({
+                                new SubscribeSection({
                                     $wrapper: $("#js-subscribe-section"),
                                     request_uri: "{$wa->getUrl('mailer/frontend/subscribe')}"
-                                })*/
+                                })
                             })(jQuery);
                         </script>
                     </div>

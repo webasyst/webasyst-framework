@@ -12,54 +12,58 @@ class siteFilemanagerListController extends waJsonController
         }
 
         $dh = opendir($path);
-        $names = array();
+        $files = array();
         if ($dh) {
             while (($f = readdir($dh)) !== false) {
                 if ($f !== '.' && $f !== '..') {
-                    $names[] = $f;
+                    $files[] = [
+                        'name' => $f,
+                        'is_file' => is_file($path.'/'.$f)
+                    ];
                 }
             }
             closedir($dh);
         }
 
-        $n = count($names);
-        $limit = 100;
-        $page = waRequest::get('page', 1);
-        $names = array_slice($names, ($page - 1) * $limit, 100);
-        $files = array();
-
-        foreach ($names as $name) {
-            $f = $name;
-            $t = filemtime($path.'/'.$f);
-            $is_file = is_file($path.'/'.$f);
-            $type = 'folder';
-            if ($is_file) {
-                $type = $this->getType($f);
-            }
-
-            $files[] = array(
-                'file' => htmlspecialchars($name),
-                'type' => $type,
-                'size' => filesize($path.'/'.$f),
-                'timestamp' => $t,
-                'datetime' => waDateTime::format('humandatetime', $t),
-                'is_file' => $is_file
-            );
-        }
-
         // Сортировка по типу (сначала папки, потом файлы)
         usort($files, function($a, $b) {
-            if ($a['type'] === 'folder' && $b['type'] !== 'folder') {
+            if (!$a['is_file'] && $b['is_file']) {
                 return -1; // Папка должна быть выше файла
-            } elseif ($a['type'] !== 'folder' && $b['type'] === 'folder') {
+            } elseif ($a['is_file']  && !$b['is_file']) {
                 return 1;
             } else {
-                return strnatcasecmp($a['file'], $b['file']);
+                return strnatcasecmp($a['name'], $b['name']);
             }
         });
 
+        $limit = 100;
+        $n = count($files);
+        $page = waRequest::get('page', 1);
+        $files = array_slice($files, ($page - 1) * $limit, 100);
+
+        $files_page = [];
+        foreach ($files as $f) {
+            $name = $f['name'];
+            $is_file = $f['is_file'];
+
+            $type = 'folder';
+            if ($is_file) {
+                $type = $this->getType($name);
+            }
+
+            $t = filemtime($path.'/'.$name);
+            $files_page[] = array(
+                'file' => htmlspecialchars($name),
+                'type' => $type,
+                'size' => filesize($path.'/'.$name),
+                'timestamp' => $t,
+                'datetime' => waDateTime::format('humandatetime', $t),
+                'is_file' => $is_file,
+            );
+        }
+
         $this->response['pages'] = ceil((float)$n / $limit);
-        $this->response['files'] = $files;
+        $this->response['files'] = $files_page;
     }
 
     protected function getType($file)

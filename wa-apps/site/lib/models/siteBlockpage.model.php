@@ -208,4 +208,45 @@ class siteBlockpageModel extends waModel
                 WHERE id IN (i:ids)";
         return $this->exec($sql, array('ids' => $ids, 'url' => $new_url));
     }
+
+    public function copyContents($source_page_id, $dest_page_id)
+    {
+        $unprocessed_ids = [];
+        $blockpage_blocks_model = new siteBlockpageBlocksModel();
+        $blocks = $blockpage_blocks_model->getByPage($source_page_id);
+        foreach ($blocks as $id => $b) {
+            $unprocessed_ids[$id] = $id;
+        }
+
+        // Copy blocks and block files
+        $sql = "INSERT INTO site_blockpage_block_files (file_id, block_id, `key`)
+                SELECT file_id, ?, `key` FROM site_blockpage_block_files WHERE block_id=?";
+        $old_id_to_new_id = [];
+        $something_changed = true;
+        while ($something_changed) {
+            $something_changed = false;
+            foreach ($unprocessed_ids as $id) {
+                $b = $blocks[$id];
+                if (empty($b['parent_id']) || isset($old_id_to_new_id[$b['parent_id']])) {
+                    unset($b['id']);
+                    $b['page_id'] = $dest_page_id;
+                    if ($b['parent_id']) {
+                        $b['parent_id'] = $old_id_to_new_id[$b['parent_id']];
+                    }
+                    $new_block_id = $blockpage_blocks_model->insert($b);
+                    $this->exec($sql, [$new_block_id, $id]);
+
+                    $old_id_to_new_id[$id] = $new_block_id;
+                    unset($unprocessed_ids[$id]);
+                    $something_changed = true;
+                }
+            }
+        }
+
+        // Page params
+        $sql = "INSERT INTO site_blockpage_params (page_id, name, value)
+                SELECT ?, name, value FROM site_blockpage_params
+                WHERE page_id=?";
+        $this->exec($sql, [$dest_page_id, $source_page_id]);
+    }
 }

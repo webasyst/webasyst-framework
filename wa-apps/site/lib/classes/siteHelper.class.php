@@ -22,22 +22,16 @@ class siteHelper
 
         if (!empty($routing_error)) {
             $not_install = ifset($routing_error, 'apps', $domain_id, 'not_install', null);
-            if ($not_install) {
+            if ($not_install && wa()->whichUI() === '1.3') {
                 $not_install_id = array();
                 foreach ($not_install as $app_name) {
                     if (isset($apps[$app_name]['name'])) {
                         $not_install_id[] = $apps[$app_name]['name'];
                     }
                 }
-                if (wa()->whichUI() === '1.3') {
-                    $not_install_text = sprintf(_w('You have no rules set up for %s app.', 'You have no rules set up for %s apps.',
-                        count($not_install), false), implode(_w('”, “'), $not_install_id));
-                } else {
-                    $count = count($not_install);
-                    $not_install_text = sprintf(_w('App %s has not been added and may not be working properly.', 'Apps %s have not been added and may not be working properly.',
-                        $count, false), implode($count > 2 ? ', ' : _w(' and '), $not_install_id));
-                }
 
+                $not_install_text = sprintf(_w('You have no rules set up for %s app.', 'You have no rules set up for %s apps.',
+                    count($not_install), false), implode(_w('”, “'), $not_install_id));
             }
 
             $incorrect = ifset($routing_error, 'apps', $domain_id, 'incorrect', null);
@@ -156,27 +150,39 @@ class siteHelper
     public static function getDomainId()
     {
         if (!self::$domain_id) {
-            $domain_id = waRequest::get('domain_id');
+
             $domains = self::getDomains(true);
-            if (is_numeric($domain_id)) {
-                self::$domain_id = (int)$domain_id;
+            if (wa()->getEnv() === 'frontend') {
+                $domain = wa()->getRouting()->getDomain(null, true);
             } else {
+                $domain_id = waRequest::get('domain_id');
+                if (is_numeric($domain_id)) {
+                    self::$domain_id = (int)$domain_id;
+                } else {
+                    $domain = $domain_id;
+                    unset($domain_id);
+                }
+            }
+
+            if (!self::$domain_id && !empty($domain)) {
                 foreach ($domains as $d_id => $d) {
-                    if ($d['name'] == $domain_id) {
+                    if ($d['name'] == $domain) {
                         self::$domain_id = $d_id;
                         break;
                     }
                 }
             }
 
-            if (!self::$domain_id) {
-                self::$domain_id = wa()->getUser()->getSettings('site', 'last_domain_id');
-                if (!isset($domains[self::$domain_id])) {
-                    self::$domain_id = null;
+            if (wa()->getEnv() !== 'frontend') {
+                if (!self::$domain_id) {
+                    self::$domain_id = wa()->getUser()->getSettings('site', 'last_domain_id');
+                    if (!isset($domains[self::$domain_id])) {
+                        self::$domain_id = null;
+                    }
                 }
-            }
-            if (!self::$domain_id) {
-                self::$domain_id = current(array_keys($domains));
+                if (!self::$domain_id) {
+                    self::$domain_id = current(array_keys($domains));
+                }
             }
 
             if (self::$domain_id && !isset($domains[self::$domain_id])) {
@@ -346,27 +352,55 @@ class siteHelper
 
     public static function getSitemapAppIds()
     {
-        return ['site', 'shop', 'blog', 'hub', 'photos', 'helpdesk'];
+        $result = [];
+        foreach (wa()->getApps() as $app) {
+            if (empty($app['frontend']) || empty($app['themes'])) {
+                continue;
+            }
+            if (!empty($app['routing_params']['private'])) {
+                continue;
+            }
+            if ($app['id'] == 'feedback') {
+                continue;
+            }
+            $result[] = $app['id'];
+        }
+        return $result;
     }
 
-    public static function getAlternativeAppNames(string $app_id, string $def_app_name)
+    public static function getAlternativeAppNames(string $app_id, string $def_app_name, $is_fullname = false)
     {
         $names = [
             'shop' => _w('Shop'),
             'photos' => _w('Photo Gallery'),
-            'hub' => _w('Forum'),
+            'hub' => [_w('Knowledge base'), _w('Knowledge base and forum')],
             'blog' => _w('Blog'),
             'helpdesk' => _w('Helpdesk'),
             'site' => _w('New page'),
         ];
-        return ifset($names, $app_id, $def_app_name);
+
+        if (isset($names[$app_id])) {
+            $name = $names[$app_id];
+
+            if (is_array($name)) {
+                if ($is_fullname) {
+                    $name = $name[1];
+                } else {
+                    $name = $name[0];
+                }
+            }
+        } else {
+            $name = $def_app_name;
+        }
+
+        return $name;
     }
 
     public static function getAlternativeAppUrl(string $app_id)
     {
         $urls = [
             'photos' => 'photo-gallery',
-            'hub' => 'forum',
+            'hub' => 'knowledge-base',
             'site' => 'new-page',
         ];
         return ifset($urls, $app_id, $app_id);
@@ -452,6 +486,19 @@ class siteHelper
             return null;
         }
 
-        return new $page_model_class();
+        $result = new $page_model_class();
+        if (!$result instanceof waPageModel) {
+            return null;
+        }
+
+        return $result;
+    }
+
+    public static function saveLastDomainId()
+    {
+        $domain_id = waRequest::request('domain_id', null, 'int');
+        if ($domain_id && $domain_id != wa()->getUser()->getSettings('site', 'last_domain_id')) {
+            wa()->getUser()->setSettings('site', 'last_domain_id', $domain_id);
+        }
     }
 }

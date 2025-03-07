@@ -131,7 +131,7 @@ class siteBlockPage
             // Render theme styles and scripts
             if ($this->data['theme']) {
                 $theme = new waTheme($this->data['theme'], 'site');
-                $theme_view = new waSmarty3View(wa('site'));
+                $theme_view = new siteEditorView(wa('site'));
                 if(!$theme_view->setThemeTemplate($theme, 'blockpage.wrapper.html')) {
                     $theme_view = null;
                 }

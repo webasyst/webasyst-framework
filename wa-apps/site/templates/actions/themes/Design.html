@@ -251,7 +251,6 @@
             </div>
 
         <script type="text/javascript">
-
             var skeleton_template = {skeleton|json_encode},
                 skeleton_sidebar = {skeleton_sidebar|json_encode},
                 $design_actions = $('.js-design-actions').find('[data-is-nav]'),
@@ -261,10 +260,7 @@
                 $theme_preview_link = $('.js-tabs-menu .wa-theme-preview'),
                 $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
 
-            var current_menu_id = sessionStorage.getItem('wa_design_menu_id') ?? null;
-
             var $bottombar = $('.bottombar');
-
 
             async function postData(url, data) {
                 const response = await fetch(url, {
@@ -376,11 +372,12 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             })
 
-            if (current_menu_id) {
-                $(document).on('wa_design_loaded', function () {
+            $(document).on('wa_design_loaded', function () {
+                const current_menu_id = sessionStorage.getItem('wa_design_menu_id');
+                if (current_menu_id) {
                     $theme_settings_section.find('a[data-divider-id='+current_menu_id+']').trigger('click');
-                })
-            }
+                }
+            });
 
             /**
              * TODO Remove when Site app will be ready for WA2
@@ -525,7 +522,10 @@
             });
 
             /* Theme preview */
-            $('.js-tabs-menu, .js-design-container').on('click', ".wa-theme-preview", function (e) {
+            $('.js-tabs-menu, .js-design-container').on('click auxclick', ".wa-theme-preview", function (e) {
+                if (e.which === 3) {
+                    return;
+                }
                 var $self = $(this),
                     theme_id = $self.data('theme-id'),
                     url = $self.attr('data-href') || $self.attr('href'),
@@ -860,21 +860,6 @@
             $(function () {
                 $(document).trigger('wa_design_inited');
             });
-
-            {* запоминаем к настройкам какой темы нужно перейти после обновления страницы *}
-            $(document).on('installer_after_install_go_to_settings', function(e, data) {
-                if (data.type === 'theme') {
-                    sessionStorage.setItem('wa_theme_onload', data.id);
-                    location.reload();
-                }
-            });
-            var wa_theme_onload = sessionStorage.getItem('wa_theme_onload');
-            if (wa_theme_onload) {
-                $theme_list.find('[data-id="'+wa_theme_onload+'"] a').on('click', function  () {
-                    sessionStorage.removeItem('wa_theme_onload');
-                }).click();
-            }
-
         </script>
             {if !$wa->isMobile()}</div>{/if}
 </div>

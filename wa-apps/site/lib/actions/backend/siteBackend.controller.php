@@ -36,6 +36,15 @@ class siteBackendController extends waViewController
 
     public function execute20()
     {
+        if (null === waRequest::get('list')) {
+            $last_domain_id = $this->getUser()->getSettings('site', 'last_domain_id');
+            if ($last_domain_id) {
+
+                if (isset(siteHelper::getDomains()[$last_domain_id])) {
+                    $this->redirect('?module=map&action=overview&domain_id='.$last_domain_id);
+                }
+            }
+        }
         $this->executeAction(new siteBackendDomainsAction());
         $this->setLayout(new siteBackendLayout());
     }

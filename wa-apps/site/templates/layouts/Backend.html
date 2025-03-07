@@ -27,10 +27,13 @@
             title_pattern: '%s — ' + {$wa->accountName(false)|json_encode},
             content_router_mode: {if empty($hide_wa_app_icons)}'xhr'{else}'reload'{/if},
             rights: {json_encode($rights)},
+            lang: '{if $wa->locale() == "ru_RU"}ru{else}en{/if}',
             locale: {json_encode([
                 "unable_to_load" => _w("Unable to get the page from the server.")
             ])},
-            lang: '{if $wa->locale() == "ru_RU"}ru{else}en{/if}'
+            templates: {
+                unsaved_form_dialog: {{include file="templates/actions/backend/includes/unsaved_form_dialog.html"}|json_encode|strip}
+            }
         });
     })();</script>
     {* CSS *}

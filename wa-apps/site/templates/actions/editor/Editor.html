@@ -52,7 +52,7 @@
 {*
  * see templates/actions/map/MapPageSettingsDialog.html
  *}
-{$page_settings_dialog_html}
+{*$page_settings_dialog_html*}
 
 <script>(function() { "use strict";
 
@@ -140,48 +140,35 @@
                 </div>
             </div>
         </div>`;
-        const $left_drawer_wrapper = $(left_drawer_html).appendTo('body');
+        let $left_drawer_wrapper = $();
         let drawer;
-        let drawer_html;
-        let drawer_loaded = false;
-        let scroll_y;
 
         $('#js-wa-header-hamburger').on('click', function() {
-            if (!drawer) {
-                drawer = $.waDrawer({
-                    $wrapper: $left_drawer_wrapper,
-                    direction: 'left',
-                    lock_body_scroll: true
-                });
-            } else {
-                $left_drawer_wrapper.find('.drawer-content').html(drawer_html);
-                drawer.show();
-                $left_drawer_wrapper.one('click', '.js-close-drawer', function() {
-                    drawer.hide();
-                })
-            }
-
-            if (!drawer_loaded) {
-                $.site.loadMap();
-            }
+            $left_drawer_wrapper = $(left_drawer_html).clone().appendTo('body');
+            drawer = $.waDrawer({
+                $wrapper: $left_drawer_wrapper,
+                direction: 'left',
+                lock_body_scroll: true,
+                onOpen() {
+                    $.site.loadMap(true);
+                },
+                onClose() {
+                    return !$('.s-section-settings-dialog.dialog-opened').length;
+                }
+            });
         });
 
-        $.site.loadMap = function () {
+        $.site.loadMap = function (scroll_to = false) {
             const $drawer_content = $left_drawer_wrapper.find('.drawer-content');
-            scroll_y = $drawer_content.scrollTop();
             $drawer_content.css('pointer-events', 'none');
-            $.get($left_drawer_wrapper.data('load-url')).then((html) => {
-                drawer_html = html;
-                $drawer_content.html(drawer_html);
+            $.get($left_drawer_wrapper.data('load-url') + (scroll_to ? '&scroll_to=1' : '')).then((html) => {
+                $drawer_content.html(html);
                 $drawer_content.css('pointer-events', 'auto');
-                if (drawer_loaded && scroll_y !== undefined) {
-                    $drawer_content.scrollTop(scroll_y);
-                }
-                drawer_loaded = true;
+
+                $(document).trigger("wa_loaded");
             }, () => {
                 alert($.site.opts.locale.unable_to_load);
                 drawer.hide();
-                drawer_loaded = false;
             });
         };
     }());
@@ -237,25 +224,33 @@
 
         $wrapper.on('page_saved', function(e, data) {
             page_data = data;
+            if (data.theme_changed) {
+                window.location.reload();
+                return
+            }
             updatePreviewLink(page_data);
         });
 
         function openDialog() {
-            var dialog = $.waDialog({
-                $wrapper: $wrapper,
-                onClose: function() {
-                    dialog.hide();
-                    return false; // keep dialog in DOM when closed
-                }
-            });
+            const url = site_app_url+'?module=map&action=pageSettingsDialog&page_id=' + page_data.id;
+
+            $.site.helper.preventDupeRequest(() => {
+                return $.get(url, function(html) {
+
+                    const dialog = $.waDialog({
+                        html: html
+                    });
+                });
+            }, url);
         }
     }());
 
     function updatePreviewLink(page_data) {
+
         var $a = $('#js-wa-header-preview');
         const $hamburger_label = $('.js-hamburger-label');
         $a.attr('href', domain_root_url + page_data.full_url);
-        $hamburger_label.text(page_data.name);
+        $hamburger_label.text(page_data.name).attr('title', page_data.name);
     }
 
 })();</script>

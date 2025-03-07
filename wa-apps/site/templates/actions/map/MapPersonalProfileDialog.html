@@ -20,7 +20,7 @@
 
         <div class="s-personal-field-list flexbox vertical space-12">
             {foreach $fields as $field}
-                <label for="id-{$field.id}">
+                <label for="id-{$field.id}" class="s-flex-checkbox">
                     <span class="wa-checkbox">
                         <input type="checkbox" id="id-{$field.id}" name="personal_fields[]" value="{$field.id|escape}"{if $field.checked} checked{/if}>
                         <span>
@@ -29,7 +29,7 @@
                             </span>
                         </span>
                     </span>
-                    {$field.name|escape}
+                    <span class="break-word">{$field.name|escape}</span>
                 </label>
             {/foreach}
         </div>

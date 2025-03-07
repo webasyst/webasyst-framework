@@ -124,6 +124,37 @@ class siteThemeActions extends waDesignActions
         return $result;
     }
 
+    protected function getThemesEditData(array $get = []) {
+        try {
+            return parent::getThemesEditData($get);
+        } catch (waException $e) {
+            // this is a trial theme, not editable
+            $app_id = $this->getAppId();
+            $app = wa()->getAppInfo($app_id);
+            $theme_id = ifset($get, 'theme', '');
+            $theme = new waTheme($theme_id, $app_id);
+            $data = [
+                'options'              => [],
+                'app_id'               => $app_id,
+                'design_url'           => $this->design_url,
+                'app'                  => $app,
+                'file'                 => null,
+                'theme_id'             => $theme_id,
+                'theme'                => null,
+                'theme_usages'         => [],
+                'theme_usages_decoded' => [],
+                'route_url'            => null,
+                'route_url_decoded'    => null,
+                'theme_files'          => [],
+            ];
+
+            if ($theme->parent_theme_id) {
+                $data['parent_theme'] = $theme->parent_theme;
+            }
+            return $data;
+        }
+    }
+
     public function editFilesAction()
     {
         $get = waRequest::get();

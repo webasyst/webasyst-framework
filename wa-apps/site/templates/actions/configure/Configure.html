@@ -28,28 +28,17 @@
         <div class="form s-settings-page" id="s-settings-page">
             <form target="s-settings-iframe" id="s-settings-form" method="post" action="?module=configure&action=save&domain_id={$domain_id}" enctype="multipart/form-data">
                 {$wa->csrf()}
-                <div class="s-field-group fields custom-my-32">
+                <div class="fields custom-my-32">
                     <div class="field">
-                        <div class="name bold for-input">[`Domain name`]
-                            <span id="big-tooltip"><i class="fas fa-question-circle text-light-gray"></i></span>
-                            <div class="wa-tooltip-template" id="big-tooltip-example">
-                                <div class="box">
-                                    [`A valid URL pointing to this Webasyst installation.`]<br />
-                                    [`E.g., <em>domain.com</em> if Webasyst is installed in the root folder of domain.com, or <em>domain.com/wa</em> if Webasyst is installed in the /wa/ subfolder of domain.com. Do not add slash / at the end of the URL.`]<br /><br />
-                                    <strong>[`IMPORTANT`]:</strong> [`The URL entered must point to the root of this Webasyst framework installation.`]
-                                </div>
-                            </div>
-                        </div>
-                        <script>
-                            ( function($) {
-                                $("#big-tooltip").waTooltip({
-                                template: '#big-tooltip-example',
-                                placement: 'right',
-                            });
-                            })(jQuery);
-                        </script>
+                        <div class="name bold for-input">[`Domain name`]</div>
                         <div class="value">
                             <strong class="custom-pr-4">http://</strong><input type="text" class="bold longer" name="url" value="{waIdna::dec($domain.name|escape)}" /><br />
+                            <p class="hint">
+                                <span class="custom-mr-2">[`The domain name must be registered and set up to point to this Webasyst account.`]</span>
+                                <a href="[`https://support.webasyst.com/47317/get-domain-name/`]" target="_blank" class="nowrap">
+                                    [`Help`] <i class="fas fa-external-link-alt icon smaller custom-ml-2"></i>
+                                </a>
+                            </p>
                         </div>
                     </div>
                     <div class="field">
@@ -116,8 +105,7 @@
 
                             <script>
                                 ( function($) {
-                                    $("#switch-ssl-all").waSwitch({
-                                    });
+                                    $("#switch-ssl-all").waSwitch();
                                 })(jQuery);
                             </script>
                         </div>
@@ -255,34 +243,6 @@
                         </div>
                     </div>
 
-                    <div class="field s-field-custom-code">
-                        <div class="name">[`Custom JavaScript code within &lt;head&gt;`]</div>
-                        <div class="value">
-                            <div class="flexbox wrap space-8 custom-pb-16">
-                                <div class="width-100 s-small">[`Google Analytics Property ID`]:</div>
-                                <input class="long" type="text" name="google_analytics[code]" value="{$google_analytics.code|escape}">
-                                <div class="wa-select">
-                                    <select name="google_analytics[universal]" class="js-ga-select">
-                                        <option value="1" data-hint="UA-123456-1" {if !empty($google_analytics.universal)}selected{/if}>[`Universal Analytics`]</option>
-                                        <option value="0" data-hint="G-FJBLKODBA0" {if empty($google_analytics.universal)}selected{/if}>[`Google Analytics 4`]</option>
-                                    </select>
-                                </div>
-
-                                {if !empty($google_analytics.universal)}
-                                    {$code_hint = 'UA-123456-1'}
-                                {else}
-                                    {$code_hint = 'G-FJBLKODBA0'}
-                                {/if}
-                                <span class="hint ga-hint">{sprintf('[`E.g., <strong>%s</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag.`]', $code_hint)}</span>
-                            </div>
-                            <div class="">
-                                <div class="width-100 s-small custom-pb-8">[`Additional JavaScript code to be added before the closing &lt;/head&gt; tag:`]</div>
-                                <textarea class="width-100 s-small custom-code-textarea" name="head_js" placeholder="&lt;script&gt;&lt;/script&gt;">{$head_js|escape}</textarea>
-                            </div>
-                        </div>
-
-                    </div>
-
                     {* ROBOTS.TXT *}
                     {_renderRobotsControl}
 
@@ -306,47 +266,113 @@
                         </div>
                     </div>
 
+                    <div class="field s-field-custom-code">
+                        <div class="name">[`Custom JavaScript code within &lt;head&gt;`]</div>
+                        <div class="value">
+                            <div class="">
+                                <div class="width-100 s-small custom-pb-8">[`Additional JavaScript code to be added before the closing &lt;/head&gt; tag:`]</div>
+                                <textarea class="width-100 s-small custom-code-textarea" name="head_js" placeholder="&lt;script&gt;&lt;/script&gt;">{$head_js|escape}</textarea>
+                            </div>
+
+                            <div class="flexbox wrap space-8 custom-pb-16">
+                                <div class="width-100 s-small">[`Google Analytics Property ID`]:</div>
+                                <input class="long" type="text" name="google_analytics[code]" value="{$google_analytics.code|escape}">
+                                <div class="wa-select">
+                                    <select name="google_analytics[universal]" class="js-ga-select">
+                                        <option value="1" data-hint="UA-123456-1" {if !empty($google_analytics.universal)}selected{/if}>[`Universal Analytics`]</option>
+                                        <option value="0" data-hint="G-FJBLKODBA0" {if empty($google_analytics.universal)}selected{/if}>[`Google Analytics 4`]</option>
+                                    </select>
+                                </div>
+
+                                {if !empty($google_analytics.universal)}
+                                    {$code_hint = 'UA-123456-1'}
+                                {else}
+                                    {$code_hint = 'G-FJBLKODBA0'}
+                                {/if}
+                                <span class="hint ga-hint">{sprintf('[`E.g., <strong>%s</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag.`]', $code_hint)}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
                     <!-- plugin hook: 'backend_settings.section' -->
                     {* @event backend_settings.%plugin_id%.section *}
                     {foreach $backend_settings as $_}{ifset($_.section)}{/foreach}
 
-                    {* Redirect *}
-                    <div class="fields-group s-field-redirect custom-py-20">
+                    {* Custom text *}
+                    <div class="fields-group s-field-group s-field-custom-text custom-py-20">
                         <div class="flexbox full-width space-12">
                             <div class="flexbox middle space-4">
-                                <h4 class="custom-mb-0">[`Redirects`]</h4>
-                                <span id="redir-tooltip" data-wa-tooltip-content="[`Redirect website visitors from outdated addresses to new ones.`]" data-wa-tooltip-placement="{if !$wa->isMobile()}right{/if}">
-                                    <i class="fas fa-question-circle text-light-gray custom-mt-6"></i>
-                                </span>
-                                <script>
-                                    ( function($) {
-                                        $("#redir-tooltip").waTooltip({
-                                            appendTo: 'parent',
-                                            zIndex: 1
-                                        });
-                                    })(jQuery);
-                                </script>
+                                <h4 class="custom-mb-0">[`Custom files in site root`]</h4>
                             </div>
-                            <button type="button" class="button nobutton small light-gray js-redirect-toggle">
-                                <span class="icon text-blue"> <i class="fas fa-cog"></i></span>
-                                [`Settings`]
+                            <button type="button" class="button nobutton small light-gray js-custom-text-toggle">
+                                <i class="fas fa-cog"></i> [`Settings`] <span><i class="fas fa-caret-down js-toggle-icon"></i></span>
                             </button>
                         </div>
 
+                        <p class="small custom-mb-0">
+                            [`Help confirm the site ownership for third-party services and may also be used for other purposes.`]
+                        </p>
+
+                        <div class="js-custom-text-value" style="display: none;">
+                            <div class="table-scrollable-x custom-py-20">
+                                <table id="s-custom-text-routes" class="s-routing single-lined">
+                                    {foreach $custom_texts as $route_id=>$route}
+                                        <tr data-route-id="{$route_id}">
+                                            <td class="nowrap app-name-td {if !empty($route.private)}gray{/if}">
+                                                <div class="flexbox middle space-8 app-name-wrapper">
+                                                    <span class="app-icon"><i class="fas fa-file-code"></i></span>
+                                                    <span class="text">{ifset($route, '_name', ifset($route.static_content))|truncate:32|escape}</span>
+                                                </div>
+                                            </td>
+                                            <td class="s-url max-width {if !empty($route.private)}gray{/if}">
+                                                <div>{$route.url|escape|truncate:30:'...':false:true}<i class="shortener"></i></div>
+                                            </td>
+                                            <td class="s-link">
+                                                <a href="//{$domain.name}/{$route.url}" target="_blank"><i class="fas fa-external-link-alt"></i></a>
+                                            </td>
+                                            <td class="s-actions s-route-settings js-route-settings align-right">
+                                                <span class="icon cursor-pointer" title="[`Settings`]"><i class="icon fas fa-pen"></i></span>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                    <!-- /fields -->
+                                </table>
+                            </div>
+                            <a class="js-custom-text-add button rounded outlined smaller custom-mb-8" data-app-id=":text" href="javascript:void(0)">
+                                <span class="icon add custom-pr-8"><i class="fas fa-plus"></i></span>[`Add`]
+                            </a>
+                        </div>
+                    </div>
+
+                    {* Redirect *}
+                    <div class="fields-group s-field-group s-field-redirect custom-py-20">
+                        <div class="flexbox full-width space-12">
+                            <div class="flexbox middle space-4">
+                                <h4 class="custom-mb-0">[`Redirects`]</h4>
+                            </div>
+                            <button type="button" class="button nobutton small light-gray js-redirect-toggle">
+                                <i class="fas fa-cog"></i> [`Settings`] <span><i class="fas fa-caret-down js-toggle-icon"></i></span>
+                            </button>
+                        </div>
+
+                        <p class="small custom-mb-0">
+                            [`Redirect site visitors from outdated to new URLs.`]
+                        </p>
+
                         <div class="js-redirect-value" style="display: none;">
                             <div class="table-scrollable-x custom-py-20">
-                                <table id="s-rules" class="s-routing single-lined">
-                                    {foreach $routes as $route_id=>$route}
-                                    {if !empty($route.redirect)}
-                                    {if empty($route.disabled) && ifempty($route.disabled) <= 0}
-                                        {$route_disabled = 1}
-                                    {else}
-                                        {$route_disabled = null}
-                                    {/if}
+                                <table id="s-routes" class="s-routing single-lined">
+                                    {foreach $redirects as $route_id=>$route}
+                                        {if empty($route.disabled) && ifempty($route.disabled) <= 0}
+                                            {$route_disabled = 1}
+                                        {else}
+                                            {$route_disabled = null}
+                                        {/if}
                                         <tr id="route-{$route_id}" data-id="{$route_id}" class="s-inc">
                                             <td class="s-url nowrap max-width {if !$route_disabled}text-gray{/if}">
                                                 <div>
-                                                    <span class="s-domain-url">{$url}/</span><span class="s-editable-url">{$route.url|escape|truncate:30:'...':false:true}</span>
+                                                    <span class="s-domain-url">{waIdna::dec($url|default:'')}/</span><span class="s-editable-url">{$route.url|escape|truncate:30:'...':false:true}</span>
                                                     <span class="icon custom-px-4"><i class="fas fa-long-arrow-alt-right"></i></span>
                                                     <span class="redirect">{$route.redirect|escape}</span>
                                                     <i class="shortener"></i>
@@ -358,11 +384,10 @@
                                                     <input type="checkbox" name="params[disabled]" {if $route_disabled}checked{/if}>
                                                 </span>
                                             </td>*}
-                                            <td class="s-actions align-right">
-                                                <span class="icon s-route-settings js-s-route-settings settings cursor-pointer" title="[`Settings`]"><i class="icon fas fa-pen"></i></span>
+                                            <td class="s-actions s-route-settings js-route-settings align-right">
+                                                <span class="icon cursor-pointer" title="[`Settings`]"><i class="icon fas fa-pen"></i></span>
                                             </td>
                                         </tr>
-                                        {/if}
                                     {/foreach}
                                     <!-- /fields -->
                                 </table>
@@ -374,16 +399,19 @@
                     </div>
 
                     {* Section settings *}
-                    <div class="fields-group s-field-app custom-py-20">
+                    <div class="fields-group s-field-group s-field-app custom-py-20">
                         <div class="flexbox full-width space-12">
                             <div class="flexbox middle space-8">
                                 <h4 class="custom-mb-0">[`Apps on the site`]</h4>
                             </div>
                             <button type="button" class="button nobutton small light-gray js-app-toggle">
-                                <span class="icon text-blue"> <i class="fas fa-cog"></i></span>
-                                [`Settings`]
+                                <i class="fas fa-cog"></i> [`Settings`] <span><i class="fas fa-caret-down js-toggle-icon"></i></span>
                             </button>
                         </div>
+
+                        <p class="small custom-mb-0">
+                            [`These apps cannot form a whole site section but are capable of displaying useful content somewhere on the site or by a special link.`]
+                        </p>
 
                         {$routing_errors = siteHelper::getRoutingErrorsInfo()}
                         {if !empty($routing_errors['not_install'])}
@@ -398,13 +426,13 @@
                         {/if}
                         <div class="js-app-value" style="display: none;">
                             <div class="table-scrollable-x custom-py-20">
-                                <table id="s-apps" class="s-apps single-lined">
+                                <table id="s-apps" class="s-apps s-routing single-lined">
                                     {foreach $routes as $route_id=>$route}
-                                    {if isset($route.app) && $route.app !== ':text' && (isset($route.app.id) && !in_array($route.app.id, ['site', 'shop', 'blog', 'hub', 'photos', 'helpdesk']))}
+                                    {if $route.app === ':text' || isset($route.app.id)}
                                         {$is_misconfigured_settlement = !empty($route.misconfigured_settlement)}
                                         {$app_disabled = !empty($route.app.disabled)}
                                         <tr data-route-id="{$route_id}">
-                                            <td class="nowrap app-name-td {if $app_disabled || !empty($route.private) || !empty($route.disabled) || (!empty($route.app) && !is_array($route.app))}gray{/if}">
+                                            <td class="nowrap app-name-td {if $app_disabled || !empty($route.private) || !empty($route.disabled) || ($route.app !== ':text' && !is_array($route.app) )}gray{/if}">
                                             <div class="flexbox middle space-8 app-name-wrapper">
                                                 {if is_array($route.app)}
                                                     <span class="app-icon">
@@ -414,9 +442,10 @@
                                                         <i class="fas fa-question"></i>
                                                         {/if}
                                                     </span>
-                                                    {$route.app.name|default:$route.app.id}
+                                                    {$route._name|default:$route.app.name|default:$route.app.id}
                                                 {elseif $route.app ===':text'}
-                                                    <span class="app-icon"><img src="{$wa_app_static_url}img/script-code.png?v=1" class="" alt=""></span><span class="text">{$route.text|default:''|truncate:32|escape}</span>
+                                                    <span class="app-icon"><i class="fas fa-file-code"></i></span>
+                                                    <span class="text">{$route.static_content|default:''|truncate:32|escape}</span>
                                                 {else}
                                                     {$route.app|escape}
                                                 {/if}
@@ -426,10 +455,16 @@
                                                 {/if}
                                             </div>
                                             </td>
-                                            <td class="{if $app_disabled || !empty($route.private) || !empty($route.disabled) || (!empty($route.app) && !is_array($route.app))}gray{/if}{if $app_disabled || $is_misconfigured_settlement} js-misconfigured-settlement strike{/if}">
-                                                /{$route.url|rtrim:'/*'|escape|truncate:30:'...':false:true}/
+                                            <td class="{if $app_disabled || !empty($route.private) || !empty($route.disabled) || ($route.app !== ':text' && !is_array($route.app))}gray{/if}{if $app_disabled || $is_misconfigured_settlement} js-misconfigured-settlement strike{/if}">{strip}
+                                                {if $route.app === ':text'}
+                                                    /{$route.url|escape|truncate:30:'...':false:true}
+                                                {else}
+                                                    /{$route.url|rtrim:'/*'|escape|truncate:30:'...':false:true}/
+                                                {/if}
+                                            {/strip}</td>
+                                            <td class="min-width s-route-settings js-app-settings cursor-pointer">
+                                                <span class="icon cursor-pointer" title="[`Settings`]"><i class="fas fa-cog"></i></span>
                                             </td>
-                                            <td class="min-width js-app-settings cursor-pointer"><i class="fas fa-cog"></i></td>
                                         </tr>
                                     {/if}
                                     {/foreach}
@@ -442,14 +477,16 @@
                                 <div class="dropdown-body">
                                     <ul class="menu">
                                         {foreach $apps as $app}
-                                        {if $app.id != 'site' && $app.id != 'shop' && $app.id != 'blog' && $app.id != 'hub' && $app.id != 'photos' && $app.id != 'helpdesk'}
                                         <li>
                                             <a href="javascript:void(0);" class="js-add-app" data-app-id="{$app.id}">
+                                                {if isset($app.icon_class)}
+                                                <i class="{$app.icon_class}"></i>
+                                                {else}
                                                 <i class="icon"><img src="{$wa_url}{$app.icon.24}" alt=""></i>
+                                                {/if}
                                                 <span>{$app.name}</span>
                                             </a>
                                         </li>
-                                        {/if}
                                         {/foreach}
                                     </ul>
                                 </div>
@@ -457,6 +494,27 @@
 
                         </div>
                     </div>
+                    <script>
+                        (function($) {
+                            {$scroll_to = waRequest::get('scroll_to')}
+                            if ({json_encode(in_array($scroll_to, ['redirects', 'custom-texts']))}) {
+                                localStorage.setItem('site/settings/{$scroll_to}-expanded', 1);
+                            }
+
+                            const sections = {
+                                'site/settings/custom-texts-expanded': '.js-custom-text-value',
+                                'site/settings/redirects-expanded': '.js-redirect-value',
+                                'site/settings/apps-expanded': '.js-app-value',
+                            };
+                            for (const key in sections) {
+                                if (localStorage.getItem(key) == 1) {
+                                    $(sections[key])
+                                        .show()
+                                        .closest('.s-field-group').find('.js-toggle-icon').addClass('fa-caret-up').removeClass('fa-caret-down');
+                                }
+                            }
+                        })(jQuery);
+                    </script>
                 {/if}
 
                 </div>
@@ -495,7 +553,6 @@
 {/if}
 
 <script type="text/javascript">
-
     SiteSettings = (function ($) {
         return class {
             constructor(options) {
@@ -514,26 +571,31 @@
                 that.storage = that.initStorage();
 
                 // INIT
-                that.initClass();
-
-                if (options["dialog_add_app"]) {
-                    that.showAddAppDialog(options["dialog_add_app"]);
-                }
+                that.initClass(options);
             };
 
-            initClass() {
+            initClass(options) {
                 const that = this;
                 // this.oldData = this.$form.serialize();
                 that.initWaApps();
                 that.initFavicon();
                 that.initTouchicon();
                 that.initCdn();
+                that.initCustomTextRoutes();
                 that.initRedirectRoutes();
                 that.initRouteSettings();
                 that.initAppSettings();
                 that.initDeleteSite();
                 that.initSubmitSettings();
-                that.initExpansionState();
+
+                // handler get-params
+                if (options["dialog_add_app"] || options["scroll_to"]) {
+                    const content_url = options['$wa_app_url'] + 'settings/?domain_id=' + options['domain_id'];
+                    history.pushState({ content_url }, null, content_url);
+
+                    that.showAddAppDialog(options["dialog_add_app"])
+                    that.scrollToSection(options["scroll_to"]);
+                }
             }
 
             initWaApps() {
@@ -781,28 +843,27 @@
                                     id: id,
                                     disabled: active ? 0 : 1
                                 }
-
-                                /*xhr && xhr.abort();
-                                xhr = $.post(url, data)
-                                .done(function (r) {
-                                    if (r.status !== 'ok') {
-                                        return;
-                                    }
-                                    if (active) {
-                                        $item.removeClass('s-is-disabled');
-                                    } else {
-                                        $item.addClass('s-is-disabled');
-                                    }
-                                    wa_switch.disable(false);
-                                })
-                                .always(function () {
-                                    xhr = null;
-                                    //$loading.hide();
-                                })*/
                             }
                         });
                 });
             };
+
+            initCustomTextRoutes() {
+                const that = this,
+                $section = that.$wrapper.find('.s-field-custom-text'),
+                $table_wrapper =  $section.find('.js-custom-text-value'),
+                $table = $section.find('#s-custom-text-routes');
+
+                $table.on('click', '.js-route-settings', that.openAppDialog());
+                $section.on('click', '.js-custom-text-add', that.openAppDialog());
+
+                $section.on('click', '.js-custom-text-toggle', function(e, data){
+                    data = data || {};
+                    that.storage.setExpandCustomTexts($table_wrapper.is(':hidden'));
+                    $table_wrapper.slideToggle(data.no_animation ? 0 : 350);
+                    $(this).find('.js-toggle-icon').toggleClass('fa-caret-down fa-caret-up');
+                });
+            }
 
             initAppSettings() {
                 const that = this,
@@ -811,31 +872,14 @@
                 $dropdown_add =  $section.find('#js-app-dropdown-add'),
                 $table = $section.find('#s-apps');
 
-                $table.on('click', '.js-app-settings', openDialog);
+                $table.on('click', '.js-app-settings', that.openAppDialog());
 
                 $section.on('click', '.js-app-toggle', function(e, data){
                     data = data || {};
                     that.storage.setExpandApps($table_wrapper.is(':hidden'));
                     $table_wrapper.slideToggle(data.no_animation ? 0 : 350);
+                    $(this).find('.js-toggle-icon').toggleClass('fa-caret-down fa-caret-up');
                 });
-
-                function openDialog() {
-                    const $item = $(this),
-                        $tr = $item.closest('tr'),
-                        item_id = $tr.data('route-id');
-
-                    const href = that.$wa_app_url + "?module=configure&action=sectionDialog" + "&domain_id=" + that.domain_id;
-                    const data = {
-                        'route': item_id,
-                        'domain_id': that.domain_id
-                    };
-
-                    $.post(href, data, function (html) {
-                        $.waDialog({
-                            html: html,
-                        })
-                    })
-                }
 
                 $dropdown_add.waDropdown({
                     hover: false,
@@ -863,13 +907,36 @@
                 });
             }
 
+            openAppDialog() {
+                const that = this;
+
+                return function() {
+                    const $item = $(this),
+                    $tr = $item.closest('tr'),
+                    item_id = $tr.data('route-id');
+
+                    const href = that.$wa_app_url + "?module=configure&action=sectionDialog";
+                    const data = {
+                        ...(item_id !== undefined ? { route: item_id }: {}),
+                        ...($item.data('app-id') !== undefined ? { app: $item.data('app-id') }: {}),
+                        domain_id: that.domain_id,
+                    };
+
+                    $.post(href, data, function (html) {
+                        $.waDialog({
+                            html: html,
+                        })
+                    })
+                }
+            }
+
             initRouteSettings() {
                 const that = this,
                 $section = that.$wrapper.find('.s-field-redirect'),
                 $table_wrapper =  $section.find('.js-redirect-value'),
-                $table = $section.find('#s-rules');
+                $table = $section.find('#s-routes');
 
-                $table.on('click', '.js-s-route-settings', openDialog);
+                $table.on('click', '.js-route-settings', openDialog);
 
                 $section.on('click', '.js-redirect-add', openDialog);
 
@@ -877,6 +944,7 @@
                     data = data || {};
                     that.storage.setExpandRedirects($table_wrapper.is(':hidden'));
                     $table_wrapper.slideToggle(data.no_animation ? 0 : 350);
+                    $(this).find('.js-toggle-icon').toggleClass('fa-caret-down fa-caret-up');
                 });
 
                 function openDialog() {
@@ -894,15 +962,6 @@
                             html: html,
                         })
                     })
-                }
-            }
-
-            initExpansionState() {
-                if (this.storage.isRedirectsExpanded()) {
-                    this.$wrapper.find('.js-redirect-toggle').trigger('click', { no_animation: true });
-                }
-                if (this.storage.isAppsExpanded()) {
-                    this.$wrapper.find('.js-app-toggle').trigger('click', { no_animation: true });
                 }
             }
 
@@ -976,18 +1035,41 @@
             }
 
             showAddAppDialog(app_id) {
+                if (!app_id) return;
                 const $app_toggler = this.$wrapper.find('.js-app-toggle').trigger('click');
                 setTimeout(() => this.$wrapper.find('#js-app-dropdown-add').get(0).scrollIntoView(), 350);
                 this.$wrapper.find(`.js-add-app[data-app-id="${ app_id }"]`).trigger('click');
             }
 
+            scrollToSection(section) {
+                if (!section) return;
+
+                section = section.slice(0, -1);
+                const offset_top = ($('#wa-nav').height() || 0) + ($('.s-tabs').height() || 0);
+                const $section = $('.s-field-'+section);
+
+                if ($section.length) {
+                    const top = $section.offset().top - offset_top;
+                    window.scroll(0, top);
+                }
+            }
+
             initStorage() {
+                const custom_texts_expanded_key = 'site/settings/custom-texts-expanded';
                 const redirects_expanded_key = 'site/settings/redirects-expanded';
                 const apps_expanded_key = 'site/settings/apps-expanded';
 
                 return {
+                    isCustomTextsExpanded: () => localStorage.getItem(custom_texts_expanded_key) == 1,
                     isRedirectsExpanded: () => localStorage.getItem(redirects_expanded_key) == 1,
                     isAppsExpanded: () => localStorage.getItem(apps_expanded_key) == 1,
+                    setExpandCustomTexts: (is_expand = false) => {
+                        if (is_expand) {
+                            localStorage.setItem(custom_texts_expanded_key, 1);
+                        } else {
+                            localStorage.removeItem(custom_texts_expanded_key);
+                        }
+                    },
                     setExpandRedirects: (is_expand = false) => {
                         if (is_expand) {
                             localStorage.setItem(redirects_expanded_key, 1);
@@ -1024,6 +1106,22 @@
                 alert_button: "[`Close`]",
             },
             dialog_add_app: {waRequest::get('dialog_add_app')|json_encode},
+            scroll_to: {waRequest::get('scroll_to')|json_encode},
         });
     });
+
+    (function($) {
+        const storage_key  = 'site/settings/scroll-pos';
+        const scroll_pos = sessionStorage.getItem(storage_key);
+        if (scroll_pos) {
+            window.scrollTo(0, scroll_pos);
+            sessionStorage.removeItem(storage_key);
+        }
+
+        $.site.reloadWithScrollTo = function () {
+            $('body').removeClass('is-locked');
+            sessionStorage.setItem(storage_key, window.scrollY);
+            this.reload();
+        }
+    })(jQuery);
 </script>

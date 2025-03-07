@@ -5,14 +5,14 @@ msgstr ""
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: site\n"
+"Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.3\n"
-"Language: ru_RU\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -186,6 +186,9 @@ msgstr "Описание"
 
 msgid "This will permanently delete this snippet. Are you sure?"
 msgstr "Блок будет удален и перестанет подключаться в шаблонах и на страницах, на которые был добавлен до этого. Удалить блок?"
+
+msgid "This will permanently delete this snippet."
+msgstr "Блок будет удален и перестанет подключаться в шаблонах и на страницах, на которые был добавлен до этого."
 
 msgid "New file"
 msgstr "Новый файл"
@@ -400,8 +403,8 @@ msgstr "Запрашиваемый ресурс недоступен."
 msgid "Select a site section where visitors will sign up and log into their personal accounts."
 msgstr "Выберите раздел сайта, в котором посетители будут регистрироваться и входить в личный кабинет."
 
-msgid "Enter the URL of your new website. You should own the domain name and be able to configure it to point to your Webasyst installation. Contact your hosting provider on how to map your domain name to this server."
-msgstr "Введите URL нового сайта. Вы должны быть владельцем доменного имени и предварительно настроить домен так, чтобы он указывал на данную установку Webasyst. Для настройки доменного имени обратитесь за помощью к вашему хостинг-провайдеру."
+msgid "The domain name must be registered and set up to point to this Webasyst account."
+msgstr "Доменное имя должно быть зарегистрировано и настроено, чтобы указывать на этот аккаунт Webasyst."
 
 msgid "Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param(\"key\")&#125;</em>. Each key=value pair must be specified on a separate line."
 msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться шаблонах дизайна и страницах этого поселения как <em>&#123;$wa->param(\"key\")&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
@@ -487,6 +490,9 @@ msgstr "Восстановить из оригинала"
 msgid "This will reset all changes you have applied to this block. Are you sure?"
 msgstr "Восстановление из оригинала сбросит все изменения, которые вы применяли к блоку. Продолжить?"
 
+msgid "This will reset all changes you have applied to this block."
+msgstr "Восстановление из оригинала сбросит все изменения, которые вы применяли к блоку."
+
 msgid "File will be deleted without the ability to recover. Are you sure?"
 msgstr "Файл будет удален без возможности восстановления. Удалить?"
 
@@ -522,6 +528,9 @@ msgstr "Мы используем <a href=\"http://www.webasyst.ru/\" target=\"_
 
 msgid "http://www.webasyst.com/developers/docs/routing/site-app-routing/"
 msgstr "http://www.webasyst.ru/developers/docs/routing/site-app-routing/"
+
+msgid "https://support.webasyst.com/47317/get-domain-name/"
+msgstr "https://support.webasyst.ru/47313/get-domain-name/"
 
 msgid "Site structure"
 msgstr "Структура сайта"
@@ -757,6 +766,9 @@ msgstr "Эта настройка будет работать, только ес
 msgid "To enable redirect to HTTPS for <em>all</em> website settlements, change this option in <a href=\"%s#/settings/\">common site settings</a>."
 msgstr "Чтобы включить перенаправление на HTTPS для <em>всех</em> поселений сайта, измените этот параметр в <a href=\"%s#/settings/\">общих настройках сайта</a>."
 
+msgid "To enable redirect to HTTPS for <em>all</em> website settlements, change this option in common site settings."
+msgstr "Чтобы включить перенаправление на HTTPS для <em>всех</em> поселений сайта, измените этот параметр в общих настройках сайта."
+
 msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection."
 msgstr "Перенаправлять посетителей сайта с обычного HTTP- на безопасное HTTPS-подключение."
 
@@ -826,8 +838,8 @@ msgstr "текст (text/plain)"
 msgid "HTML code (text/html)"
 msgstr "HTML-код (text/html)"
 
-msgid "If content type “file” is selected, downloading of a file will start automatically if there is no extension in its name."
-msgstr "Если выбран тип содержимого «файл», то автоматически начнется скачивание файла, если в его имени не указано расширение."
+msgid "If content type “file” is selected and the URL does not end with a name extension then requesting this URL will automatically start downloading of a file."
+msgstr "Если выбран тип содержимого «файл» и в конце URL не указано расширение имени, то автоматически начнется скачивание файла при запросе этого URL."
 
 msgid "This rule is disabled because it is placed below a more general rule. Move this rule higher in the list to enable it."
 msgstr "Это правило отключено, потому что оно находится ниже более общего правила. Перенесите правило выше, чтобы включить его."
@@ -1159,6 +1171,9 @@ msgstr "Добавить внутри"
 msgid "Duplicate"
 msgstr "Дублировать"
 
+msgid "%s copy"
+msgstr "%s копия"
+
 msgid "Make the site’s homepage"
 msgstr "Сделать главной страницей сайта"
 
@@ -1309,8 +1324,8 @@ msgstr "Подраздел выключен"
 msgid "%s personal account URL: <a id=\"s-app-frontend-link\" href=\"%s\" target=\"_blank\"><span class=\"break-all\">%s</span> <i class=\"fas fa-external-link-alt fa-xs\"></i></a>"
 msgstr "«%s» в личном кабинете: <a id=\"s-app-frontend-link\" href=\"%s\" target=\"_blank\"><span class=\"break-all\">%s</span> <i class=\"fas fa-external-link-alt fa-xs\"></i></a>"
 
-msgid "Redirects and the settings of apps not affecting the website contents or appearance have been moved to the “Settings” section."
-msgstr "Перенаправления и настройки приложений, не относящихся к внешнему виду сайта, переехали в раздел «Настройки»."
+msgid "Redirects and the settings of apps not affecting the site map have been moved to the “Settings” section."
+msgstr "Перенаправления и настройки приложений, не относящихся к карте сайта, переехали в раздел «Настройки»."
 
 msgid "This site’s settings contain redirects. They may cause visitors open other addresses than those currently available on your site or that used to be available before."
 msgstr "В настройках сайта есть перенаправления. Из-за них посетители могут попадать на другие адреса вместо страниц или разделов, которые есть или были ранее в карте сайта."
@@ -1324,9 +1339,6 @@ msgstr "Личный кабинет включен"
 msgid "Client accounts are disabled"
 msgstr "Личный кабинет выключен"
 
-msgid "This section was set up with an error in the old interface and, therefore, is not available on the website. You can fix that error in the old interface or right here."
-msgstr "В старом интерфейсе этот раздел был задан с ошибкой и поэтому недоступен на сайте. Исправить ошибку можно в старом интерфейсе или прямо здесь."
-
 msgid "Fix it"
 msgstr "Исправить"
 
@@ -1335,12 +1347,6 @@ msgstr "Мои сайты"
 
 msgid " and "
 msgstr " и "
-
-msgid "App %s has not been added and may not be working properly."
-msgid_plural "Apps %s have not been added and may not be working properly."
-msgstr[0] "Приложение %s не добавлено и может работать некорректно."
-msgstr[1] "Приложения %s не добавлены и могут работать некорректно."
-msgstr[2] "Приложения %s не добавлены и могут работать некорректно."
 
 msgid "This section’s URL was saved with an error in the old interface; therefore, you cannot edit it here. You can fix the error in the old interface or in file <em>wa-config/routing.php</em>."
 msgstr "URL этого раздела был задан с ошибкой в старом интерфейсе, поэтому нельзя изменить его здесь. Исправить ошибку можно в старом интерфейсе или в файле <em>wa-config/routing.php</em>."
@@ -1363,8 +1369,11 @@ msgstr "Онлайн-магазин"
 msgid "Photo Gallery"
 msgstr "Фотогалерея"
 
-msgid "Forum"
-msgstr "Форум"
+msgid "Knowledge base and forum"
+msgstr "База знаний и форум"
+
+msgid "Knowledge base"
+msgstr "База знаний"
 
 msgid "Blog"
 msgstr "Блог"
@@ -1399,9 +1408,6 @@ msgstr "Ссылки в меню навигации по сайту"
 msgid "Visual appearance can be supplemented or completely modified by design settings."
 msgstr "Внешний вид меню может быть дополнен или полностью изменен настройками темы дизайна."
 
-msgid "Redirect website visitors from outdated addresses to new ones."
-msgstr "Перенаправляют посетителей сайта со старых, неактуальных адресов на новые."
-
 msgid "Publish"
 msgstr "Опубликовать"
 
@@ -1433,10 +1439,10 @@ msgid "Copy to clipboard"
 msgstr "Скопировать в буфер обмена"
 
 msgid "Contents displayed to website visitors instead of the variable"
-msgstr "Содержимое, которое будет видно сайте вместо переменной"
+msgstr "Содержимое, которое будет видно на сайте вместо переменной"
 
-msgid "This will reset all changes you have applied to this variable. Are you sure?"
-msgstr "Будут потеряны все изменения, которые вы внесли в эту переменную. Продолжить?"
+msgid "This will reset all changes you have applied to this variable."
+msgstr "Будут потеряны все изменения, которые вы внесли в эту переменную."
 
 msgid "Copied"
 msgstr "Скопировано"
@@ -1687,8 +1693,8 @@ msgstr "Страница будет удалена из карты сайта. �
 msgid "https://support.webasyst.com/2879/client-account/"
 msgstr "https://support.webasyst.ru/3313/client-account/"
 
-msgid "Please enter a valid URL. Ensure that it starts with <mark>http://</mark> or <mark>https://</mark> has the correct format."
-msgstr "Введите корректный URL-адрес. Убедитесь, что он начинается с <mark>http://</mark> или <mark>https://</mark> и имеет правильный формат."
+msgid "Please enter a valid URL starting with <mark>/</mark>, <mark>http://</mark>, or <mark>https://</mark>."
+msgstr "Введите корректный URL-адрес, начинающийся с <mark>/</mark>, <mark>http://</mark> или <mark>https://</mark>."
 
 msgid "Text"
 msgstr "Текст"
@@ -1708,6 +1714,194 @@ msgstr "Главная страница"
 msgid "Section is not available for the site mirror"
 msgstr "Раздел не доступен для зеркала сайта"
 
-msgid "Maximun 63 characters"
+msgid "Maximum 63 characters"
 msgstr "Максимум 63 символа"
 
+msgid "Site footer top block"
+msgstr "Верхний блок подвала сайта"
+
+msgid "Site footer bottom block"
+msgstr "Нижний блок подвала сайта"
+
+msgid "Custom code"
+msgstr "Свой код"
+
+msgid "Column alignment"
+msgstr "Выравнивание столбцов"
+
+msgid "New columns"
+msgstr "Новые столбцы"
+
+msgid "Main screen"
+msgstr "Главный экран"
+
+msgid "Advantages"
+msgstr "Преимущества"
+
+msgid "Reviews"
+msgstr "Отзывы"
+
+msgid "Prices"
+msgstr "Тарифы"
+
+msgid "Contacts"
+msgstr "Контакты"
+
+msgid "Site footer"
+msgstr "Подвал сайта"
+
+msgid "If the new address has the same domain name then you may enter only the part after the domain; e.g., <em>/about/</em>."
+msgstr "Если у нового адреса тот же домен, то можно указать только часть после домена, например, <em>/about/</em>."
+
+msgid "Moving cannot be completed: pages with the same address cannot be placed at the same level."
+msgstr "Перемещение невозможно: страницы с одинаковым адресом не могут находиться на одном уровне."
+
+msgid "Rule settings"
+msgstr "Настройки правила"
+
+msgid "The rule will be removed from the site settings. Continue?"
+msgstr "Правило будет удалено из настроек сайта. Продолжить?"
+
+msgid "The app will be removed from the site settings. Continue?"
+msgstr "Приложение будет удалено из настроек сайта. Продолжить?"
+
+msgid "Delete rule?"
+msgstr "Удалить правило?"
+
+msgid "Delete app?"
+msgstr "Удалить приложение?"
+
+msgid "mydomain.com"
+msgstr "mydomain.ru"
+
+msgid "After deletion, the variable will not work any more in any templates or site pages where it might have been added."
+msgstr "После удаления переменная перестанет работать в шаблонах и на страницах сайта, где она использовалась."
+
+msgid "Save modified data before leaving?"
+msgstr "Сохранить изменения?"
+
+msgid "Your changes will be lost if you do not save them."
+msgstr "Ваши изменения будут потеряны, если их не сохранить."
+
+msgid "Leave without saving"
+msgstr "Уйти без сохранения"
+
+msgid "Stay"
+msgstr "Остаться"
+
+msgid "Start filling your site with content by <a href=\"%s\">editing this page</a>."
+msgstr "Начните наполнение сайта с <a href=\"%s\">редактирования этой страницы</a>."
+
+msgid "To upload a file to the site root; e.g., to confirm the site ownership for third-party services, add a “<em>%s</em>” rule in the <a href=\"%s\" class=\"text-dark-gray underline\">Settings</a>."
+msgstr "Чтобы добавить файл в корень сайта — например, подтвердить владение сайтом для интеграции со сторонними сервисами, — добавьте правило «<em>%s</em>» в «<a href=\"%s\" class=\"text-dark-gray underline\">Настройках</a>»."
+
+msgid "Custom files in site root"
+msgstr "Свои файлы в корне сайта"
+
+msgid "Custom file or text in site root"
+msgstr "Свой файл или текст в корне сайта"
+
+msgid "Help confirm the site ownership for third-party services and may also be used for other purposes."
+msgstr "Помогают подтвердить владение сайтом для интеграции со сторонними сервисами и могут также использоваться в других целях."
+
+msgid "Redirect site visitors from outdated to new URLs."
+msgstr "Перенаправляйте посетителей сайта с устаревших адресов на новые."
+
+msgid "These apps cannot form a whole site section but are capable of displaying useful content somewhere on the site or by a special link."
+msgstr "Эти приложения не могут формировать целый раздел сайта, но могут показывать полезное содержимое на сайте или по отдельной ссылке."
+
+msgid "No apps for adding sections are installed."
+msgstr "Приложения для добавления разделов не установлены."
+
+msgid "To add sections, <%s>install apps<%s>"
+msgstr "Чтобы добавлять разделы, <%s>установите приложения<%s>"
+
+msgid "Optional."
+msgstr "Заполнять необязательно."
+
+msgid "You can pass additional parameters to a variable after a comma: %s. Replace %s with an associative array of parameters; e.g., %s. Each passed parameter is accessible in the code by its name as a Smarty variable; e.g., %s."
+msgstr "В переменную можно передать дополнительные параметры после запятой: %s. Вместо %s укажите ассоциативный массив параметров, например: %s. Каждый переданный параметр доступен в коде по своему имени в виде переменной Smarty, например: %s."
+
+msgid "You can use HTML and Smarty code in this field."
+msgstr "В этом поле можно использовать Smarty и HTML."
+
+msgid "Restore block?"
+msgstr "Восстановить блок?"
+
+msgid "Restore variable?"
+msgstr "Восстановить переменную?"
+
+msgid "Delete block?"
+msgstr "Удалить блок?"
+
+msgid "Delete variable?"
+msgstr "Удалить переменную?"
+
+msgid "Text variables"
+msgstr "Текстовые"
+
+msgid "Blocks & codes"
+msgstr "Блоки и коды"
+
+msgid "Variables allow you to display the same information in various parts of a site, easily editable in one place."
+msgstr "Переменные позволяют добавлять одинаковую информацию в разные места сайта и быстро редактировать ее в едином месте."
+
+msgid "“Text variables” are useful for displaying simple information like contact details."
+msgstr "«Текстовые» переменные предназначены для отображения простой информации, например, контактных данных."
+
+msgid "“Blocks & codes” can be used to display large amounts of information, to embed integration snippets from third-party services, etc."
+msgstr "«Блоки и коды» можно использовать для вывода больших блоков информации, вставки кода для интеграции со сторонними сервисами и др."
+
+msgid "Video or music"
+msgstr "Видео или музыка"
+
+msgid "Embed code"
+msgstr "Код для встраивания"
+
+msgid "Outside"
+msgstr "Снаружи"
+
+msgid "Inside"
+msgstr "Внутри"
+
+msgid "Alignment of the last row when not filled in"
+msgstr "Выравнивание последней строки, когда не заполнена"
+
+msgid "Form crm"
+msgstr "Форма для сбора контактов в СРМ"
+
+msgid "Form mailer"
+msgstr "Подписка на рассылку"
+
+msgid "Form helpdesk"
+msgstr "Форма запроса в поддержку"
+
+msgid "Identifier (ID)"
+msgstr "Идентификатор (ID)"
+
+msgid "Link"
+msgstr "Ссылка"
+
+msgid "Customize the appearance of the link to the page in social networks"
+msgstr "Настроить вид ссылки на страницу в соцсетях"
+
+msgid "Redirected to <strong>%s</strong>"
+msgstr "Перенаправлен на <strong>%s</strong>"
+
+msgid "Add & edit"
+msgstr "Добавить и редактировать"
+
+msgid "This section or app were set up with an error in the old interface and is, therefore, unavailable on the site. You can fix the error either in the old interface or right here."
+msgstr "В старом интерфейсе этот раздел или приложение были заданы с ошибкой и поэтому недоступны на сайте. Исправить ошибку можно в старом интерфейсе или прямо здесь."
+
+msgid "Added later"
+msgstr "Добавленные недавно"
+
+msgid "Added earlier"
+msgstr "Добавленные давно"
+
+msgid "By name A–Z"
+msgstr "По алфавиту А–Я"
+
+msgid "By name Z–A"
+msgstr "По алфавиту Я–А"

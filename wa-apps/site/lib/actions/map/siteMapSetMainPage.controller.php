@@ -21,7 +21,7 @@ class siteMapSetMainPageController extends waJsonController
         $main_page->silenceMainPage();
 
         $id = $page_id;
-        if ($type === 'route_app' || $type === 'route_text') {
+        if ($type === 'route_app') {
             $id = $route_id;
         }
         $app_id = waRequest::request('app_id', 'site');

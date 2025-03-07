@@ -15,18 +15,7 @@
 <section class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-block-id="{$block_id|escape}" data-page-id="{$data->getPageId()|escape}" data-static="{$static_main}" >
     <div class="{$static_wrapper}" data-static="{$static_wrapper}">
         {foreach $children as $n => $c}
-            {$key = "column-`$n+1`"}
-            {$column_class = ifset($columns_props, $key, '')}
-            <div class="site-block-columns-col" data-count="{$n+1}" data-static="site-block-columns-col">
-                {$c.html}
-            </div>
-            {if $is_backend}
-            <script>$(() => setTimeout(function(){
-                $.wa.editor.updateBlockData({$c.id|json_encode}, {json_encode($c.data->data, constant('JSON_FORCE_OBJECT'))} || {});
-                $.wa.editor.updateBlockSettingsFormConfig({$c.id|json_encode}, {json_encode($c.data->block_type->getBlockSettingsFormConfig(), constant('JSON_FORCE_OBJECT'))} || {});
-
-            }, 0));</script>
-            {/if}
+            {$c.html}
         {/foreach}
     </div>
 </section>
@@ -42,50 +31,8 @@
         }
         });
     })
-
-    window.siteColController = (function() { "use strict";
-        const msg_error_deleting_block = {_w('Block deletion error.')|json_encode}
-        return siteColController;
-
-        function siteColController(opts) {
-            var self = {};
-            var $wrapper = opts.$wrapper;
-            var block_id = $wrapper.data('block-id');
-            var page_id = $wrapper.data('page-id');
-            // When user clicks on "Add block" button, open dialog in topmost frame
-            // When user clicks anywhere else within a block, select that block and show its settings in right drawer
-            $wrapper.on('click', '.site-block-column', function(e) {
-                const $child = $(this);
-                if ($child.closest('.site-block-columns-col')[0] !== $wrapper[0] ||  $(e.target).closest('.site-block-columns-col')[0] !== $wrapper[0]) {
-                    return; // Ignore events from child vseq instances
-                }
-                const selection = window.getSelection().anchorNode.parentElement;
-                const selection_id = selection.dataset.blockId;
-                //проверка на выделение текста в колонке, когда курсор выходит за пределы блока, чтобы не происходило ложных переключений блока
-                if (window.getSelection().type === 'Range' && +selection_id !== $child.data('block-id')) return;
-                e.stopPropagation();
-                e.preventDefault();
-                $.wa.editor.setSelectedBlock($child.data('block-id'), $child, e.target);
-            });
-            return self;
-        }
-    })();
 </script>
 
-</script>
-<script>
-(function() { "use strict";
-    var block_id = {$block_id|json_encode};
-    var $wrapper;
-    if (block_id) {
-        $wrapper = $('.site-block-columns-wrapper[data-block-id="'+block_id+'"]');
-    }
-    $(function() {
-        var controller = siteColController({
-            $wrapper
-        });
-    });
-})();</script>
 {else}
 <script>$(function() { "use strict";
     const block_id = {$data->getId()|json_encode};

@@ -7,6 +7,8 @@ class siteFrontendBlockpageAction extends waViewAction
     public function execute()
     {
         $page = waRequest::param('page');
+        $page_params = waRequest::param('page_params');
+       
         if (!$page) {
             // this should not happen
             throw new waException('Block page not found', 500);
@@ -19,6 +21,25 @@ class siteFrontendBlockpageAction extends waViewAction
             'rendered_page_html' => (new siteBlockPage($page))->renderFrontend(),
         ]);
 
+        // set response
+        if (!$this->getResponse()->getTitle() && isset($page['title'])) {
+            $this->getResponse()->setTitle($page['title']);
+        }
+        $this->getResponse()->setMeta(array(
+            'keywords' => isset($page_params['meta_keywords']) ? $page_params['meta_keywords'] : '',
+            'description' => isset($page_params['meta_description']) ? $page_params['meta_description'] : ''
+        ));
+        
+        if (ifset($page_params, 'og_active', false)) {
+            foreach (ifset($page_params, array()) as $property => $content) {
+                if ($content && $property !== 'og_active') {
+                    substr($property, 0, 3) == 'og_' && wa()->getResponse()->setOGMeta('og:'.substr($property, 3), $content);
+                }
+               
+            }
+        }
+
+        
         // Use theme defined by the blockpage
         if ($page['theme']) {
             waRequest::setParam('theme', $page['theme']);

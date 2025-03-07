@@ -76,11 +76,23 @@
                             </div>
 
                         </div>
+                        {if !$wa->user()->getSettings($wa_app, 'hide_alert_files')}
                         <div class="s-alert-text alert custom-mb-8">
                             <div class="flexbox space-12 small">
                                 <span> <i class="fas fa-info-circle"></i></span>
                                 [`Files uploaded here are accessible to all website visitors without authorization. Do not upload private files.`]
                                 <a href="javascript:void(0)" class="alert-close custom-ml-auto"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="s-alert-text alert custom-mb-8">
+                            <div class="flexbox space-12 small">
+                                <span> <i class="fas fa-info-circle"></i></span>
+                                <span>{sprintf_wp(
+                                    'To upload a file to the site root; e.g., to confirm the site ownership for third-party services, add a “<em>%s</em>” rule in the <a href="%s" class="text-dark-gray underline">Settings</a>.',
+                                    _w('Custom files in site root'),
+                                    "{$wa_app_url}settings/?domain_id={$domain_id}&scroll_to=custom-texts"
+                                )}</span>
                             </div>
                         </div>
 
@@ -181,7 +193,7 @@
                             <header class="dialog-header"><h1>[`Move to folder`] <span style="color: #aaa;"></span></h1></header>
                             <div class="dialog-content">
                                 <div class="wa-select">
-                                    <select name="new_path"></select>
+                                    <select name="new_path" class="text-ellipsis width-100"></select>
                                 </div>
                                 <input type="hidden" name="path" />
                                 <div id="s-move-dialog-files" style="display:none"></div>
@@ -242,7 +254,7 @@
                 that.$sub_dirs_decoded = options["$sub_dirs_decoded"];
                 that.$dirs = options["$dirs"];
                 that.$files_path = options["$files_path"];
-                console.log(that.page, that.$domain_id)
+                that.domains_decode = options["domains_decode"];
             // INIT
                 that.initClass();
 
@@ -276,7 +288,6 @@
                 let params = hash;
 
                 if (hash === false) {
-                    console.log(hash)
                     hash = that.$files_path;
                     page = that.page;
                 }
@@ -293,12 +304,10 @@
                 }
 
                 that.$files_path = hash;
-                console.log(page, hash)
                 const page_url = page != 1 ? '&page=' + page : '';
 
                 if (loaded && !unset_state) {
                     let url = that.$wa_app_url + 'files/' + hash + (hash ? '/' : '') +  '?domain_id=' + that.$domain_id + page_url;
-                    console.log(url)
                     history.pushState({
                         content_url: url
                     }, "", url);
@@ -309,7 +318,6 @@
                 }
                 else {
                     const url = that.$wa_app_url + 'files/' + hash + '/' + '?domain_id=' + that.$domain_id + page_url;
-                    console.log('reload: ', url)
                     $.site.loadContent(url);
                 }
             }
@@ -343,9 +351,14 @@
                 const that = this,
                 $toolbar = that.$toolbar;
                 let checkbox_hidden = true;
-                const $alert_text = $toolbar.find('.s-alert-text');
-                $alert_text.on('click', '.alert-close', function() {
-                    $alert_text.hide();
+
+                $toolbar.find('.alert-close').on('click', function() {
+                    const $alert = $(this).closest('.s-alert-text');
+                    $.post('?module=filemanager&action=hideAlertFiles', null, function (r) {
+                        if (r?.status === 'ok') {
+                            $alert.remove();
+                        }
+                    });
                 })
 
                 $toolbar.on('click', '.js-action-select', function() {
@@ -497,7 +510,6 @@
                 let params = path;
 
                 if ($files_tree.length) {
-                    console.log('loadFiles', params)
                     loadFiles();
                 }
 
@@ -513,7 +525,8 @@
 
                     $("#s-upload-path").val(params || '');
                     that.current_folder = params.substr(params.lastIndexOf('/') + 1) || '';
-                    that.$content.find("#s-current-path").html(that.current_folder);
+                    const path = that.domains_decode[that.current_folder] || that.current_folder;
+                    that.$content.find("#s-current-path").html(path);
                     that.$toolbar.find("#s-files-count").html('0');
                     that.$files_grid.find("input.all").removeAttr('checked');
                     that.$toolbar.find("#dropdown-selected-files .dropdown-body a").addClass('disabled');
@@ -537,7 +550,6 @@
                 $.post("?module=filemanager&action=list&page=" + page, data, "json").then(function (response) {
                     that.$files_grid.find("tr.s-file").remove();
                     $("div.s-pagination").empty();
-                    console.log(response.data)
                     for (let i = 0; i < response.data.files.length; i++) {
                         let r = response.data.files[i];
                         if (r.is_file) {
@@ -549,9 +561,9 @@
                         }
 
                         let checkbox = '<label><span class="wa-checkbox"><input type="checkbox" value="'+r.file+'"><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>';
-
-                        var html = '<tr class="s-file small"><td class="min-width">'+ checkbox +'</td>' +
-                            '<td class="file-name-td"><div class="file-name flexbox middle space-8"><i class="icon text-gray fas fa-' + r.type + '"></i> <div><a class="'+ url_class +'" href="'+url+'">' + r.file + '</a><i class="shortener"></i></div></div></td>' +
+                        const file_name = that.domains_decode[r.file] || r.file;
+                        let html = '<tr class="s-file small"><td class="min-width">'+ checkbox +'</td>' +
+                            '<td class="file-name-td"><div class="file-name flexbox middle space-8"><i class="icon text-gray fas fa-' + r.type + '"></i> <div><a class="'+ url_class +'" href="'+url+'">' + file_name + '</a><i class="shortener"></i></div></div></td>' +
                             '<td><div>' + r.datetime + '<i class="shortener"></i></div></td>' +
                             '<td><div><span class="float-right">' + getFileSize(r.size) + '</span><i class="shortener"></i></div></td>' +
                             '<td><div class="dropdown clickable" id="' + i + '-' + r.timestamp + '"><a href="javascript:void(0)" class="dropdown-toggle without-arrow text-gray"><i class="icon fas fa-ellipsis-h"></i></a>' +
@@ -759,7 +771,6 @@
             moveDialog(file, is_file = false, is_action = false, multiple = false) {
                 const that = this;
                 const dialog_html = that.$wrapper.find("#s-move-dialog-wrapper").html();
-                console.log('move:', file, is_file)
                 $.waDialog({
                     html: dialog_html,
                     onOpen: function ($dialog, dialog_instance) {
@@ -786,7 +797,6 @@
 
                         }
                         $form.on('submit', function(){
-                            console.log($form.serialize())
                             $.post('?module=files&action=move', $form.serialize() , function (response) {
                                 if (response.status == 'ok') {
                                     if (is_action) {
@@ -823,6 +833,7 @@
 
             filesPathOptions(data, prefix = '', prev_full_path = '') {
                 const that = this;
+                const max_length = 64;
                 let id = '';
                 let result = '';
 
@@ -837,8 +848,14 @@
                     id = typeof(data[i]) == 'string' ? data[i] : data[i]['id'];
                     let selected = false;
                     let full_path = prev_full_path + id + '/';
-                    if (current_folder === id) selected = true;
-                    result += '<option ' + (selected ? 'selected="selected"' : '') + ' value="' + full_path + '">' + prefix + id + '</option>';
+                    if (current_folder === id) {
+                        selected = true;
+                    }
+
+                    const full_name = that.domains_decode[id] || id;
+                    const is_max_length = full_name.length > max_length;
+                    const name = prefix + (is_max_length ? full_name.substring(0, max_length) + "..." : full_name);
+                    result += `<option ${ selected ? 'selected="selected"' : '' } value="${ full_path }" ${ is_max_length ? `title=${ full_name }` : '' }>${ name }</option>`;
 
                     if (typeof(data[i]) != 'string') {
                         result +=  that.filesPathOptions(data[i]['childs'], prefix + '&nbsp;&nbsp;&nbsp;', full_path);
@@ -871,7 +888,8 @@
                             link_href = 'javascript:void(0);'
                             link_class = ''
                         }
-                        html += '<li class="'+ li_class +'"><a href="'+ link_href +'" class="'+ link_class +'">'+ breadcrumb_ar[i] +'</a></li>'
+                        const path = that.domains_decode[breadcrumb_ar[i]] || breadcrumb_ar[i];
+                        html += '<li class="'+ li_class +'"><a href="'+ link_href +'" class="'+ link_class +'">'+ path +'</a></li>'
                         }
                     }
                     return html;
@@ -893,6 +911,7 @@
             $files_path: '{$files_path}',
             $page: '{$page|default: 1}',
             domain_protocol: {json_encode($domain_protocol)},
+            domains_decode: {json_encode($domains_decode)},
             locales: {
             open: '[`Open`]',
             download: '[`Download`]',

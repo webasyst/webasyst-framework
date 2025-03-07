@@ -1,9 +1,11 @@
 {$is_broken_route_url = !empty($route.is_broken_route_url) && $route.is_broken_route_url}
+{$has_route = strlen($route_id)}
+
 {capture assign="_field_url"}
 <div class="field field-url">
     <div class="name bold for-input">URL</div>
     <div class="value">
-    {if strlen($route_id)}
+    {if $has_route}
         <!-- existing route -->
         <div class="s-route-block flexbox wrap middle space-4" id="s-route-where">
             <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
@@ -39,8 +41,8 @@
 <div class="dialog s-section-settings-dialog" id="js-section-settings-dialog">
     <div class="dialog-background"></div>
     <div class="dialog-body">
-        <header class="dialog-header flexbox middle full-width custom-mb-16">
-            {if strlen($route_id)}
+        <header class="dialog-header flexbox middle full-width">
+            {if $has_route}
                 <h1 class="custom-mb-0">{if $app_id === 'site'}[`Page settings`]{else}[`Section settings`]{/if}</h1>
             {else}
             <h1 class="custom-mb-0">
@@ -76,7 +78,7 @@
                 {if $app}
                     {$_route_params = []}
                     {foreach $route as $key=>$value}
-                        {if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled', 'is_broken_route_url')) && substr($key, 0, 1) != '_' && !isset($params[$key]) && is_scalar($value)}
+                        {if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled', 'is_broken_route_url', 'priority_settlement', 'old_url')) && substr($key, 0, 1) != '_' && !isset($params[$key]) && is_scalar($value)}
                             {$_route_params[$key] = $value}
                         {/if}
                     {/foreach}
@@ -86,7 +88,14 @@
                         {$_is_params_diff = (array_diff_assoc($other_params, $_route_params) || array_diff_assoc($_route_params, $other_params))}
                     {/if}
 
-                    <div class="custom-mb-16">
+                    {if !empty($route.priority_settlement)}
+                        <input type="hidden" name="params[priority_settlement]" value="1">
+                    {/if}
+                    {if !empty($route.old_url)}
+                        <input type="hidden" name="params[old_url]" value="{$route.old_url}">
+                    {/if}
+
+                    <div class="custom-mt-16">
                         {if $app_id === 'site'}
                             <div class="field">
                                 <div class="name bold for-input">[`Page name`]</div>
@@ -286,9 +295,11 @@
                                                 </div>
                                                 <input name="params[theme]" type="hidden" value="{$used_theme}">
                                             </div>
-                                            <a class="js-theme-settings text-plum small semibold custom-ml-16" href="{$wa_app_url}themes/?domain_id={$domain_id}#/themes/theme={$used_theme}&domain={$domain_decoded|urlencode}{if $route_id}&route={$route_id}{/if}" target="_blank">
+                                            {if $app_id === 'site'}
+                                            <a class="js-theme-settings text-plum small semibold custom-ml-16" href="{$wa_app_url}themes/?domain_id={$domain_id}#/themes/theme={$used_theme}&domain={$domain_decoded|urlencode}{if $has_route}&route={$route_id}{/if}" target="_blank">
                                                 <i class="fas fa-palette custom-mr-4"></i>[`Theme settings`] <i class="fas fa-external-link-alt smaller custom-ml-4"></i>
                                             </a>
+                                            {/if}
                                         </li>
                                         <li class="flexbox middle space-8 custom-mt-12">
                                             <label>
@@ -311,233 +322,208 @@
 
                                 </div>
                             </div>
-                            <div class="field">
-                                <div class="name">[`Language`]</div>
-                                <div class="value">
-                                    {if !strlen($route_id)}{$_l=$wa->locale()}{else}{$_l=ifset($route.locale, '')}{/if}
-                                    <div class="wa-select small">
-                                        {html_options name="params[locale]" options=$locales selected=$_l}</div><br>
-                                    <span class="hint">[`Select a language to translate text strings in website frontend.`]<br>
-                                        [`If “Auto” option is selected, website language will be determined by user browser settings.`]</span>
-                                </div>
-                            </div>
                         {/if}
+                    </div>
 
-                        {if $app_id === 'shop'}
-                            <div class="field">
-                                <div class="name for-checkbox">[`Security`]
-                                    <span class="js-tooltip" data-wa-tooltip-template="#about-security-tooltip"><i class="fas fa-question-circle text-light-gray"></i></span>
-                                    <div class="wa-tooltip-template" id="about-security-tooltip">
-                                        <div class="box">
-                                            <p>[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this section.`]
-                                                <br>
-                                                [`This option will work only if an SSL certificate is installed for your domain name.`]
-                                            </p>
-                                        </div>
+                    {if !$has_route}
+                        <div class="custom-mt-16">
+                            <a id="wa-page-advanced-params-link" href="javascript:void(0);" class="semibold">
+                                [`Show more`]
+                                <i class="fas fa-caret-down"></i>
+                            </a>
+                        </div>
+                    {/if}
+                    <div id="wa-page-advanced-params" class="custom-mt-16"{if !$has_route} style="display:none"{/if}>
+
+                        <div class="custom-mb-16">
+                            {if $themes}
+                                <div class="field">
+                                    <div class="name">[`Language`]</div>
+                                    <div class="value">
+                                        {if !$has_route}{$_l=$wa->locale()}{else}{$_l=ifset($route.locale, '')}{/if}
+                                        <div class="wa-select small">
+                                            {html_options name="params[locale]" options=$locales selected=$_l}</div><br>
+                                        <span class="hint">[`Select a language to translate text strings in website frontend.`]<br>
+                                            [`If “Auto” option is selected, website language will be determined by user browser settings.`]</span>
                                     </div>
                                 </div>
-                                <div class="value">
-                                    <label>
-                                        <span class="wa-checkbox">
-                                            <input type="checkbox" value="1" id="ssl_all" name="params[ssl_all]" {if !empty($route.ssl_all)} checked{/if} {if empty($is_https)}disabled{/if}>
-                                            <span>
-                                                <span class="icon">
-                                                    <i class="fas fa-check"></i>
+                            {/if}
+
+                            {if $app_id === 'shop'}
+                                <div class="field">
+                                    <div class="name for-checkbox">[`Security`]
+                                        <span class="js-tooltip" data-wa-tooltip-template="#about-security-tooltip"><i class="fas fa-question-circle text-light-gray"></i></span>
+                                        <div class="wa-tooltip-template" id="about-security-tooltip">
+                                            <div class="box">
+                                                <p>[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this section.`]
+                                                    <br>
+                                                    [`This option will work only if an SSL certificate is installed for your domain name.`]
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="value">
+                                        <label>
+                                            <span class="wa-checkbox">
+                                                <input type="checkbox" value="1" id="ssl_all" name="params[ssl_all]" {if !empty($route.ssl_all)} checked{/if} {if empty($is_https)}disabled{/if}>
+                                                <span>
+                                                    <span class="icon">
+                                                        <i class="fas fa-check"></i>
+                                                    </span>
                                                 </span>
                                             </span>
-                                        </span>
-                                        <span class="small">[`Redirect to HTTPS`]</span>
-                                    </label>
-                                    <div class="hint">
-                                        <p class="ssl_server_https text-orange custom-mb-0" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]</p>
-                                        <p class="ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]</p>
+                                            <span class="small">[`Redirect to HTTPS`]</span>
+                                        </label>
+                                        <div class="hint">
+                                            <p class="ssl_server_https text-orange custom-mb-0" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]</p>
+                                            <p class="ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        {/if}
+                            {/if}
 
-                        {if $app_id === 'site'}
-                            <div class="custom-mt-24">
-                                <div class="field">
-                                    <div class="name custom-pt-6">
-                                        [s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span>
+                            {if $app_id === 'site'}
+                                <div class="custom-mt-24">
+                                    <div class="field">
+                                        <div class="name custom-pt-6">
+                                            [s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span>
+                                        </div>
+                                        <div class="value">
+                                            <input type="text" name="page[title]" value="{if !empty($page)}{$page.title|escape}{/if}" class="bold width-100" />
+                                        </div>
                                     </div>
-                                    <div class="value">
-                                        <input type="text" name="page[title]" value="{if !empty($page)}{$page.title|escape}{/if}" class="bold width-100" />
+                                    {foreach $page_params as $n => $p}
+                                        <div class="field">
+                                            <div class="name custom-pt-6">{$vars[$n]}</div>
+                                            {if $n == 'description'}
+                                                <div class="value">
+                                                    <textarea name="page[params][{$n}]" class="small width-100">{$p|escape}</textarea>
+                                                </div>
+                                            {else}
+                                                <div class="value">
+                                                    <input type="text" name="page[params][{$n}]" class="small width-100" value="{$p|escape}" />
+                                                </div>
+                                            {/if}
+                                        </div>
+                                    {/foreach}
+                                    <div class="field">
+                                        <div class="name for-switch">[s`Social sharing`]</div>
+                                        <div class="value">
+                                            <div class="switch-with-text ">
+                                            <span class="switch smaller" id="og-switch">
+                                                <input id="og-checkbox" type="checkbox"{if empty($og_params)} checked{/if}>
+                                            </span>
+                                            <label for="og-checkbox" class="small">
+                                                [s`Use these meta tags for social sharing too`]
+                                            </label>
+                                            </div>
+                                            <script>
+                                                ( function($) {
+                                                    const $og_switch = $("#og-switch");
+                                                    const $og_group = $(".og-group");
+
+                                                    $og_switch.waSwitch({
+                                                        change(active) {
+                                                            $og_group.toggle(!active);
+                                                        }
+                                                    });
+                                                })(jQuery);
+                                            </script>
+                                        </div>
                                     </div>
                                 </div>
-                                {foreach $page_params as $n => $p}
+                                <div class="custom-mt-24 og-group" {if empty($og_params)}style="display: none;"{/if}>
                                     <div class="field">
-                                        <div class="name custom-pt-6">{$vars[$n]}</div>
-                                        {if $n == 'description'}
+                                        <div class="name custom-pt-6">[s`Social sharing title`] <span class="hint">og:title</span></div>
+                                        <div class="value">
+                                            <input type="text" name="page[og][title]" class="width-100 bold" value="{ifset($og_params.title, '')|escape}" {if empty($og_params)}disabled{/if}>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name custom-pt-6">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
+                                        <div class="value">
+                                            <input type="text" name="page[og][image]" class="width-100" value="{ifset($og_params.image, '')|escape}" {if empty($og_params)}disabled{/if}>
+                                            <p class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</p>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name custom-pt-6">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
+                                        <div class="value">
+                                            <input type="text" name="page[og][video]" class="width-100" value="{ifset($og_params.video, '')|escape}" {if empty($og_params)}disabled{/if}>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name custom-pt-6">[s`Social sharing description`] <span class="hint">og:description</span></div>
+                                        <div class="value">
+                                            <textarea class="width-100" name="page[og][description]"{if empty($og_params)} disabled{/if}>{ifset($og_params.description, '')|escape}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name custom-pt-6">[s`Social sharing type`] <span class="hint">og:type</span></div>
+                                        <div class="value">
+                                            <input type="text" name="page[og][type]" class="width-100" placeholder="" value="{ifset($og_params.type, '')}" {if empty($og_params)}disabled{/if}>
+                                            <p class="hint">[s`Please refer to <a href="http://ogp.me" rel="noopener" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {if !empty($page_edit)}
+                                    <div class="custom-mt-24">
+                                        {foreach $page_edit as $_}{$_}{/foreach}
+                                    </div>
+                                {/if}
+
+                                {if isset($other_params) && $other_params}
+                                    <div class="custom-mt-24"{if !$_is_params_diff} style="display: none;"{/if}>
+                                        <div class="field">
+                                            <div class="name custom-pt-6">[`Custom page parameters`]</div>
                                             <div class="value">
-                                                <textarea name="page[params][{$n}]" class="small width-100">{$p|escape}</textarea>
+                                    <textarea name="page[other_params]" class="small width-100">{strip}
+                                        {if $page}
+                                        {foreach from=$other_params item=v key=k}{$k}={$v|escape}{"\n"}{/foreach}
+                                        {/if}
+                                    {/strip}</textarea>
+                                                <p class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a> <i class="fas fa-external-link-alt small"></i></p>
                                             </div>
+                                        </div>
+                                    </div>
+                                {/if}
+                            {/if}
+                        </div>
+                        <div class="custom-mb-16">
+                            {if !empty($params)}
+                                {foreach $params as $p}
+                                    {if is_array($p)}
+                                        {if $p.type == 'hidden'}
+                                            {$p.value}
                                         {else}
-                                            <div class="value">
-                                                <input type="text" name="page[params][{$n}]" class="small width-100" value="{$p|escape}" />
+                                            <div class="field">
+                                                <div class="name{if in_array($p.type, ['checkbox','radio_checkbox','radio_text','radio_select'])} for-switch{elseif in_array($p.type, ['input','textarea'])} custom-pt-6{/if}"
+                                                >{$p.name|escape}</div>
+                                                <div class="value">{$p.value}</div>
                                             </div>
                                         {/if}
-                                    </div>
-                                {/foreach}
-                                <div class="field">
-                                    <div class="name for-switch">[s`Social sharing`]</div>
-                                    <div class="value">
-                                        <div class="switch-with-text ">
-                                        <span class="switch smaller" id="og-switch">
-                                            <input id="og-checkbox" type="checkbox"{if empty($og_params)} checked{/if}>
-                                        </span>
-                                        <label for="og-checkbox" class="small">
-                                            [s`Use these meta tags for social sharing too`]
-                                        </label>
-                                        </div>
-                                        <script>
-                                            ( function($) {
-                                                const $og_switch = $("#og-switch");
-                                                const $og_group = $(".og-group");
-
-                                                $og_switch.waSwitch({
-                                                    change(active) {
-                                                        $og_group.toggle(!active);
-                                                    }
-                                                });
-                                            })(jQuery);
-                                        </script>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="custom-mt-24 og-group" {if empty($og_params)}style="display: none;"{/if}>
-                                <div class="field">
-                                    <div class="name custom-pt-6">[s`Social sharing title`] <span class="hint">og:title</span></div>
-                                    <div class="value">
-                                        <input type="text" name="page[og][title]" class="width-100 bold" value="{ifset($og_params.title, '')|escape}" {if empty($og_params)}disabled{/if}>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <div class="name custom-pt-6">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
-                                    <div class="value">
-                                        <input type="text" name="page[og][image]" class="width-100" value="{ifset($og_params.image, '')|escape}" {if empty($og_params)}disabled{/if}>
-                                        <p class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</p>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <div class="name custom-pt-6">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
-                                    <div class="value">
-                                        <input type="text" name="page[og][video]" class="width-100" value="{ifset($og_params.video, '')|escape}" {if empty($og_params)}disabled{/if}>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <div class="name custom-pt-6">[s`Social sharing description`] <span class="hint">og:description</span></div>
-                                    <div class="value">
-                                        <textarea class="width-100" name="page[og][description]"{if empty($og_params)} disabled{/if}>{ifset($og_params.description, '')|escape}</textarea>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <div class="name custom-pt-6">[s`Social sharing type`] <span class="hint">og:type</span></div>
-                                    <div class="value">
-                                        <input type="text" name="page[og][type]" class="width-100" placeholder="" value="{ifset($og_params.type, '')}" {if empty($og_params)}disabled{/if}>
-                                        <p class="hint">[s`Please refer to <a href="http://ogp.me" rel="noopener" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {if !empty($page_edit)}
-                                <div class="custom-mt-24">
-                                    {foreach $page_edit as $_}{$_}{/foreach}
-                                </div>
-                            {/if}
-
-                            {if isset($other_params) && $other_params}
-                                <div class="custom-mt-24"{if !$_is_params_diff} style="display: none;"{/if}>
-                                    <div class="field">
-                                        <div class="name custom-pt-6">[`Custom page parameters`]</div>
-                                        <div class="value">
-                                <textarea name="page[other_params]" class="small width-100">{strip}
-                                    {if $page}
-                                    {foreach from=$other_params item=v key=k}{$k}={$v|escape}{"\n"}{/foreach}
-                                    {/if}
-                                {/strip}</textarea>
-                                            <p class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a> <i class="fas fa-external-link-alt small"></i></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            {/if}
-                        {/if}
-                    </div>
-                    <div class="custom-mb-16">
-                        {if !empty($params)}
-                            {foreach $params as $p}
-                                {if is_array($p)}
-                                    {if $p.type == 'hidden'}
-                                        {$p.value}
                                     {else}
-                                        <div class="field">
-                                            <div class="name{if in_array($p.type, ['checkbox','radio_checkbox','radio_text','radio_select'])} for-switch{elseif in_array($p.type, ['input','textarea'])} custom-pt-6{/if}"
-                                            >{$p.name|escape}</div>
-                                            <div class="value">{$p.value}</div>
-                                        </div>
+                                        <h5 class="heading clear-both"><br>{$p}<br><br></h5>
                                     {/if}
-                                {else}
-                                    <h5 class="heading clear-both"><br>{$p}<br><br></h5>
-                                {/if}
-                            {/foreach}
-                        {/if}
-                    </div>
-                    <div class="custom-mb-16">
-                        <div class="field">
-                            <div class="name custom-pt-6">[`Custom parameters`]</div>
-                            <div class="value">
-                                <textarea class="small width-100" name="other_params">{strip}
-                                    {foreach $_route_params as $key=>$value}
-                                    {$key|escape}={if $value===false}0{else}{$value|escape}{/if}{"\n"}
-                                    {/foreach}
-                                {/strip}</textarea>
-                                <p class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in design templates, as well as in the page and all its subpages, as <em>&#123;$wa->param("key")&#125;</em>. Each key=value pair must be specified on a separate line.`] <a href="[`https://developers.webasyst.com/docs/templates/design-themes/`]" target="_blank">[`Help`]</a> <i class="fas fa-external-link-alt small"></i></p>
-                            </div>
+                                {/foreach}
+                            {/if}
                         </div>
-                    </div>
-                {elseif $app_id === ':text'}
-                    <div class="">
-                        {$_field_url}
-                        <div class="field">
-                            <div class="name">[`Custom text`]</div>
-                            <div class="value">
-                                <textarea class="small width-100" name="params[static_content]" placeholder="[`Text to be returned at specified URL`]">{$route.static_content|default:''|escape}</textarea>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="name">[`Content type`]</div>
-                            <div class="value">
-                                <div class="wa-select">
-                                    <select name="params[static_content_type]">
-                                        <option value=""{if empty($route.static_content_type)} selected{/if}>[`file`]</option>
-                                        <option value="text/plain" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/plain')} selected{/if}>[`text (text/plain)`]</option>
-                                        <option value="text/html" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/html')} selected{/if}>[`HTML code (text/html)`]</option>
-                                    </select>
+                        <div class="custom-mb-16">
+                            <div class="field">
+                                <div class="name custom-pt-6">[`Custom parameters`]</div>
+                                <div class="value">
+                                    <textarea class="small width-100" name="other_params">{strip}
+                                        {foreach $_route_params as $key=>$value}
+                                        {$key|escape}={if $value===false}0{else}{$value|escape}{/if}{"\n"}
+                                        {/foreach}
+                                    {/strip}</textarea>
+                                    <p class="hint">[`Optional set of custom <em>key=value</em> parameters, which can be used in design templates, as well as in the page and all its subpages, as <em>&#123;$wa->param("key")&#125;</em>. Each key=value pair must be specified on a separate line.`] <a href="[`https://developers.webasyst.com/docs/templates/design-themes/`]" target="_blank">[`Help`]</a> <i class="fas fa-external-link-alt small"></i></p>
                                 </div>
-                                <br>
-                                <span class="hint">[`If content type “file” is selected, downloading of a file will start automatically if there is no extension in its name.`]</span>
                             </div>
                         </div>
-                        <div class="field">
-                            <div class="name">[`Privacy`]</div>
-                            <div class="value">
-                                <label>
-                                    <span class="wa-checkbox">
-                                        <input type="checkbox" value="1" name="params[private]"{if !empty($route.private) || !strlen($route_id)} checked{/if}>
-                                        <span>
-                                            <span class="icon">
-                                                <i class="fas fa-check"></i>
-                                            </span>
-                                        </span>
-                                    </span>
-                                    [`Private settlement`]
-                                </label>
-                                <div class="hint">[`When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines.`]</div>
-                            </div>
-                        </div>
-                    </div>
 
+                    </div>
                 {elseif $app === false}
                     <div class="">
                         <div class="field">
@@ -556,15 +542,22 @@
         </div>
         <footer class="dialog-footer flexbox full-width space-24">
             <div class="dialog-footer-left flexbox middle wrap space-8">
-                {if $app || $app_id === ':text'}
-                <button class="js-save button">[`Save`]</button>
-                <button class="js-close-dialog button light-gray">[`Cancel`]</button>
+                {if $app}
+                    {if empty($has_route)}
+                        <button class="js-save button" type="button">[`Add`]</button>
+                        {if $app_id === 'site'}
+                            <button class="js-save-and-edit button dark-gray" type="button">[`Add & edit`]</button>
+                        {/if}
+                    {else}
+                        <button class="js-save button" type="button">[`Save`]</button>
+                    {/if}
+                    <button class="js-close-dialog button light-gray" type="button">[`Cancel`]</button>
                 {else}
-                <button class="js-close-dialog button light-gray">[`Close`]</button>
+                    <button class="js-close-dialog button light-gray" type="button">[`Close`]</button>
                 {/if}
                 <span class="js-place-for-errors state-caution-hint"></span>
             </div>
-            {if strlen($route_id)}
+            {if $has_route}
                 <div class="nowrap">
                     <button class="js-delete red nobutton"><i class="fas fa-trash-alt"></i> [`Delete`]</button>
                 </div>
@@ -584,6 +577,7 @@
     const $form = $wrapper.find('form');
 
     const $save_button = $wrapper.find('.js-save');
+    const $save_and_edit_button = $wrapper.find('.js-save-and-edit');
     const $place_for_errors = $wrapper.find('.js-place-for-errors');
     var dialog;
 
@@ -626,6 +620,10 @@
         saveHandler();
         return false;
     });
+    $save_and_edit_button.on('click', function() {
+        saveHandler(false, true);
+        return false;
+    });
     $form.submit(function() {
         saveHandler();
         return false;
@@ -650,6 +648,13 @@
             cancel_button_class: 'light-gray',
             onSuccess: deleteHandler
         });
+    });
+
+    $("#wa-page-advanced-params-link").on('click', function(e) {
+        e.preventDefault();
+        $("#wa-page-advanced-params").show();
+        $(this).remove();
+        $wrapper.data('dialog').resize();
     });
 
     function deleteHandler(d, is_multiple_delete = false) {
@@ -684,7 +689,7 @@
         });
     }
 
-    function saveHandler(is_oninput = false) {
+    function saveHandler(is_oninput = false, is_edit = false) {
         $form.find('.state-error').removeClass('state-error');
         $form.find('.state-error-hint').remove();
         $place_for_errors.empty();
@@ -695,12 +700,18 @@
         const loading = loadingOnButton().show();
         $.post(save_url, $form.serialize(), 'json').then(function(r) {
             loading.hide();
-                handleResponse(r, () => {
-                    if (!is_oninput) {
-                        $wrapper.data('dialog').close();
-                        $.site.loadMap();
+            handleResponse(r, () => {
+                if (!is_oninput) {
+                    $wrapper.data('dialog').close();
+
+                    if (is_edit && r.data.page_id) {
+                        location.href = `{$wa_app_url}htmleditor/page/${ r.data.page_id }/?domain_id=${ domain_id }`;
+                        setTimeout(() => $.site.loadMap(), 100);
+                    } else {
+                        $wrapper.trigger('page_saved', [r.data]);
                     }
-                });
+                }
+            });
 
             if (is_oninput) {
                 $(document).trigger('after_save_page_settings');
@@ -714,7 +725,7 @@
 
     function validateUrls() {
         // Rule address contains unsupported character, regexp for define it
-        const invalid_url_regexp = /(\&|\$|\+|\,|\:|\;|\=|\?|\@|\#|\<|\>|\[|\]|\}|\||\^|\%)/;
+        const invalid_url_regexp = /(\&|\$|\+|\,|\;|\=|\?|\@|\#|\[|\]|\}|\||\^|\%)/;
         const $url_inputs = $form.find('.js-url');
         let errors = [];
 
@@ -782,11 +793,28 @@
             }
         });
     }
-    console.log('im  heree')
-    const $active_url_input = $form.find('.js-url').eq(0);
-    $active_url_input.on('input', function() {
-        //console.log(this.value)
-    })
+
+    //Show warning about the length of the string for site App
+    if (is_site) {
+        const $active_url_input = $form.find('#s-route-where .js-url').eq(0);
+        $active_url_input.on('input', function() {
+        const maxLength = 62;
+            if (this.value.length > maxLength) {
+                showLengthWarning($(this))
+                this.value = this.value.substring(0, maxLength);
+            }
+        })
+    }
+
+    function showLengthWarning($input) {
+            if($input.hasClass('state-error')) return
+            $input.addClass('state-error');
+            $input.closest('.s-route-block').after('<div class="state-error-hint" style="float: right;">[`Maximum 63 characters`]</p>')
+                setTimeout(() => {
+                    $input.removeClass('state-error');
+                    $input.closest('.value').find('.state-error-hint').remove();
+                }, 3000);
+    }
 
     const $external_domain_link = $('#s-route-where a');
     if ($external_domain_link.length) {
@@ -796,13 +824,8 @@
         const $original_value = $url_input.val();
 
         $url_input.on('input', function() {
-            const maxLength = 62;
-            if (this.value.length > maxLength) {
-                showCaution($(this))
-                this.value = this.value.substring(0, maxLength);
-            }
+
             $external_domain_link.attr('href', domain + '/' + this.value.replace('*', '')).addClass('disabled');
-            
             $external_domain_link.find('.fa-external-link-alt').hide();
             $external_domain_link.find('.fa-spinner').show();
 
@@ -810,15 +833,6 @@
             timerId = setTimeout(() => saveHandler(true), 1500);
         });
 
-        function showCaution($input) {
-            if($input.hasClass('state-error')) return
-            $input.addClass('state-error');
-            $input.closest('.s-route-block').after('<div class="state-error-hint" style="float: right;">[`Maximun 63 characters`]</p>')
-                setTimeout(() => {
-                    $input.removeClass('state-error'); 
-                    $input.closest('.value').find('.state-error-hint').remove();
-                }, 3000);
-            }
 
         $(document).on('after_save_page_settings', function() {
             $external_domain_link.removeClass('disabled');

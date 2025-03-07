@@ -389,8 +389,8 @@
             <div class="value">
                 <div class="switch-with-text custom-pt-4">
                     <span class="switch smaller js-signup-captcha-toogle" id="switch-signup-captcha-toogle">
-                        <input id="s-signup-captcha" name="signup_captcha" class=" " type="checkbox" value="1"{if $signup_captcha} checked="checked"{/if}>
                         <input type="hidden" name="signup_captcha" value="0">
+                        <input id="s-signup-captcha" name="signup_captcha" type="checkbox" value="1"{if $signup_captcha} checked="checked"{/if}>
                     </span>
                     <label class="s-small" for="s-signup-captcha" data-active-text="[`Enabled`]" data-inactive-text="[`Disabled`]">{if $signup_captcha}[`Enabled`]{else}[`Disabled`]{/if}</label>
                 </div>
@@ -405,7 +405,7 @@
                     {* Available fields *}
                     {foreach $available_fields as $_a_field}
                         <div class="s-form-available-field">
-                            <label class="js-available-field" data-id="{$_a_field.id}">
+                            <label class="js-available-field s-flex-checkbox" data-id="{$_a_field.id}">
                                 <span class="wa-checkbox">
                                     <input type="checkbox" data-field-id="{$_a_field.id|escape}"{if $_a_field.checked} checked{/if}{if $_a_field.disabled} disabled{/if}>
                                     <span>
@@ -414,7 +414,7 @@
                                         </span>
                                     </span>
                                 </span>
-                                {$_a_field.name|escape}
+                                <span class="break-word">{$_a_field.name|escape}</span>
                             </label>
                         </div>
                     {/foreach}
@@ -534,8 +534,8 @@
             <div class="value">
                 <div class="switch-with-text custom-pt-4">
                     <span class="switch smaller js-rememberme-auth-toogle" id="switch-rememberme-auth-toogle">
-                        <input id="s-rememberme-auth" name="rememberme" class="" type="checkbox" value="1"{if $rememberme} checked="checked"{/if}>
                         <input type="hidden" name="rememberme" value="0">
+                        <input id="s-rememberme-auth" name="rememberme" type="checkbox" value="1"{if $rememberme} checked="checked"{/if}>
                     </span>
                     <label class="s-small" for="s-rememberme-auth" data-active-text="[`Enabled`]" data-inactive-text="[`Disabled`]">{if $rememberme}[`Enabled`]{else}[`Disabled`]{/if}</label>
                 </div>

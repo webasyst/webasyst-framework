@@ -14,6 +14,11 @@ class siteMapOverviewAction extends waViewAction
         $domain_id = waRequest::request('domain_id', null, 'int');
         $htmleditor = waRequest::request('htmleditor', null, 'int');
 
+        // update last_domain_id
+        if (!$sidebar_mode) {
+            siteHelper::saveLastDomainId();
+        }
+
         $domain = $this->getNeedDomain($domain_id);
 
         if ($domain['is_alias']){ //redirect for aliases
@@ -26,7 +31,7 @@ class siteMapOverviewAction extends waViewAction
 
         list($apps, $routes, $has_redirect) = $this->getSitemapRoutesApps($domain);
         $migrated_from_ui13 = wa()->getSetting('migrated_from_ui13', false, 'site');
-        $this->loadHtmlPages($domain, $routes, $migrated_from_ui13);
+        $this->loadHtmlPages($domain, $routes);
 
         list($sitemap_tree, $root_page) = $this->buildSitemapTree($routes, $pages);
         $sitemap_table_rows = $this->buildFlatSitemapTable($sitemap_tree);
@@ -35,22 +40,24 @@ class siteMapOverviewAction extends waViewAction
 
         $apps_to_add = [];
         foreach ($apps as $app) {
-            if ($app) {
-                $apps_to_add[] = [
-                    'id' => $app['id'],
-                    'name' => siteHelper::getAlternativeAppNames($app['id'], $app['name']),
-                    'icon' => $app['icon']
-                ];
+            if ($app['id'] === 'site') {
+                continue;
             }
+            $apps_to_add[$app['id']] = [
+                'id' => $app['id'],
+                'name' => siteHelper::getAlternativeAppNames($app['id'], $app['name'], true),
+                'icon' => $app['icon'],
+                'pages' => ifset($app, 'pages', false),
+            ];
         }
 
         $this->view->assign([
             'sidebar_mode'     => $sidebar_mode,
             'table_rows'       => $sitemap_table_rows,
             'domain_id'        => $domain_id,
+            'domain_idn'       => waIdna::dec($domain['name']),
             'domain'           => $domain,
             'page_id'          => $page_id,
-            'apps'             => $apps,
             'has_redirect'     => $has_redirect,
             'show_alert_moving_to_settings' => $show_alert_moving_to_settings,
             'is_htmleditor'    => $htmleditor,
@@ -87,16 +94,13 @@ class siteMapOverviewAction extends waViewAction
                 continue;
             }
 
-            $route['route_id'] = $route_id;
-            $route['url_formatted'] = '/'.ltrim(rtrim($route['url'], '*'), '/');
-            if (isset($route['app']) && $route['app'] === ':text') {
-                continue;
-            }
-
             if (!isset($route['app']) || !in_array($route['app'], $allowed_apps)) {
                 unset($routes[$route_id]);
                 continue;
             }
+
+            $route['route_id'] = $route_id;
+            $route['url_formatted'] = '/'.ltrim(rtrim($route['url'], '*'), '/');
 
             $apps_routed[$route['app']] = true;
             $route['app'] = ifempty($apps[$route['app']], [
@@ -249,8 +253,6 @@ class siteMapOverviewAction extends waViewAction
 
             if (isset($route['app']['id'])) {
                 $route = ['row_type' => 'route_app'] + $route;
-            } else if (ifset($route, 'app', '') == ':text') {
-                $route = ['row_type' => 'route_text'] + $route;
             } else {
                 continue; // should never happen
             }
@@ -313,9 +315,6 @@ class siteMapOverviewAction extends waViewAction
         foreach($sitemap_tree as $node) {
             if (!is_null($node)) { //поправил warning
                 switch ($node['row_type']) {
-                    case 'route_text':
-                        $result[] = $node;
-                        break;
                     case 'blockpage':
                         $addPageTree(['app_id' => 'site'] + $node, 0);
                         break;

@@ -1,5 +1,5 @@
 <?php
-class siteBlockpageParamsModel extends waModel
+class siteBlockpageParamsModel extends waPageParamsModel
 {
     protected $table = 'site_blockpage_params';
 }

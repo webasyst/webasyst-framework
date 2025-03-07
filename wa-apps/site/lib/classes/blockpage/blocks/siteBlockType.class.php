@@ -199,9 +199,36 @@ abstract class siteBlockType
     protected function getView()
     {
         if (!$this->view) {
-            $this->view = wa('site')->getView();
+            $this->view = new siteEditorView(wa('site'));
         }
         return $this->view;
+    }
+
+    /**
+     * Helper for render(): evaluates input as a Smarty template and returns resulting string.
+     * @param string
+     * @return string
+     */
+    protected function renderSmarty($html)
+    {
+        if (!$html || !is_string($html)) {
+            return $html;
+        }
+        $html = preg_replace_callback('~\{[^\}]+\}~iu', function($matches) {
+            return str_replace(['&lt;', '&gt;', '&amp;'], ['<', '>', '&'], $matches[0]);
+        }, $html, -1, $count);
+        if ($count <= 0) {
+            return $html;
+        }
+
+        try {
+            $html = wa()->getView()->fetch('string:'.$html);
+        } catch (Throwable $e) {
+            if (wa()->getUser()->getId() && wa()->getUser()->get('is_user') > 0) {
+                $html .= '<br><br> (!!)'.$e->getMessage();
+            }
+        }
+        return $html;
     }
 
     protected function getPrerenderTemplatePath(bool $is_backend)

@@ -3,7 +3,7 @@
  * on Site Map screen, but also is included in parent screen HTML
  * on Editor page.
  *}
-<div class="dialog" id="js-htmlpage-settings-dialog">
+<div class="dialog s-section-settings-dialog" id="js-htmlpage-settings-dialog">
     <div class="dialog-background"></div>
     <div class="dialog-body" style="width: 45rem;">
         <header class="dialog-header">
@@ -68,13 +68,13 @@
                             <div class="name for-input">[s`Page URL`]</div>
                             <div class="value wa-page-app-url ">
                                 <div class="flexbox middle space-8 wrap">
-                                {if !empty($url)}<span class="custom-mr-4 break-word custom-py-6">{$url_decoded|escape}</span>{/if}<span><input type="text" class="short" name="info[url]" value="{if $page}{$page.url|escape}{/if}" />
+                                {if !empty($url)}<span class="custom-mr-4 break-word custom-py-6">{$url_decoded|escape}</span>{/if}<span><input type="text" class="short" name="info[url]" value="{if $page}{$page.url|escape|trim:'/'}{/if}" />
                                 <span class="custom-mr-4">/</span></span>
                                 </div>
                                 {if !empty($warnings)}
                                     <p class="state-caution-hint small custom-mt-4">
                                         {if isset($warnings.no_site_storefront)}
-                                            [s`This page will not be published because there is no settlement, or routing rule, for this app in the site structure settings. Set up a settlement in Site app’s “Structure” section to publish this page.`]
+                                            [s`This page will not be published because there is no section of this app in the site map. Add at least one section to publish the page.`]
                                         {elseif isset($warnings.deleted_site_storefront)}
                                             [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Set up a settlement in Site app’s “Structure” section to publish this page.`]
                                         {elseif isset($warnings.several_site_storefront)}
@@ -96,12 +96,14 @@
 
                     </div>
                     {if !$page || !$page.id}
-                        <a id="wa-page-advanced-params-link" href="javascript:void(0);" class="small gray custom-mt-16">
-                            [s`more`]
-                            <i class="fas fa-caret-down"></i>
-                        </a>
+                        <div class="custom-mt-16">
+                            <a id="wa-page-advanced-params-link" href="javascript:void(0);" class="semibold">
+                                [`Show more`]
+                                <i class="fas fa-caret-down"></i>
+                            </a>
+                        </div>
                     {/if}
-                    <div id="wa-page-advanced-params" {if !$page || !$page.id} style="display:none"{/if} class=" custom-mt-16">
+                    <div id="wa-page-advanced-params" {if !$page || !$page.id} style="display:none"{/if} class="custom-mt-16">
                         <div class="">
                             <div class="field">
                                 <div class="name for-input">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
@@ -117,21 +119,22 @@
                                 {/if}
                             </div>
                             {/foreach}
-                            <div class="field">
-                                <div class="name for-checkbox">[s`Social sharing`]</div>
-                                <div class="value">
-                                    <label>
-                                        <span class="wa-checkbox">
-                                            <input class="og-checkbox" type="checkbox"{if empty($og_params)} checked{/if}>
-                                            <span>
-                                                <span class="icon">
-                                                    <i class="fas fa-check"></i>
-                                                </span>
+                        </div>
+
+                        <div class="field">
+                            <div class="name for-checkbox">[s`Social sharing`]</div>
+                            <div class="value">
+                                <label>
+                                    <span class="wa-checkbox">
+                                        <input class="og-checkbox" type="checkbox"{if empty($og_params)} checked{/if}>
+                                        <span>
+                                            <span class="icon">
+                                                <i class="fas fa-check"></i>
                                             </span>
                                         </span>
-                                        [s`Use these meta tags for social sharing too`]
-                                    </label>
-                                </div>
+                                    </span>
+                                    [s`Use these meta tags for social sharing too`]
+                                </label>
                             </div>
                         </div>
                         <div class="custom-mt-24 og-group" {if empty($og_params)}style="display: none;"{/if}>
@@ -191,10 +194,17 @@
             </form>
         </div>
         <footer class="dialog-footer">
-            <div class="flexbox full-width">
+            <div class="flexbox middle full-width">
                 <div class="wide">
-                    <button class="js-save button">[`Save`]</button>
-                    <button class="js-close-dialog button light-gray">[`Cancel`]</button>
+                    {if empty($page.id)}
+                        <button class="js-save button" type="button">[`Add`]</button>
+                        {if $app_id === 'site'}
+                            <button class="js-save-and-edit button dark-gray" type="button">[`Add & edit`]</button>
+                        {/if}
+                    {else}
+                        <button class="js-save button" type="button">[`Save`]</button>
+                    {/if}
+                    <button class="js-close-dialog button light-gray" type="button">[`Cancel`]</button>
                 </div>
                 <div>
                     {if !empty($page.id)}
@@ -218,6 +228,7 @@
     const $wrapper = $('#js-htmlpage-settings-dialog');
     const $form = $wrapper.find('form');
     const $save_button = $wrapper.find('.js-save');
+    const $save_and_edit_button = $wrapper.find('.js-save-and-edit');
     const wa_loading = $.waLoading();
     const $place_for_errors = $wrapper.find('.js-place-for-errors');
     let $page_form = $('#wa-page-form');
@@ -291,23 +302,28 @@
 
     // Show/hide block of OG fields when user clicks the checkbox
     $('.og-checkbox').change(function () {
-        if ($(this).is(':checked')) {
-            $('.og-group').hide().find('input,textarea').attr('disabled', 'disabled');
-        } else {
-            $('.og-group').show().find('input,textarea').removeAttr('disabled');
-        }
-        $wrapper.data('dialog').resize();
-    });
+           if ($(this).is(':checked')) {
+               $('.og-group').hide().find('input,textarea').attr('disabled', 'disabled');
+           } else {
+               $('.og-group').show().find('input,textarea').removeAttr('disabled');
+           }
+           $wrapper.data('dialog').resize();
+       });
 
     $("#wa-page-advanced-params-link").on('click', function(e) {
         e.preventDefault();
         $("#wa-page-advanced-params").show();
         $(this).remove();
+        $wrapper.data('dialog').resize();
     });
 
     // Save to server when user clicks Save button
     $save_button.on('click', function() {
         saveHandler();
+        return false;
+    });
+    $save_and_edit_button.on('click', function() {
+        saveHandler(true);
         return false;
     });
     $form.submit(function() {
@@ -393,7 +409,7 @@
         }
     {/if}
 
-    function saveHandler() {
+    function saveHandler(is_edit = false) {
         wa_loading.show();
         wa_loading.animate(4000, 99, false);
 
@@ -413,9 +429,14 @@
             wa_loading.done();
 
             if (r.status == 'ok') {
-                $wrapper.trigger('page_saved', [r.data]);
                 $wrapper.data('dialog').close();
-                $.site.loadMap();
+
+                if (is_edit && r.data.id) {
+                    location.href = `{$wa_app_url}htmleditor/page/${ r.data.id }/?domain_id={$domain_id}`;
+                    setTimeout(() => $.site.loadMap(), 100);
+                } else {
+                    $wrapper.trigger('page_saved', [{ ...r.data, app_id }]);
+                }
                 return;
             }
 

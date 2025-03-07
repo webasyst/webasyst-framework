@@ -27,13 +27,13 @@ class siteMenuBlockType extends siteBlockType
 
         $columns_arr = array();
         $logo_column = (new siteMenuLogoBlockType())->getExampleBlockData();
-        $logo_column->data['new_column'] = 'st-3 st-3-lp st-9-tb st-8-mb';
+        $logo_column->data['column'] = 'st-3 st-3-lp st-9-tb st-8-mb';
         $menu_column = (new siteMenuColumnBlockType())->getExampleBlockData();
-        $menu_column->data['new_column'] = 'st-6 st-6-lp st-0-tb st-0-mb';
+        $menu_column->data['column'] = 'st-6 st-6-lp st-0-tb st-0-mb';
         $contacts_column = (new siteMenuContactsBlockType())->getExampleBlockData();
-        $contacts_column->data['new_column'] = 'st-3 st-3-lp st-0-tb st-0-mb';
+        $contacts_column->data['column'] = 'st-3 st-3-lp st-0-tb st-0-mb';
         $burger_column = (new siteMenuBurgerBlockType())->getExampleBlockData();
-        $burger_column->data['new_column'] = 'st-0 st-0-lp st-3-tb st-4-mb';
+        $burger_column->data['column'] = 'st-0 st-0-lp st-3-tb st-4-mb';
 
         $hseq->addChild($logo_column, 'col1');
         $hseq->addChild($menu_column, 'col2');
@@ -48,7 +48,7 @@ class siteMenuBlockType extends siteBlockType
         $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", 'flex-align-vertical' => "x-c"];
 
         $result->data = ['block_props' => $column_props, 'wrapper_props' => ['justify-align' => "y-j-cnt"]];
-        //$result->data['new_columns'] = $columns_arr;
+        //$result->data['columns'] = $columns_arr;
         $result->data['elements'] = $this->elements;
        
         $app_template_prop = array();
@@ -75,7 +75,7 @@ class siteMenuBlockType extends siteBlockType
                 [   'type' => 'MenuToggleGroup',
                     'name' => _w('Menu toggle'),
                 ],
-                [   'type' => 'NewColumnsGroup',
+                [   'type' => 'ColumnsGroup',
                     'name' => _w('Columns'),
                 ],
                 [   'type' => 'ColumnsAlignVerticalGroup',

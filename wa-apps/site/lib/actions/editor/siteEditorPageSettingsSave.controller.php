@@ -32,10 +32,35 @@ class siteEditorPageSettingsSaveController extends waJsonController
             $data['full_url'] = $data['url'];
         }
 
+        if (waRequest::request('set_main_page')) {
+            // make silence for current homepage
+            $domain_id = siteHelper::getDomainId();
+            $main_page = new siteMainPage($domain_id, $routes);
+            $main_page->silenceMainPage();
+            /*if ($new['url'] === '*') {
+                unset($routes[$domain][$route_id]);
+            }*/
+        }
+        
+        $data['update_datetime'] = date('Y-m-d H:i:s');
+
+        $blockpage_params_model = new siteBlockpageParamsModel();
+        if (isset($data['params']) && is_array($data['params'])) {
+            /*!!!if (!empty($data['params']['og'])) {
+                foreach ($data['params']['og'] as $k => $v) {
+                    $data['params']['og_'.$k] = $v;
+                }
+                unset($data['params']['og']);
+            }*/
+            $blockpage_params_model->save($page_id, $data['params']);
+        }
+        unset($data['params']);
+
         if (!$this->errors) {
             $blockpage_model = new siteBlockpageModel();
             $blockpage_model->updateById($page_id, $data);
             $this->response = $blockpage_model->getById($page_id);
+            $this->response['params'] = $blockpage_params_model->getById($page_id);
         }
     }
 }

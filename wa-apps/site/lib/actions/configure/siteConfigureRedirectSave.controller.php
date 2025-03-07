@@ -33,7 +33,7 @@ class siteConfigureRedirectSaveController extends waJsonController
 
                 if ($route['app'] === ':text') {
                     $routes[$domain] = array($route_id => $route) + $routes[$domain];
-                    $this->response['add'] = 'top';
+                    $this->response['add'] = 'bottom';
                 } else {
                     if (!$route['url']) {
                         $route['url'] = '*';
@@ -52,7 +52,7 @@ class siteConfigureRedirectSaveController extends waJsonController
                             }
                         }
                         $routes[$domain] = array($route_id => $route) + $routes[$domain];
-                        $this->response['add'] = 'top';
+                        $this->response['add'] = 'bottom';
                     }
 
                     // add robots
@@ -75,7 +75,7 @@ class siteConfigureRedirectSaveController extends waJsonController
                 }
                 $route_id = $this->getRouteId($routes[$domain]);
                 $routes[$domain] = array($route_id => $route) + $routes[$domain];
-                $this->response['add'] = 'top';
+                $this->response['add'] = 'bottom';
             }
 
             if ($this->hasDupeRouteUrl($unchanged_routes, $route)) {
@@ -94,6 +94,8 @@ class siteConfigureRedirectSaveController extends waJsonController
             $routes[$domain][$route_id] = $route;
             waUtils::varExportToFile($routes, $path);
             wa('site')->event('route_save.after', $params);
+
+            $this->response['route_id'] = $route_id;
 
             // log
             $this->logAction('route_add', $domain.'/'.$route['url']);
@@ -133,9 +135,9 @@ class siteConfigureRedirectSaveController extends waJsonController
                 $new['url'] = urldecode($new['url']);
             }
 
-            if (!isset($old['redirect'])) {
+            if (!isset($old['redirect']) && ifset($old, 'app', '') !== ':text') {
                 $is_old_rule_broken = siteHelper::isBrokenAppRouteUrl($old);
-                if (!waRequest::post('correct_url') && ifset($old, 'app', '') !== ':text' && $is_old_rule_broken) {
+                if (!waRequest::post('correct_url') && $is_old_rule_broken) {
                     // do not allow to change route URL if app rule was broken
                     $new['url'] = $old['url'];
                 } elseif ($new['url'] !== '*' && strpos(substr($new['url'], -5), '.') === false) {
@@ -226,7 +228,7 @@ class siteConfigureRedirectSaveController extends waJsonController
         $config_cache->setFileContents($path, $routes);
 
         //Delete cache problem domains
-        $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/configure/');
+        $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');
         $cache_domain->delete();
         $this->response['routing_errors'] = siteHelper::getRoutingErrorsInfo();
 
@@ -243,6 +245,13 @@ class siteConfigureRedirectSaveController extends waJsonController
             if(isset($save_result['error'])) {
                 $this->errors = $save_result['error'];
                 return;
+            } else {
+                $this->response = $this->response + [
+                    'page_id' => $save_result['id'],
+                    'name' => $save_result['name'],
+                    'status' => $save_result['status'],
+                    'is_route' => true,
+                ];
             }
         }
     }
@@ -299,6 +308,7 @@ class siteConfigureRedirectSaveController extends waJsonController
                     'static_content'      => '',
                     'static_content_type' => '',
                 );
+                $name = '';
             } else {
                 $app = wa()->getAppInfo($app_id);
                 $name = $app['name'];
@@ -428,14 +438,19 @@ class siteConfigureRedirectSaveController extends waJsonController
         return $result;
     }
 
-    public function hasDupeRouteUrl(array $routes_by_domain, $new_route, $route_id = null)
+    public function hasDupeRouteUrl(array $routes_by_domain, $curr_route, $route_id = null)
     {
-        $is_redirect = isset($new_route['redirect']);
+        $curr_is_redirect = isset($curr_route['redirect']);
         foreach ($routes_by_domain as $r_id => $r) {
-            if ($is_redirect && !isset($r['redirect'])) {
-               continue;
+            if ($curr_is_redirect) {
+                if (!isset($r['redirect'])) {
+                    continue;
+                }
+            } elseif (isset($r['redirect'])) {
+                continue;
             }
-            if ($r_id == $route_id || $r['url'] != $new_route['url']) {
+
+            if ($r_id == $route_id || $r['url'] != $curr_route['url']) {
                 continue;
             }
 

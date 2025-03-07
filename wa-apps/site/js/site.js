@@ -27,8 +27,7 @@ var that = $.site = {
 
     navigate: function(absolute_url) {
         if (this.opts.content_router_mode == 'xhr' && isRoutableViaXHR(absolute_url)) {
-            this.loadContent(absolute_url);
-            return;
+            return this.loadContent(absolute_url);
         }
 
         location.href = absolute_url;
@@ -83,6 +82,9 @@ var that = $.site = {
                 xhr: xhr
             }]);
         }).fail(function(data) {
+            if (data.statusText === 'abort') {
+                return;
+            }
             console.log('Unable to load content for URL', url);
             if (data?.responseText?.match && data.responseText.match(/waException|id="Trace"/)) {
                 console.log(data.responseText);
@@ -120,6 +122,28 @@ var that = $.site = {
         if (this.opts.is_debug) {
             console.log.apply(null, arguments);
         }
+    },
+
+    confirmUnsaved: function(opts) {
+        opts = opts || { onSave: () => null, onLeave: () => null };
+
+        $.waDialog({
+            html: this.opts.templates['unsaved_form_dialog'],
+            onOpen ($d, d) {
+                d.$block.find('.js-save-button').on('click', () => {
+                    if (typeof opts.onSave === 'function') {
+                        opts.onSave();
+                    }
+                    d.close();
+                });
+                d.$block.find('.js-leave-button').on('click', () => {
+                    if (typeof opts.onLeave === 'function') {
+                        opts.onLeave();
+                    }
+                    d.close();
+                });
+            }
+        })
     }
 };
 
@@ -220,13 +244,13 @@ function isRoutableViaXHR(absolute_url) {
     return true;
 }
 
-// Props
 $.site.helper = {
+    // Props
     xhr: null,
-};
-// Methods
-$.site.helper = {
-    loadSortableJS: () => {
+    xhr_id: null,
+
+    // Methods
+    loadSortableJS: function () {
         const dfd = $.Deferred();
 
         const $script = $("#wa-header-js"),
@@ -254,21 +278,31 @@ $.site.helper = {
         return dfd.promise();
     },
     // Cancels previous request
-    preventDupeRequest: (fn) => {
-        if ($.site.helper.xhr && typeof $.site.helper.xhr.abort === 'function') {
-            $.site.helper.xhr.abort();
-            $.site.helper.xhr = null;
+    preventDupeRequest: function (fn, id) {
+        id = typeof id === 'undefined' ? null : id;
+
+        if (id !== null) {
+            if (id === this.xhr_id && this.xhr) {
+                return;
+            }
+            this.xhr_id = id;
+        }
+        if (this.xhr && typeof this.xhr.abort === 'function') {
+            this.xhr.abort();
+            this.xhr = null;
         }
 
         $('#wa-app').trigger('wa_before_load');
 
         const resolver = () => {
-            $.site.helper.xhr = null;
+            this.xhr = null;
             $('#wa-app').trigger('wa_loaded');
         };
-        $.site.helper.xhr = fn(resolver);
-        if ($.site.helper.xhr && typeof $.site.helper.xhr.always === 'function') {
-            $.site.helper.xhr.always(resolver);
+
+        this.xhr = fn(resolver);
+
+        if (this.xhr && typeof this.xhr.always === 'function') {
+            this.xhr.always(resolver);
         }
     }
 };

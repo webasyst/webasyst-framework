@@ -30,7 +30,8 @@ class siteThemesActions extends waDesignActions
             $this->setLayout(new siteBackendThemesLayout());
 
             $app_id = $this->getAppId();
-            $app = wa()->getAppInfo($app_id);
+            $apps = wa()->getApps();
+            $app = $apps[$app_id];
 
             $all_domains = wa()->getRouting()->getDomains();
             $domain_info = siteHelper::getDomainInfo();
@@ -46,10 +47,19 @@ class siteThemesActions extends waDesignActions
             // themes used on any domain, theme_id => true
             $used_app_themes = [];
 
+            $apps_with_theme = [];
+            foreach ($apps as $_app_id => $_app) {
+                if (!empty($_app['themes'])) {
+                    $apps_with_theme[$_app_id] = 1;
+                }
+            }
             foreach($all_domains as $d) {
                 foreach(wa()->getRouting()->getRoutes($d) as $route_id => $route) {
                     if (is_array($route) && isset($route['app'])) {
                         foreach(['theme', 'theme_mobile'] as $k) {
+                            if (isset($apps_with_theme[$route['app']]) && ifset($route, $k, '') === '') {
+                                $route[$k] = 'default';
+                            }
                             if (isset($route[$k])) {
                                 $used_app_themes[$route[$k]] = true;
                                 if ($d == $domain_name) {
@@ -61,7 +71,7 @@ class siteThemesActions extends waDesignActions
                 }
             }
 
-            $app_themes = wa()->getThemes($app_id);
+            $app_themes = wa()->getThemes($app_id, true);
             usort($app_themes, function($a, $b) use ($used_domain_themes, $used_app_themes) {
                 $a_used_domain = isset($used_domain_themes[$a->id]);
                 $b_used_domain = isset($used_domain_themes[$b->id]);

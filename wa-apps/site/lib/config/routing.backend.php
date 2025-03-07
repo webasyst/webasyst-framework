@@ -7,6 +7,7 @@ return array(
     'themes/?'                                        => 'themes/',
     'plugins/?'                                       => 'extensions/',
     'files/?'                                         => 'filemanager/',
+    'variables/'                                      => 'variables/',
     'files/<files_path>/?'                            => 'filemanager/',
     'htmleditor/page/<page_id:\d+>/'                  => 'htmleditor/',
     'editor/page/<page_id:\d+>/'                      => 'editor/',

@@ -147,8 +147,12 @@ class siteConfig extends waAppConfig
 
     public function dispatchPrioritySettlement($route, $url)
     {
-        $domain_id = siteHelper::getDomainId();
-        if (!$domain_id) {
+        try {
+            $domain_id = siteHelper::getDomainId();
+            if (!$domain_id) {
+                return;
+            }
+        } catch (waException $e) {
             return;
         }
 
@@ -167,10 +171,12 @@ class siteConfig extends waAppConfig
         if (!$page) {
             return null;
         }
-
+        $blockpage_params_model = new siteBlockpageParamsModel();
+        $page_params = $blockpage_params_model->getById($page['id']);
         return [
             'url' => $url,
             'page' => $page,
+            'page_params' => $page_params,
             'module' => 'frontend',
             'action' => 'blockpage',
         ] + $route;
@@ -295,5 +301,26 @@ class siteConfig extends waAppConfig
             wa()->getResponse()->redirect(wa()->getAppUrl('site'));
         }
         parent::throwFrontControllerDispatchException();
+    }
+
+    public function checkUpdates()
+    {
+        parent::checkUpdates();
+        $this->installAfter();
+    }
+
+    protected function installAfter()
+    {
+        $model = new waAppSettingsModel();
+        $install_after_trigger = $model->get($this->application, 'install_after_trigger', 0);
+        if ($install_after_trigger && wa()->getUser()->isAuth() && wa()->getEnv() == 'backend') {
+            $old_active = waSystem::getApp();
+            if ($old_active != $this->application) {
+                waSystem::setActive($this->application);
+            }
+            include($this->getAppPath('lib/config/install.after.php'));
+            $model->del($this->application, 'install_after_trigger');
+            waSystem::setActive($old_active);
+        }
     }
 }

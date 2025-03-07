@@ -25,11 +25,9 @@
                             {else}
                                 <i class="fas fa-dollar-sign"></i>
                             {/if}
-                            <span class="flexbox vertical">
-                                {if $b.description}
-                                    <span>{$b.description|escape}</span>
-                                {/if}
-                                <span class="hint">{$b.id|escape}</span>
+                            <span class="s-block-item">
+                                <div>{$b.description|default:''|trim|escape}</div>
+                                <div class="hint">{$b.id|escape}</div>
                             </span>
                         </a>
                     </li>
@@ -38,7 +36,7 @@
         </div>
     </div>
     <div class="content js-block-editor flexbox vertical full-width" style="overflow: auto; max-height: 95vh;">
-        <form id="site-form" class="custom-py-24 custom-px-24 fields" method="post" action="{$wa_backend_url}site/?module=blocks&action=save{if $block && !isset($block.app)}&id={$block.id|escape}{/if}" style="visibility: hidden;">
+        <form id="site-form" class="custom-py-24 custom-px-24 fields" method="post" action="{$wa_backend_url}site/?module=blocks&action=save{if $block && !isset($block.app)}&id={$block.id|escape}{/if}">
 
             <div class="field">
                 <div class="value">
@@ -50,7 +48,7 @@
             <div class="field">
                 <div class="value">
                     <h4 class="heading custom-mb-8 custom-mx-0">[`Identifier`]</h4>
-                    <input name="info[id]" type="text" class="full-width{if !$block} state-error{/if}" value="{if $block}{$block.id|escape}{/if}" />
+                    <input name="info[id]" type="text" class="full-width{if !$block} state-error{/if}" value="{if $block}{$block.id|escape}{/if}" spellcheck="false" />
                     <p class="hint">[`Use Latin letters, and underscores instead of whitespaces; e.g., “company_name”.`]</p>
                 </div>
             </div>
@@ -142,8 +140,9 @@
                     }
 
                     return '<li data-block-id="' + b.id + '" class="rounded selected sortable">' +
-                        '<a href="javascript:void(0);">' + icon +
-                        ' <span class="flexbox vertical"><span>' + b.description + '</span><span class="hint">' + b.id + '</span></span></a></li>';
+                            '<a href="javascript:void(0);">' + icon +
+                            ' <span class="s-block-item"><div>' + b.description.trim() + '</div><div class="hint">' + b.id +
+                        '</div></span></a></li>';
                 }
 
                 var blocks_ul = $("#ul-blocks");

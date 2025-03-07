@@ -13,7 +13,7 @@
                 <div class="field-group field vertical old-address">
                     <div class="name">[`Old address`]</div>
                     <div class="value">
-                        <span class="s-domain-url bold break-word s-small">{$domain_name}/</span>
+                        <span class="s-domain-url bold break-word s-small">{waIdna::dec($domain_name|default:'')}/</span>
                         <input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{else}*{/if}" class="js-old-url bold long s-small" />
                     </div>
                 </div>
@@ -26,6 +26,7 @@
                     <div class="name">[`New address`]</div>
                     <div class="value">
                         <input type="text" name="params[redirect]" value="{if !empty($route.redirect)}{$route.redirect|escape}{/if}" class="js-new-url bold longer s-small" />
+                        <p class="hint">[`If the new address has the same domain name then you may enter only the part after the domain; e.g., <em>/about/</em>.`]</p>
                     </div>
                 </div>
                 <div class="field field-redirect-disabled">
@@ -169,12 +170,11 @@
         });
 
     function deleteHandler() {
-        //$wrapper.data('dialog').close();
         if ($route_id) {
             $.post(delete_url, { 'route': $route_id }).then(function(r) {
                 if (r.status == 'ok') {
                     $wrapper.data('dialog').close();
-                    location.reload();
+                    $.site.reloadWithScrollTo();
                     return
                 }
                 updateRoutingErrors(r.data.routing_errors);
@@ -210,7 +210,7 @@
 
     function validateUrls() {
         // Rule address contains unsupported character, regexp for define it
-        const invalid_url_regexp = /(\&|\$|\+|\,|\:|\;|\=|\?|\@|\#|\<|\>|\[|\]|\}|\||\^|\%)/;
+        const invalid_url_regexp = /(\&|\$|\+|\,|\;|\=|\?|\@|\#|\[|\]|\}|\||\^|\%)/;
         const $old_url = $form.find('.js-old-url'),
               old_url = $old_url.val(),
               res = old_url.match(invalid_url_regexp);
@@ -228,7 +228,7 @@
         const $new_url = $form.find('.js-new-url'),
               new_url = $new_url.val();
         if (!isValidURL(new_url)) {
-            let content = '[`Please enter a valid URL. Ensure that it starts with <mark>http://</mark> or <mark>https://</mark> has the correct format.`]';
+            let content = '[`Please enter a valid URL starting with <mark>/</mark>, <mark>http://</mark>, or <mark>https://</mark>.`]';
             errors.push({
                 field: $new_url.attr("name"),
                 description: content
@@ -257,7 +257,7 @@
         $.post(save_url, $form.serialize(), 'json').then(function(r) {
             handleResponse(r, () => {
                 $wrapper.data('dialog').close();
-                location.reload();
+                $.site.reloadWithScrollTo();
             });
         }, function() {
             console.log('Error saving page settings', arguments);
@@ -267,7 +267,7 @@
 
     {literal}
     function isValidURL(url) {
-        return url.match(/^https?:\/\/([a-zA-Z0-9а-яА-ЯёЁ\-]+\.)+[a-zA-Zа-яА-ЯёЁ]{2,}(\/[^\s]*)?$/i);
+        return url.match(/^(https?:\/\/|\/)([a-zA-Z0-9а-яА-ЯёЁ\-]+)/i);
     }
     {/literal}
 

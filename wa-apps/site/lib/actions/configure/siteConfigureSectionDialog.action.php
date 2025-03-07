@@ -29,31 +29,38 @@ class siteConfigureSectionDialogAction extends waViewAction
             $this->view->assign('apps', $apps);
             $app_id = waRequest::request('app', key($apps));
             if ($app_id == ':text') {
+                $route['_name'] = _w('Custom file or text in site root');
                 $route['static_content'] = '';
                 $route['static_content_type'] = '';
+                $route['private'] = '1';
+                $app_url = 'custom-text';
             }
 
-            $max_index = -1;
-            $app_url = $app_id;
-            foreach ($routes as $r) {
-                if (isset($r['app']) && $app_id === $r['app']) {
-                    $m = [];
-                    $url = rtrim($r['url'], '/*');
-                    if (preg_match('/^'.$app_url.'(-\d*)?$/', $url, $m)) {
-                        $i = intval(ltrim($m[1] ?? 0, '-'));
-                        $max_index = $i > $max_index ? $i : $max_index;
+            if (!strlen($route_id) && $app_id !== ':text') {
+                $app_url = '';
+                $max_index = -1;
+                $app_url = $app_id;
+                foreach ($routes as $r) {
+                    if (isset($r['app']) && $app_id === $r['app']) {
+                        $m = [];
+                        $url = rtrim($r['url'], '/*');
+                        if (preg_match('/^'.$app_url.'(-\d*)?$/', $url, $m)) {
+                            $i = intval(ltrim($m[1] ?? 0, '-'));
+                            $max_index = $i > $max_index ? $i : $max_index;
+                        }
                     }
                 }
-            }
 
-            if ($max_index > -1) {
-                $app_url = $app_url . '-' . ++$max_index;
+                if ($max_index > -1) {
+                    $app_url = $app_url . '-' . ++$max_index;
+                }
             }
         }
 
         if ($app_id) {
 
             if ($app_id == ':text') {
+                $route_name = ifset($route, '_name', '');
                 $app = array();
             } else {
 
@@ -109,12 +116,13 @@ class siteConfigureSectionDialogAction extends waViewAction
                         $route_name = $route['_name'];
                     }
 
-                    $this->view->assign('route_name', $route_name);
                     $this->view->assign('params', $params);
                 } else {
                     $app = false;
                 }
             }
+
+            $this->view->assign('route_name', $route_name);
 
         } else {
             $app = array();
@@ -151,6 +159,14 @@ class siteConfigureSectionDialogAction extends waViewAction
             }
         }
 
+        $themes = siteHelper::getThemes($app_id, true);
+        if (isset($route['theme']) && !isset($themes[$route['theme']])) {
+            $themes[$route['theme']] = $route['theme'];
+        }
+        if (isset($route['theme_mobile']) && !isset($themes[$route['theme_mobile']])) {
+            $themes[$route['theme_mobile']] = $route['theme_mobile'];
+        }
+
         $this->view->assign(array(
             'site_url'        => wa()->getAppUrl('site'),
             'domain_decoded'  => $domain_decoded,
@@ -163,8 +179,9 @@ class siteConfigureSectionDialogAction extends waViewAction
             'domain'          => siteHelper::getDomain(),
             'locales'         => array('' => _w('Auto')) + waLocale::getAll('name'),
             'is_https'        => waRequest::isHttps(),
-            'last_app_route' => $last_app_route,
+            'last_app_route'  => $last_app_route,
             'misconfigured_settlement' => $misconfigured_settlement,
+            'themes'          => $themes,
         ));
     }
 

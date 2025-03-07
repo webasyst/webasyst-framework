@@ -13,7 +13,7 @@
 
         {* render *}
         {foreach $pages as $p}
-            {if $p.url != $wa_url} {* exclude root page link to avoid duplicate link which is on the logo/title *}
+            {if ifset($p, 'full_url', '') != ''} {* exclude root page link to avoid duplicate link which is on the logo/title *}
                 <li{if $p.id == $selected_node.id} class="selected"{/if}><a href="{$p.url}">{$p.name}</a></li>
             {/if}
         {/foreach}

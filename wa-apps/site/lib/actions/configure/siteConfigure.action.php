@@ -9,30 +9,52 @@ class siteConfigureAction extends waViewAction
         $domain_id = waRequest::request('domain_id', siteHelper::getDomain(), waRequest::TYPE_INT);
         $domains = siteHelper::getDomains(true);
 
+        if (!empty($domains[$domain_id]['is_alias'])) {
+            siteHelper::saveLastDomainId();
+        }
+
         $apps = wa()->getApps();
         $routes = wa()->getRouting()->getRoutes(siteHelper::getDomain());
+        $sitemap_app_ids = siteHelper::getSitemapAppIds();
 
         $auth_apps = array();
         $route_apps = array();
+        $redirects = array();
+        $custom_texts = array();
         $has_root_settlement = false;
-        foreach ($routes as &$route) {
-            if (isset($route['app'])) {
-                if (isset($apps[$route['app']])) {
-                    $auth_apps[$route['app']] = true;
-                    $route_apps[] = $route['app'];
-                    $route['app'] = $apps[$route['app']];
-                } elseif ($route['app'] !== ':text') {
-                    $route['app'] = [
-                        'id' => $route['app'],
-                        'disabled' => true
-                    ];
+        foreach ($routes as $route_id => &$route) {
+            if (!isset($route['app'])) {
+                if (isset($route['redirect'])) {
+                    $redirects[$route_id] = $routes[$route_id];
                 }
-                if ($has_root_settlement) {
-                    $route['disabled'] = true;
-                    $route['misconfigured_settlement'] = true;
-                } else if ($route['url'] === '*' && !$has_root_settlement) {
-                    $has_root_settlement = true;
-                }
+                unset($routes[$route_id]);
+                continue;
+            }
+            if ($route['app'] === ':text') {
+                $custom_texts[$route_id] = $routes[$route_id];
+                unset($routes[$route_id]);
+                continue;
+            }
+            if (in_array($route['app'], $sitemap_app_ids)) {
+                unset($routes[$route_id]);
+                continue;
+            }
+
+            if (isset($apps[$route['app']])) {
+                $auth_apps[$route['app']] = true;
+                $route_apps[] = $route['app'];
+                $route['app'] = $apps[$route['app']];
+            } elseif ($route['app'] !== ':text') {
+                $route['app'] = [
+                    'id' => $route['app'],
+                    'disabled' => true
+                ];
+            }
+            if ($has_root_settlement) {
+                $route['disabled'] = true;
+                $route['misconfigured_settlement'] = true;
+            } else if ($route['url'] === '*' && !$has_root_settlement) {
+                $has_root_settlement = true;
             }
         }
 
@@ -41,10 +63,13 @@ class siteConfigureAction extends waViewAction
             $this->view->assign('routing_error', $routing_errors);
         }
 
-        $temp = array();
+        $apps_to_add = array();
         foreach ($apps as $app_id => $app) {
-            if (isset($app['frontend']) || isset($auth_apps[$app_id])) {
-                $temp[$app_id] = array(
+            if (!empty($app['frontend']) || isset($auth_apps[$app_id])) {
+                if (in_array($app_id, $sitemap_app_ids)) {
+                    continue;
+                }
+                $apps_to_add[$app_id] = array(
                     'id' => $app_id,
                     'icon' => $app['icon'],
                     'name' => $app['name']
@@ -53,7 +78,7 @@ class siteConfigureAction extends waViewAction
                     if (empty($app['auth'])) {
                         unset($auth_apps[$app_id]);
                     } else {
-                        $auth_apps[$app_id] = $temp[$app_id];
+                        $auth_apps[$app_id] = $apps_to_add[$app_id];
                     }
                 }
             }
@@ -64,13 +89,15 @@ class siteConfigureAction extends waViewAction
         $domain = $domains[$domain_id];
         $this->setLayout(new siteBackendLayout());
 
-        $this->view->assign('apps', $temp);
+        $this->view->assign('apps', $apps_to_add);
         $this->view->assign('domain_id', $domain_id);
         $this->view->assign('domain', $domain);
         $this->view->assign('domain_idn', waIdna::dec(siteHelper::getDomain()));
         $this->view->assign('title', siteHelper::getDomain('title'));
         $this->view->assign('is_https', waRequest::isHttps());
         $this->view->assign('routes', $routes);
+        $this->view->assign('redirects', $redirects);
+        $this->view->assign('custom_texts', $custom_texts);
 
         $domain = siteHelper::getDomain();
         $domain_alias = wa()->getRouting()->isAlias($domain);

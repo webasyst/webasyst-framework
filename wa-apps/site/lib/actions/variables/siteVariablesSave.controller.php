@@ -15,58 +15,40 @@ class siteVariablesSaveController extends waJsonController {
 
         $model = new siteVariableModel();
 
-        if ($id) {
-            try {
+        try {
+            if ($id) {
                 $model->updateById($id, $info);
                 $this->logAction('variable_edit');
                 if ($id != $info['id']) {
                     $info['old_id'] = $id;
                 }
                 $this->response($info);
-            } catch (waDbException $wde) {
-                if ($wde->getCode() === 1406) {
-                    $this->errors = [
-                        _w('The variable is too large. Reduce it or create several variables instead of one.'),
-                        'input[name="info[content]"]',
-                    ];
-                } else {
-                    throw $wde;
-                }
-            } catch (Exception $e) {
-                if ($model->getById($info['id'])) {
-                    $this->errors = [
-                        sprintf(_w('A variable with ID “%s” already exists.'), $info['id']),
-                        'input[name="info[id]"]',
-                    ];
-                } else {
-                    throw $e;
-                }
-            }
-        } else {
-            try {
+
+            } else {
                 $model->add($info);
                 $this->logAction('variable_add');
                 $this->response($info);
-            } catch (waDbException $wde) {
-                if ($wde->getCode() === 1406) {
+            }
+        } catch (waDbException $wde) {
+            switch ($wde->getCode()) {
+                case 1062:
+                    $this->errors = [
+                        sprintf(_w('A variable with ID “%s” already exists.'), $info['id']),
+                        'input[name="info[id]"]',
+                        1
+                    ];
+                    break;
+                case 1406:
                     $this->errors = [
                         _w('The variable is too large. Reduce it or create several variables instead of one.'),
                         'input[name="info[content]"]',
                     ];
-                } else {
+                    break;
+                default:
                     throw $wde;
-                }
-            } catch (Exception $e) {
-                if ($model->getById($info['id'])) {
-                    $this->errors = [
-                        sprintf(_w('A variable with ID “%s” already exists.'), $info['id']),
-                        'input[name="info[id]"]',
-                    ];
-                } else {
-                    throw $e;
-                }
             }
         }
+
         if ($this->getConfig()->getOption('cache_time')) {
             waSystem::getInstance()->getView()->clearAllCache();
         }

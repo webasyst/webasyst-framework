@@ -5,32 +5,32 @@
 class siteFooterColumnBottomBlockType extends siteBlockType
 {
     public $elements = [
-        'main' => 'site-block-column',
-        'wrapper' => 'site-block-column-wrapper',
+        'main' => 'site-block-column footer-bottom',
+        'wrapper' => 'site-block-column-wrapper footer-bottom',
         ];
 
     public function getExampleBlockData()
     {
-        // Default card contents: Horizontal sequence with heading and a paragraph of text
-        $hseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
-        $hseq->data['is_horizontal'] = true;
-        $hseq->data['is_complex'] = 'no_complex';
-        $menu_item = (new siteMenuItemBlockType())->getExampleBlockData();
-        $menu_item->data["block_props"]["width"] = "cnt-w";
+        //Default card contents: Horizontal sequence with heading and a paragraph of text
+        //$hseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
+        //$hseq->data['is_horizontal'] = true;
+        //$hseq->data['is_complex'] = 'no_complex';
+        //$menu_item = (new siteMenuItemBlockType())->getExampleBlockData();
+        //$menu_item->data["block_props"]["width"] = "cnt-w";
         //$paragraph->data = ["html" => "Column","block_props" => ["font-header" => "t-rgl","font" => "t-7","margin-top" => "m-t-0","margin-bottom" => "m-b-0","margin-left" => "m-l-10","margin-right" => "m-r-16","align" => "t-c"]];
-        $hseq->addChild($menu_item);
-        $hseq->addChild($menu_item);
-        $hseq->addChild($menu_item);
+        //$hseq->addChild($menu_item);
+        //$hseq->addChild($menu_item);
+        //$hseq->addChild($menu_item);
 
         $result = $this->getEmptyBlockData();
-        $result->addChild($hseq, '');
+        //$result->addChild($hseq, '');
         $card_props = array();
-        $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'visibility' => "d-n-tb d-n-mb"];
-        $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
+        $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0"];
+        $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-14", 'padding-bottom' => "p-b-14", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
         $column_wrapper_class = 'st-6 st-6-lp st-6-tb st-12-mb';
         $result->data = ['block_props' => $card_props];
         $result->data['elements'] = $this->elements;
-        $result->data['new_column'] = $column_wrapper_class;
+        $result->data['column'] = $column_wrapper_class;
         $result->data['indestructible'] = true;
         return $result;
     }

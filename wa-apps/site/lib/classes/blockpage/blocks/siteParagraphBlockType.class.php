@@ -4,6 +4,14 @@
  */
 class siteParagraphBlockType extends siteBlockType
 {
+    public function render(siteBlockData $data, bool $is_backend, array $tmpl_vars=[])
+    {
+        if (!$is_backend) {
+            $data->data['html'] = $this->renderSmarty($data->data['html']);
+        }
+        return parent::render($data, $is_backend, $tmpl_vars);
+    }
+
     public function getExampleBlockData()
     {
         $result = $this->getEmptyBlockData();

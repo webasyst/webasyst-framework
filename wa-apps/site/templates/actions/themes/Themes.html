@@ -2,7 +2,7 @@
     {include file="./Themes.installed.include.html" inline}
 </div>
 
-<div id="wa-theme-content" class="custom-mt-32" style="display:none;">[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i></div>
+<div id="wa-theme-content" class="custom-mt-32 hidden">[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i></div>
 
 <div class="wa-themes-store-wrapper">
     <h4 class="wa-themes-store-header" style="display:none;">[`All themes`]</h4>
@@ -29,7 +29,7 @@
                                 <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
                                 <span></span>
                             </span>
-                            {waIdna::dec($r._domain)}/{$r.url}
+                            {waIdna::dec($r._domain|escape)|replace:'www.':''}/{$r.url}
                             <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
                         </label>
                     </div>
@@ -117,9 +117,14 @@
 
                 this.dispatch(location.hash, true);
 
-                this.$store_content.load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}&return_hash={"`$design_url`theme=%theme_id%&domain={$domain|urlencode}&show_start_using=1"|escape:'url'}&full_width=1&hide_back=1&go_return_hash_after_installation=1',function(){
-                    $('.wa-design-gray-toolbar h4 svg').hide();
-                });
+                {if $wa->installer}
+                    this.$store_content.load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}&return_hash={"`$design_url`theme=%theme_id%&domain={$domain|urlencode}&show_start_using=1"|escape:'url'}&full_width=1&hide_back=1&go_return_hash_after_installation=1',function(){
+                        $('.wa-design-gray-toolbar h4 svg').hide();
+                    });
+                {else}
+                    // installer app does not exist
+                    this.$store_content.html('').closest('.wa-themes-store-wrapper').hide();
+                {/if}
             },
 
             parsePath: function (path) {
@@ -174,7 +179,7 @@
                 }
 
                 this.path.theme = path.theme;
-                this.$content.show();
+                this.$content.removeClass('hidden')
                 this.hideList();
                 this.hideStore();
                 $(document).trigger('load_theme.wa_themes');
@@ -220,7 +225,7 @@
 
             showList: function () {
                 this.$list.show();
-                this.$content.hide();
+                this.$content.addClass('hidden')
             },
             hideList: function () {
                 this.$list.hide();
@@ -243,6 +248,20 @@
 
         $.site.isWithoutReload = () => $('.s-themes').length > 0;
         $.themes.init();
+
+        {* запоминаем к настройкам какой темы нужно перейти после обновления страницы *}
+        $(document).on('installer_after_install_go_to_settings', function(e, data) {
+            if (data.type === 'theme') {
+                sessionStorage.setItem('wa_theme_onload', data.id);
+                location.reload();
+            }
+        });
+        var wa_theme_onload = sessionStorage.getItem('wa_theme_onload');
+        if (wa_theme_onload) {
+            $('#js-installed-themes').find('[data-id="'+wa_theme_onload+'"] a').on('click', function  () {
+                sessionStorage.removeItem('wa_theme_onload');
+            }).click();
+        }
     });
 </script>
 

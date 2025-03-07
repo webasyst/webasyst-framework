@@ -53,7 +53,7 @@ class siteMapMoveController extends waJsonController
         $parent_id = null;
         if ($before_id) {
             $before_page = $page_model->getById($before_id);
-            $parent_id = ifset($before_page, 'parent_id', '');
+            $parent_id = ifset($before_page, 'parent_id', null);
         }
 
         if ($parent_id === null) {
@@ -77,14 +77,6 @@ class siteMapMoveController extends waJsonController
                         'domain' => $domain['name'],
                         'route' => $route,
                     );
-                }
-
-                // Attach page under domain's main page if it exists
-                $main_page = $page_model->getByField($parent_id + [
-                    'full_url' => '',
-                ]);
-                if ($main_page) {
-                    $parent_id = $main_page['id'];
                 }
             }
         }

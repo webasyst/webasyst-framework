@@ -18,7 +18,15 @@ class siteViewHelper extends waAppViewHelper
 
             if (wa()->getApp() == 'site') {
                 $route = wa()->getRouting()->getRoute('url');
-                $url = $this->wa()->getAppUrl(null, true);
+                if (wa()->getEnv() !== 'frontend' || waRequest::param('page')) {
+                    $url = $this->wa()->getConfig()->getRootUrl(false);
+                    $url .= wa()->getRouting()->getRootUrl();
+                    if (waRequest::param('page')) {
+                        $route = '*';
+                    }
+                } else {
+                    $url = $this->wa()->getAppUrl(null, true);
+                }
             } else {
                 $routes = wa()->getRouting()->getByApp('site', $domain['name']);
                 if ($routes) {
@@ -85,24 +93,24 @@ class siteViewHelper extends waAppViewHelper
         }
     }
 
-    public function getThemeFileTemplate($template_name = 'header.html', $app_id = 'site', $theme_id = null)
+    public function getThemeFileTemplate($template_name = 'header.html', $app_id = 'site', $theme_id = null, $vars = [])
     {
         try {
             if (!$theme_id) {
                 $theme_id = waRequest::getTheme();
             }
             $theme = new waTheme($theme_id, $app_id);
-            $view = new waSmarty3View(wa($app_id));
+            $view = new siteEditorView(wa($app_id));
             if(!$view->setThemeTemplate($theme, $template_name)) {
                 return '';
             }
-            /*$view->assign([
-                'products' => $products,
-            ]);*/
+            if ($vars) {
+                $view->assign($vars);
+            }
             return $view->fetch($template_name);
 
         } catch (Exception $e) {
-            
+
             if (waSystemConfig::isDebug() && wa()->getUser()->get('is_user') > 0) {
                 return $e->getMessage()."\n<br><br>\n<pre>".$e."</pre>";
             }

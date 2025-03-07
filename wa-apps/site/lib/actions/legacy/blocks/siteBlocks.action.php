@@ -41,7 +41,7 @@ class siteBlocksAction extends waViewAction
             }
         }
 
-        if ($id === false) {
+        if (!isset($id)) {
             $id = key($blocks);
         }
         $this->view->assign('blocks', $blocks);
@@ -52,6 +52,7 @@ class siteBlocksAction extends waViewAction
         }
         $this->view->assign('block', $block);
         $this->view->assign('editor', true);
+        $this->view->assign('is_new_block', !$id);
 
         $this->view->assign('domain_id', siteHelper::getDomainId());
     }

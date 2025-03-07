@@ -2,8 +2,6 @@
 
 class siteMainPage
 {
-    public static $old_main_page_url = 'old-main-page';
-
     private $domain_id = null;
     private $domain = null;
     private $path = null;
@@ -17,7 +15,7 @@ class siteMainPage
     public function __construct($domain_id, &$routes = null)
     {
         $this->domain_id = $domain_id;
-        $this->domain = siteHelper::getDomains()[$domain_id];
+        $this->domain = ifset(ref(siteHelper::getDomains(true)), $domain_id, 'name', null);
 
         if (is_array($routes)) {
             $this->routes = &$routes;
@@ -38,31 +36,48 @@ class siteMainPage
      */
     public function silenceMainPage()
     {
-        $domain_routes = $this->routes[$this->domain];
+        $domain_routes = ifset($this->routes, $this->domain, []);
         $old_root_page = $this->getFirstRootPage($this->domain_id, $domain_routes);
         if ($old_root_page) {
             list($old_type, $old_id) = $old_root_page;
-            $old_url = $this->generateRouteId($domain_routes);
+            $main_route = $this->routes[$this->domain][$old_id];
+
             switch ($old_type) {
                 case 'blockpage':
                     // TODO: need update children
+                    // TODO: its need save the old url
+                    /*
                     $blockpage_model = new siteBlockpageModel();
                     $blockpage_model->updateByDomainId($this->domain_id, $old_id, [
                         'url' => $old_url,
                         'full_url' => $old_url,
                         'sort' => 1
                     ]);
+                    */
                     break;
                 case 'route_app':
-                    $old_url .= '/*';
-                    $this->routes[$this->domain][$old_id]['url'] = $old_url;
-                    $this->updatePagesRoute($this->routes[$this->domain][$old_id]['app'], '*', $old_url);
+                    $new_url = $this->generateRouteId(ifset($main_route, 'app', ''));
+                    $new_url .= '/*';
+
+                    $old_url = ifset($main_route, 'old_url', '');
+                    if (strlen($old_url)) {
+                        unset($main_route['old_url']);
+                        if(!$this->isUrlDuplicate($old_url)) {
+                            $new_url = $old_url;
+                        }
+                    }
+
+                    $main_route['url'] = $new_url;
+                    $this->routes[$this->domain][$old_id] = $main_route;
+                    $this->updatePagesRoute($main_route['app'], '*', $new_url);
                     $this->has_changed_routes = true;
+                    break;
             }
+
             return [
                 'type' => $old_type,
                 'id' => $old_id,
-                'url' => $old_url
+                'url' => $new_url
             ];
         }
 
@@ -73,7 +88,7 @@ class siteMainPage
      * Set new main page
      *
      * @param string $app_id
-     * @param string $type blockpage | route_app | route_text
+     * @param string $type blockpage | route_app
      * @param string|integer $id $route_id or $page_id
      * @return void
      */
@@ -81,23 +96,26 @@ class siteMainPage
     {
         switch ($type) {
             case 'blockpage':
+                // TODO: do make it?
+                /*
                 $blockpage_model = new siteBlockpageModel();
                 $blockpage_model->updateByDomainId($this->domain_id, $id, [
                     'url' => '',
                     'full_url' => '',
                     'sort' => 0
                 ]);
+                */
                 break;
             case 'route_app':
-            case 'route_text':
                 if ($type === 'route_app') {
                     $this->updatePagesRoute($app_id, $this->routes[$this->domain][$id]['url'], '*');
                 }
 
                 $main_route = $this->routes[$this->domain][$id];
+                $main_route['old_url'] = $main_route['url'];
                 $main_route['url'] = '*';
                 unset($this->routes[$this->domain][$id]);
-                // insert to end
+                // place to end
                 $this->routes[$this->domain][$id] = $main_route;
                 $this->has_changed_routes = true;
         }
@@ -151,26 +169,42 @@ class siteMainPage
         return null;
     }
 
-    private function generateRouteId(array $routes): string
+    private function generateRouteId(string $app): string
     {
-        $mask = self::$old_main_page_url;
+        if ($app) {
+            $mask = siteHelper::getAlternativeAppUrl($app);
+        } else {
+            $mask = 'old-main-page';
+        }
+
         $max_index = -1;
-        foreach ($routes as $route) {
+        foreach ($this->routes[$this->domain] as $route) {
             if (isset($route['app'])) {
                 $m = [];
                 $url = rtrim($route['url'], '/*');
                 if (preg_match('/^'.$mask.'(-\d*)?$/', $url, $m)) {
-                    $i = intval(ltrim($m[1] ?? 0, '-'));
-                    $max_index = $i > $max_index ? $i : $max_index;
+                    $idx = intval(ltrim($m[1] ?? 0, '-'));
+                    $max_index = $idx > $max_index ? $idx : $max_index;
                 }
             }
         }
 
-        $route = $mask;
+        $id = $mask;
         if ($max_index > -1) {
-            $route = $mask . '-' . ++$max_index;
+            $id = $mask . '-' . ++$max_index;
         }
 
-        return $route;
+        return $id;
+    }
+
+    private function isUrlDuplicate(string $url): bool
+    {
+        foreach ($this->routes[$this->domain] as $route) {
+            if (ifset($route, 'url', '') === $url) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -32,6 +32,51 @@ class siteHtmlPagesActions extends waPageActions
         }
     }
 
+    public function saveContentAction()
+    {
+        $id = (int)waRequest::get('id');
+        if (empty($id)) {
+            throw new waException('Page id not found');
+        }
+        $data = waRequest::post('info', array());
+        if (!isset($data['content'])) {
+            throw new waException('Content field not found');
+        }
+
+        $page_model = $this->getPageModel();
+        $old = $page_model->getById($id);
+        if (empty($old)) {
+            throw new waException('Page not found', 404);
+        }
+
+        // save to database
+        if (!$page_model->update($id, ['content' => $data['content']])) {
+            $this->displayJson(array(), _ws('Error saving web page'));
+            return;
+        }
+        $this->logAction('page_edit', $id);
+
+        /**
+         * New page created or existing page modified.
+         *
+         * @event page_save
+         * @param array $params
+         * @param array[array] $params['page'] page data after save
+         * @param array[array] $params['old'] page data before save (null if page is new)
+         * @return void
+         */
+        $event_params = array(
+            'page' => $page_model->getById($id),
+            'old' => $old,
+        );
+        wa()->event('page_save', $event_params);
+
+        // prepare response
+        $this->displayJson(array(
+            'id' => $id
+        ));
+    }
+
     protected function getPage($id)
     {
         $p = $this->getPageModel()->getById($id);

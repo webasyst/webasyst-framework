@@ -12,25 +12,25 @@ class siteBlockCategories
     {
         $result = [
             [
-                'title' => _wd('site', 'Главный экран'),
+                'title' => _wd('site', 'Main screen'),
                 'tag' => 'category_main_page',
             ], [
-                'title' => _wd('site', 'Меню'),
+                'title' => _wd('site', 'Menu'),
                 'tag' => 'category_menu',
             ], [
-                'title' => _wd('site', 'Преимущества'),
+                'title' => _wd('site', 'Advantages'),
                 'tag' => 'category_advantages',
             ], [
-                'title' => _wd('site', 'Отзывы'),
+                'title' => _wd('site', 'Reviews'),
                 'tag' => 'category_reviews',
             ], [
-                'title' => _wd('site', 'Тарифы'),
+                'title' => _wd('site', 'Prices'),
                 'tag' => 'category_rates',
             ], [
-                'title' => _wd('site', 'Контакты'),
+                'title' => _wd('site', 'Contacts'),
                 'tag' => 'category_contacts',
             ], [
-                'title' => _wd('site', 'Подвал сайта'),
+                'title' => _wd('site', 'Site footer'),
                 'tag' => 'category_footer',
             ],
         ];

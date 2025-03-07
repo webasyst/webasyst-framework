@@ -21,9 +21,11 @@ class siteColumnBlockType extends siteBlockType
         $column_props = array();
         $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
         $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c"];
+        $column_wrapper_class = 'st-3 st-6-lp st-6-tb st-12-mb';
         $result->data = ['block_props' => $column_props];
         $result->data['elements'] = $this->elements;
-        $result->data['indestructible'] = true;
+        $result->data['column'] = $column_wrapper_class;
+        //$result->data['indestructible'] = true;
         return $result;
     }
 
@@ -39,6 +41,12 @@ class siteColumnBlockType extends siteBlockType
         return [
             'type_name' => _w('Column'),
             'sections' => [
+                /*[   'type' => 'ColumnsAlignVerticalGroup',
+                    'name' => _w('Columns alignment'),
+                ],*/
+                [   'type' => 'RowsAlignGroup',
+                    'name' => _w('Column alignment'),
+                ],
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
                 ],

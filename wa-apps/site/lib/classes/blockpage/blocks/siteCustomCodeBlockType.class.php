@@ -4,10 +4,12 @@
  */
 class siteCustomCodeBlockType extends siteBlockType
 {
-    public function __construct(array $options=[])
+    public function render(siteBlockData $data, bool $is_backend, array $tmpl_vars=[])
     {
-        parent::__construct($options);
-
+        if (!$is_backend) {
+            $data->data['html'] = $this->renderSmarty($data->data['html']);
+        }
+        return parent::render($data, $is_backend, $tmpl_vars);
     }
 
     public function getExampleBlockData()
@@ -17,10 +19,11 @@ class siteCustomCodeBlockType extends siteBlockType
         $result->data['is_block'] = ifset($this->options, 'is_block', false);
         return $result;
     }
+
     protected function getRawBlockSettingsFormConfig()
     {
         return [
-            'type_name' => _w('CustomCode'),
+            'type_name' => _w('Custom code'),
             'sections' => [
                 [   'type' => 'CustomCodeGroup',
                     'name' => _w('Custom code'),

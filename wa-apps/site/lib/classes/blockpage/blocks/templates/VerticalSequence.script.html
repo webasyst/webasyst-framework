@@ -133,7 +133,7 @@
             }
 
             $.post('?module=editor&action=addBlock', Object.assign({
-                type_name: 'site.NewColumn_',
+                type_name: 'site.Column_',
                 }, place), function(new_parent_block_html) {
                     const wrapper_class = $wrapper.attr('class');
                     const $wrapper_parent = $wrapper.parent();
@@ -284,18 +284,9 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
                 node.css('visibility', '');
             }
         })
-        /*if (data.columns){
-            const columns_array = Object.keys(data.columns);
-            $.each(columns_array, function(i, k) {
-                let column_num = k.split('-')[1];
-                let column_node = $block_wrapper.find('.site-block-columns-col[data-count=' + column_num + ']');
-                let column_static_classes = column_node.data('static') || '';
-                column_node.attr('class', column_static_classes + ' ' + data.columns[k]);
-            })
-        }*/
 
-        if (data.new_column){
-            const column_class = data.new_column;
+        if (data.column){
+            const column_class = data.column;
             let column_node = $block_wrapper.closest('.seq-child');
             let selected_block = column_node.hasClass('selected-block') ? 'selected-block ' : '';
             let column_static_classes = column_node.data('static') || '';

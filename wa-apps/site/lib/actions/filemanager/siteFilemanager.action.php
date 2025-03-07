@@ -13,28 +13,33 @@ class siteFilemanagerAction extends waViewAction
         if (!$domain_id || empty($domains[$domain_id])) {
             throw new waException('Domain not found', 404);
         }
-*/
+        */
         $this->setLayout(new siteBackendLayout());
-        
+
         $path = wa()->getDataPath(null, true);
         $dirs = $this->getDirs($path);
-        $this->view->assign('dirs', $dirs);
-        $this->view->assign('sub_dirs_decoded', $this->sub_dirs_decoded);
-        $this->view->assign('domain_idn', waIdna::dec(siteHelper::getDomain()));
-        $this->view->assign('domain_protocol', $this->getProtocol());
-        
-        //$this->view->assign('domain', siteHelper::getDomain());
+
         $files_path = waRequest::param('files_path', null, 'string_trim');
         $domain_id = siteHelper::getDomainId();
         $domains = siteHelper::getDomains(true);
         $domain = $domains[$domain_id];
         $page = waRequest::request('page', 1, waRequest::TYPE_INT);
-        
+
+        $domains_decode = [];
+        foreach ($domains as $_d) {
+            $domains_decode[$_d['name']] = waIdna::dec($_d['name']);
+        }
+
         $this->view->assign([
+            'dirs' => $dirs,
+            'sub_dirs_decoded' => $this->sub_dirs_decoded,
+            'domain_idn' => waIdna::dec(siteHelper::getDomain()),
+            'domain_protocol' => $this->getProtocol(),
             'domain_id' => $domain_id,
             'domain' => $domain,
             'files_path' => $files_path,
-            'page' => $page
+            'page' => $page,
+            'domains_decode' => $domains_decode,
         ]);
     }
 

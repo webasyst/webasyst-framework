@@ -71,7 +71,7 @@ class siteMapHtmlPageSettingsDialogAction extends waViewAction
                 $route = $parent['route'];
                 $this->options['data']['info[parent_id]'] = $parent_id;
                 $url = $parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '';
-            } else if ($route_id = waRequest::request('route_id', null, 'int')) {
+            } else if ( ( $route_id = waRequest::request('route_id', '', 'string')) !== '') {
                 $app_routes = wa()->getRouting()->getByApp($app_id, $domain);
                 if ($app_route = ifset($app_routes[$route_id])) {
                     $route = $app_route['url'];

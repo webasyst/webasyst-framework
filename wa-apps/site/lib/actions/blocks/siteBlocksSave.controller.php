@@ -7,7 +7,7 @@ class siteBlocksSaveController extends waJsonController
         $id = waRequest::get('id');
         $info = waRequest::post('info');
 
-        if (!preg_match('/^[a-z0-9\._]+$/i', $info['id'])) {
+        if (!preg_match('/^[a-z0-9\._-]+$/i', $info['id'])) {
             $this->errors = array(
                 _w('Only Latin letters, numbers, and the underscore character are allowed.'),
                 'input[name="info[id]"]'
@@ -17,58 +17,39 @@ class siteBlocksSaveController extends waJsonController
 
         $model = new siteBlockModel();
 
-        if ($id) {
-            try {
+        try {
+            if ($id) {
                 $model->updateById($id, $info);
                 $this->logAction('block_edit');
                 if ($id != $info['id']) {
                     $info['old_id'] = $id;
                 }
                 $this->response($info);
-            } catch (waDbException $wde) {
-                if ($wde->getCode() === 1406) {
-                    $this->errors = [
-                        _w('The block is too large. Reduce it or create several blocks instead of one.'),
-                        'input[name="info[content]"]'
-                    ];
-                } else {
-                    throw $wde;
-                }
-            } catch (Exception $e) {
-                if ($model->getById($info['id'])) {
-                    $this->errors = array(
-                        sprintf(_w('Block with id “%s” already exists.'), $info['id']),
-                        'input[name="info[id]"]'
-                    );
-                } else {
-                    throw $e;
-                }
-            }
-        } else {
-            try {
+            } else {
                 $model->add($info);
                 $this->logAction('block_add');
                 $this->response($info);
-            } catch (waDbException $wde) {
-                if ($wde->getCode() === 1406) {
+            }
+        } catch (waDbException $wde) {
+            switch ($wde->getCode()) {
+                case 1062:
+                    $this->errors = [
+                        sprintf(_w('Block with id “%s” already exists.'), $info['id']),
+                        'input[name="info[id]"]',
+                        1
+                    ];
+                    break;
+                case 1406:
                     $this->errors = [
                         _w('The block is too large. Reduce it or create several blocks instead of one.'),
                         'input[name="info[content]"]'
                     ];
-                } else {
+                    break;
+                default:
                     throw $wde;
-                }
-            } catch (Exception $e) {
-                if ($model->getById($info['id'])) {
-                    $this->errors = array(
-                        sprintf(_w('Block with id “%s” already exists.'), $info['id']),
-                        'input[name="info[id]"]'
-                    );
-                } else {
-                    throw $e;
-                }
             }
         }
+
         if ($this->getConfig()->getOption('cache_time')) {
             waSystem::getInstance()->getView()->clearAllCache();
         }
