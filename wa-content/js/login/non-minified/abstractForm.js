@@ -174,7 +174,7 @@ var WaLoginAbstractForm = ( function($) {
 
         // If recaptcha presented and loaded
         if ($wrapper.find('.wa-captcha-field').length) {
-            $(window).one('wa_recaptcha_loaded wa_captcha_loaded', function () {
+            $(window).one('wa_recaptcha_loaded wa_captcha_loaded wa_smartcaptcha_loaded', function () {
                 that.triggerEvent('wa_auth_form_loaded');
                 that.triggerEvent('wa_auth_form_change_view');
                 that.captchaInitialized = true;

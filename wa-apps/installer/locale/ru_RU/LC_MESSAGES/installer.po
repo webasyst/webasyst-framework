@@ -591,3 +591,6 @@ msgstr "Не настроено подключение к Webasyst ID."
 
 msgid "Webasyst API access error."
 msgstr "Нет доступа к API Webasyst."
+
+msgid "Send your Installer ID to a developer to obtain access to their products’ beta versions."
+msgstr "Отправьте свой ID Инсталлера разработчику, бета-версии чьих продуктов вы хотите устанавливать."

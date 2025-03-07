@@ -499,6 +499,9 @@ class waRouting
             $absolute = $params;
             $params = array();
         }
+        if (!is_array($params)) {
+            $params = [];
+        }
 
         $parts = explode('/', $path);
         $app = $parts[0];

@@ -64,9 +64,15 @@ class installerServicesApi extends waWebasystIDApi
         }
         $url .= $service_sub_path;
         $token = $this->getToken($use_system_token);
+        if (empty($token)) {
+            throw new waException('Unable to get access token for Webasyst service API');
+        }
         $resp = $this->requestApiUrl($url, $token, $params, $http_method, $net_options);
         if ($resp['status'] == 401) {
             $token = $this->getToken($use_system_token, true);
+            if (empty($token)) {
+                throw new waException('Unable to get access token for Webasyst service API');
+            }
             $resp = $this->requestApiUrl($url, $token, $params, $http_method, $net_options);
         } else if ($resp['status'] == 404) {
             // If endpoint URL is invalid, try to refresh endpoint config and repeate call

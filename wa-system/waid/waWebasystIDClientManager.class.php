@@ -295,7 +295,7 @@ class waWebasystIDClientManager
         ];
 
         $net_options = [
-            'timeout' => 20,
+            'timeout' => waWebasystIDApi::TIMEOUT,
             'format' => waNet::FORMAT_RAW,
             'request_format' => waNet::FORMAT_RAW,
             'expected_http_code' => null,

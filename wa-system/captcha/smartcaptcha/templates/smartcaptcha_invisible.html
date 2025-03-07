@@ -13,9 +13,13 @@
             invisible: true,
             callback: callback,
         });
+
+        window.smartCaptcha.execute();
+
+        $(window).trigger('wa_smartcaptcha_loaded');
     }
 
     function callback(token) {
-        console.log(token);
+        $('#captcha-container [name="smart-token"]').val(token);
     }
 </script>

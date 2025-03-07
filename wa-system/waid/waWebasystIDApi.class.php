@@ -12,6 +12,7 @@ class waWebasystIDApi
      * @var waWebasystIDUrlsProvider
      */
     protected $provider;
+    const TIMEOUT = 10;
 
     /**
      * waWebasystIDApi constructor.
@@ -555,7 +556,7 @@ class waWebasystIDApi
     protected function requestApiUrl($url, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
     {
         $default_net_options = [
-            'timeout' => 20,
+            'timeout' => self::TIMEOUT,
             'format' => waNet::FORMAT_JSON,
             'request_format' => waNet::FORMAT_RAW,
             'expected_http_code' => null,

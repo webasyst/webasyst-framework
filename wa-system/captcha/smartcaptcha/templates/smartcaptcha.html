@@ -1,3 +1,12 @@
-<script src="https://captcha-api.yandex.ru/captcha.js" defer></script>
+<script src="https://captcha-api.yandex.ru/captcha.js" onload="onloadFunction()" defer></script>
 
 <div id="captcha-container" class="smart-captcha" data-sitekey="{$client_key}"></div>
+<script>
+    function onloadFunction() {
+        if (!window.smartCaptcha) {
+            return;
+        }
+
+        $(window).trigger('wa_smartcaptcha_loaded');
+    }
+</script>

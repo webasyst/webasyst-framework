@@ -49,7 +49,7 @@
             {else}
                 <div class="value no-shift">
                     <p>
-                        {sprintf('[`To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway. <a href="%s">Browse for SMS gateway plugins</a> in Installer app.`]', $wa_backend_url|cat:'installer/store/?filters%5Bcategory%5D=plugins%3Asms&filters%5Btype%5D=plugin')}
+                        {sprintf('[`To enable SMS message sending, set up integration with your preferred SMS gateway using a plugin from <a href="%s">Installer</a>.`]', $wa_backend_url|cat:'installer/store/?filters%5Bcategory%5D=plugins%3Asms&filters%5Btype%5D=plugin')}
                     </p>
                 </div>
             {/if}
