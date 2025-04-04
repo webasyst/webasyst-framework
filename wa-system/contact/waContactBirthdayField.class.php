@@ -125,7 +125,7 @@ class waContactBirthdayField extends waContactField
         return $value;
     }
 
-    public function prepareSave($value, waContact $contact = null)
+    public function prepareSave($value, ?waContact $contact = null)
     {
         $prefix = $this->options['prefix'];
         if (is_string($value)) {

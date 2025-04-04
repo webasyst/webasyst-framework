@@ -31,7 +31,7 @@ abstract class waViewController extends waController
      *
      * @param waLayout $layout
      */
-    public function setLayout(waLayout $layout=null)
+    public function setLayout(?waLayout $layout=null)
     {
         $this->layout = $layout;
     }

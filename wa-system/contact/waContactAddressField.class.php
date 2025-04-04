@@ -107,7 +107,7 @@ class waContactAddressField extends waContactCompositeField
         return $value;
     }
 
-    public function prepareSave($value, waContact $contact = null)
+    public function prepareSave($value, ?waContact $contact = null)
     {
         if (isset($value[0])) {
             foreach ($value as &$v) {
