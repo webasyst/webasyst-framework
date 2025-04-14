@@ -1,5 +1,5 @@
 <div class="dialog-background"></div>
-<div class="dialog-body">
+<form class="dialog-body">
     <h3 class="dialog-header">
         [s`Update theme`]
         <span class="hint">{if empty($parent_only)}{$theme.name|escape}{else}{$theme.parent_theme.name|escape}{/if} {$theme_original_version|escape}</span>
@@ -112,4 +112,4 @@
         <input type="submit" class="button blue" value="{sprintf('[s`Update all to %s`]', $theme_original_version)}">
         <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
     </div>
-</div>
+</form>

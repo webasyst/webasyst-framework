@@ -2766,7 +2766,7 @@
                             </div>
                         </li>`;
             this.$wrapper.append(dropdown)
-            this.$wrapper.find('.dropdown').waDropdown();
+            this.$wrapper.find('.dropdown').waDropdown({ hover_out_delay: 100 });
         };
 
         Tabs.prototype.initArrows = function() {

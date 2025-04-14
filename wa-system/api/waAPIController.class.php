@@ -80,6 +80,9 @@ class waAPIController
             wa()->getFrontController()->execute(null, 'api', 'tokenHeadless');
         } elseif ($request_url == 'api.php/profile-update') {
             wa()->getFrontController()->execute(null, 'api', 'profileUpdate');
+        } elseif (strpos($request_url, 'api.php/cron/') === 0 && count(explode('/', $request_url)) === 4) {
+            $parts = explode('/', $request_url);
+            (new waCronController($parts[2], $parts[3]))->execute();
         } elseif ($request_url === 'api.php') {
             $this->execute(waRequest::get('app'), waRequest::get('method'));
         } else {
@@ -94,7 +97,6 @@ class waAPIController
             }
         }
     }
-
 
     protected function execute($app, $method_name)
     {
@@ -126,6 +128,10 @@ class waAPIController
         $scope = explode(',', $token['scope']);
         if (!in_array($app, $scope)) {
             throw new waAPIException('access_denied', 403);
+        }
+
+        if (!$this->hasAppLicense($app)) {
+            throw new waAPIException('payment_required', 'License not activated', 402);
         }
 
         // init app
@@ -206,4 +212,16 @@ class waAPIController
 
         return $data;
     }
+
+    protected function hasAppLicense($app)
+    {
+        waSystem::getInstance('installer');
+        $ann_list = (new installerAnnouncementList)->withFilteredByApp($app)->getTopHeaderList();
+        $ann_list = array_filter($ann_list, function ($a) use ($app) {
+            return !empty($a['is_blocking']) && ifset($a['app_id']) === $app;
+        });
+        return empty($ann_list);
+    }
+
+
 }

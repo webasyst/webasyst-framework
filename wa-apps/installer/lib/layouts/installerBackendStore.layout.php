@@ -53,7 +53,15 @@ class installerBackendStoreLayout extends waLayout
                 throw new waException('Failed to load sidebar data');
             }
 
-            return $init_data['sidebar'];
+            $sidebar = $init_data['sidebar'];
+            if (isset($sidebar['APPS']) && isset($sidebar['APPS']['TOP']) && !isset($sidebar['SERVICES'])) {
+                $sidebar['SERVICES'] = $sidebar['APPS'];
+                $sidebar['SERVICES']['name'] = _w('Services');
+                $sidebar['SERVICES']['TOP']['base_url'] = '/services/';
+                $sidebar['APPS']['name'] = _w('Home');
+            }
+
+            return $sidebar;
         } catch (Exception $e) {
             return false;
         }

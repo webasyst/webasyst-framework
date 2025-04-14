@@ -1,8 +1,14 @@
 <!-- cheat sheet -->
 {$show_body_flag = false}
 {$show_header_flag = false}
+<style>
+    .drawer .drawer-body .drawer-block { padding: 1rem 0 0 1rem; }
+    .drawer .drawer-header { margin-right: 1rem; }
+    .drawer .drawer-content ul { padding: 0 1rem 1rem 0; }
+    .drawer .drawer-content ul > li:last-of-type { border: none; }
+</style>
 <header class="drawer-header bordered-bottom">
-    <ul class="tabs custom-pl-0">
+    <ul class="tabs overflow-dropdown custom-pl-0 custom-mr-32 small">
         {if !waRequest::request('hide_common_blocks') && !empty($blocks)}
             <li id="wa-helper-blocks-{$name}" class="selected">
                 <a href="#">[`Common blocks`]</a>
@@ -111,7 +117,7 @@
                 {foreach $blocks as $block_id => $b}
                     <li>
                         <a href="#" class="semibold inline-link js-var">{literal}{$wa->block('{/literal}{$block_id|escape}{literal}')}{/literal}</a>
-                        <p class="hint custom-mt-4">{$b.description}</p>
+                        <p class="hint custom-mt-4">{$b.description|escape}</p>
                     </li>
                 {/foreach}
             </ul>
@@ -144,13 +150,19 @@
     {/if}
 
 <script type="text/javascript">
-    $("#wa-editor-help-{$name} ul.tabs li a").on('click', function(e) {
-        e.preventDefault();
-        $("#wa-editor-help-{$name} ul.tabs li.selected").removeClass('selected');
-        let id = $(this).parent().addClass('selected').attr('id') + '-content';
-        $("#wa-editor-help-{$name} div.tab-content").hide();
-        $('#' + id).show();
-    }).first().trigger('click');
+    (function ($) {
+        const $tabs = $("#wa-editor-help-{$name} ul.tabs");
 
+        $tabs.waTabs();
+
+        $tabs.on('click', 'li[id] a', function(e) {
+            e.preventDefault();
+            $("#wa-editor-help-{$name} ul.tabs li.selected").removeClass('selected');
+            let id = $(this).parent().addClass('selected').attr('id') + '-content';
+            $("#wa-editor-help-{$name} div.tab-content").hide();
+            $('#' + id).show();
+        });
+        $tabs.find('li a:first').trigger('click');
+    })(jQuery);
 </script>
 </div>

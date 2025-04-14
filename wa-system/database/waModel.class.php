@@ -559,8 +559,8 @@ class waModel
                 // breakthrough
             case 'double':
             case 'float':
-                if (strpos($value, ',') !== false) {
-                    $value = str_replace(',', '.', $value);
+                if (strpos((string)$value, ',') !== false) {
+                    $value = str_replace(',', '.', (string)$value);
                 }
                 return str_replace(',', '.', (double) $value);
             case 'date':

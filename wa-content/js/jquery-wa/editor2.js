@@ -388,6 +388,17 @@ jQuery.fn.waEditor2 = function () {
         editor.setOption("maxLines", 10000);
         editor.setAutoScrollEditorIntoView(true);
 
+        if (options.scroll_parent_wrapper_at_edge) {
+            const scroll_speed = 20;
+            $(editor.textInput.getElement()).on('keydown', (e) => {
+                if (e.key === 'ArrowUp' && editor.selection.lead.row === 0) {
+                    window.scrollBy(0, -scroll_speed);
+                } else if (e.key === 'ArrowDown' && editor.renderer.layerConfig.lastRow === editor.selection.lead.row) {
+                    window.scrollBy(0, scroll_speed);
+                }
+            });
+        }
+
         if (options['focus']) {
             editor.focus();
             editor.navigateTo(0, 0);

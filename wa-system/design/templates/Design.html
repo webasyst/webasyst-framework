@@ -116,16 +116,21 @@
         </div>
     </div>
 </div>
-{function skeleton}
+{function skeleton for_iframe=false}
     <div class="not-blank skeleton article wider">
-        <div class="article-body" style="width: 100%;">
-            <span class="skeleton-header"></span>
-            <span class="skeleton-line"></span>
-            <span class="skeleton-line"></span>
-            <span class="skeleton-line"></span>
+        <div class="article-body{if $for_iframe} custom-pt-0{/if}" style="width: 100%;">
+            {if $for_iframe}
+                <div class="gray bold align-center custom-mb-8">[s`Loading all available design themes...`]</div>
+                <span class="skeleton-header"></span>
+            {else}
+                <span class="skeleton-header"></span>
+                <span class="skeleton-line"></span>
+                <span class="skeleton-line"></span>
+                <span class="skeleton-line"></span>
+            {/if}
 
             <div class="flexbox wrap custom-mt-32 full-width" style="container-type: inline-size;gap:1rem;">
-                {for $i=1 to 10}
+                {for $i=1 to ($for_iframe) ? 20 : 10}
                 <div>
                     <span class="skeleton-custom-box" style="width: calc(20cqw - 1rem); height: calc(20cqw - 1rem)"></span>
                     <span class="skeleton-line"></span>
@@ -376,7 +381,19 @@
                     self.$design_actions.filter('.selected').removeClass('selected');
                     self.$design_actions.filter('.themes').addClass('selected');
                     //self.$theme_settings_section.empty();
-                    self.$design_container.load("?module=design&action=themes");
+                    self.$design_container.load("?module=design&action=themes", () => {
+                        {if $wa->user()->isAdmin('installer')}
+                            const $skeleton_before_store = $({{skeleton for_iframe=true}|json_encode|strip}).insertAfter(self.$design_container.find('.wa-design-gray-toolbar'));
+                            const $wa_themes = self.$design_container.find('.wa-themes').css('visibility', 'hidden');
+
+                            self.$design_container.one('store_themes_loading', () => {
+                                $('.js-store-frame').one('load', () => {
+                                    $skeleton_before_store.remove();
+                                    $wa_themes.css('visibility', 'visible');
+                                })
+                            });
+                        {/if}
+                    });
                     self.$design_themes.load('?module=design&onlyThemeList=1', function (responseText) {
                         try {
                             let response = $.parseJSON(responseText);
@@ -430,12 +447,12 @@
                                $('.s-route-details .fields').
                                prepend($('<div class="fields-group"></div>').
                                    append($('<div class="field"><div class="name">URL</div></div>').
-                                       append($('<div class="value"></div>').html($route_where.html()))
+                                       append($('<div class="value"></div>').html($route_where.html() + '<span>/</span>'))
                                    )
                                );
                                self.$design_container.find(".s-route-delete").closest('div').remove();
 
-                               const h1 = $route_where.text().trim() + $route_where.find('input').val();
+                               const h1 = $route_where.text().trim() + $route_where.find('input').val() + '/';
                                const $back_btn = '<a href="#design/themes/" class="back" title="[`Back`]"><span class="icon size-32"><i class="fas fa-arrow-circle-left"></i></span></a>';
                                $('.s-app-settings').prepend('<h1 class="flexbox middle custom-mb-24 space-8">' + $back_btn + h1 + '</h1>');
                            });

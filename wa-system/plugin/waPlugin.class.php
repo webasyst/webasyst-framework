@@ -364,6 +364,19 @@ class waPlugin
         }
     }
 
+    public function cron($param = array())
+    {
+        $file = $this->path.'/lib/config/cron.php';
+        if (file_exists($file)) {
+            /**
+             * @var array $cron Variable available at cron config file
+             */
+            return include($file);
+        } else {
+            return [];
+        }
+    }
+
 
     /**
      * @param array $params Control items params (see waHtmlControl::getControl for details)

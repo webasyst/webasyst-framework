@@ -12,6 +12,14 @@ class webasystSettingsPushSaveController extends webasystSettingsJsonController
 
         // Save push adapter settings
         if (!empty($adapter) && isset($push_adapters[$adapter])) {
+            if (!empty(array_filter(ifempty($settings, $adapter, [])))) {
+                // validate non empty submit (allow to clear all settings)
+                $errors = $push_adapters[$adapter]->validateSettings(ifset($settings, $adapter, []));
+                if (!empty($errors)) {
+                    return $this->errors = $errors;
+                }    
+            }
+            
             $model->set('webasyst', 'push_adapter', $adapter);
             $push_adapters[$adapter]->saveSettings(ifset($settings, $adapter, array()));
             $res = $push_adapters[$adapter]->setup();

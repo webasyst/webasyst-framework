@@ -15,11 +15,11 @@
                 new WaAnnouncementReactions({
                     user_id: {$wa->userId()},
                     reaction_list: [
-                        '👍','👎','🙏','👌','👏','💩','🤮','🤩',
-                        '🥰','😍','😊','😇','💯','🤣','🎉','😄',
-                        '😀','💗','🤑','😴','🥵','🥶','😮','🙁'
+                        '👍','👎','👌','🔥','💯','🆗','⚡','🙏','🤝','👏','🤟','✌️','💗','🚀','💥','💪','🌞','⭐','🤩','🤑','😄','😀',
+                        '😅','🤣','😮','🙁','🤔','🧐','😢', '😬','😱','😎','🥰','😍','🤗','😇','😝','🎉','🥳', '🎁','☕','🍺','🍾','🥂',
+                        '🐱','🐶','🎯','🌴','🌹','🌷','🌸','💋','😴','😷','🤮','😠','💩','🤬','✅','❌','🥵','🥶','💡', '🚩',
                     ],
-                    highlighting_class: 'highlighted blue',
+                    highlighting_class: 'bg-blue text-white',
                     templates: {
                         reaction_item: {announcement_reaction|json_encode}
                     }
@@ -144,7 +144,7 @@
 
                             <label>
                                 <span class="wa-checkbox">
-                                    <input type="checkbox" name="data[is_notify_sms]" value="1">
+                                    <input type="checkbox" name="data[is_notify_sms]" value="1"{if !$sms_plugins_exists || !$sms_plugins_configured} disabled{/if}>
                                     <span>
                                         <span class="icon">
                                             <i class="fas fa-check"></i>
@@ -153,6 +153,20 @@
                                 </span>
                                 [s`by SMS`]
                             </label>
+                            {if !$sms_plugins_exists || !$sms_plugins_configured}
+                                {$_tt_text = '[`No configured SMS plugins are available.`]'}
+                                {if !$sms_plugins_exists}
+                                    {$_tt_text = '[`No SMS plugins are installed.`]'}
+                                {/if}
+                                <span class="wa-tooltip text-orange js-announcements-sms-tt" data-wa-tooltip-content="{$_tt_text|escape}">
+                                    <i class="fas fa-info-circle"></i>
+                                </span>
+                                <script>
+                                    ( function($) {
+                                        $(".js-announcements-sms-tt").waTooltip();
+                                    })(jQuery);
+                                </script>
+                            {/if}
                             <span class="js-sms-counter flexbox-inline hidden" style="min-width:55px;">
                                 <span class="js-sms-counter-loading text-gray" style="display:none;"><i class="fas fa-spinner fa-spin"></i></span>
                                 <span class="js-sms-counter-value text-gray small semibold" style="display:none;">≈<span></span> SMS</span>

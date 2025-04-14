@@ -48,13 +48,13 @@
                             {else}
 
                                 {if $wa_total_emails}
-                                    <p class="bold small custom-my-0"><i class="fas fa-at text-light-gray"></i> {_ws('%d email', '%d emails', $wa_total_emails)}</p>
+                                    <p class="bold small custom-my-0"><i class="fas fa-at text-light-gray"></i> {$wa_total_emails|wa_format:false} {_ws('message', 'messages', $wa_total_emails)}</p>
                                 {/if}
-                                {if $wa_total_sms}
-                                    <p class="bold small custom-my-0"><i class="fas fa-sms text-light-gray"></i> ≈{sprintf_wp('%d SMS', $wa_total_sms)}</p>
-                                {/if}
+                                {* based on $wa_balance // if $wa_total_sms}
+                                    <p class="bold small custom-my-0"><i class="fas fa-sms text-light-gray"></i> ≈{$wa_total_sms|wa_format:false} SMS</p>
+                                {/if *}
                                 {if $wa_is_positive_balance}
-                                    <p class="bold small custom-my-0">{$wa_balance}</p>
+                                    <p class="bold small custom-my-0"><i class="fas fa-wallet text-light-gray"></i> {$wa_balance}</p>
                                 {/if}
 
                                 <p class="hint custom-mt-4 custom-mb-12">

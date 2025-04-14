@@ -46,7 +46,7 @@
 {if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
 
 {if !empty($include_wa_push)}
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js?v={$wa->version('webasyst')}"></script>
 {/if}
 
 {$has_dasboard = ($current_app === 'webasyst' && isset($activity))}
@@ -62,14 +62,19 @@
                 <p class="wa-header-sitename flexbox middle space-16">
                     <span class="h2 wa-sitename{if $request_uri == $backend_url || $request_uri == "`$backend_url`/"} is-main-dashboard{/if}">{$wa->accountName()|truncate:42}</span>
                 </p>
-                {if $has_dasboard}
+            </div>
+            {if $has_dasboard}
+                <div class="flexbox middle space-8 custom-ml-20 custom-mt-12">
                     {if $wa->user()->getRights('team', 'edit_announcements')}
-                        <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new larger button rounded light-gray small">
+                        <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new button rounded light-gray small">
                             <i class="fas fa-bell text-gray custom-mr-4"></i>
-                            [`Add announcement`]
+                            [s`Post`]
                         </a>
                     {/if}
-                    <div class="dropdown" id="wa-announcement-links">
+
+                    <span class="js-header-datetime wa-header-datetime gray semibold nowrap"></span>
+
+                    <div class="dropdown custom-ml-4" id="wa-announcement-links">
                         <span class="dropdown-toggle without-arrow">
                             <i class="fas fa-ellipsis-h custom-ml-4 text-gray"></i>
                         </span>
@@ -83,11 +88,6 @@
                             </ul>
                         </div>
                     </div>
-                {/if}
-            </div>
-            {if $has_dasboard}
-                <div class="flexbox middle custom-ml-20 custom-mt-12">
-                    <span class="js-header-datetime wa-header-datetime gray semibold"></span>
                 </div>
             {/if}
         </div>

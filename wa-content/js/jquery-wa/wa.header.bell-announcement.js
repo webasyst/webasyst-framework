@@ -142,4 +142,28 @@ window.WaBellAnnouncement = class {
 
         });
     }
+
+    static adhocShow ($notification, id, icon_url = null) {
+        const $notification_wrapper = $('.js-notification-wrapper,.js-wa-announcement').first();
+        const $bell_announcement = $('<div id="adhoc-' + id + '" />').addClass("alert wa-notification is-unread-group")
+            .html('<div class="wa-notification-body"><ul class="list custom-m-0"><li class="js-wa-announcement is-unread"></li></ul><a href="javascript:void(0);" class="custom-ml-16 custom-py-4 back js-close wa-announcement-close"><i class="fas fa-times"></i></a></div>');
+        const $announcement_item = $bell_announcement.find('.js-wa-announcement');
+        const $icon = !!icon_url ? $('<img class="icon size-20" src="' + icon_url + '">') : $('<i class="icon webasyst-magic-wand"></i>');
+        $announcement_item.append($('<span />').append($icon))
+            .append($('<span class="wa-notification-content"></span>').append($notification));
+
+        $notification_wrapper.find('.wa-notification-empty').hide();
+        $notification_wrapper.prepend($bell_announcement).show();
+        $bell_announcement.find('.js-close').on('click', () => {
+            WaBellAnnouncement.adhocHide(id);
+        })
+    }
+
+    static adhocHide (id) {
+        const $notification_wrapper = $('.js-notification-wrapper,.js-wa-announcement').first();
+        $notification_wrapper.find('#adhoc-' + id).remove();
+        if (!$('.js-wa-announcement:visible').length) {
+            $notification_wrapper.find('.wa-notification-empty').show();
+        }
+    }
 };

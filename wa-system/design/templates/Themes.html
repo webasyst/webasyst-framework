@@ -17,6 +17,7 @@
 <div class="article wider wa-themes">
     <script type="text/javascript">
     $('div.wa-themes:first').load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}&return_hash={"`$design_url`theme=%theme_id%"|escape:'url'}',function(){
+        $('#wa-design-container').trigger('store_themes_loading');
         $('.wa-design-gray-toolbar h2 svg').hide();
     });
     $('#themes-close a').on('click', function (e) {

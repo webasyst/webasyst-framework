@@ -27,7 +27,6 @@ var InstallerStore = (function ($) {
         var that = this;
 
         that.setDefaultFilters();
-        that.initToggle();
         that.initIframe(true);
         that.initLoader();
         that.initEventListener();
@@ -46,16 +45,6 @@ var InstallerStore = (function ($) {
             }
         }
     };
-
-    InstallerStore.prototype.initToggle = function() {
-        const that = this;
-
-        that.$toggle.waToggle({
-            change: function(event, target, toggle) {
-                //console.log(event, target, toggle)
-            }
-        });
-    }
 
     InstallerStore.prototype.initLoader = function() {
         const that = this;
@@ -841,14 +830,7 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.toggleAnimate = function(link) {
         $(link).addClass('selected').siblings('a').removeClass('selected');
 
-        const thisLeftPos = $(link).position().left;
-        const thisWidth = $(link).width();
         const type = $(link).data('type-link');
-
-        $(link).siblings('.animation-block').css({
-            'left': thisLeftPos,
-            'width': thisWidth,
-        });
 
         $('.js-installer-sidebar-menu').hide();
 

@@ -1,10 +1,10 @@
 {function renderComment comment=[]}
+{$contact = ifset($contacts[$comment.contact_id])}
 <li class="comment custom-mb-24" data-id="{$comment.id}">
-    <div class="js-announcement-comment-text comment-bubble width-50 custom-mt-8">{$comment.text}</div>
+    <div class="js-announcement-comment-text comment-bubble width-50 custom-mt-8{if $contact && $contact.id == $wa->user('id')} bg-blue text-white{/if}">{$comment.text}</div>
     <div class="comment-bubble-arrow"></div>
     <div class="flexbox middle space-8">
-        {if isset($contacts[$comment.contact_id])}
-            {$contact = $contacts[$comment.contact_id]}
+        {if $contact}
             <img class="userpic userpic-20" src="{$contact.photo_url_32}">
 
             <div class="small">{$contact.name|escape}</div>

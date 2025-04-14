@@ -175,7 +175,7 @@ class waLicensing
             }
             return (bool) $had_license;
         }
-        $result = ifempty($license, 'options', 'edition', null) === 'PREMIUM';
+        $result = !empty($license['status']) && ifempty($license, 'options', 'edition', null) === 'PREMIUM';
         if ($result) {
             $date = date('Y-m-d');
             if ($had_license != $date) {
@@ -184,6 +184,9 @@ class waLicensing
         } else {
             if ($had_license) {
                 $this->setSetting('had_premium_license', null);
+            }
+            if ($this->getSetting('license_premium')) {
+                $this->setSetting('license_premium', null);
             }
         }
         return $result;

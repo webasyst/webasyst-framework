@@ -391,11 +391,20 @@ class waDispatch
             return;
         }
 
+        array_shift($argv);
         $params = array();
-        $app = $argv[1];
-        $slug = ifset($argv[2], 'help');
-        $class = $app.ucfirst($slug)."Cli";
-        $argv = array_slice($argv, 3);
+        $is_cron = false;
+        $app = trim((string)array_shift($argv));
+        if ($app == '--cron') {
+            $is_cron = true;
+            $app = trim((string)array_shift($argv));
+            if (empty($app)) {
+                // TODO: show help for --cron cli command
+                waLog::log(new waException("Invalid CRON CLI command"), 'cli.log');
+                return;
+            }
+        }
+        $slug = trim((string)array_shift($argv)) ?: 'help';
         while ($arg = array_shift($argv)) {
             if (mb_substr($arg, 0, 2) == '--') {
                 $key = mb_substr($arg, 2);
@@ -408,6 +417,7 @@ class waDispatch
             $params[$key] = trim((string)array_shift($argv));
         }
         waRequest::setParam($params);
+
         // Load system
         waSystem::getInstance('webasyst');
 
@@ -415,8 +425,15 @@ class waDispatch
             throw new waException("App ".$app." not found", 404);
         }
 
+        if ($is_cron) {
+            (new waCronController($app, $slug, true))->execute();
+            return;
+        }
+
         // Load app
         waSystem::getInstance($app, null, true);
+
+        $class = $app.ucfirst($slug)."Cli";
         $class_exists = class_exists($class);
         $event_params = array(
             'app' => $app,

@@ -186,7 +186,7 @@
 
         {* Theme name *}
         <h1 class="wa-theme-name wide custom-mb-16">
-            {sprintf('[s`%s design theme`]', $theme.name|escape)}
+            {sprintf('[s`Design theme %s`]', $theme.name|escape)}
             <span class="hint">
                 {$theme.version}
             </span>
@@ -198,7 +198,7 @@
         <div class="wa-theme-name-section custom-mb-24">
 
             {if $has_theme_usage}
-                <a id="theme-start-using" href="#" class="js-theme-start-using button green small">[s`Using`]</a>
+                <a id="theme-start-using" href="#" class="js-theme-start-using button green small">[s`Usage`]</a>
             {elseif !empty($show_theme_start_using) && !$_is_trial}
                 <a id="theme-start-using" href="#" class="js-theme-start-using button green small">[s`Start using`]</a>
             {/if}
@@ -224,7 +224,7 @@
                                 </li>
                             {else}
                                 <li>
-                                    <a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}">
+                                    <a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}" download>
                                         <i class="fas fa-file-download"></i>
                                         <span>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></span>
                                     </a>
@@ -245,15 +245,13 @@
                             <li class="gray">
                                 <a class="js-theme-parent" href="javascript:void(0);">
                                     <i class="fas fa-link"></i>
-                                    <span>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not selected`]{/if}</strong>
-                                        <span class="hint flexbox">[s`You can change the theme in settlement settings.`]</span>
-                                    </span>
+                                    <span>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not selected`]{/if}</strong></span>
                                 </a>
                             </li>
                             {if !empty($settings.items)}
                                 {* Export theme settings *}
                                 <li class="top-padded">
-                                    <a class="js-export-theme-settings" href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}">
+                                    <a class="js-export-theme-settings" href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}" download>
                                         <i class="fas fa-share text-green"></i>
                                         <span>[s`Export theme settings`]
                                             <span class="hidden js-export-error hint flexbox">
@@ -286,22 +284,16 @@
                                 {/if}
 
                                 <li>
-                                    <a class="theme-reset js-theme-reset{if $_reset_is_disabled} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $_reset_disabled_alert} onClick="window.alert('{$_reset_disabled_alert}');"{/if}>
+                                    <a class="theme-reset js-theme-reset{if $_reset_is_disabled} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $_reset_disabled_alert} data-disabled-alert="{$_reset_disabled_alert}"{/if}>
                                         <i class="fas fa-broom text-orange"></i>
-                                        <span>[s`Revert theme to original`]
-                                            {if $theme.path_original && $theme.type neq waTheme::OVERRIDDEN}
-                                                <span class="hint flexbox">[s`You are using the original version of this design theme. No customizations have been applied to theme files yet, and thus there is nothing to revert for now.`]</span>
-                                            {elseif $theme.path_original}
-                                                <span class="hint flexbox">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
-                                            {/if}
-                                        </span>
+                                        <span>[s`Revert theme to original`]</span>
                                     </a>
                                 </li>
                             {/if}
 
                         {/if}
                         <li>
-                            <a class="js-theme-delete{if $theme.system} disabled{/if}" href="#" data-confirm="[s`This will permanently delete theme without the ability to recover. Are you sure?`]" data-success="[s`Design theme deleted.`]">
+                            <a class="js-theme-delete{if $theme.system} disabled{/if}" href="#" data-confirm="[s`This will permanently delete theme without the ability to recover.`]">
                                 <i class="fas fa-trash-alt text-red"></i>
                                 <span>
                                     [s`Delete theme`]
@@ -352,7 +344,12 @@
                         {/if}
 
                         {if $wa->user()->isAdmin('installer')}
-                            <a href="{$wa_backend_url}installer/store/theme/{$theme.id|escape}/" class="button green rounded">[s`Buy theme`]</a>
+                            {$_buy_link = "{$wa_backend_url}installer/store/theme/{$theme.id|escape}/"}
+                            {$_is_single_app_mode = $wa->isSingleAppMode()}
+                            {if $_is_single_app_mode}
+                                {$_buy_link = (($wa->locale() == 'ru_RU') ? 'https://www.webasyst.ru/store/theme/' : 'https://www.webasyst.com/store/theme/')|cat:$theme.id|escape|cat:'/'}
+                            {/if}
+                            <a href="{$_buy_link}"{if $_is_single_app_mode} target="_blank"{/if} class="button green rounded">[s`Buy theme`]</a>
                         {/if}
 
                         <p class="hint">
@@ -496,6 +493,21 @@
 
             {* Theme usage *}
             <div class="wa-theme-usage fields">
+                {* Theme help *}
+                {if !empty($support) || !empty($instruction)}
+                    <div class="wa-theme-help custom-my-6 semibold small">
+                        {if !empty($instruction)}
+                        <div class="custom-mb-4">
+                            [s`User manual`]: <a class="nowrap" href="{$instruction|escape}" rel="noopener" target="_blank">{$instruction|escape} <i class="fas fa-external-link-alt fa-xs"></i></a>
+                        </div>
+                        {/if}
+                        {if !empty($support)}
+                        <div>
+                            [s`User support`]: <a class="nowrap" href="{$support|escape}" rel="noopener" target="_blank">{$support|escape} <i class="fas fa-external-link-alt fa-xs"></i></a>
+                        </div>
+                        {/if}
+                    </div>
+                {/if}
 
                 {* Theme about *}
                 {if trim($theme.about)}
@@ -645,39 +657,44 @@
 
 {$_locale = [
     'will_be_lost'  => _ws('All customizations you’ve made to this file will be lost!'),
-    'update_notice' => mb_strtoupper(_ws('All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?')),
+    'update_notice' => _ws('All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?'),
     'expand_all'    => _ws('Expand all'),
     'collapse_all'  => _ws('Collapse all'),
     'expand'        => _ws('Expand'),
     'collapse'      => _ws('Collapse'),
-    'saving'        => _ws('Saving...')
+    'saving'        => _ws('Saving...'),
+    'delete'        => _ws('Delete'),
+    'are_you_sure'  => _ws('Are you sure?'),
+    'cancel'    => _ws('Cancel'),
+    'close'     => _ws('Close'),
+    'error'     => _ws('Error'),
+    'continue'  => _ws('Continue')
 ]}
 
-{capture assign="_route_item"}
+{capture assign="_theme_row"}
 <tr>
     <td>
         <label class="flexbox space-8">
             <span class="wa-checkbox custom-mt-2">
-                <input class="js-route-theme-checkbox" type="checkbox" name="routes[{*ID*}]" value="1" checked data-used-theme data-used-theme-mobile>
+                <input class="js-theme-checkbox" type="checkbox" value="1" checked>
                 <span>
                     <span class="icon">
                         <i class="fas fa-check"></i>
                     </span>
                 </span>
             </span>
-            <span class="js-route-theme-no-support icon custom-mt-2" title="{'[`Not supported by theme “%s”.`]'|sprintf:$theme.name|escape}">
+            <span class="js-theme-no-support icon custom-mt-2" title="{'[`Not supported by theme “%s”.`]'|sprintf:$theme.name|escape}">
                 <i class="fas fa-ban text-orange"></i>
             </span>
 
             <span class="custom-pt-2 flexbox space-4 break-word">
-                <span class="js-route-app-icon icon custom-pr-4"><img src="" alt=""></span>
-                <span class="js-route-name small"></span>
-                {*<span class="js-route-url small custom-ml-12"></span>*}
+                <span class="js-app-icon icon custom-pr-4"><img src="{$wa_static_url}wa-apps/site/img/site512.png"></span>
+                <span class="js-name small"></span>
             </span>
         </label>
     </td>
     <td class="width-40 gray small">
-        <span class="js-route-used-themes">
+        <span class="js-used-themes">
             {* <div><i class="fas fa-check fa-xs custom-mr-4"></i>Name theme</div> *}
         </span>
     </td>
@@ -718,14 +735,16 @@
             $settings_section_selected.addClass('selected').siblings().removeClass('selected')
         }
 
+        if ($theme_settings_list.length) {
+            $('.bottombar').hide();
+        }
+
         if(!$theme_settings_section.data('loaded')) {
             $theme_settings_section.data('loaded', true).html($theme_settings_list.html());
         }else{
            $theme_settings_list.remove();
         }
         $theme_settings_section.data('loaded', true).html($theme_settings_list.html());
-
-        $('.bottombar').hide();
 
         // display uploaded filename
         $(".upload-control").waUpload();
@@ -747,7 +766,7 @@
             },
             templates: {
                 toggle_group_all_settings: '<span class="button custom-ml-16 js-group-all-settings light-gray rounded smallest wa-theme-group-all-settings" style="font-size: 73%;padding: 3px 6px;">[s`Show all group’s settings`] <i class="js-icon fas fa-chevron-down"></i></span>',
-                using_dialog_route_item: {$_route_item|strip|json_encode}
+                using_dialog_theme_row: {$_theme_row|strip|json_encode}
             },
             locales: {
                 theme_not_installed: '[s`The theme is not installed.`]',
@@ -792,4 +811,3 @@
 {if ($theme_routes || $_is_trial || $has_theme_usage_any_app) && !empty($settings.items)}
     {include file='./Bottombar.inc.html' _params=['form_id' => 'theme-settings'] inline}
 {/if}
-

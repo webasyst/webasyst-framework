@@ -78,7 +78,7 @@ shop
 shop/plugin/brands
 shop/theme/hypermarket
 
-> php cli.php installer update shop shop/plugin/brands shop/theme/hypermarket
+> php cli.php installer update list shop shop/plugin/brands shop/theme/hypermarket
 UPDATED 3
 PENDING 1
 

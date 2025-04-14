@@ -104,7 +104,6 @@
   flex: 0 0 auto;
 }
 #wa-app .content #wa-nav #wa-header #wa-header-logo-area .wa-announcement-button-new {
-  font-size: 0.9375rem;
   position: relative;
   white-space: nowrap;
   margin-top: 2px;
@@ -1192,7 +1191,6 @@
   padding-left: 1rem;
   margin: 0;
   max-width: max-content;
-  overflow: hidden;
   padding-bottom: 1rem;
 }
 #wa-app .content:not(.header-apps) #wa-nav #wa-header #wa-header-logo-area #wa-account:has(.wa-header-logo) {
@@ -2082,15 +2080,15 @@
 #wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .wa-announcement-reaction-list {
   display: contents;
 }
-#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls button {
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .wa-announcement-reaction-list button {
   color: var(--text-color-strong);
   padding-block: 0.25rem;
 }
-#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls button span:first-child {
+#wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .wa-announcement-reaction-list button span:first-child {
   font-size: 0.875rem;
 }
 #wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown .dropdown-body {
-  width: fit-content;
+  width: 250px;
 }
 #wa_announcement .wa-announcement-item .wa-announcement-item-inner .wa-announcement-item-main .wa-announcement-controls .dropdown .menu {
   display: grid !important;
@@ -2127,6 +2125,9 @@
   line-height: 1.4em;
   margin: 0 0 0 -16px;
 }
+#wa_announcement .wa-announcement-item .comment:not(.is-editing) .comment-bubble.text-white a:not(:hover) {
+  color: var(--white);
+}
 #wa_announcement .wa-announcement-item .comment:not(.is-editing) .comment-bubble-arrow {
   margin-top: 0;
   width: 0;
@@ -2137,6 +2138,9 @@
   vertical-align: top;
   margin-left: 5px;
   margin-bottom: 3px;
+}
+#wa_announcement .wa-announcement-item .comment img {
+  max-width: 100%;
 }
 #wa_announcement .fields-group {
   margin: 0 -0.75rem 0.75rem;

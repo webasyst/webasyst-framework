@@ -182,6 +182,19 @@ class webasystBackendActions extends waViewActions
         }
         unset($c);
 
+        $sms_plugins_exists = false;
+        try {
+            $sms_dir_iterator = new FilesystemIterator($this->getConfig()->getPath('plugins') . '/sms/', FilesystemIterator::SKIP_DOTS);
+            foreach ($sms_dir_iterator as $file_info) {
+                if ($file_info->isDir()) {
+                    $sms_plugins_exists = true;
+                    break;
+                }
+            }
+        } catch (Throwable $e) {
+            // probably no wa-plugins/sms dir, ignore
+        }
+
         $this->view->assign([
             'current_app'              => wa()->getApp(),
             'today_users'              => $today_users,
@@ -215,6 +228,8 @@ class webasystBackendActions extends waViewActions
             'dashboard_module_url'     => wa()->getAppUrl('webasyst') . 'webasyst/dashboard/',
             'has_team_app_access'      => wa()->getUser()->getRights('team', 'backend') > 0,
             'teams'                    => $this->getTeams(),
+            'sms_plugins_exists'       => $sms_plugins_exists,
+            'sms_plugins_configured'   => (bool)wa()->getConfig()->getConfigFile('sms'),
         ]);
     }
 

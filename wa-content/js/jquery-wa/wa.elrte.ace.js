@@ -70,6 +70,17 @@ function waEditorAceInit(options)
 
     ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
 
+    if (options.scroll_parent_wrapper_at_edge) {
+        const scroll_speed = 20;
+        $(wa_editor.textInput.getElement()).on('keydown', (e) => {
+            if (e.key === 'ArrowUp' && wa_editor.selection.lead.row === 0) {
+                window.scrollBy(0, -scroll_speed);
+            } else if (e.key === 'ArrowDown' && wa_editor.renderer.layerConfig.lastRow === wa_editor.selection.lead.row) {
+                window.scrollBy(0, scroll_speed);
+            }
+        });
+    }
+
     setEditorTheme();
     document.documentElement.addEventListener('wa-theme-change', setEditorTheme);
 

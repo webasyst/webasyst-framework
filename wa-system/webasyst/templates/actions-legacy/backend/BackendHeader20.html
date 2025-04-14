@@ -52,9 +52,9 @@
 {* @event backend_header *}
 {* $return[%app_id%]['header_top'] *}
 {if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
-<script type="text/javascript">var backend_url = "{$backend_url}";</script>
+<script type="text/javascript">var backend_url = "{$backend_url}"; var wa_url = "{$wa_url}";</script>
 {if !empty($include_wa_push)}
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js?v={$wa->version('webasyst')}"></script>
 {/if}
 
 {* Announcements *}

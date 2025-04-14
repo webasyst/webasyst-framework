@@ -4,6 +4,11 @@
             {$r.theme = $r.theme|default:'default'}
             {$r.theme_mobile = $r.theme_mobile|default:'default'}
 
+            {* because rtrim removes repetitions *}
+            {if $r.url && $r.url|substr:-1 == "*"}
+                {$r.url = $r.url|substr:0:-1}
+            {/if}
+
             {if isset($app_themes[$r.theme])}
             <li>
                 <a href="#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings" title="">
@@ -139,31 +144,9 @@
 
 
                 {if $wa->user()->getRights('installer')}
-                function handleError(data, $dialog) {
-                    let error = '';
-                    if (typeof data.errors == 'string') {
-                        error += (error ? '\n' : '') + data.errors;
-                    } else {
-                        for (let error_item in data.errors) {
-                            if(data.errors.hasOwnProperty(error_item)) {
-                                error += (error ? '\n' : '') + data.errors[error_item][0];
-                            }
-                        }
-                    }
-                    if ($dialog.length) {
-                        $dialog.find(".wa-theme-dialog-error").html(error + '<br><br>');
-                    } else if ($(".wa-theme-dialog-error:first:visible").length) {
-                        $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
-                    } else {
-                        alert('Error:' + error);
-                    }
-                    $dialog.find("[type=submit]").removeClass('disabled');
-                }
-
                 $(".js-theme-upload-link").on('click', function (e) {
                     e.preventDefault();
 
-                    if (!waDesignConfirm()) return false;
                     const $upload_dialog = $("#wa-theme-upload-dialog");
 
                     $(".wa-theme-dialog-error").text('');
@@ -224,6 +207,35 @@
                         }
                     });
                 });
+
+                async function postData(url, data) {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: data,
+                    });
+                    return await response.text();
+                }
+
+                function handleError(data, $dialog) {
+                    let error = '';
+                    if (typeof data.errors == 'string') {
+                        error += (error ? '\n' : '') + data.errors;
+                    } else {
+                        for (let error_item in data.errors) {
+                            if(data.errors.hasOwnProperty(error_item)) {
+                                error += (error ? '\n' : '') + data.errors[error_item][0];
+                            }
+                        }
+                    }
+                    if ($dialog.length) {
+                        $dialog.find(".wa-theme-dialog-error").html(error + '<br><br>');
+                    } else if ($(".wa-theme-dialog-error:first:visible").length) {
+                        $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
+                    } else {
+                        alert('Error:' + error);
+                    }
+                    $dialog.find("[type=submit]").removeClass('disabled');
+                }
                 {/if}
             })(jQuery);
         </script>

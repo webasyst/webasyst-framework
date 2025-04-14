@@ -361,7 +361,7 @@ blockquote cite {
 
 #wa-installer .i-progress-indicator span.passed {
   color: var(--white);
-  background-color: #a33ea5;
+  background-color: var(--accent-color);
   opacity: 0.75;
 }
 
@@ -390,6 +390,9 @@ blockquote cite {
 }
 
 #wa-installer a.wa-help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
     color: var(--gray);
     margin-left: 10px;
     font-size: 0.9em;
@@ -398,10 +401,6 @@ blockquote cite {
 
 #wa-installer a.wa-help-link span {
     text-decoration: underline;
-}
-
-#wa-installer a.wa-help-link i.icon10 {
-    margin-top: 1em;
 }
 
 .large {

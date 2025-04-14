@@ -23,24 +23,45 @@
         <table class="light" style="max-width: {if $wa->whichUI() == '1.3'}200px{else}auto{/if}; margin: 0 0 10px 0;">
             {$_cnt = 0}
             {foreach $domains as $d}
-                <tr>
+                <tr{if $d.name == $current_domain} class="highlighted"{/if}>
                     <td{if $wa->whichUI() == '1.3'} style="color: black;"{else} class="black"{/if}>{$d.name|escape}</td>
                     {if $d.connected}
                         {$_cnt =+ 1}
                         {if empty($d.api_key)}
-                            <td{if $wa->whichUI() == '1.3'} style="color: red;"{else} class="text-red"{/if}>[`API Key not set.`]</td>
+                            <td><a href="javascript:void(0);" style="color: var(--red); font-weight: 500;" class="js-focus" data-domain="{$d.name|escape}">[`API Key not set.`]</a></td>
                         {else}
-                            <td style="color: green;">[`Connected`]</td>
+                            <td{if $wa->whichUI() == '1.3'} style="color: green;"{else} class="state-success"{/if}>[`Connected`]</td>
                         {/if}
                     {else}
-                        <td{if $wa->whichUI() == '1.3'} style="color: red;"{else} class="text-red"{/if}>[`Not connected.`]</td>
+                        <td>
+                            {if $wa->whichUI() == '1.3'}
+                                <a href="javascript:void(0);" class="js-create-app">[s`Connect`]</a>
+                            {else}
+                                <button class="js-create-app button small warning">[s`Connect`]</button>
+                            {/if}
+                        </td>
                     {/if}
                 </tr>
             {/foreach}
         </table>
-
+        <script>
+            $('.js-create-app').on('click', () => {
+                {if $wa->whichUI() != '1.3'}
+                const $button = $('.js-create-app');
+                $button.prop('disabled', true).addClass('disabled');
+                const $button_text = $button.text(),
+                $loader_icon = ' <i class="fas fa-spinner fa-spin"></i>'
+                $button.empty().html($button_text + $loader_icon);
+                {/if}
+                $("#s-push-settings-page").find('form').submit();
+            });
+            
+            $('.js-focus').on('click', (e) => {
+                $("#s-push-settings-page").find('input[title="'+$(e.target).data('domain')+'"]').focus();
+            });
+        </script>
         <p class="hint">
-            [s`To add a different domain, sign into your Webasyst account on that domain and save the settings again.`]
+            [s`To add a different domain, sign into your Webasyst account on that domain.`]
         </p>
         {if $_cnt > 0}
             <h6>[s`Apps API auth keys`]</h6>

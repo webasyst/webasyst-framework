@@ -6,6 +6,7 @@ class installerServicesApi extends waWebasystIDApi
     const WS_MESSAGE_SERVICE = 'WS_MESSAGE';
     const EMAIL_MESSAGE_SERVICE = 'EMAIL';
     const SMS_SERVICE = 'SMS';
+    const CRON_SERVICE = 'CRON';
 
     public function __construct(array $options = [])
     {
@@ -28,12 +29,19 @@ class installerServicesApi extends waWebasystIDApi
     public function billingCall($api_method, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
     {
         if (!$this->isConnected()) {
-            throw new waException(_w('Not connected to Webasyst ID.'));
+            return $this->falseResult('system_error', _ws('Not connected to Webasyst ID.'));
         }
         $token = $this->getSystemToken();
+        if (empty($token)) {
+            return $this->falseResult('system_error', _ws('Unable to get access token for Webasyst service API'));
+        }
+
         $resp = $this->requestApiMethod($api_method, $token, $params, $http_method, $net_options);
         if ($resp['status'] == 401) {
             $token = $this->getSystemToken(true);
+            if (empty($token)) {
+                return $this->falseResult('system_error', _ws('Unable to get access token for Webasyst service API'));
+            }
             $resp = $this->requestApiMethod($api_method, $token, $params, $http_method, $net_options);
         } else if ($resp['status'] == 404) {
             // If endpoint URL is invalid, try to refresh endpoint config and repeate call
@@ -45,6 +53,17 @@ class installerServicesApi extends waWebasystIDApi
             $resp = $this->requestApiUrl($url, $token, $params, $http_method, $net_options);
         }
         return $resp;
+    }
+
+    private function falseResult($error = 'system_error', $error_description = 'System error')
+    {
+        return [
+            'status' => false,
+            'response' => [
+                'error' => $error,
+                'error_description' => $error_description,
+            ]
+        ];
     }
 
     public function serviceCall(
@@ -190,6 +209,66 @@ class installerServicesApi extends waWebasystIDApi
         ], waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON]);
     }
 
+    public function schedule($cron_expression, 
+        $action, 
+        $app_id = null, 
+        $get_params = [],
+        $method = waNet::METHOD_GET, 
+        $timeout = null, 
+        $request_format = null, 
+        $request_body_data = null
+    ) {
+        $app_id = ifempty($app_id, wa()->getApp());
+        $query_string = http_build_query($get_params);
+        if (!empty($query_string)) {
+            $query_string .= '?' . $query_string;
+        }
+        $data =  [
+            'cron_expression' => $cron_expression,
+            'url' => wa()->getRootUrl(true) . 'api.php/cron/' . $app_id . '/' . $action . $query_string,
+            'app_id' => $app_id,
+            'action' => $action,
+            'method' => $method,
+        ];
+
+        if (!empty($timeout)) {
+            $data['timeout'] = $timeout;
+        }
+
+        if (!empty($request_format) && !empty($request_body_data)) {
+            switch ($request_format) {
+                case waNet::FORMAT_JSON:
+                    $data['request_content_type'] = 'application/json';
+                    $data['request_body'] = json_encode($request_body_data);
+                    break;
+                default:
+                    $data['request_content_type'] = 'application/x-www-form-urlencoded';
+                    $data['request_body'] = http_build_query($request_body_data);
+                    break;
+            }            
+        }
+
+        $api_result = $this->serviceCall(self::CRON_SERVICE, $data, waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON], 'jobs');
+        if (empty($api_result['status']) || $api_result['status'] >= 300) {
+            $this->logError($api_result);
+            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst CRON API error.')), $api_result['status']);
+        } else {
+            return ifset($api_result, 'response', null);
+        }
+    }
+
+    public function getJobs($app_id = null)
+    {
+        $path = empty($app_id) ? 'jobs' : 'jobs/app/' . $app_id;
+        $api_result = $this->serviceCall(self::CRON_SERVICE, [], waNet::METHOD_GET, [], $path);
+        if (empty($api_result['status']) || $api_result['status'] >= 300) {
+            $this->logError($api_result);
+            throw new waException(_w('Webasyst CRON API error.'));
+        } else {
+            return ifset($api_result, 'response', []);
+        }
+    }
+
     public function getWebsocketUrl($channel_id, $app_id = null)
     {
         $app_id = ifempty($app_id, wa()->getApp());
@@ -200,7 +279,7 @@ class installerServicesApi extends waWebasystIDApi
             ['request_format' => waNet::FORMAT_JSON],
             '', false
         );
-        if ($api_result['status'] >= 300) {
+        if (empty($api_result['status']) || $api_result['status'] >= 300) {
             $this->logError($api_result);
             throw new waException(_w('Webasyst API access error.'));
         } else {
@@ -218,7 +297,7 @@ class installerServicesApi extends waWebasystIDApi
             ['request_format' => waNet::FORMAT_JSON],
             '/'.$app_id.'_'.$channel_id.'/'
         );
-        if ($api_result['status'] >= 300) {
+        if (empty($api_result['status']) || $api_result['status'] >= 300) {
             $this->logError($api_result);
             throw new waException(_w('Webasyst API access error.'));
         }

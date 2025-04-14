@@ -1827,43 +1827,6 @@ class waInstallerApps
         return self::setConfig($path, $config);
     }
 
-    private function setRoutingConfig($app_id, $theme_id)
-    {
-        $changed = false;
-        $routing = self::getConfig(self::CONFIG_ROUTING);
-        foreach ($routing as & $routes) {
-            if (!is_array($routes)) {
-                continue; // skip alias domains
-            }
-            foreach ($routes as &$route) {
-                if (is_array($route)) { //route is array
-                    if (isset($route['app']) && ($route['app'] == $app_id)) {
-                        if (empty($route['theme'])) {
-                            $route['theme'] = $theme_id;
-                            $changed = true;
-                        }
-                        if (empty($route['theme_mobile'])) {
-                            $route['theme_mobile'] = $theme_id;
-                            $changed = true;
-                        }
-                    }
-                } else { //route is string
-                    $parts = array_filter(explode('/', $route), 'strlen');
-                    $route_app = array_shift($parts);
-                    if ($route_app == $app_id) {
-
-                    }
-                }
-                unset($route);
-            }
-            unset($routes);
-        }
-        if ($changed) {
-            self::setConfig(self::CONFIG_ROUTING, $routing);
-        }
-        return $changed;
-    }
-
     /**
      *
      * @param $app_id string
@@ -2064,7 +2027,6 @@ class waInstallerApps
                     $this->updateAppPluginsConfig($slugs[0], $slugs[2]);
                     break;
                 case 'themes':
-                    $this->setRoutingConfig($slugs[0], $slugs[2]);
                     break;
                 case 'widgets':
                     //do nothing

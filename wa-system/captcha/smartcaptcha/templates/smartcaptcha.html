@@ -2,11 +2,14 @@
 
 <div id="captcha-container" class="smart-captcha" data-sitekey="{$client_key}"></div>
 <script>
-    function onloadFunction() {
-        if (!window.smartCaptcha) {
-            return;
-        }
-
+    if (window.smartCaptcha) {
         $(window).trigger('wa_smartcaptcha_loaded');
+    } else {
+        window.onloadFunction = function() {
+            if (!window.smartCaptcha) {
+                return;
+            }
+            $(window).trigger('wa_smartcaptcha_loaded');
+        }
     }
 </script>

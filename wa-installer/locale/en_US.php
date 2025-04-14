@@ -66,7 +66,7 @@ return array(
     'Installation Guide'
     => 'Installation guide',
     'install_guide_url'
-    => 'https://www.webasyst.com/developers/docs/installation/',
+    => 'https://developers.webasyst.com/docs/installation/',
     'Extracting Webasyst archive...'
     => 'Extracting Webasyst archive...',
     'Check available updates'

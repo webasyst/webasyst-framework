@@ -71,6 +71,15 @@
                         $wrapper: $cheatsheet_drawer,
                         onOpen($drawer) {
                             $.cheatsheet[cheat_sheet_name].insertVarEvent($drawer)
+
+                            if (!$('#js-cheatsheet-alerts').length) {
+                                $('body:first').append(`<div id="js-cheatsheet-alerts" class="alert-fixed-box" style="top:0.5rem;right:3.5rem;">
+                                    <div class="alert success js-copied-alert" style="display:none;">
+                                        <i class="fas fa-check-circle"></i>
+                                        [s`Copied`]
+                                    </div>
+                                </div>`);
+                            }
                         },
                         onBgClick() {
                             this.close();
@@ -95,38 +104,16 @@
                         el = el.children('b');
                     }
 
-                    if ($design_content.length) {
-                        //If the design reactor is turned on and the html editor is selected
-                        if ($el_rte.length && $el_rte.is(':visible')) {
-                            try {
-                                $design_content.elrte()[0].elrte.selection.insertHtml(el.text());
-                            } catch (e) {
-
-                            }
-                        } else {
-                            //If the design reactor is turned and text editor is selected
-                            try {
-                                wa_editor.insert(el.text());
-                            } catch (e) {
-
-                            }
-                        }
-                    } else {
-                        //If only text editor is selected
-                        try {
-                            wa_editor.insert(el.text());
-                        } catch (e) {
-
-                                }
-                            }
-                            if ($page_content.length) {
-                                $.wa_editor_ready.then(function (method) {
-                                    $page_content[method]('insert', el.text());
-                                });
-                            }
-                        });
-                    }
-                };
+                    $.wa.copyToClipboard(el.text()).then(() => {
+                        const $copied_alert = $('#js-cheatsheet-alerts .js-copied-alert');
+                        $copied_alert.show();
+                        setTimeout(() => {
+                            $copied_alert.hide();
+                        }, 1500);
+                    });
+                });
+            }
+        };
         $(document).trigger('wa_cheatsheet_init.' + cheat_sheet_name);
         $.cheatsheet[cheat_sheet_name].init();
 

@@ -29,6 +29,7 @@ class WaHeaderAnnouncement {
             } else {
                 that.hideAndResetForm(function () {
                     that.showForm();
+                    that.$form.find('[name="data[is_notify_email]"]').prop('checked', true);
                     $('.js-new-announcement').addClass('is-open');
                 })
             }
@@ -247,6 +248,7 @@ class WaHeaderAnnouncement {
 
             if ($current_group.hasClass(class_collapsed)) {
                 $self.find('.js-announcement-count').addClass('hidden');
+                $self.removeAttr('title');
                 $current_group.addClass(class_expanded).removeClass(class_collapsed);
             }
         });

@@ -9,6 +9,8 @@ return array(
     'waAPIRightsMethod'                 => 'api/waAPIRightsMethod.class.php',
     'waAPIMethod'                       => 'api/waAPIMethod.class.php',
 
+    'waCronController'                  => 'cron/waCronController.class.php',
+
     'waAuth'                            => 'auth/waAuth.class.php',
     'waAuthAdapter'                     => 'auth/waAuthAdapter.class.php',
     'waOAuth2Adapter'                   => 'auth/waOAuth2Adapter.class.php',

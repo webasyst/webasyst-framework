@@ -405,13 +405,18 @@ class webasystDashboardAnnouncementsActions extends waActions
             }, $comments);
 
             $col = new waContactsCollection('id/'.join(',', array_unique($contact_ids)));
-            $contacts = $col->getContacts('id,name,photo_url_32', 0, 500);
+            $contacts = $col->getContacts('id,name,login,firstname,middlename,lastname,photo_url_32', 0, 500);
+
+            $contacts = array_map(function ($c) {
+                $c['name'] = waUser::formatName($c);
+                return $c;
+            }, $contacts);
         }
 
         $this->display([
                 'announcement_id' => $announcement_id,
-                'comments' => $comments ?? [],
-                'contacts' => $contacts ?? [],
+                'comments' => $comments,
+                'contacts' => $contacts,
             ],
             $wa->getAppPath('templates/actions/backend/BackendDashboardAnnouncementComments.html')
         );

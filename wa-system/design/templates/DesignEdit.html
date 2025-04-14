@@ -4,7 +4,7 @@
             <div class="wa-design-header">
                 {* Theme name *}
                 <h1 class="wa-theme-name wide custom-mb-16" style="display: none;">
-                    {sprintf('[s`%s design theme`]', $theme.name|escape)}
+                    {sprintf('[s`Design theme %s`]', $theme.name|escape)}
                 </h1>
                 <h4 class="custom-my-0">
                     {$file.id|escape}
@@ -68,6 +68,7 @@
                         <script type="text/javascript">
                             $(".wa-design-delete").on('click', function (e) {
                                 e.preventDefault();
+                                e.stopPropagation();
                                 if (confirm('[s`File will be deleted without the ability to recover. Are you sure?`]')) {
                                     $.post($(this).attr('href'), { theme_id:"{$theme_id}", file: "{$file.id}"}, function () {
                                         let li = $("ul.wa-theme-templates li.selected"),
@@ -196,7 +197,7 @@
                 </div>
             {/if}
         </div>
-        <div class="wa-editor-core-wrapper ace">
+        <div class="wa-editor-core-wrapper ace custom-mb-32">
             <div style="clear:both">
                 <textarea style="display:none" id="wa-design-content" name="content">{$file.content|escape}</textarea>
             </div>
@@ -210,7 +211,6 @@
     $(document).ready(function () {
         let is_error = false;
         $('.js-tab-content[data-id="edit"]').off('click.wa_theme').on('click.wa_theme', '.wa-theme-templates a', function () {
-            if (!waDesignConfirm()) return false;
             $(".js-tab-content li.selected").removeClass('selected');
             $(this).parent().addClass('selected');
             $.wa.setHash($(this).attr('href'));
@@ -230,7 +230,8 @@
             'id': 'wa-design-content',
             'type': "{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{else}html{/if}",
             'prefix': 'wa-design-',
-            'save_button': 'bb_submit'
+            'save_button': 'bb_submit',
+            'scroll_parent_wrapper_at_edge': true
         };
 
         var element = $('#' + options.id);

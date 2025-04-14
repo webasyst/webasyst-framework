@@ -1,7 +1,7 @@
 {assign "can_edit_notifications" $wa->user()->getRights('team', 'edit_announcements') scope="root"}
 
 {function announcement_reaction emoji='' users=[]}
-<button type="button" class="js-announcement-reaction light-gray rounded smallest custom-px-4{if $users && in_array($wa->userId(), $users)} highlighted blue{/if}" data-users="{$users|json_encode}">
+<button type="button" class="js-announcement-reaction light-gray rounded smallest custom-px-4{if $users && in_array($wa->userId(), $users)} bg-blue text-white{/if}" data-users="{$users|json_encode}">
     <span data-emoji="{$emoji}">{$emoji|escape}</span><span class="custom-px-4" data-count="{$users|count}">{$users|count}</span>
 </button>
 {/function}

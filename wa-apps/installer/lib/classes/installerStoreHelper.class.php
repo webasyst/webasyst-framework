@@ -50,6 +50,10 @@ class installerStoreHelper
         if (preg_match('~^(featured\/)~ui', $store_path)) {
             $sidebar_type = 'FEATURED';
         }
+
+        if (preg_match('~^(service(s)?/)~ui', $store_path)) {
+            $sidebar_type = 'SERVICES';
+        }
         return $sidebar_type;
     }
 

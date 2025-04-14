@@ -263,10 +263,9 @@ and (orientation : portrait) {
     max-width: 16.25rem;
 }
 
-.is-wa2 #wa-design-container .wa-theme-info-section {
-
+.is-wa2 #wa-design-container .wa-theme-name-section .dropdown-body.dd-wide {
+  max-width: 240px;
 }
-
 
 .is-wa2 #wa-design-container .value input.color {
     min-width: 95px;
@@ -422,7 +421,8 @@ and (orientation : portrait) {
 #wa-theme-start-using-dialog-routes tr > *:last-child { text-align: right; }
 #wa-theme-start-using-dialog-routes th { font-size: 1em; font-weight: 500; padding-bottom: 1rem; }
 #wa-theme-start-using-dialog-routes th:first-child { color: var(--text-color-strong); }
-#wa-theme-start-using-dialog-routes td { padding: 0.5em 0.75em; }
+#wa-theme-start-using-dialog-routes td { padding: 0.5em 0.75em; border-bottom: none; }
+#wa-theme-start-using-dialog-routes tr[data-level="0"] td { border-top: 1px solid var(--border-color-soft); }
 #wa-theme-start-using-dialog-routes label > span:first-child { margin-right: 0.375rem; }
 
 @-moz-keyframes loader-keyframes-pulse {

@@ -75,7 +75,7 @@
         {if $change_status_access}
             <div class="blank custom-pt-12 custom-pb-4">
                 <h5 class="heading flexbox">
-                  <span class="wide nowrap">{sprintf('[s`Status for %s`]', $smarty.now|wa_datetime:'humandate')}</span>
+                  <span class="wide nowrap">{$smarty.now|wa_datetime:'humandate'}</span>
                   <a href="{$backend_url}team/calendar/" class="button smaller light-gray rounded bold">[s`Calendar`]</a>
                 </h5>
                 <ul id="js-user-dropdown-menu" class="menu custom-mb-0">

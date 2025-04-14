@@ -10,12 +10,21 @@
 
     {* Product-type switch *}
     <div class="sidebar-header">
-        <div class="box custom-pb-4">
-            <div class="toggle js-installer-toggle">
-                {foreach $store_sidebar_items as $_type => $_sidebar_item}
-                <a href="{$wa_app_url}store{$_sidebar_item.TOP.base_url|escape}" data-href="{$_sidebar_item.TOP.base_url|escape|substr:1}" data-type-link="{$_sidebar_item@key}" class="semibold js-installer-toggle-link{if $store_sidebar_type == $_type} selected{/if}">{$_sidebar_item.name}</a>
-                {/foreach}
-            </div>
+        <div class="i-sidebar-bricks bricks js-installer-toggle">
+            {$_brick_icons = [
+            'APPS' => 'fas fa-home',
+            'THEMES' => 'fas fa-palette',
+            'SERVICES' => 'fas fa-at'
+            ]}
+            {foreach $store_sidebar_items as $_type => $_sidebar_item}
+                {$_data_href = $_sidebar_item.TOP.base_url|escape|substr:1}
+                {$_href = ($_type == 'SERVICES') ? "`$wa_app_url``$_data_href`" : "`$wa_app_url`store`$_sidebar_item.TOP.base_url|escape`"}
+
+                <a href="{$_href}" data-href="{$_data_href}" data-type-link="{$_sidebar_item@key}" class="{if $_type != 'SERVICES'}js-installer-toggle-link{/if}{if $store_sidebar_type == $_type} selected{/if}">
+                    <span class="icon"><i class="{$_brick_icons[$_type]}"></i></span>
+                    {$_sidebar_item.name}
+                </a>
+            {/foreach}
         </div>
     </div>
 

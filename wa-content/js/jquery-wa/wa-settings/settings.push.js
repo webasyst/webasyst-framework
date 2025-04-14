@@ -77,16 +77,15 @@ var WASettingsPush = ( function($) {
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
                     if (res.data.reload) {
+                        $.wa.content.reload();
+                        return;
+                    } else {
+                        that.$button.empty().html($button_text + $success_icon).removeClass('yellow');
+                        that.$footer_actions.removeClass('is-changed');
                         setTimeout(function(){
-                            $.wa.content.reload();
+                            that.$button.empty().html($button_text);
                         },2000);
                     }
-
-                    that.$button.empty().html($button_text + $success_icon).removeClass('yellow');
-                    that.$footer_actions.removeClass('is-changed');
-                    setTimeout(function(){
-                        that.$button.empty().html($button_text);
-                    },2000);
                 } else {
                     that.$button.empty().html($button_text);
                 }

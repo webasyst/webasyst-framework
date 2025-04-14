@@ -1,0 +1,179 @@
+{if !empty($data)}
+    {if !$data.spf.is_ok || !$data.dkim.is_ok}
+        <p class="small">
+            {sprintf_wp(
+                'Sender address <em>%s</em> cannot be used for sending emails via the Webasyst service for the next reasons:',
+                $data.original_from_email
+            )}
+        </p>
+    {/if}
+    <ul>
+    {if !$data.spf.is_ok}
+        {if empty($data.spf.record_current)}
+            <li class="small">
+            {sprintf_wp(
+                'No SPF rules are specified for domain name <em>%s</em>.',
+                $data.domain
+            )}
+            </li>
+        {else}
+            <li class="small">
+            {sprintf_wp(
+                'Missing necessary SPF rules for domain name <em>%s</em>: Webasyst Email servers’ addresses are not specified as allowed.',
+                $data.domain
+            )}
+            </li>
+        {/if}
+    {/if}
+    {if !$data.dkim.is_ok}
+        {if $data.dmarc_policy}
+            <li class="small">
+            {sprintf_wp(
+                'The DMARC policy level of domain name <em>%s</em> is <strong>%s</strong>. A Webasyst Email DKIM domain record is missing.',
+                $data.domain,
+                $data.dmarc_policy
+            )}
+            </li>
+        {else}
+            <li class="small">
+            {sprintf_wp(
+                'No DMARC policy for domain name <em>%s</em> is specified.',
+                $data.domain
+            )}
+            </li>
+        {/if}
+    {/if}
+    </ul>
+
+    {if $data.is_zone_records_just_created}
+    <p class="small">
+        {sprintf_wp(
+            'Necessary records have been added to the DNS zone of domain name <strong>%s</strong>. Please wait for up to 2 days until these changes take effect.',
+            $data.domain
+        )}
+    </p>
+    {/if}
+
+    <p class="small">
+        [`To prevent messages from being rejected or marked as SPAM by recipients’ servers, the sender’s information will be replaced as follows in the message headers:`]
+        <br><br>
+        <span class="bold">From:</span>
+        {if !empty($data.from_name)}
+            {$data.from_name|escape} &lt;{$data.from_email|escape}&gt;
+        {else}
+            {$data.from_email|escape}
+        {/if}
+        {if !empty($data.reply_to_email)}
+            <br>
+            <span class="bold">Reply-To:</span>
+            {if !empty($data.reply_to_name)}
+                {$data.reply_to_name|escape} &lt;{$data.reply_to_email|escape}&gt;
+            {else}
+                {$data.reply_to_email|escape}
+            {/if}
+        {/if}
+    </p>
+
+    {if !$data.is_public_email_provider && !$data.is_zone_records_just_created && (!$data.spf.is_ok || !$data.dkim.is_ok)}
+        <p class="small">
+            <a href="javascript:void(0);" class="js-instructions-toggle">[`Do not replace sender’s information`]</a>
+        </p>
+        <div class="js-instructions" style="display: none;">
+            {if !$data.spf.is_ok || !$data.dkim.is_ok}
+                <p class="small">
+                    {sprintf_wp(
+                        'If you do not want such a replacement and would like to use only sender address <em>%s</em> then carry out the following actions (it may be required to wait up to 2 days for these changes to take effect).',
+                        $data.original_from_email
+                    )}
+                </p>
+            {/if}
+            <ol>
+            {if !$data.spf.is_ok}
+                {if empty($data.spf.record_current)}
+                    <li class="small custom-mb-24">
+                        {sprintf_wp(
+                            'Add an SPF record for domain name <strong>%s</strong>:',
+                            $data.domain
+                        )}
+                        <div class="custom-mt-6">
+                            [`Host:`] <code>{$data.spf.domain|escape}</code>. [`Record type:`] <code>TXT</code>.
+                            [`Value:`]
+                        </div>
+                        <blockquote class="custom-mt-4">
+                            <pre class="small" style="overflow-wrap: break-word;">{$data.spf.record_required|escape}</pre>
+                        </blockquote>
+                    </li>
+                {else}
+                    <li class="small custom-mb-24">
+                        {sprintf_wp(
+                            'Change the SPF rules of domain name <strong>%s</strong>.',
+                            $data.domain
+                        )}
+
+                        <div class="custom-mt-6">
+                            {sprintf_wp(
+                                'To do so, include the Webasyst Email servers’ addresses in the list of allowed email senders for domain name <strong>%s</strong> by adding the <code>%s</code> part to its SPF record.',
+                                $data.domain,
+                                $data.spf.record_include
+                            )}
+                        </div>
+                        <div class="custom-mt-6">
+                            {sprintf_wp(
+                                'Current SPF record value in the <strong>%s</strong> zone:',
+                                $data.spf.domain
+                            )}
+                        </div>
+                        <blockquote class="custom-mt-4">
+                            <pre class="small">{$data.spf.record_current|escape}</pre>
+                        </blockquote>
+                        <div class="custom-mt-6">[`Change this record as follows:`]</div>
+                        <blockquote class="custom-mt-4">
+                            <pre class="small">{$data.spf.record_required}</pre>
+                        </blockquote>
+                    </li>
+                {/if}
+            {/if}
+            {if !$data.dkim.is_ok}
+                {if empty($data.dmarc_policy)}
+                    <li class="small custom-mb-24">
+                        {sprintf_wp(
+                            'Add a DMARC policy record for domain name <strong>%s</strong>.',
+                            $data.domain
+                        )}
+
+                        <div class="custom-mt-6">
+                            [`Host:`] <code>_dmarc.{$data.domain}</code>.
+                            [`Record type:`] <code>TXT</code>.
+                            [`Value:`] <code>v=DMARC1; p=none</code>.
+                        </div>
+                    </li>
+                {/if}
+
+                {if !empty($data.dkim.txt)}
+                    <li class="small custom-mb-24">
+                        {sprintf_wp(
+                            'Add a DKIM record to the DNS zone of domain name <strong>%s</strong>:',
+                            $data.domain
+                        )}
+
+                        <div class="custom-mt-6">
+                            [`Host:`] <code>{$data.dkim.host}</code>. [`Record type:`] <code>TXT</code>.
+                            [`Value:`]
+                        </div>
+                        <blockquote class="custom-mt-4">
+                            <pre class="small" style="overflow-wrap: break-word;">{$data.dkim.txt|escape}</pre>
+                        </blockquote>
+                    </li>
+                {/if}
+            {/if}
+            </ol>
+        </div>
+<script>
+(function() {
+    $('.js-instructions-toggle').on("click", () => {
+        $('.js-instructions').toggle();
+    });
+})();
+</script>
+    {/if}
+{/if}

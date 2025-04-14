@@ -173,6 +173,12 @@ abstract class waPushAdapter
         return implode("\n", $controls);
     }
 
+    public function validateSettings($settings = [])
+    {
+        // override it in adapter if needed
+        return null;
+    }
+
     /**
      * @param mixed [string] $settings Array of settings key=>value
      * @return void|array

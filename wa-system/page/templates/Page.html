@@ -409,7 +409,9 @@
                 {if $options.is_ajax}
                 let new_hash = {$page_url|json_encode} +id;
                 if (new_hash == location.hash) {
-                    $.wa.site.dispatch();
+                    if ($('.block-pages ul li.selected:not([data-page-id])').length) {
+                        waLoadPage(id);
+                    }
                 } else {
                     $.wa.setHash(new_hash);
                 }

@@ -91,9 +91,9 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
                 ) . '</p>';
             }
             $res = $wa_service_api->getBalance(waServicesApi::EMAIL_MESSAGE_SERVICE);
-            if ($res['status'] != 200) {
-                return null;
-            }
+        }
+        if ($res['status'] != 200) {
+            return null;
         }
         if ($only_check_auth) {
             return true;
@@ -101,7 +101,7 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
 
         $balance_amount = ifset($res, 'response', 'amount', 0);
         $price_value = ifset($res, 'response', 'price', 0);
-        $free_limits = ifset($res, 'response', 'free_limits', '');
+        $free_limits = ifset($res, 'response', 'free_limits', []);
         $remaining_free_calls = ifempty($res, 'response', 'remaining_free_calls', []);
         $remaining_pack = ifset($remaining_free_calls, 'pack', 0);
         unset($remaining_free_calls['pack']);

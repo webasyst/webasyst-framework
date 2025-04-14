@@ -17,7 +17,7 @@
 
             {* KEY *}
             {if $key == 'default'}
-                <input class="js-key" data-name="key" value="{$key|escape}" type="hidden">
+                <input class="js-key js-default-key" data-name="key" value="{$key|escape}" type="hidden">
             {else}
                 <div class="flexbox">
                     <div class="wide">
@@ -66,6 +66,7 @@
                             {if $id == 'wasender'}
                                 <div class="js-transport-description js-{$id}-description custom-my-8"{if $_transport != $id} style="display: none;"{/if}>
                                     {$transport.description|default:null}
+                                    <div class="value js-wasender-validation-content"></div>
                                 </div>
                             {else}
                                 <p class="hint js-transport-description js-{$id}-description"{if $_transport != $id} style="display: none;"{/if}>
@@ -259,7 +260,7 @@
         {/if}
 
         {* Editor for wa-config/mail.php *}
-        <div class="fields-group blank s-settings-items">
+        <div class="fields-group blank s-settings-items js-config-sender-wrapper">
             <div class="field">
                 <div class="name for-input">
                     <label for="config-sender">[s`Default sender`]</label>
@@ -319,6 +320,7 @@
             locales: {
                 required: '[`This field is required`]',
                 copied: '[`Copied`]',
+                checking: '[`Checking sender`]'
             }
         });
         $.wa.title.set({$_title|json_encode});

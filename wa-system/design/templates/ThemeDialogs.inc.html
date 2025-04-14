@@ -22,10 +22,12 @@
                 </label>
             {/if}
         </div>
-        <div class="dialog-footer">
-            <input type="hidden" name="theme" value="{$theme.id}">
-            <input type="submit" class="button orange" value="[s`Revert to original`]">
-            <a href="#/design/themes/" class="js-close-dialog light-gray button">[s`Cancel`]</a>
+        <div class="dialog-footer flexbox middle space-8">
+            <div>
+                <input type="hidden" name="theme" value="{$theme.id}">
+                <input type="submit" class="button orange" value="[s`Revert to original`]">
+                <a href="#/design/themes/" class="js-close-dialog light-gray button">[s`Cancel`]</a>
+            </div>
         </div>
     </form>
 </div>
@@ -49,43 +51,43 @@
                     </div>
                 </div>
 
-                <div id="js-alert-has-not-support-theme" class="alert warning small custom-mt-20 hidden">
-                    <div class="flexbox space-8">
-                        <div><i class="fas fa-ban"></i></div>
-                        <div>{'[s`Theme “%s” cannot be used all over this site. Below are listed the pages, sections, and apps not supported by this theme.`]'|sprintf:$theme.name|escape}</div>
+                <p class="hint custom-mt-16 js-wa-empty-site-map-hide">[s`This site’s map is empty. Add sections or pages to the site map to be used with this design theme.`]</p>
+                <div class="js-wa-empty-site-map-show">
+                    <div id="js-alert-has-not-support-theme" class="alert warning small custom-mt-20 hidden">
+                        <div class="flexbox space-8">
+                            <div><i class="fas fa-ban"></i></div>
+                            <div>{'[s`Theme “%s” cannot be used all over this site. Below are listed the pages, sections, and apps not supported by this theme.`]'|sprintf:$theme.name|escape}</div>
+                        </div>
                     </div>
-                </div>
 
-                <p class="hint custom-mt-16">[s`The use of a design theme can be selected only for top-level sections and pages in the site map. Any existing subpages inherit their theme selection.`]</p>
-
-                <table id="wa-theme-start-using-dialog-routes">
-                    <thead>
-                        <tr>
-                            <th>
-                                <label>
-                                    <span class="wa-checkbox">
-                                        <input type="checkbox" name="use_all_settlements" value="1"{if empty($has_theme_usage)} checked{/if}>
-                                        <span>
-                                            <span class="icon">
-                                                <i class="fas fa-check"></i>
+                    <table id="wa-theme-start-using-dialog-routes">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <label>
+                                        <span class="wa-checkbox">
+                                            <input type="checkbox" name="use_all_settlements" value="1"{if empty($has_theme_usage)} checked{/if}>
+                                            <span>
+                                                <span class="icon">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
                                             </span>
                                         </span>
-                                    </span>
-                                    <span>[s`On the entire website`]</span>
-                                </label>
-                            </th>
-                            <th class="gray">[s`Currently in use`]</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-
+                                        <span>[s`On the entire website`]</span>
+                                    </label>
+                                </th>
+                                <th class="gray">[s`Currently in use`]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="dialog-footer">
             <div class="small custom-mb-24">
-                <label>
+                <label class="js-wa-empty-site-map-show">
                     <span class="wa-checkbox">
                         <input type="checkbox" name="mobile_only" value="1" {if $theme.id == 'mobile'}checked{/if}>
                         <span>
@@ -97,9 +99,13 @@
                     [s`Apply this theme for mobile devices only`]
                 </label>
             </div>
-            <input type="hidden" name="theme" value="{$theme.id}">
-            <input type="submit" class="button green" value="[s`Start using`]">
-            <a href="#" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+            <div class="dialog-footer-inner flexbox middle wrap space-8">
+                <div>
+                    <input type="hidden" name="theme" value="{$theme.id}">
+                    <input type="submit" class="button green" value="[s`Start using`]">
+                    <a href="#" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+                </div>
+            </div>
         </div>
     </form>
 </div>
@@ -130,9 +136,11 @@
                     </div>
                 </div>
             </div>
-            <div class="dialog-footer">
-                <input type="submit" class="button orange" value="[s`Save`]">
-                <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+            <div class="dialog-footer flexbox middle space-8">
+                <div>
+                    <input type="submit" class="button orange" value="[s`Save`]">
+                    <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+                </div>
             </div>
         </form>
 </div>
@@ -188,9 +196,11 @@
                 </div>
             </div>
         </div>
-        <div class="dialog-footer">
-            <input type="submit" class="button blue" value="[s`Clone theme`]">
-            <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+        <div class="dialog-footer flexbox middle space-8">
+            <div>
+                <input type="submit" class="button blue" value="[s`Clone theme`]">
+                <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+            </div>
         </div>
     </form>
 </div>
@@ -249,9 +259,11 @@
                 </div>
             </div>
         </div>
-        <div class="dialog-footer">
-            <input type="submit" class="button orange" value="[s`Save`]">
-            <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+        <div class="dialog-footer flexbox middle space-8">
+            <div>
+                <input type="submit" class="button orange" value="[s`Save`]">
+                <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+            </div>
         </div>
     </form>
 </div>

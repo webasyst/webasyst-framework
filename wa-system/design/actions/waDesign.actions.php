@@ -689,6 +689,28 @@ HTACCESS;
                     }
                 }
             }
+
+            $selected_blockpages = waRequest::post('blockpages', [], waRequest::TYPE_ARRAY);
+            if ($selected_blockpages && wa()->appExists('site')) {
+                wa('site');
+                $selected_blockpages = array_keys(array_filter($selected_blockpages));
+                $domain_id_by_name = array_flip(siteHelper::getDomains());
+                if (isset($domain_id_by_name[$domain]) && class_exists('siteBlockpageModel')) {
+                    $blockpage_model = new siteBlockpageModel();
+                    $blockpage_model->updateByField([
+                        'domain_id' => $domain_id_by_name[$domain],
+                        'id' => $selected_blockpages,
+                    ], [
+                        'theme' => $theme_id,
+                    ]);
+                    $blockpage_model->updateByField([
+                        'domain_id' => $domain_id_by_name[$domain],
+                        'final_page_id' => $selected_blockpages,
+                    ], [
+                        'theme' => $theme_id,
+                    ]);
+                }
+            }
         } else {
             list($domain, $route_id) = explode('|', $route);
             if (!waRequest::post('mobile_only')) {
@@ -897,7 +919,7 @@ HTACCESS;
             $settlements_by_domain = [];
             $has_theme_usage = false;
             if (wa()->whichUI() != '1.3') {
-                $all_blockpages = $this->getBlockpagesByDomain($domains);
+                $all_blockpages = $this->getBlockpagesByDomain($domains, ifset($parent_themes, 'site', 'themes', []), $current_theme->id);
                 foreach ($domains as $_domain) {
                     list($settlements, $has_not_support_theme) = $this->workupSettlements($apps, $_domain, $parent_themes, $current_theme->id);
 
@@ -916,10 +938,34 @@ HTACCESS;
                     $settlements_by_domain[$_domain]['blockpages'] = ifset($all_blockpages, $_domain, []);
 
                     foreach ($settlements as $s) {
+                        if (isset($s['app']['icon'])) {
+                            $s['app'] = [
+                                'id' => $s['app']['id'],
+                                'icon' => $s['app']['icon'],
+                                'disabled' => ifset($s['app'], 'disabled', false),
+                            ];
+                        }
+
+                        if (ifset($s, 'url', null) === '*') {
+                            $settlements_by_domain[$_domain]['main_page'] = $s;
+                            $settlements_by_domain[$_domain]['main_page']['page_type'] = 'route';
+                            continue;
+                        }
+
                         if (in_array($s['app']['id'], $sitemap_app_ids)) {
                             $settlements_by_domain[$_domain]['sitemap_apps'][] = $s;
                         } else {
                             $settlements_by_domain[$_domain]['settings_apps'][] = $s;
+                        }
+                    }
+
+                    foreach ($settlements_by_domain[$_domain]['blockpages'] as $i => $bp) {
+                        if ($bp['url_formatted'] === '/') {
+                            $settlements_by_domain[$_domain]['main_page'] = $bp;
+                            $settlements_by_domain[$_domain]['main_page']['page_type'] = 'blockpage';
+                            unset($settlements_by_domain[$_domain]['blockpages'][$i]);
+                            $settlements_by_domain[$_domain]['blockpages'] = array_values($settlements_by_domain[$_domain]['blockpages']);
+                            break;
                         }
                     }
                 }
@@ -980,7 +1026,7 @@ HTACCESS;
     protected function workupSettlements(array $apps, string $domain, array $parent_themes, string $current_theme_id)
     {
         $routes_app_id_to_alias = [
-            'mailer' => _ws('My account. My subscriptions'),
+            'mailer' => _ws('My account › My subscriptions'),
         ];
         $routes = wa()->getRouting()->getRoutes($domain);
 
@@ -1032,14 +1078,12 @@ HTACCESS;
                                 if (isset($domain_id_by_name[$domain])) {
                                     $app_pages_search[$app_id] = [$app_page_model, [
                                         'domain_id' => $domain_id_by_name[$domain],
-                                        'parent_id' => null,
                                         'route' => [],
                                     ]];
                                 }
                             } else {
                                 $app_pages_search[$app_id] = [$app_page_model, [
                                     'domain' => $domain,
-                                    'parent_id' => null,
                                     'route' => [],
                                 ]];
                             }
@@ -1064,7 +1108,7 @@ HTACCESS;
         }
         unset($route);
 
-        // Fetch all top-level pages from DB
+        // Fetch all pages from DB
         foreach ($app_pages_search as $app_id => $_) {
             list($model, $search) = $_;
             try {
@@ -1073,24 +1117,41 @@ HTACCESS;
                 $pages = [];
             }
             if ($pages) {
-                uasort($pages, function($a, $b) {
-                    return $a['sort'] <=> $b['sort'];
-                });
-
-                foreach ($pages as $p) {
+                $pages = array_map(function($p) use ($routes, $page_route_urls) {
                     if (!isset($page_route_urls[$p['route']])) {
-                        continue;
+                        return null;
                     }
                     $route_id = $page_route_urls[$p['route']];
-                    $routes[$route_id]['pages'][] = [
+                    return [
                         'id' => $p['id'],
                         'name' => $p['name'],
                         'status' => $p['status'],
                         'url_formatted' => $routes[$route_id]['url_formatted'].$p['full_url'],
+                        'parent_id' => $p['parent_id'],
+                        'full_url' => $p['full_url'],
+                        'route' => $p['route'],
+                        'sort' => $p['sort'],
+                        'children' => [],
                     ];
-                    if (($p['full_url'] === '' || $p['full_url'] === '/') && $p['name']) {
-                        $routes[$route_id]['_name'] = $p['name'];
+                }, $pages);
+                $pages = self::formatPagesTree(array_filter($pages));
+
+                $main_page_children = [];
+                foreach ($pages as $p) {
+                    $route_id = $page_route_urls[$p['route']];
+                    if (empty($routes[$route_id]['pages']) && ($p['full_url'] === '' || $p['full_url'] === '/')) {
+                        if ($p['name']) {
+                            $routes[$route_id]['_name'] = $p['name'];
+                        }
+                        $main_page_children = $p['children'];
+                    } else {
+                        $routes[$route_id]['pages'][] = $p;
                     }
+                }
+
+                foreach ($main_page_children as $p) {
+                    $route_id = $page_route_urls[$p['route']];
+                    $routes[$route_id]['pages'][] = $p;
                 }
             }
         }
@@ -1140,7 +1201,7 @@ HTACCESS;
         return [$settlements, $has_not_support_theme];
     }
 
-    protected function getBlockpagesByDomain($domains)
+    protected function getBlockpagesByDomain($domains, $available_themes, $current_theme_id)
     {
         if (!wa()->appExists('site')) {
             return [];
@@ -1162,7 +1223,6 @@ HTACCESS;
         $blockpages = $blockpage_model->getByField([
             'domain_id' => array_values($domain_id_by_name),
             'final_page_id' => null,
-            'parent_id' => null,
         ], true);
 
         $result = [];
@@ -1173,17 +1233,52 @@ HTACCESS;
             if ($full_url !== '/') {
                 $full_url .= '/';
             }
-            $result[$d][] = [
+            $theme = ifset($p, 'theme', 'default');
+            $theme_names = [ifset($available_themes, $theme, ifset($available_themes, 'default', ''))];
+
+            $result[$d][$p['id']] = [
                 'id' => $p['id'],
                 'name' => $p['name'],
                 'status' => $p['status'] == 'final_published' ? 1 : 0,
                 'url_formatted' =>  $full_url,
+                'theme' => $theme,
+                'theme_names' => $theme_names,
+                'used_theme' => $theme === $current_theme_id,
+                'parent_id' => $p['parent_id'],
+                'sort' => $p['sort'],
+                'children' => [],
             ];
         }
+
+        foreach ($result as $d => &$pages) {
+            $pages = self::formatPagesTree($pages);
+        }
+        unset($pages);
+
         return $result;
     }
 
-    /**=
+    protected static function formatPagesTree($pages)
+    {
+        uasort($pages, function($a, $b) {
+            return $a['sort'] <=> $b['sort'];
+        });
+
+        $result = [];
+        foreach ($pages as $id => &$p) {
+            unset($p['sort']);
+            if (!$p['parent_id'] || !isset($pages[$p['parent_id']])) {
+                $result[] =& $p;
+            } else {
+                $pages[$p['parent_id']]['children'][] =& $p;
+            }
+        }
+        unset($p);
+
+        return $result;
+    }
+
+    /**
      * Convert flat list of theme settings into hierarchical tree structure
      * based on group divider levels.
      *
