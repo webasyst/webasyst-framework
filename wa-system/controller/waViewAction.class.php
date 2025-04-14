@@ -104,7 +104,7 @@ abstract class waViewAction extends waController
         return $this->controller;
     }
 
-    public function setLayout(waLayout $layout = null)
+    public function setLayout(?waLayout $layout = null)
     {
         if ($this->controller !== null && $this->controller instanceof waViewController) {
             $this->controller->setLayout($layout);

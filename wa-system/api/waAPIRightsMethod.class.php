@@ -12,7 +12,7 @@ abstract class waAPIRightsMethod extends waAPIMethod
         $this->response = self::getAppRights($this->app);
     }
 
-    public static function getAppRights($app_id, waContact $contact = null)
+    public static function getAppRights($app_id, ?waContact $contact = null)
     {
         $contact = ifset($contact, wa()->getUser());
         /**
