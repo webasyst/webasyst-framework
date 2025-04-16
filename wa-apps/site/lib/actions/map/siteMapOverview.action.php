@@ -25,9 +25,7 @@ class siteMapOverviewAction extends waViewAction
             $this->redirect(wa()->getAppUrl('site').'settings/?domain_id='.$domain_id);
         }
         $blockpage_model = new siteBlockpageModel();
-        $pages = $blockpage_model->getByDomain($domain_id);
-
-        $this->workupPages($pages, $domain);
+        $pages = $blockpage_model->getByDomainWithVerifyDraftModifications($domain_id);
 
         list($apps, $routes, $has_redirect) = $this->getSitemapRoutesApps($domain);
         $migrated_from_ui13 = wa()->getSetting('migrated_from_ui13', false, 'site');
@@ -35,6 +33,8 @@ class siteMapOverviewAction extends waViewAction
 
         list($sitemap_tree, $root_page) = $this->buildSitemapTree($routes, $pages);
         $sitemap_table_rows = $this->buildFlatSitemapTable($sitemap_tree);
+        $this->workupFrontendLinks($sitemap_table_rows, $domain);
+        $this->blockpagesHasUrlOverlapByFrontendLink($sitemap_table_rows);
 
         $show_alert_moving_to_settings = $migrated_from_ui13 && !wa()->getUser()->getSettings('site', 'hide_alert_moving_to_settings', false);
 
@@ -63,6 +63,7 @@ class siteMapOverviewAction extends waViewAction
             'is_htmleditor'    => $htmleditor,
             'root_page'        => $root_page,
             'apps_to_add'      => $apps_to_add,
+            'app_hashes'       => $this->getAppHashes($apps),
         ]);
 
         $this->workupAndAssignPersonalApps($domain);
@@ -249,6 +250,7 @@ class siteMapOverviewAction extends waViewAction
     {
         $route_rows = [];
         $root_settlement = null;
+        $route_rows_over_another = [];
         foreach ($routes as $route) {
 
             if (isset($route['app']['id'])) {
@@ -263,9 +265,31 @@ class siteMapOverviewAction extends waViewAction
             } else if ($route['url'] === '*' && !$root_settlement) {
                 $root_settlement = $route;
                 continue;
+            } else {
+                if ($route['app']['id'] === 'site' && false === strpos($route['url'], '<') && rtrim($route['url'], '*').'*' !== $route['url']) {
+                    $route['show_over_another_section'] = true;
+                    $route_rows_over_another[] = $route;
+                    continue;
+                }
             }
 
             $route_rows[] = $route;
+
+            if ($route_rows_over_another) {
+                $something_changed = false;
+                $pattern = str_replace(array(' ', '.', '(', '!'), array('\s', '\.', '(?:', '\!'), ifset($route, 'url', ''));
+                $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
+                foreach ($route_rows_over_another as $i => $r) {
+                    if (preg_match('!^'.$pattern.'$!ui', $r['url'], $match)) {
+                        unset($route_rows_over_another[$i]);
+                        $something_changed = true;
+                        $route_rows[] = $r;
+                    }
+                }
+                if (!empty($something_changed)) {
+                    $route_rows_over_another = array_values($route_rows_over_another);
+                }
+            }
         }
 
         $page_rows = [];
@@ -280,24 +304,39 @@ class siteMapOverviewAction extends waViewAction
             $page_rows[] = $page;
         }
 
-        $result = $route_rows;
+        $root_page = null;
+        if ($root_settlement) {
+            $root_settlement['is_main'] = true;
+        }
         if ($root_page_tree) {
-            $result[] = $root_settlement;
-            $result = array_merge($result, array_reverse($page_rows));
-            $result[] = $root_page_tree;
+            $root_page_tree['is_main'] = !$root_settlement;
+            // When main page is blockpage, order is: main blockpage, all blockpages, main route (preceded by routes over it), then all other routes
+            $result = array_merge(
+                $route_rows,                                // all other routes
+                array_reverse($route_rows_over_another),    // routes over main route
+                array_reverse($page_rows),                  // all blockpages
+                [$root_page_tree],                          // main blockpage
+                $root_settlement ? [$root_settlement] : [], // main route
+            );
+            $root_page = $root_page_tree;
         } else {
-            $result = array_merge($result, array_reverse($page_rows));
+            // When main page is a settlement, order is: main route (followed by routes over it), then all blockpages, then all other routes
+            foreach ($route_rows_over_another as &$r) {
+                $r['show_under_another_section'] = true;
+            }
+            unset($r);
+            $result = array_merge(
+                $route_rows,                                // all other routes
+                array_reverse($page_rows),                  // all blockpages
+                array_reverse($route_rows_over_another),    // routes over main route
+                $root_settlement ? [$root_settlement] : [], // main route
+            );
             if ($root_settlement) {
-                $result[] = $root_settlement;
+                $root_page = $root_settlement;
             }
         }
 
         $result = array_reverse($result);
-
-        $root_page = null;
-        if ($result && waRouting::clearUrl($result[0]['url']) === '') {
-            $root_page = $result[0];
-        }
         return array($result, $root_page);
     }
 
@@ -313,7 +352,7 @@ class siteMapOverviewAction extends waViewAction
         };
 
         foreach($sitemap_tree as $node) {
-            if (!is_null($node)) { //поправил warning
+            if (!is_null($node)) {
                 switch ($node['row_type']) {
                     case 'blockpage':
                         $addPageTree(['app_id' => 'site'] + $node, 0);
@@ -355,25 +394,6 @@ class siteMapOverviewAction extends waViewAction
             throw new waException('Domain not found', 404);
         }
         return $domains[$domain_id] + ['id' => $domain_id];
-    }
-
-    protected function workupPages(&$pages, $domain)
-    {
-        if (waRequest::isHttps()) {
-            $protocol = 'https://';
-        } else {
-            $protocol = 'http://';
-        }
-
-        $domain_root_url = $protocol.$domain['name'].'/';
-        foreach($pages as &$p) {
-            $p['full_url'] = trim($p['full_url'], '/');
-            if ($p['full_url']) {
-                $p['full_url'] .= '/';
-            }
-            $p['frontend_link'] = $domain_root_url.$p['full_url'];
-        }
-        unset($p);
     }
 
     protected function workupAndAssignPersonalApps($domain)
@@ -508,6 +528,72 @@ class siteMapOverviewAction extends waViewAction
             wa()->setActive($old_app);
         }
         return $result;
+    }
+
+    protected function workupFrontendLinks(&$rows, $domain)
+    {
+        if (waRequest::isHttps()) {
+            $protocol = 'https://';
+        } else {
+            $protocol = 'http://';
+        }
+        $domain_root_url = $protocol.$domain['name'].'/';
+
+        foreach($rows as &$row) {
+            if (isset($row['full_url'])) {
+                if (isset($row['route'])) {
+                    $full_url = rtrim($row['route'], '*').$row['full_url'];
+                } else {
+                    $full_url = rtrim($row['full_url'], '/');
+                    if ($full_url) {
+                        $full_url .= '/';
+                    }
+                }
+            } elseif (isset($row['url_formatted'])) {
+                $full_url = ltrim($row['url_formatted'], '/');
+            } else {
+                continue;
+            }
+
+            $row['frontend_link'] = $domain_root_url.$full_url;
+        }
+        unset($row);
+    }
+
+    protected function blockpagesHasUrlOverlapByFrontendLink(&$rows = [])
+    {
+        $blockpages = [];
+        $urls_map = [];
+        foreach ($rows as $i => &$row) {
+            if (ifset($row, 'row_type', '') === 'blockpage') {
+                $blockpages[] = &$row;
+            } else {
+                if (empty($row['show_over_another_section'])) {
+                    $urls_map[$row['frontend_link']] = $i;
+                }
+            }
+        }
+        unset($row);
+
+        if (!$urls_map) {
+            return;
+        }
+
+        foreach ($blockpages as &$p) {
+            $p['show_over_another_section'] = isset($urls_map[$p['frontend_link']]);
+        }
+        unset($p);
+    }
+
+    protected function getAppHashes($apps)
+    {
+        $app_hashes = [];
+        foreach ($apps as $app) {
+            if (!empty($app['pages'])) {
+                $app_hashes[$app['id']] = siteHelper::getPreviewHash($app['id']);
+            }
+        }
+        return $app_hashes;
     }
 
 }

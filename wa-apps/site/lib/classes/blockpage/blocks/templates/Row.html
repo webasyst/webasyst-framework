@@ -1,7 +1,7 @@
 {$block_id = $data->getId()}
 {$static_main = "site-block-row rw f-w"}
-
-<div class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_main}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+{$anchor_id = $data->data['id']|default:0}
+<div class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_main}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}" {if $anchor_id}id="{$anchor_id|escape}"{/if}>
     {foreach $children as $c}
         {$c.html}
     {/foreach}

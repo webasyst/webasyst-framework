@@ -15,7 +15,7 @@ class siteHeadingBlockType extends siteBlockType
     public function getExampleBlockData()
     {
         $result = $this->getEmptyBlockData();
-        $result->data = ['html' => 'Excepteur', 'tag' => 'h2', 'block_props' => ['font-header' => "t-hdn", 'font' => "t-2", 'margin-top' => "m-t-0", 'margin-bottom' => "m-b-8", 'align' => "t-l"]];
+        $result->data = ['html' => 'Morbi convallis', 'tag' => 'h3', 'block_props' => ['font-header' => "t-hdn", 'font-size' => ["name" => "Size #3", "value" => "t-2", "unit" => "px", "type" => "library"], 'margin-top' => "m-t-0", 'margin-bottom' => "m-b-12", 'align' => "t-l"]];
         return $result;
     }
 
@@ -23,6 +23,7 @@ class siteHeadingBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Heading'),
+            'tags' => 'element',
             'sections' => [
                 [   'type' => 'FontHeaderGroup',
                     'name' => _w('Font header'),
@@ -50,9 +51,13 @@ class siteHeadingBlockType extends siteBlockType
                 ],
                 [   'type' => 'ShadowsGroup',
                     'name' => _w('Shadows'),
+                    'shadow_type' => 'text'
                 ],
                 [   'type' => 'VisibilityGroup',
                     'name' => _w('Visibility on devices'),
+                ],
+                [   'type' => 'IdGroup',
+                    'name' => _w('Identifier (ID)'),
                 ],
                 [   'type' => 'TagsGroup',
                     'name' => _w('SEO'),

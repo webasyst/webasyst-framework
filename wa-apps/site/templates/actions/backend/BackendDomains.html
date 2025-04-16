@@ -150,7 +150,7 @@
 
                     <div class="s-domain-hint s-grid">
                         {if $is_alias}
-                            <div class="hint text-ellipsis">{sprintf_wp('This is a mirror site (alias) for <strong>%s</strong>.', waIdna::dec($d.is_alias|escape)|replace:'www.':'')}</div>
+                            <div class="hint text-ellipsis">{sprintf_wp('Mirror site (alias) for <strong>%s</strong>', waIdna::dec($d.is_alias|escape)|replace:'www.':'')}</div>
                         {elseif $redirect}
                             <div class="hint text-ellipsis">{sprintf_wp('Redirected to <strong>%s</strong>', waIdna::dec($redirect|replace:['http://','https://','www.']:''|escape))}</div>
                         {/if}
@@ -302,4 +302,11 @@
         }
     });
 
+    {if waRequest::get('show_add_dialog')}
+        $wrapper.find('.js-domains-add').click();
+        if (history.state?.content_url) {
+            const content_url = history.state.content_url.replace('&show_add_dialog=1', '');
+            history.replaceState({ content_url }, null, content_url);
+        }
+    {/if}
 })();</script>

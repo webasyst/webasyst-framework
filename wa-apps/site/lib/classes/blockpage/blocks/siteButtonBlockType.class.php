@@ -7,13 +7,14 @@ class siteButtonBlockType extends siteBlockType
     public function getExampleBlockData()
     {
         $result = $this->getEmptyBlockData();
-        $result->data = ['html' => 'Ссылка в виде кнопки', 'tag' => 'a', 'block_props' => ['border-radius' => "b-r-r", 'margin-bottom' => "m-b-12", 'button-style' => "bg-brn-1 t-wht b-r-r", 'button-size' => 'inp-m p-l-13 p-r-13']];
+        $result->data = ['html' => 'Exercitation', 'tag' => 'a', 'block_props' => ['margin-bottom' => "m-b-12", 'button-style' => ['name' => "complementary", 'scheme' => 'complementary', 'value' => "btn-a", 'type' => 'palette'], 'button-size' => 'inp-m p-l-13 p-r-13']];
         return $result;
     }
     protected function getRawBlockSettingsFormConfig()
     {
         return [
             'type_name' => _w('Button or link'),
+            'tags' => 'element',
             'sections' => [
                 [   'type' => 'ButtonLinkGroup',
                     'name' => _w('Action'),
@@ -35,6 +36,9 @@ class siteButtonBlockType extends siteBlockType
                 ],
                 [   'type' => 'VisibilityGroup',
                     'name' => _w('Visibility on devices'),
+                ],
+                [   'type' => 'IdGroup',
+                    'name' => _w('Identifier (ID)'),
                 ],
             ],
         ] + parent::getRawBlockSettingsFormConfig();

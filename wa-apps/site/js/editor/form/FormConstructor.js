@@ -18,6 +18,7 @@ var FormConstructor = ( function($) {
             // CONST
             //that.block_id = options["block_id"];
             that.$wrapper = options["$wrapper"];
+            that.$sidebar = that.$wrapper.parent();
             that.templates = $.form_storage.templates;
             that.storage_data = $.form_storage.data;
             that.media_prop =  options["media_prop"];
@@ -49,6 +50,8 @@ var FormConstructor = ( function($) {
 
             // INIT
             that.vue_model = that.initVue();
+
+
         }
 
         FormConstructor.prototype.init = function(vue_model) {
@@ -65,6 +68,7 @@ var FormConstructor = ( function($) {
             that.media_prop = media_prop;
             that.$target_wrapper = that.$iframe_wrapper.find('.seq-child [data-block-id=' + block_id + ']');
             that.is_new_block = is_new_block;
+            let is_element = form_config.tags && form_config.tags === 'element';
             that.states = {
                 block_id: block_id,
                 form_config: form_config,
@@ -73,7 +77,7 @@ var FormConstructor = ( function($) {
                 media_prop: media_prop,
                 elements: form_config.elements || null,
                 semi_headers: form_config.semi_headers || null,
-                header: form_config.type_name,
+                header: is_element ? form_config.type_name : 'Block',
                 selected_element: form_config.elements?.main || null, //that.selected_element,
             }
 
@@ -154,24 +158,40 @@ var FormConstructor = ( function($) {
                             block_id: { type: Number},
                         },
                         data() {
+                            const self = this;
                             const form_type = that.storage_data[this.group_config.type].type;
-                            let arr_options = that.storage_data[this.group_config.type].values;
+                            let arr_options = that.storage_data[this.group_config.type];
+                            const selected_element = that.states.selected_element;
+                            const active_icon = that.storage_data[this.group_config.type].icon;
+                            const data_type_array = ['inline_props', 'block_props']
+                            let data_type = null;
+                            let active_option = null;
                             /*for (let key in this.options.values) {
                                 arr_options.push(this.options.values[key]);
                             }*/
-                            const active_option = this.block_data?.block_props?.[form_type];
+                            //let active_option = this.block_data?.block_props?.[form_type];
+                            $.each(data_type_array, function(i, d) {
+                                let temp_options = self.block_data?.[d]?.[form_type] || self.block_data?.[d]?.[selected_element]?.[form_type] || null;
+                                if (temp_options) {
+                                    active_option = temp_options;
+                                    if (active_option) {data_type = d}
+                                }
+                            })
+                            //console.log("FontGroup", active_option, self.block_data)
+                            //if (selected_element) active_option = this.block_data?.block_props?.[selected_element]?.[form_type];
                             const header_name = this.group_config.name;
 
-                            return { arr_options, header_name, active_option, form_type }
+                            return { active_icon, data_type, selected_element, arr_options, header_name, active_option, form_type }
                           },
                         template: that.templates["component_font_group"],
                         delimiters: ['{ { ', ' } }'],
                         components: {
-                            'FontDropdown': that.vue_components['component-dropdown'],
+                            //'FontDropdown': that.vue_components['component-dropdown'],
+                            'FontSizeDropdown': that.vue_custom_components['component-width-dropdown'],
                           },
 
                     },
-                    "ButtonStyleGroup": {
+                    /*"ButtonStyleGroupOld": {
                         props: {
                             group_config: { type: Object },
                             block_data: { type: Object, default: {} },
@@ -180,9 +200,7 @@ var FormConstructor = ( function($) {
                         data() {
                             const form_type = that.storage_data[this.group_config.type].type;
                             let arr_options = that.storage_data[this.group_config.type].values;
-                            /*for (let key in this.options.values) {
-                                arr_options.push(this.options.values[key]);
-                            }*/
+
                             let active_option_class = this.block_data?.block_props?.[form_type];
                             const form_type_custom = 'custom';
                             var filter_search = arr_options.filter( function(option) {
@@ -219,6 +237,61 @@ var FormConstructor = ( function($) {
                                 }
                             }
                         },
+                    },*/
+                    "ButtonStyleGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            let arr_options = that.storage_data[this.group_config.type];
+
+                            let active_option = this.block_data?.block_props?.[form_type];
+                            const form_type_custom = 'custom';
+
+                            const header_name = this.group_config.name;
+
+                            return { arr_options, header_name, active_option, form_type }
+                          },
+                        template: that.templates["component_button_style_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'ButtonStyleDropdown': that.vue_custom_components['component-button-color-dropdown'],
+                          },
+                        methods: {
+                            change: function(option) { //put classes to remove in temp_active_option
+                                let self = this;
+
+                                if (self.active_option !== option.value) {
+                                    var filter_search = self.arr_options.filter( function(opt) {
+                                        return option.value == opt.value;
+                                    });
+                                    let new_option_class = (filter_search.length ? filter_search[0].value_class : self.active_option_class);
+
+                                    $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                        self.block_data.block_props[self.form_type] = new_option_class;
+                                        bs.saveBlockData(self.block_data);
+                                    });
+                                    self.active_option = option.value; //update base
+                                    //self.active_option_class = new_option_class
+                                    console.log('saveBlockData', self.block_data)
+                                }
+                            },
+                            changePalette: function(option) { //put classes to remove in temp_active_option
+                                let self = this;
+                                if (self.active_option !== option) {
+                                    $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                        self.block_data.block_props[self.form_type] = option;
+                                        bs.saveBlockData(self.block_data);
+                                    });
+                                    self.active_option = option; //update base
+                                    //self.active_option_class = new_option_class
+                                    console.log('saveBlockData', self.block_data)
+                                }
+                            }
+                        },
                     },
                     "ButtonSizeGroup": {
                         props: {
@@ -247,7 +320,7 @@ var FormConstructor = ( function($) {
                             'ButtonSizeToggle': that.vue_components['component-toggle'],
                           },
                     },
-                    "OldColumnsGroup": {
+                    /*"OldColumnsGroup": {
                         props: {
                             group_config: { type: Object },
                             block_data: { type: Object, default: {} },
@@ -299,7 +372,7 @@ var FormConstructor = ( function($) {
 
                             }
                         }
-                    },
+                    },*/
                     "ColumnsGroup": {
                         props: {
                             group_config: { type: Object },
@@ -321,7 +394,7 @@ var FormConstructor = ( function($) {
                             let arr_options = that.storage_data['ColumnsGroup'].values;
                             const icons = that.storage_data['ColumnsGroup'].icons;
                             const active_option = this.block_data?.block_props?.[form_type];
-                            
+
                             const header_name = this.group_config.name;
                             const media_prop = that.media_prop;
                             const icon = that.media_prop ? icons[media_prop] : 'fa-desktop';
@@ -361,7 +434,7 @@ var FormConstructor = ( function($) {
                                 updateSelectedBlock(column_block_id)
                             },
                             addColumn: function(event) {
-                                let self = this; 
+                                let self = this;
                                 const $block_wrapper = that.$target_wrapper.find('.js-seq-wrapper').eq(0);
                                 let column_id = $block_wrapper.find('> .seq-child')?.eq(self.columns_data.length - 1)?.data('block-id');
                                 $block_wrapper.css('opacity', 0.5)
@@ -378,7 +451,125 @@ var FormConstructor = ( function($) {
                                 $.wa.editor.removeBlock(column_id, that.$target_wrapper.find('.js-seq-wrapper').eq(0));
                                 self.columns_data.pop();
                                 console.log('removeColumn', column_id);
-                                
+
+                            }
+                        }
+                    },
+                    "ColumnWidthGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            //const form_type = that.storage_data[this.group_config.type].type;
+                            const form_type_custom = 'custom';
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            const element = that.states.elements['wrapper'];
+                            const selected_element = that.states.selected_element;
+                            let arr_options = that.storage_data[this.group_config.type].values;
+                            const icons = that.storage_data[this.group_config.type].icons;
+                            const active_option = this.block_data?.block_props?.[element]?.[form_type];
+                            const header_name = this.group_config.name;
+                            //const media_prop = that.media_prop;
+                            //const icon = that.media_prop ? icons[media_prop] : 'fa-desktop';
+                            return {  arr_options, header_name, active_option, form_type, form_type_custom, element, selected_element}
+                        },
+                        template: that.templates["component_columns_maxwidth_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'MaxWidthDropdown': that.vue_components['component-dropdown'],
+                          },
+                        methods: {
+                            change: function(option) {
+                                let self = this;
+                                //console.log('saveBlockData', option)
+                            },
+
+                        },
+                        mounted: function() {
+                            const self = this;
+                            $(self.$el).find("#tooltip-column-max-width").waTooltip();
+                        }
+                    },
+                    "CardsGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            //const form_type = that.storage_data[this.group_config.type].type;
+                            const form_type = 'customColumn';
+                            self.columns_nodes = that.$target_wrapper.find('.js-seq-wrapper').eq(0).find('> .seq-child');
+                            let columns_data = [];
+                            let cards_dropdown_array = [];
+                            let indestructible_cols = this.block_data?.indestructible || false;
+                            cards_dropdown_array.push({
+                                name: 'Choose card',
+                                value: 'default'
+                            });
+                            $.each(self.columns_nodes, function(i, node) {
+                                const column_id = $(node).attr('data-block-id');
+                                const column_data = $.wa.editor.block_storage.getData(column_id);
+                                cards_dropdown_array.push({
+                                    name: (i+1) + ' card',
+                                    value: column_id
+                                });
+                                columns_data.push(column_data.column);
+                                if (column_data?.indestructible) indestructible_cols = true;
+                            });
+                            //console.log(columns_data);
+
+                            let arr_options = that.storage_data['ColumnsGroup'].values;
+                            const icons = that.storage_data['ColumnsGroup'].icons;
+                            const active_option = this.block_data?.block_props?.[form_type];
+
+                            const header_name = this.group_config.name;
+                            const media_prop = that.media_prop;
+                            const icon = that.media_prop ? icons[media_prop] : 'fa-desktop';
+                            return { cards_dropdown_array, indestructible_cols, columns_data, arr_options, header_name, active_option, form_type, media_prop, icon}
+                        },
+                        template: that.templates["component_cards_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'CardsListDropdown': that.vue_components['component-dropdown'],
+                            'CustomButton': that.vue_components['custom-button'],
+                          },
+                        methods: {
+                            change: function(option, column_num, activeOption) { //put classes to remove in temp_active_option
+                                let self = this;
+
+                            },
+                            changeComponent: function(option) {
+                                let self = this;
+                                let key = option;
+                                let column_block_id = option.value;
+                                /*let $editable = that.$target_wrapper.find('.style-wrapper');
+                                $editable = $editable.length ? $editable : that.$target_wrapper;
+                                $editable = $editable.find('.site-block-column').eq(key);
+                                let column_block_id = $editable.data('block-id');*/
+                                updateSelectedBlock(column_block_id)
+                            },
+                            addColumn: function(event) {
+                                let self = this;
+                                const $block_wrapper = that.$target_wrapper.find('.js-seq-wrapper').eq(0);
+                                let column_id = $block_wrapper.find('> .seq-child')?.eq(self.columns_data.length - 1)?.data('block-id');
+                                $block_wrapper.css('opacity', 0.5)
+                                let column_data = {}
+                                if (column_id) column_data = { duplicate_block_id: column_id };
+                                else column_data = { parent_block_id: $block_wrapper.data('block-id'), type_name: 'site.Column_' };
+                                $.post('?module=editor&action=addBlock', column_data).then(function(new_parent_block_html) {
+                                    $block_wrapper.replaceWith(new_parent_block_html);
+                                });
+                            },
+                            removeColumn: function() {
+                                let self = this;
+                                let column_id = that.$target_wrapper.find('.js-seq-wrapper').eq(0).find('> .seq-child').eq(self.columns_data.length - 1).data('block-id');
+                                $.wa.editor.removeBlock(column_id, that.$target_wrapper.find('.js-seq-wrapper').eq(0));
+                                self.columns_data.pop();
+                                console.log('removeColumn', column_id);
+
                             }
                         }
                     },
@@ -391,16 +582,28 @@ var FormConstructor = ( function($) {
                         data() {
                             const form_type = that.storage_data[this.group_config.type].type;
                             let arr_options = that.storage_data[this.group_config.type].values;
-                            const element = that.states.elements['wrapper'];
-                            const active_option = this.block_data?.block_props?.[element]?.[form_type];
+                            //const element = that.states.elements['wrapper'];
+                            const active_option = this.block_data?.wrapper_props?.[form_type];
                             const header_name = this.group_config.name;
-                            return { arr_options, header_name, active_option, form_type, element }
+                            return { arr_options, header_name, active_option, form_type }
                         },
                         template: that.templates["component_columns_align_group"],
                         delimiters: ['{ { ', ' } }'],
                         components: {
                             'ColumnsAlignDropdown': that.vue_components['component-dropdown'],
                           },
+                        methods: {
+                            change: function(option) { //set class props for hseq wrapper
+                                let self = this;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    if (!self.block_data.wrapper_props) self.block_data.wrapper_props = {};
+                                    self.block_data.wrapper_props[self.form_type] = option.value;
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                                self.active_option = option.value;
+                            },
+                        }
                     },
                     "ColumnsAlignVerticalGroup": {
                         props: {
@@ -435,6 +638,26 @@ var FormConstructor = ( function($) {
                             },
                         }
                     },
+                    "ColumnAlignVerticalGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            let arr_options = that.storage_data[this.group_config.type].values;
+                            const element = that.states.elements['main'];
+                            const active_option = this.block_data?.block_props?.[element]?.[form_type];
+                            const header_name = this.group_config.name;
+                            return { element, arr_options, header_name, active_option, form_type}
+                        },
+                        template: that.templates["component_column_align_vertical_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'ColumnsAlignDropdown': that.vue_components['component-dropdown'],
+                        },
+                    },
                     "RowsAlignGroup": {
                         props: {
                             group_config: { type: Object },
@@ -465,6 +688,63 @@ var FormConstructor = ( function($) {
                                     console.log('saveBlockData', self.block_data)
                                 });
                                 self.active_option = option.value;
+                            },
+                        }
+                    },
+                    "RowsWrapGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            const options = that.storage_data[this.group_config.type].values[0];
+                            const icons = that.storage_data[this.group_config.type].icons;
+                            //const element = that.states.elements['wrapper'];
+                            const icon = that.media_prop ? icons[that.media_prop] : 'fa-desktop';
+                            const disabledValue = false;
+                            const header_name = this.group_config.name;
+
+                            let active_options = this.block_data?.wrapper_props?.[form_type]?.split(' ') || [];
+                            const currentValue = that.media_prop? options[`value_${that.media_prop}`] : options.value;
+                            let activeValue = !active_options.includes(currentValue);
+                            return { active_options, header_name, activeValue, currentValue, form_type, icon, disabledValue}
+                          },
+                          template: `
+                          <div class="s-editor-option-wrapper">
+                            <div class="s-editor-option-body custom-mt-8">
+                                <div class="switch-wrap-group custom-mb-24 flexbox middle space-12">
+                                    <switch-toggle styleData="flex-shrink: 0" activeName="switch-wrap" :activeValue="activeValue" :disabled="disabledValue" @changeSwitch="changeSwitch" :textValue="$t('custom.Move elements to the next line')" switchClass="smaller"></switch-toggle>
+                                    <span class="s-icon icon text-light-gray" v-if="icon"><i class="fas" :class="icon"></i></span>
+                                </div>
+                            </div>
+                          </div>
+                          `,
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'SwitchToggle': that.vue_components['component-switch'],
+                          },
+                        methods: {
+                            changeSwitch(option) {
+                                let self = this;
+                                let temp_active_options = self.active_options.slice();
+                                if (option) {
+                                    temp_active_options = temp_active_options.filter((el) => el !== self.currentValue);
+                                } else {
+                                    if (!temp_active_options.includes(self.currentValue)) temp_active_options.push(self.currentValue);
+                                }
+                                //console.log(option, self.currentValue, temp_active_options)
+                                if (!self.block_data.wrapper_props) self.block_data.wrapper_props = {};
+                                self.block_data.wrapper_props[self.form_type] = temp_active_options.join(' ');
+                                if (!temp_active_options.length) delete self.block_data.wrapper_props[self.form_type];
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                                self.active_options = temp_active_options;
+                                self.activeValue = option;
                             },
                         }
                     },
@@ -511,10 +791,10 @@ var FormConstructor = ( function($) {
                             'SwitchAbs': that.vue_components['component-switch'],
                           },
                         methods: {
-                            changeSwitch(option, event) { 
+                            changeSwitch(option, event) {
                                 let self = this;
                                 let result_value = '';
-                                
+
                                 if (event) {
                                     if (!self.active_option) {
                                         result_value = option;
@@ -540,14 +820,14 @@ var FormConstructor = ( function($) {
                                 })[0];
                                 self.activeValue = result_value;
                                 self.active_option = filter_search;
-                                console.log('changeSwitch', option, self.active_option);
                                 $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                     if (!self.block_data.block_props) self.block_data.block_props = {};
                                     if (!self.block_data.block_props[self.element]) self.block_data.block_props[self.element] = {};
                                     self.block_data.block_props[self.element][self.form_type] = result_value;
                                     bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data);
                                 });
-                                
+
                             },
                         },
                         mounted: function() { }
@@ -577,7 +857,7 @@ var FormConstructor = ( function($) {
                             'SwitchToggle': that.vue_components['component-switch'],
                           },
                         methods: {
-                            changeSwitch(option) { 
+                            changeSwitch(option) {
                                 let self = this;
                                 let $editable = that.$target_wrapper;
                                 let $app_template_section = $editable.siblings('.app-template');
@@ -585,14 +865,15 @@ var FormConstructor = ( function($) {
                                 self.block_data.html = $editable.html();
                                 if (option) {
                                     $editable.hide();
-                                    $app_template_section.show();
-                                    $main_settings_wrapper.children().each(function(i, el){ 
+                                    const app_template = $app_template_section.data('template').replace(/\"/g, '"');
+                                    $app_template_section.html(app_template).show();
+                                    $main_settings_wrapper.children().each(function(i, el){
                                         if (i > 2) $(el).hide();
                                     })
                                 } else {
                                     $editable.show();
-                                    $app_template_section.hide();
-                                    $main_settings_wrapper.children().each(function(i, el){ 
+                                    $app_template_section.html('').hide();
+                                    $main_settings_wrapper.children().each(function(i, el){
                                         if (i > 2) $(el).show();
                                     })
                                 }
@@ -602,7 +883,7 @@ var FormConstructor = ( function($) {
                                     self.block_data.app_template['active'] = option;
                                     bs.saveBlockData(self.block_data, false);
                                 });
-                                
+
                             },
                         },
                         mounted: function() { //Костыль / Сломается если будет долгая загрузка
@@ -610,12 +891,71 @@ var FormConstructor = ( function($) {
                             let $main_settings_wrapper =  $(self.$el).closest('.site-editor-block-settings');
                             if (self.activeValue) {
                                 $(() => setTimeout(function(){
-                                    $main_settings_wrapper.children().each(function(i, el){ 
+                                    $main_settings_wrapper.children().each(function(i, el){
                                         if (i > 2) $(el).hide();
                                     })
                                  }, 50));
                             }
                             $(self.$el).find("#tooltip-switch-app").waTooltip();
+                        }
+                    },
+                    "MaxWidthToggleGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const header_name = this.group_config.name;
+                            const element = that.states.elements['wrapper'];
+                            const selected_element = that.states.selected_element;
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            let arr_option = that.storage_data[this.group_config.type].values[0].value;
+                            let activeValue = false;
+                            if (element) {
+                                activeValue = this.block_data?.block_props?.[element]?.[form_type] || false;
+                            };
+                            const disabledValue = false;
+                            return { header_name, activeValue, disabledValue, arr_option, form_type, element, selected_element }
+                        },
+                        template: `
+                        <div class="switch-max-width-group custom-mb-32 custom-mt-24 flexbox middle space-12" v-if="element === selected_element">
+                            <switch-toggle activeName="switch-max-width" :activeValue="activeValue" :disabled="disabledValue" @changeSwitch="changeSwitch" :textValue="$t('custom.Width is limited')" switchClass="smaller"></switch-toggle>
+                            <span id="tooltip-max-width-toggle" data-wa-tooltip-template="#tooltip-max-width-toggle1">
+                                <i class="fas fa-question-circle text-light-gray"></i>
+                            </span>
+                            <div class="wa-tooltip-template" id="tooltip-max-width-toggle1" >
+                                <div style="width: 240px"> { { $t('custom.tooltip-max-width-toggle') } }</div>
+                            </div>
+                        </div>
+                        `,
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'SwitchToggle': that.vue_components['component-switch'],
+                          },
+                        methods: {
+                            changeSwitch(option) {
+                                let self = this;
+
+                                if (option) {
+                                    if (!self.block_data.block_props) self.block_data.block_props = {};
+                                    if (!self.block_data.block_props[self.element]) self.block_data.block_props[self.element] = {};
+                                    self.block_data.block_props[self.element][self.form_type] = self.arr_option;
+                                }
+                                else {
+                                    if (self.block_data.block_props[self.element]) delete self.block_data.block_props[self.element][self.form_type];
+                                }
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data);
+                                });
+
+                            },
+                        },
+                        mounted: function() {
+                            const self = this;
+                            $(self.$el).find("#tooltip-max-width-toggle").waTooltip();
                         }
                     },
                     "FontStyleGroup": {
@@ -665,22 +1005,28 @@ var FormConstructor = ( function($) {
                                     const arr_block_options = that.storage_data.link_block_data;
                                     const arr_pages_options = that.storage_data.link_page_data;
                                     const form_type = 'custom';
-                                    const selection_attr = {
-                                        active_option: 'external-link',
-                                        active_block_option: '1',
-                                        active_pages_option: '1',
+                                    let selection_attr = {
+                                        active_option: 'internal-link',
+                                        active_block_option: null,
+                                        active_pages_option: null,
                                         inputEmail: '',
                                         inputSubject: '',
                                         inputPhone: '',
                                         inputCheckbox: false,
+                                        inputCheckboxNoFollow: false
                                     };
 
                                     const active_data = arr_options.filter( function(option) {
-                                        return (option.value === 'external-link');
+                                        return (option.value === 'internal-link');
                                     })[0];
                                     //
                                     return { selection_attr, active_data, link_header, arr_options, arr_block_options, arr_pages_options, form_type}
                                   },
+                                computed: {
+                                    isEmptyData: function () {
+                                       return jQuery.isEmptyObject(this.active_link_options)
+                                    }
+                                },
                                 template: that.templates["component_form_link_group"],
                                 components: {
                                     'FormHeader': that.vue_components['form-header'],
@@ -688,36 +1034,49 @@ var FormConstructor = ( function($) {
                                     'CustomButton': that.vue_components['custom-button'],
                                 },
                                 created: function() {
-                                        let self = this;
-                                        let selection_temp = self.active_link_options ? self.active_link_options : self.selection.anchorNode.parentElement.attributes;
+                                    let self = this;
+                                    let selection_temp = self.active_link_options ? self.active_link_options : self.selection.anchorNode.parentElement.attributes;
+                                    if (selection_temp['data-value']) {
+                                        let value = selection_temp.getNamedItem("data-value").value;
+                                        self.selection_attr.active_option = value;
+                                        self.active_data = self.arr_options.filter( function(option) {
+                                            return (option.value === value);
+                                        })[0];
 
-                                        if (selection_temp['data-value']) {
-                                            let value = selection_temp.getNamedItem("data-value").value;
-                                            self.selection_attr.active_option = value;
-                                            self.active_data = self.arr_options.filter( function(option) {
-                                                return (option.value === value);
-                                            })[0];
-                                            if (value === 'external-link') {
+                                        if (value === 'external-link') {
+                                            self.selection_attr.inputEmail = selection_temp.getNamedItem("href").nodeValue;
+                                        }
+                                        if (value === 'email-link' ) {
+                                            const temp = selection_temp.getNamedItem("href").nodeValue.split('mailto:')[1];
+                                            self.selection_attr.inputEmail = temp.split('?subject=')[0];
+                                            self.selection_attr.inputSubject = temp.split('?subject=')[1];
+                                        }
+                                        if (value === 'phone-link' ) {
+                                            self.selection_attr.inputPhone = selection_temp.getNamedItem("href").nodeValue.split('tel:')[1];
+                                        }
+                                        if (value === 'internal-link') {
+                                            self.selection_attr.active_pages_option = selection_temp.getNamedItem("data-block")?.value || null;
+                                            if (self.selection_attr.active_pages_option === null) {
                                                 self.selection_attr.inputEmail = selection_temp.getNamedItem("href").nodeValue;
                                             }
-                                            if (value === 'email-link' ) {
-                                                const temp = selection_temp.getNamedItem("href").nodeValue.split('mailto:')[1];
-                                                self.selection_attr.inputEmail = temp.split('?subject=')[0];
-                                                self.selection_attr.inputSubject = temp.split('?subject=')[1];
-                                            }
-                                            if (value === 'phone-link' ) {
-                                                self.selection_attr.inputPhone = selection_temp.getNamedItem("href").nodeValue.split('tel:')[1];
-                                            }
-                                            if (value === 'internal-link' ) {
-                                                self.selection_attr.active_pages_option = selection_temp.getNamedItem("data-block").value;
-                                            }
-                                            if (value === 'block-link' ) {
-                                                self.selection_attr.active_block_option = selection_temp.getNamedItem("data-block").value;
-                                            }
-                                            if (selection_temp.getNamedItem("target") ) {
-                                                self.selection_attr.inputCheckbox = true;
+                                        }
+                                        if (value === 'block-link' ) {
+                                            self.selection_attr.active_block_option = selection_temp.getNamedItem("data-block")?.value || null;
+                                            if (self.selection_attr.active_block_option === null) {
+                                                self.selection_attr.inputEmail = selection_temp.getNamedItem("href").nodeValue;
                                             }
                                         }
+                                        if (selection_temp.getNamedItem("target") ) {
+                                            self.selection_attr.inputCheckbox = true;
+                                        }
+                                        if (selection_temp.getNamedItem("rel") ) {
+                                            self.selection_attr.inputCheckboxNoFollow = true;
+                                        }
+                                    }
+                                },
+                                mounted: function() {
+                                    let self = this;
+                                    self.mountTooltips();
                                 },
                                 methods: {
                                     change: function(option) {
@@ -725,6 +1084,12 @@ var FormConstructor = ( function($) {
                                         self.active_data = self.arr_options.filter( function(opt) {
                                             return (opt.value === option.value);
                                         })[0];
+                                        setTimeout(()=> self.mountTooltips(), 0);
+                                    },
+                                    mountTooltips: function() {
+                                        let self = this;
+                                        $(self.$el).find("#tooltip-internal-link")?.waTooltip();
+                                        $(self.$el).find("#tooltip-block-link")?.waTooltip();
                                     },
                                     changePagesDropdown: function(option) {
                                         let self = this;
@@ -733,6 +1098,18 @@ var FormConstructor = ( function($) {
                                     changeBlockDropdown: function(option) {
                                         let self = this;
                                         self.selection_attr.active_block_option = option.value;
+                                    },
+                                    changeAnchor() {
+                                        let self = this;
+                                        let temp_input = self.selection_attr.inputEmail;
+                                        if (temp_input !== '#' && temp_input !== '') {
+                                            let hash_pos = temp_input.indexOf('#');
+                                            if (hash_pos >= 0) {
+                                                self.selection_attr.inputEmail = '#' + temp_input.split('#')[1];
+                                            } else {
+                                                self.selection_attr.inputEmail = '#' + temp_input;
+                                            }
+                                        }
                                     },
                                     saveLink: function() {
                                         let self = this;
@@ -751,21 +1128,27 @@ var FormConstructor = ( function($) {
                                             new_url = 'tel:' + self.selection_attr.inputPhone;
                                         }
                                         if (active_data.value === 'internal-link' ) {
-                                            new_url = self.arr_pages_options.filter( function(option) {
-                                                return (option.value === self.selection_attr.active_pages_option);
-                                            })[0]['url'];
                                             active_block_attr = self.selection_attr.active_pages_option;
+                                            if (active_block_attr) {
+                                                new_url = self.arr_pages_options.filter( function(option) {
+                                                    return (option.value === self.selection_attr.active_pages_option);
+                                                })[0]['url'];
+                                            }
                                         }
                                         if (active_data.value === 'block-link' ) {
-                                            new_url = self.arr_block_options.filter( function(option) {
-                                                return (option.value === self.selection_attr.active_block_option);
-                                            })[0]['url'];
                                             active_block_attr = self.selection_attr.active_block_option;
+                                            if (active_block_attr) {
+                                                new_url = self.arr_block_options.filter( function(option) {
+                                                    return (option.value === self.selection_attr.active_block_option);
+                                                })[0]['url'];
+                                            } else {
+                                                new_url = new_url
+                                            }
                                         }
                                         if (new_url) {
-                                            
+
                                             //попробовал сделать через insertHTML, работает криво
-                                            /*let linkNode = document.createElement('a') 
+                                            /*let linkNode = document.createElement('a')
                                             linkNode.href = new_url;
                                             linkNode.innerText = self.selection.toString();
 
@@ -779,12 +1162,15 @@ var FormConstructor = ( function($) {
                                             console.log(self.selection.toString(), linkNode.outerHTML);
                                             self.$emit('updateLink', 'insertHTML', linkNode.outerHTML);
                                             self.$emit('closeDrawer');*/
-                               
+
                                             self.$emit('updateLink', 'CreateLink', new_url);
                                             self.$emit('closeDrawer');
 
                                             if (self.selection_attr.inputCheckbox) {
                                                 self.selection.anchorNode.parentElement.target = '_blank';
+                                            }
+                                            if (self.selection_attr.inputCheckboxNoFollow) {
+                                                self.selection.anchorNode.parentElement.rel = 'nofollow';
                                             }
                                             self.selection.anchorNode.parentElement.setAttribute("data-value", active_data.value)
                                             if (active_block_attr) {
@@ -796,21 +1182,30 @@ var FormConstructor = ( function($) {
                                     },
                                     deleteLink: function() {
                                         let self = this;
+                                        //self.cleanForm();
+
                                         self.$emit('updateLink', 'unlink');
                                         self.$emit('closeDrawer');
+
+
                                     },
                                     cleanForm: function() {
                                         let self = this;
-                                        /*self.inputEmail = '';
-                                        self.inputCheckbox = false;
-                                        self.inputPhone = '';
-                                        self.inputSubject = '';
-                                        self.active_option = 'external-link';
-                                        self.active_block_option = '1';
-                                        self.active_pages_option = '1';*/
-                                        /*self.active_data = self.arr_options.filter( function(option) {
-                                            return (option.value === self.active_option);
-                                        })[0];*/
+
+                                        /*self.selection_attr = {
+                                            active_option: 'external-link',
+                                            active_block_option: null,
+                                            active_pages_option: null,
+                                            inputEmail: '',
+                                            inputSubject: '',
+                                            inputPhone: '',
+                                            inputCheckbox: false,
+                                            inputCheckboxNoFollow: false
+                                        };*/
+                                        //self.clean_key += 1;
+                                        //console.log('cleankey', self.clean_key)
+                                        //self.selection_attr.inputEmail = '';
+
                                     },
                                     goToParent: function(parent_id) {
                                         let self = this;
@@ -834,12 +1229,27 @@ var FormConstructor = ( function($) {
                                     self.toggleModal();
                                     return
                                 }
-                                that.$iframe_wrapper[0].execCommand(option, false, url); // сохраняет форму сама по себе, т.к. идет событие input в элементе 
-                                
+                                //проверяем есть ли выделенный фрагмент или просто фокус на элементе
+                                let selected_text_length = (that.$iframe_wrapper[0].getSelection().anchorOffset - that.$iframe_wrapper[0].getSelection().extentOffset);
+                                //если просто фокус, берем весь контент элемента на котором фокус, если родитель сам блок, то ничего не делаем
+                                if (selected_text_length === 0) {
+                                    const targetEl = self.getSelectionBoundaryElement()
+                                    let tagN = targetEl.tagName;
+                                    console.log(targetEl, tagN)
+                                    if (self.tagsArr.indexOf(tagN) < 0) return;
+                                    let rng = that.$iframe_wrapper[0].createRange()
+                                    let sel = that.$iframe_wrapper[0].getSelection()
+                                    rng.selectNodeContents(targetEl)
+                                    sel.removeAllRanges()
+                                    sel.addRange(rng)
+                                }
+                                //магия execCommand
+                                that.$iframe_wrapper[0].execCommand(option, false, url); // сохраняет форму сама по себе, т.к. идет событие input в элементе
+
                                 //self.block_data.html = $editable.html();
                                 $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                     self.block_data.html = $editable.html();
-                                    bs.saveBlockData(self.block_data, false);
+                                    bs.saveBlockData(self.block_data);
                                 });
 
                                 //Update buttons
@@ -861,7 +1271,6 @@ var FormConstructor = ( function($) {
                             },
                             goToParent: function(parent_id) {
                                 let self = this;
-                                console.log(parent_id, self.block_id)
                                 if (self.block_id === parent_id) {
                                     self.toggleModal();
                                     return
@@ -873,16 +1282,37 @@ var FormConstructor = ( function($) {
                             let self = this;
                             let $editable = that.$target_wrapper.find('.style-wrapper');
                             $editable = $editable.length ? $editable : that.$target_wrapper;
-                            $editable.on('mouseup', function(e) { // To highlight the buttons on mouseup
-                                let targetEl = $(e.target);
+
+                            //Take element from getSelection()
+                            self.getSelectionBoundaryElement = function(isStart) {
+                                let range, sel, container;
+                                    sel = that.$iframe_wrapper[0].getSelection();
+                                    if (sel.rangeCount > 0) {
+                                        range = sel.getRangeAt(0);
+                                    }
+
+                                    if (range) {
+                                       container = range[isStart ? "startContainer" : "endContainer"];
+                                       // Check if the container is a text node and return its parent if so
+                                       return container.nodeType === 3 ? container.parentNode : container;
+                                    }
+                            }
+
+                            $editable.on('mouseup', (e) => updateTagData($(e.target)))
+
+                            updateTagData($(self.getSelectionBoundaryElement(true)));
+
+                            // Function highlight the buttons on mouseup and get Link Attributes
+                            function updateTagData(targetEl) {
+
+                                //let targetEl = $(e.target);
                                 let tagN = targetEl.prop("tagName");
                                 let temp_active_options = [];
+                                self.active_link_options = [];
                                 if (self.showLinkModal) {
                                     self.selection = that.$iframe_wrapper[0].getSelection();
-                                    self.for_key = self.for_key + 1;
-                                    //console.log(self.selection);
+                                    self.for_key += 1;
                                 }
-
                                 while (self.tagsArr.indexOf(tagN) >= 0 ) {
                                     switch (tagN) {
                                         case 'B':
@@ -911,7 +1341,7 @@ var FormConstructor = ( function($) {
                                 tagN = targetEl.prop("tagName");
                                }
                                self.active_options = temp_active_options;
-                            })
+                            }
                         },
                     },
                     "ButtonLinkGroup": { //сделать значение по умолчанию
@@ -926,64 +1356,89 @@ var FormConstructor = ( function($) {
                             const arr_block_options = that.storage_data.link_block_data;
                             const arr_pages_options = that.storage_data.link_page_data;
                             const form_type = 'custom';
+                            let showSwitch = false;
+                            let showChildren = true;
                             const group_header = this.group_config.name;
-                            const selection_attr = {
-                                active_option: 'external-link',
-                                active_block_option: '1',
-                                active_pages_option: '1',
+                            if (this.group_config.is_hidden) {
+                                showSwitch = true;
+                                showChildren = false;
+                            }
+                            let selection_attr = {
+                                active_option: 'internal-link',
+                                active_block_option: null,
+                                active_pages_option: null,
                                 inputEmail: '',
                                 inputSubject: '',
                                 inputPhone: '',
                                 inputCheckbox: false,
+                                inputCheckboxNoFollow: false,
                             };
+                            //self.wa_url_front = $.site.wa_url;
                             const show_buttons = false;
 
                             const active_data = arr_options.filter( function(option) {
-                                return (option.value === 'external-link');
+                                return (option.value === 'internal-link');
                             })[0];
                             //
-                            return { show_buttons, selection_attr, active_data, group_header, arr_options, arr_block_options, arr_pages_options, form_type}
+                            return { showSwitch, showChildren, show_buttons, selection_attr, active_data, group_header, arr_options, arr_block_options, arr_pages_options, form_type}
                           },
+
                         template: that.templates["component_button_link_group"],
                         components: {
                             'LinkActionDropdown': that.vue_components['component-dropdown'],
                             'CustomButton': that.vue_components['custom-button'],
+                            'SwitchToggle': that.vue_components['component-switch'],
                         },
                         created: function() {
-                                let self = this;
-                                self.$editable = that.$target_wrapper.find('.style-wrapper');
-                                self.$editable = self.$editable.length ? self.$editable : that.$target_wrapper;
-                                //let selection = that.$iframe_wrapper[0].getSelection();
-                                //let selection_temp = self.selection.anchorNode.parentElement.attributes;
-                                //let selection_arr = self.selection_attr;
-
-                                if (self.block_data.link_props) {
-                                    let value = self.block_data.link_props['data-value'];
-                                    self.selection_attr.active_option = value;
-                                    self.active_data = self.arr_options.filter( function(option) {
-                                        return (option.value === value);
-                                    })[0];
-                                    if (value === 'external-link') {
-                                        self.selection_attr.inputEmail = self.$editable.attr("href");
-                                    }
-                                    if (value === 'email-link' ) {
-                                        const temp = self.block_data.link_props["href"].split('mailto:')[1];
-                                        self.selection_attr.inputEmail = temp.split('?subject=')[0];
-                                        self.selection_attr.inputSubject = temp.split('?subject=')[1];
-                                    }
-                                    if (value === 'phone-link' ) {
-                                        self.selection_attr.inputPhone = self.block_data.link_props["href"].split('tel:')[1];
-                                    }
-                                    if (value === 'internal-link' ) {
-                                        self.selection_attr.active_pages_option = self.block_data.link_props["data-block"];
-                                    }
-                                    if (value === 'block-link' ) {
-                                        self.selection_attr.active_block_option = self.block_data.link_props["data-block"];
-                                    }
-                                    if (self.block_data.link_props["target"] ) {
-                                        self.selection_attr.inputCheckbox = true;
+                            let self = this;
+                            self.$editable = that.$target_wrapper.find('.style-wrapper');
+                            self.$editable = self.$editable.length ? self.$editable : that.$target_wrapper;
+                            //let selection = that.$iframe_wrapper[0].getSelection();
+                            //let selection_temp = self.selection.anchorNode.parentElement.attributes;
+                            //let selection_arr = self.selection_attr;
+                            self.isEmptyData = true;
+                            if (self.block_data.link_props) {
+                                self.isEmptyData = false;
+                                let value = self.block_data.link_props['data-value'];
+                                self.showChildren = true;
+                                self.selection_attr.active_option = value;
+                                self.active_data = self.arr_options.filter( function(option) {
+                                    return (option.value === value);
+                                })[0];
+                                if (value === 'external-link') {
+                                    self.selection_attr.inputEmail = self.$editable.attr("href");
+                                }
+                                if (value === 'email-link' ) {
+                                    const temp = self.block_data.link_props["href"].split('mailto:')[1];
+                                    self.selection_attr.inputEmail = temp.split('?subject=')[0];
+                                    self.selection_attr.inputSubject = temp.split('?subject=')[1];
+                                }
+                                if (value === 'phone-link' ) {
+                                    self.selection_attr.inputPhone = self.block_data.link_props["href"].split('tel:')[1];
+                                }
+                                if (value === 'internal-link') {
+                                    self.selection_attr.active_pages_option = self.block_data.link_props["data-block"] || null;
+                                    if (self.selection_attr.active_pages_option === null) {
+                                        self.selection_attr.inputEmail = self.block_data.link_props["href"];
                                     }
                                 }
+                                if (value === 'block-link' ) {
+                                    self.selection_attr.active_block_option = self.block_data.link_props["data-block"] || null;
+                                    if (self.selection_attr.active_block_option === null) {
+                                        self.selection_attr.inputEmail = self.block_data.link_props["href"];
+                                    }
+                                }
+                                if (self.block_data.link_props["target"] ) {
+                                    self.selection_attr.inputCheckbox = true;
+                                }
+                                if (self.block_data.link_props["rel"] ) {
+                                    self.selection_attr.inputCheckboxNoFollow = true;
+                                }
+                            }
+                        },
+                        mounted: function() {
+                            let self = this;
+                            self.mountTooltips()
                         },
                         methods: {
                             change: function(option) {
@@ -992,6 +1447,29 @@ var FormConstructor = ( function($) {
                                     return (opt.value === option.value);
                                 })[0];
                                 self.show_buttons = true;
+                                setTimeout(()=> self.mountTooltips(), 0);
+                            },
+                            changeSwitch(option) {
+                                let self = this;
+                                //let $editable = that.$target_wrapper;
+                                self.showChildren = option
+                                if (!option) {
+                                    //self.switchValue = option;
+                                  self.deleteLink();
+                                }
+                            },
+                            changeAnchor() {
+                                let self = this;
+                                self.show_buttons = true;
+                                let temp_input = self.selection_attr.inputEmail;
+                                if (temp_input !== '#' && temp_input !== '') {
+                                    let hash_pos = temp_input.indexOf('#');
+                                    if (hash_pos >= 0) {
+                                        self.selection_attr.inputEmail = '#' + temp_input.split('#')[1];
+                                    } else {
+                                        self.selection_attr.inputEmail = '#' + temp_input;
+                                    }
+                                }
                             },
                             changePagesDropdown: function(option) {
                                 let self = this;
@@ -1003,12 +1481,16 @@ var FormConstructor = ( function($) {
                                 self.selection_attr.active_block_option = option.value;
                                 self.show_buttons = true;
                             },
+                            mountTooltips: function() {
+                                let self = this;
+                                $(self.$el).find("#tooltip-internal-link")?.waTooltip();
+                                $(self.$el).find("#tooltip-block-link")?.waTooltip();
+                            },
                             saveLink: function() {
                                 let self = this;
                                 let new_url = self.selection_attr.inputEmail;
                                 let active_data = self.active_data;
                                 let active_block_attr = '';
-                                //const selection = that.$iframe_wrapper[0].getSelection();
 
                                 if (active_data.value === 'email-link' ) {
                                     new_url = 'mailto:' + new_url;
@@ -1020,16 +1502,22 @@ var FormConstructor = ( function($) {
                                     new_url = 'tel:' + self.selection_attr.inputPhone;
                                 }
                                 if (active_data.value === 'internal-link' ) {
-                                    new_url = self.arr_pages_options.filter( function(option) {
-                                        return (option.value === self.selection_attr.active_pages_option);
-                                    })[0]['url'];
                                     active_block_attr = self.selection_attr.active_pages_option;
+                                    if (active_block_attr) {
+                                        new_url = self.arr_pages_options.filter( function(option) {
+                                            return (option.value === self.selection_attr.active_pages_option);
+                                        })[0]['url'];
+                                    }
                                 }
                                 if (active_data.value === 'block-link' ) {
-                                    new_url = self.arr_block_options.filter( function(option) {
-                                        return (option.value === self.selection_attr.active_block_option);
-                                    })[0]['url'];
                                     active_block_attr = self.selection_attr.active_block_option;
+                                    if (active_block_attr) {
+                                        new_url = self.arr_block_options.filter( function(option) {
+                                            return (option.value === self.selection_attr.active_block_option);
+                                        })[0]['url'];
+                                    } else {
+                                        new_url = new_url;
+                                    }
                                 }
                                 if (new_url) {
                                     //self.$emit('updateLink', 'CreateLink', new_url);
@@ -1048,6 +1536,14 @@ var FormConstructor = ( function($) {
                                         self.$editable.removeAttr("target")
                                         delete self.block_data.link_props['target']
                                     }
+                                    if (self.selection_attr.inputCheckboxNoFollow) {
+                                        self.$editable.attr('rel', 'nofollow');
+                                        self.block_data.link_props['rel'] = 'nofollow';
+                                    }
+                                    else {
+                                        self.$editable.removeAttr("rel")
+                                        delete self.block_data.link_props['rel']
+                                    }
                                     if (active_block_attr) {
                                         //self.$editable.attr("data-block", active_block_attr);
                                         self.block_data.link_props['data-block'] = active_block_attr;
@@ -1056,14 +1552,15 @@ var FormConstructor = ( function($) {
                                         //self.$editable.removeAttr("data-block");
                                         delete self.block_data.link_props['data-block'];
                                     }
-                                    self.cleanForm();
-
+                                    //self.cleanForm();
+                                    self.show_buttons = false;
                                     $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                         //self.block_data.html = self.$editable.html();
                                         bs.saveBlockData(self.block_data, false);
 
                                     });
                                     console.log('saveBlockData', self.block_data)
+                                    self.isEmptyData = false;
                                 }
 
                             },
@@ -1077,10 +1574,23 @@ var FormConstructor = ( function($) {
                                 self.show_buttons = false;
                                 //self.$emit('updateLink', 'unlink');
                                 //self.$emit('closeDrawer');
+                                self.showChildren = false;
+                                self.cleanForm()
                             },
                             cleanForm: function() {
                                 let self = this;
                                 self.show_buttons = false;
+                                self.selection_attr = {
+                                    active_option: 'internal-link',
+                                    active_block_option: null,
+                                    active_pages_option: null,
+                                    inputEmail: '',
+                                    inputSubject: '',
+                                    inputPhone: '',
+                                    inputCheckbox: false,
+                                    inputCheckboxNoFollow: false,
+                                };
+                                self.isEmptyData = true;
                             }
                         }
                     },
@@ -1093,11 +1603,11 @@ var FormConstructor = ( function($) {
                         data() {
                             const { ref } = Vue;
                             const form_type = that.storage_data[this.group_config.type].type;
-                            const arr_options = that.storage_data[this.group_config.type].values;
+                            const arr_options = that.storage_data[this.group_config.type];
                             let active_option = this.block_data?.inline_props?.[form_type];
                             const semi_header = this.group_config.name;
                             const active_icon = that.storage_data[this.group_config.type].icon;
-                            const tagsArr = ['B', 'I', 'U', 'STRIKE', 'A', 'FONT']
+                            const tagsArr = ['B', 'I', 'U', 'STRIKE', 'A', 'FONT', 'SPAN']
                             return { arr_options, semi_header, active_option, form_type, active_icon, tagsArr}
                           },
                         template: that.templates["component_text_color_group"],
@@ -1118,46 +1628,114 @@ var FormConstructor = ( function($) {
                                     rng.selectNodeContents($editable[0])
                                     sel.removeAllRanges()
                                     sel.addRange(rng)
-                                    //self.block_data.html = $editable.html();
+                                    $(self.getSelectionBoundaryElement(true)).find('font').each(function(){$(this).removeAttr("class")});
+                                    that.$iframe_wrapper[0].execCommand('foreColor', false, '#' + option);
                                 }
-                                //that.$iframe_wrapper[0].execCommand('styleWithCSS', false, true);
-                                that.$iframe_wrapper[0].execCommand('foreColor', false, '#' + option);
-                                //that.$iframe_wrapper[0].execCommand('styleWithCSS', false, true);
+                                else {
+                                    $(self.getSelectionBoundaryElement(true)).find('font').each(function(){$(this).removeAttr("class")});
+                                    that.$iframe_wrapper[0].execCommand('foreColor', false, '#' + option);
+                                    $(self.getSelectionBoundaryElement(false)).removeAttr("class");
+                                }
+                                //console.log(that.$iframe_wrapper[0].getSelection().focusNode, self.getSelectionBoundaryElement(true), self.getSelectionBoundaryElement(false))
+                                //if (that.$iframe_wrapper[0].getSelection().focusNode.parentNode.nodeName === "FONT")  that.$iframe_wrapper[0].getSelection().focusNode.parentNode.classList = [];
+                                //that.$iframe_wrapper[0].execCommand('removeformat');
+
                                 self.block_data.html = $editable.html();
 
-                                self.active_option = { type: 'self_color', value: '#' + option, name: 'Self color'};
+                                //self.active_option = { type: 'self_color', value: '#' + option, name: 'Self color'};
                                 /*$.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                     bs.saveBlockData(self.block_data);
                                 });
                                 console.log('saveBlockData', self.block_data)*/
+                            },
+                            changePalette: function(option) {
+                                let self = this;
+                                $editable = that.$target_wrapper.find('.style-wrapper');
+                                $editable = $editable.length ? $editable : that.$target_wrapper;
+                                let selected_text_length = (that.$iframe_wrapper[0].getSelection().anchorOffset - that.$iframe_wrapper[0].getSelection().extentOffset);
+
+                               if (selected_text_length === 0) {
+                                    let rng = that.$iframe_wrapper[0].createRange()
+                                    let sel = that.$iframe_wrapper[0].getSelection()
+                                    rng.selectNodeContents($editable[0])
+                                    sel.removeAllRanges()
+                                    sel.addRange(rng)
+                                    //that.$iframe_wrapper[0].execCommand("SelectAll");
+                               }
+                                    //that.$iframe_wrapper[0].execCommand('removeformat');
+                                    //that.$iframe_wrapper[0].execCommand('formatblock', false, 'font');
+                                    //console.log($(self.getSelectionBoundaryElement(true)).find('font'))
+                                    $(self.getSelectionBoundaryElement(true)).find('font').each(function(){$(this).removeAttr("class")});
+                                    that.$iframe_wrapper[0].execCommand('foreColor', false, '#000');
+
+                                    //$(self.getSelectionBoundaryElement(true)).attr('class', option.value);
+                                    that.$iframe_wrapper[0].getSelection().focusNode.parentNode.color = '';
+                                    that.$iframe_wrapper[0].getSelection().focusNode.parentNode.classList = [option.value];
+
+
+                                self.block_data.html = $editable.html();
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                });
+                                console.log('saveBlockData', self.block_data)
+
+                                //self.active_option = { type: option.type, value: option.value, name: option.name};
+
                             }
                         },
                         mounted: function() {
                             let self = this;
                             let $editable = that.$target_wrapper.find('.style-wrapper');
                             $editable = $editable.length ? $editable : that.$target_wrapper;
-                            $editable.on('mouseup', function(e) { // To highlight the buttons on mouseup
-                                checkTag(e)
-                            })
+                            $editable.on('mouseup', (e) => checkTag($(e.target))) // To highlight the buttons on mouseup
 
-                            function checkTag(el){
-                                let targetEl = $(el.target);
+                            function checkTag(targetEl){
+                                //let targetEl = $(el.target);
                                 let tagN = targetEl.prop("tagName");
 
                                 while (self.tagsArr.indexOf(tagN) >= 0 ) {
-                                if (tagN === 'FONT') {
-                                    let target_color = targetEl[0].attributes.color.value || false;
-                                    if (target_color) {
-                                        self.active_option = { type: 'self_color', value: target_color, name: 'Self color'};
+                                    if (tagN === 'FONT') {
+                                        let target_color = targetEl[0].attributes.color?.value || false;
+                                        let target_class = targetEl[0].attributes.class?.value || false;
+                                        if (target_color) {
+                                            self.active_option = { type: 'self_color', value: target_color, name: 'Self color'};
+                                        }
+                                        if (target_class) {
+                                            self.active_option = { type: 'palette', value: target_class, name: 'Palette'};
+                                        }
+                                        //break;
+                                        return;
                                     }
-                                    //break;
-                                    return;
-                                }
-                                targetEl = targetEl.parent();
-                                tagN = targetEl.prop("tagName");
+                                    if (tagN === 'SPAN') {
+                                        let target_class = targetEl[0].attributes.class?.value || false;
+                                        if (target_class) {
+                                            self.active_option = { type: 'palette', value: target_class, name: 'Palette'};
+                                        }
+                                        return;
+                                    }
+                                    targetEl = targetEl.parent();
+                                    tagN = targetEl.prop("tagName");
                                }
                                self.active_option =  self.block_data?.inline_props?.[self.form_type];
+                               //console.log('checktag', self.active_option)
                             }
+
+                            self.getSelectionBoundaryElement = function(isStart) {
+                                let range, sel, container;
+                                    sel = that.$iframe_wrapper[0].getSelection();
+                                    if (sel.rangeCount > 0) {
+                                        range = sel.getRangeAt(0);
+                                    }
+
+                                    if (range) {
+                                       container = range["startContainer"];
+                                       // Check if the container is a text node and return its parent if so
+                                       return isStart ?  container : container.parentNode;
+                                    }
+                            }
+
+                            checkTag($(self.getSelectionBoundaryElement(false)));
+
                         },
                     },
                     "BackgroundColorGroup": {
@@ -1170,6 +1748,7 @@ var FormConstructor = ( function($) {
                             const self = this;
                             const form_type = that.storage_data[this.group_config.type].type;
                             const arr_options = that.storage_data[this.group_config.type];
+                            self.default_prop = that.storage_data[this.group_config.type].default_prop;
                             const active_icon = that.storage_data[this.group_config.type].icon;
                             const header_name = this.group_config.name;
                             const data_type_array = ['inline_props', 'block_props']
@@ -1230,7 +1809,7 @@ var FormConstructor = ( function($) {
                                     self.layers.push(new_layer);
                                 }
                                 else { //create default layer
-                                    const new_layer = Object.assign({}, self.arr_options.palette[0]);
+                                    const new_layer = Object.assign({}, self.default_prop);
                                     new_layer.uuid = self.last_uuid; //add uniq layer index
                                     self.layers.push(new_layer)
                                 }
@@ -1411,9 +1990,11 @@ var FormConstructor = ( function($) {
                         },
                         data() {
                             const self = this;
-                            const form_type = that.storage_data[this.group_config.type].type;
-                            const arr_options = that.storage_data[this.group_config.type];
-                            const active_icon = that.storage_data[this.group_config.type].icon;
+                            const shadow_type = this.group_config.shadow_type || '';
+                            const group_config_type = shadow_type + this.group_config.type;
+                            const form_type = that.storage_data[group_config_type].type;
+                            const arr_options = that.storage_data[group_config_type];
+                            const active_icon = that.storage_data[group_config_type].icon;
                             const header_name = this.group_config.name;
                             const data_type_array = ['inline_props', 'block_props'];
                             let showChildren = false;
@@ -1425,13 +2006,14 @@ var FormConstructor = ( function($) {
                             $.each(data_type_array, function(i, d) {
                                 let temp_options = self.block_data?.[d]?.[form_type] || self.block_data?.[d]?.[self.element]?.[form_type] || null;
                                 if (temp_options) {
-                                    active_options = temp_options;
+                                    active_options = $.extend(true, {}, temp_options);
                                     if (active_options.layers) {
                                         layers = Object.values(active_options.layers)
                                         self.last_uuid = active_options.uuid || self.last_uuid;
                                     }
                                 }
                             });
+
                             //const target_wrapper = iframe_wrapper.find('.seq-child > [data-block-id=' + self.block_id + ']');
                             self.$editable = that.$target_wrapper.find('.style-wrapper');
                             if (self.element) self.$editable = that.$target_wrapper.find('.' + self.element);
@@ -1451,14 +2033,9 @@ var FormConstructor = ( function($) {
                                 if (event.oldIndex === event.newIndex) return;
                                 const oldLayer = self.layers[event.oldIndex]
                                 const newLayer = self.layers[event.newIndex]
-                                //const oldUid = oldLayer.uuid;
-                                //const newUid = newLayer.uuid;
-                                //oldLayer.uuid = newUid;
-                                //newLayer.uuid = oldUid;
                                 self.layers[event.newIndex] = oldLayer;
                                 self.layers[event.oldIndex] = newLayer;
                                 self.changeCss();
-                                //console.log(oldLayer, newLayer, oldUid, newUid)
                             },
                             toggleChildren() {
                                 var self = this;
@@ -1472,6 +2049,7 @@ var FormConstructor = ( function($) {
                             },
                             addLayer(index) {
                                 const self = this;
+
                                 if (self.layers?.[0]) { //copy first layer if we have layers
                                     const new_layer = Object.assign({}, self.layers[0]);
                                     new_layer.uuid = ++self.last_uuid; //add uniq layer index
@@ -1666,7 +2244,7 @@ var FormConstructor = ( function($) {
                             //element: { type: String }
                         },
                         data() {
-                            const arr_options = that.storage_data[this.group_config.type];
+                            const arr_options = that.storage_data[this.group_config.type]; //.slice(0,2)
                             const selected_element = that.states.selected_element;
                             //const form_type = ["padding-top", "padding-bottom"];
                             let active_options = (this.block_data?.block_props||{});
@@ -1676,13 +2254,16 @@ var FormConstructor = ( function($) {
                             const semi_headers = that.states.semi_headers ? that.states.semi_headers : 'Inner';
                             const header_name = this.group_config.name;
                             const body_class = 'right';
+                            const icons = that.storage_data.media_icons_data;
+                            const media_prop = that.media_prop;
+                            const media_icon = that.media_prop ? icons[that.media_prop] : 'fa-desktop';
 
-                            return { selected_element, arr_options, header_name, semi_headers, body_class, active_options}
+                            return { media_prop, media_icon, selected_element, arr_options, header_name, semi_headers, body_class, active_options}
                           },
                         template: that.templates["component_padding_group"],
                         delimiters: ['{ { ', ' } }'],
                         components: {
-                            'PaddingDropdown': that.vue_components['component-dropdown'],
+                            'PaddingDropdown': that.vue_components['component-dropdown-removable'],
                           },
                         methods: {
                             toggleChildren() {
@@ -1713,14 +2294,17 @@ var FormConstructor = ( function($) {
                             } else {
                                 showChildren = true;
                             };
+                            const icons = that.storage_data.media_icons_data;
+                            const media_prop = that.media_prop;
+                            const media_icon = that.media_prop ? icons[that.media_prop] : 'fa-desktop';
                             const semi_headers = that.states.semi_headers ? that.states.semi_headers : 'Inner';
                             const header_name = this.group_config.name;
-                            return { selected_element, arr_options, header_name, showChildren, semi_headers, body_class: 'right', active_options}
+                            return { media_prop, media_icon, selected_element, arr_options, header_name, showChildren, semi_headers, body_class: 'right', active_options}
                           },
                         template: that.templates["component_margin_group"],
                         delimiters: ['{ { ', ' } }'],
                         components: {
-                            'MarginDropdown': that.vue_components['component-dropdown'],
+                            'MarginDropdown': that.vue_components['component-dropdown-removable'],
                           },
                         methods: {
                             toggleChildren() {
@@ -1731,6 +2315,102 @@ var FormConstructor = ( function($) {
                                 });
                                 self.showChildren = !self.showChildren;
                                 $(self.$el).find(".s-editor-options-body").slideToggle(0);
+                            },
+                        },
+                    },
+                    "HeightGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            const arr_options = that.storage_data[this.group_config.type].values;
+                            const selected_element = that.states.selected_element;
+                            self.active_option_object = this.block_data?.inline_props?.[form_type] || null;
+                            let active_option = self.active_option_object?.type || null;
+                            let showChildren = active_option ? true : false;
+                            const header_name = this.group_config.name;
+
+                            let inputUnit = 'px';
+                            let unit_options = that.storage_data.border_unit_data;
+                            let inputSize = 300;
+                            if (active_option === 'custom') {
+                                inputUnit = self.active_option_object?.unit;
+                                inputSize = self.active_option_object?.value.split(inputUnit)[0];
+                            }
+                            let active_option_dropdown = self.active_option_object?.value;
+                            return { active_option_dropdown, form_type, inputUnit, inputSize, unit_options, selected_element, arr_options, header_name, showChildren, body_class: 'right', active_option}
+                          },
+                        template: that.templates["component_height_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'HeightDropdown': that.vue_components['component-dropdown'],
+                            'WidthUnitDropdown': that.vue_components['component-dropdown'],
+                          },
+                        methods: {
+                            change: function(option) {
+                                const self = this;
+
+                                let temp_active_option = self.arr_options.filter((obj) => obj.name === option.name)[0];
+                                //self.active_option_dropdown = temp_active_option.value;
+                                if (temp_active_option.type === 'custom') {
+                                    temp_active_option.value = self.inputSize+self.inputUnit;
+                                    temp_active_option.unit = self.inputUnit;
+                                }
+                                self.active_option = temp_active_option.type;
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    if (!self.selected_element) {
+                                        if (!self.block_data.inline_props) self.block_data.inline_props = {};
+                                        self.block_data.inline_props[self.form_type] = temp_active_option;
+                                    } else {
+                                        if (!self.block_data.inline_props) self.block_data.inline_props = {};
+                                        if (!self.block_data.inline_props[self.element]) self.block_data.inline_props[self.element] = {};
+                                        self.block_data.inline_props[self.element][self.form_type] = temp_active_option;
+                                    }
+                                    bs.saveBlockData(self.block_data);
+                                });
+
+                                console.log('saveBlockData', self.arr_options, self.active_option_object, temp_active_option, option);
+                            },
+                            changeInput() {
+                                let self = this;
+                                self.change({name: 'Custom'});
+                                //const $dropdown = $(self.$el);
+                                //const $dropdown_toggle = $dropdown.find('> .dropdown-toggle');
+                                //$dropdown_toggle.find('.s-name').html('Self size: ' + self.inputSize);
+                            },
+                            changeUnit(option) {
+                                let self = this;
+                                self.inputUnit = option.value
+                                //self.changeInput();
+                                self.change({name: 'Custom'});
+                            },
+                            setDefault() {
+                                const self = this;
+                                //console.log('setDefault')
+                                if (self.active_option) {
+                                    self.active_option = null;
+                                    self.active_option_dropdown = self.arr_options[0].value;
+                                    self.active_option_object = null;
+                                    self.inputUnit = self.arr_options[0].unit;
+                                    self.inputSize = self.arr_options[0].value.split(self.inputUnit)[0];
+                                    //self.$refs.child.toggleData(self.showChildren, self.arr_options[3]);
+                                    $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                        delete self.block_data.inline_props[self.form_type];
+                                        bs.saveBlockData(self.block_data);
+                                    });
+                                    console.log('saveBlockData', self.block_data);
+                                } else self.change({name: 'Custom'});
+
+                            },
+                            toggleChildren() {
+                                var self = this;
+                                self.setDefault();
+                                self.showChildren = !self.showChildren;
+                                //$(self.$el).find(".s-editor-option-body").slideToggle(0);
                             },
                         },
                     },
@@ -2249,71 +2929,245 @@ var FormConstructor = ( function($) {
                             block_id: { type: Number},
                         },
                         data() {
+                            const self = this;
                             const form_type = that.storage_data[this.group_config.type].type;
+                            const toggle_options = that.storage_data.image_upload_toggle_data;
                             let image_data = this.block_data?.image ? this.block_data.image : '';
-                            return { form_type, image_data }
+                            let active_toggle_option = image_data?.type ? image_data.type : 'upload';
+                            const svg_placeholder = '<svg fill="currentColor"></svg>';
+                            let svg_html = image_data['svg_html'] || '';
+                            let url_text = image_data['url_text'] || '';
+                            const wa_url = $.site.backend_url;
+                            self.$editable = that.$target_wrapper.eq(0).find('.style-wrapper picture');
+
+                            return { wa_url, svg_html, url_text, form_type, image_data, active_toggle_option, toggle_options, svg_placeholder }
                         },
-                        template: that.templates["component_image_upload_group"],
-                        delimiters: ['{ { ', ' } }'],
+                        template: `
+                        <div class="s-editor-option-wrapper image-group-wrapper">
+                            <div class="s-editor-option-body custom-mt-8">
+                                <image-data-toggle @changeToggle="changeToggle" :options="toggle_options" :activeOption="active_toggle_option" :with_text="true" form_type="custom"></image-data-toggle>
+                            </div>
+                            <div class="s-editor-option-body custom-mt-20" v-if="active_toggle_option === 'upload'">
+                                <image-upload :block_data="block_data" :block_id="block_id"></image-upload>
+                            </div>
+                            <div class="s-editor-option-body custom-mt-8" v-if="active_toggle_option === 'svg'">
+                                <div class="s-semi-header small custom-pb-10 custom-pt-20" v-html="
+                                    $t('custom.Paste the code of your vector image or copy one from **Google Icons**, **FontAwesome**, or another similar library')
+                                        .replace('**', '<a href=&quot;https://fonts.google.com/icons&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                        .replace('**', '<a href=&quot;https://fontawesome.com/&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                ">
+                                </div>
+                                <div class="s-semi-header text-gray small">{{$t('custom.Image SVG code')}}</div>
+                                <div class="width-100 svg-image-wrapper">
+                                    <textarea @input="changeSvg" v-model="svg_html" class="width-100" id="js-svg-image" :placeholder="svg_placeholder"></textarea>
+                                    <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                </div>
+                                <div class="width-100">
+                                    <svg-color-group @changeSvgColor="changeSvgColor" class="width-100 custom-mb-8" :block_data="block_data" :block_id="block_id"></svg-color-group>
+                                     <div class="text-gray smaller">{{$t('custom.The specified color will update fill attribute')}}</div>
+                                </div>
+                            </div>
+                            <div class="s-editor-option-body custom-mt-8" v-if="active_toggle_option === 'address'">
+                                <div class="s-semi-header small custom-pb-10 custom-pt-20" v-html="
+                                    $t('custom.Paste the address of an image added in the **Site › Files** section or in another Webasyst app (eg, **Files**, **Photos**), or located on a third-party site **Help**')
+                                        .replace('**', '<a href=&quot;' + wa_url + 'site/files/&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                        .replace('**', '<a href=&quot;' + wa_url + 'installer/store/app/files/&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                        .replace('**', '<a href=&quot;' + wa_url + 'installer/store/app/photos/&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                        .replace('**', '<a href=&quot;' + $t('custom.support_url_images') + '&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                    "
+                                ></div>
+                                <div class="s-semi-header text-gray small">{{$t('custom.URL of the image')}}</div>
+                                <div class="width-100 svg-image-wrapper custom-mb-12">
+                                    <textarea @input="changeAddress"  v-model="url_text" class="width-100" id="js-svg-image" :placeholder="$t('custom.url_address_placeholder')"></textarea>
+                                    <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                </div>
+                            </div>
+                            <div class="s-editor-option-body custom-mt-8">
+                                <picture-size-group class="width-100" :block_data="block_data" :block_id="block_id"></picture-size-group>
+                            </div>
+                        </div>`,
                         computed: {
                         },
-                        methods: {
-                            change: function(option) {
-                                const self = this;
-                                that.is_new_block = false;
-                                if (!option.target.files?.length) return false;
-                                self.image_data = option.target.files[0].name;
-                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    self.block_data.image = self.image_data;
-                                    bs.saveBlockData(self.block_data, false);
-                                    bs.uploadFile(option.target.files[0], '');
-                                });
-                            },
-                            cancelFile: function(option) {
-                                const self = this;
-                                if (!option.target.value.length) {
-                                    if (that.is_new_block) {
+                        components: {
+                            'ImageDataToggle': that.vue_components['component-toggle'],
+                            'ImageUpload': {
+                                props: {
+                                    block_data: { type: Object, default: {} },
+                                    block_id: { type: Number},
+                                },
+                                emits: ["change"],
+                                data() {
+                                    const form_type = 'image-upload';
+                                    let image_data = this.block_data?.image?.type === 'upload' ? this.block_data.image.name : '';
+                                    return { form_type, image_data }
+                                },
+                                template: that.templates["component_image_upload_group"],
+                                delimiters: ['{ { ', ' } }'],
+                                computed: {
+                                },
+                                methods: {
+                                    change: function(option) {
+                                        const self = this;
                                         that.is_new_block = false;
-                                        self.removeBlock();
-                                    }
-                                    return false;
+                                        if (!option.target.files?.length) return false;
+                                        image_data = option.target.files[0].name
+                                        self.temp_image_data = {type: 'upload', 'name': option.target.files[0].name} ;
+                                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                            self.block_data.image = self.temp_image_data;
+                                            bs.saveBlockData(self.block_data, true);
+                                            bs.uploadFile(option.target.files[0], '');
+                                        });
+                                    },
+                                    cancelFile: function(option) {
+                                        const self = this;
+                                        if (!option.target.value.length) {
+                                            if (that.is_new_block) {
+                                                that.is_new_block = false;
+                                                self.removeBlock();
+                                            }
+                                            return false;
+                                        }
+                                    },
+                                    drop: function(option) {
+                                        const self = this;
+                                        const files = $(self.$el).find("#drop-area").data('upload')?.files;
+                                        that.is_new_block = false;
+                                        //console.log('drop', option.disabled, !files?.length)
+                                        if (option.disabled || !files?.length) { return false; }
+                                        self.temp_image_data = {type: 'upload', 'name':  files[0].name} ;
+                                        self.block_data.image = self.temp_image_data;
+                                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                            bs.saveBlockData(self.block_data, true);
+                                            bs.uploadFile(files[0], '')
+                                        });
+                                    },
+                                    removeBlock: function(){
+                                        const self = this;
+                                        const $block_wrapper = that.$target_wrapper.closest('.js-seq-wrapper');
+                                        if ($block_wrapper.length) {
+                                            $.wa.editor.removeBlock(self.block_id, $block_wrapper);
+                                            $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                                bs.hide();
+                                                $.wa.editor.selected_block_id = '';
+                                            });
+                                        }
+                                    },
+
+                                },
+                                mounted: function() {
+                                    const self = this;
+                                    $(self.$el).find("#drop-area").waUpload({
+                                        is_uploadbox: true,
+                                        show_file_name: true
+                                    })
+
+                                    /*if (that.is_new_block) { //Need for open the file menu when adding a block
+                                        $(self.$el).find('label').trigger('click')
+                                    }*/
                                 }
                             },
-                            drop: function(option) {
+                            "SvgColorGroup": {
+                                props: {
+                                    block_data: { type: Object, default: {} },
+                                    block_id: { type: Number},
+                                },
+                                emits: ["changeSvgColor"],
+                                data() {
+                                    const form_type = that.storage_data['SvgColorGroup'].type;
+                                    const arr_options = that.storage_data['SvgColorGroup'];
+                                    let active_option = this.block_data?.image?.color ? { type: 'self_color', value: '#' + this.block_data?.image?.color, name: 'Self color'} : {};
+                                    const semi_header = 'Color';
+                                    const active_icon = that.storage_data['SvgColorGroup'].icon;
+                                    return { arr_options, semi_header, active_option, form_type, active_icon}
+                                  },
+                                template: that.templates["component_text_color_group"],
+                                delimiters: ['{ { ', ' } }'],
+                                components: {
+                                    'TextColorDropdown': that.vue_custom_components['component-text-color-dropdown']
+                                },
+                                methods: {
+                                    change: function(option) {
+                                        let self = this;
+                                        self.$emit('changeSvgColor', option);
+                                        active_option = self.active_option = { type: 'self_color', value: '#' + option, name: 'Self color'};
+                                    },
+                                    changePalette: function(option) {
+                                        let self = this;
+
+                                    }
+                                },
+                                mounted: function() {
+                                    let self = this;
+                                },
+                            },
+                            "PictureSizeGroup": {
+                                props: {
+                                    group_config: { type: Object },
+                                    block_data: { type: Object, default: {} },
+                                    block_id: { type: Number},
+                                },
+                                data() {
+                                    const form_type = that.storage_data['PictureSizeGroup'].type;
+                                    const arr_options = that.storage_data['PictureSizeGroup'].values;
+                                    const active_option = (this.block_data?.block_props||{})[form_type];
+                                    const semi_header = 'Size';
+                                    const active_icon = that.storage_data['PictureSizeGroup'].icon;
+                                    return { arr_options, semi_header, active_option, form_type, active_icon }
+                                  },
+                                template: that.templates["component_line_height_group"],
+                                delimiters: ['{ { ', ' } }'],
+                                components: {
+                                    'LineHeightDropdown': that.vue_components['component-dropdown'],
+                                  },
+                                methods: {
+                                },
+                            },
+                          },
+                        methods: {
+                            change: function() {
                                 const self = this;
-                                const files = $(self.$el).find("#drop-area").data('upload')?.files;
-                                that.is_new_block = false;
-                                if (option.disabled || !files?.length) { return false; }
-                                self.image_data = files[0].name;
                                 $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    self.block_data.image = files[0].name;
-                                    bs.saveBlockData(self.block_data, false);
-                                    bs.uploadFile(files[0], '');
+                                    self.block_data.image = self.temp_image_data;
+                                    bs.saveBlockData(self.block_data, true);
                                 });
                             },
-                            removeBlock: function(){
+                            changeSvg: function() {
                                 const self = this;
-                                const $block_wrapper = that.$target_wrapper.closest('.js-seq-wrapper');
-                                if ($block_wrapper.length) {
-                                    $.wa.editor.removeBlock(self.block_id, $block_wrapper);
-                                    $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                        bs.hide();
-                                        $.wa.editor.selected_block_id = '';
-                                    });
-                                }
+                                self.temp_image_data = {type: 'svg', 'svg_html': self.svg_html}
+                                self.change();
+                                self.$editable.html($.wa.editor.sanitizeHTML(self.svg_html));
+                            },
+                            changeAddress: function() {
+                                const self = this;
+                                self.temp_image_data = {type: 'address', 'url_text': self.url_text}
+                                self.change();
+                                self.$editable.html('<img src="' + self.url_text + '" />')
+                            },
+                            changeToggle: function(option) {
+                                const self = this;
+                                self.active_toggle_option = option.value;
+                            },
+
+                            changeSvgColor: function(color) {
+                                const self = this;
+                                const svg_node = $(self.svg_html);
+                                if (!svg_node.length) return;
+                                svg_node.attr({'fill': '#' + color})
+                                self.svg_html = svg_node[0].outerHTML;
+                                self.temp_image_data = {type: 'svg', color: color, 'svg_html': self.svg_html}
+                                self.$editable.html(self.svg_html);
+                                self.change();
                             },
 
                         },
                         mounted: function() {
                             const self = this;
-                            $(self.$el).find("#drop-area").waUpload({
-                                is_uploadbox: true,
-                                show_file_name: true
-                            })
-                            if (that.is_new_block) {
-                                $(self.$el).find('label').trigger('click')
-                                //that.is_new_block = false;
-                            }
                         }
                     },
                     "TagsGroup": {
@@ -2333,6 +3187,170 @@ var FormConstructor = ( function($) {
                             return { arr_options, header_name, semi_header, active_option, form_type }
                           },
                         template: that.templates["component_tags_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'TagsDropdown': that.vue_components['component-dropdown'],
+                          },
+                        methods: {
+                            change(option) {
+                                let self = this;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    self.block_data.tag = option.value;
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                                self.active_option = option.value;
+                                that.$target_wrapper = that.$iframe_wrapper.find('.seq-child [data-block-id=' +  self.block_id + ']');
+                            },
+                        }
+                    },
+                    "IdGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const self = this;
+                            const form_type = 'scroll-margin-top';
+                            const selected_element = that.states.selected_element;
+                            self.active_option_object = self.block_data?.inline_props?.[form_type] || self.block_data?.inline_props?.[selected_element]?.[form_type] || null;
+                            self.active_option_id = self.block_data?.id || null;
+
+                            let showChildren =  self.active_option_id || self.active_option_object ? true : false;
+                            const header_name = self.group_config.name;
+                            const semi_header = 'Scroll offset'
+                            let unit_options = that.storage_data.border_unit_data;
+
+                            inputId = self.active_option_id ? '#' + self.active_option_id : '';
+                            inputUnit = self.active_option_object?.unit || "px";
+                            inputSize = self.active_option_object?.value?.split(inputUnit)[0] || '';
+                            return { inputId, form_type, inputUnit, inputSize, unit_options, selected_element, header_name,semi_header, showChildren}
+                          },
+                        template: that.templates["component_id_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'WidthUnitDropdown': that.vue_components['component-dropdown'],
+                          },
+                        methods: {
+                            change: function(option) {
+                                const self = this;
+                                if (option === 'input') {
+                                    if (self.inputId !== '#' && self.inputId !== '') {
+                                        let hash_pos = self.inputId.indexOf('#');
+                                        if (hash_pos >= 0) {
+                                            self.inputId = '#' + self.inputId.split('#')[1];
+                                        } else {
+                                            self.inputId = '#' + self.inputId;
+                                        }
+                                    }
+
+                                    self.temp_active_option_object = self.temp_active_option_object ? self.temp_active_option_object : {};
+                                    self.temp_active_option_object.value = self.inputSize ? self.inputSize+self.inputUnit : '';
+                                    self.temp_active_option_object.unit = self.inputUnit;
+                                    self.temp_active_option_object.id = self.inputId.split('#')[1] || '';
+                                    return
+                                }
+
+                                if ((self.active_option_object?.id !== self.temp_active_option_object.id) && self.checkUniqErrors()) return;
+
+                                self.block_data.id = self.temp_active_option_object.id;
+                                self.active_option_object = self.temp_active_option_object;
+                                self.active_option_id = self.temp_active_option_object.id;
+                                if (!self.selected_element) {
+                                    if (!self.block_data.inline_props) self.block_data.inline_props = {};
+                                    self.block_data.inline_props[self.form_type] = self.temp_active_option_object;
+                                } else {
+                                    if (!self.block_data.inline_props) self.block_data.inline_props = {};
+                                    if (!self.block_data.inline_props[self.selected_element]) self.block_data.inline_props[self.selected_element] = {};
+                                    self.block_data.inline_props[self.selected_element][self.form_type] = self.temp_active_option_object;
+                                }
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+
+                            },
+                            changeInput() {
+                                let self = this;
+                                self.change('input');
+                            },
+                            checkUniqErrors() {
+                                let self = this;
+                                let input = $(self.$el).find('[name="input-id"]');
+                                let error_block = input.parent().find('.state-error-hint');
+
+                                let not_uniq = that.$iframe_wrapper.find(self.inputId).length;
+                                if (not_uniq) {
+                                    if (!input.hasClass('state-error')) input.addClass('state-error');
+                                    error_block.show();
+                                    setTimeout(() => { input.removeClass('state-error'); error_block.hide();}, 3000);
+                                    return true;
+                                }
+                                input.removeClass('state-error')
+                                error_block.hide();
+                                return false
+                            },
+                            changeId(e) {
+                                let self = this;
+                                self.change('input');
+                            },
+                            changeUnit(option) {
+                                let self = this;
+                                self.inputUnit = option.value
+                                self.change('input');
+                                self.change();
+                            },
+                            setDefault() {
+                                const self = this;
+                                //console.log('setDefault')
+                                if (self.active_option_object) {
+                                    self.active_option_object = null;
+                                    self.active_option_id = '';
+                                    self.inputUnit = 'px';
+                                    self.inputSize = '';
+                                    self.inputId = '';
+                                    //self.$refs.child.toggleData(self.showChildren, self.arr_options[3]);
+                                    $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                        delete self.block_data.id;
+                                        if (!self.element) {
+                                            if (self.block_data.inline_props) delete self.block_data.inline_props[self.form_type];
+                                        } else {
+                                            if (self.block_data.inline_props && self.block_data.inline_props[self.selected_element]) delete self.block_data.inline_props[self.selected_element][self.form_type];
+                                        }
+                                        bs.saveBlockData(self.block_data);
+                                    });
+                                    console.log('saveBlockData', self.block_data);
+                                }
+                            },
+                            toggleChildren() {
+                                var self = this;
+                                self.setDefault();
+                                self.showChildren = !self.showChildren;
+                            },
+                        },
+                        mounted: function() {
+                            const self = this;
+                            $(self.$el).find("#tooltip-identifier").waTooltip();
+                        }
+                    },
+                    "ListStyleGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            //const _form_type = that.storage_data[this.group_config.type].type;
+                            const arr_options = that.storage_data[this.group_config.type].values;
+                            const active_option = this.block_data?.tag;
+                            const header_name = this.group_config.name;
+                            const semi_header = 'Tag';
+                            const form_type = 'custom';
+
+                            return { arr_options, header_name, semi_header, active_option, form_type }
+                          },
+                        template: that.templates["component_list_style_group"],
                         delimiters: ['{ { ', ' } }'],
                         components: {
                             'TagsDropdown': that.vue_components['component-dropdown'],
@@ -2385,12 +3403,14 @@ var FormConstructor = ( function($) {
                                     <div class="value js-redactor-wrapper">
                                         <textarea style="display:none" class="js-content-body" id="js-content-body" name="content"> {{block_data[selected_tab]}}</textarea>
                                     </div>
-                               
+                                    <p class="hint custom-mt-8">{{$t('custom.JavaScript code is not executed here; check its result on the site')}}</p>
                                 </div>
                             </div>
-                            <div class="code-group-wrapper custom-mb-12 custom-mt-12">
+                            <div class="code-group-wrapper custom-mb-12 custom-mt-12 flexbox">
                                 <custom-button id="js-save-code" :buttonText="$t('custom.Save')" buttonClass="green blue" @click="saveCode"></custom-button>
                                 <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                                <custom-button v-show="selected_tab === 'html'" id="js-show-variables" iconClass="fa-dollar-sign" :title="$t('custom.Variables')" buttonClass="gray nobutton custom-ml-auto" @click="showVariables"></custom-button>
+                                <custom-button v-show="selected_tab === 'html'" id="js-show-cheatsheet" iconClass="fa-code" :title="$t('custom.CheatSheet')" buttonClass="gray nobutton" @click="showCheatSheet"></custom-button>
                             </div>
                         </div>
                         `,
@@ -2413,7 +3433,7 @@ var FormConstructor = ( function($) {
                                 }
                                 $button = $(self.$el).find('#js-save-code');
                                 $button.removeClass('yellow').addClass('green');
-                                
+
                             },
                             saveCode(opt){
                                 const self = this;
@@ -2426,15 +3446,25 @@ var FormConstructor = ( function($) {
                                     $button.removeClass('yellow').addClass('green');
                                     console.log('saveBlockData', self.block_data)
                                 });
-                                if (self.selected_tab === 'css') {
+                                /*if (self.selected_tab === 'css') {
                                     self.$editable = that.$target_wrapper.siblings('#style-tag');
-                                    self.$editable.html(session.getValue())
-                                }
-                                if (self.selected_tab === 'js') {
+                                    self.$editable.html($.wa.editor.sanitizeHTML(session.getValue()))
+                                }*/
+                                /*if (self.selected_tab === 'js') {
                                     self.$editable = that.$target_wrapper.siblings('#script-tag');
                                     let script_string = '$(function() { "use strict";' + session.getValue() + '});'
                                     self.$editable.html(script_string)
-                                }
+                                }*/
+                            },
+                            showVariables(){
+                                const self = this;
+                                //$button = $(self.$el).find('#js-save-code');
+                                $('.site-editor-wa-header-wrapper').find('.js-show-variables').click();
+                            },
+                            showCheatSheet(){
+                                const self = this;
+                                //$button = $(self.$el).find('#js-save-code');
+                                $('.site-editor-wa-header-wrapper').find('.js-show-cheatsheet').click();
                             }
                         },
 
@@ -2445,8 +3475,431 @@ var FormConstructor = ( function($) {
                             waEditorAceInit({ 'id': 'js-content-body','type': "html", 'save_button': 'js-save-code'});
                             //wa_editor.setOption('fontSize', 14);
                             wa_editor.$blockScrolling = Infinity;
-                            wa_editor.setOption('minLines', 25);
+                            wa_editor.setOption('minLines', 15);
                             wa_editor.renderer.setShowGutter(false);
+                        }
+                    },
+                    "CustomMapGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        emits: ["changeElement"],
+                        data() {
+                            //const elements = that.states.elements;
+                            const header_name = this.group_config.name;
+                            const placeholder = '<iframe src=""></iframe>';
+                            return { header_name, placeholder }
+                          },
+                        template: `
+                        <div class="s-editor-option-wrapper ">
+                            <div class="map-group-wrapper custom-mb-12 custom-mt-12">
+                                <div class="s-semi-header small custom-pb-20" v-html="
+                                    $t('custom.Get the map embed code on **Google Maps**, **Yandex Maps**, or another similar service **Help**')
+                                        .replace('**', '<a href=&quot;https://www.google.com/maps&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                        .replace('**', '<a href=&quot;https://yandex.ru/map-constructor/&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                        .replace('**', '<a href=&quot;' + $t('custom.Map Help Link') + '&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                "></div>
+                                <div class="s-semi-header text-gray small">{{header_name}}</div>
+                                <div class="map-group custom-mb-12 custom-mt-8">
+                                    <div class="value js-redactor-wrapper">
+                                        <textarea class="width-100 js-content-body" id="js-content-body" name="content" :placeholder="placeholder">{{block_data['html']}}</textarea>
+                                        <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="map-group-wrapper custom-mb-12 custom-mt-12">
+                                <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                            </div>
+                        </div>
+                        `,
+                        //delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'CustomButton': that.vue_components['custom-button'],
+                          },
+                        methods: {},
+
+                        mounted: function() {
+                            const self = this;
+
+                            //div = $('<div></div>');
+                           // $html_wrapper = $(self.$el).find('.js-redactor-wrapper');
+                            $default_picture = that.$target_wrapper.find('.iframe-picture-cover');
+                            $textarea = $(self.$el).find('.js-content-body');
+                            //$placeholder = '<iframe src=""></iframe>';
+                            // Init Ace
+                            //$html_wrapper.prepend($('<div class="ace"></div>').append(div));
+                            //$textarea.hide();
+                            //var editor = ace.edit(div.get(0));
+                            // Set options
+                            /*editor.commands.removeCommand('find');
+                            ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
+                            editor.setTheme("ace/theme/eclipse");
+                            editor.renderer.setShowGutter(false);
+                            editor.$blockScrolling = Infinity;
+                            var session = editor.getSession();
+                            session.setMode("ace/mode/smarty");
+                            session.setUseWrapMode(true);
+                            editor.setFontSize(14);
+                            if ($textarea.val().length) {
+                                session.setValue($textarea.val());
+                            } else {
+                                //session.setValue($placeholder);
+                            }
+                            editor.setOption("minLines", 10);
+                            editor.setOption("maxLines", 100);*/
+                            $textarea.on('input', function () {
+                                let editor_val = $textarea.val();
+
+                                if (checkTagsErrors(editor_val, $textarea)) return;
+
+                                self.block_data['html'] = editor_val;
+                                if (!editor_val.length) {
+                                    $default_picture.show();
+                                } else $default_picture.hide();
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                            });
+
+                            function checkTagsErrors(inputText, $textarea) {
+                                let error_text = '';
+                                let error_block = $textarea.parent().find('.state-error-hint');
+                                if (checkForHtmlTagsExceptIframe(inputText)) error_text = 'error-tags';
+                                if (checkIframeWithoutClosingTag(inputText)) error_text = 'error-open-tag';
+                                if (error_text) {
+                                    error_block.text(error_block.data(error_text)).show();
+                                    $textarea.addClass('state-error');
+                                    setTimeout(() => { $textarea.removeClass('state-error'); error_block.hide();}, 3000);
+                                    return true;
+                                }
+                                error_block.hide();
+                                return false
+                            }
+
+                        }
+                    },
+                    "CustomVideoGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        emits: ["changeElement"],
+                        data() {
+                            //const elements = that.states.elements;
+                            const header_name = this.group_config.name;
+                            const placeholder = '<iframe src=""></iframe>';
+                            return { header_name, placeholder }
+                          },
+                        template: `
+                        <div class="s-editor-option-wrapper ">
+                            <div class="video-group-wrapper custom-mb-12 custom-mt-12">
+                                <div class="s-semi-header small custom-pb-20" v-html="
+                                    $t('custom.Get the embed code on **YouTube** or **Vimeo**, or another similar service')
+                                        .replace('**', '<a href=&quot;https://www.youtube.com/&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                        .replace('**', '<a href=&quot;https://vimeo.com/&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                ">
+                                </div>
+                                <div class="s-semi-header text-gray small">{{header_name}}</div>
+                                <div class="video-group custom-mb-12 custom-mt-8">
+                                    <div class="value js-redactor-wrapper">
+                                        <textarea class="width-100 js-content-body" id="js-content-body" name="content" :placeholder="placeholder">{{block_data['html']}}</textarea>
+                                        <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="code-group-wrapper custom-mb-12 custom-mt-12">
+                                <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                            </div>
+                        </div>
+                        `,
+                        //delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'CustomButton': that.vue_components['custom-button'],
+                          },
+                        methods: {},
+                        mounted: function() {
+                            const self = this;
+                            $default_picture = that.$target_wrapper.find('.iframe-picture-cover');
+                            $textarea = $(self.$el).find('.js-content-body');
+
+                            $textarea.on('input', function () {
+                                let editor_val =  $textarea.val();
+
+                                if (checkTagsErrors(editor_val, $textarea)) return;
+
+                                self.block_data['html'] = editor_val;
+                                if (!editor_val.length) {
+                                    $default_picture.show();
+                                } else $default_picture.hide();
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                            });
+
+                            function checkTagsErrors(inputText, $textarea) {
+                                let error_text = '';
+                                let error_block = $textarea.parent().find('.state-error-hint');
+                                if (checkForHtmlTagsExceptIframe(inputText)) error_text = 'error-tags';
+                                if (checkIframeWithoutClosingTag(inputText)) error_text = 'error-open-tag';
+                                if (error_text) {
+                                    error_block.text(error_block.data(error_text)).show();
+                                    $textarea.addClass('state-error');
+                                    setTimeout(() => { $textarea.removeClass('state-error'); error_block.hide();}, 3000);
+                                    return true;
+                                }
+                                error_block.hide();
+                                return false
+                            }
+                        }
+                    },
+                    "CustomFormGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        emits: ["changeElement"],
+                        data() {
+                            //const elements = that.states.elements;
+                            const header_name = this.group_config.name;
+                            let placeholder = `{$wa->crm->form(1)}
+
+                            или {$wa->mailer->form(1)}
+
+                            или {$wa->helpdesk->form(1)}`;
+                            const form_type = this.block_data?.form_type;
+                            if(form_type) {
+                                placeholder = `{$wa->${form_type}->form(1)}`;
+                            }
+                            const wa_url = $.site.backend_url;
+                            return { header_name, placeholder, form_type, wa_url }
+                          },
+                        template: `
+                        <div class="s-editor-option-wrapper ">
+                            <div class="form-group-wrapper custom-mb-12 custom-mt-12">
+                                <div class="s-semi-header small custom-pb-20">{{$t('custom.Get the embed code in webasyst')}} <a :href="wa_url + form_type + '/'" class="nowrap" target="_blank">{{$t('custom.form_' + form_type, form_type)}} <i class="fas fa-external-link-alt small"></i></a></div>
+                                <div class="s-semi-header text-gray small">{{header_name}}</div>
+                                <div class="form-group custom-mb-12 custom-mt-8">
+                                    <div class="value js-redactor-wrapper">
+                                        <textarea class="width-100 js-content-body" id="js-content-body" name="content" :placeholder="placeholder">{{block_data['textarea_html']}}</textarea>
+                                        <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="code-group-wrapper custom-mb-12 custom-mt-12">
+                                <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                            </div>
+                        </div>
+                        `,
+                        //delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'CustomButton': that.vue_components['custom-button'],
+                          },
+                        methods: {},
+                        mounted: function() {
+                            const self = this;
+                            $default_picture = that.$target_wrapper.find('.iframe-picture-cover');
+                            $textarea = $(self.$el).find('.js-content-body');
+
+                            $textarea.on('input', function () {
+                                let editor_val =  $textarea.val();
+
+                                if (checkTagsErrors(editor_val, $textarea)) return;
+
+                                self.block_data['html'] = editor_val;
+                                self.block_data['textarea_html'] = editor_val;
+                                /*if (!editor_val.length) {
+                                    $default_picture.show();
+                                } else $default_picture.hide();
+                                */
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                            });
+
+                            function checkTagsErrors(inputText, $textarea) {
+                                let error_text = '';
+                                let error_block = $textarea.parent().find('.state-error-hint');
+                                //if (checkForHtmlTagsExceptIframe(inputText)) error_text = 'error-tags';
+                                //if (checkIframeWithoutClosingTag(inputText)) error_text = 'error-open-tag';
+                                if (error_text) {
+                                    error_block.text(error_block.data(error_text)).show();
+                                    $textarea.addClass('state-error');
+                                    setTimeout(() => { $textarea.removeClass('state-error'); error_block.hide();}, 3000);
+                                    return true;
+                                }
+                                error_block.hide();
+                                return false
+                            }
+                        }
+                    },
+                    "ProductIdGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = 'product_id';
+                            const active_id = this.block_data?.product_id;
+                            const productName = active_id ? this.block_data?.additional?.product?.name : '';
+                            const header_name = this.group_config.name;
+                            const wa_backend_url = $.site.backend_url;
+                            return { active_id, productName, header_name, form_type, wa_backend_url }
+                        },
+                        template: `
+                        <div class="s-editor-option-wrapper">
+                            <div class="s-semi-header text-gray small">{ { header_name } }</div>
+                            <div class="s-editor-option-body custom-mt-8 ">
+                                <div class="state-with-inner-icon right width-100">
+                                    <input @input="inputAutocomplete($event.target.value)" v-model.trim="productName" class="width-100 smaller custom-mr-0" type="text" :name="active_id" :placeholder="$t('custom.Enter product name')">
+                                    <span class="icon text-gray" @click="productName = ''" v-show="productName"><i class="fas fa-times-circle" ></i></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        `,
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            //'ProductInfoDropdown': that.vue_components['component-dropdown'],
+                        },
+                        methods: {
+                            inputAutocomplete(input) {
+                                let self = this;
+                                //console.log('inputAutocomplete', input, self.wa_backend_url+'shop/?module=backend&action=autocomplete&type=product')
+                                $.post(self.wa_backend_url+'shop/?module=backend&action=autocomplete&type=product', {
+                                    term: input,
+                                    with_image: 1,
+                                    with_all_skus: 1
+                                }, function(r) {
+                                    //console.log('Product autocomplete returned:', r);
+                                    $(self.$el).find("input").autocomplete({
+                                        source: r,
+                                        html: true,
+                                        appendTo: $(self.$el),
+                                        select: function (event, ui) {
+                                            self.block_data[self.form_type] = ui.item.id;
+                                            delete self.block_data.sku_id;
+                                            $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                                bs.saveBlockData(self.block_data);
+                                                console.log('saveBlockData', self.block_data)
+                                            });
+                                        }
+                                    });
+                                }, 'json');
+                            },
+                        },
+                        mounted: function() {
+                            let self = this;
+                        }
+                    },
+                    "ProductInfoGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            let arr_options = that.storage_data[this.group_config.type].values;
+                            const active_option = this.block_data?.[form_type];
+                            const header_name = this.group_config.name;
+                            return { arr_options, header_name, active_option, form_type }
+                        },
+                        template: that.templates["component_product_info_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'ProductInfoDropdown': that.vue_components['component-dropdown'],
+                        },
+                        methods: {
+                            change(option) {
+                                let self = this;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    self.block_data[self.form_type] = option.value;
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                            },
+                        }
+                    },
+                    "ProductPictureGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            let arr_options = that.storage_data[this.group_config.type].values;
+                            const active_option = this.block_data?.[form_type];
+                            const header_name = this.group_config.name;
+                            return { arr_options, header_name, active_option, form_type }
+                        },
+                        template: that.templates["component_product_info_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'ProductInfoDropdown': that.vue_components['component-dropdown'],
+                        },
+                        methods: {
+                            change(option) {
+                                let self = this;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    self.block_data[self.form_type] = option.value;
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                            },
+                        }
+                    },
+                    "ProductSkuGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = 'sku_id';
+                            let arr_options = Object.values(this.block_data?.additional?.product?.skus);
+                            formatted_options = [];
+
+                            $.each(arr_options, function(i, option) {
+                                formatted_options.push({
+                                    name: option.name,
+                                    value: option.id
+                                });
+                            });
+
+                            const active_option = this.block_data?.[form_type];
+                            const header_name = this.group_config.name;
+                            return { arr_options, header_name, active_option, form_type, formatted_options }
+                        },
+                        template: that.templates["component_product_sku_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'ProductInfoDropdown': that.vue_components['component-dropdown'],
+                        },
+                        methods: {
+                            change(option) {
+                                let self = this;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    self.block_data[self.form_type] = option.value;
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                            },
                         }
                     },
                     "TabsWrapperGroup": {
@@ -2496,13 +3949,23 @@ var FormConstructor = ( function($) {
                     "MainControlsGroup": {
                         props: {
                             block_id: { type: Number},
+                            form_config: { type: Object },
+                        },
+                        data() {
+                            const self = this;
+                            const is_broken_block = this.form_config?.type === "site.Broken" || false;
+                            self.block_wrapper = that.$target_wrapper.closest('.js-seq-wrapper');
+                            const is_hseq = self.block_wrapper.hasClass('hseq-wrapper');
+                            const prev_move_icon = is_hseq ? 'fa-arrow-left' : 'fa-arrow-up';
+                            const next_move_icon = is_hseq ? 'fa-arrow-right' : 'fa-arrow-down';
+                            return { is_broken_block, prev_move_icon, next_move_icon }
                         },
                         template: `
                         <div class="main-button-group custom-mb-32 custom-mt-24">
-                            <custom-button buttonClass="light-gray" iconClass="fa-trash-alt" @click="removeBlock"></custom-button>
-                            <custom-button buttonClass="light-gray" iconClass="fa-arrow-up" @click="reorderBlocks('up')"></custom-button>
-                            <custom-button buttonClass="light-gray" iconClass="fa-arrow-down" @click="reorderBlocks('down')"></custom-button>
-                            <custom-button buttonClass="light-gray" iconClass="fa-copy" @click="copyBlock"></custom-button>
+                            <custom-button buttonClass="light-gray" iconClass="fa-trash-alt" @click="removeBlock" :title="$t('custom.Delete')"></custom-button>
+                            <custom-button buttonClass="light-gray" :iconClass="prev_move_icon" @click="reorderBlocks('up')" v-if="!is_broken_block" :title="$t('custom.Move')"></custom-button>
+                            <custom-button buttonClass="light-gray" :iconClass="next_move_icon" @click="reorderBlocks('down')" v-if="!is_broken_block" :title="$t('custom.Move')"></custom-button>
+                            <custom-button buttonClass="light-gray" iconClass="fa-copy" @click="copyBlock" v-if="!is_broken_block" :title="$t('custom.Copy')"></custom-button>
                         </div>
                         `,
                         //delimiters: ['{ { ', ' } }'],
@@ -2511,9 +3974,12 @@ var FormConstructor = ( function($) {
                           },
                         methods: {
                             removeBlock(){
-                                const $block_wrapper = that.$target_wrapper.closest('.js-seq-wrapper');
-                                if ($block_wrapper.length) {
-                                    $.wa.editor.removeBlock(this.block_id, $block_wrapper);
+                                const self = this;
+                                if (this.is_broken_block) {
+                                    self.block_wrapper = that.$iframe_wrapper.find('.seq-child[data-block-id=' + this.block_id + ']').closest('.js-seq-wrapper');
+                                }
+                                if (self.block_wrapper.length) {
+                                    $.wa.editor.removeBlock(this.block_id, self.block_wrapper);
                                     $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                         bs.hide();
                                         $.wa.editor.selected_block_id = '';
@@ -2521,9 +3987,9 @@ var FormConstructor = ( function($) {
                                 }
                             },
                             reorderBlocks(order){
-                                const $block_wrapper = that.$target_wrapper.closest('.js-seq-wrapper');
-                                const block_id = $block_wrapper.data('block-id');
-                                const page_id = $block_wrapper.data('page-id');
+                                const self = this;
+                                const block_id = self.block_wrapper.data('block-id');
+                                const page_id = self.block_wrapper.data('page-id');
                                 const $child = that.$target_wrapper.closest('.seq-child');
 
                                 const before_child_ids = $child.parent().children('.seq-child').map(function() {
@@ -2549,14 +4015,13 @@ var FormConstructor = ( function($) {
                                 $.wa.editor.reorderBlocks(page_id, block_id, before_child_ids, child_ids, $child.parent());
                             },
                             copyBlock(event){
-                                const $block_wrapper = that.$target_wrapper.closest('.js-seq-wrapper');
-                                $block_wrapper.css('opacity', 0.5);
+                                const self = this;
+                                self.block_wrapper.css('opacity', 0.5);
                                 $(event.target).addClass('disabled');
-                                console.log(event.target)
                                 $.post('?module=editor&action=addBlock', {
                                     duplicate_block_id: this.block_id
                                 }).then(function(new_parent_block_html) {
-                                    $block_wrapper.replaceWith(new_parent_block_html);
+                                    self.block_wrapper.replaceWith(new_parent_block_html);
                                 });
                             },
                         },
@@ -2571,8 +4036,8 @@ var FormConstructor = ( function($) {
                     }
                 },*/
                 template: `
-                    <form-header :header="header" :parents="parents" @closeDrawer="close_drawer" @goToParent="goToParent"></form-header>
-                    <main-controls-group :key="block_id+media_prop" :block_id="block_id" v-if="!block_data.indestructible"></main-controls-group>
+                    <form-header :header="header" :parents="parents" @closeDrawer="close_drawer" @updateDrawer="update_drawer" @updateDrawerHor="update_drawer_hor" @goToParent="goToParent"></form-header>
+                    <main-controls-group :key="block_id+media_prop" :block_id="block_id" :form_config="form_config" v-if="!(block_data?.indestructible || false)"></main-controls-group>
                     <component
                         v-for="(item, key) in settings_array"
                         :is="item.type"
@@ -2599,6 +4064,18 @@ var FormConstructor = ( function($) {
                                 $.wa.editor.selected_block_id = '';
                             });
                         that.$target_wrapper.closest('.seq-child.selected-block').removeClass('selected-block');
+                    },
+                    update_drawer: function() {
+                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                bs.updatePosition();
+                                //$.wa.editor.selected_block_id = '';
+                            });
+                    },
+                    update_drawer_hor: function() {
+                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                bs.updatePositionHorizontal();
+                                //$.wa.editor.selected_block_id = '';
+                            });
                     },
                     changeElement: function(element) {
                         const self = this;
@@ -2632,12 +4109,22 @@ var FormConstructor = ( function($) {
                 //}
             }
 
-            /*function saveBlockData(wrapper, old_block_html, block_data, update) {
-                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                    bs.saveBlockData(wrapper, old_block_html, block_data, update);
-                    console.log('saveBlockData', block_data)
-                });
-            }*/
+            function checkForHtmlTagsExceptIframe(inputText) {
+                // Регулярное выражение для поиска HTML тегов, кроме <iframe>
+                const regex = /<(?!iframe\s*[^>]*>)(?!\/iframe\s*>)[^>]+>/g;
+                // Проверка на наличие HTML тегов
+                return regex.test(inputText);
+            }
+
+            function checkIframeWithoutClosingTag(htmlString) {
+                // Регулярное выражение для поиска открывающего тега <iframe> без закрывающего </iframe>
+                const iframeRegex = /<iframe[^>]*>(?![\s\S]*<\/iframe>)/;
+                // Проверяем строку на соответствие регулярному выражению
+                if (iframeRegex.test(htmlString)) {
+                    return true; // Возвращаем true, если найден iframe без закрывающего тега
+                }
+            return false; // Возвращаем false, если все iframe имеют закрывающие теги
+            }
         };
 
         return FormConstructor;

@@ -1,7 +1,10 @@
 <div class="flexbox editor-page" id="editor-page">
-    <div class="sidebar right width-17rem hidden block-settings-sidebar custom-p-16">
+    <div class="sidebar right width-17rem hidden block-settings-sidebar custom-p-16 custom-pt-0">
         {include file="templates/actions/editor/includes/block_settings_drawer.html"}
     </div>
+    <!--<div class="sidebar-button button blue hidden">
+        <span class="icon size-18"><i class="fas fa-sliders-h"></i></span>
+    </div>-->
     <div class="content flexbox not-blank">
         <div class="flexbox mq-wrapper blank">
             <iframe src="{$wa_app_url}?module=editor&action=body&page_id={$page.id|escape}" class="main-editor-body" id="js-main-editor-body" frameborder="0"></iframe>
@@ -10,44 +13,7 @@
     </div>
 </div>
 
-<div class="dialog" id="js-add-block-dialog">
-    <div class="dialog-background"></div>
-    <div class="dialog-body" style="width:70%;min-width:45rem;">
-        <a href="javascript:void(0)" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
-        <div class="dialog-content">
-            <div class="skeleton">
-                <div class="flexbox">
-                    <div class="sidebar blank height-auto" style="padding-right:1rem;">
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-                    </div>
-                    <div class="content">
-                        <span class="skeleton-header" style="width: 70%;"></span>
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-
-                        <span class="skeleton-header" style="width: 70%;"></span>
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-
-                        <span class="skeleton-header" style="width: 70%;"></span>
-                        <span class="skeleton-line"></span>
-                        <span class="skeleton-line"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{include file="templates/actions/editor/includes/add_block_dialog.html"}
 
 {*
  * see templates/actions/map/MapPageSettingsDialog.html
@@ -60,8 +26,8 @@
     const block_storage_data = {$block_data|json_encode};
     const block_form_config_by_type = {$block_form_config|json_encode};
     var page_data = {$page|json_encode};
-
-    updatePreviewLink(page_data);
+    var published_page_data = {$published_page|json_encode};
+    var preview_hash = {$preview_hash|json_encode};
 
     const block_form_config_by_block_id = {};
     for (var block_id in block_form_config_by_type) {
@@ -78,6 +44,17 @@
         block_storage_data: block_storage_data
     });
 
+    updatePreviewLink(page_data);
+    page_data.preview_hash = preview_hash;
+    $("#js-wa-header-publish").data('controller').initPageData(domain_root_url, page_data, published_page_data);
+
+    {if $is_published}
+        (function() {
+            const url = location.href.replace(/\/editor\/page\/\d+\//, '/editor/page/{$page.id}/');
+            window.history.replaceState(null, "", url);
+        }());
+    {/if}
+
     // Undo and redo
     (function() {
 
@@ -90,6 +67,48 @@
         });
 
     }());
+
+        // sidebar-mini-button
+        /*
+        (function() {
+
+            $('.sidebar-button').click(function() {
+                $('.sidebar.block-settings-sidebar').removeClass('hidden').show();
+                $(this).addClass('hidden');
+            });
+
+        }());
+        */
+
+        // check window width, and add absoulute class to sidebar
+        (function() {
+
+            const $html_wrapper = $('html');
+            //const $iframe = $html_wrapper.find('#js-main-editor-body');
+            const temp_class = 'overflow-mode';
+            const sidebar = $('.sidebar.block-settings-sidebar');
+            const styles = getComputedStyle(document.documentElement);
+            const bgColor = styles.getPropertyValue('--color-background');
+            const sidebar_width = sidebar.outerWidth();
+            let sidebar_max = sidebar_width + +$html_wrapper.css('--cnt').split('px')[0] + +$html_wrapper.css('--pd-cnt').split('px')[0] + +$html_wrapper.css('--pd-cnt').split('px')[0];
+
+            setEditorSettingsPosition();
+            $(window).on('resize', setEditorSettingsPosition);
+
+            function setEditorSettingsPosition() {
+                const screen_toggle = $('#js-wa-header-screen-toggle').find('.selected').attr('id') || 'desktop';
+                const media_prop = '--' + screen_toggle;
+                const window_w = $(window).width();
+                let sidebar_max_2 = sidebar_width + +$html_wrapper.css(media_prop).split('px')[0];
+                //console.log(media_prop, sidebar.outerWidth(), sidebar_max, sidebar_max_2, $(window).width())
+
+                if (window_w < sidebar_max && window_w < sidebar_max_2 ) {
+                    sidebar.addClass(temp_class);
+                } else {
+                    sidebar.removeClass(temp_class);
+                }
+            }
+        }());
 
     // media query buttons
     (function() {
@@ -106,6 +125,7 @@
                 $mq_wrapper.addClass(media_param);
                 temp_param = media_param;
                 $.wa.editor.resetMediaProp(media_param);
+                $(window).trigger('resize')
             }
         });
 
@@ -115,7 +135,7 @@
     // Left drawer
     //
     (function() {
-        const left_drawer_html = `<div class="drawer site-editor-left-drawer" id="js-left-drawer" data-load-url="{$wa_app_url}?module=map&action=overview&domain_id={$domain_id|escape}&sidebar_mode=1&page_id={$page.id|escape}">
+        const left_drawer_html = `<div class="drawer site-editor-left-drawer" id="js-left-drawer" data-load-url="{$wa_app_url}?module=map&action=overview&domain_id={$domain_id|escape}&sidebar_mode=1&page_id={$page.id}{if !empty($page.final_page_id)}&final_page_id={$page.final_page_id}{/if}">
             <div class="drawer-background"></div>
             <div class="drawer-body">
                 <a href="javascript:void(0)" class="drawer-close z-20 custom-mr-8 js-close-drawer"><i class="fas fa-times"></i></a>
@@ -204,7 +224,6 @@
     //
     (function() {
         const site_app_url = {$wa_app_url|json_encode};
-        const $wrapper = $('#js-page-settings-dialog');
         const domain_url = site_app_url + "?module=map&action=overview&domain_id=" + page_data.domain_id;
 
         // Open dialog when user clicks on settings button in wa-header
@@ -217,26 +236,21 @@
             openDialog();
         }
 
-        // Leave screen when page is deleted
-        $wrapper.on('page_deleted', function() {
-            window.location = domain_url;
-        });
-
-        $wrapper.on('page_saved', function(e, data) {
+        $(document).on('page_saved', function(e, data) {
             page_data = data;
             if (data.theme_changed) {
                 window.location.reload();
                 return
             }
             updatePreviewLink(page_data);
+            page_data.preview_hash = preview_hash;
+            $("#js-wa-header-publish").data('controller').updatePageData(page_data);
         });
 
         function openDialog() {
             const url = site_app_url+'?module=map&action=pageSettingsDialog&page_id=' + page_data.id;
-
             $.site.helper.preventDupeRequest(() => {
                 return $.get(url, function(html) {
-
                     const dialog = $.waDialog({
                         html: html
                     });
@@ -246,10 +260,20 @@
     }());
 
     function updatePreviewLink(page_data) {
-
-        var $a = $('#js-wa-header-preview');
+        const $hamburger_draft = $('.js-hamburger-draft-icon');
+        const $hamburger_draft_changed = $('.js-hamburger-draft-changed-icon');
         const $hamburger_label = $('.js-hamburger-label');
-        $a.attr('href', domain_root_url + page_data.full_url);
+
+        const is_draft = page_data.status === 'draft';
+        $hamburger_draft.toggleClass('hidden', is_draft);
+
+        if (is_draft) {
+            $hamburger_draft_changed.toggleClass('hidden', page_data.create_datetime === page_data.update_datetime);
+            $(document).on('page_has_unsaved_changes', (_, is_changed) => {
+                $hamburger_draft_changed.toggleClass('hidden', !is_changed);
+            });
+        }
+
         $hamburger_label.text(page_data.name).attr('title', page_data.name);
     }
 

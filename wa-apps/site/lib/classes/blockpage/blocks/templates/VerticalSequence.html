@@ -14,18 +14,18 @@
 <div class="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" data-static="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" {if $block_id}data-block-id="{$block_id|escape}"{else}id="js-global-seq"{/if} data-page-id="{$data->getPageId()}">
     {foreach $children as $c}
         {function _add_button value='1'}
-            {if !$is_indestructible} 
+            {if !$is_indestructible}
                 {if $is_columns}
                     <div class="dropdown">
-                        <button class="button smaller">
+                        <a class="btn button smaller">
                             <span class="icon size-12">+</span>
-                        </button>
-                    </div> 
+                        </a>
+                    </div>
                 {elseif $block_id}
                     <div class="dropdown" id="dropdown-{$value}-{$c.id|escape}">
-                        <button class="button smaller circle dropdown-toggle without-arrow">
+                        <a class="btn button smaller circle dropdown-toggle without-arrow">
                             <span class="icon size-12">+</span>
-                        </button>
+                        </a>
                         <div class="dropdown-body">
                             <div class="animation-box box">
                                 <i class="fas fa-spinner wa-animation-spin speed-1000"></i>
@@ -33,9 +33,9 @@
                         </div>
                     </div>
                 {else}
-                    <button class="button smaller">
+                    <a class="btn button smaller">
                         <span class="icon size-12">+</span>
-                    </button>
+                    </a>
                 {/if}
             {/if}
         {/function}
@@ -83,9 +83,9 @@
         </div>
         <div class="empty-seq-add {if $is_columns}js-add-column{else}js-add-element{/if}">
             <div class="dropdown" id="dropdown-empty-{$block_id}">
-                <button class="button smaller circle dropdown-toggle without-arrow">
+                <a class="btn button smaller circle dropdown-toggle without-arrow">
                     <span class="icon size-12">+</span>
-                </button>
+                </a>
                 <div class="dropdown-body">
                     <div class="animation-box box">
                         <i class="fas fa-spinner wa-animation-spin speed-1000"></i>
@@ -95,17 +95,25 @@
         </div>
         {else}
         <div class="js-add-block">
-            <button class="button small light-gray">
+            <a class="btn button small light-gray">
                 <span class="icon size-12 custom-mr-4">+</span> [`Add block to page`]
-            </button>
+            </a>
         </div>
         {/if}
     </div>
 
 </div>
 
-<script>
+<script>(function() { "use strict";
+    var block_id = {$block_id|json_encode};
+    var $wrapper;
+    if (block_id) {
+        $wrapper = $('.js-seq-wrapper[data-block-id="'+block_id+'"]');
+    } else {
+        $wrapper = $('#js-global-seq');
+    }
 
-</script>
-
-{include file="./VerticalSequence.script.html" is_backend=$is_backend inline}
+    var controller = siteVseqController({
+        $wrapper
+    });
+})();</script>

@@ -159,13 +159,13 @@
                                                         </div>
                                                         <ul class="menu custom-my-0">
                                                             {foreach $themes as $theme_id => $theme}
-                                                                <li class="{($route['theme']|default:'default' == $theme_id ) ? 'selected' : ''}">
-                                                                    <a href="javascript:void(0);" data-id="{$theme_id}">
+                                                                <li class="{($route['theme']|default:'default' == $theme_id ) ? 'selected' : ''}" data-id="{$theme_id}">
+                                                                    <div class="item">
                                                                         <span>{$theme|escape}</span>
                                                                         {if $route['theme']|default:'default' == $theme_id}
                                                                             <span class="count"><i class="fas fa-check text-light-gray"></i></span>
                                                                         {/if}
-                                                                    </a>
+                                                                    </div>
                                                                 </li>
                                                             {/foreach}
                                                         </ul>
@@ -366,6 +366,7 @@
         </div>
     </div>
 
+    {include file="templates/actions/backend/includes/unsaved_dialog.html" inline}
     <script type="text/javascript">
         $(function () {
 
@@ -668,7 +669,7 @@
             function initThemeSelect() {
                 $(".js-theme-select").waDropdown({
                     hover: false,
-                    items: ".menu > li > a",
+                    items: ".menu > li",
                     open: function(dropdown_instance) {
                         const $dropdown_body = dropdown_instance.$wrapper.find('.dropdown-body');
                         const height = $dropdown_body.height();
@@ -676,7 +677,9 @@
                         if (scrollHeight > 500 || scrollHeight > height + 1) $dropdown_body.css('max-height', ($dropdown_body.height() - 93.1) + 'px');
                     },
                     change: function(event, target) {
-                        const theme_id = $(target).data("id");
+                        const $li = $(target);
+                        const theme_id = $li.data("id");
+                        $li.children().append($li.siblings().find('.count'));
                         $('[name="params[theme]"]').val(theme_id);
 
                         updateThemeLinks();
@@ -718,7 +721,7 @@
                     e.stopPropagation();
                     const $a = $(this);
 
-                    showUnsavedFormDialog({
+                    $.confirmUnsaved({
                         onSave() {
                             $form.off('routing_edit_saved').on('routing_edit_saved', () => {
                                 form_changed = false;
@@ -735,26 +738,6 @@
                         }
                     });
                 });
-
-                function showUnsavedFormDialog({ onSave = () => null, onLeave = () => null }) {
-                    $.waDialog({
-                        html: {{include file="templates/actions/backend/includes/unsaved_form_dialog.html"}|json_encode|strip},
-                        onOpen ($d, d) {
-                            d.$block.find('.js-save-button').on('click', () => {
-                                if (typeof onSave === 'function') {
-                                    onSave();
-                                }
-                                d.close();
-                            });
-                            d.$block.find('.js-leave-button').on('click', () => {
-                                if (typeof onLeave === 'function') {
-                                    onLeave();
-                                }
-                                d.close();
-                            });
-                        }
-                    })
-                }
             })();
 
         });

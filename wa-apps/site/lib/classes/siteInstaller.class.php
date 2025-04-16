@@ -9,10 +9,10 @@ class siteInstaller
         if (!$model->query('SELECT COUNT(*) FROM site_variable')->fetchField()) {
             $locale_data = [
                 'ru_RU' => [
-                    ['id' => 'company-name', 'content' => 'ООО "Моя компания"', 'description' => 'Название компании', 'sort' => 1],
+                    ['id' => 'company-name', 'content' => 'ООО «Моя компания»', 'description' => 'Название компании', 'sort' => 1],
                     ['id' => 'address', 'content' => 'Москва, ул. Пушкина, д. 1, оф. 1', 'description' => 'Адрес', 'sort' => 2],
                     ['id' => 'phone', 'content' => '+7 (123) 456-78-90', 'description' => 'Телефон', 'sort' => 3],
-                    ['id' => 'email', 'content' => 'info@your-company.com', 'description' => 'Email', 'sort' => 4],
+                    ['id' => 'email', 'content' => 'info@my-company.ru', 'description' => 'Email', 'sort' => 4],
                 ],
                 'en_US' => [
                     ['id' => 'company-name', 'content' => 'Your Company Name Ltd', 'description' => 'Company Name', 'sort' => 1],
@@ -171,7 +171,6 @@ class siteInstaller
             $pages[$p['domain_id']][$p['route']] = true;
         }
 
-        $content = $this->getDemoContent();
         foreach ($this->loadRouting() as $domain => $domain_routes) {
             if (!is_array($domain_routes) || empty($domain_ids[$domain])) {
                 continue;
@@ -182,7 +181,7 @@ class siteInstaller
                 if (ifset($route, 'app', null) !== 'site' || empty($route['url']) || !empty($pages[$domain_id][$route['url']])) {
                     continue;
                 }
-                if ($is_main_page = rtrim($route['url'], '/*') === '') {
+                if (rtrim($route['url'], '/*') === '') {
                     $name = _w('Home page');
                 } else {
                     $name = ifempty($route, '_name', $default_route_name);
@@ -193,22 +192,26 @@ class siteInstaller
                     'title' => $name,
                     'url' => '',
                     'full_url' => '',
-                    'content' => $content,
+                    'content' => '',
                     'route' => $route['url'],
                     'status' => 1,
                     'parent_id' => null,
+                ]);
+
+                $page_model->updateById($page_id, [
+                    'content' => $this->getDemoContent($page_id, $domain_id)
                 ]);
             }
         }
     }
 
-    protected function getDemoContent()
+    protected function getDemoContent($page_id, $domain_id)
     {
         $view = wa('site')->getView();
 
         $view->assign([
-            'page_id'   => '{$page.id}',
-            'domain_id' => '{$page.domain_id}',
+            'page_id'   => $page_id,
+            'domain_id' => $domain_id,
         ]);
 
         $template = wa()->getAppPath('templates/actions/frontend/includes/demo_htmlpage.html', 'site');

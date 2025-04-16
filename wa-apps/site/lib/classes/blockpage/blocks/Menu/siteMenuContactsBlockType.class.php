@@ -4,7 +4,7 @@
  */
 class siteMenuContactsBlockType extends siteBlockType
 {
-    public $elements = [   
+    public $elements = [
         'main' => 'site-block-column',
         'wrapper' => 'site-block-column-wrapper',
         ];
@@ -19,7 +19,7 @@ class siteMenuContactsBlockType extends siteBlockType
         $menu_item->data["html"] = "+1 234 567-89-10";
         $menu_item->data["link_props"] = ["href" => "tel:+1 234 567-89-10","data-value" => "phone-link"];
         $menu_item->data["block_props"]["width"] = "cnt-w";
-        $button->data["html"] = 'Order';
+        $button->data["html"] = _w('Order');
         $button->data["block_props"]["margin-bottom"] = "m-b-0";
         $button->data["block_props"]["width"] = "cnt-w";
         $hseq->addChild($menu_item);
@@ -28,7 +28,7 @@ class siteMenuContactsBlockType extends siteBlockType
         $result = $this->getEmptyBlockData();
         $result->addChild($hseq, '');
         $card_props = array();
-        $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'visibility' => "d-n-tb d-n-mb"];
+        $card_props[$this->elements['main']] = ['margin-bottom' => "m-b-a", 'margin-left' => "m-l-a", 'margin-top' => "m-t-a", 'padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'visibility' => "d-n-tb d-n-mb"];
         $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
         $result->data = ['block_props' => $card_props];
         $result->data['elements'] = $this->elements;
@@ -47,10 +47,8 @@ class siteMenuContactsBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Column'),
+            'tags' => 'element',
             'sections' => [
-                [   'type' => 'ColumnsAlignGroup',
-                    'name' => _w('Alignment'),
-                ],
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
                 ],

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Possible `status` values:
+ * - 'final_published': public page visible @ frontend. `final_page_id` is NULL.
+ * - 'final_unpublished': initial draft of the page, not visible @ frontend. `final_page_id` is NULL.
+ * - 'draft': non-public version of a `final_published` page during editing. `final_page_id` contains id of the public page.
+ */
 class siteBlockpageModel extends waModel
 {
     protected $table = 'site_blockpage';
@@ -10,11 +15,32 @@ class siteBlockpageModel extends waModel
     public function createEmptyUnpublishedPage($domain_id)
     {
         $dt = date('Y-m-d H:i:s');
-        $url = $this->getIncrementUrl('new-page');
+        $url = siteHelper::getIncrementUrl();
         return $this->insert([
             'domain_id' => $domain_id,
             'full_url' => $url,
             'url' => $url,
+            'status' => 'final_unpublished',
+            'create_datetime' => $dt,
+            'update_datetime' => $dt,
+        ]);
+    }
+
+    /**
+     * @return int
+     */
+    public function createUnpublishedPage($domain_id, $page)
+    {
+        $dt = date('Y-m-d H:i:s');
+
+        return $this->insert([
+            'domain_id' => $domain_id,
+            'name' => $page['name'],
+            'title' => $page['title'],
+            'url' => $page['url'],
+            'full_url' => $page['url'],
+            'theme' => $page['theme'],
+            'parent_id' => ifset($page, 'parent_id', null),
             'status' => 'final_unpublished',
             'create_datetime' => $dt,
             'update_datetime' => $dt,
@@ -33,7 +59,14 @@ class siteBlockpageModel extends waModel
 
     public function getByDomain($domain_id)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE domain_id=? ORDER BY `sort`";
+        $sql = "SELECT * FROM {$this->table} WHERE domain_id=? AND status<>'draft' ORDER BY `sort`";
+        $pages = $this->query($sql, [$domain_id])->fetchAll('id');
+        return $pages;
+    }
+
+    public function getByDomainWithVerifyDraftModifications($domain_id)
+    {
+        $sql = "SELECT t1.*,(t2.create_datetime != t2.update_datetime) as draft_changed FROM {$this->table} as t1 LEFT JOIN {$this->table} as t2 ON t1.id = t2.final_page_id WHERE t1.domain_id=? AND t1.status<>'draft' ORDER BY t1.sort";
         $pages = $this->query($sql, [$domain_id])->fetchAll('id');
         return $pages;
     }
@@ -52,12 +85,28 @@ class siteBlockpageModel extends waModel
         return $this->query($sql, [[$url, $url2], $status, $domain_id])->fetchAssoc();
     }
 
-    public function delete($ids)
+    public function getByUrlStartingWith(int $domain_id, string $url)
+    {
+        $sql = "SELECT *
+                FROM {$this->table}
+                WHERE full_url LIKE ?
+                    AND domain_id = ?
+                ORDER BY id";
+        return $this->query($sql, [$url.'%', $domain_id])->fetchAll('id');
+    }
+
+    public function delete($ids, $with_connected_pages=true)
     {
         if (!$ids) {
             return;
         }
         $ids = (array) $ids;
+        if ($with_connected_pages) {
+            $draft_ids = array_keys($this->select('id')->where('final_page_id IN (?)', [$ids])->fetchAll('id'));
+            $published_ids = array_keys($this->select('final_page_id')->where('id IN (?) AND final_page_id IS NOT NULL', [$ids])->fetchAll('final_page_id'));
+            $children_ids = $this->getChildIds(array_merge($ids, $published_ids));
+            $ids = array_merge($ids, $draft_ids, $published_ids, $children_ids);
+        }
 
         $block_ids = array_keys($this->query("SELECT id FROM site_blockpage_blocks WHERE page_id IN (?)", [$ids])->fetchAll('id'));
         if ($block_ids) {
@@ -69,31 +118,18 @@ class siteBlockpageModel extends waModel
 
         $blockpage_params_model = new siteBlockpageParamsModel();
         $blockpage_params_model->deleteByField('page_id', $ids);
-    }
 
-    public function getIncrementUrl(string $start_name)
-    {
-        $slug = $start_name;
-        $urls = $this->query(
-            "SELECT url FROM {$this->table} WHERE url != ''
-            UNION ALL
-            SELECT url FROM site_page WHERE parent_id IS NULL AND url != ''"
-        )->fetchAll(null, true);
-
-        $max_index = -1;
-        foreach ($urls as $url) {
-            $m = [];
-            $url = rtrim($url, '/');
-            if (preg_match('/^'.$start_name.'(-\d*)?$/', $url, $m)) {
-                $i = intval(ltrim($m[1] ?? 0, '-'));
-                $max_index = $i > $max_index ? $i : $max_index;
+        if (!$with_connected_pages) {
+            // fix children of deleted pages by moving them to root
+            $child_pages = $this->getByField([
+                'parent_id' => $ids,
+            ], true);
+            foreach ($child_pages as $p) {
+                $this->move($p['id'], [
+                    'domain_id' => $p['domain_id'],
+                ]);
             }
         }
-        if ($max_index > -1) {
-            $slug = $start_name . '-' . ++$max_index;
-        }
-
-        return $slug;
     }
 
     public function move($id, $parent_id, $before_id = null)
@@ -162,11 +198,19 @@ class siteBlockpageModel extends waModel
             return false;
         }
 
-        if (isset($data['domain_id']) || isset($data['parent_id'])) {
+        if (isset($data['domain_id']) || array_key_exists('parent_id', $data)) {
             $child_ids = $this->getChildIds($id);
             if ($child_ids) {
-                if (isset($data['parent_id'])) {
+                if (array_key_exists('parent_id', $data)) {
                     $this->updateFullUrl($child_ids, $data['full_url'], $page['full_url']);
+                    if (isset($data['full_url'])) {
+                        $this->updateByField([
+                            'final_page_id' => $id,
+                        ], [
+                            'full_url' => $data['full_url'],
+                            'parent_id' => $data['parent_id'],
+                        ]);
+                    }
                 }
                 $update = array();
                 if (isset($data['domain_id'])) {
@@ -187,12 +231,14 @@ class siteBlockpageModel extends waModel
     public function getChildIds($id)
     {
         $result = [];
-        $ids = [$id];
-        $sql = "SELECT id FROM ".$this->table." WHERE parent_id IN (?)";
-        while ($ids = $this->query($sql, [$ids])->fetchAll(null, true)) {
-            $result = array_merge($result, $ids);
+        $ids = array_fill_keys((array)$id, 1);
+        $sql = "SELECT id FROM ".$this->table."
+                WHERE (parent_id IN (:ids) AND status IN ('final_published', 'final_unpublished'))
+                    OR (final_page_id IN (:ids) AND status='draft')";
+        while ( ( $ids = $this->query($sql, ['ids' => array_keys($ids)])->fetchAll('id', true))) {
+            $result += $ids;
         }
-        return $result;
+        return array_keys($result);
     }
 
     public function updateFullUrl($ids, $new_url, $old_url)
@@ -205,8 +251,24 @@ class siteBlockpageModel extends waModel
         }
         $sql = "UPDATE {$this->table}
                 SET full_url = CONCAT(s:url, SUBSTR(full_url, ".(mb_strlen($old_url) + 1) ."))
-                WHERE id IN (i:ids)";
-        return $this->exec($sql, array('ids' => $ids, 'url' => $new_url));
+                WHERE id IN (i:ids)
+                    AND s:old_url = SUBSTR(full_url, 1, ".mb_strlen($old_url).")";
+        return $this->exec($sql, [
+            'ids' => $ids,
+            'url' => $new_url,
+            'old_url' => $old_url,
+        ]);
+    }
+
+    public function cleanupPage($page_id)
+    {
+        $blockpage_blocks_model = new siteBlockpageBlocksModel();
+        $delete_blocks = $blockpage_blocks_model->select('id,page_id')->where('page_id=?', [$page_id])->fetchAll('id');
+        $this->exec("DELETE FROM site_blockpage_params WHERE page_id=?", [$page_id]);
+        if ($delete_blocks) {
+            $blockpage_blocks_model->deleteByField('page_id', $page_id);
+            $this->exec("DELETE FROM site_blockpage_block_files WHERE block_id IN (?)", [array_keys($delete_blocks)]);
+        }
     }
 
     public function copyContents($source_page_id, $dest_page_id)
@@ -248,5 +310,17 @@ class siteBlockpageModel extends waModel
                 SELECT ?, name, value FROM site_blockpage_params
                 WHERE page_id=?";
         $this->exec($sql, [$dest_page_id, $source_page_id]);
+    }
+
+    public function getDraftById($published_page_id)
+    {
+        return $this->query("
+            SELECT *
+            FROM {$this->table}
+            WHERE final_page_id=?
+                AND status='draft'
+            LIMIT 1",
+            [$published_page_id]
+        )->fetchAssoc();
     }
 }

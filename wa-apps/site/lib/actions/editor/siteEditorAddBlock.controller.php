@@ -57,7 +57,7 @@ class siteEditorAddBlockController extends waController
             elseif ($type_name) {
                 $block_type_info = $library->getByTypeName($type_name);
             }
-            
+
             if (empty($block_type_info['data'])) {
                 throw new waException('unknown type_id', 400);
             }
@@ -67,6 +67,7 @@ class siteEditorAddBlockController extends waController
         $new_block_id = $blockpage_blocks_model->addToParent($block_data, $parent_page['id'], $parent_block_id, $child_key, $before_block_id, $after_block_id);
 
         $page = new siteBlockPage($parent_page);
+        $page->updateDateTime();
         echo $page->renderBackend($parent_block_id);
         echo $this->getUndoScript($parent_block_id, $new_block_id);
     }
@@ -106,7 +107,7 @@ EOF;
         if (empty($columns)) {
             return false;
         }
-        
+
         $addChild = function (array $block, siteBlockData $parent_block_data) {
             $block_data = siteBlockType::factory($block['type'])->getEmptyBlockData()->setDbRow(['id' => null] + $block);
             $parent_block_data->addChild($block_data, $block['child_key']);
@@ -123,7 +124,7 @@ EOF;
             if (empty($v_sequences)) {
                 continue;
             }
-           
+
             foreach ($v_sequences as $v_sequence) {
                 $v_sequence_data = $addChild($v_sequence, $col_data);
 
@@ -135,7 +136,7 @@ EOF;
                     continue;
                 }
                 foreach ($elements as $el) {
-                
+
                     if ($el['type'] == 'site.VerticalSequence') {
                         $this->copyChildrenBlocks($blockpage_blocks_model, $v_sequence_data, $v_sequence['id']);
                     } else {

@@ -1,31 +1,15 @@
 {$block_id = $data->getId()}
-
 {$elements = ifset($data->data, 'elements', [
     'wrapper' => '',
     'main' => ''
 ])}
-
-{$cards_props = []}
-{if !empty($data->data['cards'])}
-    {$cards_props = $data->data['cards']}
-{/if}
-{$static_main = "`$elements.main` f-w"}
-{$static_wrapper = "`$elements.wrapper` style-wrapper cnt rw"}
-{if $cards_props|@count == 1}
-{$static_wrapper = "`$elements.wrapper` style-wrapper cnt cl"}
-{/if}
-<section class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-block-id="{$block_id|escape}" data-page-id="{$data->getPageId()|escape}" data-static="{$static_main}" >
+{$static_main = "`$elements.main` f-w blc"}
+{$static_wrapper = "`$elements.wrapper` style-wrapper rw"}
+{$anchor_id = $data->data['id']|default:0}
+<section {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-block-id="{$block_id|escape}" data-page-id="{$data->getPageId()|escape}" data-static="{$static_main}" >
     <div class="{$static_wrapper}" data-static="{$static_wrapper}">
         {foreach $children as $n => $c}
-            {$key = "card-`$n+1`"}
-            {$card_class = ifset($cards_props, $key, '')}
-            <div class="site-block-columns-col" data-static="site-block-columns-col" data-count="{$n+1}">
-                {$c.html}
-            </div>
-            <script>$(() => setTimeout(function(){
-                $.wa.editor.updateBlockData({$c.id|json_encode}, {json_encode($c.data->data, constant('JSON_FORCE_OBJECT'))} || {});
-                $.wa.editor.updateBlockSettingsFormConfig({$c.id|json_encode}, {json_encode($c.data->block_type->getBlockSettingsFormConfig(), constant('JSON_FORCE_OBJECT'))} || {});
-            }, 0));</script>
+            {$c.html}
         {/foreach}
     </div>
 </section>
@@ -34,63 +18,15 @@
     $(function() { "use strict";
         const block_id = {$data->getId()|json_encode};
         const $block_wrapper = $('.site-block-cards[data-block-id="'+block_id+'"]');
-        //updateBlockStyles($block_wrapper, {$data->data|json_encode}, block_id);
         $block_wrapper.on('block_data_updated', function(event, updated_block_id, data) {
         event.stopPropagation();
         if (updated_block_id == block_id) {
             updateBlockStyles($block_wrapper, data, block_id);
         }
         });
-    });
-
-    window.siteCardController = (function() { "use strict";
-
-    const msg_error_deleting_block = {_w('Block deletion error.')|json_encode}
-
-    return siteCardController;
-
-    function siteCardController(opts) {
-        var self = {};
-        var $wrapper = opts.$wrapper;
-        var block_id = $wrapper.data('block-id');
-        var page_id = $wrapper.data('page-id');
-        // When user clicks on "Add block" button, open dialog in topmost frame
-
-        // When user clicks anywhere else within a block, select that block and show its settings in right drawer
-        $wrapper.on('click', '.site-block-card', function(e) {
-
-            const $child = $(this);
-            if ($child.closest('.site-block-cards-col')[0] !== $wrapper[0] ||  $(e.target).closest('.site-block-cards-col')[0] !== $wrapper[0]) {
-                return; // Ignore events from child vseq instances
-            }
-            const selection = window.getSelection().anchorNode.parentElement;
-            const selection_id = selection.dataset.blockId;
-            //console.log(window.getSelection().type, selection.dataset.blockId, $child.data('block-id'))
-            if (window.getSelection().type === 'Range' && +selection_id !== $child.data('block-id')) return;
-            //console.log($child, e.target)
-            e.stopPropagation();
-            e.preventDefault();
-            $.wa.editor.setSelectedBlock($child.data('block-id'), $child, e.target);
-        });
-
-        return self;
-        }
-    })();
+    })
 </script>
 
-<script>
-(function() { "use strict";
-    var block_id = {$block_id|json_encode};
-    var $wrapper;
-    if (block_id) {
-        $wrapper = $('.site-block-cards-wrapper[data-block-id="'+block_id+'"]');
-    }
-    $(function() {
-        var controller = siteCardController({
-            $wrapper
-        });
-    });
-})();</script>
 {else}
 <script>$(function() { "use strict";
     const block_id = {$data->getId()|json_encode};

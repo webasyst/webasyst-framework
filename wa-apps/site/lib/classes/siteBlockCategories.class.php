@@ -1,37 +1,60 @@
 <?php
+
 /**
  * All categories for Add Block dialog.
  *
  * Each category has a tag assigned. Blocks are put into categories depending on block's tags.
  */
-class siteBlockCategories
-{
-    const BLOCK_CATEGORIES_LIMIT = 3;
+class siteBlockCategories {
+    const BLOCK_CATEGORIES_LIMIT = 5;
 
-    public function getAll()
-    {
+    public function getAll() {
         $result = [
             [
                 'title' => _wd('site', 'Main screen'),
-                'tag' => 'category_main_page',
+                'tag'   => 'category_main_page',
             ], [
                 'title' => _wd('site', 'Menu'),
-                'tag' => 'category_menu',
+                'tag'   => 'category_menu',
             ], [
-                'title' => _wd('site', 'Advantages'),
-                'tag' => 'category_advantages',
+                'title' => _wd('site', 'Banners'),
+                'tag'   => 'category_banners',
+            ], [
+                'title' => _wd('site', 'Partner logos'),
+                'tag'   => 'category_partner_logos',
+            ], [
+                'title' => _wd('site', 'Products'),
+                'tag'   => 'category_products',
             ], [
                 'title' => _wd('site', 'Reviews'),
-                'tag' => 'category_reviews',
+                'tag'   => 'category_reviews',
             ], [
-                'title' => _wd('site', 'Prices'),
-                'tag' => 'category_rates',
+                'title' => _wd('site', 'Advantages'),
+                'tag'   => 'category_advantages',
+            ], [
+                'title' => _wd('site', 'Images with description'),
+                'tag'   => 'category_images_with_description',
+            ], [
+                'title' => _wd('site', 'Gallery'),
+                'tag'   => 'category_gallery',
+            ], [
+                'title' => _wd('site', 'Text'),
+                'tag'   => 'category_text',
+            ], [
+                'title' => _wd('site', 'FAQ'),
+                'tag'   => 'category_faq',
+            ], [
+                'title' => _wd('site', 'Call to action'),
+                'tag'   => 'category_cta',
             ], [
                 'title' => _wd('site', 'Contacts'),
-                'tag' => 'category_contacts',
+                'tag'   => 'category_contacts',
             ], [
                 'title' => _wd('site', 'Site footer'),
-                'tag' => 'category_footer',
+                'tag'   => 'category_footer',
+            ], [
+                'title' => _wd('site', 'Custom code'),
+                'tag'   => 'category_custom_code',
             ],
         ];
 
@@ -43,8 +66,7 @@ class siteBlockCategories
         return $result;
     }
 
-    public function categorizeBlocks($categories, $blocks, &$uncategorized_blocks)
-    {
+    public function categorizeBlocks($categories, $blocks, &$uncategorized_blocks) {
         $uncategorized_blocks = [];
 
         $category_by_tag = [];

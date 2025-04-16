@@ -12,6 +12,7 @@ class BlockSettingsDrawer
     drawer;
     $wrapper;
     form_constructor;
+    position_number = 0;
 
     constructor(options) {
         this.o = options;
@@ -24,10 +25,62 @@ class BlockSettingsDrawer
         this.$sidebar.removeClass('hidden').show();
     }
 
+    /** Called by the core SiteEditor to show the drawer after user selects a block. */
+    /*showSidebarButton() {
+        const that = this;
+        const sidebarButton = this.$sidebar.siblings('.sidebar-button');
+        if (!sidebarButton.hasClass('hidden') || !this.$sidebar.is(":hidden")) return
+        sidebarButton.removeClass('hidden');
+        sidebarButton.on('click', function(){
+            that.show();
+            sidebarButton.off('click');
+            sidebarButton.addClass('hidden');
+        });
+    }*/
+
     /** Hides a drawer when user de-selects a block */
     hide() {
         this.$sidebar.hide();
+        //const sidebarButton = this.$sidebar.siblings('.sidebar-button');
+        //sidebarButton.addClass('hidden');
     }
+
+    /** Change view of drawer  */
+    updatePosition() {
+        this.position_number
+        switch (this.position_number) {
+            case 0:
+                this.$sidebar.addClass('secondSmallPosition');
+                break;
+            /* не удаляю, чтобы можно было сделать больше 2х режимов отображения сайдбара
+            case 1:
+                this.$sidebar.addClass('secondSmallPosition').removeClass('firstSmallPosition');
+                break;
+            case 2:
+                this.$sidebar.addClass('thirdSmallPosition').removeClass('secondSmallPosition');
+                break;*/
+            default:
+                this.$sidebar.removeClass('secondSmallPosition')
+                this.position_number = -1;
+                break;
+        }
+        this.position_number++
+    }
+
+        /** Change position of drawer  */
+        updatePositionHorizontal() {
+            this.position_number
+            switch (this.position_number) {
+                case 0:
+                    this.$sidebar.addClass('leftPosition');
+                    break;
+                default:
+                    this.$sidebar.removeClass('leftPosition')
+                    this.position_number = -1;
+                    break;
+            }
+            this.position_number++
+        }
 
     /** Called by the core SiteEditor to (re-)initialize a form in the drawer
      * when user selects a different block. */
@@ -48,7 +101,17 @@ class BlockSettingsDrawer
                 is_new_block: is_new_block
             });
         }
-        console.log('BlockSettingsDrawer.setForm()', form_config, block_data, media_prop);
+        //console.log('BlockSettingsDrawer.setForm()', form_config, block_data, media_prop);
+        this.updatePaddingRight(media_prop)
+    }
+
+    updatePaddingRight(media_prop) {
+        $iframe = $('#js-main-editor-body');
+        //console.log(media_prop, this.$sidebar.hasClass('overflow-mode'))
+        if (!media_prop && this.$sidebar.hasClass('overflow-mode')) {
+            let padding_right = $iframe[0].contentWindow.innerWidth - $iframe[0].contentWindow.document.body.clientWidth + 10 + 'px';
+            this.$sidebar.css('right', padding_right);
+        } else this.$sidebar.css('right', '');
     }
 
     /** Called by the core SiteEditor to update data without changing currently visible form.

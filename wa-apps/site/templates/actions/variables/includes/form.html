@@ -31,11 +31,11 @@
             {if $_type == 'block'}
                 <p class="hint custom-mt-8">
                     {sprintf_wp(
-                        'You can pass additional parameters to a variable after a comma: %s. Replace %s with an associative array of parameters; e.g., %s. Each passed parameter is accessible in the code by its name as a Smarty variable; e.g., %s.',
-                        sprintf("<code>&#123%s-&gt;block('%s', <strong>%s</strong>)&#125;</code>", '$wa', $_item.id|escape, '$params'),
+                        'You can pass additional parameters to a variable after a comma: %s<br>Instead of %s must be specified an associative array of parameters; e.g., %s<br>Each passed parameter is accessible in the code by its name as a Smarty variable; e.g., %s',
+                        sprintf("<code class='nowrap'>&#123%s-&gt;block('%s', <strong>%s</strong>)&#125;</code>", '$wa', $_item.id|escape, '$params'),
                         '<em>$params</em>',
-                        "<code>['some' =&gt; 100, 'other' =&gt; 500]</code>",
-                        '<code>&#123$some + $other&#125</code>'
+                        "<code class='nowrap'>['<strong>first</strong>' =&gt; 100, '<strong>second</strong>' =&gt; 500]</code>",
+                        '<code class="nowrap">&#123$sum = <strong>$first</strong> + <strong>$second</strong>&#125</code>'
                     )}
                 </p>
             {/if}

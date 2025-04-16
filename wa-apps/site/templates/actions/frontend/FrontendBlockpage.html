@@ -3,9 +3,8 @@
 * Used in case design theme does not specify its own custom layout.
 *
 *}
-
 <!DOCTYPE html>
-   <html>
+   <html lang="{if $wa->locale() == 'ru_RU'}ru{else}en{/if}">
    <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>{$wa->title()|escape}</title>

@@ -1,0 +1,41 @@
+<template id="unsaved-form-dialog-template">
+    <div class="dialog">
+        <div class="dialog-background"></div>
+        <div class="dialog-body">
+            <div class="dialog-header">
+                <h2>[`Save modified data before leaving?`]</h2>
+            </div>
+            <div class="dialog-content">
+                <p>[`Your changes will be lost if you do not save them.`]</p>
+            </div>
+            <div class="dialog-footer flexbox middle">
+                <button class="js-save-button button green" type="button">[`Save`]</button>
+                <button class="js-dialog-close button light-gray" type="button">[`Stay`]</button>
+                <button class="js-leave-button button outlined orange custom-ml-auto" type="button">[`Leave without saving`]</button>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    (function ($) {
+        $.confirmUnsaved = function ({ onSave = () => null, onLeave = () => null }) {
+            $.waDialog({
+                html: $('#unsaved-form-dialog-template').html(),
+                onOpen ($d, d) {
+                    d.$block.find('.js-save-button').on('click', () => {
+                        if (typeof onSave === 'function') {
+                            onSave();
+                        }
+                        d.close();
+                    });
+                    d.$block.find('.js-leave-button').on('click', () => {
+                        if (typeof onLeave === 'function') {
+                            onLeave();
+                        }
+                        d.close();
+                    });
+                }
+            })
+        }
+    })(jQuery);
+</script>

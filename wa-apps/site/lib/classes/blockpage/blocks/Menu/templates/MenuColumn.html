@@ -1,7 +1,7 @@
 {$block_id = $data->getId()}
 {$elements = $data->data['elements']}
-{$static_main = "`$elements.main` fx-6"}
-{$static_wrapper = "`$elements.wrapper` style-wrapper cl p-l-16 p-r-16"}
+{$static_main = "`$elements.main` clm"}
+{$static_wrapper = "`$elements.wrapper` style-wrapper cl"}
 
 <div class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_main}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
     <div class="{$static_wrapper}" data-static="{$static_wrapper}">

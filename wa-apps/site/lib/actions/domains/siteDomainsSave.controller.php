@@ -24,8 +24,8 @@ class siteDomainsSaveController extends waJsonController
         $data['name'] = $name;
 
         if ($domain_model->getByName($name)) {
-            $error_txt = _w("A website with domain name %s already exists in this Webasyst account. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website.");
-            $this->errors = sprintf($error_txt, $original_name, $original_name, $original_name);
+            $error_txt = _w("A site with domain name %s already exists in this Webasyst account.");
+            $this->errors = sprintf($error_txt, $original_name);
             return;
         }
 

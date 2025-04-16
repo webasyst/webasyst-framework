@@ -27,23 +27,32 @@ class siteEditorAction extends waViewAction
             throw new waException('Page not found', 404);
         }
 
-        $domain_id = $page['domain_id'];
+        if (!empty($page['final_page_id'])) {
+            $draft_page = $page;
+            $page = $blockpage_model->getById($page['final_page_id']);
+        } else {
+            $draft_page = (new siteBlockPage($page))->getDraftPage()->data;
+        }
 
         $this->setLayout(new siteBackendLayout([
             'hide_wa_app_icons' => true,
         ]));
 
-        $page_settings_dialog_html = (new siteMapPageSettingsDialogAction(['page_id' => $page['id']]))->display();
+        $page_settings_dialog_html = (new siteMapPageSettingsDialogAction(['page_id' => $draft_page['id']]))->display();
 
-        list($block_data, $block_form_config) = $this->getBlockDataAndConfig($page);
+        list($block_data, $block_form_config) = $this->getBlockDataAndConfig($draft_page);
 
         $this->view->assign([
-            'page' => $page,
-            'domain_id' => $domain_id,
+            'page' => $draft_page,
+            'published_page' => $page,
+            'domain_id' => $page['domain_id'],
             'block_data' => $block_data,
             'block_form_config' => $block_form_config,
-            'domain_root_url' => $this->getDomainRootUrl($domain_id),
+            'domain_root_url' => $this->getDomainRootUrl($page['domain_id']),
             'page_settings_dialog_html' => $page_settings_dialog_html,
+            'has_unpublished_changes' => $draft_page['create_datetime'] !== $draft_page['update_datetime'],
+            'is_published' => $page['status'] === 'final_published',
+            'preview_hash' => siteHelper::getPreviewHash(),
         ]);
     }
 

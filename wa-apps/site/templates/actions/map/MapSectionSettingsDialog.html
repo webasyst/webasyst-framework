@@ -5,35 +5,62 @@
 <div class="field field-url">
     <div class="name bold for-input">URL</div>
     <div class="value">
-    {if $has_route}
-        <!-- existing route -->
-        <div class="s-route-block flexbox wrap middle space-4" id="s-route-where">
-            <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
-            {if empty($is_main_page)}
-                <input type="text" name="params[url]" value="{$route.url|escape}" class="js-url small full-width" {if $is_broken_route_url}disabled{/if}>
-                <span class="custom-mr-4">/</span>
+        <div class="s-route-block flexbox wrap middle space-4{if !$has_route} full-width{/if}" id="s-route-where">
+            {if $has_route}
+                <!-- existing route -->
+                <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
+                {if empty($is_main_page)}
+                    <input type="text" name="params[url]" value="{$route.url|escape}" class="js-url small full-width" {if $is_broken_route_url}disabled{/if}>
+                    <span class="custom-mr-4">/</span>
+                {else}
+                    <input type="hidden" name="params[url]" value="{$route.url|escape}" class="js-url small full-width">
+                {/if}
+                <a href="//{$domain_decoded}/{$route.url|replace:'*':''|rtrim:'/'|escape}/{if !empty($page) && $page.status == 0}?preview={$preview_hash}{/if}" data-domain="{$domain_decoded}" target="_blank" class="button nobutton small circle"><i class="fas fa-external-link-alt"></i><i class="fas fa-spinner fa-spin text-gray" style="display: none;"></i></a>
             {else}
-                <input type="hidden" name="params[url]" value="{$route.url|escape}" class="js-url small full-width">
+                <!-- new route -->
+                <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
+                <input type="text" name="params[url]" value="{$app_url}" class="js-url small full-width">
+                <span class="">/</span>
+                <input type="hidden" name="params[app]" value="{$app_id}">
             {/if}
-            <a href="//{$domain_decoded}/{$route.url|replace:'*':''|escape}" data-domain="{$domain_decoded}" target="_blank" class="button nobutton small circle"><i class="fas fa-external-link-alt"></i><i class="fas fa-spinner fa-spin text-gray" style="display: none;"></i></a>
         </div>
 
-        <div class="custom-mt-8">
-            {if empty($is_main_page)}
-            <button type="button" class="js-set-main-page button nowrap rounded smaller outlined gray"><i class="fas fa-home custom-mr-4"></i>[`Make the site’s homepage`]</button>
-            {/if}
-            <button type="button" class="js-active-main-page button nowrap rounded smaller green{if empty($is_main_page)} hidden{/if}" disabled><i class="fas fa-home custom-mr-4"></i>[`Homepage`]<i class="fas fa-check custom-ml-4"></i></button>
-        </div>
-    {else}
-
-        <!-- new route -->
-        <div class="s-route-block flexbox wrap middle space-4 full-width" id="s-route-where">
-        <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
-        <input type="text" name="params[url]" value="{$app_url}" class="js-url small full-width">
-        <span class="">/</span>
-        <input type="hidden" name="params[app]" value="{$app_id}">
-        </div>
-    {/if}
+        {if isset($route.show_over_another_section) || $has_route}
+            <div class="custom-mt-8">
+                {if $app_id === 'site' && isset($route.show_over_another_section)}
+                    <div class="custom-mb-16">
+                        <div class="switch-with-text">
+                            <input type="hidden" name="params[show_over_another_section]" value="">
+                            <span class="switch smallest" id="switch-show-over-another-section">
+                                <input type="checkbox"
+                                    name="params[show_over_another_section]"
+                                    value="1"
+                                    {if !empty($route.show_over_another_section)} checked{/if}
+                                    id="switch-show-over-another-section-input"
+                                >
+                            </span>
+                            <label class="small" for="switch-show-over-another-section-input">
+                                <span class="normal">[`Main section page`]</span>
+                                <span data-wa-tooltip-content="[`When enabled, this page becomes the main page of a section with the same URL, and its subpages become unavailable. All other section pages remain available at their addresses.`]">
+                                    <i class="fas fa-question-circle text-light-gray"></i>
+                                </span>
+                            </label>
+                        </div>
+                        <script>(function() { "use strict";
+                            const $switch = $("#switch-show-over-another-section");
+                            $switch.parent().find("[data-wa-tooltip-content]").waTooltip();
+                            $switch.waSwitch();
+                        })();</script>
+                    </div>
+                {/if}
+                {if $has_route}
+                    {if empty($is_main_page)}
+                        <button type="button" class="js-set-main-page button nowrap rounded smaller outlined gray"><i class="fas fa-home custom-mr-4"></i>[`Make the site’s homepage`]</button>
+                    {/if}
+                    <button type="button" class="js-active-main-page button nowrap rounded smaller green{if empty($is_main_page)} hidden{/if}" disabled><i class="fas fa-home custom-mr-4"></i>[`Homepage`]<i class="fas fa-check custom-ml-4"></i></button>
+                {/if}
+            </div>
+        {/if}
     </div>
 </div>
 {/capture}
@@ -76,9 +103,13 @@
             {include file="templates/layouts/includes/alert_broken_url.html" is_broken_route_url=$is_broken_route_url inline}
             <div class="fields">
                 {if $app}
+                    {$other_params_list = [
+                        'app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled',
+                        'is_broken_route_url', 'priority_settlement', 'old_url', 'show_over_another_section'
+                    ]}
                     {$_route_params = []}
                     {foreach $route as $key=>$value}
-                        {if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled', 'is_broken_route_url', 'priority_settlement', 'old_url')) && substr($key, 0, 1) != '_' && !isset($params[$key]) && is_scalar($value)}
+                        {if !in_array($key, $other_params_list) && substr($key, 0, 1) != '_' && !isset($params[$key]) && is_scalar($value)}
                             {$_route_params[$key] = $value}
                         {/if}
                     {/foreach}
@@ -275,13 +306,13 @@
                                                     </div>
                                                     <ul class="menu custom-my-0">
                                                         {foreach $themes as $theme_id => $theme}
-                                                            <li class="{($route['theme']|default:'default' == $theme_id ) ? 'selected' : ''}">
-                                                                <a href="javascript:void(0);" data-id="{$theme_id}">
+                                                            <li class="{($route['theme']|default:'default' == $theme_id ) ? 'selected' : ''}" data-id="{$theme_id}">
+                                                                <div class="item">
                                                                     <span>{$theme|escape}</span>
                                                                     {if $route['theme']|default:'default' == $theme_id}
                                                                         <span class="count"><i class="fas fa-check text-light-gray"></i></span>
                                                                     {/if}
-                                                                </a>
+                                                                <div>
                                                             </li>
                                                         {/foreach}
                                                     </ul>
@@ -407,7 +438,10 @@
                                         </div>
                                     {/foreach}
                                     <div class="field">
-                                        <div class="name for-switch">[s`Social sharing`]</div>
+                                        <div class="name for-switch">[s`Social sharing`]
+                                            <br>
+                                            <span class="hint">[`Open Graph Meta Tags`]</span>
+                                        </div>
                                         <div class="value">
                                             <div class="switch-with-text ">
                                             <span class="switch smaller" id="og-switch">
@@ -858,7 +892,7 @@
     function themeSelect() {
         $(".js-theme-select").waDropdown({
             hover: false,
-            items: ".menu > li > a",
+            items: ".menu > li",
             open: function(dropdown_instance) {
                 const $dropdown_body = dropdown_instance.$wrapper.find('.dropdown-body');
                 const height = $dropdown_body.height();
@@ -866,7 +900,9 @@
                 if (scrollHeight > 500 || scrollHeight > height + 1) $dropdown_body.css('max-height', ($dropdown_body.height() - 93.1) + 'px');
             },
             change: function(event, target) {
-                const theme_id = $(target).data("id");
+                const $li = $(target);
+                const theme_id = $li.data("id");
+                $li.children().append($li.siblings().find('.count'));
                 $('[name="params[theme]"]').val(theme_id);
                 $('.js-theme-settings').attr('href', "{$wa_app_url}themes/?domain_id={$domain_id}#/themes/theme=" + theme_id + "&domain={$domain_decoded|urlencode}");
 

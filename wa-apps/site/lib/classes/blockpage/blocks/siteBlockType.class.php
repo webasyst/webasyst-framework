@@ -138,10 +138,14 @@ abstract class siteBlockType
     }
 
     /** Config for block settings form that appears in right drawer
-     * when user selects block of this type in editor. */
+     * when user selects block of this type in editor. 
+     * Set user language for block settings translation */
     public function getBlockSettingsFormConfig()
     {
+        $old_locale = wa()->getLocale();
+        wa()->setLocale(wa()->getUser()->getLocale());
         $config = $this->getRawBlockSettingsFormConfig();
+        wa()->setLocale($old_locale);
         return $config;
     }
 
@@ -193,6 +197,27 @@ abstract class siteBlockType
             return 'site.'.$m[1];
         }
         throw new siteUnknownBlockTypeException($class_name);
+    }
+
+    /**
+     * Fetch from DB additional data required to render() this block.
+     * Array returned from this method will be stored as $data->data['additional']
+     * and will be available in .html template as well as in JS data for this block
+     * but will not be stored in DB as part of block settings.
+     * @return array?
+     */
+    public function additionalData(siteBlockData $data)
+    {
+        return null; // overriden in subclasses
+    }
+
+    /**
+     * Modification in this block's data will re-render whole block on save if this method returns true.
+     * @return bool
+     */
+    public function shouldRenderBlockOnSave($old_data, $new_data)
+    {
+        return false; // overriden in subclasses
     }
 
     /** @return waView */
@@ -249,10 +274,11 @@ abstract class siteBlockType
 
     public static function factory(string $type)
     {
-        if (substr($type, 0, 5) === 'site.') {
-            $class_type = substr($type, 5);
+        list($app_id, $class_type) = explode('.', $type, 2) + ['', ''];
+        if (wa()->appExists($app_id)) {
+            wa($app_id);
             $class_type = explode('.', $class_type, 2)[0];
-            $class_name = "site{$class_type}BlockType";
+            $class_name = $app_id."{$class_type}BlockType";
             if (class_exists($class_name)) {
                 return new $class_name([
                     'type' => $type,
@@ -260,7 +286,15 @@ abstract class siteBlockType
             }
         }
 
-        // !!! TODO: event hook to pick up block types from plugins and apps
+        // event hook to pick up block types from plugins and apps
+        $library = new siteBlockpageLibrary();
+        $all_blocks = $library->getAllBlocks();
+        foreach($all_blocks as $b) {
+            if ($b['data']->block_type->getTypeId() === $type) {
+                return $b['data']->block_type;
+            }
+        }
+
         throw new siteUnknownBlockTypeException($type);
     }
 }

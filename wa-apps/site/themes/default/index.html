@@ -158,7 +158,7 @@
             .color_scheme_white header .pages li a,
             .color_scheme_white header .pages li a:hover { color: {$theme_settings.color_custom_links} !important; }
         {/if}
-        {if $is_blockpage}
+        {if !empty($is_blockpage)}
             .maincontent > .container { margin: 0; max-width: unset; }
         {/if}
         .appfooter .webasyst-magic-wand { z-index: unset; }

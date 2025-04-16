@@ -41,23 +41,27 @@ class siteConfigureRedirectSaveController extends waJsonController
                     $this->syncRouteName($route);
 
                     if ($route['url'] == '*') {
-                        $routes[$domain][$route_id] = $route;
+                        if (!empty($route['show_over_another_section'])) {
+                            $route['url'] = '';
+                            $routes[$domain] = array($route_id => $route) + $routes[$domain];
+                        } else {
+                            $routes[$domain][$route_id] = $route;
+                        }
                         $this->response['add'] = 'bottom';
                     } else {
-                        if (strpos($route['url'], '*') === false) {
-                            if (substr($route['url'], -1) == '/') {
-                                $route['url'] .= '*';
-                            } elseif (substr($route['url'], -1) != '*' && strpos(substr($route['url'], -5), '.') === false) {
-                                $route['url'] .= '/*';
+                        if (!empty($route['show_over_another_section'])) {
+                            if (strpos(substr($route['url'], -5), '.') === false) {
+                                $route['url'] = rtrim($route['url'], '/*').'/';
+                            }
+                        } else if (strpos($route['url'], '*') === false) {
+                            if (strpos(substr($route['url'], -5), '.') === false) {
+                                $route['url'] = rtrim($route['url'], '/*').'/*';
                             }
                         }
                         $routes[$domain] = array($route_id => $route) + $routes[$domain];
                         $this->response['add'] = 'bottom';
                     }
-
-                    // add robots
-                    $robots = new siteRobots($domain);
-                    $robots->add($route['app'], $route['url']);
+                    unset($route['show_over_another_section']);
                 }
             } elseif (isset($route['redirect'])) {
                 if ($route['url'] && substr($route['url'], -1) != '*' && substr($route['url'], -1) != '/' && strpos(substr($route['url'], -5), '.') === false) {
@@ -80,6 +84,12 @@ class siteConfigureRedirectSaveController extends waJsonController
 
             if ($this->hasDupeRouteUrl($unchanged_routes, $route)) {
                 return;
+            }
+
+            if (!empty($route['app'])) {
+                // add robots
+                $robots = new siteRobots($domain);
+                $robots->add($route['app'], $route['url']);
             }
 
             // Save new route
@@ -140,10 +150,20 @@ class siteConfigureRedirectSaveController extends waJsonController
                 if (!waRequest::post('correct_url') && $is_old_rule_broken) {
                     // do not allow to change route URL if app rule was broken
                     $new['url'] = $old['url'];
-                } elseif ($new['url'] !== '*' && strpos(substr($new['url'], -5), '.') === false) {
-                    $new['url'] = rtrim($new['url'], '/*').'/*';
+                } else if (!empty($new['show_over_another_section'])) {
+                    if (strpos(substr($new['url'], -5), '.') === false) {
+                        $new['url'] = rtrim($new['url'], '/*');
+                        if ($new['url']) {
+                            $new['url'] .= '/';
+                        }
+                    }
+                } else {
+                    if ($new['url'] !== '*' && strpos(substr($new['url'], -5), '.') === false) {
+                        $new['url'] = rtrim($new['url'], '/*').'/*';
+                    }
                 }
             }
+            unset($new['show_over_another_section']);
 
             if (
                 ($new['url'] != $old['url'])

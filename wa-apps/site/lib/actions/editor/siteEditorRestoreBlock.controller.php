@@ -19,6 +19,7 @@ class siteEditorRestoreBlockController extends siteEditorDeleteBlockController
         $blockpage_blocks_model->restoreDeleted($block_ids);
 
         $page = new siteBlockPage($page_id);
+        $page->updateDateTime();
         echo $page->renderBackend(ifempty($target_block, 'parent_id', null));
     }
 }

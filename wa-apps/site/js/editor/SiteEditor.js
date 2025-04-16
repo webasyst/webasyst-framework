@@ -70,42 +70,23 @@ class SiteEditor {
             dialog.$content.html(html).on('site_block_added', function(e, data) {
                 successCb(data);
             });
+            dialog.resize();
         });
     }
-
-    /**
-     * Delete it later if you don't need it.
-     */
-    /*openAddElementsList(dropdown_id, place_data, successCb, cancelCb) {
-        console.log(dropdown_id, place_data);
-        $.post('?module=editor&action=addElementsList', place_data, function(html) {
-            //console.log(html);
-            const $dropdown = $('#' + dropdown_id);
-            console.log('#' + dropdown_id, $dropdown)
-            $dropdown.find('.dropdown-body').html(html);
-            const $dropdown_instance = $dropdown.waDropdown({
-                hover: false,
-                //items: ".menu > li > a",
-                ready: function(event, target, dropdown) {
-
-                }
-            });
-            $dropdown.on('site_block_added', function(e, data) {
-                successCb(data);
-            });
-        });
-    }*/
 
     /**
      * Called from inside iframe when user clicks to select a block.
      * Shows right drawer with block settings form.
      */
     async setSelectedBlock(block_id, is_new_block, reset_block) {
-        console.log(this.current_mq)
         this.selected_block_id = block_id;
         var bs = await this._block_settings_drawer_promise;
-        bs.show();
-        bs.setForm(block_id, this.block_storage.getFormConfig(block_id), this.block_storage.getData(block_id), this.current_mq, is_new_block, reset_block);
+        const formConfig = this.block_storage.getFormConfig(block_id);
+        const blockData = this.block_storage.getData(block_id);
+        //const is_block = formConfig?.elements ? true : false;
+        //is_block ? bs.show() : bs.showSidebarButton();
+        bs.show()
+        bs.setForm(block_id, formConfig, blockData, this.current_mq, is_new_block, reset_block);
     }
     /**
      * Called from outside iframe when user clicks on device panel in wa-header .
@@ -121,7 +102,7 @@ class SiteEditor {
     }
     /**
      * Process some events for block settings
-     * It is used to close block settings form 
+     * It is used to close block settings form
      */
     initCustomEvents() {
         let site_editor = this;
@@ -130,14 +111,14 @@ class SiteEditor {
             if (event.keyCode == 27 && site_editor.selected_block_id && !$('.site-editor-left-drawer').length) {
                 closerSettings()
             }
-            if (event.ctrlKey || event.metaKey) {
+            /*if (event.ctrlKey || event.metaKey) {
                 if (event.keyCode == 90) site_editor.undoredo.undo();
                 if (event.keyCode == 89) site_editor.undoredo.redo();
-            }
+            }*/
             if (event.altKey && !last_alt) {
                 last_alt = true;
-                site_editor.iframe_api?.$wrapper?.addClass('alt-down');  
-            } 
+                site_editor.iframe_api?.$wrapper?.addClass('alt-down');
+            }
 
         });
         $(document).on('keyup', function(event) {
@@ -163,7 +144,7 @@ class SiteEditor {
         /*$(document).on('click', function(event) { //close settings if we click on wa-header
         if ($(event.target).closest('#wa-header').length) closerSettings()
         })*/
-      
+
         function closerSettings() {
             site_editor._block_settings_drawer_promise.then(function(bs) {
                 bs.hide();
@@ -198,9 +179,9 @@ class SiteEditor {
             type: 'file_upload',
 
             undo_url: null,
-            undo_data: null,
+            undo_post_params: null,
             redo_url: null,
-            redo_data: null,
+            redo_post_params: null,
             new_file_state: null,
 
             // This runs when queue reaches this operation as DO
@@ -219,7 +200,7 @@ class SiteEditor {
                 }).then(function(r) {
                     try {
                         op.undo_url = r.data.undo.url;
-                        op.undo_data = r.data.undo.post;
+                        op.undo_post_params = r.data.undo.post;
                         file_promise.resolve(r.data.file.url);
                     } catch (e) {
                         // something went wrong, no undo
@@ -230,6 +211,9 @@ class SiteEditor {
                     op.new_file_state = r.data.file;
                     site_editor.block_storage.setFile(block_id, key, op.new_file_state);
                     site_editor.iframe_api.updateBlockFile(block_id, key, op.new_file_state);
+                    if (r && r.data && r.data.page_has_unsaved_changes !== undefined) {
+                        $("#js-wa-header-publish").data('controller').updateHasUnsavedChanges(r.data.page_has_unsaved_changes);
+                    }
                 });
 
             },
@@ -241,18 +225,21 @@ class SiteEditor {
             },
             // this runs when queue reaches UNDO operation
             undo: function(op) {
-                if (!op.undo_url || !op.undo_data) {
+                if (!op.undo_url || !op.undo_post_params) {
                     return $.Deferred().resolve().promise();
                 }
-                return $.post(op.undo_url, op.undo_data).then(function(r) {
+                return $.post(op.undo_url, op.undo_post_params).then(function(r) {
                     try {
                         op.redo_url = r.data.undo.url;
-                        op.redo_data = r.data.undo.post;
+                        op.redo_post_params = r.data.undo.post;
                     } catch (e) {
                         // something went wrong, no redo
                         console.log('Error performing undo upload', e, r);
                     }
                     site_editor.iframe_api.updateBlockFile(block_id, key, r?.data?.file);
+                    if (r && r.data && r.data.page_has_unsaved_changes !== undefined) {
+                        $("#js-wa-header-publish").data('controller').updateHasUnsavedChanges(r.data.page_has_unsaved_changes);
+                    }
                 });
             },
             // this runs immediately when user clicks REDO (no waiting for queue)
@@ -263,11 +250,14 @@ class SiteEditor {
             },
             // This runs when queue reaches this operation as REDO
             redo: function(op) {
-                if (!op.redo_url || !op.redo_data) {
+                if (!op.redo_url || !op.redo_post_params) {
                     return $.Deferred().resolve().promise();
                 }
-                return $.post(op.redo_url, op.redo_data).then(function(r) {
+                return $.post(op.redo_url, op.redo_post_params).then(function(r) {
                     site_editor.iframe_api.updateBlockFile(block_id, key, r?.data?.file);
+                    if (r && r.data && r.data.page_has_unsaved_changes !== undefined) {
+                        $("#js-wa-header-publish").data('controller').updateHasUnsavedChanges(r.data.page_has_unsaved_changes);
+                    }
                 });
             }
         }));
@@ -294,62 +284,84 @@ class SiteEditor {
 
         this.undoredo.addOperation(block_id, new UndoRedoQueue.Operation({
             delay: opts?.delay || 0,
-            undo_data: undo_data,
+            undo_post_params: {
+                data: undo_data,
+                mode: 'set',
+                block_id: block_id
+            },
             mode: 'merge',
             type: 'data_'+data_update_mode,
-            data: data,
+            redo_post_params: {
+                data: data,
+                mode: data_update_mode,
+                block_id: block_id
+            },
             merge: function(op, old_op) {
-                op.undo_data = old_op.undo_data;
+                op.undo_post_params = old_op.undo_post_params;
             },
             localRedo: function(op) {
                 // immediately set DOM state and block settings form
-                //site_editor.block_storage.setData(block_id, op.data);
-                site_editor.iframe_api.updateBlockData(block_id, op.data);
+                //site_editor.block_storage.setData(block_id, op.redo_post_params.data);
+                site_editor.iframe_api.updateBlockData(block_id, op.redo_post_params.data);
                 site_editor._block_settings_drawer_promise.then(function(bs) {
                     if (site_editor.selected_block_id == block_id) {
                         site_editor.setSelectedBlock(block_id, false, true);
-                        //bs.setForm(block_id, site_editor.block_storage.getFormConfig(block_id), op.data, site_editor.current_mq, false, true);
-                        //bs.setData(op.data);
+                        //bs.setForm(block_id, site_editor.block_storage.getFormConfig(block_id), op.redo_post_params.data, site_editor.current_mq, false, true);
+                        //bs.setData(op.redo_post_params.data);
                     }
                 });
             },
             run: function(op) {
-                return $.post('?module=editor&action=saveBlockData', {
-                    data: JSON.stringify(op.data),
-                    mode: data_update_mode,
-                    block_id: block_id
-                }).then(function(r) {
+                return $.post('?module=editor&action=saveBlockData', withDataStringified(op.redo_post_params)).then(function(r) {
+                    var old_undo_post_params = op.undo_post_params;
+                    op.undo_post_params = r.data.undo.post;
                     try {
-                        op.undo_data = JSON.parse(r.data.undo.post.data);
+                        op.undo_post_params.data = JSON.parse(op.undo_post_params.data);
+                        op.undo_post_params.data.additional = old_undo_post_params.data.additional;
                     } catch (e) {
-                        // will use existing op.undo_data
+                        op.undo_post_params.data = old_undo_post_params.data;
+                    }
+                    if (r.data.additional_data) {
+                        op.redo_post_params.data.additional = r.data.additional_data;
+                        if (r.data.html) {
+                            op.redo_post_params.data.additional.html = r.data.html;
+                        }
+                        site_editor.iframe_api.updateBlockData(block_id, op.redo_post_params.data);
+                    }
+                    if (r && r.data && r.data.page_has_unsaved_changes !== undefined) {
+                        $("#js-wa-header-publish").data('controller').updateHasUnsavedChanges(r.data.page_has_unsaved_changes);
                     }
                 });
             },
             localUndo: function(op) {
                 // immediately revert DOM state and block settings form
-                //site_editor.block_storage.setData(block_id, op.undo_data);
-                site_editor.iframe_api.updateBlockData(block_id, op.undo_data);
+                //site_editor.block_storage.setData(block_id, op.undo_post_params.data);
+                site_editor.iframe_api.updateBlockData(block_id, op.undo_post_params.data);
                 site_editor._block_settings_drawer_promise.then(function(bs) {
                     if (site_editor.selected_block_id === +block_id) {
                         site_editor.setSelectedBlock(block_id, false, true);
-                        //bs.setForm(block_id, site_editor.block_storage.getFormConfig(block_id), op.undo_data, site_editor.current_mq, false, true);
-                        //bs.setData(op.undo_data);
+                        //bs.setForm(block_id, site_editor.block_storage.getFormConfig(block_id), op.undo_post_params.data, site_editor.current_mq, false, true);
+                        //bs.setData(op.undo_post_params.data);
                     }
                 });
-                
+
             },
             undo: function(op) {
-                return $.post('?module=editor&action=saveBlockData', {
-                    data: JSON.stringify(op.undo_data),
-                    mode: 'set',
-                    block_id: block_id
-                }).then(function(r) {
+                return $.post('?module=editor&action=saveBlockData', withDataStringified(op.undo_post_params)).then(function(r) {
+                    var old_redo_post_params = op.redo_post_params;
+                    op.redo_post_params = r.data.undo.post;
                     try {
-                        op.data = JSON.parse(r.data.undo.post.data);
-                        data_update_mode = 'set';
+                        op.redo_post_params.data = JSON.parse(op.redo_post_params.data);
+                        op.redo_post_params.data.additional = old_redo_post_params.data.additional;
                     } catch (e) {
-                        // will use existing op.data
+                        op.redo_post_params.data = old_redo_post_params.data;
+                    }
+                    if (r.data.additional_data) {
+                        op.undo_post_params.data.additional = r.data.additional_data;
+                        site_editor.iframe_api.updateBlockData(block_id, op.undo_post_params.data);
+                    }
+                    if (r && r.data && r.data.page_has_unsaved_changes !== undefined) {
+                        $("#js-wa-header-publish").data('controller').updateHasUnsavedChanges(r.data.page_has_unsaved_changes);
                     }
                 });
             }
@@ -366,6 +378,12 @@ class SiteEditor {
         }
         if (opts?.notify_editor_inside_iframe) {
             site_editor.iframe_api.updateBlockData(block_id, site_editor.block_storage.getData(block_id));
+        }
+
+        function withDataStringified(source) {
+            let data = Object.assign({}, source.data);
+            delete data.additional;
+            return Object.assign({}, source, { data: JSON.stringify(data) });
         }
     }
 
@@ -418,7 +436,6 @@ class SiteEditor {
      * See PHP class: siteEditorAddBlockController
      */
     addBlockUndoOperation(block_id, $wrapper) {
-
         var skip_run = true;
         var site_editor = this;
         this.undoredo.addOperation(block_id, new UndoRedoQueue.Operation({
@@ -510,7 +527,6 @@ class SiteEditor {
                 // nothing to do
             });
         }
-
     }
 
     updateEmptyClass($wrapper) {
@@ -522,5 +538,26 @@ class SiteEditor {
         }
     }
 
+    // @see copy SiteEditor.js
+    sanitizeHTML(str) {
+        if (!str) {
+            return str;
+        }
 
+        // clean up JS
+        const pattern = /<script[^>]*>.*?<\/script>/igs;
+        const html = str.replace(pattern, '');
+
+        // keep http(s)
+        const sanitizeIframeSrc = (str) => {
+            return str.replace(/<iframe[^>]*src\s*=\s*"(.*?)"[^>]*>/g, (start, src) => {
+                if (src.match(/^https?:/)) {
+                    return start + src;
+                }
+                return start.replace(src, '');
+            });
+        }
+
+        return sanitizeIframeSrc(html);
+    }
 }

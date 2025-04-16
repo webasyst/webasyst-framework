@@ -43,10 +43,8 @@ class siteMenuColumnBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Column'),
+            'tags' => 'element',
             'sections' => [
-                [   'type' => 'ColumnsAlignGroup',
-                    'name' => _w('Alignment'),
-                ],
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
                 ],

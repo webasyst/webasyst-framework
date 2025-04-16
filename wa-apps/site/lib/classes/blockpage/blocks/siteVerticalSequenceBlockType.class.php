@@ -20,13 +20,15 @@ class siteVerticalSequenceBlockType extends siteBlockType
     {
         if ($is_backend) {
             return dirname(__FILE__).'/templates/'.substr(get_class($this), 4, -9).'.prerender.html';
+        } else {
+            return dirname(__FILE__).'/templates/'.substr(get_class($this), 4, -9).'.script.html';
         }
     }
 
     public function render(siteBlockData $data, bool $is_backend, array $tmpl_vars=[])
     {
         return parent::render($data, $is_backend, $tmpl_vars + [
-            'children' => array_reduce($data->getRenderedChildren($is_backend), 'array_merge', []),
+            'children' => array_reduce($data->getRenderedChildren($is_backend, $tmpl_vars), 'array_merge', []),
         ]);
     }
 }

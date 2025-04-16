@@ -4,7 +4,7 @@
  */
 class siteMenuLogoBlockType extends siteBlockType
 {
-    public $elements = [   
+    public $elements = [
         'main' => 'site-block-column',
         'wrapper' => 'site-block-column-wrapper',
         ];
@@ -16,17 +16,20 @@ class siteMenuLogoBlockType extends siteBlockType
         $hseq->data['indestructible'] = true;
         $hseq->data['is_complex'] = 'no_complex';
         $vseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
-        $vseq->data['indestructible'] = true;
-        $header = (new siteHeadingBlockType())->getExampleBlockData();
-        $paragraph = (new siteParagraphBlockType())->getExampleBlockData();
+        //$vseq->data['indestructible'] = true;
+        $header = (new siteMenuItemBlockType())->getExampleBlockData();
+        $paragraph = (new siteMenuItemBlockType())->getExampleBlockData();
+        //$header = (new siteHeadingBlockType())->getExampleBlockData();
+        //$paragraph = (new siteParagraphBlockType())->getExampleBlockData();
+
         $logo = (new siteImageBlockType())->getExampleBlockData();
         $logo->data['block_props'] = ["margin-right" => "m-r-8","margin-bottom" => "m-b-0", 'border-radius' => "b-r-l",'width' => 'i-xxl'];
         $logo->data['indestructible'] = true;
         $logo->data['default_image_url'] = wa()->getAppStaticUrl('site').'img/image.svg';
         $logo->data['image'] = 'image.svg';
-        $header->data = ["html" => "Company name","tag" => "h1","block_props" => ["font-header" => "t-hdn","font" => "t-7","margin-top" => "m-t-0","margin-bottom" => "m-b-2","align" => "t-l" ], 'indestructible' => true ];
-        $paragraph->data = ["html" => "Company Slogan","block_props" => ["font-header" => "t-rgl","font" => "t-8","margin-top" => "m-t-0","margin-bottom" => "m-b-0","align" => "t-l"], 'indestructible' => true];
-        
+        $header->data = ["html" => _w('Company slogan'),"tag" => "h1","block_props" => ['button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], "font-header" => "t-hdn","font" => "t-7","margin-top" => "m-t-0","margin-bottom" => "m-b-2","align" => "t-l" ], 'indestructible' => true ];
+        $paragraph->data = ["html" => _w('Company slogan'), "block_props" => ['button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], "font-header" => "t-rgl","font" => "t-8","margin-top" => "m-t-0","margin-bottom" => "m-b-0","align" => "t-l"], 'indestructible' => true];
+
         $vseq->addChild($header);
         $vseq->addChild($paragraph);
         $hseq->addChild($logo);
@@ -54,10 +57,9 @@ class siteMenuLogoBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Logo'),
+            'tags' => 'element',
             'sections' => [
-                [   'type' => 'RowsAlignGroup',
-                    'name' => _w('Column alignment'),
-                ],
+
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
                 ],

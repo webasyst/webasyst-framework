@@ -1,0 +1,84 @@
+<div class="dialog s-premium">
+    <style>
+        .s-premium .s-premium-features > * { max-width: 344px; }
+        .s-premium .s-premium-features ul { padding-inline-start: 1.875rem; }
+        .s-premium .s-premium-features ul > li { position: relative; margin-top: 0.75rem; line-height: 1.5rem; }
+        .s-premium .s-premium-features ul > li::before {
+            content: '';
+            position: absolute;
+            top: 0.375rem;
+            left: -1.5rem;
+            display: block;
+            height: 0.8125rem;
+            width: 100%;
+            background-image: url('data:image/svg+xml,<svg fill="rgb(34,209,61)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M173.9 439.4l-166.4-166.4c-10-10-10-26.2 0-36.2l36.2-36.2c10-10 26.2-10 36.2 0L192 312.7 432.1 72.6c10-10 26.2-10 36.2 0l36.2 36.2c10 10 10 26.2 0 36.2l-294.4 294.4c-10 10-26.2 10-36.2 0z"/></svg>');
+            background-repeat: no-repeat;
+        }
+        .s-premium .s-premium-features ul > li .badge { font-weight: 400; }
+        @media screen and (min-width: 992px) {
+            .s-premium .dialog-body { width: 800px; }
+        }
+    </style>
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <a href="javascript:void(0)" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        <div class="dialog-content">
+            <div class="s-premium-logo-wrapper align-center">
+                <div class="s-premium-logo custom-mb-8">
+                    <img src="{$wa_app_static_url}img/site.svg" width="96" height="96" alt="">
+                </div>
+                <h1 class="custom-mt-12 custom-mb-8 semibold">[`Upgrade › <strong>Premium</strong>`]</h1>
+                <div>[`Discover advanced features for your projects with the premium license.`]</div>
+            </div>
+
+            <div class="s-premium-features flexbox vertical-mobile space-32 custom-mt-40 custom-ml-16">
+                <div>
+                    <div class="align-center">
+                        <div class="icon size-48">
+                            <svg width="45" height="46" viewBox="0 0 45 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.1857 13.552L21.568 22.7981C22.163 23.0685 22.8358 23.0685 23.4308 22.7981L43.8131 13.552C45.2612 12.8949 45.2612 10.7065 43.8131 10.0494L23.4317 0.802388C23.1394 0.668767 22.8217 0.599609 22.5003 0.599609C22.1788 0.599609 21.8612 0.668767 21.5688 0.802388L1.1857 10.0485C-0.262422 10.7056 -0.262422 12.8949 1.1857 13.552ZM43.814 21.2765L38.7311 18.9726L24.5876 25.3838C23.9261 25.6839 23.2235 25.8361 22.4998 25.8361C21.7762 25.8361 21.0745 25.6839 20.4121 25.3838L6.26945 18.9726L1.1857 21.2765C-0.262422 21.9328 -0.262422 24.1203 1.1857 24.7765L21.568 34.0156C22.163 34.2851 22.8358 34.2851 23.4308 34.0156L43.814 24.7765C45.2621 24.1203 45.2621 21.9328 43.814 21.2765ZM43.814 32.459L38.7503 30.1639L24.5876 36.5838C23.9261 36.8839 23.2235 37.0361 22.4998 37.0361C21.7762 37.0361 21.0745 36.8839 20.4121 36.5838L6.2502 30.1639L1.1857 32.459C-0.262422 33.1153 -0.262422 35.3028 1.1857 35.959L21.568 45.1981C22.163 45.4676 22.8358 45.4676 23.4308 45.1981L43.814 35.959C45.2621 35.3028 45.2621 33.1153 43.814 32.459Z" fill="url(#paint0_radial_9706_5434)"/>
+                                <defs>
+                                    <radialGradient id="paint0_radial_9706_5434" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(4.68147 44.3821) rotate(-49.9208) scale(54.559 54.5589)">
+                                        <stop offset="0.225" stop-color="#6B21FF"/>
+                                        <stop offset="1" stop-color="#C387FF"/>
+                                    </radialGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                    <h5 class="custom-mt-8 custom-ml-4">[`Block page builder`]</h5>
+                    <ul class="list">
+                        <li>[`Professional creation of web pages with functional blocks and elements`]</li>
+                        <li>[`Flexible design and blocks settings without programming`]</li>
+                        <li>[`Integration with Shop-Script products`]</li>
+                        <li>[`Ready-made page templates, global design settings, simple & advanced web forms (quizzes), integration with Webasyst apps, animations, etc.`] <span class="badge red small">[`Soon`]</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="align-center">
+                        <div class="icon size-48">
+                            <svg width="47" height="46" viewBox="0 0 47 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.9888 2.15773L15.275 13.7427L2.49129 15.6065C0.198792 15.939 -0.719958 18.7652 0.942541 20.384L10.1913 29.3965L8.00379 42.1277C7.61004 44.429 10.0338 46.1527 12.0638 45.0765L23.5 39.0652L34.9363 45.0765C36.9663 46.144 39.39 44.429 38.9963 42.1277L36.8088 29.3965L46.0575 20.384C47.72 18.7652 46.8013 15.939 44.5088 15.6065L31.725 13.7427L26.0113 2.15773C24.9875 0.0927303 22.0213 0.0664803 20.9888 2.15773Z" fill="url(#paint0_radial_9706_5685)"/>
+                                <defs>
+                                    <radialGradient id="paint0_radial_9706_5685" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(4.8814 44.3864) rotate(-48.6795) scale(55.5913 55.9568)">
+                                        <stop offset="0.225" stop-color="#6B21FF"/>
+                                        <stop offset="1" stop-color="#C387FF"/>
+                                    </radialGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                    <h5 class="custom-mt-8 custom-ml-4">[`More options in the app`]</h5>
+                    <ul class="list">
+                        <li>[`Copying sites for convenient work with production/development versions an regional domains`]</li>
+                        <li>[`Copying pages and sections for convenient testing and quick creation of similar pages by template`]</li>
+                        <li>[`Custom variable values for selected sites, sites export, and other improvements`] <span class="badge red small">[`Soon`]</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <footer class="dialog-footer align-center">
+            <a href="{$wa_backend_url}installer/store/app/site/" class="button large purple"><i class="fas fa-crown"></i> [`About the premium license`]</a>
+        </footer>
+    </div>
+</div>

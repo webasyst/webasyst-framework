@@ -1,3 +1,4 @@
+{include file="templates/actions/backend/includes/unsaved_dialog.html" inline}
 <script>
 $(function() {
     new class waVariables {
@@ -108,22 +109,22 @@ $(function() {
                 });
             };
 
-            const $id = this.$content.find('input[name="info[id]"]:visible');
+            const $input_id = this.$content.find('input[name="info[id]"]:visible');
 
             this.$content.find('input[name="info[description]"]').onKeyFinish(300, function () {
                 const url = $(this).val();
-                if (url && (!$id.val() || !$id.data('changed'))) {
+                if (url && (!$input_id.val() || !$input_id.data('changed'))) {
                     $.post("?module=htmlPages&action=translit", { str: url }, function (response) {
                         if (response.status === 'ok') {
-                            if (!$id.val() || !$id.data('changed')) {
-                                $id.val(response.data.str);
+                            if (!$input_id.val() || !$input_id.data('changed')) {
+                                $input_id.val(response.data.str);
                             }
                         }
                     }, "json");
                 }
             });
 
-            $id.on('keyup', function () {
+            $input_id.on('keyup', function () {
                 const $self = $(this);
 
                 $self.data('changed', 1);
@@ -350,6 +351,10 @@ $(function() {
                     setTimeout(() => self.dialog.resize());
                 });
             }
+
+            self.$content.find('input[name="info[id]"]').on('focus', function() {
+                $(this).removeClass('state-error');
+            });
         }
 
         onDelete(){
@@ -525,7 +530,7 @@ $(function() {
             if (self.is_dialog) {
                 const oldOnClose = self.dialog.onClose;
                 self.dialog.onClose = () => {
-                    return oldOnClose() && showDialog(() => {
+                    return oldOnClose() && showDialog(null, () => {
                         self.dialog.close();
                     });
                 };
@@ -533,19 +538,21 @@ $(function() {
 
             const unbindEvent = () => $links.off(event_name);
 
-            function showDialog (eventOrOnClose) {
+            function showDialog (e, onClose) {
                 if (!self.form_has_changes) {
-                    unbindEvent();
+                    if (!e || !$(this).closest('.js-variables-types-toggle').length) {
+                        unbindEvent();
+                    }
                     return true;
                 }
 
-                if (typeof eventOrOnClose === 'object') {
-                    eventOrOnClose.preventDefault();
-                    eventOrOnClose.stopPropagation();
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
                 const $a = $(this);
 
-                $.site.confirmUnsaved({
+                $.confirmUnsaved({
                     onSave() {
                         self.form_has_changes = false;
                         unbindEvent();
@@ -556,8 +563,8 @@ $(function() {
                     onLeave() {
                         self.form_has_changes = false;
                         unbindEvent();
-                        if (typeof eventOrOnClose === 'function') {
-                            eventOrOnClose();
+                        if (typeof onClose === 'function') {
+                            onClose();
                         } else {
                             $a.click();
                         }

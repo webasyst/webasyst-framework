@@ -565,6 +565,7 @@ table.lined tr.service td { padding-top: 5px; padding-bottom: 5px; padding-left:
 
 header.globalheader { background: var(--header-menu-bg-color); position: relative; box-shadow: var(--shadow1); margin-bottom: 48px; }
 header.globalheader .appnav { margin: 16px auto 16px auto; min-height: 49px; }
+header.globalheader .appnav:empty { margin: 0; min-height: 0; }
 header a, header a:hover, header a:visited { color: var(--header-link-color); }
 
 header h2 { margin: 0; font-size: 1.3em; white-space: nowrap; }

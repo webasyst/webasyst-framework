@@ -2,28 +2,55 @@
  * This goes inside #js-add-block-dialog .dialog-content
  * see JS: SiteEditor.openAddBlockDialog()
  *}
-
-<h1>[`Block library`]</h1>
-
-<ul id="js-list-of-blocks" class="separated menu">
-    {foreach $library as $category}
-        <li><h3>{$category.title|escape}</h3></li>
-        {foreach $category.blocks as $b}
-            {if !empty($b.image)}
-                {* !!! TODO $b.image is a 400x180 image *}
-            {/if}
-            <li><button data-type-id="{$b.id|escape}" {if !empty($b.disabled)}disabled{/if}>[`Add`] {$b.title|escape}</button></li>
-        {/foreach}
-    {/foreach}
-</ul>
-
+ <div class="flexbox space-32">
+    <div class="sidebar js-add-block-dialog-sidebar blank custom-mt-24 width-14rem">
+        <h4>[`Adding block`]</h4>
+            <ul id="js-list-of-blocks-sidebar" class="menu">
+                {foreach $library as $n => $category}
+                    <li class="rounded{if $n == 0} selected{/if}" data-category="{$n}">
+                        <a href="javascript:void(0);">{$category.title|escape}</a>
+                    </li>
+                {/foreach}
+            </ul>
+    </div>
+    <div class="content js-add-block-dialog-content flexbox vertical custom-pr-48">
+        {* <div class="width-100 custom-pr-48"> *}
+            {foreach $library as $n => $category}
+                <ul id="js-list-of-blocks-{$n}" class="list-of-blocks separated menu{if !$category@last} custom-mt-24 custom-mb-0{else} custom-my-24{/if}" data-category="{$n}">
+                    <li><h6 style="custom-mt-12 custom-mb-24">{$category.title|escape}</h6></li>
+                    {foreach $category.blocks as $b}
+                        <li>
+                            {if !empty($b.icon)}
+                                <a href="javascript:void(0);"{if empty($b.disabled)} data-type-id="{$b.id|escape}"{/if} class="bordered custom-p-0" style="border-radius: 4px;max-width: 400px;display: flex;justify-content: center;align-items: center;aspect-ratio: 16 / 9;background-color: var(--background-color-skeleton);font-size: 1.5rem;">
+                                    <i class="fas fa-{$b.icon|escape}" style="font-size: 2.5rem; max-width: 100%; color: var(--menu-link-color);"></i>
+                                </a>
+                            {elseif empty($b.image)}
+                                <a href="javascript:void(0);"{if empty($b.disabled)} data-type-id="{$b.id|escape}"{/if} class="bordered custom-p-0" style="border-radius: 4px;max-width: 400px;display: flex;justify-content: center;align-items: center;aspect-ratio: 16 / 9;background-color: var(--background-color-skeleton);font-size: 1.5rem;">
+                                    {$b.title|escape}
+                                </a>
+                            {else}
+                                <img{if empty($b.disabled)} data-type-id="{$b.id|escape}"{/if} srcset="{$b.image} 1x, {(!empty($b.image_2x)) ? $b.image_2x : $b.image} 2x" src="{$b.image}" class="bordered cursor-pointer" style="border-radius: 4px;" alt="">
+                            {/if}
+                    {/foreach}
+                </ul>
+            {/foreach}
+            <!--<div class="width-100">
+                <img src="{"`$wa_app_static_url`img/image-background.svg"}" alt="">
+            </div>
+            <div class="width-100">
+                <img src="{"`$wa_app_static_url`img/image-background.svg"}" alt="">
+            </div>-->
+        {* </div> *}
+    </div>
+</div>
 <script>(function() { "use strict";
 
     const insert_place_params = {json_encode($insert_place_params)};
 
-    var $list_of_blocks = $('#js-list-of-blocks');
-    var $dialog_content = $list_of_blocks.closest('.dialog-content');
-    var dialog = $list_of_blocks.closest('.dialog').data('dialog');
+    var $list_of_blocks = $('.list-of-blocks');
+    var $list_of_blocks_sidebar = $('#js-list-of-blocks-sidebar');
+    var $dialog_content = $list_of_blocks_sidebar.closest('.dialog-content');
+    var dialog = $list_of_blocks_sidebar.closest('.dialog').data('dialog');
 
     $list_of_blocks.on('click', '[data-type-id]', function() {
 
@@ -38,4 +65,67 @@
 
     });
 
+    let isScrollingIntoView = false;
+    $list_of_blocks_sidebar.on('click', '[data-category]', function() {
+        isScrollingIntoView = true;
+        const category_id = $(this).data('category');
+        $(this).addClass('selected').siblings().removeClass('selected');
+        $('#js-list-of-blocks-' + category_id)[0].scrollIntoView();
+    });
+
+    setTimeout(() => initMenuSelectionScroll(), 250);
+
+    function initMenuSelectionScroll() {
+        const $content = dialog.$block.find('.js-add-block-dialog-content');
+        const content = $content[0];
+        const dialog_top = dialog.$block.offset().top;
+        const dialog_height = dialog.$block.height() + dialog_top;
+        const dialog_height_half = dialog.$block.height() / 2 - dialog_top;
+        const len = $list_of_blocks.length;
+
+        let timer_finish_scroll = null;
+        const debouncedIsFinishScroll = () => {
+            if (timer_finish_scroll) {
+                clearTimeout(timer_finish_scroll);
+                timer_finish_scroll = null;
+            }
+            timer_finish_scroll = setTimeout(() => {
+                isScrollingIntoView = false;
+            }, 50);
+        };
+
+        const selectMenuViaScrolling = () => {
+            if (isScrollingIntoView) {
+                debouncedIsFinishScroll();
+                return;
+            }
+
+            const scroll_pos = content.offsetHeight + content.scrollTop;
+            const scroll_height = content.scrollHeight - dialog_top / 2;
+            if (scroll_pos >= scroll_height) {
+                $list_of_blocks_sidebar.children().removeClass('selected');
+                $list_of_blocks_sidebar.children(':last').addClass('selected');
+                return;
+            }
+
+            for (let i = 0; i < len; i++) {
+                const { top, bottom, height } = $list_of_blocks[i].getBoundingClientRect();
+                if ((top > dialog_top && top <= dialog_height_half && bottom >= dialog_height_half) || (bottom >= dialog_height && top < dialog_top)) {
+                    $list_of_blocks_sidebar.children().removeClass('selected');
+                    $list_of_blocks_sidebar.children(':eq('+i+')').addClass('selected');
+                    break;
+                }
+            }
+        };
+
+        let timer_scroll = null;
+        $content.on('scroll', () => {
+            if (timer_scroll) return;
+
+            selectMenuViaScrolling();
+            timer_scroll = setTimeout(() => {
+                timer_scroll = null;
+            }, 10);
+        });
+    }
 })();</script>

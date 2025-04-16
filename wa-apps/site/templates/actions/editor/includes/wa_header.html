@@ -5,12 +5,20 @@
 
 <style>
 .site-editor-wa-header-wrapper { height: 4rem; margin: 0 .5rem 0 .5rem; }
-@media screen and (max-width: 760px) {
-    .site-editor-wa-header-wrapper { margin-inline: 1rem; }
-}
 .site-editor-wa-header-wrapper .site-screen-toggle { margin: 0 auto; }
 .site-editor-wa-header-wrapper .site-editor-page-name { max-width: 13rem; }
 .site-editor-wa-header-wrapper .site-editor-page-settings:not(:hover) { color: var(--gray); }
+.site-editor-wa-header-wrapper.block_editor .site-editor-page-name { max-width: 46%; min-width: 2.39rem; }
+.site-editor-wa-header-wrapper.block_editor .site-editor-page-name-wrapper { min-width: 20rem; max-width: 40%; }
+
+@media screen and (min-width: 1150px) {
+    .site-editor-wa-header-wrapper.block_editor .site-editor-page-name-wrapper { max-width: unset; }
+    .site-editor-wa-header-wrapper.block_editor .site-editor-page-name { max-width: 13rem; }
+}
+@media screen and (max-width: 760px) {
+    .site-editor-wa-header-wrapper { margin-inline: 1rem; }
+    .site-editor-wa-header-wrapper.block_editor .site-editor-page-name-wrapper { min-width: 5rem; }
+}
 </style>
 
 <div class="site-editor-wa-header-wrapper flexbox full-width middle {$custom_header_type}">
@@ -20,11 +28,12 @@
         </button>
 
         <div class="site-editor-page-name text-ellipsis">
-            <span class="js-hamburger-draft-icon icon disabled-icon custom-mr-8 text-gray hidden"><i class="fas fa-eye-slash"></i></span>
+            <span class="js-hamburger-draft-icon icon disabled-icon custom-mr-8 text-glyph desktop-only hidden" title="[`Unpublished`]"><i class="fas fa-eye-slash"></i></span>
+            <span class="js-hamburger-draft-changed-icon icon rounded bg-yellow smaller custom-mr-2 desktop-only hidden" title="[`Non-published changes exist`]"></span>
             <span class="js-hamburger-label bold desktop-only"></span>
         </div>
 
-        <a href="javascript:void(0)" id="js-wa-header-settings" class="site-editor-page-settings small custom-mx-8 custom-mt-6" title="[`Page settings`]">
+        <a href="javascript:void(0)" id="js-wa-header-settings" class="site-editor-page-settings small custom-mx-8 custom-mt-4 desktop-only" title="[`Page settings`]">
             <i class="fas fa-cog large"></i>
         </a>
 
@@ -47,7 +56,7 @@
 
         {$wa->getCheatSheetButton(['is_block_page' => true, 'hide_common_blocks' => true])}
     {/if}
-    <div>
+    <div class="flexbox">
         {if $custom_header_type == 'block_editor'}
             <button class="button small light-gray desktop-and-tablet-only custom-ml-12" id="js-wa-header-undo">
                 <i class="fas fa-undo"></i>
@@ -56,13 +65,8 @@
             <button class="button small light-gray desktop-and-tablet-only" id="js-wa-header-redo">
                 <i class="fas fa-redo"></i>
             </button>
-            <a class="button small light-gray desktop-and-tablet-only" id="js-wa-header-preview" target="_blank">
-                <i class="fas fa-external-link-alt"></i>
-            </a>
-            <button class="button small green" id="js-wa-header-publish">
-                <i class="fas fa-upload mobile-only"></i>
-                <span class="desktop-and-tablet-only">[`Publish`]</span>
-            </button>
+
+            {include file="./publication_control.html" inline}
         {/if}
         {if $custom_header_type == 'html_editor'}
             <span id="wa-editor-status" class="custom-mr-16" style="display: none"></span>

@@ -40,15 +40,22 @@ class siteColumnBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Column'),
+            'tags' => 'element',
             'sections' => [
-                /*[   'type' => 'ColumnsAlignVerticalGroup',
-                    'name' => _w('Columns alignment'),
-                ],*/
-                [   'type' => 'RowsAlignGroup',
-                    'name' => _w('Column alignment'),
+                [   'type' => 'ColumnsAlignGroup',
+                    'name' => _w('Horizontal alignment'),
                 ],
+                [   'type' => 'ColumnAlignVerticalGroup',
+                    'name' => _w('Vertical alignment'),
+                ],
+                /*[   'type' => 'RowsAlignGroup',
+                    'name' => _w('Column alignment'),
+                ],*/
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],
+                [   'type' => 'ColumnWidthGroup',
+                    'name' => _w('Width limit'),
                 ],
                 [   'type' => 'BackgroundColorGroup',
                     'name' => _w('Background'),
@@ -72,7 +79,7 @@ class siteColumnBlockType extends siteBlockType
             'elements' => $this->elements,
             'semi_headers' => [
                 'main' => _w('Whole column'),
-                'wrapper' => _w('Container'),
+                'wrapper' => _w('Content'),
             ]
         ] + parent::getRawBlockSettingsFormConfig();
     }

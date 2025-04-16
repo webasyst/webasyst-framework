@@ -16,7 +16,7 @@ class siteRowBlockType extends siteBlockType
         $result = $this->getEmptyBlockData();
         $result->addChild($hseq, '');
         $result->data = ['block_props' => ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10"], 'wrapper_props' => ['justify-align' => "j-s"]];
-      
+
         //$result->data['indestructible'] = true;
         return $result;
     }
@@ -32,9 +32,13 @@ class siteRowBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Row'),
+            'tags' => 'element',
             'sections' => [
                 [   'type' => 'RowsAlignGroup',
                     'name' => _w('Alignment'),
+                ],
+                [   'type' => 'RowsWrapGroup',
+                    'name' => _w('Wrap line'),
                 ],
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
@@ -58,8 +62,8 @@ class siteRowBlockType extends siteBlockType
                 [   'type' => 'VisibilityGroup',
                     'name' => _w('Visibility on devices'),
                 ],
-                [   'type' => 'TagsGroup',
-                    'name' => _w('SEO'),
+                [   'type' => 'IdGroup',
+                    'name' => _w('Identifier (ID)'),
                 ],
             ],
         ] + parent::getRawBlockSettingsFormConfig();

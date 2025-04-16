@@ -16,69 +16,98 @@ class siteMapPageSettingsDialogAction extends waViewAction
         } else {
             $this->page_id = waRequest::request('page_id', null, 'int');
         }
-        if (!$this->page_id) {
-            throw new waException('page_id is required', 400);
-        }
     }
 
     public function execute()
     {
+        $is_new = waRequest::request('is_new', 0, 'int');
+
+        $page = [];
+        $page_params = [];
+        $og_params = [];
+        $misconfigured_settlement = false;
         $blockpage_model = new siteBlockpageModel();
-        $blockpage_params_model = new siteBlockpageParamsModel();
-        $page = $blockpage_model->getById($this->page_id);
-        $page_params = $blockpage_params_model->getById($this->page_id);
-        
-        $og_params = array();
-        foreach ($page_params as $k => $v) {
-            if (substr($k, 0, 3) == 'og_') {
-                $og_params[substr($k, 3)] = $v;
-                unset($page_params[$k]);
+        if ($this->page_id) {
+            $blockpage_params_model = new siteBlockpageParamsModel();
+
+            $page = $blockpage_model->getById($this->page_id);
+            if (!$page) {
+                throw new waException('Page not found', 404);
             }
-        }
 
-        $other_params_temp = explode("\n", ifset($page_params, 'other_params', ''));
-        //$other_params = array();
-
-        foreach ($other_params_temp as $string) {
-            $string = trim($string);
-            if ($string && strpos($string, '=') !== false) {
-                $string = explode('=', $string, 2);
-                if ($string[0]) {
-                    $page['params'][$string[0]] = $string[1];
+            $page_params = $blockpage_params_model->getById($this->page_id);
+            $og_params = array();
+            foreach ($page_params as $k => $v) {
+                if (substr($k, 0, 3) == 'og_') {
+                    $og_params[substr($k, 3)] = $v;
+                    unset($page_params[$k]);
                 }
             }
-        }
 
-        if (!$page) {
-            throw new waException('Page not found', 404);
-        }
+            $other_params_temp = explode("\n", ifset($page_params, 'other_params', ''));
 
-        //IS NEEDED?
-        $routes = wa()->getRouting()->getRoutes(siteHelper::getDomain());
-        $has_root_settlement = false;
-        $misconfigured_settlement = false;
-        foreach ($routes as $_route_id => $_route) {
-            if ($page['id'] == $_route_id) {
-                $misconfigured_settlement = $has_root_settlement;
-                break;
-            } else if ($_route['url'] === '*' && !$has_root_settlement) {
-                $has_root_settlement = true;
+            foreach ($other_params_temp as $string) {
+                $string = trim($string);
+                if ($string && strpos($string, '=') !== false) {
+                    $string = explode('=', $string, 2);
+                    if ($string[0]) {
+                        $page['params'][$string[0]] = $string[1];
+                    }
+                }
             }
+
+            $routes = wa()->getRouting()->getRoutes(siteHelper::getDomain());
+            $has_root_settlement = false;
+
+            foreach ($routes as $_route_id => $_route) {
+                if ($page['id'] == $_route_id) {
+                    $misconfigured_settlement = $has_root_settlement;
+                    break;
+                } else if ($_route['url'] === '*' && !$has_root_settlement) {
+                    $has_root_settlement = true;
+                }
+            }
+        } elseif(!$is_new) {
+            throw new waException('page_id is required', 400);
+        } elseif ($parent_id = waRequest::request('parent_id')) {
+            $parent_page = $blockpage_model->getById($parent_id);
+            if ($parent_page) {
+                $page = [
+                    'theme' => ifset($parent_page, 'theme', 'default'),
+                    'parent_id' => $parent_id,
+                    'full_url' => ifset($parent_page, 'full_url', ''),
+                ];
+            }
+        }
+
+        if ($is_new && !waLicensing::check('site')->hasPremiumLicense()) {
+            throw new waException(_w('The premium license is required to create block pages.'), 403);
+        }
+
+        if (!$this->page_id) {
+            $new_url = siteHelper::getIncrementUrl();
+            $page['full_url'] = (!empty($page['full_url']) ? $page['full_url'].'/' : ''). $new_url;
+            $page = $page + [
+                'name' => _w('New page'),
+                'url' => $new_url,
+                'is_new' => $is_new,
+            ];
         }
 
         $idna = new waIdna();
         $domain_decoded = $idna->decode(siteHelper::getDomain());
 
         $this->view->assign([
-            'page' => $page,
-            'page_params' => $page_params,
-            'og_params' => $og_params,
-            //'other_params' => $other_params,
             'domain_id' => siteHelper::getDomainId(),
             'domain_decoded' => $domain_decoded,
             'locales' => array('' => _w('Auto')) + waLocale::getAll('name'),
+            'page' => $page,
+            'page_params' => $page_params,
+            'og_params' => $og_params,
             'misconfigured_settlement' => $misconfigured_settlement,
             'is_main_page' => rtrim(ifset($page['url'], ''), '*') === '' && !$misconfigured_settlement,
+            'has_url_overlap' => (bool)siteHelper::blockpageHasUrlOverlap($page['full_url'], ifset($page['parent_id'])),
+            'preview_hash' => siteHelper::getPreviewHash(),
         ]);
     }
 }

@@ -34,6 +34,7 @@ class SiteEditorInsideIframe {
         })
         that.$wrapper.on('keydown', function(event) {
             if (event.key === 'Enter') {
+                if ($(event.target).hasClass('site-block-list')) return
                 document.execCommand('insertLineBreak')
                 event.preventDefault()
                 //event.stopPropagation()
@@ -42,10 +43,10 @@ class SiteEditorInsideIframe {
                 var esc = $.Event("keydown", { keyCode: event.keyCode });
                 parent.$('body').trigger(esc);
             }
-            if ((event.ctrlKey || event.metaKey) && (event.keyCode == 90 || event.keyCode == 89)) {
+            /*if ((event.ctrlKey || event.metaKey) && (event.keyCode == 90 || event.keyCode == 89)) {
                     var ctrlZY = $.Event("keydown", { keyCode: event.keyCode, ctrlKey: event.ctrlKey, metaKey: event.metaKey});
                     parent.$('body').trigger(ctrlZY);
-            }
+            }*/
 
             if (event.altKey) {
                 if (!last_alt) {
@@ -60,14 +61,14 @@ class SiteEditorInsideIframe {
                 that.$wrapper.removeClass('alt-down');
             }
         })
-        
+
         $(window).on('blur', function(event) {
             if (last_alt) {
                 last_alt = false;
                 that.$wrapper.removeClass('alt-down');
             }
         });
-        
+
         that.$wrapper.on('paste', function(e) {
             e.preventDefault();
             var text = e.originalEvent.clipboardData.getData("text/plain");
@@ -143,7 +144,6 @@ class SiteEditorInsideIframe {
      */
     setSelectedBlock(block_id, $wrapper, $currentTarget, is_new_block = false) {
         this.$wrapper.trigger('close_dropdown', {target: $currentTarget});
-
         if (this.api.selected_block_id != block_id) {
             try {
                 this.api.setSelectedBlock(block_id, is_new_block);
@@ -159,5 +159,26 @@ class SiteEditorInsideIframe {
         return false;
     }
 
-}
+    // @see copy SiteEditorInsideIframe.js
+    static sanitizeHTML(str) {
+        if (!str) {
+            return str;
+        }
 
+        // clean up JS
+        const pattern = /<script[^>]*>.*?<\/script>/igs;
+        const html = str.replace(pattern, '');
+
+        // keep http(s)
+        const sanitizeIframeSrc = (str) => {
+            return str.replace(/<iframe[^>]*src\s*=\s*"(.*?)"[^>]*>/g, (start, src) => {
+                if (src.match(/^https?:/)) {
+                    return start + src;
+                }
+                return start.replace(src, '');
+            });
+        }
+
+        return sanitizeIframeSrc(html);
+    }
+}

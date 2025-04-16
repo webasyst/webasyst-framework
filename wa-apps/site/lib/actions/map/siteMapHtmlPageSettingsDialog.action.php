@@ -120,7 +120,7 @@ class siteMapHtmlPageSettingsDialogAction extends waViewAction
             'page'         => $page,
             'page_url'     => $this->url,
             'options'      => $this->options,
-            'preview_hash' => $this->getPreviewHash(),
+            'preview_hash' => siteHelper::getPreviewHash(),
             'lang'         => substr(wa()->getLocale(), 0, 2),
             'upload_url'   => wa()->getDataUrl('img', true),
             'domain_id'    => waRequest::request('domain_id'),
@@ -147,24 +147,6 @@ class siteMapHtmlPageSettingsDialogAction extends waViewAction
 
         $this->view->assign($data);
 
-    }
-
-    protected function getPreviewHash()
-    {
-        $hash = $this->appSettings('preview_hash');
-        if ($hash) {
-            $hash_parts = explode('.', $hash);
-            if (time() - $hash_parts[1] > 14400) {
-                $hash = '';
-            }
-        }
-        if (!$hash) {
-            $hash = uniqid().'.'.time();
-            $app_settings_model = new waAppSettingsModel();
-            $app_settings_model->set($this->getAppId(), 'preview_hash', $hash);
-        }
-
-        return md5($hash);
     }
 
     /**

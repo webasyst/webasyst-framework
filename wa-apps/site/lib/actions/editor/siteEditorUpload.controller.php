@@ -108,15 +108,35 @@ class siteEditorUploadController extends waJsonController
             $file_data['url'] = siteBlockData::getBlockpageFileUrl($file_data);
         }
 
+        $has_unsaved_changes = true;
+        $new_datetime = $old_datetime = '';
+        $blockpage_blocks_model = new siteBlockpageBlocksModel();
+        $target_block = $blockpage_blocks_model->getById($block_id);
+        if ($target_block) {
+            $setdt = waRequest::post('setdt', null, 'string');
+            $ifdt = waRequest::post('ifdt', null, 'string');
+            try {
+                $page = new siteBlockPage($target_block['page_id']);
+                if (!$ifdt || !$setdt || $page->data['update_datetime'] !== $ifdt) {
+                    $setdt = null;
+                }
+                list($new_datetime, $old_datetime) = $page->updateDateTime($setdt);
+                $has_unsaved_changes = $new_datetime !== $page->data['create_datetime'];
+            } catch (Throwable $e) {
+            }
+        }
 
         $this->response = [
             'file' => ifset($file_data),
+            'page_has_unsaved_changes' => $has_unsaved_changes,
             'undo' => [
                 'url' => wa()->getAppUrl(null, true).'?module=editor&action=upload',
                 'post' => [
                     'key' => $file_key,
                     'block_id' => $block_id,
                     'file_id' => $existing_file_id,
+                    'setdt' => $old_datetime,
+                    'ifdt' => $new_datetime,
                 ],
             ],
         ];

@@ -63,7 +63,14 @@
                 </div>
             {/if}
 
-            <h4 class="heading custom-mb-8 custom-mx-0">[`Contents displayed to website visitors instead of the variable`]</h4>
+            <h4 class="heading custom-mb-8 custom-mx-0">
+                [`Contents displayed to website visitors instead of the variable`]
+                <span>
+                    <span id="tooltip-smarty-info" class="custom-ml-4 small" data-wa-tooltip-content="[`You can use HTML and Smarty code in this field.`]">
+                        <i class="fas fa-question-circle text-light-gray"></i>
+                    </span>
+                </span>
+            </h4>
             {if $block}
                 <div class="flexbox middle">
                     {if isset($block.original)}
@@ -112,6 +119,8 @@
     var $block_list = $("#ul-blocks");
     var dialog = $block_list.closest('.dialog').data('dialog');
     var cheatsheet_name = dialog.$content.data('cheatsheet-name');
+
+    $('.js-block-editor').find('[data-wa-tooltip-content]').waTooltip();
 
     waEditorAceInit({
         id: 'content'

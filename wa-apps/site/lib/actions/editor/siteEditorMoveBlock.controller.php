@@ -37,6 +37,7 @@ class siteEditorMoveBlockController extends waController
         }
 
         $page = new siteBlockPage($page_id);
+        $page->updateDateTime();
         echo $page->renderBackend($parent_block_id);
     }
 

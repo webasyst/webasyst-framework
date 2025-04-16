@@ -142,15 +142,6 @@
 
      {if empty ($_is_order_page)}
      <!-- APP NAVIGATION -->
-     <div class="container appnav wa-flex justify-content-between align-items-center" id="header-container"{if $theme_settings.header_scheme|strstr:'andgray'} style="border-top: 1px solid transparent;"{/if}>
-         {if $wa->globals('isMyAccount')}
-
-             {* focused personal accounts navigation *}
-             {$wa->myNav('pages')}
-
-         {else}
-             {include file="`$wa_active_theme_path`/header.html" inline}
-         {/if}
-     </div>
+     <div class="container appnav wa-flex justify-content-between align-items-center" id="header-container"{if $theme_settings.header_scheme|strstr:'andgray'} style="border-top: 1px solid transparent;"{/if}>{if $wa->globals('isMyAccount')}{* focused personal accounts navigation *}{$wa->myNav('pages')}{else}<!-- Site app page list -->{include file="`$wa_active_theme_path`/header.html" inline}{/if}</div>
      {/if}
  </header>

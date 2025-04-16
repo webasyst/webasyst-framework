@@ -49,7 +49,7 @@
                                     <span class="switch smaller" id="switch-domain-title">
                                         <input id="s-domain-title" type="checkbox" name="" {if !$title}checked{/if}>
                                     </span>
-                                    <label for="s-domain-title s-small">[`Matches domain name`]</label>
+                                    <label for="s-domain-title">[`Matches domain name`]</label>
                                 </div>
                                 <div class="s-domain-title-input" {if !$title}style="display:none"{/if}>
                                     <input type="text" class="" name="title" value="{if $title}{$domain.title|escape}{/if}"><br>
@@ -79,7 +79,7 @@
                     </div>
                 {if !empty($domain_alias)}
                     <div class="field">
-                        <div class="name bold">[`Alias (mirror) for the site`]</div>
+                        <div class="name bold">[`Alias (mirror) for site`]</div>
                         <div class="value no-shift">
                             {$domain_alias}
                         </div>

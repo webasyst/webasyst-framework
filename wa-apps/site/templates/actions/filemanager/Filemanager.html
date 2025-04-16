@@ -625,13 +625,13 @@
 
                 function getFileSize(size) {
                     if (size < 1024) {
-                            return size + ' B';
+                            return size + ' ' + that.locales['b'];
                         } else if (size < 1024 * 1024) {
-                            return Math.round(size/1024) + ' KB';
+                            return Math.round(size/1024) + ' ' + that.locales['kb'];
                         } else if (size < 1024 * 1024 * 1024) {
-                            return Math.round(size/(1024 * 1024)) + ' MB';
+                            return Math.round(size/(1024 * 1024)) + ' ' + that.locales['mb'];
                         } else {
-                            return Math.round(size/(1024 * 1024 * 1024)) + ' GB';
+                            return Math.round(size/(1024 * 1024 * 1024)) + ' ' + that.locales['gb'];
                         }
                     }
             }
@@ -913,13 +913,17 @@
             domain_protocol: {json_encode($domain_protocol)},
             domains_decode: {json_encode($domains_decode)},
             locales: {
-            open: '[`Open`]',
-            download: '[`Download`]',
-            rename: '[`Rename`]',
-            move: '[`Move to folder`]',
-            delete: '[`Delete`]',
-            delete_folder_title: '[`Delete folder`]',
-            delete_content: "[`Folder will be deleted without the ability to recover.`]",
+                open: '[`Open`]',
+                download: '[`Download`]',
+                rename: '[`Rename`]',
+                move: '[`Move to folder`]',
+                delete: '[`Delete`]',
+                delete_folder_title: '[`Delete folder`]',
+                delete_content: "[`Folder will be deleted without the ability to recover.`]",
+                b: "[s`B`]",
+                kb: "[s`kB`]",
+                mb: "[s`MB`]",
+                gb: "[s`GB`]",
             }
         });
         })(jQuery);

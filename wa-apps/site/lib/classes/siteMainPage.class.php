@@ -40,22 +40,46 @@ class siteMainPage
         $old_root_page = $this->getFirstRootPage($this->domain_id, $domain_routes);
         if ($old_root_page) {
             list($old_type, $old_id) = $old_root_page;
-            $main_route = $this->routes[$this->domain][$old_id];
 
             switch ($old_type) {
                 case 'blockpage':
-                    // TODO: need update children
-                    // TODO: its need save the old url
-                    /*
+
                     $blockpage_model = new siteBlockpageModel();
+                    $page = $blockpage_model->getById($old_id);
+
+                    $blockpage_params_model = new siteBlockpageParamsModel();
+                    $params = $blockpage_params_model->getById($old_id);
+                    if (isset($params['url_before_main_page'])) {
+                        $new_url = $params['url_before_main_page'];
+                        $blockpage_params_model->deleteOne($old_id, 'url_before_main_page');
+                    } else {
+                        $new_url = $this->generateRouteId();
+                    }
+
                     $blockpage_model->updateByDomainId($this->domain_id, $old_id, [
-                        'url' => $old_url,
-                        'full_url' => $old_url,
-                        'sort' => 1
+                        'url' => $new_url,
+                        'full_url' => $new_url,
+                        'sort' => 1,
                     ]);
-                    */
+
+                    // update tree starting from the page
+                    $child_ids = $blockpage_model->getChildIds($old_id);
+                    if ($child_ids) {
+                        $blockpage_model->updateFullUrl($child_ids, $new_url, $page['url']);
+                    }
+
+                    // update draft
+                    $blockpage_model->updateByField([
+                        'final_page_id' => $old_id,
+                    ], [
+                        'url' => $new_url,
+                        'full_url' => $new_url,
+                        'sort' => 1,
+                    ]);
+
                     break;
                 case 'route_app':
+                    $main_route = $this->routes[$this->domain][$old_id];
                     $new_url = $this->generateRouteId(ifset($main_route, 'app', ''));
                     $new_url .= '/*';
 
@@ -96,15 +120,45 @@ class siteMainPage
     {
         switch ($type) {
             case 'blockpage':
-                // TODO: do make it?
-                /*
                 $blockpage_model = new siteBlockpageModel();
+                $page = $blockpage_model->getById($id);
+                if (strlen((string)$page['url'])) {
+                    $blockpage_params_model = new siteBlockpageParamsModel();
+                    $blockpage_params_model->setOne($id, 'url_before_main_page', $page['url']);
+                }
+
+                // Move page to root if it hs a parent
+                if (!empty($page['parent_id'])) {
+                    $page['parent_id'] = null;
+                    $blockpage_model->move($id, [
+                        'domain_id' => $page['domain_id'],
+                    ]);
+                }
+
+                // update page
                 $blockpage_model->updateByDomainId($this->domain_id, $id, [
                     'url' => '',
                     'full_url' => '',
-                    'sort' => 0
+                    'sort' => 0,
                 ]);
-                */
+
+                if (strlen((string)$page['url'])) {
+                    // update tree starting from the page
+                    $child_ids = $blockpage_model->getChildIds($id);
+                    if ($child_ids) {
+                        $blockpage_model->updateFullUrl($child_ids, '', $page['url']);
+                    }
+
+                    // update draft
+                    $blockpage_model->updateByField([
+                        'final_page_id' => $id,
+                    ], [
+                        'url' => '',
+                        'full_url' => '',
+                        'parent_id' => null,
+                    ]);
+                }
+
                 break;
             case 'route_app':
                 if ($type === 'route_app') {
@@ -119,6 +173,19 @@ class siteMainPage
                 $this->routes[$this->domain][$id] = $main_route;
                 $this->has_changed_routes = true;
         }
+    }
+
+    public function isAllowedAsMainPage($app_id, $type, $id)
+    {
+        switch ($type) {
+            case 'blockpage':
+                $blockpage_model = new siteBlockpageModel();
+                $page = $blockpage_model->getById($id);
+                return $page['status'] == 'final_published' && !$page['parent_id'];
+            case 'route_app':
+                return true;
+        }
+
     }
 
     /**
@@ -155,8 +222,6 @@ class siteMainPage
 
         $root_route_id = null;
         foreach ($routes as $route_id => $route) {
-            // TODO: только с темой поселение является главной страницей?
-            // update: 08.10.2024 видимо роут мб без темы
             if ($route['url'] === '*' && !isset($route['redirect'])) {
                 $root_route_id = $route_id;
                 break;
@@ -169,7 +234,7 @@ class siteMainPage
         return null;
     }
 
-    private function generateRouteId(string $app): string
+    private function generateRouteId(string $app=''): string
     {
         if ($app) {
             $mask = siteHelper::getAlternativeAppUrl($app);
@@ -186,6 +251,15 @@ class siteMainPage
                     $idx = intval(ltrim($m[1] ?? 0, '-'));
                     $max_index = $idx > $max_index ? $idx : $max_index;
                 }
+            }
+        }
+
+        $blockpage_model = new siteBlockpageModel();
+        $other_blockpages = $blockpage_model->getByUrlStartingWith($this->domain_id, $mask);
+        foreach ($other_blockpages as $p) {
+            if (preg_match('/^'.$mask.'(-\d*)?$/', $p['full_url'], $m)) {
+                $idx = intval(ltrim($m[1] ?? 0, '-'));
+                $max_index = $idx > $max_index ? $idx : $max_index;
             }
         }
 

@@ -1,0 +1,223 @@
+<div class="dialog s-domain-duplicate-dialog" id="js-domain-duplicate-dialog">
+    <style>
+        .is-processing .dialog-header .hint,
+        .is-processing .dialog-footer a,
+        .is-processing .s-domains-to-copy li:not(.is-checked) { display: none; }
+        .is-processing .s-domains-to-copy li.is-checked label { pointer-events: none; }
+        .is-processing .s-domains-to-copy li.is-checked label .wa-checkbox,
+        .is-processing .s-domains-to-copy li.is-checked a { display: none; }
+
+        .is-processing.is-success .s-domains-to-copy li.is-checked a { display: inline; }
+        .is-success .progressbar svg path { stroke: var(--green); }
+        .is-success.is-error .progressbar svg path { stroke: var(--red); }
+    </style>
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header">
+            <h1 class="custom-mb-0">[`Site copying`]</h1>
+            <p class="small text-dark-gray">
+                [`The site map and some other settings will be copied <strong>and completely replaced</strong>: navigation menu, favicons, robots.txt, CDN, custom JavaScript code, apps, redirects, custom files in site root.`]
+            </p>
+        </header>
+        <div class="dialog-content">
+            <form id="form-copy" action="?module=domains&action=duplicate" method="post" class="fields">
+                <input type="hidden" name="source_domain_id" value="{$domain_id|escape}">
+                {* progressbar *}
+                <div id="js-progressbar-wrapper" class="align-center custom-mb-16" style="display:none;">
+                    <div class="progressbar" style="display:inline-block;"></div>
+                </div>
+                {* copy from  *}
+                <div class="fields-group custom-mt-0">
+                    <div class="field vertical">
+                        <div class="name">[`From`]</div>
+                        <div class="value semibold">{waIdna::dec($domain.title)|escape}</div>
+                    </div>
+                </div>
+                {* arrow down *}
+                <div class="custom-my-16 align-center">
+                    <span class="icon larger"><i class="fas fa-arrow-down"></i></span>
+                </div>
+                {* copy to *}
+                <div class="fields-group custom-mt-0">
+                    <div class="field vertical">
+                        <div class="name">[`To`]</div>
+                        <div class="value">
+                            {if !empty($domains)}
+                                <ul class="s-domains-to-copy list custom-mt-8">
+                                    {foreach $domains as $domain_id => $d}
+                                        <li class="custom-mb-16">
+                                            <div class="flexbox middle nowrap space-8">
+                                                <label class="semibold text-ellipsis">
+                                                    <span class="wa-checkbox custom-mr-4">
+                                                        <input type="checkbox" data-name="dest_domain_id" value="{$domain_id|escape}">
+                                                        <span>
+                                                            <span class="icon">
+                                                                <i class="fas fa-check"></i>
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                    <span title="{waIdna::dec($d.title)|escape}">{waIdna::dec($d.title)|escape}</span>
+                                                </label>
+                                            </div>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            {else}
+                                <i class="fas fa-exclamation-triangle text-orange"></i> <span class="state-caution">[`You have no other sites to copy the selected one to. First add at least one more site and then proceed to copying again.`]</span>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <footer class="dialog-footer flexbox middle">
+                <button
+                    class="js-save button" type="submit" form="form-copy"
+                    data-text-default="[`Start copying`]"
+                    data-text-in-progress="[`Copying in progress`]"
+                    disabled
+                >
+                    <span class="js-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i></span>
+                    <span class="js-text">[`Start copying`]</span>
+                </button>
+                <button class="js-abort js-close-dialog button light-gray" type="button">[`Cancel`]</button>
+                <button class="js-close-dialog button gray" type="button" style="display:none;">[`Close`]</button>
+
+                <a href="{$wa_app_url}?list&show_add_dialog=1" class="js-close-dialog button nobutton custom-ml-auto">
+                    <i class="fas fa-plus fa-sm"></i>
+                    <span class="custom-mx-4">[`Add site`]</span>
+                    <i class="fas fa-external-link-alt fa-sm"></i>
+                </a>
+        </footer>
+    </div>
+</div>
+
+<script>(function() { "use strict";
+
+    const site_app_url = {$wa_app_url|json_encode};
+    const domain_id = {$domain_id|json_encode};
+    const $wrapper = $('#js-domain-duplicate-dialog');
+    const $form = $wrapper.find('form');
+    const $submit = $wrapper.find('[type="submit"]');
+    const $domains_wrapper = $form.find('.s-domains-to-copy');
+    const $domains = $domains_wrapper.find('[data-name="dest_domain_id"]');
+
+    // Call server controller when user user clicks Start button
+    $form.find('form').submit(saveHandler);
+    $wrapper.find('.js-save').on('click', saveHandler);
+
+    // checkbox domains
+    $domains.on('change', function() {
+        $(this).closest('li').toggleClass('is-checked', this.checked);
+
+        const count_checked = $domains.filter(':checked').length;
+        const button_text = $submit.data('text-default') + (count_checked > 0 ? ' ('+count_checked+')' : '');
+        $submit.prop('disabled', count_checked === 0)
+            .children('.js-text').text(button_text);
+    });
+
+    function saveHandler(e) {
+        e && e.preventDefault && e.preventDefault();
+        startCopyProcess();
+    }
+
+    async function startCopyProcess() {
+        const $domains_checked = $domains.filter(':checked');
+        const domains_checked = Array.from($domains_checked);
+        const len = domains_checked.length;
+        if (!len) {
+            return false;
+        }
+
+        const progressbar = initProgressbar(len);
+        let promise = null;
+        $wrapper.find('.js-abort').one('click', function() {
+            promise && promise.abort();
+        });
+        $wrapper.addClass('is-processing');
+        $submit.prop('disabled', true);
+        $submit.children('.js-loading').show();
+        $submit.children('.js-text').text($submit.data('text-in-progress'));
+        setTimeout(() => {
+            $wrapper.resize();
+        }, 50);
+
+        const payload = {
+            source_domain_id: $form.find('[name="source_domain_id"]').val()
+        };
+        for (let i = 0; i < len; i++) {
+            payload.dest_domain_id = domains_checked[i].value;
+            promise = copyDomainRequest(payload);
+            const r = await promise;
+            const $label = $domains_checked.eq(i).closest('label');
+            if (r.status === 'ok') {
+                $('<span class="icon"><i class="fas fa-check-circle text-green"></i></span>')
+                    .insertAfter($label)
+                    .after(
+                        `<a href="{$wa_app_url}map/overview/?domain_id=${ r.data.dest_domain_id }" target="_blank" class="custom-ml-auto">
+                            {_w('Go to site')} <i class="fas fa-external-link-alt fa-xs"></i>
+                        </a>`
+                    );
+            } else {
+                $label.after(`<span class="state-error">
+                        <i class="fas fa-times-circle text-red"></i> {_w('Error. Please try again.')}
+                    </span>`
+                );
+            }
+            progressbar.fillSegment();
+
+            if (i === len - 1) {
+                progressbar.destroy();
+                $submit.hide();
+                $submit.children('.js-loading').remove();
+                $wrapper.find('.js-close-dialog').hide().siblings('.gray').show();
+
+                setTimeout(() => {
+                    $wrapper.addClass('is-success');
+                    if ($domains_wrapper.find('.state-error').length) {
+                        $wrapper.addClass('is-error');
+                    }
+                }, 100);
+            } else {
+                // sleep 1 second
+                await new Promise((resolve, reject) => {
+                    promise = { abort: () => reject('canceled request') };
+                    setTimeout(() => resolve(), 1000);
+                });
+            }
+        }
+    }
+
+    function initProgressbar(count_of_segments) {
+        const $wrapper = $('#js-progressbar-wrapper').show(),
+            $bar = $wrapper.find('.progressbar').waProgressbar({ type: 'circle' }),
+            instance = $bar.data('progressbar');
+
+        let count = 0;
+        return {
+            fillSegment: () => {
+                if (count < count_of_segments) {
+                    count += 1;
+                    const percentage = Math.floor(100/count_of_segments*count);
+                    instance.set({
+                        percentage,
+                        text: percentage + "%"
+                    });
+                }
+            },
+            destroy: () => {
+                $bar.data('progressbar', null);
+            }
+        }
+    }
+
+    function copyDomainRequest(payload) {
+        return $.post($form.attr('action'), payload, function(r) {
+            if (r?.status !== 'ok') {
+                console.log('Error duplicating domain', r);
+            }
+        });
+    }
+
+})();</script>

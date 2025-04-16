@@ -45,7 +45,7 @@ class siteMenuBlockType extends siteBlockType
 
         $column_props = array();
         $column_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0"];
-        $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", 'flex-align-vertical' => "x-c"];
+        $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", 'flex-align-vertical' => "x-c", 'max-width' => "cnt"];
 
         $result->data = ['block_props' => $column_props, 'wrapper_props' => ['justify-align' => "y-j-cnt"]];
         //$result->data['columns'] = $columns_arr;
@@ -79,13 +79,16 @@ class siteMenuBlockType extends siteBlockType
                     'name' => _w('Columns'),
                 ],
                 [   'type' => 'ColumnsAlignVerticalGroup',
-                    'name' => _w('Alignment'),
+                    'name' => _w('Vertical alignment'),
                 ],
                 [   'type' => 'MenuDecorationGroup',
                     'name' => _w('Decoration'),
                 ],
                 [  'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],
+                [   'type' => 'MaxWidthToggleGroup',
+                    'name' => _w('Max width'),
                 ],
                 [   'type' => 'BackgroundColorGroup',
                     'name' => _w('Background'),
@@ -104,6 +107,9 @@ class siteMenuBlockType extends siteBlockType
                 ],
                 [   'type' => 'ShadowsGroup',
                     'name' => _w('Shadows'),
+                ],
+                [   'type' => 'IdGroup',
+                    'name' => _w('Identifier (ID)'),
                 ],
             ],
             'elements' => $this->elements,

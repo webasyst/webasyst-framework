@@ -36,7 +36,7 @@ class siteMapPersonalSettingsDialogAction extends waViewAction
             'auth_config'                => $auth_config->getData(),
             'params'                     => $auth_config->getParams(),
             'auth_adapters'              => $auth_config->getAvailableAuthAdapters(),
-            'auth_endpoints'             => $auth_endpoints,
+            'auth_endpoints'             => array_reverse($auth_endpoints),
             'auth_types'                 => $auth_config->getAuthTypes(),
             'signup_captcha'             => $auth_config->getSignUpCaptcha(),
             'rememberme'                 => $auth_config->getRememberMe(),

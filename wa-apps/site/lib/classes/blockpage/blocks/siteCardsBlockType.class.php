@@ -23,35 +23,36 @@ class siteCardsBlockType extends siteBlockType
     public function getExampleBlockData()
     {
         $result = $this->getEmptyBlockData();
+        $hseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
+        $hseq->data['is_horizontal'] = true;
+        $hseq->data['is_complex'] = 'only_columns';
+        $hseq->data['indestructible'] = true;
         $card_block_type = new siteCardBlockType();
-        $card_count = ifset($this->options, 'cards', 6);
+        $card_count = ifset($this->options, 'cards', 7);
 
-        $card_class = 'fx-8 st-6 st-6-lp st-6-tb st-12-mb';
+        $card_wrapper_class = 'st-3 st-3-lp st-4-tb st-6-mb';
+        if ($card_count < 3) {
+            $card_wrapper_class = 'st-6 st-6-lp st-6-tb st-12-mb';
+        }
+        if ($card_count < 2) {
+            $card_wrapper_class = 'st-12 st-12-lp st-12-tb st-12-mb';
+        }
+
+        $card_block_type = (new siteCardBlockType())->getExampleBlockData();
+        $card_block_type->data['indestructible'] = false;
+        $card_block_type->data['column'] = $card_wrapper_class;
+
         $card_props = array();
         $card_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
-        $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
-        $card_props_inline = array();
-       
-        if ($card_count > 1) {
-            $card_class = 'st-6 st-6-lp st-6-tb st-12-mb';
-            $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", "border-radius" => "b-r-l", 'flex-align-vertical' => "x-t"];
-        }
-        if ($card_count > 2) {
-            $card_class = 'st-4 st-6-lp st-6-tb st-12-mb';
-        }
-        if ($card_count > 3) {
-            $card_class = 'st-4 st-4-lp st-6-tb st-6-mb';
-        }
+        $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c", 'max-width' => "cnt"];
 
-        $result->data = ['block_props' => $card_props];
+        $result = $this->getEmptyBlockData();
 
-        $cards_arr = array();
         for($i = 1; $i <= $card_count; $i++) {
-            $result->addChild($card_block_type->getExampleBlockData(), 'col'.$i);
-            $cards_arr['card-'.$i] = $card_class;
-
+            $hseq->addChild($card_block_type);
         }
-        $result->data['columns'] = $cards_arr;
+        $result->addChild($hseq, '');
+        $result->data = ['block_props' => $card_props, 'wrapper_props' => ['justify-align' => "y-j-cnt"]];
         $result->data['elements'] = $this->elements;
 
         return $result;
@@ -67,57 +68,21 @@ class siteCardsBlockType extends siteBlockType
     public function getRawBlockSettingsFormConfig()
     {
         $card_count = $this->options['cards'];
-        if ($card_count == 1) {
-            return [
-                'type_name' => _w('Cards'),
-                'sections' => [
-                    [   'type' => 'ColumnsGroup',
-                        'name' => _w('Column'),
-                    ],
-                    [   'type' => 'ColumnsAlignGroup',
-                        'name' => _w('Alignment'),
-                    ],
-                    [   'type' => 'TabsWrapperGroup',
-                        'name' => _w('Tabs'),
-                    ],
-                    [   'type' => 'BackgroundColorGroup',
-                        'name' => _w('Background'),
-                    ],
-                    [   'type' => 'PaddingGroup',
-                        'name' => _w('Padding'),
-                    ],  
-                    [   'type' => 'MarginGroup',
-                        'name' => _w('Margin'),
-                    ],
-                    [   'type' => 'BorderGroup',
-                        'name' => _w('Border'),
-                    ],
-                    [   'type' => 'BorderRadiusGroup',
-                        'name' => _w('Angle'),
-                    ],
-                    [   'type' => 'ShadowsGroup',
-                        'name' => _w('Shadows'),
-                    ],
-                ],
-                'elements' => $this->elements,
-                'semi_headers' => [
-                    'main' => _w('Whole block'),
-                    'wrapper' => _w('Container'),
-                ]
-            ] + parent::getRawBlockSettingsFormConfig();
-        };
 
         return [
             'type_name' => _w('Cards'),
             'sections' => [
-                [   'type' => 'ColumnsGroup',
-                    'name' => _w('Column'),
+                [   'type' => 'CardsGroup',
+                    'name' => _w('Cards'),
                 ],
-                [   'type' => 'ColumnsAlignVerticalGroup',
-                    'name' => _w('Columns alignment'),
+                [   'type' => 'RowsAlignGroup',
+                    'name' => _w('Alignment of the last row when not filled in'),
                 ],
                 [  'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],
+                [   'type' => 'MaxWidthToggleGroup',
+                    'name' => _w('Max width'),
                 ],
                 [   'type' => 'BackgroundColorGroup',
                     'name' => _w('Background'),
@@ -137,11 +102,14 @@ class siteCardsBlockType extends siteBlockType
                 [   'type' => 'ShadowsGroup',
                     'name' => _w('Shadows'),
                 ],
+                [   'type' => 'IdGroup',
+                    'name' => _w('Identifier (ID)'),
+                ],
             ],
             'elements' => $this->elements,
             'semi_headers' => [
-                'main' => _w('Whole block'),
-                'wrapper' => _w('Container'),
+                'main' => _w('Outside'),
+                'wrapper' => _w('Inside'),
             ]
         ] + parent::getRawBlockSettingsFormConfig();
     }

@@ -46,9 +46,9 @@
         {/foreach}
     {/if}
 {/if}
-
-<div class="{$elements.main} fx-6{$classes_props_main}" style="{$inline_props_main}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
-    <div class="{$elements.wrapper} style-wrapper cl p-l-16 p-r-16{$classes_props_wrap}" style="{$inline_props_wrap}">
+{$anchor_id = $data->data['id']|default:0}
+<div {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$elements.main} clm{$classes_props_main}" style="{$inline_props_main}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    <div class="{$elements.wrapper} style-wrapper cl {$classes_props_wrap}" style="{$inline_props_wrap}">
         {foreach $children as $c}
             {$c.html}
         {/foreach}

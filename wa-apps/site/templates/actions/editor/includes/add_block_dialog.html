@@ -1,0 +1,23 @@
+<div class="dialog" id="js-add-block-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <a href="javascript:void(0)" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        <div class="dialog-content custom-py-0 is-long-content">
+            <div class="skeleton custom-py-24">
+                <div class="flexbox">
+                    <div class="sidebar blank height-auto" style="padding-right:1rem;">
+                        {for $i=1 to 24}
+                            <span class="skeleton-line"></span>
+                        {/for}
+                    </div>
+                    <div class="content">
+                        {for $i=1 to 3}
+                            <span class="skeleton-line" style="width: 70%;"></span>
+                            <span class="skeleton-line" style="width: 92%; height: 245px;{if $i != 3} margin-bottom: 1rem;{/if}"></span>
+                        {/for}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

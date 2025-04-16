@@ -15,6 +15,7 @@ class siteHrBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Horizontal ruler'),
+            'tags' => 'element',
             'sections' => [
                 [   'type' => 'BorderGroup',
                     'name' => _w('Border'),
@@ -31,8 +32,8 @@ class siteHrBlockType extends siteBlockType
                 [   'type' => 'VisibilityGroup',
                     'name' => _w('Visibility on devices'),
                 ],
-                [   'type' => 'TagsGroup',
-                    'name' => _w('SEO'),
+                [   'type' => 'IdGroup',
+                    'name' => _w('Identifier (ID)'),
                 ],
             ],
         ] + parent::getRawBlockSettingsFormConfig();

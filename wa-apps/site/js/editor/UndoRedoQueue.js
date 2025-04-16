@@ -35,6 +35,7 @@ class UndoRedoQueue
 
     async mainLoop() {
         var op;
+        const publication_controller = $("#js-wa-header-publish").data('controller');
         while (true) {
             if (!this.ongoing_operations.length) {
                 await new Promise(resolve => setTimeout(resolve, this.MAIN_LOOP_DELAY));
@@ -61,16 +62,25 @@ class UndoRedoQueue
                 this.redo_states = [];
             }
 
-            this.current_operation_promise = Promise.race([
-                this._runOngoingOperation(op),
-                new Promise(resolve => setTimeout(resolve, this.OP_TIMEOUT))
-            ]);
-            await this.current_operation_promise;
+            publication_controller.spinnerOn();
+            try {
+                this.current_operation_promise = Promise.race([
+                    this._runOngoingOperation(op),
+                    new Promise(resolve => setTimeout(resolve, this.OP_TIMEOUT))
+                ]);
+                await this.current_operation_promise;
+            } catch (e) {
+                console.log('ERROR during save operation', e);
+            }
             this.current_operation_promise = this._noop;
+            publication_controller.spinnerOff();
             if (op.state == 'done') {
                 this.undo_states.push(op);
             } else if (op.state == 'undone') {
                 this.redo_states.push(op);
+                if (this.undo_states.length <= 0) {
+                    publication_controller.undoneFully();
+                }
             } else {
                 console.log('WARNING: operation in wrong state after having been performed', op.state);
             }
@@ -102,8 +112,6 @@ class UndoRedoQueue
             return false;
         }
 
-        // !!! TODO: оверлей, крутилка в некоторых случаях, см. txt
-
         this._callSynced(() => {
             // cancel this.ongoing_operations if contains 'waiting' or 'before_redoing' state, см. txt
             /* !!!
@@ -127,7 +135,6 @@ class UndoRedoQueue
         if (!this.redo_states.length) {
             return false;
         }
-        // !!! TODO: оверлей, крутилка в некоторых случаях, см. txt
         this._callSynced(() => {
             // !!! TODO: cancel this.ongoing_operations if contans 'before_undoing' state, см. txt
             var op = this.redo_states.pop();

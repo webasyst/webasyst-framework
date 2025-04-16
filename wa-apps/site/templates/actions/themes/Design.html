@@ -14,7 +14,9 @@
         {if $options.js.editor}<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>{/if}
         <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design.css?{$wa->version()}">
 
-        <div class="sidebar blank flexbox width-16rem{if $wa->isMobile()} height-auto{/if}"{if $wa->isMobile()} style="position: relative; width:100%; min-height: auto; top: 0"{/if}>
+        <div class="sidebar blank flexbox width-16rem{if $wa->isMobile()} height-auto{/if}"
+            {if $wa->isMobile()}style="position: relative; width:100%; min-height: auto; top: 0"{else}style="height: calc(100vh - var(--sidebar-scroll-offset, 4rem));"{/if}
+        >
             <div class="sidebar-header box custom-py-0">
 
                 {* TODO: cut in the future *}
@@ -859,7 +861,33 @@
 
             $(function () {
                 $(document).trigger('wa_design_inited');
+
+                initFixSidebarBottomOffset();
             });
+
+            function initFixSidebarBottomOffset () {
+                const nav_height = $('#wa-nav').height() || 0;
+                const offset_top = $('.sidebar-header').offset().top;
+                document.documentElement.style.cssText = `--sidebar-scroll-offset:${ offset_top }px`;
+                const fixSidebarScrollOffset = () => {
+                    const new_offset_top = offset_top - Math.min(offset_top, document.documentElement.scrollTop);
+                    document.documentElement.style.setProperty('--sidebar-scroll-offset', `${ Math.max(new_offset_top, nav_height) }px`);
+                };
+                let timer = null;
+
+                $(document).off('scroll.theme_sidebar').on('scroll.theme_sidebar', function () {
+                    if (timer) {
+                        return;
+                    }
+
+                    fixSidebarScrollOffset();
+
+                    timer = setTimeout(() => {
+                        fixSidebarScrollOffset();
+                        timer = null;
+                    }, 200);
+                });
+            }
         </script>
             {if !$wa->isMobile()}</div>{/if}
 </div>

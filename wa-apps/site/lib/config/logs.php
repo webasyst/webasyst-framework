@@ -10,6 +10,9 @@ return array(
     'site_delete' => array(
         'name' => /*_w*/('deleted site')
     ),
+    'site_duplicate' => array(
+        'name' => /*_w*/('duplicated site')
+    ),
 
     'file_upload' => array(
         'name' => /*_w*/('uploaded file')

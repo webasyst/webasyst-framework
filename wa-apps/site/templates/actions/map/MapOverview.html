@@ -1,9 +1,7 @@
-{* Когда показываем в левом сайдбаре в редакторе страниц, то внешние контейнеры рендерить не нужно *}
-{*wa_tpl_vars*}
 
-{function row_newposition row=[] offset=null}
+{function row_newposition row=[] offset=null _class=''}
 {$_offset = $offset|default:$row.offset_level|default:null}
-<tr class="drag-newposition"
+<tr class="drag-newposition{if $_class} {$_class|trim}{/if}"
     data-app-id="{ifset($row, 'app_id', ifset($row, 'app', 'id', ''))|escape}"
     data-row-type="{ifset($row, 'row_type', '')}"
     {if empty($_offset)}data-root="1"{else}data-offset="{$_offset}"{/if}
@@ -23,6 +21,7 @@
 </script>
 {/if}
 {if empty($sidebar_mode)}
+{* Когда показываем в левом сайдбаре в редакторе страниц, то внешние контейнеры рендерить не нужно *}
 <div class="article site-base">
     <div class="article-body">
 {/if}
@@ -35,7 +34,7 @@
             </button>
             <div class="dropdown-body custom-mt-2">
                 <ul class="menu">
-                    {if $wa->site->config('dev_enable_blockpages')}
+                    {if waLicensing::check('site')->isPremium()}
                         <li>
                             <a href="javascript:void(0);" id="js-add-blockpage">
                                 <i class="fas fa-layer-group"></i>
@@ -112,40 +111,45 @@
                         {$c_page_id = $p.route_id}
                     {/if}
 
-                    {if !empty($p.frontend_link) }
-                        {$frontend_link = $p.frontend_link}
-                    {else !empty($domain)}
-                        {if isset($p.full_url)}
-
-                                {$full_url = "/`$p.full_url`"}
-                                {if isset($p.route) }
-                                    {$full_url = "/`$p.route|rtrim:'*'``$p.full_url`"}
-                                {/if}
-                            {else}
-                                {$full_url = $p.url_formatted}
-                            {/if}
-                        {$frontend_link = "http://`$domain.name``$full_url`"}
-                    {/if}
-
                     {if !$row@first}
                         {row_newposition row=$row}
                     {/if}
 
+                    {$frontend_link = $p.frontend_link}
                     {$js_settings_link_class = ''}
                     {$app_disabled = !empty($row.app.disabled)}
                     {$is_misconfigured_settlement = !empty($row.misconfigured_settlement)}
-                    {$is_main = !$is_misconfigured_settlement && $root_page && $row.url === $root_page.url}
+                    {$is_main = !$is_misconfigured_settlement && !empty($row.is_main)}
                     {$is_parent = empty($row.offset_level)}
                     {$disable_set_main_page = false}
                     {$app_id = null}
+                    {$route = []}
                     {if $row['row_type'] === 'route_app'}
                         {$route = $row}
                         {$is_broken_route_url = !empty($row.is_broken_route_url) && $row.is_broken_route_url}
                         {$is_hidden_route = !empty($route.private) && $route.private || !empty($route.disabled)}
                         {$unpublished_page = (!empty($route.app) && !is_array($route.app)) || (!empty($route.root_page.id) && $route.root_page.status == '0')}
                         {$app_id = ifset($route, 'app', 'id', '')}
+                        {$show_over_another_section = !empty($route.show_over_another_section)}
                         <tr
-                            class="dr{if $app_disabled} disable-link{/if}{if $is_htmleditor && !empty($route.root_page.id) && $app_id == 'site' && $route.root_page.id == $page_id} selected js-current{/if}{if $is_main} is-main{/if}"
+                            class="{strip}
+                                dr
+                                {if $app_disabled}
+                                    {" "}disable-link
+                                {/if}
+                                {if $is_htmleditor && !empty($route.root_page.id) && $app_id == 'site' && $route.root_page.id == $page_id}
+                                    {" "}selected{" "}js-current
+                                {/if}
+                                {if $is_main}
+                                    {" "}is-main
+                                {/if}
+                                {if $show_over_another_section}
+                                    {" "}url-overlap
+                                {/if}
+                                {if $show_over_another_section && empty($route.show_under_another_section)}
+                                    {" "}show-over-another-section
+                                {/if}
+                            {/strip}"
                             data-route-id="{$route.route_id}" {if !empty($route.root_page.id)}data-page-id="{$route.root_page.id}"{/if}
                             {if $app_id == 'site'}data-html-page="1"{/if} data-app-id="{$app_id}"
                             data-row-type="{$row.row_type}"{if $is_parent} data-root{/if}{if !empty($route.url)} data-route="{$route.url}"{/if}
@@ -183,11 +187,16 @@
                             {if 1}
                             <td class="page-route{if $app_disabled || $is_misconfigured_settlement} js-misconfigured-settlement strike gray{/if}">
                                 <div>
-                                    <a href="javascript:void(0)" data-href="{$frontend_link|escape}" data-url="{$route.url_formatted|default:''|escape}" class="gray">{strip}
+                                    <a href="javascript:void({$route.route_id|default:0|json_encode|escape})" data-href="{$frontend_link|escape}" data-url="{$route.url_formatted|default:''|escape}" class="gray">{strip}
                                         {if $is_main}
                                             {$_main_page_icon}
                                         {else}
                                             {$route.url_formatted|truncate:30:'...':false:true|escape}
+                                        {/if}
+                                        {if $show_over_another_section}
+                                            <span data-wa-tooltip-content="[`The page is available instead of a section with the same address. Its subpages become unavailable.`]">
+                                                &nbsp;<i class="fas fa-exclamation-circle text-light-gray"></i>
+                                            </span>
                                         {/if}
                                     {/strip}</a>
                                     <i class="shortener"></i>
@@ -217,8 +226,8 @@
                             {if 1}
                             <td class="page-route">
                                 <div>
-                                    <a href="javascript:void(0)" data-href="{$frontend_link|escape}" data-url="{$p.url|default:''|escape}" class="gray">{strip}
-                                        /{$p.url|escape}
+                                    <a href="javascript:void({$row.route_id|default:0|json_encode|escape})" data-href="{$frontend_link|escape}" data-url="{$p.url|default:''|escape}" class="gray">{strip}
+                                        /{if $p.url}{$p.url|escape}{/if}
                                     {/strip}</a>
                                     <i class="shortener"></i>
                                 </div>
@@ -232,7 +241,18 @@
                         {$disable_set_main_page = $p.status !== 'final_published'}
                         {$app_id = 'site'}
                         <tr
-                            class="dr{if !$is_htmleditor && $p.id == $page_id} selected js-current{/if}{if $is_main} is-main{/if}"
+                            class="{strip}
+                                dr
+                                {if !$is_htmleditor && ($p.id == $page_id || $p.id == waRequest::get('final_page_id'))}
+                                    {" "}selected js-current
+                                {/if}
+                                {if $is_main}
+                                    {" "}is-main
+                                {/if}
+                                {if $p.show_over_another_section}
+                                    {" "}url-overlap
+                                {/if}
+                            {/strip}"
                             data-page-id="{$p.id|escape}" {if !empty($row.offset_level)}data-offset="{$row.offset_level}"{/if}
                             data-parent-id="{$p.parent_id|default:''}"
                             data-row-type="{$row.row_type}"{if $is_parent} data-root{/if}
@@ -241,6 +261,11 @@
                                 <div class="page-name-wrapper flexbox middle space-8">
                                     <span class="page-icon"><i class="fas fa-layer-group"></i></span>
                                     <span class="text-ellipsis {if $p.id == $page_id}bold{/if}">{$p.name|escape}</span>
+                                    {if $p.status === 'final_unpublished'}
+                                        <span class="icon small disabled-icon custom-mr-8" title="[`Unpublished`]"><i class="fas fa-eye-slash"></i></span>
+                                    {elseif !empty($p.draft_changed)}
+                                        <span class="icon smaller rounded bg-yellow custom-mr-8 custom-mt-2" title="[`Non-published changes exist`]"></span>
+                                    {/if}
                                 </div>
                             </td>
                             {if 1}
@@ -250,10 +275,15 @@
                                         {if $is_main}
                                             {$_main_page_icon}
                                         {else}
-                                            /{$p.url|escape}/
+                                        /{if $p.url}{$p.url|escape}/{/if}
                                         {/if}
                                     {/strip}</a>
                                     <i class="shortener"></i>
+                                    {if !empty($p.show_over_another_section)}
+                                        <span data-wa-tooltip-content="[`The page is available instead of a section with the same address. Its subpages become unavailable.`]">
+                                            &nbsp;<i class="fas fa-exclamation-circle text-light-gray"></i>
+                                        </span>
+                                    {/if}
                                 </div>
                             </td>
                             {else}
@@ -268,19 +298,35 @@
                                         <ul class="menu">
                                             {if !$app_disabled}
                                                 <li>
-                                                    <a href="{$frontend_link|escape}" target="_blank">
-                                                        <i class="icon fas fa-globe smaller"></i> [`Preview`] <i class="fas fa-external-link-alt new-window custom-ml-auto"></i>
+                                                    {$page_status = ''}
+                                                    {if $row.row_type === 'route_app'}
+                                                        {if $app_id === 'site'}
+                                                            {$page_status = ifset($row, 'root_page', 'status', '')}
+                                                        {/if}
+                                                    {else}
+                                                        {$page_status = ifset($row, 'status', '')}
+                                                    {/if}
+
+                                                    {$preview_url_param = ''}
+                                                    {$page_is_draft = $page_status === 'final_unpublished' || $page_status == '0'}
+                                                    {if $page_is_draft && isset($app_hashes[$app_id])}
+                                                        {$preview_url_param = "?{if $row.row_type === 'blockpage'}preview_hash{else}preview{/if}={$app_hashes[$app_id]}"}
+                                                    {/if}
+                                                    <a href="{$frontend_link|escape}{$preview_url_param}" target="_blank">
+                                                        <i class="icon fas fa-globe smaller"></i>{if $page_is_draft}[`Draft preview`]{else}[`View on site`]{/if} <i class="fas fa-external-link-alt new-window custom-ml-auto"></i>
                                                     </a>
                                                 </li>
                                                 {*<li><a id="s-map-add-inside" href="javascript:void(0)"><i class="icon fas fa-plus"></i>[`Add inside`] <i class="fas fa-caret-right add-menu custom-ml-auto"></i></a></li>*}
-                                                {if ($row['row_type'] === 'route_app' || $row['row_type'] === 'htmlpage') && ($app_id === 'site' || !empty($apps_to_add[$app_id]['pages']))}
-                                                    <li><a class="js-map-add-subpage" href="javascript:void(0)"><i class="icon fas fa-file-alt"></i>[`Add page`]</a></li>
+                                                {if $app_id === 'site' || !empty($apps_to_add[$app_id]['pages'])}
+                                                    <li><a class="js-map-add-subpage" href="javascript:void(0)"><i class="icon fas fa-plus"></i>[`Add subpage`]</a></li>
                                                 {/if}
-                                                {if !$is_main && $is_parent && $row['row_type'] !== 'blockpage'}
+                                                {if !$is_main && $is_parent}
                                                     <li><a href="javascript:void(0)" class="js-map-set-main-page{if $disable_set_main_page} s-disabled{/if}"{if $disable_set_main_page} title="[`The homepage cannot be unpublished. Please select another section or page as the homepage.`]"{/if}><i class="icon fas fa-home"></i>[`Make the site’s homepage`]</a></li>
                                                 {/if}
-                                                {if $row['row_type'] === 'blockpage'}    {* || $row['row_type'] === 'htmlpage' || ($row['row_type'] === 'route_app' && $route.app.id == 'site') *}
-                                                    <li><a href="javascript:void(0)" class="js-map-duplicate"><i class="icon fas fa-copy"></i>[`Duplicate`]</a></li>
+                                                {if waLicensing::check('site')->isPremium()}
+                                                    {if $row['row_type'] === 'blockpage' || $row['row_type'] === 'htmlpage' || $row['row_type'] === 'route_app'}
+                                                        <li><a href="javascript:void(0)" class="js-map-duplicate"><i class="icon fas fa-copy"></i>[`Duplicate`]</a></li>
+                                                    {/if}
                                                 {/if}
                                             {/if}
                                             <li><a class="js-map-delete" href="javascript:void(0)"><i class="icon fas fa-trash-alt"></i>[`Delete`]</a></li>
@@ -290,6 +336,7 @@
                                 </div>
                                 <script>
                                     (function($) {
+                                        const page_settings_skeleton_body = '<div class="skeleton"><span class="skeleton-header"></span><span class="skeleton-line"></span><span class="skeleton-line"></span></div>';
                                         $("#dropdown-actions-li-{$n}-{$c_page_id}").waDropdown({
                                             hover: false,
                                             /*page_settings_skeleton_body: function(dropdown){
@@ -358,7 +405,7 @@
                             <td class="page-settings">
                                 {if $js_settings_link_class}
                                 <div>
-                                    <a class="{$js_settings_link_class}" href="javascript:void(0)"><i class="fas fa-cog"></i></a>
+                                    <a class="{$js_settings_link_class}" href="javascript:void({ifempty($row, 'id', ifset($route, 'root_page', 'id', 0))|json_encode|escape})"><i class="fas fa-cog"></i></a>
                                 </div>
                                 {/if}
                             </td>
@@ -369,7 +416,7 @@
                                 {for $i=0 to $row.offset_level}
                                     {$_offset = $row.offset_level-$i}
                                     {if $_offset > 0 && $_offset > $_next_offset}
-                                        {row_newposition row=$row offset=$_offset}
+                                        {row_newposition row=$row offset=$_offset _class="{if $_offset === 1 && !empty($show_over_another_section)}show-over-another-section{/if}"}
                                     {/if}
                                 {/for}
                             {/if}
@@ -468,13 +515,12 @@
     const editor_html_page_url = {$wa_app_url|json_encode} + 'htmleditor/page/%s/?domain_id='+domain_id;
     const sidebar_mode = {$sidebar_mode|json_encode};
     const $table = $('.site-map-tree-table');
-    const page_settings_skeleton_header = '<h1>'+{_w('Page settings')|json_encode} + '</h1>';
-    const section_settings_skeleton_header = '<h1>'+{_w('Section settings')|json_encode} + '</h1>';
-    const page_settings_skeleton_body = '<div class="skeleton"><span class="skeleton-header"></span><span class="skeleton-line"></span><span class="skeleton-line"></span></div>';
     const $drawer = $('.site-editor-left-drawer:visible');
     if (typeof $.site.loadMap === 'undefined') {
         $.site.loadMap = $.site.reload;
     }
+
+    $table.find("[data-wa-tooltip-content]").waTooltip({});
 
     $("#js-dropdown-add").waDropdown({
         hover: false,
@@ -515,10 +561,7 @@
                     return false;
                 })
                 $menu.on('click', '#js-add-blockpage', function(e){
-                    $.post('?module=map&action=createBlockPage', { domain_id }, function(result) {
-                        var page_id = result.data.id;
-                        window.location.href = editor_page_url.replace('%s', page_id);
-                    });
+                    openBlockpageSettings({ is_new: 1 });
                 })
             }
     });
@@ -527,7 +570,7 @@
     {if $page_id && waRequest::get('scroll_to')}
         const $row = $table.find('.dr.selected');
         if ($row.length) {
-            const y = $row.offset().top - $drawer.find('.s-site-tabs').height() - $row.height();
+            const y = $row.offset().top - $drawer.find('.s-site-header').height() - $row.height();
             $drawer.find('.drawer-content').get(0).scrollTo(0, y);
         }
     {/if}
@@ -578,34 +621,24 @@
 
     const onPageDelete = (dialog, callback) => {
         dialog.$wrapper.off('page_deleted').on('page_deleted', function() {
-            dialog.close();
+            setTimeout(() => {
+                dialog.close();
+            }, 100);
             if (typeof callback === 'function') {
                 callback();
             }
         });
     };
 
-    function openBlockpageSettings(page_id, $tr) {
-        // show skeleton while loading content
-        /*const skele_dialog = $.waDialog({
-            header: page_settings_skeleton_header,
-            content: page_settings_skeleton_body
-        });*/
-        const url = site_app_url+'?module=map&action=pageSettingsDialog&page_id=' + page_id;
-
+    function openBlockpageSettings(params, $tr) {
+        params = { ...params, domain_id };
+        const url = site_app_url+'?module=map&action=pageSettingsDialog&' + new URLSearchParams(params);
         const dfd = $.Deferred();
 
         $.site.helper.preventDupeRequest(() => {
             return $.get(url, function(html) {
-                /*skele_dialog.close();
-                skele_dialog.$wrapper.remove();*/
-
                 const dialog = $.waDialog({
                     html: html
-                });
-
-                dialog.$wrapper.on('page_saved', function(event, page_data) {
-                    $.site.loadMap();
                 });
 
                 if ($tr) {
@@ -623,7 +656,7 @@
 
     $table.on('click', '.js-page-settings', function() {
         const $tr = $(this).closest('tr');
-        openBlockpageSettings($tr.data('page-id'), $tr);
+        openBlockpageSettings({ page_id: $tr.data('page-id') }, $tr);
         return false;
     });
 
@@ -644,7 +677,7 @@
     function htmlPageSettingsDialog (params, $item) {
         params = params || {};
         const full_params = new URLSearchParams({
-            domain_id: domain_id,
+            domain_id,
             ...params
         });
 
@@ -701,6 +734,24 @@
         return dfd.promise();
     }
 
+    function duplicateRoute(route_id) {
+        const dfd = $.Deferred();
+        $.post('?module=map&action=duplicate', {
+            type: 'route',
+            domain_id,
+            route_id
+        }, 'json').then(function(data) {
+            if (data && data.status == 'ok' && data.data && data.data.id) {
+                dfd.resolve(data.data.id);
+            } else {
+                dfd.reject();
+            }
+        }, function() {
+            dfd.reject();
+        });
+        return dfd.promise();
+    }
+
     // Show page settings dialog when user clicks on a cog
     $table.on('click', '.js-section-settings', function() {
         const $tr = $(this).closest('tr');
@@ -727,44 +778,22 @@
     $table.on('click', '.js-map-duplicate', function (e) {
         e.preventDefault();
 
+        const highlightCopiedRow = (id, app_id) => {
+            $(document).trigger('page_saved.map', [{
+                id,
+                app_id,
+                add: true
+            }]);
+        };
         const $item = $(this).closest('.dr');
+        const app_id = $item.data('app-id');
         if ($item.data('row-type') === 'route_app') {
-            // not implemented for sections yet
+            duplicateRoute($item.data('route-id')).then(id => highlightCopiedRow(id, app_id));
         } else if ($item.data('row-type') === 'htmlpage') {
             const app_id = $item.data('app-id') || 'site';
-            duplicateHtmlPage(app_id, $item.data('page-id')).then(function(new_page_id) {
-                htmlPageSettingsDialog({
-                    app_id: app_id,
-                    page_id: new_page_id,
-                    details: 1
-                }).then(function(dialog) {
-                    const oldOnClose = dialog.onClose;
-                    dialog.onClose = function() {
-                        if (oldOnClose) {
-                            dialog.onClose = oldOnClose;
-                            dialog.onClose(dialog);
-                        }
-                        $.site.loadMap();
-                    };
-                }, function() {
-                    $.site.loadMap();
-                });
-            });
+            duplicateHtmlPage(app_id, $item.data('page-id')).then(id => highlightCopiedRow(id, app_id));
         } else { // 'blockpage'
-            duplicateBlockPage($item.data('page-id')).then(function(new_page_id) {
-                openBlockpageSettings(new_page_id).then(function(dialog) {
-                    const oldOnClose = dialog.onClose;
-                    dialog.onClose = function() {
-                        if (oldOnClose) {
-                            dialog.onClose = oldOnClose;
-                            dialog.onClose(dialog);
-                        }
-                        $.site.loadMap();
-                    };
-                }, function() {
-                    $.site.loadMap();
-                });
-            });
+            duplicateBlockPage($item.data('page-id')).then(id => highlightCopiedRow(id, app_id));
         }
     });
 
@@ -807,15 +836,22 @@
             e.preventDefault();
 
             const $item = $(this).closest('.dr');
+            const row_type = $item.data('row-type');
+
             const params = {
                 app_id: $item.data('app-id') || 'site'
             };
-            if ($item.data('row-type') === 'route_app') {
+            if (row_type === 'route_app') {
                 params.route_id = $item.data('route-id') || '';
             } else {
-                params.parent_id = $item.data('page-id') || 0;
+                params.parent_id = $item.data('page-id') || '';
             }
-            htmlPageSettingsDialog(params);
+
+            if (row_type === 'blockpage') {
+                openBlockpageSettings({ ...params, is_new: 1 });
+            } else {
+                htmlPageSettingsDialog(params);
+            }
         });
 
         $(document).off('personal_account_state_changed.map').on('personal_account_state_changed.map', (_, active) => {
@@ -840,13 +876,20 @@
                     if (data.route_id !== undefined) {
                         const $row = $(`.site-map-tree-table tbody:first [data-route-id="${ data.route_id }"]`);
                         if ($row.length) {
-                            $row[0].scrollIntoView();
+                            $row[0].scrollIntoView({ block: 'center' });
                             $row.addClass('selected');
                         }
                     // for nested page
                     } else if (data.id) {
-                        const $row = $(`.site-map-tree-table tbody:first [data-app-id="${ data.app_id }"][data-page-id="${ data.id }"]`);
+                        let selector = `.site-map-tree-table tbody:first [data-page-id="${ data.id }"]`;
+                        if (data.app_id) {
+                            selector += `[data-app-id="${ data.app_id }"][data-html-page]`;
+                        } else {
+                            selector += '[data-row-type="blockpage"]';
+                        }
+                        const $row = $(selector);
                         if ($row.length) {
+                            $row[0].scrollIntoView({ block: 'center' });
                             $row.addClass('selected');
                         }
                     }
@@ -964,7 +1007,7 @@
             });
         });
 
-        // @see class .s-site-tabs
+        // @see class .s-site-header
         (function () {
             const $map_tab_link = $('.s-tabs li:first a');
             const scroll_wrapper = sidebar_mode ? $drawer.find('.drawer-content').get(0) : document;
@@ -973,7 +1016,7 @@
             let scroll_up = null;
             let scroll_down = null;
 
-            $('.map-page-dropdown').css({ top: $('.s-site-tabs').height() - $('.map-page-dropdown').height() - 1 });
+            $('.map-page-dropdown').css({ top: $('.s-site-header').height() - $('.map-page-dropdown').height() - 1 });
 
             const showToggleDropdownInTab = function() {
                 let current_position = sidebar_mode ? scroll_wrapper.scrollTop : document.documentElement.scrollTop;
@@ -1144,15 +1187,18 @@
                 cursorAt: { left: 24 },
                 helper: function() {
                     const $self = $(this);
-                    const $new_tr = $('<tr/>').append('<table class="s-map-draggable-list" />');
+                    const $new_tr = $('<tr/>').append('<table class="s-map-draggable-list"/>');
+                    if ($self.hasClass('url-overlap')) {
+                        setTimeout(() => {
+                            showAlert('[`This page cannot be moved because it is the main page of another section. Either move the whole section, and the page will move, too, or change the address and disable the main page setting.`]');
+                        });
+                        return $new_tr;
+                    }
+
                     const $new_table = $new_tr.find('table').css({ 'min-width': '550px', 'width': '70%' });
-
-                    $self.prev().addClass('disable-drop');
-                    $new_table.append(calcPaddingLeft($self.addClass('disable-drop').clone()));
-
-                    const addChildrens = ($self, offset = 1) => {
-                        const route_id = $self.data('route-id');
-                        const page_id = $self.data('page-id');
+                    const addChildrens = ($row, offset = 1) => {
+                        const route_id = $row.data('route-id');
+                        const page_id = $row.data('page-id');
                         let needs_children_selector = '';
 
                         if (route_id !== undefined) {
@@ -1166,12 +1212,12 @@
 
                         // find pages
                         let selector = `${table_selector}${needs_children_selector}`;
-                        if ($self.data('row-type') === 'blockpage') {
+                        if ($row.data('row-type') === 'blockpage') {
                             selector += '[data-row-type="blockpage"]';
                         } else {
                             selector += '[data-html-page]';
                         }
-                        const app_id = $self.data('app-id');
+                        const app_id = $row.data('app-id');
                         if (app_id) {
                             selector += `[data-app-id="${app_id}"]`;
                         }
@@ -1182,7 +1228,21 @@
                             addChildrens($child, offset + 1);
                         });
                     };
-                    addChildrens($self);
+                    const addRows = () => {
+                        $self.prev().addClass('disable-drop');
+                        $new_table.append(calcPaddingLeft($self.addClass('disable-drop').clone()));
+                        addChildrens($self);
+                    };
+                    const shouldAddRowsOverAnother = () => {
+                        const $over_another_row = shouldGetOverAnotherRow($self);
+                        if ($over_another_row.length) {
+                            $new_table.append(calcPaddingLeft($over_another_row.addClass('disable-drop').clone()));
+                            addChildrens($over_another_row);
+                        }
+                    };
+
+                    shouldAddRowsOverAnother();
+                    addRows();
 
                     $new_tr.find('.dr').addClass('ui-dragging');
 
@@ -1193,6 +1253,9 @@
                 start: function (_, ui) {
                     is_above_newposition = false;
                     const $dr = $(this);
+                    if ($dr.hasClass('url-overlap')) {
+                        return false;
+                    }
                     const row_type = $dr.data('row-type');
                     const app_id = $dr.data('app-id');
                     const is_root = $dr.data('root') !== undefined;
@@ -1293,9 +1356,10 @@
 
                         const self = $(this);
                         const self_offset = self.data('offset') || 0;
-                        const before_filter_selector = self_offset ? `[data-offset="${self_offset}"]` : '';
-                        const before = self.nextUntil(before_filter_selector ? '[data-root]' : '').filter(`.dr:not(.disable-drop)${before_filter_selector}:first`);
 
+                        const before_filter_selector = self_offset ? `[data-offset="${self_offset}"]` : '';
+                        const before = self.nextUntil(before_filter_selector ? '[data-root]' : '')
+                            .filter(`.dr:not(.disable-drop)[data-row-type="${dr_row_type}"]${before_filter_selector}:first`);
                         if (before.length && !before.hasClass('helper')) {
                             before_id = before.data('page-id');
                         }
@@ -1308,14 +1372,12 @@
 
                         // update parent-id only children.
                         let new_parent_id = dr.data('parent-id');
-                        if (dr_row_type === 'blockpage' || dr.data('html-page')) {
-                            if (self_offset > 1) {
-                                new_parent_id = self.prevAll(`.dr[data-offset="${self_offset-1}"]:first`).data('page-id');
-                            } else if (dr_row_type === 'blockpage') {
-                                new_parent_id = self.prevAll(`.dr[data-row-type="blockpage"][data-root]:first`).data('page-id');
-                            } else {
-                                new_parent_id = '';
-                            }
+                        if (dr_row_type === 'blockpage' && self_offset > 0) {
+                            new_parent_id = self.prevAll(`.dr[data-row-type="blockpage"][data-root]:first`).data('page-id');
+                        } else if (dr.data('html-page') && self_offset > 1) {
+                            new_parent_id = self.prevAll(`.dr[data-offset="${self_offset-1}"]:first`).data('page-id');
+                        } else {
+                            new_parent_id = '';
                         }
 
                         const self_route_id = self.prevAll(`.dr[data-row-type="route_app"][data-route-id]:first`).data('route-id');
@@ -1338,9 +1400,11 @@
                         ];
                         if (dr_row_type === 'route_app') {
                             const data = {
-                                route_id: dr.data('route-id') || '',
-                                before_route_id: before.data('route-id') || 0
+                                route_id: dr.data('route-id') || ''
                             };
+                            if (before.length) {
+                                data.before_route_id = before.data('route-id') || '';
+                            }
                             routeMove(data, ...callbacks_args);
                         } else {
                             const route = self.prevAll(`.dr[data-app-id="${self.data('app-id')}"][data-root]:first`).data('route') || '';
@@ -1417,9 +1481,10 @@
                             return false;
                         }
 
+                        const correct_parent_id = parent_type === 'route_app' ? '' : parent_id;
                         if (checkDupeUrl(dr, {
                             new_offset: parent_offset + 1,
-                            new_parent_id: parent_type === 'route_app' ? '' : parent_id,
+                            new_parent_id: correct_parent_id,
                             new_route_id: parent_type === 'route_app' ? self.data('route-id') : self.data('parent-route-id')
                         })) {
                             return false;
@@ -1430,7 +1495,7 @@
                         const data = {
                             id,
                             route,
-                            parent_id,
+                            parent_id: correct_parent_id,
                             before_id: 0,
                             app_id: dr.data('row-type') === 'blockpage' ? 'site_blockpage' : dr.data('app-id'),
                             page_ids: getDraggablePageIds(ui)
@@ -1456,7 +1521,7 @@
             );
 
             if ($dupe.length) {
-                alert('[`Moving cannot be completed: pages with the same address cannot be placed at the same level.`]');
+                showAlert('[`Moving cannot be completed: pages with the same addresses cannot be located at the same level.`]');
                 return true;
             }
 
@@ -1474,53 +1539,71 @@
         }
         function finishDroppable (ui, place_to_end = false) {
             const $drag_newposition = place_to_end ? $(this).removeClass('drag-newparent') : $(this);
-            const dr = ui.draggable;
+            const $need_dr = ui.draggable;
             const offset = ($drag_newposition.data('offset') || 0) + (place_to_end ? 1 : 0);
-            const prev_offset = dr.data('offset') || 0;
-            const sep  = dr.prev();
 
-            updateOffset(dr, offset);
-            updateOffset(sep, offset);
-            if (place_to_end) {
-                let $last_sibling = $drag_newposition;
-                let $last = $();
-                let page_id = $last_sibling.data('page-id');
-                const dr_page_id = dr.data('page-id');
-                let parent_selector = $last_sibling.data('row-type') === 'route_app'
-                    ? `[data-parent-route-id="${$last_sibling.data('route-id')}"]`
-                    : `[data-parent-id="${page_id}"]`;
-                let part_selector = $last_sibling.data('row-type') === 'blockpage' ? '[data-row-type="blockpage"]' : `[data-app-id="${$last_sibling.data('app-id')}"]`;
-                while (($last = $last_sibling.nextAll(`${parent_selector}:not([data-page-id="${dr_page_id}"])${part_selector}:last`)).length) {
-                    $last_sibling = $last;
-                    parent_selector = `[data-parent-id="${$last.data('page-id')}"]`;
+            shouldGetOverAnotherRow($need_dr).add($need_dr).each(function () {
+                const $dr = $(this);
+                const $sep  = $dr.prev();
+                const prev_offset = $dr.data('offset') || 0;
+
+                updateOffset($dr, offset);
+                updateOffset($sep, offset);
+                if (place_to_end) {
+                    let $last_sibling = $drag_newposition;
+                    let $last = $();
+                    let page_id = $last_sibling.data('page-id');
+                    const dr_page_id = $dr.data('page-id');
+                    let parent_selector = $last_sibling.data('row-type') === 'route_app'
+                        ? `[data-parent-route-id="${$last_sibling.data('route-id')}"]`
+                        : `[data-parent-id="${page_id}"]`;
+                    let part_selector = $last_sibling.data('row-type') === 'blockpage' ? '[data-row-type="blockpage"]' : `[data-app-id="${$last_sibling.data('app-id')}"]`;
+                    while (($last = $last_sibling.nextAll(`${parent_selector}:not([data-page-id="${dr_page_id}"])${part_selector}:last`)).length) {
+                        $last_sibling = $last;
+                        parent_selector = `[data-parent-id="${$last.data('page-id')}"]`;
+                    }
+                    $sep.insertAfter($last_sibling);
+                    $dr.insertAfter($sep);
+                } else {
+                    $sep.insertBefore($drag_newposition);
+                    $dr.insertBefore($drag_newposition);
                 }
-                sep.insertAfter($last_sibling);
-                dr.insertAfter(sep);
-            } else {
-                sep.insertAfter($drag_newposition);
-                dr.insertAfter($drag_newposition);
-            }
 
-            if (ui.helper.find('tr').length > 1) {
-                let $prev_row = dr;
-                const $list = $('.site-map-tree-table tbody:first');
-                ui.helper.find('tr:not(:first)').each(function () {
-                    const $fake_child = $(this);
-                    const page_id = $fake_child.data('page-id');
-                    const app_id = $fake_child.data('app-id');
+                let $children = ui.helper.find('tr');
+                if ($children.length > 1) {
+                    let $prev_row = $dr;
+                    const $list = $('.site-map-tree-table tbody:first');
+                    $children.first().nextUntil('[data-root]').each(function () {
+                        const $fake_child = $(this);
+                        const page_id = $fake_child.data('page-id');
+                        const app_id = $fake_child.data('app-id');
 
-                    let part_selector = $fake_child.data('row-type') === 'blockpage' ? '[data-row-type="blockpage"]' : `[data-app-id="${app_id}"]`;
-                    const $child = $list.find(`${part_selector}[data-page-id="${page_id}"]:first`);
-                    const $child_sep = $child.prev();
-                    const new_offset = offset + ($child.data('offset') - prev_offset);
+                        let part_selector = $fake_child.data('row-type') === 'blockpage' ? '[data-row-type="blockpage"]' : `[data-app-id="${app_id}"]`;
+                        const $child = $list.find(`${part_selector}[data-page-id="${page_id}"]:first`);
+                        const $child_sep = $child.prev();
+                        const new_offset = offset + ($child.data('offset') - prev_offset);
 
-                    updateOffset($child, new_offset);
-                    updateOffset($child_sep, new_offset);
-                    $child_sep.insertAfter($prev_row);
-                    $child.insertAfter($child_sep);
-                    $prev_row = $child;
-                });
-            }
+                        updateOffset($child, new_offset);
+                        updateOffset($child_sep, new_offset);
+
+                        $child_sep.insertAfter($prev_row);
+                        $child.insertAfter($child_sep);
+
+                        $prev_row = $child;
+                        $fake_child.remove();
+                    });
+                    $children.first().remove();
+                }
+
+            });
+        }
+
+        function shouldGetOverAnotherRow($dr) {
+            const url = $dr.find('[data-url]').data('url');
+            const $over_another_row = $dr.prevAll('.dr.url-overlap.show-over-another-section:first')
+                .find(`a[data-url="${url}"]`).closest('.dr');
+
+            return $over_another_row;
         }
 
         function getDraggablePageIds (ui) {
@@ -1579,10 +1662,23 @@
                     success();
                     $.site.loadMap();
                 } else {
+                    if (r?.errors?.map) {
+                        let msgs = r.errors.map(function(el) {
+                            return el?.description || '';
+                        });
+                        showAlert(msgs.join("\n"));
+                    }
                     $('#wa-app').trigger('wa_load_fail');
                     error();
                 }
             }, "json");
+        }
+
+        function showAlert(text) {
+            $.waDialog.alert({
+                text,
+                'button_title': '[`Close`]'
+            });
         }
         {/literal}
 })();

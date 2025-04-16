@@ -1,38 +1,39 @@
-{*
- * This goes inside #js-add-element-wrapper
- * see JS: SiteEditor.openAddElementsList()
- *}
- 
-    <ul id="js-list-of-elements" class="menu" data-place-param='{json_encode($insert_place_params)}'>
-        {foreach $library as $b}
-            {if !empty($b.image)}
-                {* !!! TODO $b.image is a 400x180 image *}
-            {/if}
-            <li>
-                <a href="javascript:void(0)" data-type-id="{$b.id|escape}">
-                    {if !empty($b.icon)}<span class="icon"><i class="fas fa-{$b.icon}"></i></span>{/if}
+{function render_item b=[]}
+    <li>
+        {if !empty($b['blocks'])}
+            <div class="item dropdown extra-dropdown">
+                <div class="dropdown-toggle">
+                    {if !empty($b.app_icon)}
+                        <img src="{$wa_url}{$b.app_icon}" class="app_icon icon" alt="">
+                    {elseif !empty($b.icon)}
+                        <span class="icon"><i class="fas fa-{$b.icon}"></i></span>
+                    {/if}
                     {$b.title|escape}
-                </a>
-            </li>
-        {/foreach}
-    </ul>
+                    <span class="icon icon-spec"><i class="fas fa-angle-right"></i></span>
+                </div>
+                <div class="dropdown-body">
+                    <ul class="menu">
+                        {foreach $b['blocks'] as $b2}
+                            {render_item b=$b2}
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+        {else}
+            <a href="javascript:void(0)" data-type-id="{$b.id|escape}">
+                {if !empty($b.app_icon)}
+                    <img src="{$wa_url}{$b.app_icon}" class="app_icon icon" alt="">
+                {elseif !empty($b.icon)}
+                    <span class="icon"><i class="fas fa-{$b.icon}"></i></span>
+                {/if}
+                {$b.title|escape}
+            </a>
+        {/if}
+    </li>
+{/function}
 
-<script>/*(function() { "use strict";
-
-    const insert_place_params = {json_encode($insert_place_params)};
-
-    var $list_of_elements = $('#js-list-of-elements');
-    var $dialog_content = $list_of_elements.closest('.dropdown');
-    //var dialog = $list_of_elements.closest('.dialog').data('dialog');
-    
-    $list_of_elements.on('click', '[data-type-id]', function() {
-        const type_id = $(this).data('type-id');
-        console.log('list_of_elements click', type_id, insert_place_params);
-        $.post('?module=editor&action=addBlock', Object.assign({
-            type_id: type_id
-        }, insert_place_params), function(html) {
-            $dialog_content.trigger('site_block_added', [html]);
-        });
-    });
-
-})();*/</script>
+<ul class="menu js-list-of-elements">
+    {foreach $library as $b}
+        {render_item b=$b}
+    {/foreach}
+</ul>

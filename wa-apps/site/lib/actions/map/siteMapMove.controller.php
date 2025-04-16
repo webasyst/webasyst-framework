@@ -111,31 +111,103 @@ class siteMapMoveController extends waJsonController
         $all_routes = file_exists($path) ? include($path) : array();
 
         if (isset($all_routes[$domain][$route_id])) {
-            $new_domain_routes = [];
+
             $route_to_move = $all_routes[$domain][$route_id];
+            $pattern = str_replace(array(' ', '.', '(', '!'), array('\s', '\.', '(?:', '\!'), ifset($route_to_move, 'url', ''));
+            $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
+
+            // Routes attached to the $route_id we move should move with it if new position shadows them.
+            // List all the attached routes.
+            $route_rows_over_another = [];
+            foreach($all_routes[$domain] as $id => $route) {
+                if ($id == $route_id) {
+                    break;
+                }
+                if (isset($route['url']) && ifset($route, 'app', '') === 'site' && false === strpos($route['url'], '<') && rtrim($route['url'], '*').'*' !== $route['url']) {
+                    if (preg_match('!^'.$pattern.'$!ui', $route['url'], $match)) {
+                        $route_rows_over_another[$id] = $route;
+                    }
+                }
+            }
+            $route_rows_over_another_copy = $route_rows_over_another;
+
+            $new_domain_routes = [];
             foreach($all_routes[$domain] as $id => $r) {
                 $id = (string) $id;
                 if ($id === $route_id) {
                     continue;
                 }
                 $new_domain_routes[$id] = $r;
-                if ($route_to_move !== null && $id === $before_route_id) {
-                    $new_domain_routes[$route_id] = $route_to_move;
-                    $route_to_move = null;
+                if ($route_to_move !== null) {
+                    unset($route_rows_over_another[$id]);
+                    if ($id === $before_route_id) {
+                        $new_domain_routes += $route_rows_over_another;
+                        $new_domain_routes[$route_id] = $route_to_move;
+                        $route_to_move = null;
+                    }
                 }
             }
             if ($route_to_move !== null) {
                 // last one on site map page = first one in routing file
-                $new_domain_routes = [$route_id => $route_to_move] + $new_domain_routes;
+                $new_domain_routes = $route_rows_over_another_copy + [$route_id => $route_to_move] + $new_domain_routes;
             }
 
             if (array_keys($all_routes[$domain]) != array_keys($new_domain_routes)) {
-                $all_routes[$domain] = $new_domain_routes;
-                waUtils::varExportToFile($all_routes, $path);
-                (new waVarExportCache('problem_domains', 3600, 'site/settings/'))->delete();
+                $initial_shadowed_routes = $this->getShadowedRoutes($all_routes, $route_id);
+                $new_shadowed_routes = $this->getShadowedRoutes($new_domain_routes, $route_id);
+                $added_shadowed_routes = array_diff_key($new_shadowed_routes, $initial_shadowed_routes);
+                if ($added_shadowed_routes) {
+                    $this->errors[] = [
+                        'error' => 'position_not_allowed',
+                        'description' => _w('Such arrangement is not allowed. Probably, the section will stop working because the address of the section being dragged partially matches another address.'),
+                        'shadowed_routes' => array_values($new_shadowed_routes),
+                        'added_shadowed_routes' => array_values($added_shadowed_routes),
+                    ];
+                    return;
+                } else {
+                    $all_routes[$domain] = $new_domain_routes;
+                    waUtils::varExportToFile($all_routes, $path);
+                    (new waVarExportCache('problem_domains', 3600, 'site/settings/'))->delete();
+                }
             }
         }
 
         $this->response['routing_errors'] = siteHelper::getRoutingErrorsInfo();
+    }
+
+    protected function getShadowedRoutes($all_routes, $route_id)
+    {
+        if (empty($all_routes[$route_id])) {
+            return [];
+        }
+        $result = [];
+        $before_route = true;
+        foreach ($all_routes as $r_id => $route) {
+            if ($r_id == $route_id) {
+                $before_route = false;
+            } else if ($before_route) {
+                if (!isset($result[$route_id]) && $this->isShadowedBy($all_routes[$route_id], $route)) {
+                    $result[$route_id] = $route_id;
+                }
+            } else {
+                if ($this->isShadowedBy($route, $all_routes[$route_id])) {
+                    $result[$r_id] = $route_id;
+                }
+            }
+        }
+        return $result;
+    }
+
+    protected function isShadowedBy($route, $by_route)
+    {
+        $route_url = ifset($route, 'url', '');
+        $by_route_url = ifset($by_route, 'url', '');
+        if (!$by_route_url || substr($by_route_url, -1) !== '*') {
+            return $route_url === $by_route_url;
+        }
+
+        $route_url = rtrim($route_url, '/*');
+        $by_route_url = rtrim($by_route_url, '/*');
+        return substr($route_url, 0, strlen($by_route_url)) === $by_route_url;
     }
 }

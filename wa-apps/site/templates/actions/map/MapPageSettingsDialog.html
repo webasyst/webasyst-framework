@@ -4,31 +4,62 @@
  * on Editor page.
  *}
 
- <input type="text" class="bold long large" name="info[url]" value="{$page.url|escape}">
- {$is_broken_route_url = !empty($page.is_broken_route_url) && $page.is_broken_route_url}
- {capture assign="_field_url"}
+{$is_broken_route_url = !empty($page.is_broken_route_url) && $page.is_broken_route_url}
+{$preview_hash_param = (ifset($page, 'status', '') === 'final_unpublished') ? "?preview_hash={$preview_hash}" : ""}
+{$is_exists = !empty($page.id)}
+
+{capture assign="_field_url"}
 <div class="field field-url">
     <div class="name bold for-input">URL</div>
     <div class="value">
         <!-- existing route -->
         <div class="s-route-block flexbox wrap middle space-4" id="s-route-where">
-            <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
-            
+            {$full_url = $page.full_url|default:''|rtrim:$page.url|rtrim:'/'}
+            <span class="break-word custom-py-6">http://{$domain_decoded}/{if $full_url}{$full_url}/{/if}</span>
+
             {if empty($is_main_page)}
                 <input type="text" name="info[url]" value="{$page.url|escape}" class="js-url small full-width" {if $is_broken_route_url}disabled{/if}>
                 <span class="custom-mr-4">/</span>
             {else}
                 <input type="hidden" name="info[url]" value="{$page.url|escape}" class="js-url small full-width">
             {/if}
-            <a href="//{$domain_decoded}/{$page.url|replace:'*':''|escape}" data-domain="{$domain_decoded}" target="_blank" class="button nobutton small circle"><i class="fas fa-external-link-alt"></i><i class="fas fa-spinner fa-spin text-gray" style="display: none;"></i></a>
+            {if $is_exists}
+                <a href="//{$domain_decoded}/{if $page.full_url}{$page.full_url|rtrim:'/'|escape}/{/if}{$preview_hash_param}" data-domain="{$domain_decoded}" target="_blank" class="button nobutton small circle">
+                    <i class="fas fa-external-link-alt"></i><i class="fas fa-spinner fa-spin text-gray" style="display: none;"></i>
+                </a>
+            {/if}
         </div>
+
+        {if empty($is_main_page) || !empty($has_url_overlap)}
+        <div class="custom-my-8">
+            <div class="switch-with-text">
+                <span class="switch smallest" id="switch-url-overlap-section">
+                    <input type="checkbox"
+                        id="switch-url-overlap-input"
+                        name="url_overlap"
+                        value="1"
+                        {if !empty($has_url_overlap)} checked{/if}
+                    >
+                </span>
+                <label class="small" for="switch-url-overlap-input">
+                    <span class="normal">[`Main section page`]</span>
+                    <span data-wa-tooltip-content="[`When enabled, this page becomes the main page of a section with the same URL, and its subpages become unavailable. All other section pages remain available at their addresses.`]">
+                        <i class="fas fa-question-circle text-light-gray"></i>
+                    </span>
+                </label>
+            </div>
+        </div>
+        {/if}
+
         <div class="custom-mt-8">
-            {if empty($is_main_page) && !$page.parent_id}
-            <button type="button" class="js-set-main-page button nowrap rounded smaller outlined gray"><i class="fas fa-home custom-mr-4"></i>[`Make the site’s homepage`]</button>
+            {if $is_exists && empty($is_main_page) && !$page.parent_id}
+            <button type="button" class="js-set-main-page button nowrap rounded smaller outlined gray"{if $page.status == 'final_unpublished'} disabled{/if}>
+                <i class="fas fa-home custom-mr-4"></i>[`Make the site’s homepage`]
+            </button>
             {/if}
             <button type="button" class="js-active-main-page button nowrap rounded smaller green{if empty($is_main_page)} hidden{/if}" disabled><i class="fas fa-home custom-mr-4"></i>[`Homepage`]<i class="fas fa-check custom-ml-4"></i></button>
         </div>
- 
+
     </div>
 </div>
 {/capture}
@@ -48,16 +79,20 @@
             {*var_dump($og_params)*}
             <form>
             <div class="fields">
-                <input type="hidden" name="id" value="{$page.id|escape}">
-                <div class="field">
-                    <div class="value js-place-for-errors">
-                    </div>
-                </div>
+                {if $is_exists}
+                    <input type="hidden" name="id" value="{$page.id|escape}">
+                {/if}
+                {if !empty($page.is_new)}
+                    <input type="hidden" name="is_new" value="1">
+                {/if}
+                {if isset($page.parent_id)}
+                    <input type="hidden" name="info[parent_id]" value="{$page.parent_id|escape}">
+                {/if}
                 <div class="field">
                     <div class="name for-input">[`Page name`]</div>
                     <div class="value">
                         <div class="flexbox middle">
-                            <input type="text" class="bold width-100 large" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
+                            <input type="text" class="wide bold large" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
                             {if !empty($page.id)}
                                 <span class="nowrap">
                                     id: <strong>{$page.id}</strong>
@@ -68,9 +103,54 @@
                     </div>
 
                 </div>
+                {if $is_exists}
+                <div class="field">
+                    <div class="name">[`Publication`]</div>
+                    <div class="field">
+                        <div class="value">
+                            <div class="toggle rounded" id="draft-toggle">
+                                <span data-status="unpublish"{if $page.status == 'final_unpublished'} class="selected"{/if}><i class="fas fa-eye-slash text-gray custom-mr-4"></i>[s`Draft`]</span>
+                                <span data-status="publish"{if $page.status != 'final_unpublished'} class="selected"{/if}><i class="fas fa-check-circle text-green custom-mr-4"></i>[s`Published`]</span>
+                            </div>
+                            <input type="hidden" name="init_status" value="{if $page.status == 'final_unpublished'}unpublish{else}publish{/if}">
+                            <script>
+                                ( function($) {
+                                    const $draft_toggle = $("#draft-toggle"),
+                                        init_status = $('input[name="init_status"]');
+
+                                    setTimeout(() => {
+                                        $draft_toggle.waToggle({
+                                            change(event, target, toggle) {
+                                                const status = toggle.$active.data('status');
+                                                if (status !== init_status) {
+                                                    if (status === 'unpublish') {
+                                                        $.waDialog.confirm({
+                                                            title: '[`Page unpublishing`]',
+                                                            text: '[`After the unpublishing, only the draft will remain.`]'
+                                                                + '<br><br>'
+                                                                + '[`The published version will be lost forever after saving the page settings.`]',
+                                                            success_button_title: '[`Delete published version`]',
+                                                            success_button_class: 'danger',
+                                                            cancel_button_title: '[`Do not unpublish`]',
+                                                            cancel_button_class: 'light-gray',
+                                                            onCancel() {
+                                                                toggle.$before.click();
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    })
+                                })(jQuery);
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                {/if}
 
                 {$_field_url}
-                
+
                 {$themes = siteHelper::getThemes('site', true)}
                 {if $themes}
                     <div class="field">
@@ -85,13 +165,13 @@
                                     </div>
                                     <ul class="menu custom-my-0">
                                         {foreach $themes as $theme_id => $theme}
-                                            <li class="{($page['theme']|default:'default' == $theme_id ) ? 'selected' : ''}">
-                                                <a href="javascript:void(0);" data-id="{$theme_id}">
+                                            <li class="{($page['theme']|default:'default' == $theme_id ) ? 'selected' : ''}" data-id="{$theme_id}">
+                                                <div class="item">
                                                     <span>{$theme|escape}</span>
                                                     {if $page['theme']|default:'default' == $theme_id}
                                                         <span class="count"><i class="fas fa-check text-light-gray"></i></span>
                                                     {/if}
-                                                </a>
+                                                </div>
                                             </li>
                                         {/foreach}
                                     </ul>
@@ -126,7 +206,7 @@
                         [s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span>
                     </div>
                     <div class="value">
-                        <input type="text" name="info[title]" value="{if !empty($page)}{$page.title|escape}{/if}" class="bold width-100" />
+                        <input type="text" name="info[title]" value="{if !empty($page)}{$page.title|default:''|escape}{/if}" class="bold width-100" />
                     </div>
                 </div>
                 <div class="field">
@@ -144,7 +224,9 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name for-switch">[s`Social sharing`] <br><span class="hint">Open Graph Meta Tags</span></div>
+                    <div class="name for-switch">[s`Social sharing`]
+                        <br>
+                        <span class="hint">[`Open Graph Meta Tags`]</span></div>
                     <div class="value">
                         <div class="switch-with-text ">
                         <span class="switch smaller" id="og-switch">
@@ -204,36 +286,46 @@
                             {foreach from=$page.params item=v key=k}{$k}={$v|escape}{"\n"}{/foreach}
                             {/if}
                         {/strip}</textarea>
-                        <p class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.params.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a> <i class="fas fa-external-link-alt"></i></p>
+                        <p class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a>&nbsp;<i class="fas fa-external-link-alt"></i></p>
                     </div>
                 </div>
-                
+
             </div>
         </form>
         </div>
-        <footer class="dialog-footer flexbox middle full-width">
-            <div class="wide">
-                <button class="js-save button">[`Save`]</button>
-                <button class="js-close-dialog button light-gray">[`Cancel`]</button>
+        <footer class="dialog-footer flexbox space-8">
+            <div class="wide flexbox middle space-8 wrap">
+                {if $is_exists}
+                    <button class="js-save button" type="button">[`Save`]</button>
+                {else}
+                    <button class="js-save button" type="button">[`Add`]</button>
+                    <button class="js-save-and-edit button dark-gray" type="button">[`Add & edit`]</button>
+                {/if}
+                <button class="js-close-dialog button light-gray" type="button">[`Cancel`]</button>
+                <div class="js-place-for-errors state-caution-hint"></div>
             </div>
-            <div>
-                <a href="javascript:void(0);" class="js-delete text-red"><i class="fas fa-trash-alt custom-mr-4"></i>[`Delete page`]</a>
-            </div>
+            {if $is_exists}
+                <a href="javascript:void(0);" class="js-delete text-red nowrap custom-mt-4"><i class="fas fa-trash-alt custom-mr-4"></i>[`Delete page`]</a>
+            {/if}
         </footer>
     </div>
 </div>
-
 <script>(function() { "use strict";
 
     const site_app_url = {$wa_app_url|json_encode};
-    const save_url = site_app_url + '?module=editor&action=pageSettingsSave';
+    const domain_id = '{if !empty($page.domain_id)}{$page.domain_id}{else}{$domain_id}{/if}';
+    const save_url = site_app_url + '?module=editor&action=pageSettingsSave&domain_id='+domain_id;
     const delete_url = site_app_url + '?module=editor&action=pageDelete';
     const initial_page_data = {$page|json_encode};
+    const editor_page_url = {$wa_app_url|json_encode} + 'editor/page/%s/?domain_id='+domain_id;
+    const preview_hash_param = {$preview_hash_param|json_encode};
+    const page_id = {$page.id|default:0|json_encode};
 
     const $wrapper = $('#js-page-settings-dialog');
     const $form = $wrapper.find('form');
-    const $theme_val = $form.find('[name="info[theme]"]').val();
+    const theme_val = $form.find('[name="info[theme]"]').val();
     const $save_button = $wrapper.find('.js-save');
+    const $save_and_edit_button = $wrapper.find('.js-save-and-edit');
     const wa_loading = $.waLoading();
     const $place_for_errors = $wrapper.find('.js-place-for-errors');
     var dialog;
@@ -250,9 +342,15 @@
     });
 
     initThemeSelect();
+    initSwitchUrlOverlap();
+
     // Save to server when user clicks Save button
     $save_button.on('click', function() {
         saveHandler();
+        return false;
+    });
+    $save_and_edit_button.on('click', function() {
+        saveHandler(false, true);
         return false;
     });
     $form.submit(function() {
@@ -268,6 +366,7 @@
     });
 
     // Delete page when user clicks on Delete button
+    {if $is_exists}
     $wrapper.on('click', '.js-delete', function(e) {
         e.preventDefault();
         const deleteHandler = (d, is_multiple_delete) => {
@@ -287,7 +386,7 @@
                 } else if ($('.site-map').length) {
                     $wrapper.trigger('page_deleted');
                 } else {
-                    location.href = '{$wa_app_url}map/overview/?domain_id={if !empty($page.domain_id)}{$page.domain_id}{else}{$domain_id}{/if}';
+                    location.href = '{$wa_app_url}map/overview/?domain_id=' + domain_id;
                 }
             }, "json").always(function() {
                 $loading.remove();
@@ -303,48 +402,73 @@
             onSuccess: deleteHandler
         });
     });
+    {/if}
 
-
-    function saveHandler(is_oninput = false) {
+    function saveHandler(is_oninput = false, is_add_and_open = false) {
         wa_loading.show();
         wa_loading.animate(4000, 99, false);
-        
-        $form.find('.state-error').removeClass('state-error');
-        $form.find('.state-error-hint').remove();
-        const $theme_changed = $form.find('[name="info[theme]"]').val() !== $theme_val;
-        $place_for_errors.empty();
-        console.log($form.serializeArray());
+        clearErrors();
+
+        const theme_changed = $form.find('[name="info[theme]"]').val() !== theme_val;
+
         $.post(save_url, $form.serialize(), 'json').then(function(r) {
-            if (r.status == 'ok') {
-                r.data.theme_changed = $theme_changed;
-                if (!$theme_changed) wa_loading.done();
-                if (!is_oninput) {
-                    $wrapper.trigger('page_saved', [r.data]);
+            if (r.status === 'ok') {
+                r.data.theme_changed = theme_changed;
+                wa_loading.done();
+
+                if (r.data.url) {
+                    $form.find('[name="url"]').val(r.data.url);
+                }
+
+                if (is_add_and_open) {
+                    window.location.href = editor_page_url.replace('%s', r.data.id);
+                    setTimeout(() => $.site.loadMap(), 100);
                     $wrapper.data('dialog').close();
+                    return;
+                }
+
+                if (!is_oninput) {
+                    shouldSaveStatusPublication().then(() => {
+                        $wrapper.trigger('page_saved', [r.data]);
+                        $wrapper.data('dialog').close();
+                    }).fail(r => {
+                        if (Array.isArray(r.errors) && r.errors[0].description) {
+                            $place_for_errors.text(r.errors[0].description);
+                        }
+                    });
                 }
                 if (is_oninput) {
-                    $(document).trigger('after_save_page_settings');
+                    $(document).trigger('after_save_page_settings', [r.data]);
                 }
                 return;
             }
+            wa_loading.abort();
 
             if (is_oninput) {
-                $(document).trigger('after_save_page_settings');
+                $(document).trigger('after_save_page_settings', [r.data]);
             }
-            r.errors.forEach(function(e) {
-                var $field = null;
-                if (e.field) {
-                    $field = $form.find('[name="'+e.field+'"]');
-                }
 
-                const $msg = $('<div class="state-error-hint"></div>').text(e.description);
+            if (Array.isArray(r.errors)) {
+                r.errors.forEach(function(err) {
+                    let $field = null;
+                    if (err.field) {
+                        $field = $form.find('[name="'+err.field+'"]');
+                    }
 
-                if($field && $field.length) {
-                    $field.addClass('state-error').after($msg);
-                } else {
-                    $place_for_errors.append($msg);
-                }
-            });
+                    const msg = err.description || (typeof err === 'string' ? err : '');
+                    if($field && $field.length) {
+                        $field.addClass('state-caution');
+                        if (err.bottom) {
+                            $place_for_errors.text(msg);
+                        } else {
+                            const $msg = $('<div class="state-caution-hint"></div>').text(msg);
+                            $field.after($msg);
+                        }
+                    } else {
+                        $place_for_errors.text(msg);
+                    }
+                });
+            }
 
         }, function() {
             console.log('Error saving page settings', arguments);
@@ -352,10 +476,45 @@
         });
     }
 
+    function shouldSaveStatusPublication() {
+        const dfd = $.Deferred();
+        const init_status = $('input[name="init_status"]').val();
+        const new_status = $('#draft-toggle [data-status].selected').data('status');
+        if (!page_id || init_status === new_status) {
+            return dfd.resolve();
+        }
+
+        const payload = { id: page_id, operation: new_status };
+        const $editor_wrapper = $("#js-wa-header-publish");
+        $editor_wrapper.addClass('is-publishing');
+        $.post('?module=editor&action=pagePublish', payload, function(r) {
+            if (r.status === 'ok' && r.data.page_id) {
+                const $left_drawer = $('#js-left-drawer:visible');
+                if (($editor_wrapper.length && !$left_drawer.length) || $left_drawer.find('.js-current[data-page-id="'+page_id+'"]').length) {
+                    if (new_status === 'unpublish') {
+                        const url = location.href.replace(/\/editor\/page\/\d+\//, '/editor/page/'+r.data.page_id+'/');
+                        window.location.href = url;
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    dfd.resolve();
+                }
+            } else {
+                dfd.reject(r)
+                console.error('Unable to cancel publication', r);
+            }
+        }).always(function() {
+            $editor_wrapper.removeClass('is-publishing');
+        });
+
+        return dfd.promise();
+    }
+
     function initThemeSelect() {
         $(".js-theme-select").waDropdown({
             hover: false,
-            items: ".menu > li > a",
+            items: ".menu > li",
             open: function(dropdown_instance) {
                 const $dropdown_body = dropdown_instance.$wrapper.find('.dropdown-body');
                 const height = $dropdown_body.height();
@@ -363,23 +522,33 @@
                 if (scrollHeight > 500 || scrollHeight > height + 1) $dropdown_body.css('max-height', ($dropdown_body.height() - 93.1) + 'px');
             },
             change: function(event, target) {
-                const theme_id = $(target).data("id");
+                const $li = $(target);
+                const theme_id = $li.data("id");
+                $li.children().append($li.siblings().find('.count'));
                 $('[name="info[theme]"]').val(theme_id);
-                $('.js-theme-settings').attr('href', "{$wa_app_url}themes/?domain_id={$domain_id}#/themes/theme=" + theme_id + "&domain={$domain_decoded|urlencode}");
+                $('.js-theme-settings').attr('href', "{$wa_app_url}themes/?domain_id=" + domain_id + "#/themes/theme=" + theme_id + "&domain={$domain_decoded|urlencode}");
+            }
+        });
+    }
+
+    function initSwitchUrlOverlap() {
+        const $switch = $("#switch-url-overlap-section");
+        $switch.parent().find("[data-wa-tooltip-content]").waTooltip();
+        $switch.waSwitch({
+            change(is_active) {
+                is_active && clearErrors();
             }
         });
     }
 
     const $external_domain_link = $('#s-route-where a');
-    if ($external_domain_link.length) {
-        let timerId = null;
-        const domain = '//' + $external_domain_link.data('domain');
-        const $url_input = $('#s-route-where .js-url');
+    const $url_input = $('#s-route-where .js-url');
+    if (page_id && $external_domain_link.length) {
         const $original_value = $url_input.val();
 
+        let timerId = null;
         $url_input.on('input', function() {
-
-            $external_domain_link.attr('href', domain + '/' + this.value.replace('*', '')).addClass('disabled');
+            $external_domain_link.addClass('disabled');
             $external_domain_link.find('.fa-external-link-alt').hide();
             $external_domain_link.find('.fa-spinner').show();
 
@@ -387,8 +556,11 @@
             timerId = setTimeout(() => saveHandler(true), 1500);
         });
 
-
-        $(document).on('after_save_page_settings', function() {
+        $(document).on('after_save_page_settings', function(_, data) {
+            if (data?.full_url !== undefined) {
+                const domain = '//' + $external_domain_link.data('domain');
+                $external_domain_link.attr('href', domain + '/' + data.full_url + preview_hash_param);
+            }
             $external_domain_link.removeClass('disabled');
             $external_domain_link.find('.fa-external-link-alt').show();
             $external_domain_link.find('.fa-spinner').hide();
@@ -407,6 +579,15 @@
                 saveHandler(true);
             }
         }
+    }
+    $url_input.on('keydown', () => {
+        clearErrors();
+    });
+
+    function clearErrors() {
+        $form.find('.state-caution').removeClass('state-caution');
+        $form.find('.state-caution-hint').remove();
+        $place_for_errors.empty();
     }
 
     {*if (!$page || !$page.id) && empty($options.disable_auto_url) }

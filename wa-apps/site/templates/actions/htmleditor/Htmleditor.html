@@ -166,6 +166,7 @@
         </div>
     </div>
 </div>
+{include file="templates/actions/backend/includes/unsaved_dialog.html" inline}
     <script type="text/javascript">
         // init editor
         (function ($) {
@@ -213,7 +214,7 @@
                 $submit: $page_button_submit
             });
             const observeLinksForConfirmUnsaved = () => observeLinks([
-                '.s-site-tabs a',
+                '.s-site-header a',
                 '.site-map-tree-table .page-name',
                 '.site-map-tree-table .page-route'
             ]);
@@ -442,7 +443,7 @@
                         e.preventDefault();
                         e.stopImmediatePropagation();
 
-                        $.site.confirmUnsaved({
+                        $.confirmUnsaved({
                             onSave() {
                                 unbindEvent();
                                 opts.$submit.click();

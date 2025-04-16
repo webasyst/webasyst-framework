@@ -12,22 +12,12 @@ class siteFooterColumnBlockType extends siteBlockType
     public function getExampleBlockData()
     {
         // Default card contents: Horizontal sequence with heading and a paragraph of text
-        /*$vseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
-        //$hseq->data['is_horizontal'] = true;
-        $vseq->data['is_complex'] = 'no_complex';
-        $menu_item = (new siteMenuItemBlockType())->getExampleBlockData();
-        $menu_item->data["block_props"]["width"] = "cnt-w";
-        //$paragraph->data = ["html" => "Column","block_props" => ["font-header" => "t-rgl","font" => "t-7","margin-top" => "m-t-0","margin-bottom" => "m-b-0","margin-left" => "m-l-10","margin-right" => "m-r-16","align" => "t-c"]];
-        $vseq->addChild($menu_item);
-        $vseq->addChild($menu_item);
-        $vseq->addChild($menu_item);*/
 
         $result = $this->getEmptyBlockData();
-        //$result->addChild($vseq, '');
         $card_props = array();
         $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0"];
         $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
-        $column_wrapper_class = 'st-4 st-4-lp st-6-tb st-12-mb';
+        $column_wrapper_class = 'st-6-tb st-12-mb st-3 st-3-lp';
         $result->data = ['block_props' => $card_props];
         $result->data['elements'] = $this->elements;
         $result->data['column'] = $column_wrapper_class;
@@ -46,6 +36,7 @@ class siteFooterColumnBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Column'),
+            'tags' => 'element',
             'sections' => [
                 [   'type' => 'RowsAlignGroup',
                     'name' => _w('Column alignment'),

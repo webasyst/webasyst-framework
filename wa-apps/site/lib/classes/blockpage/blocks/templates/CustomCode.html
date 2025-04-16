@@ -1,15 +1,26 @@
 
 {$is_block = $data->data['is_block']}
 {$static_classes_props = 'site-block-custom-code style-wrapper f-w'}
+{if $is_backend}
+    <div class="child-iframe-cover"></div>
+{/if}
 {if $is_block}
-    <section class="{$static_classes_props} p-t-20 p-b-20 m-l-a m-r-a" style="width: fit-content;" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
-        {ifset($data->data, 'html', '')}
+    <section class="{$static_classes_props} p-t-20 p-b-20 m-l-a m-r-a blc" style="text-align: center;" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+        {if $is_backend}
+            <div class="iframe-cover"></div>
+        {/if}
+        {if $is_backend}{$wa->site->sanitizeHTML(ifset($data->data, 'html', ''))}{else}{ifset($data->data, 'html', '')}{/if}
     </section>
 {else}
-<div class="{$static_classes_props} p-t-10 p-b-10 m-l-a m-r-a" style="width: fit-content;" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
-    {ifset($data->data, 'html', '')}
+<div class="{$static_classes_props} p-t-10 p-b-10 m-l-a m-r-a" style="text-align: center;" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    {if $is_backend}
+        <div class="iframe-cover"></div>
+    {/if}
+    {if $is_backend}{$wa->site->sanitizeHTML(ifset($data->data, 'html', ''))}{else}{ifset($data->data, 'html', '')}{/if}
 </div>
 {/if}
+
+{if !$is_backend}
 <style id="style-tag">
     {ifset($data->data, 'css', '')}
 </style>
@@ -18,6 +29,7 @@
     {ifset($data->data, 'js', '')}
 });
 </script>
+{/if}
 
 {if $is_backend}
 <script>$(function() { "use strict";
@@ -30,7 +42,7 @@
         event.stopPropagation();
         if (+updated_block_id === +block_id) {
             //updateBlockStyles($(this), data, block_id);
-            $(this).html(data.html);
+            $(this).html(SiteEditorInsideIframe.sanitizeHTML(data.html));
         }
     });
 });
@@ -38,7 +50,7 @@
 {else}
 <script>$(function() { "use strict";
     const block_id = {$data->getId()|json_encode};
-    const $wrapper = $('.site-block-heading[data-block-id="'+block_id+'"]');
+    const $wrapper = $('.site-block-custom-code[data-block-id="'+block_id+'"]');
     const data = {$data->data|json_encode};
 });</script>
 {/if}

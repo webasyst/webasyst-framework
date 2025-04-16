@@ -17,11 +17,7 @@ class siteEditorPageDeleteController extends waJsonController
         $blockpage_model = new siteBlockpageModel();
         if (
             !waRequest::request('confirm_multiple_delete') &&
-            ($domain_id = waRequest::request('domain_id')) &&
-            $blockpage_model->countByField([
-                'domain_id' => $domain_id,
-                'parent_id' => $page_id
-            ]) > 0
+            $blockpage_model->countByField('parent_id', $page_id) > 0
         ) {
             $this->response = ['multiple_delete' => true];
             return;

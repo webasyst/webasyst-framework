@@ -21,13 +21,13 @@
                     <span class="icon size-20"><img class="js-selected-app-icon" src="{if $_selected_app}{$wa_url}{$_selected_app.icon.16}{/if}"></span>
                     <span class="js-selected-app-name">
                         {if $_selected_app}
-                            {$_selected_app.name|escape} <span class="hint">({$_selected_route_url|escape})</span>
+                            {$_selected_app.name|escape} <span class="hint"> /{$_selected_route_url|rtrim:'*'|escape}</span>
                         {else}
                             [`Select app`]
                         {/if}
                     </span>
                 </a>
-                <div class="dropdown-body">
+                <div class="dropdown-body" style="width:250px;">
                     <ul class="menu with-icons">
                         {strip}
                             {foreach $auth_endpoints as $_route_url => $_endpoint}
@@ -42,7 +42,7 @@
                                     data-login-url="{$_endpoint.login_url}"
                                     data-signup-url="{$_endpoint.signup_url}">
                                         <span class="icon size-20 custom-pr-4"><img class="s-app16x16icon-menu-v" src="{$_icon}"></span>
-                                        <span class="s-app-name">{$_app.name|escape} <span class="hint" title="{$_route_url|escape}">({$_route_url|escape})</span></span>
+                                        <span class="s-app-name">{$_app.name|escape} <span class="hint" title="{$_route_url|escape}"> /{$_route_url|rtrim:'*'|escape}</span></span>
                                     </a>
                                 </li>
                             {/foreach}
@@ -51,7 +51,7 @@
                     <input class="js-selected-app-id" type="hidden" name="route_url" value="{if $_selected_route_url}{$_selected_route_url|escape}{/if}" />
                 </div>
             </div>
-            <div class="hint js-endpoint-login-url custom-mb-0">{$_selected_endpoint.login_url|default:null}</div>
+            <div class="hint js-endpoint-login-url custom-mb-4">{$_selected_endpoint.login_url|default:null}</div>
             <div class="hint js-endpoint-signup-url custom-mt-0">{$_selected_endpoint.signup_url|default:null}</div>
         </div>
     </div>
@@ -239,7 +239,7 @@
                                         <span class="">{$control_name}</span>
                                     </div>
                                     <div class="value">
-                                        <input class="long small" type="text" name="adapters[{$adapter_id}][{$control_id}]" value="{if !empty($auth_config['adapters'][$adapter_id])}{$auth_config['adapters'][$adapter_id][$control_id]}{/if}">
+                                        <input class="long small" type="text" name="adapters[{$adapter_id}][{$control_id}]" value="{if !empty($auth_config['adapters'][$adapter_id][$control_id])}{$auth_config['adapters'][$adapter_id][$control_id]}{/if}">
                                     </div>
                                 </div>
                             {/foreach}
@@ -384,7 +384,7 @@
         <div class="field s-signup-captcha">
             <div class="name">
                 [`Captcha`]
-                <div class="hint">[`A user must enter characters shown in an image`]</div>
+                <div class="hint">[`Anti-bot protection`]</div>
             </div>
             <div class="value">
                 <div class="switch-with-text custom-pt-4">
@@ -506,7 +506,7 @@
         <div class="field js-captcha-wrapper">
             <div class="name">
                 [`Captcha`]
-                <div class="hint">[`A user must enter characters shown in an image`]</div>
+                <div class="hint">[`Anti-bot protection`]</div>
             </div>
             <div class="value s-small">
                 {foreach $login_captcha_variants as $_variant_val => $_variant_info}

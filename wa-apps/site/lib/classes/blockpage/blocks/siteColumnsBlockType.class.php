@@ -26,7 +26,7 @@ class siteColumnsBlockType extends siteBlockType
         $hseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq->data['is_horizontal'] = true;
         $hseq->data['is_complex'] = 'only_columns';
-
+        $hseq->data['indestructible'] = true;
         $column_count = ifset($this->options, 'columns', 2);
         $column_wrapper_class = 'st-3 st-3-lp st-6-tb st-12-mb';
         if ($column_count < 3) {
@@ -42,7 +42,7 @@ class siteColumnsBlockType extends siteBlockType
 
         $column_props = array();
         $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
-        $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c"];
+        $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c", 'max-width' => "cnt"];
 
         $result = $this->getEmptyBlockData();
 
@@ -76,8 +76,14 @@ class siteColumnsBlockType extends siteBlockType
                 [   'type' => 'RowsAlignGroup',
                     'name' => _w('Columns alignment'),
                 ],
+                [   'type' => 'RowsWrapGroup',
+                    'name' => _w('Wrap line'),
+                ],
                 [  'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],
+                [   'type' => 'MaxWidthToggleGroup',
+                    'name' => _w('Max width'),
                 ],
                 [   'type' => 'BackgroundColorGroup',
                     'name' => _w('Background'),
@@ -96,6 +102,9 @@ class siteColumnsBlockType extends siteBlockType
                 ],
                 [   'type' => 'ShadowsGroup',
                     'name' => _w('Shadows'),
+                ],
+                [   'type' => 'IdGroup',
+                    'name' => _w('Identifier (ID)'),
                 ],
             ],
             'elements' => $this->elements,

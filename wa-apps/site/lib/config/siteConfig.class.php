@@ -159,11 +159,12 @@ class siteConfig extends waAppConfig
         // Preview?
         $preview_hash = waRequest::request('preview_hash');
         if ($preview_hash) {
-            // !!! TODO check hash
+            if ($preview_hash !== $this->getPreviewHash()) {
+                return null;
+            }
             $status = ['draft', 'final_unpublished'];
         } else {
-            // !!! TODO only ['final_published'];
-            $status = ['final_published', 'draft', 'final_unpublished'];
+            $status = ['final_published'];
         }
 
         $blockpage_model = new siteBlockpageModel();
@@ -179,7 +180,25 @@ class siteConfig extends waAppConfig
             'page_params' => $page_params,
             'module' => 'frontend',
             'action' => 'blockpage',
+            'locale' => ifset($page_params, 'locale', ifset($route, 'locale', null)),
         ] + $route;
+    }
+
+    public function getPreviewHash($app_id = 'site')
+    {
+        $app_settings_model = new waAppSettingsModel();
+        $hash = $app_settings_model->get($app_id, 'preview_hash');
+        if ($hash) {
+            $hash_parts = explode('.', $hash);
+            if (time() - $hash_parts[1] > 14400) {
+                $hash = '';
+            }
+        }
+        if (!$hash) {
+            $hash = str_replace('.', '', uniqid('sitepreviewhash', true)).'.'.time();
+            $app_settings_model->set($app_id, 'preview_hash', $hash);
+        }
+        return md5($hash);
     }
 
     /**
@@ -322,5 +341,14 @@ class siteConfig extends waAppConfig
             $model->del($this->application, 'install_after_trigger');
             waSystem::setActive($old_active);
         }
+    }
+
+    protected function configure()
+    {
+        if (waRequest::get('module') === 'editor' && waRequest::get('action') === 'body') {
+            // Do not remember page inside iframe as last page to return to after backend login
+            waRequest::setParam('skip_update_last_page', true);
+        }
+        parent::configure();
     }
 }

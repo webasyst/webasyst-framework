@@ -1,0 +1,271 @@
+{**
+ * Контрол публикации блочной страницы, кусок wa_header.html (соседний файл).
+ *
+ * Основной код редактора управляет состоянием этого контрола, вызывая методы на JS объекте-контроллере.
+ * Контроллер сохранён в $('#js-wa-header-publish').data('controller').
+ *
+ * Контроллер управляет визуальным состоянием дропдауна, меняя CSS классы на #js-wa-header-publish.
+ *
+ * Первая группа классов: состояние публикации страницы. Одно из трёх:
+ * - .is-draft = страница не опубликована на сайте.
+ * - .is-published = страница опубликована, нет неопубликованных изменений.
+ * - .is-published.has-unsaved-changes = страница опубликована, есть изменения.
+ *
+ * Вторая группа классов: состояние сохранения. Одно из трёх:
+ * - .is-loading = идёт сохранение данных какого-то блока.
+ * - .is-publishing = юзер запустил процесс публикации всей страницы во фронте, идёт сохранение на сервер.
+ * - (либо ни того, ни другого)
+ *}
+
+<style>
+#js-wa-header-publish .dropdown-body { width: auto; }
+#js-wa-header-publish:not(.is-draft) .draft-only { display: none !important; }
+#js-wa-header-publish.is-draft .not-draft-only { display: none !important; }
+#js-wa-header-publish:not(.is-published) .published-only { display: none !important; }
+#js-wa-header-publish.is-published:not(.has-unsaved-changes) .draft-or-has-changes-only { display: none !important; }
+#js-wa-header-publish:not(.is-published.has-unsaved-changes) .published-unsaved-only { display: none !important; }
+#js-wa-header-publish.is-draft .published-no-changes-only { display: none !important; }
+#js-wa-header-publish.is-published.has-unsaved-changes .published-no-changes-only { display: none !important; }
+#js-wa-header-publish li.blank > * { background-color: var(--background-color-blank); cursor: default; }
+#js-wa-header-publish li > * { white-space: nowrap; }
+
+#js-wa-header-publish:not(.is-loading) .loading-only { display: none !important; }
+#js-wa-header-publish.is-loading .not-loading-only { display: none !important; }
+#js-wa-header-publish:not(.is-publishing) .publishing-only { display: none !important; }
+#js-wa-header-publish.is-publishing .not-publishing-only { display: none !important; }
+
+#js-wa-header-publish .heading.heading.heading.heading.heading { white-space: nowrap; margin-top: .75rem; margin-left: .75rem; }
+#js-wa-header-publish .button { white-space: nowrap; }
+
+#js-wa-header-publish.is-draft > button { background-color: var(--blue); }
+#js-wa-header-publish.is-published > button { background-color: var(--green); }
+#js-wa-header-publish.is-draft.is-publishing > button { background-color: var(--green); }
+#js-wa-header-publish.is-published.has-unsaved-changes > button { background-color: var(--yellow); color: var(--black); }
+
+@media screen and (max-width: 760px) {
+    .dropdown > .dropdown-body { left: auto; right: 0; }
+}
+</style>
+
+<div id="js-wa-header-publish" class="dropdown is-draft">
+    <button class="dropdown-toggle button small">
+        <i class="fas fa-globe not-loading-only not-publishing-only"></i>
+        <i class="fas fa-spinner fa-spin loading-only"></i>
+        <i class="fas fa-spinner fa-spin publishing-only"></i>
+        <span class="desktop-only">[`View & publish`]</span>
+    </button>
+    <div class="dropdown-body not-loading-only not-publishing-only">
+        <h5 class="heading black">[`Published version`]</h5>
+        <ul class="menu">
+            <li class="draft-only blank">
+                <span class="item"><span class="gray small">[`The page is not published.`]</span></span>
+            </li>
+            <li class="published-only">
+                <a href="javascript:void(0)" class="js-published-link" target="_blank">
+                    <span class="icon"><i class="fas fa-external-link-alt text-blue"></i></span>
+                    [`View`]
+                </a>
+            </li>
+            <li class="published-only">
+                <a href="javascript:void(0)" class="js-withdraw-publication">
+                    <span class="icon"><i class="fas fa-eye-slash text-red"></i></span>
+                    [`Unpublish`]
+                </a>
+            </li>
+        </ul>
+        <h5 class="heading black">[`Draft`]</h5>
+        <ul class="menu">
+            <li class="published-no-changes-only blank">
+                <span class="item"><span class="gray small">[`No changes to publish`]</span></span>
+            </li>
+            <li class="draft-or-has-changes-only">
+                <a href="javascript:void(0)" class="js-draft-preview-link" target="_blank">
+                    <span class="icon"><i class="fas fa-external-link-alt text-gray"></i></span>
+                    [`Open preview`]
+                </a>
+            </li>
+            <li class="published-unsaved-only not-draft-only">
+                <a href="javascript:void(0)" class="js-discard-draft">
+                    <span class="icon"><i class="fas fa-history text-gray"></i></span>
+                    [`Undo all changes`]
+                </a>
+            </li>
+            <li class="draft-only blank">
+                <a href="javascript:void(0)">
+                    <button class="js-publish button width-100 blue">
+                        [`Publish draft`]
+                    </button>
+                </a>
+            </li>
+            <li class="published-unsaved-only blank">
+                <a href="javascript:void(0)">
+                    <button class="js-publish button width-100 yellow">
+                        [`Publish changes`]
+                    </button>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<script>(function() { "use strict";
+    const $wrapper = $("#js-wa-header-publish");
+    var domain_root_url = null;
+    $wrapper.waDropdown();
+    $wrapper.data('controller', initPublicationControl());
+
+    var empty_undo_means_no_unsaved_changes = true;
+    var page_id = null;
+
+    function initPublicationControl() {
+        const that = {
+            initPageData,
+            updatePageData,
+            updateHasUnsavedChanges,
+            undoLimitExceeded,
+            undoneFully,
+            spinnerOff,
+            spinnerOn
+        };
+        init();
+        return that;
+
+        function init() {
+            // Пользователь нажал кнопку Опубликовать изменения
+            $wrapper.on('click', '.js-publish', function() {
+                $wrapper.addClass('is-publishing');
+                $.post('?module=editor&action=pagePublish', { id: page_id }, function() {
+                    if ($wrapper.hasClass('is-draft')) {
+                        window.location.reload();
+                    } else {
+                        empty_undo_means_no_unsaved_changes = false;
+                        updateWrapperClasses(true, false);
+                    }
+                }).always(function() {
+                    $wrapper.removeClass('is-publishing');
+                });
+            });
+
+            // Пользователь нажал кнопку Отменить публикацию
+            $wrapper.on('click', '.js-withdraw-publication', function() {
+                $.waDialog.confirm({
+                    title: '[`Page unpublishing`]',
+                    text: '[`After the unpublishing, only the draft will remain. The published version will be lost forever.`]',
+                    success_button_title: '[`Delete published version`]',
+                    success_button_class: 'danger',
+                    cancel_button_title: '[`Do not unpublish`]',
+                    cancel_button_class: 'light-gray',
+                    onSuccess() {
+                        $wrapper.addClass('is-publishing');
+                        $.post('?module=editor&action=pagePublish', { id: page_id, operation: 'unpublish' }, function(r) {
+                            if (r.status == 'ok' && r.data.page_id) {
+                                const url = location.href.replace(/\/editor\/page\/\d+\//, '/editor/page/'+r.data.page_id+'/');
+                                window.location.href = url;
+                            } else {
+                                console.error('Unable to cancel publication', r);
+                            }
+                        }).always(function() {
+                            $wrapper.removeClass('is-publishing');
+                        });
+                    }
+                });
+            });
+
+            // Пользователь нажал кнопку Отменить изменения
+            $wrapper.on('click', '.js-discard-draft', function() {
+                $.waDialog.confirm({
+                    title: '[`Resetting changes to draft`]',
+                    text: '[`After resetting changes, the draft will become identical to the published version. All changes will be lost forever.`]',
+                    success_button_title: '[`Reset non-published changes`]',
+                    success_button_class: 'danger',
+                    cancel_button_title: '[`Do not reset`]',
+                    cancel_button_class: 'light-gray',
+                    onSuccess: () => {
+                        $wrapper.addClass('is-publishing');
+                        $.post('?module=editor&action=pagePublish', { id: page_id, operation: 'rollback' }, function() {
+                            window.location.reload();
+                        }).always(function() {
+                            $wrapper.removeClass('is-publishing');
+                        });
+                    }
+                });
+            });
+        }
+
+        // Выставляет CSS классы в зависимости от первоначального состояния страницы.
+        function initPageData(init_domain_root_url, draft_page, published_page) {
+            page_id = draft_page.id;
+            domain_root_url = init_domain_root_url;
+            const is_published = published_page.status === 'final_published';
+            const has_unsaved_changes = draft_page.create_datetime !== draft_page.update_datetime;
+            empty_undo_means_no_unsaved_changes = is_published && !has_unsaved_changes;
+            updateWrapperClasses(is_published, has_unsaved_changes);
+
+            $wrapper.find('.js-published-link').attr('href', domain_root_url + fixSlashes(published_page.full_url));
+            updatePreviewLinks(draft_page);
+        }
+
+        // Юзер изменил основные параметры страницы (название, url и т.п.)
+        function updatePageData(draft_page) {
+            empty_undo_means_no_unsaved_changes = false;
+            updateWrapperClasses($wrapper.hasClass('is-published'), true);
+            updatePreviewLinks(draft_page);
+        }
+
+        // Сигнализирует о переполнении очереди UNDO (сейчас очередь UNDO бесконечная и эта функция не используется, но кто знает...)
+        function undoLimitExceeded() {
+            empty_undo_means_no_unsaved_changes = false;
+        }
+
+        // Сигнализирует о том, что очередь UNDO закончилась (юзер отменил все изменения)
+        function undoneFully() {
+            if (empty_undo_means_no_unsaved_changes) {
+                updateWrapperClasses(true, false);
+            }
+        }
+
+        // Начало любого сохранения блока (включая UNDO и REDO)
+        function spinnerOn() {
+            $wrapper.addClass('is-loading');
+        }
+
+        // Окончание любого сохранения блока (включая UNDO и REDO)
+        function spinnerOff() {
+            $wrapper.removeClass('is-loading');
+            updateWrapperClasses($wrapper.hasClass('is-published'), true);
+        }
+
+        function updateHasUnsavedChanges(has_unsaved_changes) {
+            setTimeout(function() {
+                updateWrapperClasses($wrapper.hasClass('is-published'), has_unsaved_changes);
+            }, 50);
+        }
+
+        function updateWrapperClasses(is_published, has_unsaved_changes) {
+            if (is_published) {
+                $wrapper.removeClass('is-draft');
+                $wrapper.addClass('is-published');
+                if (has_unsaved_changes) {
+                    $wrapper.addClass('has-unsaved-changes');
+                } else {
+                    $wrapper.removeClass('has-unsaved-changes');
+                }
+                $(document).trigger('page_has_unsaved_changes', [has_unsaved_changes]);
+            } else {
+                $wrapper.removeClass('is-published has-unsaved-changes');
+                $wrapper.addClass('is-draft');
+            }
+        }
+
+        function updatePreviewLinks(draft_page) {
+            $wrapper.find('.js-draft-preview-link').attr('href', domain_root_url + fixSlashes(draft_page.full_url) + (draft_page.preview_hash ? '?preview_hash='+draft_page.preview_hash : ''));
+        }
+
+        function fixSlashes(url) {
+            if (url && url.length && url[url.length-1] != '/') {
+                url += '/';
+            }
+            return url;
+        }
+    }
+
+})();</script>

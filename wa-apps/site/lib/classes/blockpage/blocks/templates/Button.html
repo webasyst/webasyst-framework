@@ -1,10 +1,6 @@
 {$block_props = []}
 {$href = ''}
 {$target = ''}
-{$tag = 'a'}
-{if !empty($data->data['tag'])}
-    {$tag = $data->data['tag']}
-{/if}
 
 {if !empty($data->data['link_props'])}
     {$link_props = $data->data['link_props']}
@@ -16,9 +12,10 @@
     {/if}
 {/if}
 {$static_classes_props = 'style-wrapper btn'}
-<{$tag} href="{$href}" class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}"{if $is_backend} contenteditable="true"{/if} {if !empty($target)}target="{$target}"{/if}>
+{$anchor_id = $data->data['id']|default:0}
+<a {if $anchor_id}id="{$anchor_id|escape}"{/if} href="{$href}" class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}"{if $is_backend} contenteditable="true"{/if} {if !empty($target)}target="{$target}"{/if}>
     {$data->data['html']}
-</{$tag}>
+</a>
 
 {if $is_backend}
 <script>$(function() { "use strict";

@@ -18,6 +18,9 @@ var that = $.site = {
             $.site.initAfterLoad();
         });
         that.lang = opts.lang;
+        that.backend_url = opts.backend_url;
+        that.app_url = opts.app_url;
+        that.wa_url = opts.wa_url;
     },
 
     initAfterLoad: function(opts) {
@@ -122,28 +125,6 @@ var that = $.site = {
         if (this.opts.is_debug) {
             console.log.apply(null, arguments);
         }
-    },
-
-    confirmUnsaved: function(opts) {
-        opts = opts || { onSave: () => null, onLeave: () => null };
-
-        $.waDialog({
-            html: this.opts.templates['unsaved_form_dialog'],
-            onOpen ($d, d) {
-                d.$block.find('.js-save-button').on('click', () => {
-                    if (typeof opts.onSave === 'function') {
-                        opts.onSave();
-                    }
-                    d.close();
-                });
-                d.$block.find('.js-leave-button').on('click', () => {
-                    if (typeof opts.onLeave === 'function') {
-                        opts.onLeave();
-                    }
-                    d.close();
-                });
-            }
-        })
     }
 };
 

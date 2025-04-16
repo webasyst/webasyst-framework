@@ -39,21 +39,24 @@ class siteMapSectionSettingsDialogAction extends waViewAction
                 $route['static_content_type'] = '';
             }
 
-            $max_index = -1;
-            $app_url = siteHelper::getAlternativeAppUrl($app_id);
-            foreach ($routes as $r) {
-                if (isset($r['app']) && $app_id === $r['app']) {
-                    $m = [];
-                    $url = rtrim($r['url'], '/*');
-                    if (preg_match('/^'.$app_url.'(-\d*)?$/', $url, $m)) {
-                        $i = intval(ltrim($m[1] ?? 0, '-'));
-                        $max_index = $i > $max_index ? $i : $max_index;
+            if ($app_id === 'site') {
+                $app_url = siteHelper::getIncrementUrl($routes);
+            } else {
+                $app_url = siteHelper::getAlternativeAppUrl($app_id);
+                $max_index = -1;
+                foreach ($routes as $r) {
+                    if (isset($r['app']) && $app_id === $r['app']) {
+                        $m = [];
+                        $url = rtrim($r['url'], '/*');
+                        if (preg_match('/^'.$app_url.'(-\d*)?$/', $url, $m)) {
+                            $i = intval(ltrim($m[1] ?? 0, '-'));
+                            $max_index = $i > $max_index ? $i : $max_index;
+                        }
                     }
                 }
-            }
-
-            if ($max_index > -1) {
-                $app_url = $app_url . '-' . ++$max_index;
+                if ($max_index > -1) {
+                    $app_url = $app_url . '-' . ++$max_index;
+                }
             }
         }
 
@@ -112,6 +115,9 @@ class siteMapSectionSettingsDialogAction extends waViewAction
                             }
                         }
                     } else {
+                        if ($app_id === 'site') {
+                            $route['show_over_another_section'] = false;
+                        }
                         $route_name = siteHelper::getAlternativeAppNames($app['id'], $app['name']);
                         $app['name'] = $route_name;
                     }
@@ -178,6 +184,7 @@ class siteMapSectionSettingsDialogAction extends waViewAction
             'misconfigured_settlement' => $misconfigured_settlement,
             'app_url'         => ifset($app_url, '*'),
             'is_main_page'    => rtrim(ifset($route['url'], ''), '*') === '' && !$misconfigured_settlement,
+            'preview_hash'    => siteHelper::getPreviewHash(),
         ));
     }
 
@@ -349,14 +356,28 @@ class siteMapSectionSettingsDialogAction extends waViewAction
 
     protected function fixRouteUrl($route_id, array &$route)
     {
+        if (empty($route['app'])) {
+            return;
+        }
+        $app_id = $route['app'];
+        if (is_array($app_id)) {
+            $app_id = $app_id['id'];
+        }
+
         if ($route_id || strlen((string)$route_id)) {
             $route['is_broken_route_url'] = siteHelper::isBrokenAppRouteUrl($route);
             if (!$route['is_broken_route_url']) {
+                if ($app_id === 'site') {
+                    $route['show_over_another_section'] = substr($route['url'], -1) !== '*';
+                }
                 $route['url'] = rtrim($route['url'], '/*');
             }
         } else {
             $route['is_broken_route_url'] = false;
             $route['url'] = ifset($route, 'url', '');
+            if (!isset($route['show_over_another_section']) && $app_id === 'site') {
+                $route['show_over_another_section'] = !$route['url'] || substr($route['url'], -1) !== '*';
+            }
         }
     }
 }

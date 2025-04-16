@@ -372,7 +372,7 @@ class siteHelper
     {
         $names = [
             'shop' => _w('Shop'),
-            'photos' => _w('Photo Gallery'),
+            'photos' => _w('Photo gallery'),
             'hub' => [_w('Knowledge base'), _w('Knowledge base and forum')],
             'blog' => _w('Blog'),
             'helpdesk' => _w('Helpdesk'),
@@ -408,13 +408,22 @@ class siteHelper
 
     public static function isBrokenAppRouteUrl($route)
     {
+        $app = ifset($route, 'app', '');
+        if (is_array($app)) {
+            $app = $app['id'];
+        }
         if (empty($route['url'])) {
-            return true;
+            return $app === 'site' ? false : true;
         }
         if ($route['url'] == '*') {
             return false;
         }
-        return $route['url'] != rtrim($route['url'], '/*').'/*';
+        $trimmed_url = rtrim($route['url'], '/*').'/';
+        if ($app === 'site') {
+            return $route['url'] != $trimmed_url && $route['url'] != $trimmed_url.'*';
+        } else {
+            return $route['url'] != $trimmed_url.'*';
+        }
     }
 
     public static function getBlocks()
@@ -500,5 +509,108 @@ class siteHelper
         if ($domain_id && $domain_id != wa()->getUser()->getSettings('site', 'last_domain_id')) {
             wa()->getUser()->setSettings('site', 'last_domain_id', $domain_id);
         }
+    }
+
+    public static function blockpageHasUrlOverlap($full_url, $parent_id = null)
+    {
+        $domain = self::getDomain();
+        $domain_id = self::getDomainId();
+        $routes = wa()->getRouting()->getRoutes($domain);
+        foreach ($routes as $r) {
+            if (isset($r['url']) && $full_url === rtrim($r['url'], '/*')) {
+                return true;
+            }
+        }
+        if (empty($parent_id)) {
+            return false;
+        }
+
+        $apps = wa()->getApps();
+        $app_ids = [];
+        foreach ($apps as $app) {
+            if (empty($app['frontend']) || empty($app['pages'])) {
+                continue;
+            }
+            $app_ids[] = $app['id'];
+        }
+
+        $ids = [];
+        $page_route = '*';
+        $full_url = rtrim($full_url, '/') . '/';
+
+        $uri_parts = explode('/', $full_url);
+        if (count($uri_parts) > 1) {
+            $page_route = $uri_parts[0] . '/*';
+
+            unset($uri_parts[0]);
+            $full_url = implode('/', $uri_parts);
+        }
+
+        foreach ($app_ids as $app_id) {
+            $app_model = self::getPageModel($app_id);
+            if (!$app_model) {
+                continue;
+            }
+
+            $domain_field = $app_model->getDomainField();
+
+            $ids += $app_model->select('id')
+                ->where(
+                    $domain_field.' = ? AND route = ? AND full_url = ?',
+                    [
+                        $domain_field === 'domain' ? $domain : $domain_id, // $$domain_field
+                        $page_route,
+                        $full_url
+                    ]
+                )
+                ->fetchAll();
+        }
+
+        return $ids;
+    }
+
+    public static function getPreviewHash($app_id = 'site')
+    {
+        return wa('site')->getConfig()->getPreviewHash($app_id);
+    }
+
+    public static function getIncrementUrl($routes = null)
+    {
+        $name_start = 'new-page';
+        $slug = $name_start;
+        $m = new waModel();
+        $urls = $m->query(
+            "SELECT url FROM site_blockpage WHERE domain_id=:domain_id AND url LIKE :name_start
+            UNION ALL
+            SELECT url FROM site_page WHERE domain_id=:domain_id AND parent_id IS NULL AND url LIKE :name_start",
+            ['domain_id' => self::getDomainId(), 'name_start' => $name_start.'%']
+        )->fetchAll(null, true);
+
+        if ($routes === null) {
+            $routes = wa()->getRouting()->getRoutes(self::getDomain());
+        }
+        foreach ($routes as $r) {
+            if (!isset($r['app']) || $r['app'] !== 'site') {
+                continue;
+            }
+            $urls[] = rtrim($r['url'], '/*');
+        }
+
+        $max_index = -1;
+        foreach ($urls as $url) {
+            $m = [];
+            $url = rtrim($url, '/');
+            if ($url && preg_match("/^{$name_start}(-\d+)?$/", $url, $m)) {
+                $i = intval(ltrim($m[1] ?? 0, '-'));
+                if ($i > $max_index) {
+                    $max_index = $i;
+                }
+            }
+        }
+        if ($max_index > -1) {
+            $slug = $name_start.'-'.++$max_index;
+        }
+
+        return $slug;
     }
 }

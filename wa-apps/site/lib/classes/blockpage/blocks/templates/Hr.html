@@ -3,8 +3,9 @@
 {if !empty($data->data['tag'])}
     {$tag = $data->data['tag']}
 {/if}
+{$anchor_id = $data->data['id']|default:0}
 {$static_classes_props = 'site-block-hr style-wrapper f-w'}
-<{$tag} class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+<{$tag} {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
 
 {if $is_backend}
 <script>$(function() { "use strict";

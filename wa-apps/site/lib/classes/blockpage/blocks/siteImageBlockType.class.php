@@ -19,9 +19,17 @@ class siteImageBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Image'),
+            'tags' => 'element',
             'sections' => [
                 [   'type' => 'ImageUploadGroup',
                     'name' => _w('Upload'),
+                ],
+                [   'type' => 'ButtonLinkGroup',
+                    'name' => _w('Action'),
+                    'is_hidden' => true, //Exception IMG element
+                ],
+                [   'type' => 'TabsWrapperGroup',
+                    'name' => _w('Tabs'),
                 ],
                 [   'type' => 'MarginGroup',
                     'name' => _w('Margin'),
@@ -38,6 +46,9 @@ class siteImageBlockType extends siteBlockType
                 ],
                 [   'type' => 'VisibilityGroup',
                     'name' => _w('Visibility on devices'),
+                ],
+                [   'type' => 'IdGroup',
+                    'name' => _w('Identifier (ID)'),
                 ],
             ],
         ] + parent::getRawBlockSettingsFormConfig();

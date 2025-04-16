@@ -51,9 +51,13 @@
         <p><i class="icon rounded bg-green shift-2"></i> {sprintf_wp('%s personal account URL: <a id="s-app-frontend-link" href="%s" target="_blank"><span class="break-all">%s</span> <i class="fas fa-external-link-alt fa-xs"></i></a>', $app.name, '', '')}</p>
         {if $app.id === 'mailer'}
             <p class="gray small">{sprintf_wp(
-                "Design theme for this subsection is set up in Mailer app’s settings via the <a class=\"%s\" href=\"%s\">site settings <i class=\"fas fa-external-link-alt fa-sm\"></i></a>.",
-                "text-dark-gray js-close-dialog",
-                "{$wa_app_url}settings/?domain_id={waRequest::request('domain_id')}"
+                'Design theme for this subsection is set up in Mailer app’s settings via the <%s>site settings %s<%s>.',
+                sprintf(
+                    'a class="text-dark-gray js-close-dialog" href="%s"',
+                    "{$wa_app_url}settings/?domain_id={waRequest::request('domain_id')}"
+                ),
+                '<i class="fas fa-external-link-alt fa-sm"></i>',
+                '/a'
             )}</p>
         {/if}
         {$personal_settings|default:''}

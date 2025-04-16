@@ -501,7 +501,7 @@
     </locale>
     <locale>
       <msgid><![CDATA[Powered by <a href="https://www.webasyst.com">Webasyst</a>]]></msgid>
-      <msgstr locale="ru_RU"><![CDATA[Работает на основе <a href="https://www.webasyst.ru">Webasyst</a>]]></msgstr>
+      <msgstr locale="ru_RU"><![CDATA[Сделано на <a href="https://www.webasyst.ru">Webasyst</a>]]></msgstr>
     </locale>
   </locales>
 </theme>

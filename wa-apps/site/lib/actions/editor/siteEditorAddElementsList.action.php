@@ -16,6 +16,80 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
             }
         }
 
-        return $library->getAllElements($complex_param);
+        $blocks = $library->getAllElements($complex_param);
+        $categories = $this->getCategories($parent_block);
+
+        $result = [];
+        foreach ($blocks as $b) {
+            $add_global = true;
+            foreach ($categories as &$c) {
+                if ($this->goesInCategory($b, $c)) {
+                    $c['blocks'][] = $b;
+                    $add_global = false;
+                }
+            }
+            if ($add_global) {
+                $result[] = $b;
+            }
+        }
+        unset($c);
+
+        foreach ($categories as $c) {
+            if ($c['blocks']) {
+                $result[] = $c;
+            }
+        }
+
+        return $result;
+    }
+
+    protected function goesInCategory($b, $c)
+    {
+        if (isset($c['callback']) && is_callable($c['callback'])) {
+            return !!$c['callback']($b);
+        }
+        foreach ($c['tags'] as $c) {
+            if (!in_array($c, $b['tags'])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected function getCategories($parent_block)
+    {
+        $event_result = wa()->event('blockpage_elements_list', ref([
+            'parent_block' => $parent_block,
+        ]));
+
+        $result = [
+            [
+                'title' => _w('Web form'),
+                'icon' => 'list',
+                'tags' => ['form'],
+                'blocks' => [],
+            ],
+        ];
+        foreach ($event_result as $r) {
+            if (isset($r['title'])) {
+                $r = [$r];
+            }
+            foreach ($r as $category) {
+                if (empty($category['title']) || empty($category['tags'])) {
+                    continue;
+                }
+                $category['tags'] = (array) $category['tags'];
+                $result[] = [
+                    'title' => $category['title'],
+                    'icon' => ifset($category, 'icon', null),
+                    'app_icon' => ifset($category, 'app_icon', null),
+                    'tags' => $category['tags'],
+                    'callback' => ifset($category, 'callback', null),
+                    'blocks' => [],
+                ];
+            }
+        }
+
+        return $result;
     }
 }

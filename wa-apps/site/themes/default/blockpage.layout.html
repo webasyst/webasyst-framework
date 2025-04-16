@@ -1,15 +1,10 @@
-<<<<<<< HEAD
-{strip}
-    {$content = $rendered_page_html}
-{/strip}{include file="`$wa_active_theme_path`/index.html" is_blockpage="true" inline}
-=======
 {*
 * Default layout for block page in frontend.
 * Used in case design theme does not specify its own custom layout.
 *
 *}
 <!DOCTYPE html>
-   <html>
+    <html lang="{if $wa->locale() == 'ru_RU'}ru{else}en{/if}">
    <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>{$wa->title()|escape}</title>
@@ -39,5 +34,4 @@
         {$content = $rendered_page_html}
     {/strip}
     {include file="`$wa_active_theme_path`/index.html" is_blockpage="true" inline*}
-    
->>>>>>> 32a0dd4da0f (site: #48.1339 обновление)
+                

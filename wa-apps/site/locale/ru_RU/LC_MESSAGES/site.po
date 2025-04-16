@@ -562,8 +562,8 @@ msgstr "Добро пожаловать на ваш новый сайт!"
 msgid "Open “<a href=\"%s\">Pages</a>” section and add a new page with an empty address. You will see its contents here."
 msgstr "Перейдите в раздел «<a href=\"%s\">Страницы</a>» и создайте страницу с пустым адресом. Здесь вы увидите ее текст."
 
-msgid "A website with domain name %s already exists in this Webasyst account. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website."
-msgstr "Сайт с доменным именем %s уже существует в этом аккаунте Webasyst. Удалите сайт %s (приложение «Сайт» > %s > Настройки), чтобы подключить этот домен к другому сайту."
+msgid "A site with domain name %s already exists in this Webasyst account."
+msgstr "Сайт с доменным именем %s уже существует в этом аккаунте Webasyst."
 
 msgid "Incorrect domain URL: %s"
 msgstr "Неправильный адрес домена: %s"
@@ -730,11 +730,11 @@ msgstr "Введите адрес CDN (Content Delivery Network), чтобы в�
 msgid "Alias (mirror site) for"
 msgstr "Зеркало сайта"
 
-msgid "Alias (mirror) for the site"
-msgstr "Это зеркало для сайта"
+msgid "Alias (mirror) for site"
+msgstr "Зеркало для сайта"
 
-msgid "This is a mirror site (alias) for <strong>%s</strong>."
-msgstr "Это зеркало сайта <strong>%s</strong>"
+msgid "Mirror site (alias) for <strong>%s</strong>"
+msgstr "Зеркало сайта <strong>%s</strong>"
 
 msgid "Specified email is already in use."
 msgstr "Указанный email-адрес уже используется."
@@ -952,17 +952,17 @@ msgstr "Приоритет над email-уведомлениями"
 msgid "Prefer SMS over email for sending notifications. In case of SMS sending failure, email will be sent as a replacement."
 msgstr "Приоритет SMS над email при отправке уведомлений. В случае сбоя в отправке SMS будет отправлено email-уведомление."
 
-msgid "A user must enter characters shown in an image"
-msgstr "Пользователь должен ввести символы с изображения"
+msgid "Anti-bot protection"
+msgstr "Защита от ботов"
 
 msgid "Email or phone"
 msgstr "Email или телефон"
 
-msgid "Cannot disable both authorization options “Email” &amp; “Phone”"
-msgstr "Нельзя отключать оба способа авторизации «Email» и «Телефон»"
+msgid "Both sign-in options “Email” & “Phone” cannot be disabled"
+msgstr "Нельзя отключать оба способа авторизации: «Email» и «Телефон»"
 
-msgid "Keep at least one of these two basic authorization option enabled for website visitors to be able to log into their accounts."
-msgstr "Оставьте включенным хотя бы один из этих двух основных способов авторизации, чтобы посетители сайта могли входить в личный кабинет."
+msgid "Keep at least one of these two basic options enabled for website visitors to be able to log into their accounts."
+msgstr "Оставьте включенным хотя бы один из этих двух основных способов, чтобы посетители сайта могли входить в личный кабинет."
 
 msgid "Authorization with an email address is used by default."
 msgstr "По умолчанию используется авторизация с помощью email-адреса."
@@ -1080,9 +1080,6 @@ msgstr "Меню для разделов"
 
 msgid "Sites"
 msgstr "Сайты"
-
-msgid "Customize the menu view in sections (Catalog, Blog, Photo Gallery, Hub) that do not yet support editing in Block designer mode."
-msgstr "Настройте вид меню в разделах (Каталог, Блог, Фотогалерея, Хаб), которые еще не поддерживают редактирование в режиме конструктора блоков."
 
 msgid "The navigation menu will be generated automatically from the main sections of the site map."
 msgstr "Меню навигации будет сформировано автоматически из главных разделов карты сайта."
@@ -1357,8 +1354,8 @@ msgstr "Формировать автоматически из разделов 
 msgid "Delete page"
 msgstr "Удалить страницу"
 
-msgid "Design theme for this subsection is set up in Mailer app’s settings via the <a class=\"%s\" href=\"%s\">site settings <i class=\"fas fa-external-link-alt fa-sm\"></i></a>."
-msgstr "Тема дизайна для этого подраздела меняется в настройках приложения «Рассылки» через <a class=\"%s\" href=\"%s\">настройки сайта <i class=\"fas fa-external-link-alt fa-sm\"></i></a>."
+msgid "Design theme for this subsection is set up in Mailer app’s settings via the <%s>site settings %s<%s>."
+msgstr "Тема дизайна для этого подраздела меняется в настройках приложения «Рассылки» через <%s>настройки сайта %s<%s>."
 
 msgid "Invalid value in field “%s”."
 msgstr "Недопустимое значение в поле «%s»."
@@ -1366,7 +1363,7 @@ msgstr "Недопустимое значение в поле «%s»."
 msgid "Shop"
 msgstr "Онлайн-магазин"
 
-msgid "Photo Gallery"
+msgid "Photo gallery"
 msgstr "Фотогалерея"
 
 msgid "Knowledge base and forum"
@@ -1687,8 +1684,8 @@ msgstr "удалил переменную для сайта"
 msgid "Editing published pages is unavailable."
 msgstr "Редактирование опубликованных страниц недоступно."
 
-msgid "The page will be removed from the site map. Continue?"
-msgstr "Страница будет удалена из карты сайта. Продолжить?"
+msgid "The page will be deleted without the ability to restore. Continue?"
+msgstr "Страница будет удалена без возможности восстановления. Продолжить?"
 
 msgid "https://support.webasyst.com/2879/client-account/"
 msgstr "https://support.webasyst.ru/3313/client-account/"
@@ -1753,8 +1750,11 @@ msgstr "Подвал сайта"
 msgid "If the new address has the same domain name then you may enter only the part after the domain; e.g., <em>/about/</em>."
 msgstr "Если у нового адреса тот же домен, то можно указать только часть после домена, например, <em>/about/</em>."
 
-msgid "Moving cannot be completed: pages with the same address cannot be placed at the same level."
-msgstr "Перемещение невозможно: страницы с одинаковым адресом не могут находиться на одном уровне."
+msgid "You can use HTML and Smarty code in this field."
+msgstr "В этом поле можно использовать HTML и Smarty."
+
+msgid "Moving cannot be completed: pages with the same addresses cannot be located at the same level."
+msgstr "Перемещение невозможно: страницы с одинаковыми адресами не могут находиться на одном уровне."
 
 msgid "Rule settings"
 msgstr "Настройки правила"
@@ -1816,14 +1816,14 @@ msgstr "Приложения для добавления разделов не �
 msgid "To add sections, <%s>install apps<%s>"
 msgstr "Чтобы добавлять разделы, <%s>установите приложения<%s>"
 
+msgid "Height"
+msgstr "Высота"
+
 msgid "Optional."
 msgstr "Заполнять необязательно."
 
-msgid "You can pass additional parameters to a variable after a comma: %s. Replace %s with an associative array of parameters; e.g., %s. Each passed parameter is accessible in the code by its name as a Smarty variable; e.g., %s."
-msgstr "В переменную можно передать дополнительные параметры после запятой: %s. Вместо %s укажите ассоциативный массив параметров, например: %s. Каждый переданный параметр доступен в коде по своему имени в виде переменной Smarty, например: %s."
-
-msgid "You can use HTML and Smarty code in this field."
-msgstr "В этом поле можно использовать Smarty и HTML."
+msgid "You can pass additional parameters to a variable after a comma: %s<br>Instead of %s must be specified an associative array of parameters; e.g., %s<br>Each passed parameter is accessible in the code by its name as a Smarty variable; e.g., %s"
+msgstr "В переменную можно передать дополнительные параметры после запятой: %s<br>Вместо %s нужно указать ассоциативный массив параметров, например: %s<br>Каждый переданный параметр доступен в коде по своему имени в виде переменной Smarty, например: %s"
 
 msgid "Restore block?"
 msgstr "Восстановить блок?"
@@ -1867,14 +1867,14 @@ msgstr "Внутри"
 msgid "Alignment of the last row when not filled in"
 msgstr "Выравнивание последней строки, когда не заполнена"
 
-msgid "Form crm"
-msgstr "Форма для сбора контактов в СРМ"
+msgid "CRM lead form"
+msgstr "Форма для сбора контактов CRM"
 
-msgid "Form mailer"
-msgstr "Подписка на рассылку"
+msgid "Email subscription form"
+msgstr "Подписка на email-рассылки"
 
-msgid "Form helpdesk"
-msgstr "Форма запроса в поддержку"
+msgid "Help desk support request form"
+msgstr "Форма отправки запроса в службу поддержки"
 
 msgid "Identifier (ID)"
 msgstr "Идентификатор (ID)"
@@ -1884,6 +1884,9 @@ msgstr "Ссылка"
 
 msgid "Customize the appearance of the link to the page in social networks"
 msgstr "Настроить вид ссылки на страницу в соцсетях"
+
+msgid "Width limit"
+msgstr "Ограничение ширины"
 
 msgid "Redirected to <strong>%s</strong>"
 msgstr "Перенаправлен на <strong>%s</strong>"
@@ -1905,3 +1908,312 @@ msgstr "По алфавиту А–Я"
 
 msgid "By name Z–A"
 msgstr "По алфавиту Я–А"
+
+msgid "Online store"
+msgstr "Интернет-магазин"
+
+msgid "Product info"
+msgstr "Информация о товаре"
+
+msgid "Product picture"
+msgstr "Изображение товара"
+
+msgid "Product"
+msgstr "Товар"
+
+msgid "Type of product information"
+msgstr "Тип информации о товаре"
+
+msgid "Type of product picture"
+msgstr "Выбор изображения"
+
+msgid "Widget with a shopping button"
+msgstr "Виджет с кнопкой покупки"
+
+msgid "Premium"
+msgstr "Премиум"
+
+msgid "Not available for sale"
+msgstr "Недоступно для продажи"
+
+msgid "Choose product"
+msgstr "Выберите товар"
+
+msgid "Add to cart"
+msgstr "В корзину"
+
+msgid "Vertical alignment"
+msgstr "Вертикальное выравнивание"
+
+msgid "Horizontal alignment"
+msgstr "Горизонтальное выравнивание"
+
+msgid "Button"
+msgstr "Кнопка"
+
+msgid "Upgrade › <strong>Premium</strong>"
+msgstr "Обновитесь › <strong>Премиум</strong>"
+
+msgid "Discover advanced features for your projects with the premium license."
+msgstr "Откройте продвинутые возможности для своих проектов с премиум-лицензией."
+
+msgid "Block page builder"
+msgstr "Конструктор блочных страниц"
+
+msgid "Professional creation of web pages with functional blocks and elements"
+msgstr "Создание профессиональных страниц из готовых блоков и элементов"
+
+msgid "Flexible design and blocks settings without programming"
+msgstr "Гибкие настройки дизайна элементов и блоков без программиста"
+
+msgid "Integration with Shop-Script products"
+msgstr "Интеграция с товарами Shop-Script"
+
+msgid "Ready-made page templates, global design settings, simple & advanced web forms (quizzes), integration with Webasyst apps, animations, etc."
+msgstr "Готовые шаблоны страниц, глобальные настройки дизайна, простые и интерактивные веб-формы (квизы), интеграция с приложениями Webasyst, анимации и многое другое"
+
+msgid "Soon"
+msgstr "Скоро"
+
+msgid "More options in the app"
+msgstr "Больше функций в приложении"
+
+msgid "Copying sites for convenient work with production/development versions an regional domains"
+msgstr "Копирование сайтов для удобной работы с публичными и тестовыми версиями и региональными доменами"
+
+msgid "Copying pages and sections for convenient testing and quick creation of similar pages by template"
+msgstr "Копирование страниц и разделов — удобно для тестирования и создания похожих страниц по шаблону"
+
+msgid "Custom variable values for selected sites, sites export, and other improvements"
+msgstr "Индивидуальные значения переменных для разных сайтов, экспорт сайтов и другие улучшения"
+
+msgid "About the premium license"
+msgstr "Подробнее о премиум-лицензии"
+
+msgid "View & publish"
+msgstr "Просмотр и публикация"
+
+msgid "Published version"
+msgstr "Опубликованная версия"
+
+msgid "The page is not published."
+msgstr "Страница не опубликована."
+
+msgid "Unpublish"
+msgstr "Сделать неопубликованной"
+
+msgid "Draft"
+msgstr "Черновик"
+
+msgid "No changes to publish"
+msgstr "Нет изменений для публикации"
+
+msgid "Open preview"
+msgstr "Открыть предпросмотр"
+
+msgid "Undo all changes"
+msgstr "Отменить все изменения"
+
+msgid "Publish draft"
+msgstr "Опубликовать черновик"
+
+msgid "Publish changes"
+msgstr "Опубликовать изменения"
+
+msgid "Page unpublishing"
+msgstr "Отмена публикации страницы"
+
+msgid "After the unpublishing, only the draft will remain. The published version will be lost forever."
+msgstr "После отмены публикации останется только черновик страницы. Опубликованная версия будет удалена безвозвратно."
+
+msgid "Delete published version"
+msgstr "Удалить опубликованную версию"
+
+msgid "Do not unpublish"
+msgstr "Не отменять публикацию"
+
+msgid "Resetting changes to draft"
+msgstr "Сброс изменений в черновике"
+
+msgid "After resetting changes, the draft will become identical to the published version. All changes will be lost forever."
+msgstr "После сброса изменений черновик станет выглядеть так же, как опубликованная версия. Изменения будут удалены безвозвратно."
+
+msgid "Reset non-published changes"
+msgstr "Сбросить неопубликованные изменения"
+
+msgid "Do not reset"
+msgstr "Не сбрасывать"
+
+msgid "Non-published changes exist"
+msgstr "Есть неопубликованные изменения"
+
+msgid "Adding block"
+msgstr "Добавление блока"
+
+msgid "The page is available instead of a section with the same address. Its subpages become unavailable."
+msgstr "Страница отображается вместо раздела с таким же адресом. Ее вложенные страницы становятся недоступными."
+
+msgid "Draft preview"
+msgstr "Просмотр черновика"
+
+msgid "Add subpage"
+msgstr "Добавить подстраницу"
+
+msgid "This page cannot be moved because it is the main page of another section. Either move the whole section, and the page will move, too, or change the address and disable the main page setting."
+msgstr "Эта страница не может быть перемещена, т.&nbsp;к. является лицевой для другого раздела. Можно переместить раздел, и она будет перемещена вместе с ним. Либо измените адрес и отмените свойство лицевой страницы."
+
+msgid "Main section page"
+msgstr "Лицевая страница раздела"
+
+msgid "When enabled, this page becomes the main page of a section with the same URL, and its subpages become unavailable. All other section pages remain available at their addresses."
+msgstr "Когда включено, страница становится главной страницей раздела с таким же адресом, а ее подстраницы становятся недоступными. Все остальные страницы этого раздела остаются доступными по своим адресам."
+
+msgid "After the unpublishing, only the draft will remain."
+msgstr "После отмены публикации останется только черновик страницы."
+
+msgid "The published version will be lost forever after saving the page settings."
+msgstr "Опубликованная версия будет удалена безвозвратно после сохранения настроек страницы."
+
+msgid "Site copying"
+msgstr "Копирование сайта"
+
+msgid "The site map and some other settings will be copied <strong>and completely replaced</strong>: navigation menu, favicons, robots.txt, CDN, custom JavaScript code, apps, redirects, custom files in site root."
+msgstr "Будут скопированы <strong>и полностью заменены</strong> карта сайта и некоторые настройки: меню навигации, фавиконки, robots.txt, CDN, пользовательский JavaScript-код, приложения, перенаправления, свои файлы в корне сайта."
+
+msgid "From"
+msgstr "Откуда"
+
+msgid "To"
+msgstr "Куда"
+
+msgid "You have no other sites to copy the selected one to. First add at least one more site and then proceed to copying again."
+msgstr "У вас нет других сайтов, куда можно скопировать выбранный. Добавьте еще хотя бы один сайт и снова перейдите к копированию."
+
+msgid "Start copying"
+msgstr "Начать копирование"
+
+msgid "Copying in progress"
+msgstr "Идет копирование"
+
+msgid "Add site"
+msgstr "Добавить сайт"
+
+msgid "Go to site"
+msgstr "Перейти к сайту"
+
+msgid "Error. Please try again."
+msgstr "Ошибка. Попробуйте еще раз."
+
+msgid "Web form"
+msgstr "Форма"
+
+msgid "The premium license is required to create block pages."
+msgstr "Для создания блочных страниц-конструкторов необходима премиум-лицензия."
+
+msgid "Unable to set this page or section as the site’s home page."
+msgstr "Не удалось установить эту страницу или раздел в качестве домашней страницы сайта."
+
+msgid "The URL exists."
+msgstr "URL существует."
+
+msgid "Such arrangement is not allowed. Probably, the section will stop working because the address of the section being dragged partially matches another address."
+msgstr "Такое расположение невозможно. Вероятно, раздел перестанет работать, потому что адрес перетаскиваемого раздела частично совпадает с другим адресом."
+
+msgid "The premium license is required to copy pages."
+msgstr "Для копирования страниц необходима премиум-лицензия."
+
+msgid "The premium license is required to copy sites."
+msgstr "Для копирования сайтов необходима премиум-лицензия."
+
+msgid "Hero"
+msgstr "Герой"
+
+msgid "Call to action"
+msgstr "Призыв к действию"
+
+msgid "Products"
+msgstr "Товары"
+
+msgid "Categories"
+msgstr "Категории"
+
+msgid "List"
+msgstr "Список"
+
+msgid "Map"
+msgstr "Карта"
+
+msgid "Max width"
+msgstr "Макс. ширина"
+
+msgid "Wrap line"
+msgstr "Перенос строки"
+
+msgid "duplicated site"
+msgstr "скопировал сайт"
+
+msgid "View on site"
+msgstr "Посмотреть на сайте"
+
+msgid "Hero 2"
+msgstr "Герой 2"
+
+msgid "Hero 3"
+msgstr "Герой 3"
+
+msgid "Menu type 2"
+msgstr "Тип меню 2"
+
+msgid "Products 2"
+msgstr "Товары 2"
+
+msgid "Products 3"
+msgstr "Товары 3"
+
+msgid "Reviews 2"
+msgstr "Отзывы 2"
+
+msgid "FAQ"
+msgstr "ЧАВО"
+
+msgid "Banner"
+msgstr "Баннер"
+
+msgid "Banner 2"
+msgstr "Баннер 2"
+
+msgid "Text 2"
+msgstr "Текст 2"
+
+msgid "Images with description"
+msgstr "Изображения с описанием"
+
+msgid "Images with description 2"
+msgstr "Изображения с описанием 2"
+
+msgid "Facts"
+msgstr "Факты"
+
+msgid "Partner logos"
+msgstr "Логотипы партнеров"
+
+msgid "Gallery"
+msgstr "Галерея"
+
+msgid "Banners"
+msgstr "Баннеры"
+
+msgid "Company name"
+msgstr "Название компании"
+
+msgid "Company slogan"
+msgstr "Слоган компании"
+
+msgid "Order"
+msgstr "Заказ"
+
+msgid "Menu type 1"
+msgstr "Тип меню 1"
+
+msgid "Open Graph Meta Tags"
+msgstr "Метатеги Open Graph"

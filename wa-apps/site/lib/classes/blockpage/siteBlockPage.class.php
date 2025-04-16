@@ -6,8 +6,9 @@
 class siteBlockPage
 {
     public $data;
+    public $params;
 
-    public function __construct($page)
+    public function __construct($page, $params=null)
     {
         if (is_scalar($page)) {
             $blockpage_model = new siteBlockpageModel();
@@ -19,6 +20,11 @@ class siteBlockPage
         if (empty($this->data['id']) || empty($this->data['status'])) {
             throw new waException('Bad page data');
         }
+        if ($params === null) {
+            $blockpage_params_model = new siteBlockpageParamsModel();
+            $params = $blockpage_params_model->getById($page['id']);
+        }
+        $this->params = $params;
     }
 
     public function getId()
@@ -39,7 +45,7 @@ class siteBlockPage
         return $this->render(true, $only_block_id);
     }
 
-    protected function render($is_backend, $only_block_id = null)
+    public function prepareBlocksForRender($is_backend, $only_block_id = null)
     {
         // Get all page blocks
         $blocks = [];
@@ -100,6 +106,16 @@ class siteBlockPage
             });
         }
 
+        return [$blocks, $block_types];
+    }
+
+    protected function render($is_backend, $only_block_id = null)
+    {
+        list($blocks, $block_types) = $this->prepareBlocksForRender($is_backend, $only_block_id);
+        if ($only_block_id) {
+            $only_block = reset($blocks);
+        }
+
         // Prerender all block types, gather global assets.
         $global_js = [];
         $global_css = [];
@@ -118,7 +134,12 @@ class siteBlockPage
             }
         }
 
-        if ($only_block) {
+        $page_locale = ifset($this->params, 'locale', null);
+        if ($page_locale && wa()->getEnv() != 'backend') {
+            wa()->setLocale($page_locale);
+        }
+
+        if (!empty($only_block)) {
             $global_block_type = $only_block->block_type;
             $global_block_data = $only_block;
         } else {
@@ -132,14 +153,16 @@ class siteBlockPage
             if ($this->data['theme']) {
                 $theme = new waTheme($this->data['theme'], 'site');
                 $theme_view = new siteEditorView(wa('site'));
-                if(!$theme_view->setThemeTemplate($theme, 'blockpage.wrapper.html')) {
+                if($theme_view->setThemeTemplate($theme, 'blockpage.wrapper.html')) {
+                    waRequest::setParam('theme', $this->data['theme']);
+                } else {
                     $theme_view = null;
                 }
             }
         }
 
         // render global block, it recursively takes care of the rest
-        $all_blocks_html = $global_block_type->render($global_block_data, $is_backend);
+        $all_blocks_html = $global_block_type->render($global_block_data->ensureAdditionalData(), $is_backend);
 
         $res = $this->formatGlobalJS($global_js)."\n".
                $this->formatGlobalCSS($global_css)."\n\n".
@@ -209,7 +232,40 @@ class siteBlockPage
         if ($this->data['status'] !== 'final_published') {
             return $this;
         }
-        throw new waException(_w('Editing published pages is unavailable.')); // !!! TODO
+
+        $blockpage_model = new siteBlockpageModel();
+        $draft_page = $blockpage_model->getDraftById($this->data['id']);
+        if ($draft_page) {
+            return new self($draft_page);
+        }
+
+        $dt = date('Y-m-d H:i:s');
+        $insert_data = [
+            'status' => 'draft',
+            'final_page_id' => $this->data['id'],
+            'create_datetime' => $dt,
+            'update_datetime' => $dt,
+        ] + $this->data;
+        unset($insert_data['id']);
+        $insert_data['id'] = $blockpage_model->insert($insert_data);
+
+        $blockpage_model->copyContents($this->data['id'], $insert_data['id']);
+
+        return new self($insert_data);
     }
 
+    public function updateDateTime($datetime=null)
+    {
+        if (!$datetime) {
+            $datetime = date('Y-m-d H:i:s');
+        }
+        $old_dt = $this->data['update_datetime'];
+        $this->data['update_datetime'] = $datetime;
+
+        (new siteBlockpageModel())->updateById($this->data['id'], [
+            'update_datetime' => $this->data['update_datetime'],
+        ]);
+
+        return [$this->data['update_datetime'], $old_dt];
+    }
 }

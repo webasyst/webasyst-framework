@@ -14,7 +14,9 @@ class siteCardBlockType extends siteBlockType
         // Default card contents: vertical sequence with heading and a paragraph of text
         $vseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $vseq->addChild((new siteHeadingBlockType())->getExampleBlockData());
-        $vseq->addChild((new siteHeadingBlockType())->getExampleBlockData());
+        $paragraph = (new siteParagraphBlockType())->getExampleBlockData();
+        $paragraph->data["html"] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ";
+        $vseq->addChild($paragraph);
 
         $result = $this->getEmptyBlockData();
         $result->addChild($vseq, '');
@@ -38,9 +40,16 @@ class siteCardBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Card'),
+            'tags' => 'element',
             'sections' => [
+                [   'type' => 'ColumnsAlignGroup',
+                    'name' => _w('Columns alignment'),
+                ],
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],
+                [   'type' => 'ColumnWidthGroup',
+                    'name' => _w('Width limit'),
                 ],
                 [   'type' => 'BackgroundColorGroup',
                     'name' => _w('Background'),
@@ -60,8 +69,8 @@ class siteCardBlockType extends siteBlockType
             ],
             'elements' => $this->elements,
             'semi_headers' => [
-                'main' => _w('Whole card'),
-                'wrapper' => _w('Container'),
+                'main' => _w('Outside'),
+                'wrapper' => _w('Inside'),
             ]
         ] + parent::getRawBlockSettingsFormConfig();
     }

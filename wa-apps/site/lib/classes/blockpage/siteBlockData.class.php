@@ -35,6 +35,7 @@ class siteBlockData
     {
         $this->db_row = $block_db_row;
         $this->data = json_decode(ifset($block_db_row, 'data', '[]'), true);
+        unset($this->data['additional']);
         return $this;
     }
 
@@ -110,18 +111,30 @@ class siteBlockData
         return $this;
     }
 
-    public function getRenderedChildren($is_backend)
+    public function getRenderedChildren($is_backend, $tmpl_vars=[])
     {
         $result = [];
         foreach($this->children as $child_key => $arr) {
             foreach($arr as $child) {
                 $result[$child_key][] = [
-                    'data' => $child,
-                    'html' => $child->block_type->render($child, $is_backend),
+                    'data' => $child->ensureAdditionalData(),
+                    'html' => $child->block_type->render($child, $is_backend, $tmpl_vars),
                 ] + ifset($child->db_row, ['id' => '']);
             }
         }
         return $result;
+    }
+
+    public function ensureAdditionalData($force=false)
+    {
+        if ($force) {
+            unset($this->data['additional']);
+        }
+        if (!isset($this->data['additional'])) {
+            $additional_data = $this->block_type->additionalData($this);
+            $this->data['additional'] = ifempty($additional_data, []);
+        }
+        return $this;
     }
 
     public function getDataEncoded()

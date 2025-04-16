@@ -13,16 +13,16 @@ class siteMenuBurgerBlockType extends siteBlockType
     {
         $hseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq->data['is_horizontal'] = true;
-        $logo = (new siteImageBlockType())->getExampleBlockData();
-        $logo->data['block_props'] = ["margin-right" => "m-r-0","margin-bottom" => "m-b-0", 'width' => 'i-xxl'];
-        $logo->data['indestructible'] = true;
-        $logo->data['default_image_url'] = wa()->getAppStaticUrl('site').'img/burger.svg';
-        $logo->data['image'] = 'burger.svg';
-        $hseq->addChild($logo);
+        $button = (new siteButtonBlockType())->getExampleBlockData();
+        $button->data["html"] = 'Saura';
+        $button->data["block_props"]["margin-bottom"] = "m-b-0";
+        $button->data["block_props"]["width"] = "cnt-w";
+        $button->data["block_props"]['button-style'] = ["name" => "Palette", "value" => "btn-blc", "type" => "palette"];
+        $hseq->addChild($button);
         $result = $this->getEmptyBlockData();
         $result->addChild($hseq, '');
         $card_props = array();
-        $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'visibility' => "d-n-lp d-n-ds"];
+        $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'visibility' => 'd-n-tb d-n-lp d-n-ds'];
         $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
         $result->data = ['block_props' => $card_props];
         $result->data['elements'] = $this->elements;
@@ -41,10 +41,8 @@ class siteMenuBurgerBlockType extends siteBlockType
     {
         return [
             'type_name' => _w('Burger'),
+            'tags' => 'element',
             'sections' => [
-                [   'type' => 'ColumnsAlignGroup',
-                    'name' => _w('Alignment'),
-                ],
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
                 ],

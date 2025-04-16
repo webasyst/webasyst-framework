@@ -30,10 +30,7 @@
             lang: '{if $wa->locale() == "ru_RU"}ru{else}en{/if}',
             locale: {json_encode([
                 "unable_to_load" => _w("Unable to get the page from the server.")
-            ])},
-            templates: {
-                unsaved_form_dialog: {{include file="templates/actions/backend/includes/unsaved_form_dialog.html"}|json_encode|strip}
-            }
+            ])}
         });
     })();</script>
     {* CSS *}
@@ -52,7 +49,7 @@
             "delete_page" => _w("Delete page?"),
             "delete_nested_pages" => _w("Delete subpages?"),
             "delete_rule_msg" => _w("The section will be removed from the site map. Continue?"),
-            "delete_page_msg" => _w("The page will be removed from the site map. Continue?"),
+            "delete_page_msg" => _w("The page will be deleted without the ability to restore. Continue?"),
             "delete_route_with_nested_pages_msg" => _w("With the selected section, its subpages will be deleted, too. Continue?"),
             "delete_page_with_nested_pages_msg" => _w("With the selected page, its subpages will be deleted, too. Continue?"),
             "delete_main_page_alert" => sprintf("<div class=\"alert danger\">%s</div>", _w('If you remove the homepage, the site will not be operating properly. Be sure to select a page or a section as the homepage right after that.'))

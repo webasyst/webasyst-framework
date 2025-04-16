@@ -29,7 +29,7 @@ class siteSettingsSaveController extends waJsonController
         if ($url != $domain) {
             // domain already exists
             if ($domain_model->getByName($url)) {
-                $this->errors = sprintf(_w("A website with domain name %s already exists in this Webasyst account. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website."), $url, $url, $url);
+                $this->errors = sprintf(_w("A site with domain name %s already exists in this Webasyst account."), $url);
                 return;
             }
             $event_params['renamed_from_domain'] = $domain;

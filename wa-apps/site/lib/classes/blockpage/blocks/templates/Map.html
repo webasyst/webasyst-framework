@@ -1,0 +1,37 @@
+{$static_classes_props = 'site-block-map style-wrapper f-w ovr-hdn'}
+{$default_empty_image_url = "`$wa_app_static_url`img/map-background.svg"}
+{$html = ifset($data->data, 'html', '')}
+{$anchor_id = $data->data['id']|default:0}
+{if $is_backend}
+    <div class="child-iframe-cover"></div>
+{/if}
+<div {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_classes_props} m-l-a m-r-a" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    <div class="iframe-picture-cover" style="background-image: url({$default_empty_image_url}); {if !empty($html)}display: none;{/if}"></div>
+    <div class="iframe-wrapper">
+        {if $is_backend}{$wa->site->sanitizeHTML($html)}{else}{$html}{/if}
+    </div>
+</div>
+
+{if $is_backend}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const wrapper_class = '.site-block-map[data-block-id="'+block_id+'"]';
+    const $wrapper_parent = $(wrapper_class).parent();
+
+    $wrapper_parent.on('block_data_updated', wrapper_class, function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (+updated_block_id === +block_id) {
+            updateBlockStyles($(this), data, block_id);
+            $(this).find('.iframe-wrapper').html(SiteEditorInsideIframe.sanitizeHTML(data.html));
+        }
+    });
+});
+</script>
+{else}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.site-block-map[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+});</script>
+{/if}

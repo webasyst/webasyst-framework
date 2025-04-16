@@ -2,11 +2,11 @@
 
 return array(
     'name'       => 'Site', // _w('Site')
-    'icon'       => 'img/site512.png',
+    'icon'       => 'img/site.svg',
     'sash_color' => '#49a2e0',
     'frontend'   => true,
-    'version'    => '3.1.0',
-    'critical'   => '3.0.0',
+    'version'    => '3.2.0',
+    'critical'   => '3.2.0',
     'vendor'     => 'webasyst',
     'system'     => true,
     'rights'     => true,
