@@ -6,7 +6,7 @@
  * @name tinkoffPayment
  * @description tinkoff Payments Standard Integration
  *
- * @link        https://oplata.tinkoff.ru/develop/api/payments/
+ * @link        https://www.tbank.ru/kassa/dev/payments/
  *
  * @property-read        $terminal_key
  * @property-read        $terminal_password
@@ -92,6 +92,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'Description' => ifempty($order_data, 'description', ''),
             'PayType'     => $this->two_steps ? 'T' : 'O',
             'DATA'        => array(
+                'connection_type' => 'webasyst',
                 'Email' => $email,
             ),
         );
@@ -107,7 +108,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         if ($this->getSettings('check_data_tax')) {
             $args['Receipt'] = $this->getReceiptData($order_data);
             if (!$args['Receipt']) {
-                return 'Данный вариант платежа недоступен. Воспользуйтесь другим способом оплаты.';
+                return 'Этот вариант платежа недоступен. Не удалось подготовить данные для формирования чека: возможно, неправильно настроены налоги.';
             }
         }
 
@@ -123,7 +124,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 return null;
             }
         } catch (Exception $ex) {
-            return 'Данный вариант платежа недоступен. Воспользуйтесь другим способом оплаты.';
+            return 'Этот вариант платежа недоступен. Получено сообщение об ошибке от API платежной системы — подробности сохранены в файле логов.';
         }
         $view = wa()->getView();
 
@@ -309,6 +310,20 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 self::log($this->id, 'Error: missed request parameter "Success"');
                 return;
             }
+            
+            if ($data['Success'] == 'true') {
+                // Check payment status
+            	$check_payment_data = $this->apiQuery('GetState', ['PaymentId' => $data['PaymentId']]);
+            	$status = ifset($check_payment_data, 'Status', null);
+            	if (in_array($status, ['CONFIRMED', 'AUTHORIZED'])) {
+            	    // Force callback handle
+                    $data['Status'] = $status;
+                    $data['TerminalKey'] = ifset($check_payment_data, 'TerminalKey', '');
+                    $data['Token'] = $this->calculateToken($data);
+                    $this->callbackHandler($data);
+            	}
+            }
+            
             $type = $data['Success'] == 'true' ? waAppPayment::URL_SUCCESS : waAppPayment::URL_FAIL;
             $url = $this->getAdapter()->getBackUrl($type, array('order_id' => $this->order_id));
             return array(
@@ -398,7 +413,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                     'transaction_data'         => $transaction_data,
                 );
 
-                static::log($this->id, $log);
+                self::log($this->id, $log);
             }
         }
     }
@@ -521,6 +536,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'CustomerKey' => $c->getId(),
             'Description' => ifempty($order_data, 'description', ''),
             'DATA'        => array(
+                'connection_type' => 'webasyst',
                 'Email' => $email,
             ),
         );
@@ -576,7 +592,9 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
             'Description' => ifempty($order_data, 'description', ''),
             'PayType'     => $this->two_steps ? 'T' : 'O',
-            'DATA'        => [],
+            'DATA'        => [
+                'connection_type' => 'webasyst',
+            ],
         );
 
         if ($this->getSettings('check_data_tax')) {
@@ -586,7 +604,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             }
             $args['Receipt'] = $this->getReceiptData($full_order_data, $this);
             if (!$args['Receipt']) {
-                return 'Данный вариант платежа недоступен. Воспользуйтесь другим способом оплаты.';
+                return 'Этот вариант платежа недоступен. Не удалось подготовить данные для формирования чека: возможно, неправильно настроены налоги.';
             }
         }
 

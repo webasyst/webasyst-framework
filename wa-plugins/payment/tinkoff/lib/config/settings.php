@@ -11,13 +11,12 @@ return array(
         'value'        => '',
         'title'        => /*_wp*/('Пароль'),
         'control_type' => waHtmlControl::PASSWORD,
-        'description'  => 'Выдается Т-Кассой после подключения.',
-//         'description'  => <<<HTML
-// <span class="js-tkassa-registration-link" style="background-color: #fea; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
-// Подключайтесь к Т-Кассе <a href="https://www.tbank.ru/kassa/form/partner/webasyst" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a> и получите данные для заполнения Terminal ID и пароля.
-// </span>
-// HTML
-//         ,
+        'description'  => <<<HTML
+<span class="js-tkassa-registration-link" style="background-color: #e3ffc8; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
+Подключайтесь к Т-Кассе <b><a href="https://www.tbank.ru/kassa/?utm_source=partners_sme&utm_medium=prt.utl&utm_campaign=business.int_acquiring.5-3AKNBMR5&partnerId=5-3AKNBMR5&agentId=1-5UKK6AD&agentSsoId=716fa180-4245-46d4-bff0-eb2926d52c32" target="_blank" style="color: #09f;">через Webasyst по этой ссылке</a> и получите ставку 2,7% с дальнейшим понижением</b>. Данные для заполнения Terminal ID и пароля будут выданы сразу после подключения.
+</span>
+HTML
+        ,
     ),
     'currency_id' => array(
         'value'        => '',
@@ -41,18 +40,18 @@ return array(
     'testmode' => array(
         'value'        => '',
         'title'        => 'Тестовый режим',
-        'description'  => /*_wp*/('Только для тестирования по старой схеме через платежный шлюз <em>https://rest-api-test.tinkoff.ru/rest/</em>'),
+        'description'  => /*_wp*/('Только для тестирования по старой схеме через платежный шлюз <em>https://rest-api-test.tinkoff.ru/rest/</em>.'),
         'control_type' => waHtmlControl::CHECKBOX,
     ),
     'check_data_tax' => array(
         'value'        => '',
         'title'        => /*_wp*/('Передавать данные для формирования чека'),
         'control_type' => waHtmlControl::CHECKBOX,
-        'description'  => 'Если включена интеграция с онлайн кассами, то клиенты смогут использовать этот способ оплаты только в следующих случаях:'
+        'description'  => 'Если включена интеграция с онлайн-кассами, то клиенты смогут использовать этот способ оплаты только в следующих случаях:'
             .'<br>'
-            .'— к элементам заказа и стоимости доставки не применяются налоги'
+            .'— к элементам заказа и стоимости доставки не применяются налоги;'
             .'<br>'
-            .'— налог составляет 0%, 10% либо 20% и <em>включен</em> в стоимость элементов заказа и стоимость доставки'.
+            .'— налог составляет 0%, 10% либо 20% и <em>включен</em> в стоимость позиций заказа и стоимость доставки.'.
 
             <<<HTML
 <script type="text/javascript">
@@ -190,7 +189,7 @@ HTML
     'payment_ffd' => array(
         'value'        => '1.05',
         'title'        => 'Версия ФФД',
-        'description'  => 'Текущая выбранная версия должна совпадать с версией в настройках ОФД',
+        'description'  => 'Текущая выбранная версия должна совпадать с версией в настройках ОФД.',
         'control_type' => waHtmlControl::SELECT,
         'options' => array(
             '1.05' => '1.05',
@@ -201,7 +200,7 @@ HTML
     'payment_language' => array(
         'value'        => 'ru',
         'title'        => 'Язык платежной формы',
-        'description'  => 'Выберите язык платежной формы для своих клиентов',
+        'description'  => 'Выберите язык платежной формы для своих клиентов.',
         'control_type' => waHtmlControl::SELECT,
         'options'      => array(
             'ru' => 'русский',
