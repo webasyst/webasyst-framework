@@ -6,18 +6,31 @@ ul.tabs.d-greeny-style li { border-color: #796; background: #daeeca; }
 ul.tabs.d-greeny-style li.selected { border-color: #796 #796 #fff; background: #fff; }
 .tab-content.d-greeny-style { border-color: #796; box-shadow: 0 2px 4px #555; }
 
-.d-sandbox-column { width: 50%; min-height: 100%; display: inline-block; overflow: hidden; margin-right: -1px /* because of border */; position: relative; }
-.d-sandbox-column .d-header h2 { color: #aaa; margin-top: 0.2em; }
+/* Sandbox */
+.d-sandbox-column { width: 50%; min-height: 100%; overflow: hidden; margin-right: -1px; position: relative; }
+.d-sandbox-column .d-header h2 { color: #aaa; margin-top: .2em; }
 .d-sandbox-column .d-header h2 select { position: relative; top: -2px; }
-.d-sandbox-column .d-editor { border: 1px dashed #ccc; min-height: 100px; }
+.d-sandbox-column .d-editor { border: 1px dashed #ccc; overflow: auto; min-height: 100px; }
+#wa .CodeMirror, #wa .CodeMirror-wrapping { padding: 0 !important; }
 #d-compile-toolbar { position: absolute; bottom: 0; width: 95%; }
+.wa-cheatsheet-dropdown { margin: 0 0 0 1rem; }
 
 #result-wrapper { overflow: auto; }
 
-/* UI sandbox from webasyst.com */
+#icons-wrapper td { padding: 0 5px 5px 0; }
+#icons-wrapper td .icon10 { margin: 3px; }
 
+/* UI */
 .wa-ui-playground .wa-ui-predefined-controls { background: #eee; border-top: 1px solid #ccc; }
 .wa-ui-playground .wa-ui-sandbox textarea { width:97%; min-height: 350px; font-size: 0.9em; }
 .wa-ui-playground .wa-ui-sandbox iframe { width: 95%; min-height: 350px; border: 1px solid #777; }
 .wa-ui-playground .wa-ui-sandbox .heading a { text-transform: none; }
 #wa .wa-ui-class pre { background-color: #F3F3F3; border: 1px dashed #CCCCCC; padding: 20px; }
+.block .fields { float: none; }
+/* UI shop icons */
+#d-product-icons { max-height: 160px; overflow-y: auto; position: relative; border: 1px solid #cdcdcd; }
+#d-product-icons .product-icon { position: relative; display: inline-block; padding: 3px; cursor: pointer; }
+#d-product-icons .product-icon input { display: none; }
+#d-product-icons .product-icon img { border: 2px solid #fff; border-radius: 2px; width: 16px; height: 16px; }
+#d-product-icons .product-icon input:checked + img { border-color: #b5b5b5; background-color: #cdcdcd; }
+

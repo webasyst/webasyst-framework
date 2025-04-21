@@ -14,14 +14,6 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: /wa-apps/developer/lib/actions/developerBackendExec.action.php:35
-msgid "Smarty"
-msgstr ""
-
-#: /wa-apps/developer/js/coding-sandbox.js:107
-msgid "PHP"
-msgstr ""
-
 #: /wa-apps/developer/templates/actions/backend/Backend.html:22
 msgid "Save as template"
 msgstr ""
@@ -100,4 +92,46 @@ msgstr ""
 
 #: /wa-apps/developer/templates/actions/backend/Backend.html:54
 msgid "E.g. wa_print_r() would output all its arguments and exit:"
+msgstr ""
+
+msgid "Events"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Translate"
+msgstr ""
+
+msgid "Compress"
+msgstr ""
+
+msgid "Frontend"
+msgstr ""
+
+msgid "DB config"
+msgstr ""
+
+msgid "Create config for tables with prefix 'application_plugin_'."
+msgstr ""
+
+msgid "Application"
+msgstr ""
+
+msgid "Widget"
+msgstr ""
+
+msgid "Plugin"
+msgstr ""
+
+msgid "System plugin"
+msgstr ""
+
+msgid "System widget"
+msgstr ""
+
+msgid "Locales"
+msgstr ""
+
+msgid "Icon"
 msgstr ""
