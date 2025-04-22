@@ -7,6 +7,7 @@ ul.tabs.d-greeny-style li.selected { border-color: #796 #796 #fff; background: #
 .tab-content.d-greeny-style { border-color: #796; box-shadow: 0 2px 4px #555; }
 
 /* Sandbox */
+#d-sandbox .content.left200px { margin-left: 201px; }
 .d-sandbox-column { width: 50%; min-height: 100%; overflow: hidden; margin-right: -1px; position: relative; }
 .d-sandbox-column .d-header h2 { color: #aaa; margin-top: .2em; }
 .d-sandbox-column .d-header h2 select { position: relative; top: -2px; }
@@ -33,4 +34,6 @@ ul.tabs.d-greeny-style li.selected { border-color: #796 #796 #fff; background: #
 #d-product-icons .product-icon input { display: none; }
 #d-product-icons .product-icon img { border: 2px solid #fff; border-radius: 2px; width: 16px; height: 16px; }
 #d-product-icons .product-icon input:checked + img { border-color: #b5b5b5; background-color: #cdcdcd; }
-
+/* Events */
+#d-app-events .field .name { width: 250px; }
+#d-app-events .field .value { margin-left: 275px; }
