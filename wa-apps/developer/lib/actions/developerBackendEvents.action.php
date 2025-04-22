@@ -15,11 +15,7 @@ class developerBackendEventsAction extends developerAction
         ]);
     }
 
-    /**
-     * @param string $appId the application identifier
-     * @return array
-     */
-    protected function getAppEvents(string $appId): array
+    private function getAppEvents(string $appId): array
     {
         $cache = new waSerializeCache('events_' . $appId, 3600, $this->getApp());
         $events = $cache->get();
@@ -31,7 +27,7 @@ class developerBackendEventsAction extends developerAction
         $excludedDirs = ['vendor', 'vendors', 'updates', 'config', 'handlers', 'actions-mobile'];
         $appDir = $appId == 'wa' ? waConfig::get('wa_path_system') : wa($appId)->getAppPath('lib');
         foreach (glob($appDir . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $path) {
-            if (!in_array(basename($path), $excludedDirs, true)) {
+            if (!in_array(basename($path), $excludedDirs)) {
                 $template = $path . '/{/,/*/,/*/*/}' . $appId . '*.{class,model,controller,action,cli,layout}.php';
                 $files[] = glob($template, GLOB_BRACE | GLOB_NOSORT);
             }
@@ -40,46 +36,165 @@ class developerBackendEventsAction extends developerAction
 
         $context = stream_context_create(['http' => ['method'=> 'GET']]);
 
-        $regexp = '\/\*\*\s+\* @event\s+(?<descr>.+?)(\*\/|\n).+?->event\([\'"](?<name>[.\w]+)[\'"](,\s*(?<args>.+?))?\)(;|\)[^;])';
-        $regexp2 = '->event\([\'"](?<name>[.\w]+)[\'"](,\s*(?<args>.+?))?\)(;|\)[^;])';
-        $pattern = '/(?:(' . $regexp . ')|(' . $regexp2 . '))/suJ';
-
         $events = [];
         foreach ($files as $file) {
-            $content = file_get_contents($file);
-            if (preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)) {
-                foreach ($matches as $event) {
-                    $event['name'] = trim($event['name']);
-                    if (isset($events[$event['name']])) {
-                        continue;
+            $fileEvents = $this->parseEvents(file_get_contents($file));
+            foreach ($fileEvents as $eventName => &$event) {
+                if (isset($events[$eventName])) {
+                    // Use event called with arguments if it's possible
+                    if (empty($events[$eventName]['args'])) {
+                        $events[$eventName] = $event;
                     }
-                    $event = array_filter($event, 'is_string', ARRAY_FILTER_USE_KEY);
-                    $url = 'https://developers.webasyst.ru/hooks/' . $appId. '/' . $event['name'] . '/';
-                    $content = @file_get_contents($url, false, $context);
-                    if ($content) {
-                        $content = preg_split(
-                            '/(?:<p class="bigger">|<div class="plugin-dummy">.+?<div class="value">\s*)/uis',
-                            $content,
-                            -1,
-                            PREG_SPLIT_NO_EMPTY
-                        );
-                        [$event['descr']] = explode('</p>', $content[1], 2);
-                        [$args] = explode('</div>', $content[2], 2);
-                        if ($args) {
-                            $event['args'] = $args;
-                        }
-                    } else {
-                        if ($event['name'] == $event['descr']) {
-                            $event['descr'] = '';
-                        }
-                    }
-                    $events[$event['name']] = $event;
+                    continue;
                 }
+
+                $url = 'https://developers.webasyst.ru/hooks/' . $appId. '/' . $eventName . '/';
+                $content = @file_get_contents($url, false, $context);
+                if ($content) {
+                    $content = preg_split(
+                        '/(?:<p class="bigger">|<div class="plugin-dummy">.+?<div class="value">\s*)/uis',
+                        $content,
+                        -1,
+                        PREG_SPLIT_NO_EMPTY
+                    );
+                    [$event['descr']] = explode('</p>', $content[1], 2);
+                    [$args] = explode('</div>', $content[2], 2);
+                    if ($args) {
+                        $event['args'] = $args;
+                    }
+                }
+
+                $events[$eventName] = $event;
             }
+            unset($event);
         }
 
         $cache->set($events);
 
         return $events;
+    }
+
+    private function parseEvents(string $code): array
+    {
+        // Quick check
+        if (!strpos($code, '->event(')) {
+            return [];
+        }
+
+        $events = [];
+
+        $tokens = token_get_all($code);
+        foreach ($tokens as &$token) {
+            if (!is_array($token)) {
+                $token = [0, $token];
+            }
+        }
+        unset($token);
+
+        foreach ($tokens as $i => $token) {
+            if (
+                !$this->checkToken($token, T_OBJECT_OPERATOR)
+                || !$this->checkToken($tokens[$i + 1], 'event')
+                || !$this->checkToken($tokens[$i + 2], '(')
+            ) {
+                continue;
+            }
+
+            $tokens2 = array_slice($tokens, $i + 3);
+            $openBrace = 1;
+            foreach ($tokens2 as $i2 => $token2) {
+                if ($this->checkToken($token2, '(')) {
+                    $openBrace++;
+                } elseif ($this->checkToken($token2, ')')) {
+                    $openBrace--;
+                    if ($openBrace == 0) {
+                        break;
+                    }
+                }
+            }
+            $tokens2 = array_slice($tokens2, 0, $i2);
+            if (count($tokens2) > 1) {
+                $tokens2 = $this->normalizeEventName($tokens2);
+            }
+
+            $data = explode(',', implode('', array_column($tokens2, 1)), 2);
+
+            $name = trim($data[0], ' "\'');
+            $args = isset($data[1]) ? str_replace(["\r\n","\n"], '', trim($data[1])) : '';
+
+            $events[$name] = ['name' => $name, 'args' => $args, 'descr' => ''];
+        }
+
+        return $events;
+    }
+
+    private function normalizeEventName(array $tokens): array
+    {
+        $isArray = false;
+        foreach ($tokens as $token) {
+            if ($this->checkToken($token, T_WHITESPACE)) {
+                continue;
+            }
+            if ($this->checkToken($token, [T_ARRAY, '['])) {
+                $isArray = true;
+            }
+            break;
+        }
+
+        $eventName = ['*'];
+        $openBrace = 0;
+        $index = 0;
+        if ($isArray) {
+            // Event name is array
+            foreach ($tokens as $i => $token) {
+                if ($this->checkToken($token, [']', ')'])) {
+                    $openBrace--;
+                    if ($openBrace == 0) {
+                        break;
+                    }
+                } elseif ($this->checkToken($token, ['[', '('])) {
+                    $openBrace++;
+                } elseif ($openBrace == 1 && $this->checkToken($token, ',')) {
+                    $index++;
+                    $eventName[$index] = '*';
+                } elseif ($openBrace == 1 && $this->checkToken($token, T_CONSTANT_ENCAPSED_STRING)) {
+                    $eventName[$index] = trim($token[1], '"\'');
+                }
+            }
+            $tokens = array_slice($tokens, $i);
+            $tokens[0] = [0, implode('.', $eventName)];
+        } else {
+            // Event name is composite string
+            foreach ($tokens as $i => $token) {
+                if ($this->checkToken($token, [']', ')'])) {
+                    $openBrace--;
+                } elseif ($this->checkToken($token, ['[', '('])) {
+                    $openBrace++;
+                } elseif ($openBrace == 0 && $this->checkToken($token, '.')) {
+                    $index++;
+                    $eventName[$index] = '*';
+                } elseif ($openBrace == 0 && $this->checkToken($token, T_CONSTANT_ENCAPSED_STRING)) {
+                    $eventName[$index] = trim($token[1], '"\'');
+                } elseif ($openBrace == 0 && $this->checkToken($token, ',')) {
+                    break;
+                }
+            }
+            $tokens = array_slice($tokens, count($tokens) - 1 == $i ? $i : $i - 1);
+            $tokens[0] = [0, implode('', $eventName)];
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * @param int|string|array $kind
+     */
+    private function checkToken(array $token, $kind): bool
+    {
+        if (!is_array($kind)) {
+            $kind = [$kind];
+        }
+
+        return in_array($token[0], $kind, true) || in_array($token[1], $kind, true);
     }
 }
