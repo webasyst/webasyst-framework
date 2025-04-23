@@ -78,7 +78,7 @@ class developerBackendEventsAction extends developerAction
     private function parseEvents(string $code): array
     {
         // Quick check
-        if (!strpos($code, '->event(') || !strpos($code, '@event')) {
+        if (!strpos($code, '->event(') && !strpos($code, '@event')) {
             return [];
         }
 
