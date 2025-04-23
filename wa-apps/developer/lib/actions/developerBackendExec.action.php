@@ -7,6 +7,10 @@ class developerBackendExecAction extends waViewAction
 {
     public function execute()
     {
+        if (!$this->getUser()->getRights('webasyst', 'backend')) {
+            throw new waRightsException(_w('Coding sandbox is available for Webasyst admin users only.'));
+        }
+
         $error = $this->view->getVars('error');
         if ($error) {
             throw new waException($error);
@@ -14,7 +18,7 @@ class developerBackendExecAction extends waViewAction
 
         error_reporting(E_ALL);
         ini_set('display_errors', 'On');
-        ini_set('log_errors',  'Off');
+        ini_set('log_errors', 'Off');
 
         // Welcome to the dark side!
         eval(waRequest::post('code'));
