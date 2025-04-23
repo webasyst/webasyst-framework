@@ -24,11 +24,11 @@ class developerBackendEventsAction extends developerAction
         }
 
         $files = [];
-        $excludedDirs = ['vendor', 'vendors', 'updates', 'config', 'handlers', 'actions-mobile'];
+        $excludedDirs = ['vendor', 'vendors', 'updates', 'handlers'];
         $appDir = $appId == 'wa' ? waConfig::get('wa_path_system') : wa($appId)->getAppPath('lib');
         foreach (glob($appDir . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $path) {
             if (!in_array(basename($path), $excludedDirs)) {
-                $template = $path . '/{/,/*/,/*/*/}' . $appId . '*.{class,model,controller,action,cli,layout}.php';
+                $template = $path . '/{/,/*/,/*/*/}' . $appId . '*.{class,trait,model,controller,action,layout,cli}.php';
                 $files[] = glob($template, GLOB_BRACE | GLOB_NOSORT);
             }
         }
