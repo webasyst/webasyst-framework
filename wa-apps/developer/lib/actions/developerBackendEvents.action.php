@@ -70,6 +70,8 @@ class developerBackendEventsAction extends developerAction
             unset($event);
         }
 
+        ksort($events);
+
         $cache->set($events);
 
         return $events;
