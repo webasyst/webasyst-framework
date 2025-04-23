@@ -17,7 +17,7 @@ class developerBackendEventsAction extends developerAction
 
     private function getAppEvents(string $appId): array
     {
-        $cache = new waSerializeCache('events_' . $appId, 3600, $this->getApp());
+        $cache = new waSerializeCache('events_' . $appId, 3600 * 12, $this->getApp());
         $events = $cache->get();
         if ($events) {
             return $events;
@@ -48,11 +48,12 @@ class developerBackendEventsAction extends developerAction
                     continue;
                 }
 
+                // Parses description from WA site
                 $url = 'https://developers.webasyst.ru/hooks/' . $appId. '/' . $eventName . '/';
                 $content = @file_get_contents($url, false, $context);
                 if ($content) {
                     $content = preg_split(
-                        '/(?:<p class="bigger">|<div class="plugin-dummy">.+?<div class="value">\s*)/uis',
+                        '/(?:<p class="bigger">|<div class="plugin-dummy">.+?<div class="custom-mb-24">\s*)/uis',
                         $content,
                         -1,
                         PREG_SPLIT_NO_EMPTY
@@ -77,7 +78,7 @@ class developerBackendEventsAction extends developerAction
     private function parseEvents(string $code): array
     {
         // Quick check
-        if (!strpos($code, '->event(')) {
+        if (!strpos($code, '->event(') || !strpos($code, '@event')) {
             return [];
         }
 
@@ -120,9 +121,27 @@ class developerBackendEventsAction extends developerAction
             $data = explode(',', implode('', array_column($tokens2, 1)), 2);
 
             $name = trim($data[0], ' "\'');
+            if (in_array($name, ['', '*', '*.*'])) {
+                continue;
+            }
+
             $args = isset($data[1]) ? str_replace(["\r\n","\n"], '', trim($data[1])) : '';
 
             $events[$name] = ['name' => $name, 'args' => $args, 'descr' => ''];
+        }
+
+        // Finds events in comments
+        foreach ($tokens as $token) {
+            if (!$this->checkToken($token, T_DOC_COMMENT)) {
+                continue;
+            }
+            if (preg_match_all('/@event\s+(?<name>[._\w]+)/', $token[1], $matches)) {
+                foreach ($matches['name'] as $name) {
+                    if (!isset($events[$name])) {
+                        $events[$name] = ['name' => $name, 'args' => '', 'descr' => ''];
+                    }
+                }
+            }
         }
 
         return $events;
@@ -187,7 +206,9 @@ class developerBackendEventsAction extends developerAction
     }
 
     /**
+     * @param array $token
      * @param int|string|array $kind
+     * @return bool
      */
     private function checkToken(array $token, $kind): bool
     {
