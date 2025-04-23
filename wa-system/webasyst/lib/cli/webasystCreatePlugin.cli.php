@@ -80,7 +80,6 @@ HELP;
             'handlers' => array(),//TODO optional include some demo handlers
         );
 
-
         $paths = array(
             'css/'.$this->plugin_id.'.css',
             'js/'.$this->plugin_id.'.js',
@@ -89,7 +88,7 @@ HELP;
             'lib/actions/backend/',
             'lib/classes/',
             'lib/config/',
-            'lib/'.$this->app_id.ucfirst($this->plugin_id).'Plugin.class.php' => $this->getPluginClassCode(),
+            'lib/'.$this->app_id.ucfirst($this->plugin_id).'.plugin.php' => $this->getPluginClassCode(),
             'lib/vendors/',
         );
 
