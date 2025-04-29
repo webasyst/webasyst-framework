@@ -95,7 +95,7 @@ window.siteVseqController = (function() { "use strict";
                 }
             });
         }
-
+        
         // When user clicks on "Add block" button, open dialog in topmost frame
         $wrapper.on('click', '.js-add-block', function(e) {
             var $self = $(this), place;
@@ -240,7 +240,6 @@ window.siteVseqController = (function() { "use strict";
             let min_height = box.height/2;
             let min_width = box.width/2;
             //console.log(window.innerHeight, box.bottom, min_height);
-            //(window.innerHeight - box.bottom) > min_height ? null : $dropdown_body.addClass('bottom').css('max-height', '');
             (window.innerWidth - box.right) > min_width ? null : $dropdown_body.addClass('right');
             box.left > min_width ? null : $dropdown_body.addClass('left');
         }
@@ -249,14 +248,14 @@ window.siteVseqController = (function() { "use strict";
 
         function updateNoChildrenClass() {
             if ($wrapper.children('.seq-child').length) {
-                $wrapper.removeClass('no-children');
-            } else {
+                setTimeout(() => {
+                    $wrapper.removeClass('no-children')
+                }, 0);
+            } else if (!$wrapper.hasClass('no-children')) {
                 $wrapper.addClass('no-children');
             }
         }
-
         return self;
-
     }
 
     /**
@@ -326,6 +325,7 @@ window.siteVseqController = (function() { "use strict";
      * It is called during the initial rendering, when changing form of the settings, as well as when undo redo
      */
 window.updateBlockStyles = function($block_wrapper, data, block_id) {
+  
     if (data.wrapper_props){ //set class props for vseq/hseq wrapper
        let elem_classes = Object.values(data.wrapper_props).map((e) => (typeof e === 'object') ? e.value : e).join(' ');
        let node = $block_wrapper.find('.js-seq-wrapper').eq(0);
@@ -338,8 +338,6 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
         let node_id = data.id;
         let current_id = node.attr('id');
         if (node_id && (!current_id || current_id !== node_id)) node.attr('id', node_id);
-        //let scroll_margin = 'scroll-margin-top:' + (node_id.value);
-        //node.attr('style', scroll_margin);
     }
     if (data.elements) { //For blocks with several wrappers
         let elements = Object.values(data.elements);
@@ -376,6 +374,7 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
             column_node.attr('class', selected_block + column_static_classes + ' ' + column_class);
             column_node.attr('data-column-class', column_class);
         }
+        checkElementsSize($block_wrapper)
         return
     }
 
@@ -392,14 +391,15 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
             if (data.inline_props[k]['value']) {
                 elem_styles += k + ': ' + data.inline_props[k]['value'] + ';';
             }
-
         })
         $block_wrapper.attr('style', elem_styles);
-
     }
     else {
         $block_wrapper.css('visibility', '');
     }
+
+    checkElementsSize($block_wrapper);
+    
     if (data.tag){
         if ($block_wrapper.prop("tagName").toLowerCase() === data.tag) return;
         let new_element = document.createElement(data.tag);
@@ -410,7 +410,22 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
         });
         $block_wrapper[0].parentNode.replaceChild(new_element, $block_wrapper[0]);
     }
-
-
 }
+
+function checkElementsSize($block_wrapper) {
+    const $is_element = $block_wrapper.siblings('.js-add-element').eq(0);
+    if ($is_element.length) {
+        const is_vertical_block = $block_wrapper.closest('.js-seq-wrapper').hasClass('vseq-wrapper');
+        const is_horiz_block = $block_wrapper.closest('.js-seq-wrapper').hasClass('hseq-wrapper');
+        const $elements_collection = $block_wrapper.closest('.seq-child');
+        $elements_collection.each(function(){
+            if (is_vertical_block) {
+                    if ($(this).height() < 40 && !$(this).hasClass('small-height')) $(this).addClass('small-height');
+            } else if(is_horiz_block) {
+                    if ($(this).width() < 40 && !$(this).hasClass('small-width')) $(this).addClass('small-width'); 
+            }
+        })
+    }
+}
+
 </script>

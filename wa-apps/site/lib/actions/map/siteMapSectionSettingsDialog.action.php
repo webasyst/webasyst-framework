@@ -183,7 +183,7 @@ class siteMapSectionSettingsDialogAction extends waViewAction
             'last_app_route'  => $last_app_route,
             'misconfigured_settlement' => $misconfigured_settlement,
             'app_url'         => ifset($app_url, '*'),
-            'is_main_page'    => rtrim(ifset($route['url'], ''), '*') === '' && !$misconfigured_settlement,
+            'is_main_page'    => !$misconfigured_settlement && empty($route['show_over_another_section']) && rtrim(ifset($route['url'], ''), '*') === '',
             'preview_hash'    => siteHelper::getPreviewHash(),
         ));
     }

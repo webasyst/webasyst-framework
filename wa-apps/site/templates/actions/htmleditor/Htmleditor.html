@@ -67,8 +67,8 @@
                         <div class="wa-page-urls small width-100">
                             {if $page}
                                 {if !empty($url)}
-                                    <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" rel="noopener" target="_blank">{$url_decoded|escape}{$page.url}</a>
-                                    <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" target="_blank"><i class="fas fa-external-link-alt fa-sm"></i></a>
+                                    <a href="{$url}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" rel="noopener" target="_blank">{$url_decoded|escape}{$page.url}</a>
+                                    <a href="{$url}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" target="_blank"><i class="fas fa-external-link-alt fa-sm"></i></a>
                                 {elseif !empty($page.domain) and $page.route !== null}
                                     {$page_route=waRouting::clearUrl($page.route)}
                                     <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" rel="noopener" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
@@ -199,7 +199,6 @@
             var framework_version = {$wa->version(true)|json_encode};
             const $page_form = $('#wa-page-form');
             const $page_button_submit = $('.js-page-submit-button');
-
             updatePreview({
                 name:  $(".wa-page-name").text(),
                 status: {$page.status|default:1},
@@ -424,6 +423,7 @@
                 };
 
                 const event_name = 'click.wa_unsaved';
+                let force_leave = false;
 
                 const handler = function (selector) {
                     const unbindEvent = () => $(selector).off(event_name);
@@ -432,11 +432,13 @@
                         const $a = $(this);
 
                         if (
+                            force_leave ||
                             !opts.hasUnsaved() ||
                             $a.attr('target') === '_blank' ||
                             $a.attr('href') === '#' ||
-                            $a.attr('href')?.startsWith('javascript:')
+                            String($a.attr('href')).startsWith('javascript:')
                         ) {
+                            force_leave = false;
                             return true;
                         }
 
@@ -451,6 +453,7 @@
                             },
                             onLeave() {
                                 unbindEvent();
+                                force_leave = true;
                                 $a.click();
                             }
                         });

@@ -41,7 +41,7 @@ class siteColumnsBlockType extends siteBlockType
         $column_block_type->data['column'] = $column_wrapper_class;
 
         $column_props = array();
-        $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
+        $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'padding-left' => "p-l-blc", 'padding-right' => "p-r-blc"];
         $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c", 'max-width' => "cnt"];
 
         $result = $this->getEmptyBlockData();

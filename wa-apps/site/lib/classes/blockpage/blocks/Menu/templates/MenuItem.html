@@ -25,10 +25,9 @@
     const block_id = {$data->getId()|json_encode};
     const $wrapper = $('.btn[data-block-id="'+block_id+'"]');
     $wrapper.on('input', function() {
-        $.wa.editor.saveBlockData(block_id, {
-            html: $wrapper.html(),
-            block_props: {$data->data['block_props']|default:[]|json_encode}
-        });
+        const data = $.extend({}, $.wa.editor.api.block_storage.getData(block_id));
+        data.html = $(this).html();
+        $.wa.editor.saveBlockData(block_id, data);
     });
 
     $wrapper.on('block_data_updated', function(event, updated_block_id, data) {

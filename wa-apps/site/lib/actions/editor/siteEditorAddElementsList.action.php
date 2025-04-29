@@ -28,7 +28,7 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
                     $add_global = false;
                 }
             }
-            if ($add_global) {
+            if ($add_global && !in_array('hidden', $b['tags'])) {
                 $result[] = $b;
             }
         }
@@ -65,7 +65,7 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
         $result = [
             [
                 'title' => _w('Web form'),
-                'icon' => 'list',
+                'icon' => 'clipboard-list',
                 'tags' => ['form'],
                 'blocks' => [],
             ],
@@ -75,10 +75,10 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
                 $r = [$r];
             }
             foreach ($r as $category) {
-                if (empty($category['title']) || empty($category['tags'])) {
+                if (empty($category['title'])) {
                     continue;
                 }
-                $category['tags'] = (array) $category['tags'];
+                $category['tags'] = (array) ifset($category, 'tags', []);
                 $result[] = [
                     'title' => $category['title'],
                     'icon' => ifset($category, 'icon', null),

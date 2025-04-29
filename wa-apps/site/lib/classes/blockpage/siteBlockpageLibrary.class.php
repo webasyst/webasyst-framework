@@ -205,14 +205,14 @@ class siteBlockpageLibrary {
             [
                 'image'    => $img_url . 'menu/menu-3.jpg',
                 'image_2x' => $img_url . 'menu/menu-3@2x.jpg',
-                'title' => _w('Menu Type 3'),
+                'title' => _w('Menu type 3'),
                 'data'  => (new siteMenuT3BlockType(['columns' => 3]))->getExampleBlockData(),
                 'tags'  => ['category_menu'],
             ],
             [
                 'image'    => $img_url . 'menu/menu-4.jpg',
                 'image_2x' => $img_url . 'menu/menu-4@2x.jpg',
-                'title' => _w('Menu Type 4'),
+                'title' => _w('Menu type 4'),
                 'data'  => (new siteMenuT4BlockType(['columns' => 4]))->getExampleBlockData(),
                 'tags'  => ['category_menu'],
             ],

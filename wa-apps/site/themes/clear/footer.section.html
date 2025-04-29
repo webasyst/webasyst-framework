@@ -1,0 +1,24 @@
+{if !empty($is_bp_header)}
+    <!-- css -->
+    <link href="{$wa_theme_url}clear.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+{/if}
+<div id="footer">
+    <div class="container">
+        <div class="hr"></div>
+        {include file="`$wa_active_theme_path`/footer.html" inline}
+        <!--
+           <div id="sub-links" class="float-left">
+            <ul>
+                  <li><a href="#">About</a></li>
+                  <li><a href="#">Terms of service</a></li>
+                  <li><a href="#">Privacy policy</a></li>
+            </ul>
+          </div>
+        -->
+
+        {if !empty($theme_settings.footer_notice)}
+            <div style="clear: both"></div>
+            <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
+        {/if}
+    </div>
+</div>

@@ -51,6 +51,10 @@ class BlockStorage
         return this.data[block_id]?.data || null;
     }
 
+    getParents(block_id) {
+        return this.data[block_id]?.parents || [];
+    }
+
     setFile(block_id, key, file) {
         if (!this.data[block_id]) {
             this.data[block_id] = {

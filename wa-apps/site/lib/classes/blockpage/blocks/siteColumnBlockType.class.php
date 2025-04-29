@@ -19,7 +19,7 @@ class siteColumnBlockType extends siteBlockType
         $result = $this->getEmptyBlockData();
         $result->addChild($vseq, '');
         $column_props = array();
-        $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
+        $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'padding-left' => "p-l-clm", 'padding-right' => "p-r-clm"];
         $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c"];
         $column_wrapper_class = 'st-3 st-6-lp st-6-tb st-12-mb';
         $result->data = ['block_props' => $column_props];

@@ -1,8 +1,12 @@
 {*
-* Default layout for block page in frontend.
-* Used in case design theme does not specify its own custom layout.
-*
-*}
+ * This layout is used for block pages.
+ *
+ * To use index.html for blockpages, this file can be a simple one-liner:
+ * {include file="`$wa_active_theme_path`/index.html" is_blockpage="true" content=$rendered_page_html inline}
+ *
+ * Note that this layout should not contain header or footer from design theme.
+ * They are added as part of a block page content.
+ *}
 <!DOCTYPE html>
     <html lang="{if $wa->locale() == 'ru_RU'}ru{else}en{/if}">
    <head>
@@ -24,14 +28,3 @@
        {$rendered_page_html}
    </body>
    </html>
-
-   {*
-    * Theme layout.
-    * Used to add blockpage content to the theme layout.
-    *}
-    
-    {*strip}
-        {$content = $rendered_page_html}
-    {/strip}
-    {include file="`$wa_active_theme_path`/index.html" is_blockpage="true" inline*}
-                

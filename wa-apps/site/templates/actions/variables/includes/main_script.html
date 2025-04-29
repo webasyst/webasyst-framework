@@ -546,11 +546,15 @@ $(function() {
                     return true;
                 }
 
+                const $a = $(this);
+                if ($a.attr('href') === '#' || String($a.attr('href')).startsWith('javascript:')) {
+                    return true;
+                }
+
                 if (e) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
-                const $a = $(this);
 
                 $.confirmUnsaved({
                     onSave() {

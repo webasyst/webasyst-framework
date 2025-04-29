@@ -15,6 +15,7 @@
 <span class="s-main-page-icon"><i class="fas fa-home"></i></span>
 {/capture}
 
+{$is_premium = waLicensing::check('site')->isPremium()}
 {if !$sidebar_mode}
 <script type="text/javascript">
     document.title = '[`Site map`] — ' + {json_encode($domain_idn)};
@@ -34,14 +35,19 @@
             </button>
             <div class="dropdown-body custom-mt-2">
                 <ul class="menu">
-                    {if waLicensing::check('site')->isPremium()}
-                        <li>
-                            <a href="javascript:void(0);" id="js-add-blockpage">
-                                <i class="fas fa-layer-group"></i>
-                                <span class="nowrap">[`Block page`] <span class="badge green smaller">[`New`]</span></span>
-                            </a>
-                        </li>
-                    {/if}
+                    <li{if !$is_premium} class="opacity-60"{/if}>
+                        <a href="javascript:void(0);" id="js-add-blockpage">
+                            <i class="fas fa-layer-group"></i>
+                            <span class="nowrap">
+                                <span class="custom-mr-4">[`Block page`]</span>
+                                {if $is_premium}
+                                <span class="badge green smaller">[`New`]</span>
+                                {else}
+                                <i class="fas fa-crown text-purple"></i>
+                                {/if}
+                            </span>
+                        </a>
+                    </li>
                     <li>
                         <a href="javascript:void(0);" id="js-add-old-page" data-app-id="site">
                             <i class="fas fa-file-alt"></i>
@@ -323,10 +329,12 @@
                                                 {if !$is_main && $is_parent}
                                                     <li><a href="javascript:void(0)" class="js-map-set-main-page{if $disable_set_main_page} s-disabled{/if}"{if $disable_set_main_page} title="[`The homepage cannot be unpublished. Please select another section or page as the homepage.`]"{/if}><i class="icon fas fa-home"></i>[`Make the site’s homepage`]</a></li>
                                                 {/if}
-                                                {if waLicensing::check('site')->isPremium()}
-                                                    {if $row['row_type'] === 'blockpage' || $row['row_type'] === 'htmlpage' || $row['row_type'] === 'route_app'}
-                                                        <li><a href="javascript:void(0)" class="js-map-duplicate"><i class="icon fas fa-copy"></i>[`Duplicate`]</a></li>
-                                                    {/if}
+
+                                                {if $row['row_type'] === 'blockpage' || $row['row_type'] === 'htmlpage' || $row['row_type'] === 'route_app'}
+                                                    <li><a href="javascript:void(0)" class="js-map-duplicate{if !$is_premium} opacity-60{/if}">
+                                                        <i class="icon fas fa-copy"></i>[`Duplicate`]
+                                                        {if !$is_premium} <i class="fas fa-crown text-purple custom-ml-4"></i>{/if}
+                                                    </a></li>
                                                 {/if}
                                             {/if}
                                             <li><a class="js-map-delete" href="javascript:void(0)"><i class="icon fas fa-trash-alt"></i>[`Delete`]</a></li>
@@ -561,7 +569,11 @@
                     return false;
                 })
                 $menu.on('click', '#js-add-blockpage', function(e){
+                    {if $is_premium}
                     openBlockpageSettings({ is_new: 1 });
+                    {else}
+                    $.site.helper.showPremiumDialog();
+                    {/if}
                 })
             }
     });
@@ -776,6 +788,7 @@
 
     // When user clicks on "Duplicate" menu item in dropdown
     $table.on('click', '.js-map-duplicate', function (e) {
+        {if $is_premium}
         e.preventDefault();
 
         const highlightCopiedRow = (id, app_id) => {
@@ -795,6 +808,9 @@
         } else { // 'blockpage'
             duplicateBlockPage($item.data('page-id')).then(id => highlightCopiedRow(id, app_id));
         }
+        {else}
+        $.site.helper.showPremiumDialog();
+        {/if}
     });
 
         // Open page when user clicks on a row in table

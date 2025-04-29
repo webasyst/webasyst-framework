@@ -489,6 +489,9 @@
                 'icon': 'fa-arrow-left',
                 'values': [
                     {name: "0px", value: "p-l-0", value_laptop: "p-l-0-lp", value_tablet: "p-l-0-tb", value_mobile: "p-l-0-mb"},
+                    /*{name: "Default for columns", value: "p-l-clm"},
+                    {name: "Default for blocks", value: "p-l-blc"},
+                    {name: "Default for blocks + columns", value: "p-l-blc-clm"},*/
                     {name: "1px", value: "p-l-1", value_laptop: "p-l-1-lp", value_tablet: "p-l-1-tb", value_mobile: "p-l-1-mb"},
                     {name: "2px", value: "p-l-2", value_laptop: "p-l-2-lp", value_tablet: "p-l-2-tb", value_mobile: "p-l-2-mb"},
                     {name: "3px", value: "p-l-3", value_laptop: "p-l-3-lp", value_tablet: "p-l-3-tb", value_mobile: "p-l-3-mb"},
@@ -515,6 +518,9 @@
                 'icon': 'fa-arrow-right',
                 'values': [
                     {name: "0px", value: "p-r-0", value_laptop: "p-r-0-lp", value_tablet: "p-r-0-tb", value_mobile: "p-r-0-mb"},
+                    {name: "Default for columns", value: "p-r-clm", variable: 1},
+                    {name: "Default for blocks", value: "p-r-blc", variable: 1},
+                    {name: "Default for blocks + columns", value: "p-r-blc-clm", variable: 1},
                     {name: "1px", value: "p-r-1", value_laptop: "p-r-1-lp", value_tablet: "p-r-1-tb", value_mobile: "p-r-1-mb"},
                     {name: "2px", value: "p-r-2", value_laptop: "p-r-2-lp", value_tablet: "p-r-2-tb", value_mobile: "p-r-2-mb"},
                     {name: "3px", value: "p-r-3", value_laptop: "p-r-3-lp", value_tablet: "p-r-3-tb", value_mobile: "p-r-3-mb"},

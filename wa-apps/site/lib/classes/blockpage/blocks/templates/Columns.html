@@ -7,7 +7,7 @@
 {if !empty($data->data['columns'])}
     {$columns_props = $data->data['columns']}
 {/if}
-{$static_main = "`$elements.main` f-w blc"}
+{$static_main = "`$elements.main` f-w"}
 {$static_wrapper = "`$elements.wrapper` style-wrapper rw"}
 {if $columns_props|@count == 1}
     {$static_wrapper = "`$elements.wrapper` style-wrapper cl"}

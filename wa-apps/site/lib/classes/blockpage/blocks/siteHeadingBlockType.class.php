@@ -15,7 +15,7 @@ class siteHeadingBlockType extends siteBlockType
     public function getExampleBlockData()
     {
         $result = $this->getEmptyBlockData();
-        $result->data = ['html' => 'Morbi convallis', 'tag' => 'h3', 'block_props' => ['font-header' => "t-hdn", 'font-size' => ["name" => "Size #3", "value" => "t-2", "unit" => "px", "type" => "library"], 'margin-top' => "m-t-0", 'margin-bottom' => "m-b-12", 'align' => "t-l"]];
+        $result->data = ['html' => 'Morbi convallis', 'tag' => 'h3', 'block_props' => ['font-header' => "t-hdn", 'font-size' => ["name" => "Size #3", "value" => "t-3", "unit" => "px", "type" => "library"], 'margin-top' => "m-t-0", 'margin-bottom' => "m-b-12", 'align' => "t-l"]];
         return $result;
     }
 

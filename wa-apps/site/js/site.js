@@ -285,6 +285,16 @@ $.site.helper = {
         if (this.xhr && typeof this.xhr.always === 'function') {
             this.xhr.always(resolver);
         }
+    },
+
+    showPremiumDialog: function() {
+        this.preventDupeRequest(() => {
+            return $.get($.site.app_url + '?module=backend&action=premiumDialog', (html) => {
+                if (html) {
+                    $.waDialog({ html });
+                }
+            });
+        });
     }
 };
 

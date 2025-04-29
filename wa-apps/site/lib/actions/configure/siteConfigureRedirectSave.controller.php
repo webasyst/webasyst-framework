@@ -102,6 +102,7 @@ class siteConfigureRedirectSaveController extends waJsonController
 
             wa('site')->event('route_save.before', $params);
             $routes[$domain][$route_id] = $route;
+            self::ensurePrioritySettlement($routes);
             waUtils::varExportToFile($routes, $path);
             wa('site')->event('route_save.after', $params);
 
@@ -219,6 +220,7 @@ class siteConfigureRedirectSaveController extends waJsonController
             wa('site')->event('route_save.before', $params);
             $routes[$domain][$route_id] = $new;
             $route = $new;
+            self::ensurePrioritySettlement($routes);
             waUtils::varExportToFile($routes, $path);
             wa('site')->event('route_save.after', $params);
 
@@ -490,5 +492,33 @@ class siteConfigureRedirectSaveController extends waJsonController
         if ($page_name = ifset($page_data, 'name', '')) {
             $route['_name'] = $page_name;
         }
+    }
+
+    protected static function ensurePrioritySettlement(&$all_routes)
+    {
+        if (!waLicensing::check('site')->isPremium()) {
+            return;
+        }
+
+        // Make sure every domain has at least one priority_settlement of Site app
+        // if at least one Site settlement exists for that domain.
+        foreach ($all_routes as &$domain_routes) {
+            if (is_array($domain_routes)) {
+                unset($site_route);
+                foreach ($domain_routes as &$route) {
+                    if (ifset($route, 'app', '') === 'site') {
+                        if (!empty($route['priority_settlement'])) {
+                            continue 2;
+                        }
+                        $site_route =& $route;
+                    }
+                }
+
+                if (!empty($site_route)) {
+                    $site_route['priority_settlement'] = true;
+                }
+            }
+        }
+        unset($domain_routes, $route, $site_route);
     }
 }

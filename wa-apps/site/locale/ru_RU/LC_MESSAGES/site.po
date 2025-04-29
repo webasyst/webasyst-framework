@@ -1954,8 +1954,8 @@ msgstr "Кнопка"
 msgid "Upgrade › <strong>Premium</strong>"
 msgstr "Обновитесь › <strong>Премиум</strong>"
 
-msgid "Discover advanced features for your projects with the premium license."
-msgstr "Откройте продвинутые возможности для своих проектов с премиум-лицензией."
+msgid "Discover advanced features for your projects with the premium version."
+msgstr "Откройте продвинутые возможности для своих проектов с премиум-версией."
 
 msgid "Block page builder"
 msgstr "Конструктор блочных страниц"
@@ -1987,8 +1987,8 @@ msgstr "Копирование страниц и разделов — удобн
 msgid "Custom variable values for selected sites, sites export, and other improvements"
 msgstr "Индивидуальные значения переменных для разных сайтов, экспорт сайтов и другие улучшения"
 
-msgid "About the premium license"
-msgstr "Подробнее о премиум-лицензии"
+msgid "About the premium version"
+msgstr "Подробнее о премиум-версии"
 
 msgid "View & publish"
 msgstr "Просмотр и публикация"
@@ -2215,5 +2215,11 @@ msgstr "Заказ"
 msgid "Menu type 1"
 msgstr "Тип меню 1"
 
-msgid "Open Graph Meta Tags"
+msgid "Open Graph meta tags"
 msgstr "Метатеги Open Graph"
+
+msgid "Menu type 3"
+msgstr "Тип меню 3"
+
+msgid "Menu type 4"
+msgstr "Тип меню 4"

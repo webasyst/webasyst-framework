@@ -538,6 +538,23 @@ class SiteEditor {
         }
     }
 
+    /*checkElementsSize($block_wrapper) {
+        const $is_block = $block_wrapper.hasClass('js-seq-wrapper') ? $block_wrapper : $block_wrapper.find('.js-seq-wrapper').eq(0);
+        console.log('checkElementsSize', $is_block)
+        if ($is_block.length) {
+            const is_vertical_block = $is_block.hasClass('vseq-wrapper');
+            const is_horiz_block = $is_block.hasClass('hseq-wrapper');
+            const $elements_collection = $is_block.children().find('> .js-add-element').closest('.seq-child');
+            $elements_collection.each(function(){
+                if (is_vertical_block) {
+                        if ($(this).height() < 40 && !$(this).hasClass('small-height')) $(this).addClass('small-height');
+                } else if(is_horiz_block) {
+                        if ($(this).width() < 40 && !$(this).hasClass('small-width')) $(this).addClass('small-width'); 
+                }
+            })
+        }
+    }*/
+
     // @see copy SiteEditor.js
     sanitizeHTML(str) {
         if (!str) {

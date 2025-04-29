@@ -13,7 +13,6 @@ var FormConstructor = ( function($) {
 
         function FormConstructor(options) {
             var that = this;
-            //const { ref } = Vue;
 
             // CONST
             //that.block_id = options["block_id"];
@@ -23,7 +22,6 @@ var FormConstructor = ( function($) {
             that.storage_data = $.form_storage.data;
             that.media_prop =  options["media_prop"];
 
-            //that.block_elements = options["form_config"].elements || null;
             that.states = {
                 block_id: options["block_id"],
                 form_config: options["form_config"],
@@ -48,10 +46,10 @@ var FormConstructor = ( function($) {
             that.vue_custom_components = that.components.custom_components;
             // CONST
 
+            //append :root styles from blockpage.wrapper.html
+            appendIframeWrapperStyles(that.$iframe_wrapper);
             // INIT
             that.vue_model = that.initVue();
-
-
         }
 
         FormConstructor.prototype.init = function(vue_model) {
@@ -94,8 +92,6 @@ var FormConstructor = ( function($) {
         FormConstructor.prototype.initVue = function() {
             var that = this;
 
-            const { reactive } = Vue;
-
             const i18n = VueI18n.createI18n({
                 locale: $.site.lang,
                 legacy: false,
@@ -107,11 +103,10 @@ var FormConstructor = ( function($) {
                 fallbackLocale: 'en',
                 messages: $.form_storage.translate
             });
-           // i18n.global.locale.value = $.site.lang;
+
             if (typeof $.vue_app === "object" && typeof $.vue_app.unmount === "function") {
                 $.vue_app.unmount();
             }
-
 
             $.vue_app = Vue.createApp({
 
@@ -249,7 +244,6 @@ var FormConstructor = ( function($) {
                             let arr_options = that.storage_data[this.group_config.type];
 
                             let active_option = this.block_data?.block_props?.[form_type];
-                            const form_type_custom = 'custom';
 
                             const header_name = this.group_config.name;
 
@@ -259,7 +253,7 @@ var FormConstructor = ( function($) {
                         delimiters: ['{ { ', ' } }'],
                         components: {
                             'ButtonStyleDropdown': that.vue_custom_components['component-button-color-dropdown'],
-                          },
+                        },
                         methods: {
                             change: function(option) { //put classes to remove in temp_active_option
                                 let self = this;
@@ -1636,17 +1630,8 @@ var FormConstructor = ( function($) {
                                     that.$iframe_wrapper[0].execCommand('foreColor', false, '#' + option);
                                     $(self.getSelectionBoundaryElement(false)).removeAttr("class");
                                 }
-                                //console.log(that.$iframe_wrapper[0].getSelection().focusNode, self.getSelectionBoundaryElement(true), self.getSelectionBoundaryElement(false))
-                                //if (that.$iframe_wrapper[0].getSelection().focusNode.parentNode.nodeName === "FONT")  that.$iframe_wrapper[0].getSelection().focusNode.parentNode.classList = [];
-                                //that.$iframe_wrapper[0].execCommand('removeformat');
-
                                 self.block_data.html = $editable.html();
 
-                                //self.active_option = { type: 'self_color', value: '#' + option, name: 'Self color'};
-                                /*$.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    bs.saveBlockData(self.block_data);
-                                });
-                                console.log('saveBlockData', self.block_data)*/
                             },
                             changePalette: function(option) {
                                 let self = this;
@@ -1662,16 +1647,10 @@ var FormConstructor = ( function($) {
                                     sel.addRange(rng)
                                     //that.$iframe_wrapper[0].execCommand("SelectAll");
                                }
-                                    //that.$iframe_wrapper[0].execCommand('removeformat');
-                                    //that.$iframe_wrapper[0].execCommand('formatblock', false, 'font');
-                                    //console.log($(self.getSelectionBoundaryElement(true)).find('font'))
                                     $(self.getSelectionBoundaryElement(true)).find('font').each(function(){$(this).removeAttr("class")});
-                                    that.$iframe_wrapper[0].execCommand('foreColor', false, '#000');
-
-                                    //$(self.getSelectionBoundaryElement(true)).attr('class', option.value);
+                                    that.$iframe_wrapper[0].execCommand('foreColor', false, '#010203');
                                     that.$iframe_wrapper[0].getSelection().focusNode.parentNode.color = '';
                                     that.$iframe_wrapper[0].getSelection().focusNode.parentNode.classList = [option.value];
-
 
                                 self.block_data.html = $editable.html();
                                 $.wa.editor._block_settings_drawer_promise.then(function(bs) {
@@ -4125,7 +4104,42 @@ var FormConstructor = ( function($) {
                 }
             return false; // Возвращаем false, если все iframe имеют закрывающие теги
             }
+
         };
+
+        function appendIframeWrapperStyles(iframe_document) {
+            const root_style = Array.from(iframe_document[0].styleSheets)
+                .filter(
+                    sheet =>
+                    sheet.href === null
+                )
+                .reduce(
+                    (acc, sheet) =>
+                    (acc = [
+                        ...acc,
+                        ...Array.from(sheet.cssRules).reduce(
+                        (def, rule) =>
+                            (def =
+                            rule.selectorText === ":root"
+                                ? [
+                                    ...def,
+                                    rule
+                                ]
+                                : def),
+                        []
+                        )
+                    ]),
+                    []
+                );
+
+                if (root_style.length) {
+                    const style = document.createElement('style');
+                    style.textContent = root_style[0]?.cssText || '';
+                    document.head.appendChild(style);
+                }
+
+                //console.log(iframe_document[0].styleSheets)
+            }
 
         return FormConstructor;
 

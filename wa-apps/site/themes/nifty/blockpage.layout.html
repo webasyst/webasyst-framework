@@ -1,0 +1,37 @@
+{*
+* Default layout for block page in frontend.
+* Used in case design theme does not specify its own custom layout.
+*
+*}
+<!DOCTYPE html>
+   <html>
+   <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>{$wa->title()|escape}</title>
+        <meta name="keywords" content="{$wa->meta('keywords')|escape}">
+        <meta name="description" content="{$wa->meta('description')|escape}">
+        {if !empty($page_params.canonical)}
+            <link rel="canonical" href="{$page_params.canonical}">
+        {/if}
+        <link rel="icon" href="/favicon.ico">
+        <link rel="shortcut icon" href="/favicon.ico">
+        {$wa->head()}
+        <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+        <script src="{$wa_app_static_url}js/jquery/jquery-ui.min.js"></script>
+        <link href="{$wa_app_static_url}css/site.min.css?v={$wa->version()}" rel="stylesheet">
+   </head>
+   <body>
+       {$rendered_page_html}
+   </body>
+   </html>
+
+   {*
+    * Theme layout.
+    * Used to add blockpage content to the theme layout.
+    *}
+    
+    {*strip}
+        {$content = $rendered_page_html}
+    {/strip}
+    {include file="`$wa_active_theme_path`/index.html" is_blockpage="true" inline*}
+            

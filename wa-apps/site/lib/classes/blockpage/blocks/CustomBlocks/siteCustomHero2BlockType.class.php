@@ -161,7 +161,7 @@ class siteCustomHero2BlockType extends siteBlockType {
             [
                 'column'        => 'st-6-lp st-12-mb st-12-tb st-7',
                 'block_props'   => $block_props,
-                'wrapper_props' => ['flex-align' => 'y-l'],
+                //'wrapper_props' => ['flex-align' => 'y-l'],
             ],
             $vseq
         );
@@ -258,7 +258,7 @@ class siteCustomHero2BlockType extends siteBlockType {
             [
                 'column'        => 'st-6-lp st-12-mb st-12-tb st-5',
                 'block_props'   => $block_props,
-                'wrapper_props' => ['flex-align' => 'y-l'],
+                //'wrapper_props' => ['flex-align' => 'y-l'],
             ],
             $vseq
         );
@@ -317,7 +317,7 @@ class siteCustomHero2BlockType extends siteBlockType {
             'font-header' => 't-rgl',
             'font-size' => ['name' => 'Size #6', 'value' => 't-6', 'unit' => 'px', 'type' => 'library'],
             'margin-bottom' => 'm-b-4',
-            'margin-left' => 'm-l-a',
+            //'margin-left' => 'm-l-a',
             'margin-top' => 'm-t-0',
         ]);
 

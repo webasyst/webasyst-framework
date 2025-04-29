@@ -88,6 +88,9 @@ class siteInstaller
                     unset($domain_routes[$route_id]);
                     $routing_changed = true;
                     continue;
+                } else if ($route['app'] === 'site' && empty($route['priority_settlement'])) {
+                    $domain_routes[$route_id]['priority_settlement'] = true;
+                    $routing_changed = true;
                 }
                 unset($need_apps[$route['app']]);
             }

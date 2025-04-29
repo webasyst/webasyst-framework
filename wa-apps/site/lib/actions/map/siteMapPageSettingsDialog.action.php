@@ -94,9 +94,8 @@ class siteMapPageSettingsDialogAction extends waViewAction
             ];
         }
 
-        $idna = new waIdna();
-        $domain_decoded = $idna->decode(siteHelper::getDomain());
-
+        $domain_decoded = (new waIdna())->decode(siteHelper::getDomain());
+        $has_url_overlap = (bool)siteHelper::blockpageHasUrlOverlap($page['full_url'], ifset($page['parent_id']));
         $this->view->assign([
             'domain_id' => siteHelper::getDomainId(),
             'domain_decoded' => $domain_decoded,
@@ -105,8 +104,8 @@ class siteMapPageSettingsDialogAction extends waViewAction
             'page_params' => $page_params,
             'og_params' => $og_params,
             'misconfigured_settlement' => $misconfigured_settlement,
-            'is_main_page' => rtrim(ifset($page['url'], ''), '*') === '' && !$misconfigured_settlement,
-            'has_url_overlap' => (bool)siteHelper::blockpageHasUrlOverlap($page['full_url'], ifset($page['parent_id'])),
+            'is_main_page' => !$has_url_overlap && !$misconfigured_settlement && ifset($page['url'], '') === '',
+            'has_url_overlap' => $has_url_overlap,
             'preview_hash' => siteHelper::getPreviewHash(),
         ]);
     }

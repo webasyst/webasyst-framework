@@ -217,12 +217,13 @@ var FormComponents = ( function($) {
                     self.sizes_data = $.form_storage.data['media_sizes_data'];
 
                     $.each(self.options, function(i, option) {
+                        if (self.media_prop && !option[`value_${self.media_prop}`]) return;
                         formatted_options.push({
                             name: option.name,
-                            value: (self.media_prop? option[`value_${self.media_prop}`] : option.value)
+                            value: (self.media_prop ? option[`value_${self.media_prop}`] : option.value)
                         });
                     });
-                    self.base_value = self.sizes_data.indexOf(formatted_options[0].value.slice(-2));
+                    self.base_value_index = self.sizes_data.indexOf(formatted_options[0].value.slice(-2));
 
                     self.is_desktop = !self.media_prop || self.media_prop === 'desktop';
                     self.is_inherited_values = false;
@@ -366,13 +367,13 @@ var FormComponents = ( function($) {
                         console.log('saveBlockData', self.block_data);
                     },
                     getClosestOption: function(optionsArr) {
-                        let base_value = null;
+                        let base_value_index = null;
                         let result = null;
                         let self = this;
                         $.each(optionsArr, function(i, opt) {
-                            let new_value = self.sizes_data.indexOf(opt.slice(-2));
-                            if (self.base_value > new_value) {
-                                base_value = !base_value || base_value < new_value ? new_value : base_value;
+                            let new_value_index = self.sizes_data.indexOf(opt.slice(-2));
+                            if (self.base_value_index > new_value_index) {
+                                base_value_index = !base_value_index || base_value_index < new_value_index ? new_value_index : base_value_index;
                                 result = opt;
                             };
                         })

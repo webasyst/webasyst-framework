@@ -1,5 +1,6 @@
 {if !isset($selected)}{$selected = 'sitemap'}{/if}
 {$is_alias = ifset($domain.is_alias, null)}
+{$is_premium = waLicensing::check('site')->isPremium()}
 {$tabs = [
     'sitemap' => [
         'id' => 'sitemap',
@@ -58,11 +59,9 @@
             <a href="//{$domain.name}" target="_blank" class="smallest button circle light-gray" title="[`View`]">
                 <i class="icon fas fa-external-link-alt"></i>
             </a>
-            {if waLicensing::check('site')->isPremium()}
-                <a href="javascript:void(0)" class="smallest button circle light-gray js-duplicate-site-button" title="[`Duplicate`]">
-                    <i class="icon far fa-clone"></i>
-                </a>
-            {/if}
+            <a href="javascript:void(0)" class="smallest button circle light-gray js-duplicate-site-button" title="[`Site copying`]">
+                <i class="icon far fa-clone"></i>
+            </a>
         </h3>
 
         <div class="flexbox middle">
@@ -77,7 +76,7 @@
                     </li>
                 {/foreach}
             </ul>
-            {if !waLicensing::check('site')->isPremium()}
+            {if !$is_premium}
                 <div class="s-premium-link-wrapper s-tabs nowrap">
                     <a href="javascript:void(0)" id="js-premium-section" class="semibold text-purple"><i class="fas fa-crown text-purple"></i> [`Premium`]</a>
                 </div>
@@ -143,22 +142,19 @@
             });
 
             $('#js-premium-section').on('click', function () {
-                const site_app_url = {$wa_app_url|json_encode};
-                $.site.helper.preventDupeRequest(() => {
-                    return $.get(site_app_url + '?module=backend&action=premiumDialog', function (html) {
-                        if (html) {
-                            $.waDialog({ html });
-                        }
-                    });
-                });
+                $.site.helper.showPremiumDialog();
             });
 
             $wrapper.on('click', '.js-duplicate-site-button', function() {
+                {if $is_premium}
                 $.post('?module=domains&action=duplicateDialog', { domain_id }, function(html) {
                     if (html) {
                         $.waDialog({ html });
                     }
                 });
+                {else}
+                $.site.helper.showPremiumDialog();
+                {/if}
                 return false;
             });
 

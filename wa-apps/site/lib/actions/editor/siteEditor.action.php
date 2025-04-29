@@ -103,15 +103,33 @@ class siteEditorAction extends waViewAction
             }
             unset($f);
 
+            $parents = [];
+            $bb = $b;
+            while (!empty($bb['parent_id']) && !empty($blocks[$bb['parent_id']])) {
+                $bb = $blocks[$bb['parent_id']];
+                $parents[] = [
+                    'id' => $bb['id'],
+                    'type_name' => ifset($block_form_config, $bb['type'], 'type_name', $bb['type']),
+                ];
+            }
+            if (!empty($bb['parent_id'])) {
+                unset($blocks[$bb['id']]);
+                continue;
+            }
+
             $b = array_intersect_key($b, [
                 'id' => 0,
-                //'parent_id' => 0,
+                'parent_id' => 0,
                 //'child_key' => 0,
                 //'sort' => 0,
                 'type' => 0,
                 'data' => 0,
                 'files' => 0,
             ]);
+            $b['parents'] = $parents;
+        }
+        foreach($blocks as &$b) {
+            unset($b['parent_id']);
         }
         unset($b);
         return [$blocks, $block_form_config];
