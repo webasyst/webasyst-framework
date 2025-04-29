@@ -1,40 +1,37 @@
 <?php
 
 /**
- * Get PHP and smarty code from POST, execute and echo output to browser.
- * Sounds crazy, isn't it?
+ * Get PHP and Smarty code from POST data, execute and print output to browser.
  */
 class developerBackendExecAction extends waViewAction
 {
     public function execute()
     {
-        // Access control
-        $message = '';
-        if (!wa()->getUser()->getRights('webasyst', 'backend')) {
-            $message = _w('This application is available for Webasyst admin users only.');
+        if (!$this->getUser()->getRights('webasyst', 'backend')) {
+            throw new waRightsException(_w('Coding sandbox is available for Webasyst admin users only.'));
         }
-        if(!waSystemConfig::isDebug()) {
-            $message = _w('This application works only when Debug mode is enabled in the Installer app.');
-        }
-        if ($message) {
-            throw new waRightsException($message);
+
+        $error = $this->view->getVars('error');
+        if ($error) {
+            throw new waException($error);
         }
 
         error_reporting(E_ALL);
-        ini_set('display_errors', 1);
+        ini_set('display_errors', 'On');
+        ini_set('log_errors', 'Off');
 
-        eval(waRequest::post('code')); // Welcome to the dark side!
+        // Welcome to the dark side!
+        eval(waRequest::post('code'));
     }
 
-    protected function isCached()
+    protected function isCached(): bool
     {
         return false;
     }
 
-    protected function getTemplate()
+    protected function getTemplate(): string
     {
-        $tmpl = trim(waRequest::post('tmpl'));
-        return 'string:</pre>'.($tmpl ? '<h2>[`Smarty`]</h2>'.$tmpl : '');
+        $tmpl = waRequest::post('tmpl', '', waRequest::TYPE_STRING_TRIM);
+        return 'string:</pre>' . ($tmpl ? '<hr>' . PHP_EOL . '<h3>[`Smarty`]</h3>' . PHP_EOL . $tmpl : '');
     }
 }
-

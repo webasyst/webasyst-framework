@@ -1,0 +1,153 @@
+/**
+ * Most icons are from Fugue and Diagona icon sets by Yusuke Kamiyamane:
+ * http://p.yusukekamiyamane.com/
+ * Fugue and Diagona icon sets are available under a Creative Commons Attribution 3.0 License.
+ * If built-in icons are not enough for your plugin or extension, we encourage you to use icons 
+ * from Fugue and Diagona icon sets.
+ */
+
+/* settings */
+.icon16.color { margin-top: 0.25em !important; }
+.icon16.restore { background-position:0 -16px; }
+
+/* settings */
+.icon16.ss { background-image: url('../../shop/img/ss-icon16.png'); }
+.icon16.ss.star-bw { background-position:-16px 0; }
+.icon16.ss.shipping-bw { background-position:-32px 0; }
+.icon16.ss.camera-bw { background-position:-48px 0; }
+.icon16.ss.globe-bw { background-position:-64px 0; }
+.icon16.ss.cube-bw { background-position:-80px 0; }
+.icon16.ss.flag-bw { background-position:-96px 0; }
+.icon16.ss.currency-bw { background-position:-112px 0; }
+.icon16.ss.settings-bw { background-position:-128px 0; }
+.icon16.ss.features-bw { background-position:-144px 0; }
+.icon16.ss.payment-bw { background-position:-160px 0; }
+.icon16.ss.cart-bw { background-position:-176px 0; }
+.icon16.ss.percent-bw { background-position:-192px 0; }
+.icon16.ss.dashboard-bw { background-position:-208px 0; }
+.icon16.ss.notification-bw { background-position:-224px 0; }
+.icon16.ss.reset-bw { background-position:-240px 0; }
+.icon16.ss.print-forms-bw { background-position:-256px 0; }
+.icon16.ss.search-bw { background-position:-272px 0; }
+.icon16.ss.discounts-bw { background-position:-288px 0; }
+.icon16.ss.affiliate-bw { background-position:-304px 0; }
+.icon16.ss.stopwatch-bw { background-position:-320px 0; }
+.icon16.ss.transfer-bw { background-position:-336px 0; }
+.icon16.ss.pencil-bw { background-position:-352px 0; }
+.icon16.ss.file-bw { background-position:-368px 0; }
+.icon16.ss.bug-bw { background-position:-384px 0; }
+.icon16.ss.phone-bw { background-position:-400px 0; }
+.icon16.ss.sort-bw { background-position:-416px 0; }
+.icon16.ss.smiley-bw { background-position:-432px 0; }
+.icon16.ss.couriers-bw { background-position:-448px 0; }
+.icon16.ss.schedule-bw { background-image: url('../../shop/img/ss-schedule-icon.svg'); background-position: center; background-size: 16px 16px; }
+.icon16.ss.fields-bw { background-image: url('../../shop/img/ss-fields-icon.svg'); background-position: center; background-size: 16px 16px; }
+
+/* order statuses */
+.icon16.ss.new { background-position:0 -32px; }
+.icon16.ss.confirmed { background-position:-16px -32px; }
+.icon16.ss.processing { background-position:-16px -32px; }
+.icon16.ss.paid { background-position:-32px -32px; }
+.icon16.ss.sent { background-position:-48px -32px; }
+.icon16.ss.completed { background-position:-64px -32px; }
+.icon16.ss.refunded { background-position:-80px -32px; }
+.icon16.ss.trash { background-position:-96px -32px; }
+.icon16.ss.flag-white { background-position:0 -16px; }
+.icon16.ss.flag-blue { background-position:-16px -16px; }
+.icon16.ss.flag-yellow { background-position:-32px -16px; }
+.icon16.ss.flag-green { background-position:-48px -16px; }
+.icon16.ss.flag-red { background-position:-64px -16px; }
+.icon16.ss.flag-purple { background-position:-80px -16px; }
+.icon16.ss.flag-black { background-position:-96px -16px; }
+.icon16.ss.flag-checkers { background-position:-112px -16px; }
+
+/* third-parties */
+.icon16.ss.russianpost { background-position:0 -48px; }
+.icon16.ss.yandexmarket { background-position:-16px -48px; }
+.icon16.ss.excel { background-position:-32px -48px; }
+.icon16.ss.quickbooks { background-position:-48px -48px; }
+.icon16.ss.odiness { background-position:-64px -48px; }
+.icon16.ss.paypal { background-position:-80px -48px; }
+.icon16.ss.google { background-position:-96px -48px; }
+.icon16.ss.ups { background-position:-112px -48px; }
+.icon16.ss.usps { background-position:-128px -48px; }
+.icon16.ss.fedex { background-position:-144px -48px; }
+.icon16.ss.dhl { background-position:-160px -48px; }
+
+/* product types */
+.icon16.ss.pt.sports { background-position:0 -64px; }
+.icon16.ss.pt.soccer { background-position:-16px -64px; }
+.icon16.ss.pt.cake { background-position:-32px -64px; }
+.icon16.ss.pt.music { background-position:-48px -64px; }
+.icon16.ss.pt.box { background-position:-64px -64px; }
+.icon16.ss.pt.car { background-position:-80px -64px; }
+.icon16.ss.pt.diamond { background-position:-96px -64px; }
+.icon16.ss.pt.audio { background-position:-112px -64px; }
+.icon16.ss.pt.globe { background-position:-128px -64px; }
+.icon16.ss.pt.mobile { background-position:-144px -64px; }
+.icon16.ss.pt.gingerbread-man { background-position:-160px -64px; }
+.icon16.ss.pt.camera { background-position:-176px -64px; }
+.icon16.ss.pt.rocket { background-position:-192px -64px; }
+.icon16.ss.pt.plane { background-position:-208px -64px; }
+.icon16.ss.pt.shoe { background-position:-224px -64px; }
+.icon16.ss.pt.gift { background-position:-240px -64px; }
+.icon16.ss.pt.nuclear { background-position:-256px -64px; }
+.icon16.ss.pt.map { background-position:-272px -64px; }
+.icon16.ss.pt.tv { background-position:0 -80px; }
+.icon16.ss.pt.t-shirt { background-position:-16px -80px; }
+.icon16.ss.pt.disc { background-position:-32px -80px; }
+.icon16.ss.pt.computer { background-position:-48px -80px; }
+.icon16.ss.pt.building { background-position:-64px -80px; }
+.icon16.ss.pt.toolbox { background-position:-80px -80px; }
+.icon16.ss.pt.hamburger { background-position:-96px -80px; }
+.icon16.ss.pt.cookie { background-position:-112px -80px; }
+.icon16.ss.pt.door { background-position:-128px -80px; }
+.icon16.ss.pt.clapperboard { background-position:-144px -80px; }
+.icon16.ss.pt.traffic-cone { background-position:-160px -80px; }
+.icon16.ss.pt.hammer { background-position:-176px -80px; }
+.icon16.ss.pt.guitar { background-position:-192px -80px; }
+.icon16.ss.pt.disk { background-position:-208px -80px; }
+.icon16.ss.pt.cup { background-position:-224px -80px; }
+.icon16.ss.pt.auction-hammer { background-position:-240px -80px; }
+.icon16.ss.pt.drawer { background-position:-256px -80px; }
+.icon16.ss.pt.traffic-light { background-position:-272px -80px; }
+.icon16.ss.pt.clock { background-position:0 -96px; }
+.icon16.ss.pt.chair { background-position:-16px -96px; }
+.icon16.ss.pt.downloadable { background-position:-32px -96px; }
+.icon16.ss.pt.sunglasses { background-position:-48px -96px; }
+.icon16.ss.pt.umbrella { background-position:-64px -96px; }
+.icon16.ss.pt.controller { background-position:-80px -96px; }
+.icon16.ss.pt.key { background-position:-96px -96px; }
+.icon16.ss.pt.sushi { background-position:-112px -96px; }
+.icon16.ss.pt.cat { background-position:-128px -96px; }
+.icon16.ss.pt.monkey { background-position:-144px -96px; }
+.icon16.ss.pt.books { background-position:-160px -96px; }
+.icon16.ss.pt.socket { background-position:-176px -96px; }
+.icon16.ss.pt.spray { background-position:-192px -96px; }
+
+/* misc */
+.icon16.ss.comments { background-position: 0 -112px; }
+.icon16.ss.service { background-position:-16px -112px; }
+.icon16.ss.coupon { background-position:-32px -112px; }
+.icon16.ss.bestseller { background-position:-48px -112px; }
+.icon16.ss.lowprice { background-position:-64px -112px; }
+.icon16.ss.div { background-position:-80px -112px; }
+.icon16.ss.affiliate { background-position:-96px -112px; }
+.icon16.ss.shop { background-position:-112px -112px; }
+.icon16.ss.set { background-position:-128px -112px; }
+.icon16.ss.set-dynamic { background-position:-176px -112px; }
+.icon16.ss.chart-up { background-position:-144px -112px; }
+.icon16.ss.chart-down { background-position:-160px -112px; }
+.icon16.ss.promo { background-position:-192px -112px; }
+
+.icon16.ss.orders-processing { background-position: 0px -128px; }
+.icon16.ss.orders-all { background-position: -16px -128px; }
+.icon16.ss.sku-type-flat { background-position: -32px -128px; }
+.icon16.ss.sku-type-selectable { background-position: -48px -128px; }
+.icon16.ss.info { background-position: -64px -128px; }
+.icon16.ss.visibility { background-position: -80px -128px; }
+.icon16.ss.view-skus { background-position: -96px -128px; }
+.icon16.ss.courier { background-position: -112px -128px; }
+
+.icon16.ss.email-confirmed { width: 20px; background-image: url('../../shop/img/email-confirmed.png'); background-position: center; }
+.icon16.ss.phone-confirmed { width: 20px; background-image: url('../../shop/img/phone-confirmed.png'); background-position: center; }
