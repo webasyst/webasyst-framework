@@ -72,7 +72,7 @@ class waSystem
      * @throws  waException
      * @see wa()
      */
-    public static function getInstance($name = null, waSystemConfig $config = null, $set_current = false)
+    public static function getInstance($name = null, ?waSystemConfig $config = null, $set_current = false)
     {
         if ($name === null) {
             if ($config && $config instanceof waAppConfig) {

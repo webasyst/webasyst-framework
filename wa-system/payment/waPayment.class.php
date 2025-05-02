@@ -973,12 +973,12 @@ abstract class waPayment extends waSystemPlugin
     }
 
     /**
-     * @param waOrder $order
+     * @param waOrder|null $order
      * @return array[string]array
      * @return array[string]['name']string Printable form name
      * @return array[string]['description']string Printable form description
      */
-    public function getPrintForms(waOrder $order = null)
+    public function getPrintForms(?waOrder $order = null)
     {
         return array();
     }

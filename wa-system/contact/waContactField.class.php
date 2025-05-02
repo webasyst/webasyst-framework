@@ -883,7 +883,7 @@ abstract class waContactField
         return new $state['_type']($state['id'], $state['name'], $state['options']);
     }
 
-    public function prepareSave($value, waContact $contact = null)
+    public function prepareSave($value, ?waContact $contact = null)
     {
         return $value;
     }
