@@ -547,6 +547,12 @@ class waAppConfig extends SystemConfig
             $paths = array($this->getAppPath().'/lib/');
             // plugins
             $all_plugins = waFiles::listdir($this->getAppPath().'/plugins');
+            $pluginspath = $this->getConfigPath('plugins.php', true);
+            //Filter disabled plugins
+            if (file_exists($pluginspath)) {
+                $enabled_plugins = array_keys(array_filter(include($pluginspath)));
+                $all_plugins = array_intersect($all_plugins, $enabled_plugins);
+            }
             foreach ($all_plugins as $plugin_id) {
                 $path = $this->getPluginPath($plugin_id).'/lib/';
                 if (file_exists($path)) {
