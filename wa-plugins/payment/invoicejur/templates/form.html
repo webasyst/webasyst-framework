@@ -198,10 +198,12 @@
                         <td><b>Всего к оплате</b></td>
                         <td>{$order.total|wa_format_amount:$order.currency:'words'}</td>
                     </tr>
+                    {if $order.tax > 0}
                     <tr bgcolor=white>
                         <td>&nbsp;</td>
                         <td>НДС - {$order.tax|wa_format_amount:$order.currency:'words'}</td>
                     </tr>
+                    {/if}
                 </table>
             </td>
         </tr>
