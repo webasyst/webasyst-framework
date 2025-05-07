@@ -7,5 +7,6 @@ class developerBackendLayout extends waLayout
         if (!$this->view->getVars('page')) {
             $this->view->assign('page', '');
         }
+        parent::execute();
     }
 }

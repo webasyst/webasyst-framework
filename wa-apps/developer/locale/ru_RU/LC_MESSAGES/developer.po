@@ -84,3 +84,44 @@ msgstr "Приложение работает только при включен
 msgid "Permanently delete template “%s”?"
 msgstr "Удалить сохраненный шаблон «%s»?"
 
+msgid "Events"
+msgstr "События"
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Translate"
+msgstr "Перевести"
+
+msgid "Compress"
+msgstr "Сжать"
+
+msgid "Frontend"
+msgstr "Фронтенд"
+
+msgid "DB config"
+msgstr "Конфиг БД"
+
+msgid "Create config for tables with prefix 'application_plugin_'."
+msgstr "Создать конфиг для таблиц с префиксом 'application_plugin_'."
+
+msgid "Application"
+msgstr "Приложение"
+
+msgid "Widget"
+msgstr "Виджет"
+
+msgid "Plugin"
+msgstr "Плагин"
+
+msgid "System plugin"
+msgstr "Системный плагин"
+
+msgid "System widget"
+msgstr "Системный виджет"
+
+msgid "Locales"
+msgstr "Локализации"
+
+msgid "Icon"
+msgstr "Иконка"
