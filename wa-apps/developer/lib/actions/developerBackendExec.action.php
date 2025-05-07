@@ -59,4 +59,9 @@ class developerBackendExecAction extends developerAction
     {
         return ucfirst($matches[1]);
     }
+
+    public function setLayout(waLayout $layout = null)
+    {
+        $this->layout = null; // never use layout for this action
+    }
 }
