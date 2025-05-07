@@ -12,6 +12,7 @@ ul.tabs.d-greeny-style li.selected { border-color: #796 #796 #fff; background: #
 .d-sandbox-column .d-header h2 { color: #aaa; margin-top: .2em; }
 .d-sandbox-column .d-header h2 select { position: relative; top: -2px; }
 .d-sandbox-column .d-editor { border: 1px dashed #ccc; overflow: auto; min-height: 100px; }
+.CodeMirror .CodeMirror-scroll { height: auto; }
 #wa .CodeMirror, #wa .CodeMirror-wrapping { padding: 0 !important; }
 #d-compile-toolbar { position: absolute; bottom: 0; width: 95%; }
 .wa-cheatsheet-dropdown { margin: 0 0 0 1rem; }
