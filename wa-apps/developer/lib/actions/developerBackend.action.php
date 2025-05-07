@@ -4,7 +4,7 @@ class developerBackendAction extends developerAction
 {
     public function execute()
     {
-        if (!waSystemConfig::isDebug()) {
+        if (!defined('DEVELOPER_APP_IN_NONDEBUG') && !waSystemConfig::isDebug()) {
             $this->view->assign('error', _w('Coding sandbox works only if Debug mode is enabled in the Installer app.'));
             $this->setTemplate('string:<h2 style="color: red">{$error|escape}</h2>');
         }

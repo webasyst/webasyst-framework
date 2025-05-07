@@ -15,6 +15,7 @@
   <body>
     <div id="wa">
         {$wa->header()}
+        {if !isset($page)}{$page = ''}{/if}
 
         <div id="wa-app">
           <ul class="tabs d-greeny-style">
@@ -36,6 +37,11 @@
             <li{if $page == 'compress'} class="selected"{/if}>
                 <a href="?action=compress">[`Compress`]</a>
             </li>
+            {foreach $plugin_tabs as $tab}
+                <li{if $page == $tab.id} class="selected"{/if}>
+                    <a href="{$tab.url|escape}">{$tab.name|escape}</a>
+                </li>
+            {/foreach}
           </ul>
 
           <div class="tab-content d-greeny-style" id="d-sandbox">

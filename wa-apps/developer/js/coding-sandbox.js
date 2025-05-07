@@ -128,13 +128,42 @@ $(function () {
         $.storage.set('devpg/code', code);
         $.storage.set('devpg/tmpl', tmpl);
 
-        $.post(
-            '?action=exec',
-            {code: code, tmpl: tmpl},
-            function (data) {
-                result_wrapper.html("<h3>PHP</h3>\n<pre>" + data); // closing </pre> is added by PHP code
+        $.ajax({
+            method: 'POST',
+            url: '?action=exec',
+            data: { code: code, tmpl: tmpl },
+            dataType: 'html',
+            global: false,
+            cache: false
+        }).always(function(data, textStatus) {
+
+            // Handle XHR errors
+            if (textStatus != 'success') {
+                console && console.log && console.log('XHR error', data);
+                data = data.responseText || '';
             }
-        );
+
+            if (data.indexOf('<html') < 0) {
+                // Show result without iframe
+                if (data.indexOf('</pre>') >= 0) {
+                    data = '<h2>'+$_('PHP')+'</h2><pre>'+data; // closing </pre> is added by PHP code
+                }
+                result_wrapper.html(data);
+                result_wrapper.find('.wa-exception-debug-dump #Trace pre').each(function() {
+                    var $pre = $(this);
+                    var new_html = $pre.html().replace(/^(#(#|\d+)\s+(wa-system|index\.php|\{main\}).*)$/gm, '<span style="color:#999">$1</span>');
+                    $pre.html(new_html);
+                });
+            } else {
+                // Show result inside iframe
+                result_wrapper.empty();
+                var iframe = $('<iframe src="about:blank" style="width:100%;height:auto;min-height:500px;"></iframe>').appendTo(result_wrapper);
+                var ifrm = (iframe[0].contentWindow) ? iframe[0].contentWindow : (iframe[0].contentDocument.document) ? iframe[0].contentDocument.document : iframe[0].contentDocument;
+                ifrm.document.open();
+                ifrm.document.write(data || $_('Empty response from server'));
+                ifrm.document.close();
+            }
+        });
 
         return false;
     });
