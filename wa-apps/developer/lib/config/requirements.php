@@ -2,10 +2,10 @@
 
 return array(
     'app.installer' => array(
-        'version' => '>=1.0.8.15083',
-        'strict'  => true
+        'version' => '>=1.8.2',
+        'strict'  => true,
     ),
     'app.developer' => array(
-        'strict' => true
+        'strict' => false,
     ),
 );

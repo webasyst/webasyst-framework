@@ -9,9 +9,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
-"X-Poedit-Language: ru_RU\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -72,15 +73,14 @@ msgstr "UI"
 msgid "Coding sandbox is available for Webasyst admin users only."
 msgstr "Песочница доступна только для пользователей Вебасиста, обладающих полными административными правами."
 
-msgid "Coding sandbox works only if Debug mode is enabled in the Installer app."
-msgstr "Песочница работает только при включенном режиме отладки (debug_mode) в приложении «Инсталлер»."
+msgid "Coding sandbox works only if developer mode is enabled in Settings app."
+msgstr "Песочница работает только при включенном режиме отладки в приложении «Настройки»."
 
 msgid "This application is available for Webasyst admin users only."
 msgstr "Приложение доступно только для пользователей Вебасиста, обладающих полными административными правами."
 
-msgid "This application works only when Debug mode is enabled in the Installer app."
+msgid "This application works only when developer mode is enabled in Settings app."
 msgstr "Приложение работает только при включенном режиме отладки (debug_mode) в приложении «Инсталлер»."
 
 msgid "Permanently delete template “%s”?"
 msgstr "Удалить сохраненный шаблон «%s»?"
-
