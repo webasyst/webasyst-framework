@@ -3,23 +3,10 @@
 /**
  * Get PHP and Smarty code from POST data, execute and print output to browser.
  */
-class developerBackendExecAction extends waViewAction
+class developerBackendExecAction extends developerAction
 {
     public function execute()
     {
-        if (!$this->getUser()->getRights('webasyst', 'backend')) {
-            throw new waRightsException(_w('Coding sandbox is available for Webasyst admin users only.'));
-        }
-        if (!defined('DEVELOPER_APP_IN_NONDEBUG') && !waSystemConfig::isDebug()) {
-            $error = _w('This application works only when developer mode is enabled in Settings app.');
-        }
-        if (empty($error)) {
-            $error = $this->view->getVars('error');
-        }
-        if ($error) {
-            throw new waException($error);
-        }
-
         error_reporting(E_ALL | E_STRICT | E_NOTICE);
         ini_set('display_errors', 'On');
         ini_set('log_errors', 'Off');

@@ -4,8 +4,9 @@ class developerBackendAction extends developerAction
 {
     public function execute()
     {
-        if (!defined('DEVELOPER_APP_IN_NONDEBUG') && !waSystemConfig::isDebug()) {
-            $this->view->assign('error', _w('Coding sandbox works only if Debug mode is enabled in the Installer app.'));
+        $error = $this->checkRights();
+        if ($error) {
+            $this->view->assign('error', $error);
             $this->setTemplate('string:<h2 style="color: red">{$error|escape}</h2>');
         }
 
@@ -13,5 +14,15 @@ class developerBackendAction extends developerAction
         $this->getResponse()
              ->addHeader('X-XSS-Protection', 0)
              ->sendHeaders();
+    }
+
+    protected function checkRights()
+    {
+        // show nice message instead of exception screen
+        try {
+            parent::checkRights();
+        } catch (waException $e) {
+            return $e->getMessage();
+        }
     }
 }
