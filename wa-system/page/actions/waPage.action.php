@@ -79,6 +79,9 @@ class waPageAction extends waViewAction
 
             $this->view->assign('page', $page);
             $this->view->assign('wa_theme_url', $this->getThemeUrl());
+            
+            $this->view->assign('frontend_page', wa($this->getAppId())->event('frontend_page', $page, array('before_content', 'after_content')));
+            
             $page['content'] = $this->renderPage($page);
 
             if ($this->layout) {
