@@ -7,7 +7,7 @@ class developerBackendExecAction extends developerAction
 {
     public function execute()
     {
-        error_reporting(E_ALL | E_STRICT | E_NOTICE);
+        error_reporting(E_ALL);
         ini_set('display_errors', 'On');
         ini_set('log_errors', 'Off');
 
