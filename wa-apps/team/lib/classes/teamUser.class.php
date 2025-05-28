@@ -106,7 +106,9 @@ class teamUser
 
         // Order by
         $order_by = ifset($options['order']);
-        if (!$order_by) {
+        if ($order_by) {
+            $order_by = preg_replace('/[^\w\s]+/', '', $order_by);
+        } else {
             $order_by = 'name ASC';
         }
         if ($order_by === 'from_user_settings') {
