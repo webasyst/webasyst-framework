@@ -103,6 +103,7 @@ class waMailSenderTransport implements Swift_Transport
             switch($header->getFieldName()) {
                 case 'List-Unsubscribe':
                     $message_data['unsubscribe_url'] = trim($header->getFieldBody(), '<>');
+                    $message_data['one_click_unsubscribe'] = true;
                     break;
                 case 'X-Log-ID':
                     $value = $header->getFieldBody();

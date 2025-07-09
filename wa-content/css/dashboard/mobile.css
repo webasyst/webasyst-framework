@@ -17,6 +17,40 @@
     padding-right: 1.75rem;
   }
 }
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.nobutton {
+  color: var(--text-color-input);
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button {
+  transition: background-color 0.3s ease, color 0.3s ease, width 0.3s ease, max-width 0.3s ease, min-width 0.3s ease;
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button .icon-loading,
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button .icon-success,
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button .icon-error {
+  display: none;
+  color: var(--white);
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button.is-submit {
+  height: 35px;
+  padding: 0;
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button.is-submit .text {
+  display: none;
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button.is-submit:not(.is-success):not(.is-error) .icon-loading {
+  display: inline-block;
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button.is-success {
+  background: var(--green);
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button.is-success .icon-success {
+  display: inline-block;
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button.is-error {
+  background: var(--red);
+}
+#wa_announcement .wa-announcement-wrapper > .wa-announcement-form .button.ai-button.is-error .icon-error {
+  display: inline-block;
+}
 #wa_announcement .wa-announcement-wrapper > .wa-announcement-list-wrapper {
   padding-left: 28px;
   padding-right: 28px;

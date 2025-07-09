@@ -199,7 +199,8 @@ class Swift_Mime_MimePart extends Swift_Mime_SimpleMimeEntity
     /** Encode charset when charset is not utf-8 */
     protected function _convertString($string)
     {
-        $charset = strtolower($this->getCharset());
+        $charset = $this->getCharset();
+        $charset = empty($charset) ? '' : strtolower($charset);
         if (!in_array($charset, array('utf-8', 'iso-8859-1', ''))) {
             // mb_convert_encoding must be the first one to check, since iconv cannot convert some words.
             if (function_exists('mb_convert_encoding')) {

@@ -31,11 +31,21 @@ class waWebasystIDSiteAuth extends waWebasystIDAuthAdapter
         // it is beginning of auth process, adapter didn't ask webasyst ID server yet
         // redirect to provider auth page
         if (!$error && !$code) {
+            $goal_url_encoded = waRequest::get('goal_url', null, waRequest::TYPE_STRING_TRIM);
+            if (!empty($goal_url_encoded)) {
+                wa()->getStorage()->set('auth_goal_url', $goal_url_encoded);
+            }
+
             $request_url = $this->getHealthyRedirectUri();
             if (!$request_url) {
                 throw new waWebasystIDException(_ws('Webasyst ID authentication endpoint is not available'));
             }
             wa()->getResponse()->redirect($request_url);
+        }
+
+        $goal_url_encoded = wa()->getStorage()->get('auth_goal_url');
+        if (!empty($goal_url_encoded)) {
+            waRequest::setParam('goal_url', $goal_url_encoded);
         }
 
         // auth server returns something be callback url

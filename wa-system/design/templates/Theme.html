@@ -1,5 +1,7 @@
 {$_is_trial = $theme.type === waTheme::TRIAL}
 {$is_only_settings = $only_settings|default:false}
+{$has_theme_usage_any_app = $has_theme_usage_any_app || !empty($fallback_has_theme_usage)}
+{$has_theme_usage = $has_theme_usage || !empty($fallback_has_theme_usage)}
 
 <script src="{$wa_url}wa-content/js/jquery-wa/design/theme.settings.js?v{$wa->version()}"></script>
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design/theme.settings.css?{$wa->version()}">
@@ -457,7 +459,7 @@
                 {/if}
             </div>
 
-            {if !$has_theme_usage && !$_is_trial && (!$has_theme_usage_any_app || $show_theme_start_using)}
+            {if !$has_theme_usage && !$_is_trial && (!$has_theme_usage_any_app || !empty($show_theme_start_using))}
                 <div class="wa-theme-use custom-mb-24">
 
                     {if !$has_theme_usage_any_app}
@@ -573,7 +575,7 @@
                                         {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
                                             {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
                                         {/if}
-                                        <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
+                                        <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold break-word">
                                             <span>{$_r._domain_decoded}/{$_r.url|replace:'*':''}</span>
                                             <span class="count small"><i class="fas fa-external-link-alt fa-xs"></i></span>
                                         </a>

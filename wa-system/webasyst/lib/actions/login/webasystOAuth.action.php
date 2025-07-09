@@ -58,7 +58,9 @@ class webasystOAuthAction extends waViewAction
 
     public function execute()
     {
-        if ($this->provider_id === waWebasystIDAuthAdapter::PROVIDER_ID) {
+        $auth_type = waRequest::get('type', null, waRequest::TYPE_STRING_TRIM);
+
+        if ($this->provider_id === waWebasystIDAuthAdapter::PROVIDER_ID && $auth_type !== waWebasystIDAuthAdapter::TYPE_SITE) {
             $this->webasystIDAuthCase();
         } else {
             $this->defaultCase();
@@ -111,6 +113,11 @@ class webasystOAuthAction extends waViewAction
 
     protected function defaultCase()
     {
+        $goal_url_encoded = waRequest::param('goal_url', null, waRequest::TYPE_STRING_TRIM);
+        if (!empty($goal_url_encoded)) {
+            $goal_url = waUtils::urlSafeBase64Decode($goal_url_encoded);
+            $this->redirect($goal_url);
+        }
         $this->template = wa()->getAppPath('templates/actions/oauth/', 'webasyst').'OAuth.html';
     }
 

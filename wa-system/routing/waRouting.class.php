@@ -15,6 +15,7 @@ class waRouting
 
     public function __construct(waSystem $system, $routes = array())
     {
+        $this->root_url = '';
         $this->system = $system;
         if (!$routes) {
             $routes = $this->system->getConfig()->getConfigFile('routing');
@@ -279,7 +280,7 @@ class waRouting
                     $offset += strlen($s) - strlen($m[0][0]);
                 }
             }
-            $this->root_url = self::clearUrl($u);
+            $this->root_url = (string) self::clearUrl($u);
             $url = isset($params['url']) ? $params['url'] : substr($url, strlen($this->root_url));
             $this->dispatchRoutes($this->getAppRoutes($r['app'], $r, true), $url);
         }

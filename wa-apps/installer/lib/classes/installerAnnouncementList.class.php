@@ -20,6 +20,8 @@ class installerAnnouncementList
      */
     const PLACE_PROMOTION = 'promotion';
 
+    const PLACE_FRONT = 'front';
+
     public function withFilteredByApp($app_id)
     {
         if ($app_id) {
@@ -87,12 +89,19 @@ class installerAnnouncementList
         return isset($list[self::PLACE_NOTIFICATION]) ? $list[self::PLACE_NOTIFICATION] : [];
     }
 
+    public function getFrontList()
+    {
+        $list = $this->getList();
+        return isset($list[self::PLACE_FRONT]) ? $list[self::PLACE_FRONT] : [];
+    }
+
     private function groupByPlace(array $list = [])
     {
         $result = [
             self::PLACE_HEADER_TOP => [],
             self::PLACE_NOTIFICATION => [],
             self::PLACE_PROMOTION => [],
+            self::PLACE_FRONT => [],
         ];
         foreach ($list as $key => $announcement) {
             if(empty($announcement['html'])) {

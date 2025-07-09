@@ -83,6 +83,14 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
         static $res = [];
 
         if (empty($res)) {
+            if ($wa_service_api->isBrokenConnection()) {
+                return '<p class="state-caution-hint"><i class="fas fa-exclamation-circle"></i> '.
+                _ws('Connection to Webasyst ID server is broken. Please re-connect your account to continue using Webasyst Email service.') . ' ' .
+                sprintf_wp(
+                    'To do so, open the <a href="%s">Webasyst ID settings</a>, disable sign-in with Webasyst ID and enable it again.',
+                    wa()->getConfig()->getBackendUrl(true) . 'webasyst/settings/waid/'
+                ) . '</p>';
+            }
             if (!$wa_service_api->isConnected()) {
                 return '<p class="small">'.
                 sprintf_wp(

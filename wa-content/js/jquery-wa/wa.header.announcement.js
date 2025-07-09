@@ -8,15 +8,19 @@ class WaHeaderAnnouncement {
         this.notify_users_dropdown = null;
         this.sms_counter_timer_id = null;
         this.count_sms_per_user = null;
+        this.onChangeRedactorStack = [];
 
         this.init();
         this.bindEvents();
     }
 
     init () {
-        this.initRedactor();
+        this.redactor = this.initRedactor();
         this.initTooltip(this.$announcement_groups);
         this.notify_users_dropdown = this.initNotifyUsersDropdown();
+        this.initAIWrite();
+        this.initAISpellcheck();
+        this.initToggleAIWriteOrSpellcheck();
     }
 
     bindEvents () {
@@ -280,10 +284,14 @@ class WaHeaderAnnouncement {
                 that.$announcement_groups.find('.js-announcement-toggle-group').click();
             });
         });
+
+        that.onChangeRedactor(() => {
+            that.calcSMSPerUser();
+        })
     }
 
     initRedactor () {
-        $('#js-announcement-textarea').redactor({
+        return $('#js-announcement-textarea').redactor({
             toolbarFixed: false,
             minHeight: 80,
             maxHeight: 100,
@@ -293,11 +301,15 @@ class WaHeaderAnnouncement {
             linkSize: 1000,
             callbacks: {
                 change: () => {
-                    this.calcSMSPerUser();
+                    this.onChangeRedactorStack.forEach(cb => cb());
                 }
             }
-        });
+        }).data('redactor');
     }
+    onChangeRedactor (callback) {
+        typeof callback === 'function' && this.onChangeRedactorStack.push(callback);
+    }
+
     initTooltip ($wrapper) {
         $wrapper.find('[data-wa-tooltip-content]').waTooltip();
     }
@@ -798,6 +810,104 @@ class WaHeaderAnnouncement {
 
         const $counter = this.$form.find('.js-sms-counter-value');
         $counter.show().children().text(total_sms);
+    }
+
+    initAIWrite () {
+        const $wrapper = $('#js-wa-announcement-ai-write-dropdown').waDropdown({
+            hover: false,
+            hide: false
+        });
+        const $prompt = $wrapper.find('.js-prompt');
+        const $submit = $wrapper.find('.js-submit');
+        const $repeat_submit = $wrapper.find('.js-repeat-submit');
+        const $error = $wrapper.find('.js-error');
+        const redactor = this.redactor;
+
+        const submit = async (repeat = false) => {
+            $error.empty();
+            if (repeat) {
+                $repeat_submit.hide();
+                $submit.removeClass(['is-submit', 'is-success', 'is-error']);
+            }
+            $submit.prop('disabled', true);
+            $submit.css('width', $submit.css('width'));
+            $submit.addClass('is-submit');
+            $submit.animate({ width: '35px' }, 50);
+            await new Promise((resolve) => setTimeout(() => resolve(), 1000));
+
+            const text = $prompt.val();
+            const emotion = $wrapper.find('.js-emotion').val(); // TODO: soon remove
+            $.post(this.url_api + 'ai/write', { text, emotion }, (r) => {
+                if (r.errors) {
+                    $error.html(r.errors.error_description || r.errors.error);
+                    $submit.addClass('is-error');
+                } else if (r.data) {
+                    const html = r.data;
+                    redactor.code.set(html);
+                    $submit.addClass('is-success');
+                }
+            }).always(() => {
+                $repeat_submit.show();
+                $submit.prop('disabled', false);
+            });
+        };
+
+        $prompt.on('input', function() {
+            const is_empty = !$(this).val().trim();
+            $submit.prop('disabled', is_empty);
+            $repeat_submit.prop('disabled', is_empty);
+        });
+
+        $submit.on('click', (e) => {
+            e.preventDefault();
+            submit();
+        });
+        $repeat_submit.on('click', (e) => {
+            e.preventDefault();
+            submit(true);
+        });
+    }
+
+    initAISpellcheck () {
+        const $submit = $('#js-wa-announcement-ai-spellcheck');
+        const $error = $('#js-announcement-error');
+
+        const submit = () => {
+            $error.addClass('hidden');
+            $submit.prop('disabled', true);
+            const $loading = $submit.find('.webasyst-magic-wand-ai').addClass('shimmer');
+            const text = this.redactor.code.get();
+            $.post(this.url_api + 'ai/spellcheck', { text }, (r) => {
+                if (r.errors) {
+                    const error = r.errors.error_description || r.errors.error;
+                    if (error) {
+                        $error.text(error);
+                    }
+                    $error.removeClass('hidden');
+                } else if (r.data) {
+                    this.redactor.code.set(r.data);
+                }
+            }).always(() => {
+                $loading.removeClass('shimmer');
+                $submit.prop('disabled', false);
+            });
+        };
+
+        $submit.on('click', (e) => {
+            e.preventDefault();
+            submit();
+        });
+    }
+
+    initToggleAIWriteOrSpellcheck () {
+        const that = this;
+        const updateAvailabilitySubmit = () => {
+            const show_ai_write = that.redactor.code.html.replace(/<[^>]*>/g, '').trim().length <= 10;
+            $('#js-wa-announcement-ai-write-dropdown .dropdown-toggle').toggle(show_ai_write);
+            $('#js-wa-announcement-ai-spellcheck').toggle(!show_ai_write);
+        };
+        updateAvailabilitySubmit();
+        that.onChangeRedactor(updateAvailabilitySubmit);
     }
 }
 

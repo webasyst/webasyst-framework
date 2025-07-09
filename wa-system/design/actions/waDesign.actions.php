@@ -776,7 +776,11 @@ HTACCESS;
             $theme_routes = array();
             $preview_url = false;
             $domain = wa()->getConfig()->getDomain();
-            foreach ($routes as $r) {
+            foreach ($routes as $r_id => $r) {
+                if (ifset($r, 'app', '') === 'site' && !empty($r['site_tech_route'])) {
+                    unset($routes[$r_id]);
+                    continue;
+                }
                 if ((waRequest::get('route') == $r['_id']) && !empty($r['locale'])) {
                     $current_locale = $r['locale'];
                 }
@@ -938,6 +942,9 @@ HTACCESS;
                     $settlements_by_domain[$_domain]['blockpages'] = ifset($all_blockpages, $_domain, []);
 
                     foreach ($settlements as $s) {
+                        if (ifset($s, 'app', 'id', '') === 'site' && !empty($s['site_tech_route'])) {
+                            continue;
+                        }
                         if (isset($s['app']['icon'])) {
                             $s['app'] = [
                                 'id' => $s['app']['id'],

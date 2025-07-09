@@ -183,7 +183,7 @@ class waMailDecode
         if (isset($this->body['text/plain'])) {
             $result['text/plain'] = trim($this->body['text/plain']);
             if (!isset($this->body['text/html'])) {
-                $result['text/html'] = nl2br($result['text/plain']);
+                $result['text/html'] = nl2br(htmlspecialchars($result['text/plain'], ENT_IGNORE));
             }
         }
 
@@ -506,7 +506,16 @@ class waMailDecode
                     $info = $this->parseHeader($part['value'], $this->current_header);
                     $this->part['type'] = strtolower(strtok($info['value'], '/'));
                     $this->part['subtype'] = strtolower(strtok(''));
-                    $this->part['params'] = $info['params'];
+                    $this->part['params'] = ifempty($this->part['params'], []) + $info['params'];
+                    unset($info);
+                }
+                if ($this->current_header == 'content-disposition' && empty($this->part['params']['name'])) {
+                    $info = $this->parseHeader($part['value'], $this->current_header);
+                    if (!empty($info['params']['filename'])) {
+                        $this->part['params'] = ifempty($this->part['params'], []) + [
+                            'name' => $info['params']['filename']
+                        ];
+                    }
                     unset($info);
                 }
                 if ($this->current_header === 'from ') {

@@ -146,6 +146,11 @@ class waMailMessage extends Swift_Message
 
     protected function prepareBody($body, $charset = null)
     {
+        if (empty($body)) {
+            // Do not make HTML-wrap for empty body
+            // Empty body used for DKIM signature calculation
+            return '';
+        }
         $body = (string)$body;
         if (preg_match('/\<html|\<head|\<body/im', $body) === 0) {
             if ($charset === null) {

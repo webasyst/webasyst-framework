@@ -24,6 +24,14 @@
         {sprintf(_ws('%sHow it works?%s'), '<a href="javascript:void(0);" class="js-webasyst-id-help-link">', '</a>')}
     </p>
 
+    {if $is_broken_connection}
+        <div class="alert warning">
+            <i class="fas fa-exclamation-circle"></i>
+            [s`Connection to Webasyst ID server is broken. Please re-connect your account to continue using it.`]
+            [s`To do so, disable sign-in with Webasyst ID and enable it again.`]
+        </div>
+    {/if}
+
     {if $is_connected}
         <div class="fields">
             {if $is_user_bound_to_webasyst_id}

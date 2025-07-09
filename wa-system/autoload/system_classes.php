@@ -240,6 +240,7 @@ return array(
     'waWebasystIDException'                    => 'waid/exceptions/waWebasystIDException.class.php',
     'waWebasystIDAuthException'                => 'waid/exceptions/waWebasystIDAuthException.class.php',
     'waWebasystIDAccessDeniedAuthException'    => 'waid/exceptions/waWebasystIDAccessDeniedAuthException.class.php',
+    'waWebasystIDApiAuthException'             => 'waid/exceptions/waWebasystIDApiAuthException.class.php',
     'waWebasystIDClientManager'                => 'waid/waWebasystIDClientManager.class.php',
     'waWebasystIDAuthAdapter'                  => 'waid/waWebasystIDAuthAdapter.class.php',
     'waWebasystIDWAAuth'                       => 'waid/waWebasystIDWAAuth.class.php',

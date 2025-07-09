@@ -52,7 +52,6 @@ class googleAuth extends waOAuth2Adapter
             $data = array(
                 'source' => 'google',
                 'source_id' => $response['id'],
-                'url' => $response['link'],
                 'name' => $response['name'],
                 'firstname' => $response['given_name'],
                 'lastname' => $response['family_name']
@@ -67,6 +66,12 @@ class googleAuth extends waOAuth2Adapter
             }
             if (isset($response['email'])) {
                 $data['email'] = $response['email'];
+            }
+            if (isset($response['link'])) {
+                $data['url'] = $response['link'];
+            }
+            if (isset($response['picture'])) {
+                $data['photo_url'] = $response['picture'];
             }
             return $data;
         }

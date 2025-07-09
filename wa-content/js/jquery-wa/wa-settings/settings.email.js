@@ -294,7 +294,7 @@ class WASettingsEmail {
             }
 
             let $sender_field = $item.find(that.key_class);
-            if ($sender_field.hasClass('.js-default-key')) {
+            if ($sender_field.hasClass('js-default-key')) {
                 $sender_field = $('#config-sender');
             }
             let sender = $sender_field.val();

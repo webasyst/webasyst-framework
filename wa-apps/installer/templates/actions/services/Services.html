@@ -13,8 +13,32 @@
                 {/foreach}
             {else}
 
-                <div class="flexbox space-24 wrap-mobile full-width">
-                    <figure class="card" style="width: 400px;">
+                <figure class="card custom-mb-24" style="container-type: inline-size;">
+                    <div class="details width-70">
+                        <h4 class="custom-mb-8">
+                            [s`Webasyst AI`]
+                        </h4>
+                        <p class="small gray custom-mt-8 cust1om-mb-8">
+                            [s`Transactional AI service for promo text generation, spell check, and other kinds of text job handled by Webasyst apps.`]
+                            <a href="[s`https://www.webasyst.com/ai/`]" target="_blank" class="nowrap text-blue"><u>[s`How AI works`]</u> <i class="fas fa-external-link-alt fa-xs opacity-70"></i></a>
+                        </p>
+                    </div>
+                    <div class="details width-70">
+                        {$ai_params = webasystHelper::getAiParams()}
+
+                        <p class="small">
+                            <span>{sprintf_wp('Remaining Webasyst AI prompts: %s', '<strong>'|cat:$ai_params.remaining_count|cat:'</strong>')}</span>
+                        </p>
+
+                        <p class="custom-mt-8 custom-mb-4">
+                            <a href="javascript:void(0)" data-service="AI" class="button green small js-balance-button">[s`Add credit`]</a>
+                        </p>
+                    </div>
+                    <span class="icon webasyst-magic-wand-ai" style="font-size:clamp(4rem, 12cqw, 7rem);position:absolute;top:0;right:7cqw;bottom:0;margin:auto;"></span>
+                </figure>
+
+                <div class="flexbox space-24 wrap-mobile fixed full-width">
+                    <figure class="card">
                         <div class="details">
                             <h4 class="custom-mb-8">
                                 <i class="fas fa-at text-light-gray"></i>
@@ -70,7 +94,7 @@
                         </div>
                     </figure>
 
-                    <figure class="card" style="width: 400px;">
+                    <figure class="card">
                         <div class="details">
                             <h4 class="custom-mb-8">
                                 <i class="fas fa-sms text-light-gray"></i>

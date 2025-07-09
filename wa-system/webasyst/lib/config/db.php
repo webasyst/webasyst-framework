@@ -1,5 +1,37 @@
 <?php
 return array(
+    'wa_agreement_log' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'app_id' => array('varchar', 64, 'null' => 0),
+        'contact_id' => array('int', 11),
+        'ip' => array('varchar', 39),
+        'user_agent' => array('varchar', 255),
+        'context' => array('varchar', 64, 'null' => 0),
+        'document_name' => array('varchar', 64, 'null' => 0),
+        'document_id' => array('int', 11),
+        'accept_method' => array('varchar', 64),
+        'domain' => array('varchar', 64, 'null' => 0),
+        'form_url' => array('varchar', 255),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'contact_id' => 'contact_id',
+            'app_id_context' => array('app_id', 'context'),
+        )
+    ),
+    'wa_agreement_document' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'app_id' => array('varchar', 64, 'null' => 0),
+        'context' => array('varchar', 64, 'null' => 0),
+        'domain' => array('varchar', 64, 'null' => 0),
+        'locale' => array('varchar', 8, 'null' => 0),
+        'document_name' => array('varchar', 64, 'null' => 0),
+        'document_text' => array('text', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'app_id_context_domain_document_locale' => array('app_id', 'context', 'domain', 'document_name', 'locale'),
+        )
+    ),
     'wa_announcement' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'app_id' => array('varchar', 32, 'null' => 0),

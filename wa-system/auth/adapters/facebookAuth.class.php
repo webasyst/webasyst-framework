@@ -4,8 +4,8 @@ class facebookAuth extends waOAuth2Adapter
 {
     protected $check_state = true;
 
-    const LOGIN_URL = "http://www.facebook.com/v2.9/dialog/oauth";
-    const API_URL   = "https://graph.facebook.com/v2.9/";
+    const LOGIN_URL = "http://www.facebook.com/v22.0/dialog/oauth";
+    const API_URL   = "https://graph.facebook.com/v22.0/";
 
     public function __construct($options = array())
     {
@@ -25,7 +25,7 @@ class facebookAuth extends waOAuth2Adapter
     {
         // Login dialog url
         $redirect_uri = $this->getOption('redirect_uri');
-        return self::LOGIN_URL."?client_id=".$this->app_id."&display=popup&scope=email&redirect_uri=".urlencode($redirect_uri);
+        return self::LOGIN_URL."?client_id=".$this->app_id."&scope=email&redirect_uri=".urlencode($redirect_uri);
     }
 
     public function getAccessToken($code)
@@ -61,14 +61,12 @@ class facebookAuth extends waOAuth2Adapter
             $data = array(
                 'source'    => 'facebook',
                 'source_id' => $response['id'],
-                'url'       => $response['link'],
                 'name'      => $response['name'],
                 'firstname' => $response['first_name'],
                 'lastname'  => $response['last_name'],
-                'locale'    => $response['locale'],
             );
             if (!empty($response['picture']) && isset($response['picture']['data']['url'])) {
-                $data['photo_url'] = self::API_URL."me/picture?access_token=".$token."&type=normal";
+                $data['photo_url'] = self::API_URL."me/picture?access_token=".$token."&width=500&height=500";
             }
             if (!empty($response['gender'])) {
                 $data['sex'] = $response['gender'] == 'male' ? 'm' : 'f';

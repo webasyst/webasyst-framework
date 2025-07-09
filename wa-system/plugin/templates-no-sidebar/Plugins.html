@@ -13,19 +13,17 @@
     display: flex;
     flex-wrap: wrap;
     list-style: none;
-    gap: 1rem 0
+    margin-bottom: 0;
 }
 .s-installed-plugin-list .s-installed-list-thumbs .s-plugin-item {
     word-break: break-word;
     padding: 0;
     flex: 0 0 calc(33.33%);
     margin-right: 0;
+    padding-bottom: 1rem;
 }
 .s-installed-plugin-list .s-installed-list-thumbs .s-plugin-item .s-plugin-image-wrapper {
     position: relative;
-}
-.s-installed-plugin-list .s-installed-list-thumbs .s-plugin-item:nth-child(n+{$max_count_plugins + 1}) {
-    display: none;
 }
 .wa-plugins-store-wrapper .wa-plugins-store-header { margin: 2rem 0 -0.5rem 1.25rem; position: relative; z-index: 5; }
 </style>
@@ -49,19 +47,24 @@
                             {/if*}
                             {foreach $plugins as $plugin}
                                 {$plugin_names[$plugin.id] = $plugin.name|escape}
-                                <li class="s-plugin-item" id="plugin-{$plugin.id}"{if !empty($plugin.custom_settings_url)} data-url="{$plugin.custom_settings_url}"{elseif !empty($plugin.custom_settings)} data-settings="1"{/if}>
-
-                                        <a href="{$plugins_hash}/{$plugin.id}/">
-                                            {if !isset($plugin.img)}
-                                                <span class="s-plugin-icon"><i class="fas fa-plug"></i></span>
-                                            {else}
+                                <li id="plugin-{$plugin.id}" class="s-plugin-item"
+                                    {if !empty($plugin.custom_settings_url)}
+                                        data-url="{$plugin.custom_settings_url}"
+                                    {elseif !empty($plugin.custom_settings)}
+                                        data-settings="1"
+                                    {/if}
+                                    {if ($plugin@index + 1) > $max_count_plugins} style="display: none;"{/if}
+                                >
+                                    <a href="{$plugins_hash}/{$plugin.id}/">
+                                        {if !isset($plugin.img)}
+                                            <span class="s-plugin-icon"><i class="fas fa-plug"></i></span>
+                                        {else}
                                             <span class="icon">
                                                 <img class="s-plugin-icon" src="{wa_url()}{$plugin.img}" alt="">
                                             </span>
-                                                {/if}
-                                            <span>{$plugin.name|escape}</span>
-                                        </a>
-
+                                        {/if}
+                                        <span>{$plugin.name|escape}</span>
+                                    </a>
                                 </li>
                             {/foreach}
                         </ul>
@@ -73,7 +76,6 @@
                     {if $plugins|@count > $max_count_plugins}
                     {$other_count = $plugins|@count - $max_count_plugins}
                         <div class="custom-my-8">
-                            {*<a href="{$wa_backend_url}installer/store/app/{$wa->app()}/plugins/" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}" class="button webasyst-magic-wand full-width js-plugins-list"><i class="icon"></i>[s`Browse plugins`]</a>*}
                             <a href="javascript:void(0)" class="button light-gray full-width js-plugins-show-more">
                                 <span class="visible-name">[s`Show more`] ({$other_count}) <span class="show-more-number"></span><i class="icon fas fa-caret-down"></i></span>
                                 <span class="hidden-name" style="display: none;">[s`Hide`] <i class="icon fas fa-caret-up"></i></span></a>
@@ -525,11 +527,10 @@
     });
 
     $('.js-plugins-show-more').on('click', function  () {
-        $('.s-installed-list-thumbs .s-plugin-item:nth-child(n+4)').slideToggle(350);
+        $('.s-installed-list-thumbs .s-plugin-item:nth-child(n+{$max_count_plugins + 1})').slideToggle(300);
         $(this).find('.visible-name').toggle();
         $(this).find('.hidden-name').toggle();
-        });
-
+    });
 
     {if empty($is_ajax)}
         $('.js-plugin-list a, .js-plugins-list').on('click', function  () {

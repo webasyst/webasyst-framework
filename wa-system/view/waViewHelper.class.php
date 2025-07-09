@@ -315,7 +315,65 @@ HTML;
             $html .= '<link rel="canonical" href="' . htmlspecialchars($canonical) . '">' . PHP_EOL;
         }
 
+        if ($this->getEnv() == 'frontend' && $this->getConfig()->isFrontendAnnouncementsEnabled()) {
+            $html .= $this->getCachedFrontAnnouncements();
+        }
+
         return $html;
+    }
+
+    private function getCachedFrontAnnouncements()
+    {
+        try {
+            if ($cache = wa()->getCache()) {
+                $cache_key = 'front_announcements';
+                $result = $cache->get($cache_key);
+                if (!$result) {
+                    $result = $this->getFrontAnnouncements();
+                    if ($result) {
+                        $cache->set($cache_key, $result, 600);
+                    }
+                }
+                return $result;
+            } else {
+                return $this->getFrontAnnouncements();
+            }
+        } catch (Exception $e) {
+            waLog::log($e->__toString());
+            return '';
+        }
+    }
+
+    private function getFrontAnnouncements()
+    {
+        $records = (new waAppSettingsModel)->get('installer');
+        $announcements = array_filter($records, function ($key) {
+            return strpos($key, 'a-') === 0;
+        }, ARRAY_FILTER_USE_KEY);
+        $announcements = array_map(function ($announcement) { 
+            return json_decode($announcement, true);
+        }, $announcements);
+
+        $app_id = wa()->getApp();
+        $announcements = array_filter($announcements, function ($announcement) use ($app_id) {
+            if (!isset($announcement['html']) || empty($announcement['html']['front'])) {
+                return false;
+            }
+            if (isset($announcement['app_id']) && $announcement['app_id'] !== $app_id) {
+                return false;
+            }
+            if (isset($announcement['expire'])) {
+                $expire = new DateTime($announcement['expire'], new DateTimeZone('UTC'));
+                if ($expire <= new DateTime()) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        return array_reduce($announcements, function ($result, $announcement) {
+            return $result . $announcement['html']['front'];
+        }, '');
     }
 
     public function headJs()

@@ -341,6 +341,8 @@ class waFiles
                 return 'application/x-shockwave-flash';
             case 'eml':
                 return 'message/rfc822';
+            case 'webmanifest':
+                return 'application/manifest+json';
 
             default:
                 return 'application/octet-stream';

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-04-04 10:02+0300\n"
+"PO-Revision-Date: 2025-07-04 11:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -7048,6 +7048,9 @@ msgstr "<a href=\"%s\">Подключите Webasyst ID</a>, чтобы поль
 msgid "<a href=\"%s\">Connect to Webasyst ID</a> to use the Webasyst SMS."
 msgstr "<a href=\"%s\">Подключите Webasyst ID</a>, чтобы пользоваться отправителем Webasyst SMS."
 
+msgid "<a href=\"%s\">Connect to Webasyst ID</a> to use the Webasyst AI."
+msgstr "<a href=\"%s\">Подключите Webasyst ID</a>, чтобы пользоваться сервисом Webasyst AI."
+
 msgid "The IP address of the server where your Webasyst is installed is in the list of banned addresses."
 msgstr "IP-адрес сервера, на котором установлен ваш Webasyst, попал в список запрещенных адресов."
 
@@ -7744,8 +7747,8 @@ msgstr "Больше не показывать"
 msgid "If your browser does not offer you to enable notifications, try to clear the notifications permissions for your domain in the browser settings."
 msgstr "Если ваш браузер не предлагает включить уведомления, попробуйте удалить текущие разрешения для уведомлений вашего домена в настройках браузера."
 
-msgid "<%s>The notification has been successfully sent.<%s> If you do not see it, please try again in a few minutes. If the problem persists, try to clear the notifications permissions for your domain in the browser settings and re-check the settings on this page (<%s>read more<%s>)."
-msgstr "<%s>Уведомление успешно отправлено.<%s> Если вы его не видите, повторите попытку через несколько минут. Если проблема сохранится, попробуйте удалить текущие разрешения для уведомлений вашего домена в настройках браузера и проверьте значения настроек на этой странице (<%s>подробнее<%s>)."
+msgid "<%s>The notification has been successfully sent.<%s> If you do not see it, please try again in a few minutes. If the problem persists, try to clear the notifications permissions for your domain in the browser settings and check the web push notifications sending settings in your account (<%s>read more<%s>)."
+msgstr "<%s>Уведомление успешно отправлено.<%s> Если вы его не видите, повторите попытку через несколько минут. Если проблема сохранится, попробуйте удалить текущие разрешения для уведомлений вашего домена в настройках браузера и проверьте значения настроек для отправки push-уведомлений в вашем аккаунте (<%s>подробнее<%s>)."
 
 msgid "https://support.webasyst.com/33253/push-notifications/"
 msgstr "https://support.webasyst.ru/33248/push-notifications/"
@@ -7773,3 +7776,75 @@ msgstr "Откройте эту страницу через HTTPS-подключ
 
 msgid "Notifications appear to be disabled in the browser settings. Please enable them to receive web push notifications."
 msgstr "Похоже, что уведомления заблокированы в настройках браузера. Включите их, чтобы получать push-уведомления."
+
+msgid "Connection to Webasyst ID server is broken. Please re-connect your account to continue using it."
+msgstr "Нарушилось подключение вашего аккаунта к серверу Webasyst ID. Восстановите подключение, чтобы пользоваться Webasyst ID."
+
+msgid "Connection to Webasyst ID server is broken. Please re-connect your account to continue using Webasyst Email service."
+msgstr "Нарушилось подключение вашего аккаунта к серверу Webasyst ID. Восстановите подключение, чтобы пользоваться сервисом Webasyst Email."
+
+msgid "Connection to Webasyst ID server is broken. Please re-connect your account to continue using Webasyst SMS service."
+msgstr "Нарушилось подключение вашего аккаунта к серверу Webasyst ID. Восстановите подключение, чтобы пользоваться сервисом Webasyst SMS."
+
+msgid "Something went wrong... Connection to Webasyst ID server may be broken. Perhaps you need to re-connect your account to use the Webasyst SMS service."
+msgstr "Что-то пошло не так... Вероятно, нарушилось подключение вашего аккаунта к серверу Webasyst ID. Восстановите подключение, чтобы пользоваться сервисом Webasyst SMS."
+
+msgid "To do so, open the <a href=\"%s\">Webasyst ID settings</a>, disable sign-in with Webasyst ID and enable it again."
+msgstr "Для этого перейдите в <a href=\"%s\">настройки Webasyst ID</a>, выключите вход с Webasyst ID и включите его снова."
+
+msgid "To do so, disable sign-in with Webasyst ID and enable it again."
+msgstr "Для этого выключите вход с Webasyst ID и включите его снова."
+
+msgid "AI"
+msgstr "ИИ"
+
+msgid "Remaining Webasyst AI prompts: %s"
+msgstr "Остаток запросов к Webasyst AI: %s"
+
+msgid "prompt"
+msgid_plural "prompts"
+msgstr[0] "запрос"
+msgstr[1] "запроса"
+msgstr[2] "запросов"
+
+msgid "Transactional AI service for promo text generation, spell check, and other kinds of text job handled by Webasyst apps."
+msgstr "ИИ-генерация текстов, проверка орфографии и другие задачи по работе с текстом в приложениях Webasyst."
+
+msgid "https://www.webasyst.com/ai/"
+msgstr "https://www.webasyst.ru/ai/"
+
+msgid "How AI works"
+msgstr "Как работает ИИ"
+
+msgid "Write an announcement about..."
+msgstr "Напиши объявление про..."
+
+msgid "Write"
+msgstr "Написать"
+
+msgid "Style"
+msgstr "Стиль"
+
+msgid "Neutral"
+msgstr "Нейтральный"
+
+msgid "Positive"
+msgstr "Позитивный"
+
+msgid "Fun"
+msgstr "Веселый"
+
+msgid "Check spelling"
+msgstr "Проверить ошибки"
+
+msgid "Privacy"
+msgstr "Персональные данные"
+
+msgid "Depending on jurisdiction, your business may require to keep the log of all agreements to terms of service and privacy policy commited by your site users. In Webasyst, all agreements performed via basic routines and standard apps, are recorded into the database to help you being in compliance with the law."
+msgstr "В зависимости от юрисдикции вашему бизнесу может потребоваться вести журнал учета согласий с политикой обработки персональных данных. В Webasyst все согласия, принятые через настроенные с помощью стандартных механизмов и приложений функции, автоматически фиксируются в журнале для соответствия нормам закона. <a href=\"https://support.webasyst.ru/47766/fz-152-settings/\" target=\"_blank\">Подробнее о настройках и соответствии 152-ФЗ &rsaquo;</a>"
+
+msgid "Download agreement log"
+msgstr "Скачать журнал согласий"
+
+msgid "Download with full policy text"
+msgstr "Скачать с полным текстом согласия"

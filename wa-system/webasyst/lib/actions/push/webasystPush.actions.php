@@ -168,7 +168,7 @@ class webasystPushActions extends waActions
                 'testButtonText' => _ws('Send test notification') . '&nbsp;›',
                 'requestTimeoutMessage' => _ws('If your browser does not offer you to enable notifications, try to clear the notifications permissions for your domain in the browser settings.'),
                 'testTimeoutMessage' => sprintf_wp(
-                    '<%s>The notification has been successfully sent.<%s> If you do not see it, please try again in a few minutes. If the problem persists, try to clear the notifications permissions for your domain in the browser settings and re-check the settings on this page (<%s>read more<%s>).',
+                    '<%s>The notification has been successfully sent.<%s> If you do not see it, please try again in a few minutes. If the problem persists, try to clear the notifications permissions for your domain in the browser settings and check the web push notifications sending settings in your account (<%s>read more<%s>).',
                     'strong class="text-strong"',
                     '/strong',
                     sprintf(

@@ -45,7 +45,8 @@ class waSMS
     {
         try {
             $sms = new self();
-            return !!$sms->getAdapter($from, $do_filter_not_installed);
+            $adapter = $sms->getAdapter($from, $do_filter_not_installed);
+            return !empty($adapter) && $adapter->isConfigured();
         } catch (Exception $e) {
             return false;
         }

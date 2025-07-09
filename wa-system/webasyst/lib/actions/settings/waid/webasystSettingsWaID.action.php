@@ -32,6 +32,7 @@ class webasystSettingsWaIDAction extends webasystSettingsViewAction
 
         $this->view->assign([
             'is_connected' => $is_connected,
+            'is_broken_connection' => (new waServicesApi)->isBrokenConnection(),
             'is_backend_auth_forced' => $this->cm->isBackendAuthForced(),
             'connected_users' => $connected_users,
             'connected_users_count' => $connected_users_count,

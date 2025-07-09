@@ -3,7 +3,7 @@
 class twitterAuth extends waAuthAdapter
 {
     const API_VERSION = '1.1';
-    const API_HOST = 'https://api.twitter.com';
+    const API_HOST = 'https://api.x.com';
 
     protected $oauth_token;
     protected $oauth_token_secret;
@@ -142,7 +142,7 @@ class twitterAuth extends waAuthAdapter
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_TIMEOUT => 10,
             CURLOPT_URL => $url,
-            CURLOPT_USERAGENT => 'TwitterOAuth',
+            CURLOPT_USERAGENT => 'WebasystOAuth',
             CURLOPT_ENCODING => 'gzip',
         );
 
@@ -175,6 +175,11 @@ class twitterAuth extends waAuthAdapter
 
         if (!waRequest::get('oauth_verifier')) {
 
+            $goal_url_encoded = waRequest::get('goal_url', null, waRequest::TYPE_STRING_TRIM);
+            if (!empty($goal_url_encoded)) {
+                wa()->getStorage()->set('auth_goal_url', $goal_url_encoded);
+            }
+
             $callback_url = $this->getCallbackUrl();
             $response = $this->oauth("oauth/request_token", array('oauth_callback' => $callback_url));
 
@@ -192,13 +197,18 @@ class twitterAuth extends waAuthAdapter
             $storage->set('oauth_token', $response['oauth_token']);
             $storage->set('oauth_token_secret', $response['oauth_token_secret']);
 
-            $url = self::API_HOST."/oauth/authorize?oauth_token=".$response['oauth_token'];
+            $url = self::API_HOST."/oauth/authenticate?oauth_token=".$response['oauth_token'];
 
             waSystem::getInstance()->getResponse()->redirect($url);
         }
         else {
             if ( waRequest::get('oauth_token') != $storage->get('oauth_token' ) ) {
                 throw new waAuthException(_ws("Old token"));
+            }
+
+            $goal_url_encoded = wa()->getStorage()->get('auth_goal_url');
+            if (!empty($goal_url_encoded)) {
+                waRequest::setParam('goal_url', $goal_url_encoded);
             }
 
             // get access token
@@ -210,7 +220,10 @@ class twitterAuth extends waAuthAdapter
             $this->oauth_token = $token['oauth_token'];
             $this->oauth_token_secret = $token['oauth_token_secret'];
 
-            $response = $this->oAuthRequest(self::API_HOST."/1.1/account/verify_credentials.json", 'GET', array('skip_status' => 1));
+            $response = $this->oAuthRequest(self::API_HOST.'/'.self::API_VERSION.'/account/verify_credentials.json', 'GET', [
+                'skip_status' => true,
+                'include_email' => true,
+            ]);
 
             $response = json_decode($response, true);
 
@@ -220,7 +233,7 @@ class twitterAuth extends waAuthAdapter
             $data = array(
                 'source' => 'twitter',
                 'source_id' => $response['id_str'],
-                'url' => "https://twitter.com/".$response['screen_name'],
+                'url' => "https://x.com/".$response['screen_name'],
                 'name' => $response['name'],
                 'about' => $response['description'],
                 'photo_url' => $response['profile_image_url']

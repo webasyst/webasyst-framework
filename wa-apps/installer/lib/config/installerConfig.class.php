@@ -16,6 +16,8 @@ class installerConfig extends waAppConfig
 {
     const ANNOUNCE_CACHE_TTL = 3600; // sec
     const LICENSE_CACHE_TTL = 3600; // 1 hour
+    const LICENSE_LONG_CACHE_TTL = 86400; // 1 day
+    const LICENSE_FALL_LIMIT = 3;
 
     const INIT_DATA_CACHE_TTL = 10800; // 3 hours
     const INIT_DATA_CACHE_TTL_DEBUG = 900; // 15 mins
@@ -398,7 +400,8 @@ class installerConfig extends waAppConfig
             if ($previous_hash = $wa_installer->getGenericConfig('previous_hash')) {
                 $init_url_params['previous_hash'] = $previous_hash;
             }
-            $token_data = (new waAppSettingsModel())->get('installer', 'token_data', false);
+            $app_settings_model = new waAppSettingsModel();
+            $token_data = $app_settings_model->get('installer', 'token_data', false);
             if ($token_data) {
                 $token_data = waUtils::jsonDecode($token_data, true);
                 $init_url_params['token'] = ifset($token_data, 'token', null);
@@ -409,10 +412,12 @@ class installerConfig extends waAppConfig
             $res = $net->query($init_url);
 
             if (!empty($res['data'])) {
-                $cache->set([
+                $data = [
                     'data' => $res['data'],
                     'timestamp' => time()
-                ]);
+                ];
+                $cache->set($data);
+                $app_settings_model->set('installer', 'licenses_data', json_encode($data));
             }
 
             return $res;
