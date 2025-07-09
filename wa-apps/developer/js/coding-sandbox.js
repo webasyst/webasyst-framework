@@ -1,7 +1,8 @@
 /**
  * Coding sandbox JS controller.
  */
-$(function($) { "use strict";
+$(function () {
+    "use strict";
 
     // Initialize "persistent" storage
     $.storage = new $.store();
@@ -11,7 +12,7 @@ $(function($) { "use strict";
     var old_tmpl = $.storage.get('devpg/tmpl');
 
     // Callback for Codemirror to ignore Alt+Enter
-    var onKeyEvent = function(editor, e) {
+    var onKeyEvent = function (editor, e) {
         e = new $.Event(e.type, e);
         if (!e || !e.which) {
             return;
@@ -22,108 +23,153 @@ $(function($) { "use strict";
     };
 
     // Initialize editors
-    var editorPhp = CodeMirror($('#php-editor-wrapper')[0], {
-        value: old_code || $('#default-php-code').text(),
-        mode: 'text/x-php',
-        onKeyEvent: onKeyEvent,
-        indentWithTabs: true,
-        matchBrackets: true,
-        lineWrapping: true,
-        lineNumbers: true,
-        enterMode: "keep",
-        tabMode: "shift",
-        indentUnit: 4
-    });
-    var editorSmarty = CodeMirror($('#smarty-editor-wrapper')[0], {
-        value: old_tmpl || $('#default-smarty-code').text(),
-        onKeyEvent: onKeyEvent,
-        mode: "text/x-smarty",
-        lineWrapping: true,
-        tabMode: "indent"
-    });
+    var editorPhp = CodeMirror(
+        $('#php-editor-wrapper')[0],
+        {
+            value: old_code || $('#default-php-code').text(),
+            mode: 'text/x-php',
+            onKeyEvent: onKeyEvent,
+            autocorrect: true,
+            matchBrackets: true,
+            lineWrapping: true,
+            lineNumbers: true,
+            enterMode: 'keep',
+            indentUnit: 4
+        }
+    );
+    var editorSmarty = CodeMirror(
+        $('#smarty-editor-wrapper')[0],
+        {
+            value: old_tmpl || $('#default-smarty-code').text(),
+            mode: {name: 'smarty', baseMode: 'text/x-smarty', version: 3},
+            onKeyEvent: onKeyEvent,
+            autocorrect: true,
+            matchBrackets: true,
+            lineWrapping: true,
+            lineNumbers: true,
+            enterMode: 'keep',
+            indentUnit: 4
+        }
+    );
     $('#d-smarty').hide();
 
     /** Helper to set almost-to-the-bottom height of the entire coding sandbox */
-    var setSandboxHeight = function() {
-        var current_sandbox_height = $('#d-sandbox').height();
-        var max_sandbox_height = 0.89 * ( $(window).height() - $('#wa-header').height() );
-
-        //if ( current_sandbox_height < max_sandbox_height) {
-            $('#d-sandbox').height( max_sandbox_height );
-            setPHPandSmartyHeights();
-        //}
+    var setSandboxHeight = function () {
+        $('#d-sandbox').height($(window).height() - $('#wa-header').outerHeight() - $('#wa-app > .tabs').outerHeight());
+        setPHPandSmartyHeights();
     };
 
     /** Helper to set height of PHP and Smarty editing areas to fill the entire #d-sandbox */
-    var setPHPandSmartyHeights = function() {
-
-        var available_editor_height = $('#d-sandbox').height() - $('#d-compile-toolbar').height() - 60;
+    var setPHPandSmartyHeights = function () {
+        var available_editor_height = $('#d-sandbox').innerHeight() - $('#d-compile-toolbar').outerHeight();
+        available_editor_height -= $('#d-smarty-mode-enabled').prop('checked') ? 50 : 30;
 
         // Result column
         var result_wrapper = $('#result-wrapper');
         result_wrapper.height(available_editor_height - result_wrapper.parent().find('.d-header').height());
 
         // Editors column
-        if ($('#d-smarty-mode-enabled').is(':checked')) {
+        if ($('#d-smarty-mode-enabled').prop('checked')) {
             $('#d-smarty').show();
-            $('#d-php').height( 0.66 * available_editor_height );
-            $('#d-php .d-editor').height( 0.66 * available_editor_height - $('#d-php .d-header').height() );
-            $('#d-smarty').height( 0.33 * available_editor_height );
-            $('#d-smarty .d-editor').height( 0.33 * available_editor_height - $('#d-smarty .d-header').height() );
-            $('#smarty-editor-wrapper .CodeMirror .CodeMirror-scroll').height($('#d-smarty .d-editor').height());
+            $('#d-php').height(0.60 * available_editor_height);
+            $('#d-php .d-editor').height(0.60 * available_editor_height - $('#d-php .d-header').outerHeight());
+            $('#d-smarty').height(0.40 * available_editor_height);
+            $('#d-smarty .d-editor').height(0.40 * available_editor_height - $('#d-smarty .d-header').outerHeight());
+            $('#smarty-editor-wrapper .CodeMirror').height($('#d-smarty .d-editor').height());
             editorSmarty.refresh();
         } else {
             $('#d-smarty').hide();
-            $('#d-php').height( 1 * available_editor_height );
-            $('#d-php .d-editor').height( 1 * available_editor_height - $('#d-php .d-header').height() );
+            $('#d-php').height(available_editor_height);
+            $('#d-php .d-editor').height(available_editor_height - $('#d-php .d-header').height());
         }
-        $('#php-editor-wrapper .CodeMirror .CodeMirror-scroll').height($('#d-php .d-editor').height());
+        $('#php-editor-wrapper .CodeMirror').height($('#d-php .d-editor').height());
         editorPhp.refresh();
     };
 
     // Change editor height on window resize
-    $(window).resize(function() {
+    $(window).on('resize load', function () {
         setSandboxHeight();
-    }).resize();
+    }).trigger('resize');
 
     // Checkbox to toggle smarty editor
-    $('#d-smarty-mode-enabled').change(function() {
+    $('#d-smarty-mode-enabled').change(function () {
         setPHPandSmartyHeights();
     });
+
     if (old_tmpl) {
-        $('#d-smarty-mode-enabled').attr('checked', true);
+        $('#d-smarty-mode-enabled').prop('checked', true);
         setPHPandSmartyHeights();
     }
 
-    // Set up AJAX to never use cache
-    $.ajaxSetup({
-        cache: false
+    $('#wa-editor-help-webasyst').off('click', '.fields .inline-link');
+    $('#wa-editor-help-webasyst').on('click', '.fields .inline-link', function (event) {
+        event.preventDefault();
+        var element = $(this).find('i');
+        if (element.children('b').length) {
+            element = element.find('b');
+        }
+        editorSmarty.replaceRange(element.text(), editorSmarty.getCursor());
     });
 
+    // Set up AJAX to never use cache
+    $.ajaxSetup({cache: false});
+
     // submit button
-    $('#send').click(function() {
+    $('#send').click(function () {
         var result_wrapper = $('#result-wrapper');
-        result_wrapper.parent().find('.d-header h2').append('<i class="icon16 loading"></i>');
+        result_wrapper.html('<i class="icon16 loading"></i>');
 
         var code = editorPhp.getValue();
         var tmpl = '';
-        if ($('#d-smarty-mode-enabled').is(':checked')) {
+        if ($('#d-smarty-mode-enabled').prop('checked')) {
             tmpl = editorSmarty.getValue();
         }
 
         $.storage.set('devpg/code', code);
         $.storage.set('devpg/tmpl', tmpl);
 
-        $.post('?action=exec', { code: code, tmpl: tmpl }, function(data) {
-            result_wrapper.html('<h2>'+$_('PHP')+'</h2><pre>'+data); // closing </pre> is added by PHP code
-            result_wrapper.parent().find('.d-header .loading').remove();
+        $.ajax({
+            method: 'POST',
+            url: '?action=exec',
+            data: { code: code, tmpl: tmpl },
+            dataType: 'html',
+            global: false,
+            cache: false
+        }).always(function(data, textStatus) {
+
+            // Handle XHR errors
+            if (textStatus != 'success') {
+                console && console.log && console.log('XHR error', data);
+                data = data.responseText || '';
+            }
+
+            if (data.indexOf('<html') < 0) {
+                // Show result without iframe
+                if (data.indexOf('</pre>') >= 0) {
+                    data = '<h2>'+$_('PHP')+'</h2><pre>'+data; // closing </pre> is added by PHP code
+                }
+                result_wrapper.html(data);
+                result_wrapper.find('.wa-exception-debug-dump #Trace pre').each(function() {
+                    var $pre = $(this);
+                    var new_html = $pre.html().replace(/^(#(#|\d+)\s+(wa-system|index\.php|\{main\}).*)$/gm, '<span style="color:#999">$1</span>');
+                    $pre.html(new_html);
+                });
+            } else {
+                // Show result inside iframe
+                result_wrapper.empty();
+                var iframe = $('<iframe src="about:blank" style="width:100%;height:auto;min-height:500px;"></iframe>').appendTo(result_wrapper);
+                var ifrm = (iframe[0].contentWindow) ? iframe[0].contentWindow : (iframe[0].contentDocument.document) ? iframe[0].contentDocument.document : iframe[0].contentDocument;
+                ifrm.document.open();
+                ifrm.document.write(data || $_('Empty response from server'));
+                ifrm.document.close();
+            }
         });
 
         return false;
     });
 
     // Run on Alt + Enter
-    $(document).keyup(function(e) {
+    $(document).keyup(function (e) {
         if (!e || !e.which) {
             return;
         }
@@ -138,7 +184,7 @@ $(function($) { "use strict";
     if (!(snippets instanceof Array)) {
         snippets = [];
     }
-    var cleanSnippets = function() {
+    var cleanSnippets = function () {
         for (var i = 0; i < snippets.length; i++) {
             if (!snippets[i]) {
                 snippets.splice(i, 1);
@@ -147,16 +193,16 @@ $(function($) { "use strict";
         }
         return snippets;
     };
-    var rebuildSnippets = function(name) {
+    var rebuildSnippets = function (name) {
         cleanSnippets();
         var list = $('#snippets-list').empty().append(
-            $('<option value="none"></option>').text($_('saved templates'))
-        );
+                $('<option value="none"></option>').text($_('saved templates')));
         if (snippets.length) {
-            for(var i = 0; i < snippets.length; i++) {
+            for (var i = 0; i < snippets.length; i++) {
                 if (snippets[i]) {
                     list.append(
-                        $('<option value="'+i+'"'+((name && name === snippets[i].name) ? ' selected' : '')+'></option>').text(snippets[i].name)
+                        $('<option value="' + i + '"' + ((name && name === snippets[i].name) ? ' selected' : '') + '></option>')
+                            .text(snippets[i].name)
                     );
                 }
             }
@@ -172,11 +218,11 @@ $(function($) { "use strict";
     rebuildSnippets();
 
     // Button to save snippet as ...
-    $('#save-snippet').click(function() {
+    $('#save-snippet').click(function () {
         // suggest most recently saved snippet name
         var last_snippet_name = (new Date()).toLocaleDateString();
         var last_save = 0;
-        for(var i = 0; i < snippets.length; i++) {
+        for (var i = 0; i < snippets.length; i++) {
             if ((snippets[i].last_load || snippets[i].update_datetime) > last_save) {
                 last_snippet_name = snippets[i].name;
                 last_save = snippets[i].last_load || snippets[i].update_datetime;
@@ -195,7 +241,7 @@ $(function($) { "use strict";
             };
 
             // When snippet with this name already exists then delete it
-            for(var i = 0; i < snippets.length; i++) {
+            for (var i = 0; i < snippets.length; i++) {
                 if (snippets[i].name === name) {
                     delete snippets[i];
                 }
@@ -207,7 +253,7 @@ $(function($) { "use strict";
     });
 
     // Load snippet
-    $('#snippets-list').change(function() {
+    $('#snippets-list').change(function () {
         var i = $(this).val();
         if (i === 'none' || !snippets[i]) {
             $('#d-delete-template').hide();
@@ -228,7 +274,7 @@ $(function($) { "use strict";
     });
 
     // Delete snippet
-    $('#d-delete-template').click(function() {
+    $('#d-delete-template').click(function () {
         var i = $('#snippets-list').val();
         if (i === 'none' || !snippets[i]) {
             return;

@@ -63,7 +63,22 @@ abstract class waAuthAdapter
      */
     public function getUrl()
     {
-        return wa()->getRootUrl(false, true).'oauth.php?app='.wa()->getApp().'&provider='.$this->getId();
+        return wa()->getRootUrl(false, true).
+            'oauth.php?app='.wa()->getApp().
+            '&provider='.$this->getId();
+    }
+
+    public function url()
+    {
+        $current_url = waRequest::isXMLHttpRequest() ? 
+            waRequest::server('HTTP_REFERER', wa()->getRootUrl(false, true), waRequest::TYPE_STRING_TRIM) : 
+            wa()->getConfig()->getCurrentUrl();
+        
+        $goal_url_encoded = waRequest::get('goal_url', waUtils::urlSafeBase64Encode($current_url), waRequest::TYPE_STRING_TRIM);
+        return wa()->getRootUrl(false, true).
+            'oauth.php?app='.wa()->getApp().
+            '&provider='.$this->getId().
+            '&goal_url='.$goal_url_encoded;
     }
 
     /**
@@ -77,10 +92,14 @@ abstract class waAuthAdapter
         return wa()->getRootUrl($absolute, true).'oauth.php?provider='.$this->getId();
     }
 
-    protected function get($url, &$status = null)
+    protected function get($url, &$status = null, $header = [])
     {
+        $header[] = 'User-Agent: Webasyst-oAuth';
         if (function_exists('curl_init')) {
             $ch = curl_init($url);
+            if (!empty($header)) {
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+            }
             curl_setopt($ch, CURLOPT_HEADER, 0);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -94,8 +113,9 @@ abstract class waAuthAdapter
         return file_get_contents($url);
     }
 
-    protected function post($url, $post_data, $header = [])
+    protected function post($url, $post_data, $header = [], &$status = null)
     {
+        $header[] = 'User-Agent: Webasyst-oAuth';
         if (function_exists('curl_init')) {
             $ch = curl_init($url);
             if (!empty($header)) {
@@ -107,6 +127,7 @@ abstract class waAuthAdapter
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 
             $content = curl_exec($ch);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
             return $content;

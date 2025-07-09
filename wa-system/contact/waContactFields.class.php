@@ -726,7 +726,7 @@ class waContactFields
             if (!($f instanceof waContactField)) {
                 throw new waException("Invalid contact field ".print_r($f, true));
             }
-            $id = $f->getId();
+            $id = strval($f->getId());
             self::$fieldStatus[$id] = true;
             $fields[$id] = $f;
         }
@@ -745,7 +745,7 @@ class waContactFields
                 if (!($f instanceof waContactField)) {
                     throw new waException("Invalid contact field ".print_r($f, true));
                 }
-                $id = $f->getId();
+                $id = strval($f->getId());
                 self::$fieldStatus[$id] = false;
                 $fields[$id] = $f;
             }
@@ -768,6 +768,7 @@ class waContactFields
         // Load fields into self::$companyFields in correct order, and the rest into self::$companyDisabled
         self::$companyFields = array();
         foreach ($companyOrder as $id => $param) {
+            $id = strval($id);
             if (!isset($fields[$id])) {
                 throw new waException('Unknown field '.$id.' in company field order.');
             }
@@ -779,6 +780,7 @@ class waContactFields
         // same for self::$personFields and self::$personDisabled
         self::$personFields = array();
         foreach ($contactOrder as $id => $param) {
+            $id = strval($id);
             if (!isset($fields[$id])) {
                 throw new waException('Unknown field '.$id.' in person field order.');
             }

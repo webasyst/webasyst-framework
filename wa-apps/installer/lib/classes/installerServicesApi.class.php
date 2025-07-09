@@ -8,6 +8,11 @@ class installerServicesApi extends waWebasystIDApi
     const SMS_SERVICE = 'SMS';
     const CRON_SERVICE = 'CRON';
 
+    private static $is_connected = null;
+    private static $is_valid_connection = null;
+    private static $system_token = null;
+    private static $user_token = null;
+
     public function __construct(array $options = [])
     {
         $config = new waServicesApiUrlConfig();
@@ -18,12 +23,27 @@ class installerServicesApi extends waWebasystIDApi
 
     public function isConnected()
     {
-        static $result = null;
-        if ($result === null) {
-            $cm = new waWebasystIDClientManager();
-            $result = !!$cm->isConnected();
+        if (self::$is_connected !== null) return self::$is_connected;
+
+        $cm = new waWebasystIDClientManager();
+        self::$is_connected = !!$cm->isConnected();
+        if (self::$is_connected) {
+            try {
+                $this->getToken(false);
+            } catch (waWebasystIDApiAuthException $e) {
+                self::$is_connected = false;
+                self::$is_valid_connection = false;
+            }
         }
-        return $result;
+
+        return self::$is_connected;
+    }
+
+    public function isBrokenConnection()
+    {
+        if ($this->isConnected()) return false;
+        if (self::$is_valid_connection === false) return true;
+        return false;
     }
 
     public function billingCall($api_method, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
@@ -305,28 +325,30 @@ class installerServicesApi extends waWebasystIDApi
 
     public function getSystemToken($force_refresh = false)
     {
-        static $token = null;
-        if ($token === null || $force_refresh) {
-            $token = (new waWebasystIDClientManager)->getSystemAccessToken($force_refresh);
+        if (self::$system_token === null || $force_refresh) {
+            self::$system_token = (new waWebasystIDClientManager)->getSystemAccessToken($force_refresh);
         }
-        return $token;
+        return self::$system_token;
     }
 
     public function getUserToken($force_refresh = false)
     {
-        $token_params = wa()->getUser()->getWebasystTokenParams();
-        if (empty($token_params)) {
-            return null;
+        if (self::$user_token === null || $force_refresh) {
+            $token_params = wa()->getUser()->getWebasystTokenParams();
+            if (empty($token_params)) {
+                return null;
+            }
+            if ($force_refresh) {
+                $ok = $this->refreshedTokenParams($token_params, wa()->getUser()->getId());
+            } else {
+                $ok = $this->refreshTokenWhenExpired($token_params, wa()->getUser()->getId());
+            }
+            if (!$ok) {
+                return null;
+            }
+            self::$user_token = $token_params['access_token'];
         }
-        if ($force_refresh) {
-            $ok = $this->refreshedTokenParams($token_params, wa()->getUser()->getId());
-        } else {
-            $ok = $this->refreshTokenWhenExpired($token_params, wa()->getUser()->getId());
-        }
-        if (!$ok) {
-            return null;
-        }
-        return $token_params['access_token'];
+        return self::$user_token;
     }
 
     private function getToken($use_system_token, $force_refresh = false)

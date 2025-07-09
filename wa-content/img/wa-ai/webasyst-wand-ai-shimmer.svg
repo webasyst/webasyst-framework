@@ -1,0 +1,43 @@
+<svg class="icon-svg" width='16' height='16' viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .anim-wand, .anim-sstar1, .anim-sstar2, .anim-lstar1, .anim-sstar3, .anim-lstar2 {
+            opacity: 1;
+            transform: scale(1) translate(0,0);
+        }
+        .icon-svg .anim-sstar1 {
+            animation: anim-orange-star-shimmer 1.5s ease-in-out infinite;
+            transform: translate(-0.5px, -3.5px) scale(1.1);
+            opacity: 1;
+        }
+        .icon-svg .anim-lstar2 {
+            animation: anim-blue-star-shimmer 1.5s ease-in-out infinite;
+            transform: translate(-0.5px, 4px) scale(1.0);
+            opacity: 1;
+        }
+        .icon-svg .anim-wand,
+        .icon-svg .anim-sstar2,
+        .icon-svg .anim-lstar1,
+        .icon-svg .anim-sstar3 {
+            opacity: 0; transform: scale(0);
+        }
+        @keyframes anim-orange-star-shimmer {
+            0%, 100% { fill: #E62;}
+            12.5% { fill: #F5C400;} 25% { fill: #5DD;} 37.5% { fill: #2C2;}
+            50% { fill: #08E;} 62.5% { fill: #F5C400;} 75% { fill: #5DD;} 87.5% { fill: #2C2;}
+        }
+        @keyframes anim-blue-star-shimmer {
+            0%, 100% { fill: #08E;}
+            12.5% { fill: #55DDDD;} 25% { fill: #F5C400;} 37.5% { fill: #E62;}
+            50% { fill: #2C2;} 62.5% { fill: #55DDDD;} 75% { fill: #F5C400;} 87.5% { fill: #E62;}
+        }
+    </style>
+    <g clip-path="url(#clipPhased_light)">
+        <path class="anim-wand" d="M8.25 7.734a.912.912 0 0 0-1.272-.017L.392 13.851a1.233 1.233 0 1 0 1.74 1.742l6.134-6.585a.913.913 0 0 0-.017-1.274Z"/>
+        <path class="anim-sstar1" d="M2.466 3.992c.035-.122.208-.122.242 0l.457 1.614a.44.44 0 0 0 .303.304l1.615.456c.122.035.122.208 0 .242l-1.615.457a.44.44 0 0 0-.303.304l-.457 1.614c-.034.122-.207.122-.242 0L2.01 7.369a.44.44 0 0 0-.303-.304L.09 6.608c-.121-.034-.121-.207 0-.242l1.615-.456a.44.44 0 0 0 .303-.304l.457-1.614Z" fill="#E62"/>
+        <path class="anim-sstar2" d="M5.001.069c.027-.092.16-.092.187 0l.351 1.217c.032.11.12.197.234.229l1.241.344a.094.094 0 0 1 0 .182l-1.241.345a.335.335 0 0 0-.234.229l-.351 1.217c-.027.091-.16.091-.187 0L4.65 2.615a.335.335 0 0 0-.233-.23l-1.242-.344a.094.094 0 0 1 0-.182l1.242-.344a.335.335 0 0 0 .233-.23L5.001.07Z" fill="#5DD"/>
+        <path class="anim-lstar1" d="M8.784 11.85c.026-.092.157-.092.183 0l.344 1.217c.032.11.118.197.229.229l1.217.344c.092.026.092.157 0 .183l-1.217.344a.332.332 0 0 0-.229.229l-.344 1.217c-.026.092-.157.092-.183 0l-.344-1.217a.332.332 0 0 0-.229-.229l-1.217-.344c-.092-.026-.092-.157 0-.183l1.217-.344a.332.332 0 0 0 .229-.229l.344-1.217Z" fill="#F5C400"/>
+        <path class="anim-sstar3" d="M13.417 9.162c.033-.116.198-.116.23 0l.437 1.54c.04.14.149.25.29.29l1.539.435c.116.033.116.198 0 .23l-1.54.437a.42.42 0 0 0-.29.29l-.435 1.539c-.033.116-.198.116-.231 0l-.436-1.54a.42.42 0 0 0-.29-.29l-1.539-.435c-.116-.033-.116-.198 0-.231l1.54-.436a.42.42 0 0 0 .29-.29l.435-1.539Z" fill="#2C2"/>
+        <path class="anim-lstar2" d="M10.81.161c.067-.234.399-.234.465 0l.878 3.102c.08.282.301.503.583.583l3.102.878c.234.066.234.398 0 .465l-3.102.878a.846.846 0 0 0-.583.583l-.878 3.102c-.066.234-.398.234-.465 0L9.932 6.65a.845.845 0 0 0-.583-.583l-3.101-.878c-.235-.067-.235-.399 0-.465l3.101-.878c.283-.08.503-.3.583-.583L10.81.16Z" fill="#08E"/>
+    </g>
+    <defs><clipPath id="clipPhased_light"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs>
+</svg>

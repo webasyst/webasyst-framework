@@ -47,7 +47,7 @@ var WaSignup = ( function($) {
         var that = this;
         that.initSubmit();
         that.initErrorsAutoCleaner();
-        that.initAuthAdapters();
+        //that.initAuthAdapters();
 
         if (that.is_onetime_password_auth_type) {
             that.initOnetimePasswordView();

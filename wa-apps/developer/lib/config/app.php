@@ -1,10 +1,11 @@
 <?php
-
-return array(
-    'name' => 'Developer',
-    'img' => 'img/developer.png',
-    'vendor' => 'webasyst',
+return [
+    'name'     => 'Developer',
+    'img'      => 'img/developer.png',
+    'vendor'   => 'webasyst',
+    'version'  => '1.1.1',
     'frontend' => false,
-    'version'=>'1.0.2',
-    'csrf' => true,
-);
+    'csrf'     => true,
+    'plugins'  => true,
+    'ui'       => '1.3',
+];

@@ -1,0 +1,63 @@
+{$_title = "[s`Webasyst AI`] — {$wa->accountName(false)}"}
+<div class="article s-ai-settings-page" id="s-ai-settings-page">
+  <div class="article-body">
+    <div class="flexbox full-width">
+        <div class="wide"><h1 class="s-page-header custom-mb-0">[s`Webasyst AI`]</h1></div>
+    </div>
+
+    <p class="small">[`Transactional AI service for promo text generation, spell check, and other kinds of text job handled by Webasyst apps.`]</p>
+
+    <div class="fields">
+        <div class="fields-group blank">
+            {if $waid_is_connected}
+                <div class="flexbox middle space-16 wrap-mobile">
+                    <span>{sprintf_wp('Remaining Webasyst AI prompts: %s', '<strong>'|cat:$remaining_count|cat:'</strong>')}</span>
+                    <div>
+                        <a href="javascript:void(0)" class="button small green" id="js-ai-balance-button">[s`Add credit`]</a>
+                        <a href="[`https://www.webasyst.com/ai/`]" target="_blank" class="button nobutton custom-mr-auto small">
+                            <span>[s`How AI works`]</span>
+                            <i class="fas fa-external-link-alt fa-xs opacity-30 custom-ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            {else}
+                <p class="small">{sprintf_wp(
+                    '<a href="%s">Connect to Webasyst ID</a> to use the Webasyst AI.',
+                    $wa_backend_url|cat:'webasyst/settings/waid/'
+                )}</p>
+            {/if}
+
+        </div>
+    </div>
+  </div>
+</div>
+<script>
+    (function ($) {
+        const wa_backend_url = {$wa_backend_url|json_encode};
+
+        $.wa.title.set({$_title|json_encode});
+
+        // Highlight selected item in sidebar
+        let $sidebar = $('#js-sidebar-wrapper');
+        $sidebar.find('ul li').removeClass('selected');
+        $sidebar.find('[data-id="ai"]').addClass('selected');
+
+        // Payment link button
+        $('#js-ai-balance-button').click(function(e) {
+            e.preventDefault();
+            let $button = $(this).addClass('disabled');
+            $.get(wa_backend_url+'webasyst/?module=services&action=balanceUrl&service=AI', function (data) {
+                let resp = data.data.response;
+                let status = data.data.status || '-';
+                let err = resp.error_description || resp.error || resp.errors || null;
+                $button.removeClass('disabled');
+                if (data.status === 'fail' || err) {
+                    console.warn('balance', data);
+                    alert(status + ' ' + err?.toString());
+                } else if (typeof resp.url !== 'undefined') {
+                    document.location = resp.url;
+                }
+            });
+        });
+    })(jQuery);
+</script>

@@ -174,12 +174,17 @@ var WaLoginAbstractForm = ( function($) {
 
         // If recaptcha presented and loaded
         if ($wrapper.find('.wa-captcha-field').length) {
-            $(window).one('wa_recaptcha_loaded wa_captcha_loaded wa_smartcaptcha_loaded', function () {
+            var authFormInited = function () {
                 that.triggerEvent('wa_auth_form_loaded');
                 that.triggerEvent('wa_auth_form_change_view');
                 that.captchaInitialized = true;
                 that.processPendingSubmit();
-            });
+            };
+            if (window.captchaInitialized) {
+                authFormInited();
+            } else {
+                $(window).one('wa_recaptcha_loaded wa_captcha_loaded wa_smartcaptcha_loaded', authFormInited);
+            }
 
             if ($wrapper.find('.wa-captcha-field').find('[name="g-recaptcha-response"]').length) {
                 const observer = new MutationObserver(mutations => {
@@ -691,7 +696,7 @@ var WaLoginAbstractForm = ( function($) {
         $loading.show();
         $button.attr('disabled', true);
 
-        if (!that.captchaInitialized) {
+        if (!document.cookie.includes('_csrf=') && !that.captchaInitialized) {
             // Если капча еще не инициализирована, откладываем выполнение submit
             that.pendingSubmit = function() {
                 that.submit(options);

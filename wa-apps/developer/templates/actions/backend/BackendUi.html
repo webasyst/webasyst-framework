@@ -1,29 +1,7 @@
-<script type="text/javascript" src="//www.webasyst.com/wa-data/public/site/themes/webasystcom/ui.js"></script>
-<script type="text/javascript" src="//www.webasyst.com/wa-content/js/prettify/prettify.js"></script>
-<link href="//www.webasyst.com/wa-content/js/prettify/prettify.css" type="text/css" rel="stylesheet">
+<link href="{$wa_url}wa-content/js/prettify/prettify.css" rel="stylesheet">
+{if $wa->shop}<link href="{$wa_app_static_url}css/icons.shop.css" rel="stylesheet">{/if}
 
-<script>$(function($) {
-    prettyPrint();
-
-    // List of icons for icons tab
-    var icons = {if !empty($icons)}{json_encode($icons)}{else}[]{/if};
-    var html = '';
-    for(var i=0; i<icons.length; i++) {
-        if (0 == i % 4) {
-            if (i != 0) {
-                html += '</tr>';
-            }
-            html += '<tr>';
-        }
-        html += '<td><i class="'+icons[i].substr(1).replace('.', ' ')+'"></i> '+icons[i]+'</td>';
-    }
-    html += '</tr>';
-    $('#icons-wrapper').html('<table id="dpg-icons-table" style="width:100%; line-height: 1.5em;">'+html+'</table>');
-});</script>
-
-
-
-{IF $wa->locale() == 'ru_RU'}
+{if $wa->locale() == 'ru_RU'}
 
         {* ru_RU *}
 
@@ -38,12 +16,12 @@
               <li><a href="#thumbs" class="inline-link"><b><i>.thumbs</i></b></a></li>
               <li><a href="#sidebar" class="inline-link"><b><i>.sidebar</i></b></a></li>
               <li><a href="#fields" class="inline-link"><b><i>.fields</i></b></a></li>
-              <li><a href="#icon16" class="inline-link"><b><i>.icon16</i></b></a></li>
+              <li><a href="#icon16" class="inline-link"><b><i>.icon16/.icon10</i></b></a></li>
               <li><a href="#dialog" class="inline-link"><b><i>.dialog</i></b></a></li>
-<!--               <li><a href="#tooltip" class="inline-link"><b><i>.tooltip</i></b></a></li> -->
+              <li><a href="#tooltip" class="inline-link"><b><i>.tooltip</i></b></a></li>
               <li><a href="#profile" class="inline-link"><b><i>.profile</i></b></a></li>
               <li><a href="#progressbar" class="inline-link"><b><i>.progressbar</i></b></a></li>
-              <li><a href="#various" class="inline-link">&nbsp;<b><i>(разное)</i></b></a></li>
+              <li><a href="#various" class="inline-link"><b><i>(разное)</i></b></a></li>
             </ul>
 
             </div>
@@ -108,10 +86,6 @@
               </div>
 
 
-
-
-
-
               <!-- TABS -->
               <div id="wa-class-desc-tabs" style="display:none">
                 <div class="block double-padded">
@@ -127,9 +101,6 @@
 
               </div>
 
-
-
-
               <!-- ZEBRA -->
               <div id="wa-class-desc-zebra" style="display:none">
                 <div class="block double-padded">
@@ -144,9 +115,6 @@
                 <div class="tab-content"></div>
 
               </div>
-
-
-
 
             <!-- THUMBS -->
               <div id="wa-class-desc-thumbs" style="display:none">
@@ -165,9 +133,6 @@
                 </div>
 
               </div>
-
-
-
 
               <!-- SIDEBAR -->
               <div id="wa-class-desc-sidebar" style="display:none">
@@ -207,10 +172,6 @@
          </div>
               </div>
 
-
-
-
-
             <!-- FIELDS -->
               <div id="wa-class-desc-fields" style="display:none">
                 <div class="block double-padded">
@@ -241,10 +202,6 @@
 
               </div>
 
-
-
-
-
               <!-- ICON16 -->
               <div id="wa-class-desc-icon16" style="display:none">
                 <div class="block double-padded">
@@ -267,20 +224,14 @@
 
               </div>
 
-
-
-
-              <!-- TOOLTIP
-              <div id="wa-class-desc-tooltip" style="display:none">
+            
+            <!-- TOOLTIP -->
+            <div id="wa-class-desc-tooltip" style="display:none">
                 <div class="block double-padded">
-                <p>С помощью класса <code><strong>.tooltip</strong></code> удобно делать контекстные всплывающие подсказки. Подсказка (HTML-блок) всплывает при наведении курсора на «вызывающий» ее элемент. Контекстные подсказки встраиваются с помощью следующей HTML-конструкции:</p>
-                <pre class="prettyprint">
-                ...
-                </pre>
-         </div>
-              </div>
-
--->
+                    <p>С помощью класса <code><strong>.tooltip</strong></code> удобно делать контекстные всплывающие подсказки. Подсказка (HTML-блок) всплывает при наведении курсора на «вызывающий» ее элемент. Контекстные подсказки встраиваются с помощью следующей HTML-конструкции:</p>
+                    <pre class="prettyprint">&lt;a class="tooltip" href="#"&gt;подсказка&lt;/a&gt;</pre>
+                </div>
+            </div>
 
               <!-- PROFILE -->
               <div id="wa-class-desc-profile" style="display:none">
@@ -429,26 +380,14 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
 });
 </pre>
 
-
 <p>На все элементы диалога с CSS-классом "cancel" автоматически навешивается
   событие, закрывающее диалог по клику на элемент.</p>
 
 <blockquote>Для предотвращения возможных конфликтов нельзя использовать CSS-класс
   "dialog" для элементов, к которым будет применён waDialog.</blockquote>
 
-
-
-
                 </div>
               </div>
-
-
-
-
-
-
-
-
 
              <!-- VARIOUS -->
               <div id="wa-class-desc-various" style="display:none">
@@ -465,18 +404,18 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
         <h3>.button</h3>
                 <p>Большая красивая кнопка:</p>
                 <p>
-                  <input type="button" class="button" value="Серая" />
-                  <input type="button" class="button green" value="Зеленая" />
-                  <input type="button" class="button blue" value="Синяя" />
-                  <input type="button" class="button yellow" value="Желтая" />
-                  <input type="button" class="button red" value="Красная" /></p>
+                  <input type="button" class="button" value="Серая">
+                  <input type="button" class="button green" value="Зеленая">
+                  <input type="button" class="button blue" value="Синяя">
+                  <input type="button" class="button yellow" value="Желтая">
+                  <input type="button" class="button red" value="Красная"></p>
                 <p>Класс <code>.button</code> применяется к элементам <code>input</code> и <code>a</code> следующим образом:</p>
                 <pre class="prettyprint">
 &lt;input type="button" class="button" value="Кнопка" /&gt;
 &lt;a href="#" class="button"&gt;Кнопка&lt;/a&gt;</pre>
 
         <h3>.paging</h3>
-                <p>Индикатор текущей страницы:<br />
+                <p>Индикатор текущей страницы:<br>
                 <div class="paging">
             <a class="selected" href="#">1</a>
             <a href="#">2</a>
@@ -487,7 +426,7 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
             <a class="prevnext" href="#">след <i class="icon10 rarr"></i></a>
           </div>
                 </p>
-                <p><br />Конструкция для встраивания в шаблон:</p>
+                <p><br>Конструкция для встраивания в шаблон:</p>
                 <pre class="prettyprint">
 &lt;div class="<strong>paging</strong>"&gt;
   &lt;a class="selected" href="#"&gt;1&lt;/a&gt;
@@ -505,9 +444,9 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
 &lt;span class="large"&gt;текст&lt;/span&gt;
 &lt;span class="small"&gt;текст&lt;/span&gt;
 &lt;span class="hint"&gt;текст&lt;/span&gt;</pre>
-<p><span class="large">текст</span><br />
-<span class="small">текст</span><br />
-<span class="hint">текст</span><br />
+<p><span class="large">текст</span><br>
+<span class="small">текст</span><br>
+<span class="hint">текст</span><br>
                 </p>
 
          </div>
@@ -534,14 +473,9 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
 
         <div class="clear"></div>
 
-
-
-{ELSE}
-
+{else}
 
         {* en *}
-
-
         <div class="wa-ui">
 
           <div class="sidebar left200px wa-ui-class">
@@ -555,12 +489,12 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
               <li><a href="#thumbs" class="inline-link"><b><i>.thumbs</i></b></a></li>
               <li><a href="#sidebar" class="inline-link"><b><i>.sidebar</i></b></a></li>
               <li><a href="#fields" class="inline-link"><b><i>.fields</i></b></a></li>
-              <li><a href="#icon16" class="inline-link"><b><i>.icon16</i></b></a></li>
+              <li><a href="#icon16" class="inline-link"><b><i>.icon16/.icon10</i></b></a></li>
               <li><a href="#dialog" class="inline-link"><b><i>.dialog</i></b></a></li>
-<!--               <li><a href="#tooltip" class="inline-link"><b><i>.tooltip</i></b></a></li> -->
+              <li><a href="#tooltip" class="inline-link"><b><i>.tooltip</i></b></a></li>
               <li><a href="#profile" class="inline-link"><b><i>.profile</i></b></a></li>
               <li><a href="#progressbar" class="inline-link"><b><i>.progressbar</i></b></a></li>
-              <li><a href="#various" class="inline-link">&nbsp;<b><i>(misc)</i></b></a></li>
+              <li><a href="#various" class="inline-link"><b><i>(misc)</i></b></a></li>
             </ul>
 
             </div>
@@ -627,11 +561,6 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
 
               </div>
 
-
-
-
-
-
               <!-- TABS -->
               <div id="wa-class-desc-tabs" style="display:none">
                 <div class="block double-padded">
@@ -647,9 +576,6 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
 
               </div>
 
-
-
-
               <!-- ZEBRA -->
               <div id="wa-class-desc-zebra" style="display:none">
                 <div class="block double-padded">
@@ -664,9 +590,6 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
                 <div class="tab-content"></div>
 
               </div>
-
-
-
 
             <!-- THUMBS -->
               <div id="wa-class-desc-thumbs" style="display:none">
@@ -684,8 +607,6 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
                 </div>
 
               </div>
-
-
 
 
               <!-- SIDEBAR -->
@@ -725,10 +646,6 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
          </div>
               </div>
 
-
-
-
-
             <!-- FIELDS -->
               <div id="wa-class-desc-fields" style="display:none">
                 <div class="block double-padded">
@@ -761,10 +678,6 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
 
               </div>
 
-
-
-
-
               <!-- ICON16 -->
               <div id="wa-class-desc-icon16" style="display:none">
                 <div class="block double-padded">
@@ -782,8 +695,6 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
          </div>
 
               </div>
-
-
 
              <!-- DIALOG -->
               <div id="wa-class-desc-dialog" style="display:none">
@@ -889,7 +800,7 @@ $('&lt;div&gt;Simple message text&lt;/div&gt;').waDialog({
 
 
 
-              <!-- TOOLTIP
+              <!-- TOOLTIP -->
               <div id="wa-class-desc-tooltip" style="display:none">
                 <div class="block double-padded">
                 <p>С помощью класса <code><strong>.tooltip</strong></code> удобно делать контекстные всплывающие подсказки. Подсказка (HTML-блок) всплывает при наведении курсора на «вызывающий» ее элемент. Контекстные подсказки встраиваются с помощью следующей HTML-конструкции:</p>
@@ -898,8 +809,6 @@ $('&lt;div&gt;Simple message text&lt;/div&gt;').waDialog({
                 </pre>
          </div>
               </div>
-
--->
 
               <!-- PROFILE -->
               <div id="wa-class-desc-profile" style="display:none">
@@ -959,18 +868,18 @@ $('#my-custom-progressbar-id').css('width','41%'); //setting progress bar value 
         <h3>.button</h3>
                 <p>Nice large button:</p>
                 <p>
-                  <input type="button" class="button" value="Gray" />
-                  <input type="button" class="button green" value="Green" />
-                  <input type="button" class="button blue" value="Blue" />
-                  <input type="button" class="button yellow" value="Yellow" />
-                  <input type="button" class="button red" value="Red" /></p>
+                  <input type="button" class="button" value="Gray">
+                  <input type="button" class="button green" value="Green">
+                  <input type="button" class="button blue" value="Blue">
+                  <input type="button" class="button yellow" value="Yellow">
+                  <input type="button" class="button red" value="Red"></p>
                 <p>Class <code>.button</code> should be applied to elements <code>input</code> and <code>a</code> as shown in the example below:</p>
 <pre class="prettyprint">
 &lt;input type="button" class="button" value="Button" /&gt;
 &lt;a href="#" class="button"&gt;Button&lt;/a&gt;</pre>
 
         <h3>.paging</h3>
-                <p>Current page indicator:<br />
+                <p>Current page indicator:<br>
                 <div class="paging">
             <a class="selected" href="#">1</a>
             <a href="#">2</a>
@@ -999,15 +908,13 @@ $('#my-custom-progressbar-id').css('width','41%'); //setting progress bar value 
 &lt;span class="large"&gt;text&lt;/span&gt;
 &lt;span class="small"&gt;text&lt;/span&gt;
 &lt;span class="hint"&gt;text&lt;/span&gt;</pre>
-<p><span class="large">text</span><br />
-<span class="small">text</span><br />
-<span class="hint">text</span><br />
+<p><span class="large">text</span><br>
+<span class="small">text</span><br>
+<span class="hint">text</span><br>
                 </p>
 
          </div>
               </div>
-
-
 
             </div>
 
@@ -1019,18 +926,41 @@ $('#my-custom-progressbar-id').css('width','41%'); //setting progress bar value 
               </div>
 
               <div class="block double-padded">
-                <h6 class="heading">View <input type="button" value="Update" onclick="$.waui.preview();return false" /></h6>
+                <h6 class="heading">View <input type="button" value="Update" onclick="$.waui.preview();return false"></h6>
                 <iframe id="wa-class-preview" scrolling="no"></iframe>
               </div>
 
             </div>
           </div>
          </div>
+{/if}
 
- <link href="/wa-content/js/prettify/prettify.css" type="text/css" rel="stylesheet">
- <script type="text/javascript" src="/wa-content/js/prettify/prettify.js"></script>
- <script>prettyPrint();</script>
+<script src="{$wa_app_static_url}js/ui.js"></script>
+<script src="{$wa_url}wa-content/js/prettify/prettify.js"></script>
 
-
-
-{/IF}
+<script>
+$(function() {
+    prettyPrint();
+    // List of icons for "Icons" tab
+    var icons = {json_encode($icons)},
+        tbody = '';
+    for (var i = 0; i < icons.length; i++) {
+        if (0 === i % 3) {
+            if (i !== 0) {
+                tbody += '</tr>';
+            }
+            tbody += '<tr>';
+        }
+        var icon = icons[i].substr(1);
+        if (icon === 'icon16 country') {
+            icon = '<img class="icon16" src="{$wa_url}wa-content/img/country/rus.gif">';
+            tbody += '<td>' + icon + ' <code>' + $.wa.escape(icon).replace('"/wa-', '"{literal}{$wa_url}{/literal}wa-') + '</code></td>';
+        } else {
+            icon = '<i class="' + icon + '"></i>';
+            tbody += '<td>' + icon + ' <code>' + $.wa.escape(icon) + '</code></td>';
+        }
+    }
+    tbody += '</tr>';
+    $('#icons-wrapper').html('<table class="table full-width"><tbody>' + tbody + '</tbody></table>');
+});
+</script>

@@ -1125,4 +1125,9 @@ class waAppConfig extends SystemConfig
     {
         return false;
     }
+
+    public function isFrontendAnnouncementsEnabled()
+    {
+        return false;
+    }
 }

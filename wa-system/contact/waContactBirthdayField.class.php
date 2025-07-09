@@ -203,10 +203,11 @@ class waContactBirthdayField extends waContactField
         if (wa()->getEnv() === 'frontend' && isset($params['my_profile']) && $params['my_profile'] == '1') {
             $disabled = 'disabled="disabled"';
         }
+        $style = wa()->getEnv() === 'backend' && wa()->whichUI() != '1.3' ? ' style="padding-right: 1.5em;"' : '';
 
         $result = "";
-
-        $result .= '<select '.$attrs.' '.$disabled.' name="'.htmlspecialchars($name_input).'[day]">';
+        
+        $result .= '<select '.$attrs.' '.$disabled.$style.' name="'.htmlspecialchars($name_input).'[day]">';
         $selected_day = !empty($value['day']) ? " selected" : "";
         $result .= '<option value=""'.$selected_day.'>-</option>';
         foreach ($this->getDays() as $day) {
@@ -216,7 +217,7 @@ class waContactBirthdayField extends waContactField
         $result .= '</select>';
 
         $months = $this->getMonths();
-        $result .= '<select '.$attrs.' '.$disabled.' name="'.htmlspecialchars($name_input).'[month]">';
+        $result .= '<select '.$attrs.' '.$disabled.$style.' name="'.htmlspecialchars($name_input).'[month]">';
         $selected_month = !empty($value['month']) ? " selected" : "";
         $result .= '<option value=""'.$selected_month.'>-</option>';
         foreach($months as $month_id => $month) {

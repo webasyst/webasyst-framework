@@ -1571,7 +1571,24 @@ class waSignupAction extends waViewAction
             }
             return null;
         }
+
+        $this->logAgreementAcceptance($contact);
         return $contact;
+    }
+
+    protected function logAgreementAcceptance($contact)
+    {
+        $service_agreement = $this->auth_config->getServiceAgreement();
+        if (empty($service_agreement)) {
+            // Nothing to log
+            return;
+        }
+
+        $params = $this->auth_config->getParams();
+        $service_agreement_text = isset($params['service_agreement_text']) ? $params['service_agreement_text'] : '';
+        $contact_id = !empty($contact) && $contact->exists() ? $contact->getId() : null;
+        wa('webasyst');
+        webasystHelper::logAgreementAcceptance('service_agreement', $service_agreement_text, $service_agreement, $contact_id, 'signup');
     }
 
     protected function getFieldCaption($field_id)

@@ -23,7 +23,7 @@ class waDispatch
 
             $environment = $this->system->getEnv();
             if ($environment !== 'cli') {
-                if ($request_url === 'robots.txt' || $request_url === 'favicon.ico' || $request_url == 'apple-touch-icon.png') {
+                if ($request_url === 'robots.txt' || $request_url === 'favicon.ico' || $request_url == 'apple-touch-icon.png' || $request_url == 'site.webmanifest') {
                     $this->dispatchStatic($request_url);
                 }
             }

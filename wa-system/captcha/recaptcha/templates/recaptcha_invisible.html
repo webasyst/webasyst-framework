@@ -7,6 +7,9 @@
   (function() {
     // if already has captcha in page
     if (window.grecaptcha_once) {
+      if (typeof window.grecaptcha_once === 'string') {
+          $('#{$_wrapper_id|escape}').val(window.grecaptcha_once);
+      }
       return;
     }
     window.grecaptcha_once = true;
@@ -26,7 +29,9 @@
 
     window.onRecaptchaDataCallback = function (response_id) {
       document.cookie = "g-recaptcha-response=" + encodeURIComponent(response_id) + "; max-age=300";
-      $('#{$_wrapper_id}').val(response_id);
+      $('input[name="g-recaptcha-response"]').val(response_id);
+      window.grecaptcha_once = response_id;
+      window.captchaInitialized = true;
     };
 
     window.onRecaptchaErrorCallback = function (error) {
@@ -36,6 +41,7 @@
           grecaptcha.reset(widget_id);
           grecaptcha.execute(widget_id);
           $(window).trigger('wa_recaptcha_loaded');
+          window.captchaInitialized = true;
         } catch (e) {
           console.log('Unable to reset WA ReCaptcha widget id =', widget_id);
           console.log(e);
@@ -51,6 +57,7 @@
           try {
             grecaptcha.execute(widget_id);
             $(window).trigger('wa_recaptcha_loaded');
+            window.captchaInitialized = true;
           } catch (e) {
             console.log('Unable to reset WA ReCaptcha widget id =', widget_id);
             console.log(e);

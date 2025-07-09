@@ -22,8 +22,9 @@ class mailruAuth extends waOAuth2Adapter
 
     public function getRedirectUri()
     {
+        $url = $this->getCallbackUrl();
         return "https://connect.mail.ru/oauth/authorize?client_id=".$this->app_id."&response_type=code".
-               "&redirect_uri=".$this->getCallbackUrl();
+               "&redirect_uri=".urlencode($url);
     }
 
     public function getAccessToken($code)

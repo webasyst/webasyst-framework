@@ -598,6 +598,7 @@
                 that.animation_time = 333;
                 that.hide_class = "is-hide";
                 that.width = options["width"] || false;
+                that.staticPosition = options["staticPosition"] || false;
                 const append_to = that.$body.find(options["append_to"]);
                 that.append_to = append_to.length ? append_to : that.$body;
 
@@ -686,6 +687,10 @@
             that.$wrapper.addClass(direction_class).addClass(that.hide_class).show();
             that.$wrapper[0].style.display = 'block';
 
+            if (that.staticPosition) {
+                that.$wrapper.addClass('static');
+            }
+
             if (that.width) {
                 that.$block.css('width', that.width);
             }
@@ -723,7 +728,7 @@
                             if (that.lock_body_scroll) {
                                 Drawer.lockBodyScroll(false);
                             }
-                        }, that.animation_time);
+                        }, that.staticPosition ? 0 : that.animation_time);
                     }
                 }
             }
@@ -759,7 +764,7 @@
             }
 
             if (!that.is_locked) {
-                if (that.lock_body_scroll) {
+                if (that.lock_body_scroll && !that.staticPosition) {
                     Drawer.lockBodyScroll(true);
                 }
 
@@ -767,7 +772,7 @@
                 setTimeout( function() {
                     that.$wrapper.removeClass(that.hide_class);
                     that.is_locked = false;
-                }, 100);
+                }, that.staticPosition ? 0 : 100);
             }
 
             that.is_visible = true;

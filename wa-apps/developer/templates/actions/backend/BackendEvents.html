@@ -1,0 +1,43 @@
+<div class="sidebar left200px bordered-right">
+    <div class="block">
+      <ul class="menu-v with-icons" id="d-apps">
+        <li{if $selectedApp === 'wa'} class="selected"{/if}>
+          <a href="?action=events&app=wa">
+              <img class="icon16 valign-bottom" src="{$wa_url}wa-content/img/dummy-app-icon-48.png" alt="WA system" width="16"> WA system
+          </a>
+        </li>
+        {foreach $wa->apps() as $app}
+         <li{if $selectedApp === $app.id} class="selected"{/if}>
+            <a href="?action=events&app={$app.id}">
+              <img class="icon16 valign-bottom" src="{$wa_url}{$app.icon[16]}" alt="{$app.name}" width="16"> {$app.name}
+            </a>
+         </li>
+        {/foreach}
+      </ul>
+    </div>
+    <div class="clear-left"></div>
+</div>
+
+<div class="content left200px">
+    <div class="block">
+        <div class="d-header"><h2>[`Events`]</h2></div>
+    </div>
+    <div class="block fields" id="d-app-events">
+      {foreach $events as $event}
+      <div class="field-group">
+        <div class="field app-event">
+          <div class="name bold">{$event.name}</div>
+          <div class="value">{$event.descr}</div>
+          <div class="value small">{$event.args}</div>
+        </div>
+      </div>
+      {/foreach}
+    </div>
+    <div class="clear-left"></div>
+</div>
+
+<div class="clear"></div>
+
+{wa_js}
+    {$wa_url}wa-content/js/jquery-wa/wa.core.js
+{/wa_js}

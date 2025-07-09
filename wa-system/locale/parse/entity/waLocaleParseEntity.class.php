@@ -6,7 +6,7 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
 
     const WEBASYST_DEFAULT_PATTERN = '_w';
 
-    const WEBASYST_PLUGIN_PATTERN = '_wp';
+    const WEBASYST_PLUGIN_PATTERN = '\\b_wp';
 
     const WEBASYST_DOMAIN_PATTERN = '_wd';
 

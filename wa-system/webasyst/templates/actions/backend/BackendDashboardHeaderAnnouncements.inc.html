@@ -35,9 +35,8 @@
         <form id="js-form-new-announcement" class="wa-announcement-form" style="display:none;">
             <div class="fields">
                 <div class="fields-group">
-                    <div class="flexbox middle full-width space-12 wrap-mobile custom-mb-12">
+                    <div class="flexbox middle wrap-mobile custom-mb-12">
                         <div id="dropdown-notify-to-users" class="dropdown width-100-mobile" style="min-width: 270px;">
-
                             <button type="button" class="dropdown-toggle button light-gray width-100 small"
                                 style="text-align:left;" data-init-text="[`To all users`]">[`To all users`]</button>
 
@@ -125,11 +124,55 @@
                             </div>
 
                         </div>
-                        <div class="small">
-                            {$_count_notifocations = $contacts|count|escape}
-                            <span id="js-announcement-notify-counter" class="badge gray small" data-init-value="{$_count_notifocations}">{$_count_notifocations}</span>
 
-                            [s`Notify everyone`]
+                        <div id="js-wa-announcement-ai-write-dropdown" class="dropdown">
+                            <button type="button" class="dropdown-toggle button nobutton small custom-mx-8" style="display: none;">
+                                <i class="icon webasyst-magic-wand-ai"></i> [s`Write`]
+                            </button>
+                            <div class="dropdown-body" style="width: 340px;">
+                                <div class="custom-p-12">
+                                    <textarea class="js-prompt full-width smaller" placeholder="[s`Write an announcement about...`]"></textarea>
+
+                                    <div class="flexbox space-4 custom-mt-16">
+                                        <div class="wide">
+                                            <button type="button" class="js-submit ai-button button small black rounded align-center" disabled>
+                                                <i class="icon-loading icon icon-loading webasyst-magic-wand-ai shimmer"></i>
+                                                <i class="icon-success fas fa-check"></i>
+                                                <i class="icon-error fas fa-times"></i>
+                                                <span class="text">[s`Write`]</span>
+                                            </button>
+                                            <button type="button" class="js-repeat-submit button nobutton circle" disabled style="display: none;">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <span class="hint">[`Style`]</span>
+                                            <div class="wa-select smaller">
+                                                <select class="js-emotion">
+                                                    <option value="neutral" selected>[`Neutral`]</option>
+                                                    <option value="positive">[`Positive`]</option>
+                                                    <option value="fun">[`Fun`]</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="js-error state-error-hint custom-mt-8"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" id="js-wa-announcement-ai-spellcheck" class="button nobutton light-gray small custom-ml-8" style="display: none;">
+                            <span class="icon webasyst-magic-wand-ai"></span>
+                            [`Check spelling`]
+                        </button>
+
+                        <div class="custom-ml-auto small">
+                            <span>
+                                {$_count_notifocations = $contacts|count|escape}
+                                <span id="js-announcement-notify-counter" class="badge gray small" data-init-value="{$_count_notifocations}">{$_count_notifocations}</span>
+                                [s`Notify everyone`]
+                            </span>
+
                             <label>
                                 <span class="wa-checkbox">
                                     <input type="checkbox" name="data[is_notify_email]" value="1">
