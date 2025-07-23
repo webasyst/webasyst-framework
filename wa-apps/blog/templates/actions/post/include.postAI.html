@@ -1,0 +1,68 @@
+<button type="button" id="js-ai-spellcheck" class="b-ai-button button nobutton smaller nowrap custom-mb-4" style="display: none;">
+    <span class="icon webasyst-magic-wand-ai custom-pr-4"></span>
+    [s`Check spelling`]
+</button>
+<button type="button" id="js-show-ai-drawer" class="b-ai-button button nobutton smaller nowrap custom-mb-4">
+    <span class="icon webasyst-magic-wand-ai custom-pr-4"></span>
+    [s`Write`]
+</button>
+<div id="js-ai-drawer" class="drawer b-post-ai-drawer hidden">
+    <div class="drawer-background"></div>
+    <div class="drawer-body">
+        <div class="drawer-block">
+            <div class="drawer-content custom-mt-16">
+                <div class="js-ai-wrapper"{if !$is_premium} style="display: none;"{/if}>
+                    <div>
+                        <div class="flexbox full-width custom-mb-16">
+                            <h2 class="custom-m-0">[`Write a post`]</h2>
+                            <a href="javascript:void(0)" class="js-close-drawer larger custom-mr-8 custom-mt-4" style="color: inherit;"><i class="fas fa-times"></i></a>
+                        </div>
+                        <textarea class="js-prompt full-width smaller" data-default-prompt="[`write a SEO-friendly product review`]" placeholder="{sprintf_wp('E.g., “%s”.', _w('write a SEO-friendly product review'))}"></textarea>
+                        <div class="state-error custom-mt-8" ></div>
+                        <div class="custom-mt-16">
+                            <button type="button" class="js-write-post button small">[s`Write`]</button>
+                            <button type="button" class="js-insert-to-editor-post button green small" style="display: none;">[`Copy to editor`]</button>
+                        </div>
+                    </div>
+
+                    <div class="b-post-ai-post-wrapper custom-my-32">
+                        <div class="b-post-ai-post js-content" style="display: none;"></div>
+                    </div>
+                </div>
+
+                {if !$is_premium}
+                <div class="js-premium-wrapper">
+                    <div class="align-right" style="transform: translateY(4px);">
+                        <a href="javascript:void(0)" class="js-close-drawer larger custom-mr-8 custom-mt-4" style="color: inherit;"><i class="fas fa-times"></i></a>
+                    </div>
+                    <div class="align-center">
+                        <img src="{$wa_app_static_url}img/blog.svg" alt="" class="align-center" style="width: 144px;height: 144px;">
+                        <h1 class="wide align-center">[`Premium only`]</h1>
+                    </div>
+
+                    <div class="flexbox vertical middle space-16 wrap">
+                        <p class="small align-center custom-mx-48">[`AI post generation is available with the premium license only. Upgrade now and get the bonus of 500 extra AI prompts for free!`]</p>
+                        <a href="{$wa_backend_url}installer/store/app/blog/" class="button rounded yellow large">
+                            [`Upgrade to premium`]
+                        </a>
+                        {if $blog_try_free_count < 10}
+                            <button type="button" class="js-try-free-ai button nobutton rounded large">[`Try for free`]</button>
+                        {/if}
+                        <p class="js-after-try-free-ai bold small align-center custom-mt-4"{if $blog_try_free_count < 10} style="display: none;"{/if}>[`Bonus: +500 free AI prompts`]</p>
+                    </div>
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="alert-fixed-box">
+    <div id="js-ai-error-alert" class="alert danger" style="display: none;">
+        <div class="flexbox space-16 full-width">
+            <div class="js-text"></div>
+            <div>
+                <a href="javascript:$('#js-ai-error-alert').hide()" class="alert-close"><i class="fas fa-times"></i></a>
+            </div>
+        </div>
+    </div>
+</div>

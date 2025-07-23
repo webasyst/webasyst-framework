@@ -52,11 +52,6 @@ $.wa_blog = $.extend(true, $.wa_blog, {
                     }
                 }
             }
-
-            $(".js-tab-content").on('click', '.wa-theme-templates a', function (e) {
-                e.preventDefault();
-                waDesignLoad();
-            });
         },
         ajaxInit : function(blog) {
             blog = blog || $.wa_blog;
@@ -306,4 +301,3 @@ $.wa_blog = $.extend(true, $.wa_blog, {
 });
 
 $.wa_blog.common.init();
-

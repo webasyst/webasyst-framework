@@ -256,6 +256,19 @@
 
 <script>
     $(function() {
-        document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth' });
+        if (location.hash) {
+            document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth' });
+        }
     });
 </script>
+
+{if waRequest::get('is_created') && $wa->installer && method_exists($wa->installer, 'reviewWidget')}
+    {$wa->installer->reviewWidget('app/blog')}
+    <script>
+        (function($) {
+            if (window.history) {
+                history.replaceState(null, '', location.href.replace('&is_created=1', ''));
+            }
+        })(jQuery);
+    </script>
+{/if}

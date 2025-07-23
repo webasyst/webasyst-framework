@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1125,3 +1125,33 @@ msgstr "Продолжить"
 
 msgid "WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?"
 msgstr "Редактор WYSIWYG может изменить ваш HTML-код. Это необходимо для правильного форматирования текста. Код Smarty может быть сломан, и устаревшие HTML-теги могут быть заменены на современные. Вы действительно хотите переключиться на WYSIWYG-редактор?"
+
+msgid "Write a post"
+msgstr "Написать пост"
+
+msgid "E.g., “%s”."
+msgstr "Например, «%s»."
+
+msgid "write a SEO-friendly product review"
+msgstr "напиши обзор товара для SEO"
+
+msgid "Premium only"
+msgstr "Только в премиум"
+
+msgid "AI post generation is available with the premium license only. Upgrade now and get the bonus of 500 extra AI prompts for free!"
+msgstr "ИИ-генерация записей в блоге доступна только с премиум-лицензией. Переходите на премиум сейчас и получите 500 запросов к ИИ бесплатно!"
+
+msgid "Upgrade to premium"
+msgstr "Подключить премиум"
+
+msgid "Try for free"
+msgstr "Попробовать бесплатно"
+
+msgid "Bonus: +500 free AI prompts"
+msgstr "Бонус: +500 запросов к ИИ в подарок"
+
+msgid "Copy to editor"
+msgstr "Копировать в редактор"
+
+msgid "An error has occurred. Please reload this page and try again."
+msgstr "Произошла ошибка. Обновите страницу и повторите попытку."

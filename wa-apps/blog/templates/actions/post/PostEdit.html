@@ -1,4 +1,4 @@
-<form id="post-form" class="height-100" action="" method="post">
+<form id="post-form" class="wide height-100" action="" method="post">
 <div class="article wide">
     <div class="article-body">
 
@@ -320,38 +320,41 @@
                 </div>{* .b-post *}
 
                 <div class="b-post-editor rounded-block b-post {$blog.color}" id="post-editor">
-                    <ul class="tabs small b-post-editor-toggle">
-                        <li>
-                            <a id="redactor" href="javascript:void(0);">[`Visual`]</a>
-                        </li>
-                        <li>
-                            <a id="ace" href="javascript:void(0);">[`HTML`]</a>
-                        </li>
-
-                        {* @event backend_post_edit.%plugin_id%.editor_tab *}
-                        <!-- plugin hook: "backend_post_edit.*.editor_tab" -->
-                        {if isset($backend_post_edit)}
-                            {foreach $backend_post_edit as $plugin => $output}
-                                {if isset($output.editor_tab)}
-                                    <li>
-                                        <!-- begin backend_post_edit.{$plugin}.toolbar -->
-                                        {$output.editor_tab}
-                                        <!-- end {$plugin} -->
-                                    </li>
-                                {/if}
-                            {/foreach}
-                        {/if}
-                        <!-- end plugin hook: "backend_post_edit.*.editor_tab"-->
-
-                        {if blogPhotosBridge::isAvailable()}
+                    <div class="flexbox middle space-8">
+                        <ul class="wide tabs small b-post-editor-toggle">
                             <li>
-                                <a id="photo_bridge" href="javascript:void(0);">
-                                    [`Photo Album`]
-                                    <i class="fas fa-check-circle text-green show-when-album-selected" style="{if empty($post.album_id)}display:none;{/if}"></i>
-                                </a>
+                                <a id="redactor" href="javascript:void(0);">[`Visual`]</a>
                             </li>
-                        {/if}
-                    </ul>
+                            <li>
+                                <a id="ace" href="javascript:void(0);">[`HTML`]</a>
+                            </li>
+
+                            {* @event backend_post_edit.%plugin_id%.editor_tab *}
+                            <!-- plugin hook: "backend_post_edit.*.editor_tab" -->
+                            {if isset($backend_post_edit)}
+                                {foreach $backend_post_edit as $plugin => $output}
+                                    {if isset($output.editor_tab)}
+                                        <li>
+                                            <!-- begin backend_post_edit.{$plugin}.toolbar -->
+                                            {$output.editor_tab}
+                                            <!-- end {$plugin} -->
+                                        </li>
+                                    {/if}
+                                {/foreach}
+                            {/if}
+                            <!-- end plugin hook: "backend_post_edit.*.editor_tab"-->
+
+                            {if blogPhotosBridge::isAvailable()}
+                                <li>
+                                    <a id="photo_bridge" href="javascript:void(0);">
+                                        [`Photo Album`]
+                                        <i class="fas fa-check-circle text-green show-when-album-selected" style="{if empty($post.album_id)}display:none;{/if}"></i>
+                                    </a>
+                                </li>
+                            {/if}
+                        </ul>
+                        {include file="./include.postAI.html" inline}
+                    </div>
                     <textarea id="post_text" name="text" cols="60" rows="20" style="border:0; display: none;">{$post.text|escape}</textarea>
                     <div class="b-post-editor-wrapper" id="post_text_wrapper">
                         {if blogPhotosBridge::isAvailable()}
@@ -563,7 +566,7 @@
                     {else}
                         <input id="b-post-save-button" type="button" class="button blue" name="published" value="[`Publish`]" >
                     {/if}
-                    <button id="b-post-save-draft-button" type="submit" class="button gray" name="{if $post.status eq blogPostModel::STATUS_DEADLINE}deadline{else}draft{/if}"><i class="fas fa-edit"></i><span class="desktop-only custom-ml-4" style="pointer-events: none;">[`Save draft`]</span></button>
+                    <button id="b-post-save-draft-button" type="submit" class="button gray" name="{if $post.status eq blogPostModel::STATUS_DEADLINE}deadline{else}draft{/if}" title="[`Save draft`]"><i class="fas fa-edit"></i><span class="desktop-only custom-ml-4" style="pointer-events: none;">[`Save draft`]</span></button>
                     <span class="hint desktop-only">Ctrl+S</span>
                     <span id="form-status">
                         <span id="saved-status" style="display: none;">
@@ -573,7 +576,7 @@
                             <i class="fas fa-spin fa-spinner b-post-save-indicator custom-ml-8"></i>
                         </span>
                     </span>
-                    <a id="schedule-edit" href="javascript:void(0);" class="button light-gray outlined dialog-edit custom-ml-auto">
+                    <a id="schedule-edit" href="javascript:void(0);" class="button light-gray outlined dialog-edit custom-ml-auto" title="[`Schedule publication`]">
                         <i class="fas fa-clock"></i>
                         <span class="desktop-only custom-ml-4" style="pointer-events: none;">[`Schedule publication`]</span>
                     </a>

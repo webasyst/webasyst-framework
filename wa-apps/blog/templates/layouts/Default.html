@@ -52,7 +52,8 @@
     {$wa->header()}
     <div id="wa-app" class="flexbox wrap-mobile">
       {$sidebar}
-      <main class="{if $module == 'pages'}flexbox {/if}content s-hide-scrollbar not-blank js-main-content">
+      {$_is_flexbox = $module == 'pages' || ($module == 'post' && $action == 'edit')}
+      <main class="{if $_is_flexbox}flexbox {/if}content s-hide-scrollbar not-blank js-main-content">
         {if $_has_wrapper}
           <div class="article wide"><div class="article-body">
         {/if}

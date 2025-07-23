@@ -1,14 +1,15 @@
 (function ($) {
     $.wa_blog.post = {
         options: {
-            redirect: '?'
+            redirect: '?',
+            $form: $('#post-form')
         },
         init: function (options) {
             this.options = $.extend(this.options, options);
             var self = this;
 
             $('#postdelete-dialog input[type=button]').click(function (eventObject) {
-                return self.deleteHandler.apply(self, [this, eventObject]);
+                return self.deleteHandler.call(this);
             });
 
             $('#blog-stream-primary-menu .b-search-form input.search').keydown(function (eventObject) {
@@ -19,12 +20,13 @@
                 }
             });
         },
-        deleteHandler: function (element, event) {
-            var form = $(element).parents('form');
-            var id = parseInt(form.find('input[name=id]').val());
-            var blog_id = parseInt(form.find('input[name=blog_id]').val());
+        deleteHandler: function () {
+            var $form = $.wa_blog.post.options.$form;
+            var id = parseInt($form.find('input[name=id]').val());
+            var blog_id = parseInt($form.find('input[name=blog_id]').val());
+
             if (id) {
-                $(element).attr('disabled', true).after(
+                $(this).attr('disabled', true).after(
                     '<i class="icon16 loading"></i>');
                 $.ajax({
                     url: '?module=post&action=delete',

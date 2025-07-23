@@ -178,6 +178,7 @@
             });
 
             initRealtimePreviewMode();
+            $.wa_blog.editor.initAiFeatures();
 
             // ====== Functions declarations section ========
 
@@ -780,7 +781,7 @@
                                 showErrors(response.errors);
                                 onFail(response.errors);
                             } else if (response.data.redirect) {
-                                location.href = response.data.redirect;
+                                location.href = response.data.redirect + '&is_created=1';
                             } else {
                                 fn(response.data);
                                 if (response.data.id) {
@@ -1143,6 +1144,16 @@
                 return text;
             }
         },
+        highlightSaveButton: function() {
+            var $save_button = $('#b-post-save-button');
+            var $postpublish_edit = $('#postpublish-edit');
+            if ($postpublish_edit.is(':visible')) {
+                $postpublish_edit.removeClass('green').addClass('yellow');
+            }
+            if ($save_button.is(':visible')) {
+                $save_button.removeClass('green').addClass('yellow');
+            }
+        },
         editors : {
             ace : {
                 editor:null,
@@ -1174,7 +1185,7 @@
                         this.editor.setFontSize(13);
                         $('.ace_editor').css('fontFamily', '');
                         session.setValue($textarea.hide().val());
-                        this.editor.moveCursorTo(0, 0);
+                        this.editor.moveCursorTo(session.getLength(), Infinity);
 
                         if (navigator.appVersion.indexOf('Mac') != -1) {
                             this.editor.setFontSize(13);
@@ -1281,11 +1292,9 @@
                 inited:false,
                 callback:false,
                 editor: null,
+                focusedNode: null,
                 init : function($textarea) {
                     if(!this.inited) {
-                        var $window = $(window);
-                        var $save_button = $('#b-post-save-button');
-                        var $postpublish_edit = $('#postpublish-edit');
                         var sidebar_height = $('#post-form .sidebar .b-edit-options:first').height();
                         let focus = true;
                         if ($('#post-title').val() == '') {
@@ -1321,12 +1330,13 @@
                             imageUploadFields: $textarea.data('uploadFields'),
                             callbacks: {
                                 change: function () {
-                                    if ($postpublish_edit.is(':visible')) {
-                                        $postpublish_edit.removeClass('green').addClass('yellow');
-                                    }
-                                    if ($save_button.is(':visible')) {
-                                        $save_button.removeClass('green').addClass('yellow');
-                                    }
+                                    $.wa_blog.editor.highlightSaveButton();
+                                },
+                                keyup: function () {
+                                    $.wa_blog.editor.editors.redactor.focusedNode = this.selection.current();
+                                },
+                                click: function () {
+                                    $.wa_blog.editor.editors.redactor.focusedNode = this.selection.current();
                                 }
                             }
                         }, (options || {}));
@@ -1771,6 +1781,250 @@
                 $.wa_blog.editor.postUrlWidget.changeBlog(blog_selector.attr('data-blog-status'));
                 return true;
             }
+        },
+        currentEditor: function() {
+            let setContent = (content) => void(0);
+            let insert = (content, toEnd = false) => void(0);
+            let content = '';
+
+            const current_id = $('#post-form .b-post-editor-toggle li.selected a').attr('id');
+            if (current_id === 'redactor' && this.editors.redactor.inited) {
+                const redactor = this.editors.redactor.editor;
+                content = redactor.code.get();
+                setContent = (value) => redactor.code.set(value);
+                insert = (content, toEnd = false) => {
+                    if (toEnd) {
+                        redactor.focus.end();
+                    } else if (!redactor.selection.isRedactor()) {
+                        // redactor.selection.restoreInstant();
+                        if ($.wa_blog.editor.editors.redactor.focusedNode) {
+                            redactor.caret.end($.wa_blog.editor.editors.redactor.focusedNode);
+                        }
+                        if (!redactor.selection.isRedactor()) {
+                            redactor.focus.end();
+                        }
+                    }
+
+                    const isValidTag = (val) => /^<([a-zA-Z][a-zA-Z0-9]*)\s*([^>]*)>.+<\/([a-zA-Z][a-zA-Z0-9]*)\s*([^>]*)>$/m.test(val);
+                    if (!isValidTag(content)) {
+                        content = `<p>${content}</p>`;
+                    }
+                    if (redactor.utils.isEmpty()) {
+                        redactor.selection.current()?.remove();
+                    }
+                    const $rows = $(content);
+                    $rows.each(function() {
+                        $.wa_blog.editor.editors.redactor.focusedNode = redactor.insert.node(this);
+                    });
+                    redactor.code.sync();
+                };
+            } else if (current_id === 'ace' && this.editors.ace.inited) {
+                const editor = this.editors.ace.editor;
+                content = editor.getValue();
+                setContent = (value) => editor.setValue(value);
+                insert = (content, toEnd = false) => {
+                    let pos = editor.getCursorPosition();
+                    if (toEnd) {
+                        pos.row = editor.getSession().getLength() - 1;
+                        pos.column = editor.getSession().doc.$lines[pos.row].length;
+                    }
+                    if (pos.column > 0 && pos.column === editor.getSession().doc.$lines[pos.row].length) {
+                        pos = editor.getSession().insert(pos, '\n');
+                    }
+                    editor.getSession().insert(pos, content);
+                    $.wa_blog.editor.highlightSaveButton();
+                };
+            } else if (current_id === 'markdown' && this.editors.markdown.inited && typeof window.toMarkdown === 'function') {
+                const editor = this.editors.markdown.editor;
+                content = editor.getValue();
+                setContent = (value) => editor.setValue(value);
+                insert = (content, toEnd = false) => {
+                    let pos = editor.getCursorPosition();
+                    if (toEnd) {
+                        pos.row = editor.getSession().getLength() - 1;
+                        pos.column = editor.getSession().doc.$lines[pos.row].length;
+                    }
+                    if (pos.column > 0 && pos.column === editor.getSession().doc.$lines[pos.row].length) {
+                        pos = editor.getSession().insert(pos, '\n');
+                    }
+                    editor.getSession().insert(pos, toMarkdown(content));
+                    $.wa_blog.editor.highlightSaveButton();
+                };
+            }
+            return { content, setContent, insert };
+        },
+        onUpdateContent: function(callback) {
+            if (typeof callback !== 'function') {
+                return;
+            }
+            const self = this;
+            const $textarea = $(`#${$.wa_blog.editor.options.content_id}`);
+
+            const updateContent = () => {
+                const content = self.currentEditor().content || $textarea.val();
+                callback(content);
+            };
+            updateContent();
+            setInterval(updateContent, 1000);
+        },
+        initAiFeatures: function() {
+            const self = this;
+            const $show_drawer_button = $('#js-show-ai-drawer');
+            const $drawer = $('#js-ai-drawer').clone();
+            const $error_alert = $('#js-ai-error-alert');
+            const $error_text = $error_alert.find('.js-text');
+            const $wrapper = $drawer.find('.js-ai-wrapper');
+            const $premium_block = $drawer.find('.js-premium-wrapper');
+            const $post_title = $('#post-title');
+            let try_free = true;
+
+            const showDrawer = () => {
+                if (!$drawer.hasClass('hidden')) {
+                    return false;
+                }
+                $.waDrawer({
+                    $wrapper: $drawer,
+                    direction: 'right',
+                    append_to: '.js-main-content',
+                    staticPosition: true,
+                    onOpen: () => {
+                        $drawer.removeClass('hidden');
+                        const $textarea = $wrapper.find('.js-prompt');
+                        const post_title = $post_title.val().trim();
+                        if (post_title && !$textarea.val()?.trim()) {
+                            $textarea.prop('placeholder', post_title);
+                            $textarea.data('default-prompt', post_title);
+                        }
+
+                        try_free = !$premium_block.length;
+                        if (!try_free) {
+                            $wrapper.hide();
+                            $premium_block.show();
+                        }
+                    },
+                    onClose: () => {
+                        $drawer.addClass('hidden');
+                        return false;
+                    }
+                });
+            };
+
+            const bindEvents = () => {
+                $show_drawer_button.on('click', showDrawer);
+
+                const $spellcheck_button = $('#js-ai-spellcheck');
+                // show/hide spellcheck button
+                self.onUpdateContent((content) => {
+                    $spellcheck_button.toggle(greaterOrEqualChars(content, 10));
+                });
+
+                $spellcheck_button.on('click', function() {
+                    const { content } = self.currentEditor();
+                    if (!greaterOrEqualChars(content, 10)) {
+                        return;
+                    }
+                    const $icon = $(this).find('.webasyst-magic-wand-ai').addClass('shimmer');
+                    sendRequest.call(this, { action: 'spellcheck', text: content },
+                        (result) => { self.currentEditor().setContent(result) },
+                        () => { $icon.removeClass('shimmer'); }
+                    );
+                });
+
+                const $write_post_button = $wrapper.find('.js-write-post');
+                $write_post_button.on('click', function() {
+                    if (!try_free) {
+                        return false;
+                    }
+                    const $prompt_textarea = $wrapper.find('.js-prompt');
+                    let content = $prompt_textarea.val();
+                    if (!content.trim()) {
+                        content = $prompt_textarea.data('default-prompt');
+                    }
+                    const $loading = $('<span class="custom-mr-4"><i class="fas fa-spinner fa-spin"></i></span>').prependTo(this);
+                    sendRequest.call(this, { action: 'blogPost', text: content },
+                        (result) => { previewContent(result); },
+                        () => { $loading.remove(); }
+                    );
+                });
+
+                $premium_block.find('.js-try-free-ai').on('click', function() {
+                    const $self = $(this);
+                    $.post('?module=post&action=ai', { action: 'tryFree' }, (r) => {
+                        if (r.status === 'ok') {
+                            if (r.data.is_max_count) {
+                                $premium_block.find('.js-after-try-free-ai').show();
+                                $self.remove();
+                            }
+                            $premium_block.hide();
+                            $wrapper.show();
+                            try_free = true;
+                        }
+                    });
+                });
+            };
+            bindEvents();
+
+            /** @action spellcheck | blogPost */
+            function sendRequest (payload, success, always) {
+                const $self = $(this);
+                if ($self.prop('disabled')) {
+                    return false;
+                }
+
+                toggleError();
+                $self.prop('disabled', true);
+                return $.post('?module=post&action=ai', payload, (r) => {
+                    if (r?.data?.content) {
+                        if (typeof success === 'function') {
+                            success(r.data.content);
+                        }
+                    } else if (r?.errors) {
+                        const is_payment_required = r.errors.error === 'payment_required';
+                        $error_alert.toggleClass('warning', is_payment_required);
+                        $error_alert.toggleClass('danger', !is_payment_required);
+                        toggleError(r.errors.error_description || r.errors.error);
+                    }
+                }).always(() => {
+                    $self.prop('disabled', false);
+                    if (typeof always === 'function') {
+                        always();
+                    }
+                });
+            }
+
+            function toggleError(error = false) {
+                if (error === false) {
+                    $error_alert.hide();
+                    $error_text.empty();
+                } else {
+                    $error_alert.show();
+                    $error_text.html(error);
+                }
+            }
+
+            function greaterOrEqualChars(html, number) {
+                return html.replace(/<[^>]*>/g, '').trim().length >= number;
+            }
+
+            function previewContent(html) {
+                const $content = $wrapper.find('.js-content');
+                $content.html(html).show();
+
+                $content.off('click').on('click', '> *', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const block_html = this.outerHTML;
+                    self.currentEditor().insert(block_html);
+                });
+
+                $wrapper.find('.js-insert-to-editor-post')
+                    .show()
+                    .off('click').on('click', function(e) {
+                        e.preventDefault();
+                        self.currentEditor().insert(html, true);
+                    });
+            }
+
         }
 
     };
