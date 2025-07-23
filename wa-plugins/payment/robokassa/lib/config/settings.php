@@ -6,7 +6,7 @@ return array(
         'title'        => 'Идентификатор магазина',
         'description'  => <<<HTML
 <span class="js-robokassa-registration-link" style="background-color: #e3ffc8; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
-Подключайтесь к Робокассе <a href="https://partner.robokassa.ru/Reg/Register?PromoCode=01webasyst&culture=ru" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a> и получите тариф со ставками <b>от&nbsp;2,7% навсегда</b>.
+Подключайтесь к сервису Robokassa <a href="https://partner.robokassa.ru/Reg/Register?PromoCode=01webasyst&culture=ru" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a> и получите тариф со ставками <b>от&nbsp;2,7% навсегда</b>.
 </span>
 HTML
         ,
@@ -15,13 +15,13 @@ HTML
     'merchant_pass1'      => array(
         'value'        => '',
         'title'        => 'Пароль №1',
-        'description'  => 'Вводится в «Технических настройках» в аккаунте Робокассы.',
+        'description'  => 'Вводится в «Технических настройках» в аккаунте сервиса Robokassa.',
         'control_type' => waHtmlControl::INPUT,
     ),
     'merchant_pass2'      => array(
         'value'        => '',
         'title'        => 'Пароль №2',
-        'description'  => 'Вводится в «Технических настройках» в аккаунте Робокассы.',
+        'description'  => 'Вводится в «Технических настройках» в аккаунте сервиса Robokassa.',
         'control_type' => waHtmlControl::INPUT,
     ),
     'testmode'            => array(
@@ -54,13 +54,13 @@ HTML
     'merchant_test_pass1' => array(
         'value'        => '',
         'title'        => 'Тестовый пароль №1',
-        'description'  => 'Вводится в «Технических настройках» в аккаунте Робокассы.',
+        'description'  => 'Вводится в «Технических настройках» в аккаунте сервиса Robokassa.',
         'control_type' => waHtmlControl::INPUT,
     ),
     'merchant_test_pass2' => array(
         'value'        => '',
         'title'        => 'Тестовый пароль №2',
-        'description'  => 'Вводится в «Технических настройках» в аккаунте Робокассы.',
+        'description'  => 'Вводится в «Технических настройках» в аккаунте сервиса Robokassa.',
         'control_type' => waHtmlControl::INPUT,
     ),
     'hash'                => array(
@@ -77,7 +77,7 @@ HTML
     'locale'              => array(
         'value'        => '',
         'title'        => 'Язык интерфейса',
-        'description'  => 'Выберите язык, на котором должна отображаться платежная страница на сайте Робокассы.',
+        'description'  => 'Выберите язык, на котором должна отображаться платежная страница на сайте сервиса Robokassa.',
         'control_type' => waHtmlControl::SELECT,
         'options'      => array(
             'ru' => 'русский',

@@ -1,11 +1,11 @@
 <?php
 return array(
-    'name'        => 'Робокасса',
-    'description' => 'Платежная система <a href="https://robokassa.com">Робокасса</a>',
+    'name'        => 'Robokassa',
+    'description' => 'Платежная система <a href="https://robokassa.com">Robokassa</a>',
     'icon'        => 'img/robokassa16.png',
     'logo'        => 'img/robokassa.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.2.6',
+    'version'     => '1.2.7',
     'locale'      => array('ru_RU',),
     'type'        => waPayment::TYPE_ONLINE,
 );
