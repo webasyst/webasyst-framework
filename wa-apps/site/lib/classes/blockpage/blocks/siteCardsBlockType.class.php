@@ -43,7 +43,7 @@ class siteCardsBlockType extends siteBlockType
         $card_block_type->data['column'] = $card_wrapper_class;
 
         $card_props = array();
-        $card_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
+        $card_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'padding-left' => "p-l-blc", 'padding-right' => "p-r-blc"];
         $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c", 'max-width' => "cnt"];
 
         $result = $this->getEmptyBlockData();
@@ -70,7 +70,8 @@ class siteCardsBlockType extends siteBlockType
         $card_count = $this->options['cards'];
 
         return [
-            'type_name' => _w('Cards'),
+            'type_name' => _w('Block'),
+            'type_name_original' => _w('Cards'),
             'sections' => [
                 [   'type' => 'CardsGroup',
                     'name' => _w('Cards'),

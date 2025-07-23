@@ -29,6 +29,23 @@ class siteThemesActions extends waDesignActions
         public function defaultAction() {
             $this->setLayout(new siteBackendThemesLayout());
 
+            $this->setTemplate($this->getConfig()->getAppPath().'/templates/actions/themes/Themes.html');
+
+            $this->display($this->getAppThemes() + [
+                'routes'          => $this->getRoutes(),
+                'template_path'   => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
+                'options'         => $this->options,
+            ]);
+        }
+
+        public function themesInstalledAction()
+        {
+            $this->setTemplate($this->getConfig()->getAppPath().'/templates/actions/themes/Themes.installed.include.html');
+            $this->display($this->getAppThemes());
+        }
+
+        protected function getAppThemes()
+        {
             $app_id = $this->getAppId();
             $apps = wa()->getApps();
             $app = $apps[$app_id];
@@ -38,7 +55,7 @@ class siteThemesActions extends waDesignActions
             $domain_name = $domain_info['name'];
             $domain = $this->getNeedDomain($domain_info['id']);
 
-            if ($domain['is_alias']){ //redirect for aliases
+            if (!empty($domain['is_alias'])){ //redirect for aliases
                 $this->redirect(wa()->getAppUrl('site').'settings/?domain_id='.$domain_info['id']);
             }
             // themes used on current domain, theme_id => route_id
@@ -71,7 +88,16 @@ class siteThemesActions extends waDesignActions
                 }
             }
 
-            $app_themes = wa()->getThemes($app_id, true);
+            $blockpages = (new siteBlockpageModel())
+                ->select('theme')
+                ->where('domain_id = ?', $domain_info['id'])
+                ->fetchAll();
+            foreach ($blockpages as $page) {
+                $used_domain_themes[$page['theme']] = 0;
+                $used_app_themes[$page['theme']] = true;
+            }
+
+            $app_themes = wa()->getThemes('site', true);
             usort($app_themes, function($a, $b) use ($used_domain_themes, $used_app_themes) {
                 $a_used_domain = isset($used_domain_themes[$a->id]);
                 $b_used_domain = isset($used_domain_themes[$b->id]);
@@ -91,23 +117,18 @@ class siteThemesActions extends waDesignActions
                 }
             });
 
-            $this->setTemplate('wa-apps/site/templates/actions/themes/Themes.html');
-
-            $this->display(array(
-                'routes'          => $this->getRoutes(),
-                'domains'         => $all_domains,
-                'design_url'      => $this->design_url,
+            return [
                 'themes_url'      => $this->themes_url,
-                'template_path'   => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
+                'design_url'      => $this->design_url,
+                'domains'         => $all_domains,
                 'app_id'          => $app_id,
                 'app'             => $app,
                 'app_themes'      => $app_themes,
                 'used_app_themes' => $used_app_themes,
-                'options'         => $this->options,
                 'domain_id'       => $domain_info['id'],
                 'domain'          => $domain_name,
                 'used_domain_themes'  => $used_domain_themes,
-            ));
+            ];
         }
 
         protected function getNeedDomain(int $domain_id)

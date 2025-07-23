@@ -87,6 +87,8 @@ class siteCustomContactsBlockType extends siteBlockType {
             $this->elements['main']    => [
                 'padding-top'    => 'p-t-18',
                 'padding-bottom' => 'p-b-18',
+                'padding-left' => 'p-l-blc',
+                'padding-right' => 'p-r-blc',
             ],
             $this->elements['wrapper'] => [
                 'padding-top'    => 'p-t-12',
@@ -164,6 +166,8 @@ class siteCustomContactsBlockType extends siteBlockType {
             $this->column_elements['main']    => [
                 'padding-top'    => 'p-t-12 p-t-10-mb',
                 'padding-bottom' => 'p-b-12 p-b-10-mb',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'padding-top'    => 'p-t-12',
@@ -189,6 +193,8 @@ class siteCustomContactsBlockType extends siteBlockType {
                 $this->column_elements['main']    => [
                     'padding-top'    => 'p-t-12 p-t-10-mb',
                     'padding-bottom' => 'p-b-12 p-b-10-mb',
+                    'padding-left' => 'p-l-clm',
+                    'padding-right' => 'p-r-clm',
                 ],
                 $this->column_elements['wrapper'] => [
                     'padding-top'    => 'p-t-12',
@@ -324,7 +330,7 @@ class siteCustomContactsBlockType extends siteBlockType {
      */
     public function getRawBlockSettingsFormConfig(): array {
         return [
-                'type_name'    => _w('Contacts'),
+                'type_name'    => _w('Block'),
                 'sections'     => $this->getFormSections(),
                 'elements'     => $this->elements,
                 'semi_headers' => [
@@ -348,6 +354,14 @@ class siteCustomContactsBlockType extends siteBlockType {
             [
                 'type' => 'RowsAlignGroup',
                 'name' => _w('Columns alignment'),
+            ],
+            [
+                'type' => 'TabsWrapperGroup',
+                'name' => _w('Tabs'),
+            ],                    
+            [   'type' => 'CommonLinkGroup',
+                'name' => _w('Link or action'),
+                'is_hidden' => true,
             ],
             [
                 'type' => 'MaxWidthToggleGroup',

@@ -1,7 +1,7 @@
 {function render_item b=[]}
     <li>
         {if !empty($b['blocks'])}
-            <div class="item dropdown extra-dropdown">
+            <div class="item dropdown extra-dropdown" data-tag="{$b.tags[0]}">
                 <div class="dropdown-toggle">
                     {if !empty($b.app_icon)}
                         <img src="{$wa_url}{$b.app_icon}" class="app_icon icon" alt="">

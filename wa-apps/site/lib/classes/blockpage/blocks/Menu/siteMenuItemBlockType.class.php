@@ -7,7 +7,7 @@ class siteMenuItemBlockType extends siteBlockType
     public function getExampleBlockData()
     {
         $result = $this->getEmptyBlockData();
-        $result->data = ['html' => 'Пункт меню', 'tag' => 'a', 'block_props' => ['border-radius' => "b-r-r", 'button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-10 p-r-10']];
+        $result->data = ['html' => _w('Menu item'), 'tag' => 'a', 'block_props' => ['border-radius' => "b-r-r", 'button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-10 p-r-10']];
         return $result;
     }
     protected function getRawBlockSettingsFormConfig()
@@ -24,6 +24,9 @@ class siteMenuItemBlockType extends siteBlockType
                 ],
                 [   'type' => 'ButtonSizeGroup',
                     'name' => _w('Size'),
+                ],
+                [   'type' => 'ButtonToggleGroup',
+                    'name' => _w('Button toggle'),
                 ],
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),

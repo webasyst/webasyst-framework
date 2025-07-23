@@ -84,7 +84,6 @@
         (function() {
 
             const $html_wrapper = $('html');
-            //const $iframe = $html_wrapper.find('#js-main-editor-body');
             const temp_class = 'overflow-mode';
             const sidebar = $('.sidebar.block-settings-sidebar');
             const styles = getComputedStyle(document.documentElement);
@@ -100,8 +99,6 @@
                 const media_prop = '--' + screen_toggle;
                 const window_w = $(window).width();
                 let sidebar_max_2 = sidebar_width + +$html_wrapper.css(media_prop).split('px')[0];
-                //console.log(media_prop, sidebar.outerWidth(), sidebar_max, sidebar_max_2, $(window).width())
-
                 if (window_w < sidebar_max && window_w < sidebar_max_2 ) {
                     sidebar.addClass(temp_class);
                 } else {

@@ -14,6 +14,9 @@ class siteBlockCategories {
                 'title' => _wd('site', 'Main screen'),
                 'tag'   => 'category_main_page',
             ], [
+                'title' => _wd('site', 'Video'),
+                'tag'   => 'category_video',
+            ], [
                 'title' => _wd('site', 'Menu'),
                 'tag'   => 'category_menu',
             ], [
@@ -44,6 +47,9 @@ class siteBlockCategories {
                 'title' => _wd('site', 'FAQ'),
                 'tag'   => 'category_faq',
             ], [
+                'title' => _wd('site', 'Sections and categories'),
+                'tag'   => 'category_sections_and_categories',
+            ], [
                 'title' => _wd('site', 'Call to action'),
                 'tag'   => 'category_cta',
             ], [
@@ -52,6 +58,9 @@ class siteBlockCategories {
             ], [
                 'title' => _wd('site', 'Site footer'),
                 'tag'   => 'category_footer',
+            ], [
+                'title' => _wd('site', 'Dividers'),
+                'tag'   => 'category_dividers',
             ], [
                 'title' => _wd('site', 'Custom code'),
                 'tag'   => 'category_custom_code',

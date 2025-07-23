@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.3.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -2223,3 +2223,186 @@ msgstr "Тип меню 3"
 
 msgid "Menu type 4"
 msgstr "Тип меню 4"
+
+msgid "Subcolumn"
+msgstr "Столбец"
+
+msgid "Widget"
+msgstr "Виджет"
+
+msgid "Video"
+msgstr "Видео"
+
+msgid "Only %d left in stock"
+msgid_plural "Only %d left in stock"
+msgstr[0] "Осталась %d штука"
+msgstr[1] "Осталось %d штуки"
+msgstr[2] "Осталось %d штук"
+
+msgid "%s left"
+msgid_plural "%s left"
+msgstr[0] "Осталось %s"
+msgstr[1] "Осталось %s"
+msgstr[2] "Осталось %s"
+
+msgid "In stock"
+msgstr "В наличии"
+
+msgid "Out of stock"
+msgstr "Нет в наличии"
+
+msgid "Almost out of stock"
+msgstr "Почти закончилось"
+
+msgid "Low stock"
+msgstr "Есть, но мало"
+
+msgid "Only available with the premium license."
+msgstr "Доступно только с премиум-лицензией."
+
+msgid "Product link"
+msgstr "Ссылка на страницу товара"
+
+msgid "Link or action"
+msgstr "Ссылка или действие"
+
+msgid "Subscription form"
+msgstr "Форма подписки"
+
+msgid "Add new"
+msgstr "Создать новую"
+
+msgid "Site icon for browsers and search engines (favicon)"
+msgstr "Иконка для браузера и поисковых систем (фавиконка)"
+
+msgid "Recommendations: square shape, 48x48 pixels size, PNG or ICO file format."
+msgstr "Рекомендуются квадратная форма, размер 48x48 пикселей, формат файла PNG или ICO."
+
+msgid "Icon for smartphones"
+msgstr "Иконка для телефонов"
+
+msgid "The icon is displayed, for instance, when a site label is added to smartphone home screen. Recommendations: square shape, from 192x192 to 1024x1024 pixels size, PNG file format."
+msgstr "Иконка отображается, например, при сохранении ярлыка на главном экране телефона. Рекомендуются квадратная форма, размер от 192x192 до 1024x1024 пикселей, формат файла PNG."
+
+msgid "Label under icon"
+msgstr "Подпись под иконкой"
+
+msgid "Service temporarily unavailable. Please try again later."
+msgstr "Сервис временно недоступен. Пожалуйста, повторите попытку позднее."
+
+msgid "Hero 4"
+msgstr "герой 4"
+
+msgid "Categories 2"
+msgstr "Категории 2"
+
+msgid "Categories 3"
+msgstr "Категории 3"
+
+msgid "FAQ 1"
+msgstr "ЧАВО 1"
+
+msgid "Banner 3"
+msgstr "Баннер 3"
+
+msgid "Banner 4"
+msgstr "Баннер 4"
+
+msgid "Images with description 3"
+msgstr "Изображения с описанием 3"
+
+msgid "Images with description 4"
+msgstr "Изображения с описанием 4"
+
+msgid "Divider (dark)"
+msgstr "Разделитель (темный)"
+
+msgid "Divider light"
+msgstr "Разделитель (светлый)"
+
+msgid "Divider (top)"
+msgstr "Разделитель (вверху)"
+
+msgid "Divider (bottom)"
+msgstr "Разделитель (внизу)"
+
+msgid "Angle divider (top)"
+msgstr "Угловой разделитель (вверху)"
+
+msgid "Angle divider (bottom)"
+msgstr "Угловой разделитель (внизу)"
+
+msgid "Divider 4"
+msgstr "Разделитель 4"
+
+msgid "Divider 3"
+msgstr "Разделитель 3"
+
+msgid "Button toggle"
+msgstr "Кнопка-переключатель"
+
+msgid "Full width"
+msgstr "Полная ширина"
+
+msgid "Sections and categories"
+msgstr "Разделы и категории"
+
+msgid "Dividers"
+msgstr "Разделители"
+
+msgid "A PNG favicon will be additionally converted to the ICO format."
+msgstr "Фавиконка формата PNG будет дополнительно конвертирована в формат ICO."
+
+msgid "Width 1"
+msgstr "Толщина 1"
+
+msgid "Call to action 2"
+msgstr "Призыв к действию 2"
+
+msgid "Categories 4"
+msgstr "Категории 4"
+
+msgid "Video 2"
+msgstr "Видео 2"
+
+msgid "Video 3"
+msgstr "Видео 3"
+
+msgid "Variant"
+msgstr "Модификация"
+
+msgid "Price info"
+msgstr "Информация о цене"
+
+msgid "Product name"
+msgstr "Наименование"
+
+msgid "Product price"
+msgstr "Цена товара"
+
+msgid "Product summary"
+msgstr "Краткое описание товара"
+
+msgid "Product description"
+msgstr "Описание товара"
+
+msgid "Strike-through product price"
+msgstr "Зачеркнутая цена товара"
+
+msgid "Product availability"
+msgstr "Наличие на складе"
+
+msgid "Read about the product"
+msgstr "Подробнее о товаре"
+
+msgid "Replace the standard storefront page of this product with a custom landing page with its own design using the Site app’s WYSIWYG page builder. Specify the current product page URL for the lander and enable its “Main section page” setting. This product’s properties will be automatically copied to the landing page. This product’s properties will be automatically copied to the landing page’s settings."
+msgstr "Замените стандартную страницу витрины для этого товара на страницу-лендинг с собственным дизайном с помощью визуального конструктора в приложении «Сайт». Укажите для лендинга текущий адрес страницы товара и включите настройку «Лицевая страница». Свойства этого товара будут автоматически скопированы в настройки страницы-лендинга."
+
+msgid "Create landing"
+msgstr "Создать лендинг"
+
+msgid "Positioning"
+msgstr "Расположение"
+
+msgid "Display in each variant"
+msgstr "Выводить в каждой модификации"

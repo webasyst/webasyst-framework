@@ -87,6 +87,7 @@ class siteMapOverviewAction extends waViewAction
         $apps_routed = array();
         $routes = wa()->getRouting()->getRoutes($domain['name']);
         foreach ($routes as $route_id => &$route) {
+            // do not show redirects
             if (!empty($route['redirect'])) {
                 if (!isset($route['disabled']) || !$route['disabled']) {
                     $has_redirect = true;
@@ -94,8 +95,13 @@ class siteMapOverviewAction extends waViewAction
                 unset($routes[$route_id]);
                 continue;
             }
-
+            // only show allowed apps
             if (!isset($route['app']) || !in_array($route['app'], $allowed_apps)) {
+                unset($routes[$route_id]);
+                continue;
+            }
+            // do not show tech settlements of Site app
+            if ($route['app'] === 'site' && !empty($route['site_tech_route'])) {
                 unset($routes[$route_id]);
                 continue;
             }

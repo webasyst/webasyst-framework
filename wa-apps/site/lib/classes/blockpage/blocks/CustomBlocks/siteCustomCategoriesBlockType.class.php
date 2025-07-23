@@ -150,6 +150,8 @@ class siteCustomCategoriesBlockType extends siteBlockType {
         $block_props[$this->elements['main']] = [
             'padding-top'    => 'p-t-18',
             'padding-bottom' => 'p-b-18',
+            'padding-left' => 'p-l-blc',
+            'padding-right' => 'p-r-blc',
         ];
         $block_props[$this->elements['wrapper']] = [
             'padding-top'    => 'p-t-12',
@@ -202,7 +204,8 @@ class siteCustomCategoriesBlockType extends siteBlockType {
      */
     public function getRawBlockSettingsFormConfig(): array {
         return [
-                'type_name'    => _w('Columns'),
+                'type_name'    => _w('Block'),
+                'type_name_original'    => _w('Columns'),
                 'sections'     => $this->getFormSections(),
                 'elements'     => $this->elements,
                 'semi_headers' => [
@@ -222,9 +225,11 @@ class siteCustomCategoriesBlockType extends siteBlockType {
             ['type' => 'ColumnsGroup', 'name' => _w('Columns')],
             ['type' => 'RowsAlignGroup', 'name' => _w('Columns alignment')],
             ['type' => 'RowsWrapGroup', 'name' => _w('Wrap line')],
-            ['type' => 'TabsWrapperGroup', 'name' => _w('Tabs')],
+            ['type' => 'TabsWrapperGroup', 'name' => _w('Tabs')],              
+            ['type' => 'CommonLinkGroup', 'name' => _w('Link or action'), 'is_hidden' => true],
             ['type' => 'MaxWidthToggleGroup', 'name' => _w('Max width')],
             ['type' => 'BackgroundColorGroup', 'name' => _w('Background')],
+            ['type' => 'HeightGroup', 'name' => _w('Height')],
             ['type' => 'PaddingGroup', 'name' => _w('Padding')],
             ['type' => 'MarginGroup', 'name' => _w('Margin')],
             ['type' => 'BorderGroup', 'name' => _w('Border')],
@@ -268,6 +273,8 @@ class siteCustomCategoriesBlockType extends siteBlockType {
         $block_props = [
             $this->column_elements['main']    => [
                 'padding-bottom' => 'p-b-0',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align'       => 'y-c',
@@ -300,6 +307,8 @@ class siteCustomCategoriesBlockType extends siteBlockType {
             $this->column_elements['main']    => [
                 'padding-top'    => 'p-t-12',
                 'padding-bottom' => 'p-b-12',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align'     => 'y-c',

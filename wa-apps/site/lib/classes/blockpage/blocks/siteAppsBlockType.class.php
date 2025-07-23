@@ -39,7 +39,7 @@ class siteAppsBlockType extends siteBlockType
         $result = $this->getEmptyBlockData();
         $result->addChild($block_data, '');
         $column_props = array();
-        $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
+        $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'padding-left' => "p-l-clm", 'padding-right' => "p-r-clm"];
         $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c"];
         $result->data = ['block_props' => $column_props];
         $result->data['elements'] = $this->elements;

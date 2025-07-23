@@ -41,14 +41,20 @@ class SiteEditor {
     // instance of BlockSettingsDrawer
     _block_settings_drawer_promise;
 
+    _save_block_data_promise;
+    _save_block_data_resolve = () => null;
+
     constructor(options) {
         SiteEditor.instance = this;
 
         this._block_settings_drawer_promise = this._initBlockSettingsDrawer();
         this.block_storage = new BlockStorage(options.block_storage_data, options.block_form_config);
-        this.undoredo = new UndoRedoQueue()
+        this.undoredo = new UndoRedoQueue();
         this.initCustomEvents();
         //this.updateEmptyClassEditor();
+        this._save_block_data_promise = () => new Promise((resolve) => {
+            this._save_block_data_resolve = resolve;
+        });
     }
 
     /**
@@ -107,6 +113,7 @@ class SiteEditor {
     initCustomEvents() {
         let site_editor = this;
         let last_alt = false;
+        let last_shift = false;
         $(document).on('keydown', function(event) {
             if (event.keyCode == 27 && site_editor.selected_block_id && !$('.site-editor-left-drawer').length) {
                 closerSettings()
@@ -119,6 +126,10 @@ class SiteEditor {
                 last_alt = true;
                 site_editor.iframe_api?.$wrapper?.addClass('alt-down');
             }
+            if (event.shiftKey && !last_shift) {
+                last_shift = true;
+                site_editor.iframe_api?.$wrapper?.addClass('shift-down');
+            }
 
         });
         $(document).on('keyup', function(event) {
@@ -126,12 +137,20 @@ class SiteEditor {
                 last_alt = false;
                 site_editor.iframe_api?.$wrapper?.removeClass('alt-down');
             }
+            if (last_shift) {
+                last_shift = false;
+                site_editor.iframe_api?.$wrapper?.removeClass('shift-down');
+            }
         })
 
         $(window).on('blur', function(event) {
             if (last_alt) {
                 last_alt = false;
                 site_editor.iframe_api?.$wrapper?.removeClass('alt-down');
+            }
+            if (last_shift) {
+                last_shift = false;
+                site_editor.iframe_api?.$wrapper?.removeClass('shift-down');
             }
         });
 
@@ -331,6 +350,7 @@ class SiteEditor {
                     if (r && r.data && r.data.page_has_unsaved_changes !== undefined) {
                         $("#js-wa-header-publish").data('controller').updateHasUnsavedChanges(r.data.page_has_unsaved_changes);
                     }
+                    site_editor._save_block_data_resolve(r);
                 });
             },
             localUndo: function(op) {
@@ -358,11 +378,15 @@ class SiteEditor {
                     }
                     if (r.data.additional_data) {
                         op.undo_post_params.data.additional = r.data.additional_data;
+                        if (r.data.html) {
+                            op.undo_post_params.data.additional.html = r.data.html;
+                        }
                         site_editor.iframe_api.updateBlockData(block_id, op.undo_post_params.data);
                     }
                     if (r && r.data && r.data.page_has_unsaved_changes !== undefined) {
                         $("#js-wa-header-publish").data('controller').updateHasUnsavedChanges(r.data.page_has_unsaved_changes);
                     }
+                    site_editor._save_block_data_resolve(r);
                 });
             }
         }));
@@ -549,7 +573,7 @@ class SiteEditor {
                 if (is_vertical_block) {
                         if ($(this).height() < 40 && !$(this).hasClass('small-height')) $(this).addClass('small-height');
                 } else if(is_horiz_block) {
-                        if ($(this).width() < 40 && !$(this).hasClass('small-width')) $(this).addClass('small-width'); 
+                        if ($(this).width() < 40 && !$(this).hasClass('small-width')) $(this).addClass('small-width');
                 }
             })
         }

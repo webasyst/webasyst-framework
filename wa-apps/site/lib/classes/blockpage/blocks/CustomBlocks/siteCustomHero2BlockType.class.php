@@ -83,7 +83,7 @@ class siteCustomHero2BlockType extends siteBlockType {
 
     public function getRawBlockSettingsFormConfig() {
         return [
-                'type_name'    => _w('Hero 2'),
+                'type_name'    => _w('Block'),
                 'sections'     => [
                     [
                         'type' => 'ColumnsGroup',
@@ -100,6 +100,10 @@ class siteCustomHero2BlockType extends siteBlockType {
                     [
                         'type' => 'TabsWrapperGroup',
                         'name' => _w('Tabs'),
+                    ],                    
+                    [   'type' => 'CommonLinkGroup',
+                        'name' => _w('Link or action'),
+                        'is_hidden' => true,
                     ],
                     [
                         'type' => 'MaxWidthToggleGroup',
@@ -108,6 +112,9 @@ class siteCustomHero2BlockType extends siteBlockType {
                     [
                         'type' => 'BackgroundColorGroup',
                         'name' => _w('Background'),
+                    ],
+                    [   'type' => 'HeightGroup',
+                        'name' => _w('Height'),
                     ],
                     [
                         'type' => 'PaddingGroup',
@@ -151,6 +158,8 @@ class siteCustomHero2BlockType extends siteBlockType {
             $this->column_elements['main']    => [
                 'padding-bottom'      => 'p-b-10-mb',
                 'padding-top'         => 'p-t-10-mb',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align'       => 'y-c',
@@ -246,6 +255,8 @@ class siteCustomHero2BlockType extends siteBlockType {
                 'flex-align-vertical' => 'a-c-c',
                 'padding-bottom'      => 'p-b-12 p-b-10-mb',
                 'padding-top'         => 'p-t-12 p-t-0-mb',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align' => 'y-c',

@@ -22,6 +22,7 @@ class SiteEditorInsideIframe {
     watchClicks(){
         const that = this;
         let last_alt = false;
+        let last_shift = false;
         that.$wrapper.on('close_dropdown', function(event, data) {
                 if (that.dropdown_open) {
                     that.$wrapper.find('.dropdown.is-opened').each(function(i, el){
@@ -47,12 +48,13 @@ class SiteEditorInsideIframe {
                     var ctrlZY = $.Event("keydown", { keyCode: event.keyCode, ctrlKey: event.ctrlKey, metaKey: event.metaKey});
                     parent.$('body').trigger(ctrlZY);
             }*/
-
-            if (event.altKey) {
-                if (!last_alt) {
+            if (event.altKey && !last_alt) {
                     that.$wrapper.addClass('alt-down');
                     last_alt = true;
-                }
+            }
+            if (event.shiftKey && !last_shift) {
+                    that.$wrapper.addClass('shift-down');
+                    last_shift = true;
             }
         });
         that.$wrapper.on('keyup', function(event) {
@@ -60,12 +62,20 @@ class SiteEditorInsideIframe {
                 last_alt = false;
                 that.$wrapper.removeClass('alt-down');
             }
+            if (last_shift) {
+                last_shift = false;
+                that.$wrapper.removeClass('shift-down');
+            }
         })
 
         $(window).on('blur', function(event) {
             if (last_alt) {
                 last_alt = false;
                 that.$wrapper.removeClass('alt-down');
+            }
+            if (last_shift) {
+                last_shift = false;
+                that.$wrapper.removeClass('shift-down');
             }
         });
 
@@ -114,8 +124,8 @@ class SiteEditorInsideIframe {
      * from inside iframe to update data in block storage without touching the server.
      * This does not touch server.
      */
-    updateBlockData(block_id, data) {
-        this.api.block_storage.setData(block_id, data);
+    updateBlockData(block_id, data, parent_id) {
+        this.api.block_storage.setData(block_id, data, parent_id);
         const $blocks = this.$wrapper.find('[data-block-id="'+block_id+'"]');
         $blocks.trigger('block_data_updated', [block_id, data]);
     }

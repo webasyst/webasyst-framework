@@ -104,6 +104,10 @@
                             <span class="icon size-48">
                                 <i class="fas fa-clone text-light-gray"></i>
                             </span>
+                        {elseif !empty($d.is_pending)}
+                            <span class="icon size-48">
+                                <i class="fas fa-clock text-light-gray"></i>
+                            </span>
                         {elseif !empty($d.redirect)}
                             <span class="icon size-48">
                                 <i class="fas fa-sign-in-alt text-light-gray"></i>
@@ -111,8 +115,7 @@
                         {else}
                             <div class="image s-frame-wrapper" id="s-frame-wrapper-{$domain_id|escape}" style="visibility: hidden;position: absolute;">
                                 <div class="blank-cover"></div>
-                                <iframe sandbox="allow-scripts" scrolling="no" loading="lazy" onload="onIframeDomainLoaded(this)" src="{$frontend_link|escape}">
-                                </iframe>
+                                <iframe sandbox="allow-scripts" scrolling="no" loading="lazy" onload="onIframeDomainLoaded(this)" src="{$frontend_link|escape}"></iframe>
                             </div>
                             <span class="icon size-48">
                                 <i class="fas fa-globe text-light-gray"></i>
@@ -133,7 +136,10 @@
                         </div>
                         <div class="title-wrapper wide">
                             <h4 class="title custom-m-0">
-                                <a href="{$main_link}">{$d.title|escape}</a>
+                                <a href="{$main_link}">
+                                    <span class="title-full">{$d.title|escape}</span>
+                                    <span class="title-truncated">{$d.title|truncate:40:'...'|escape}</span>
+                                </a>
                             </h4>
                         </div>
 

@@ -96,8 +96,17 @@ class siteThemeActions extends waDesignActions
             $routes = array_filter($routes, function($r) use ($theme_id) {
                 return $theme_id === ifset($r, 'theme', '');
             });
+
+            $show_theme_start_using = empty($routes);
+            if ($show_theme_start_using) {
+                $fallback_has_theme_usage = (bool)(new siteBlockpageModel())->select('id')->where(
+                    'domain_id = ? AND theme = ?', [$domain_id, $theme_id]
+                )->fetchAll();
+                $this->getView()->assign('fallback_has_theme_usage', $fallback_has_theme_usage);
+            }
+
             $this->getView()->assign([
-                'show_theme_start_using' => empty($routes),
+                'show_theme_start_using' => $show_theme_start_using,
             ]);
         }
 

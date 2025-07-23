@@ -31,6 +31,9 @@ class siteImageBlockType extends siteBlockType
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
                 ],
+                [   'type' => 'BackgroundColorGroup',
+                    'name' => _w('Background'),
+                ],
                 [   'type' => 'MarginGroup',
                     'name' => _w('Margin'),
                 ],
@@ -50,6 +53,10 @@ class siteImageBlockType extends siteBlockType
                 [   'type' => 'IdGroup',
                     'name' => _w('Identifier (ID)'),
                 ],
+                [   'type' => 'ImageSeoGroup',
+                    'name' => _w('SEO'),
+                ],
+
             ],
         ] + parent::getRawBlockSettingsFormConfig();
     }

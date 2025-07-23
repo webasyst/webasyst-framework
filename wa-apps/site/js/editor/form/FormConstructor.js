@@ -21,7 +21,8 @@ var FormConstructor = ( function($) {
             that.templates = $.form_storage.templates;
             that.storage_data = $.form_storage.data;
             that.media_prop =  options["media_prop"];
-
+            that.html_templates = options["html_templates"];
+            $.form_storage.html_templates = options["html_templates"];
             that.states = {
                 block_id: options["block_id"],
                 form_config: options["form_config"],
@@ -61,12 +62,12 @@ var FormConstructor = ( function($) {
             let {block_id, form_config, block_data, media_prop, is_new_block} = state;
             let comp_data = [];
             for (let key in form_config.sections) {
-                comp_data.push(form_config.sections[key]);
+                comp_data.push(Object.assign(form_config.sections[key], {'block_type': form_config.type}));
             }
             that.media_prop = media_prop;
             that.$target_wrapper = that.$iframe_wrapper.find('.seq-child [data-block-id=' + block_id + ']');
             that.is_new_block = is_new_block;
-            let is_element = form_config.tags && form_config.tags === 'element';
+            //let is_element = form_config.tags && form_config.tags === 'element';
             that.states = {
                 block_id: block_id,
                 form_config: form_config,
@@ -75,11 +76,11 @@ var FormConstructor = ( function($) {
                 media_prop: media_prop,
                 elements: form_config.elements || null,
                 semi_headers: form_config.semi_headers || null,
-                header: is_element ? form_config.type_name : 'Block',
+                header: form_config.type_name,
                 selected_element: form_config.elements?.main || null, //that.selected_element,
             }
-
-            that.states.parents = {}; //{'Columns': 2715, 'Column': 2716};
+            that.states.parents = $.wa.editor.block_storage.getParents(block_id).slice(0).reverse();
+            //that.states.parents = {};
 
             return that.states
         };
@@ -314,6 +315,46 @@ var FormConstructor = ( function($) {
                             'ButtonSizeToggle': that.vue_components['component-toggle'],
                           },
                     },
+                    "ButtonToggleGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = 'nobutton';
+                            //let active_class = that.storage_data[this.group_config.type].values;
+                            let active_class = this.block_data?.block_props?.[form_type] ? true : false;
+
+                            const header_name = this.group_config.name;
+
+                            return { active_class, header_name, with_text: true, form_type}
+                          },
+                        template: that.templates["component_button_toggle_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            //'ButtonStyleDropdown': that.vue_components['component-dropdown'],
+                            'SwitchToggle': that.vue_components['component-switch'],
+                          },
+                        methods: {
+                            changeSwitch(option) {
+                                let self = this;
+                                //let $editable = that.$target_wrapper;
+                                if (option) {
+                                    self.block_data.block_props[self.form_type] = self.form_type;
+                                }
+                                else if (self.block_data.block_props) {
+                                    delete self.block_data.block_props[self.form_type];
+                                }
+                                self.active_class = option;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                });
+                                console.log('saveBlockData', self.block_data)
+                            },
+                        }
+
+                    },
                     /*"OldColumnsGroup": {
                         props: {
                             group_config: { type: Object },
@@ -381,7 +422,7 @@ var FormConstructor = ( function($) {
                             let indestructible_cols = this.block_data?.indestructible || false;
                             $.each(self.columns_nodes, function(i, node) {
                                 const column_id = $(node).attr('data-block-id');
-                                const column_data = $.wa.editor.block_storage.getData(column_id);
+                                const column_data = Object.assign({}, $.wa.editor.block_storage.getData(column_id));
                                 columns_data.push(column_data.column);
                                 if (column_data?.indestructible) indestructible_cols = true;
                             });
@@ -409,7 +450,7 @@ var FormConstructor = ( function($) {
                                 temp_active_options.push(option.value);
 
                                 let column_id = that.$target_wrapper.find('.js-seq-wrapper').eq(0).find('> .seq-child').eq(column_num - 1).data('block-id');
-                                const column_data = $.wa.editor.block_storage.getData(column_id);
+                                const column_data = Object.assign({}, $.wa.editor.block_storage.getData(column_id));
                                 column_data.column = temp_active_options.join(' ');
                                 self.columns_data[column_num - 1] = temp_active_options.join(' ');
                                 $.wa.editor.saveBlockData(column_id, column_data, {
@@ -505,7 +546,7 @@ var FormConstructor = ( function($) {
                             });
                             $.each(self.columns_nodes, function(i, node) {
                                 const column_id = $(node).attr('data-block-id');
-                                const column_data = $.wa.editor.block_storage.getData(column_id);
+                                const column_data = Object.assign({}, $.wa.editor.block_storage.getData(column_id));
                                 cards_dropdown_array.push({
                                     name: (i+1) + ' card',
                                     value: column_id
@@ -742,6 +783,56 @@ var FormConstructor = ( function($) {
                             },
                         }
                     },
+                    "RowsAttrsVisibilityGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            const options = that.storage_data[this.group_config.type].values;
+                            const header_name = this.group_config.name;
+                            const hidden_attrs = this.block_data.hidden_attrs;
+                            const active_options = options.map(option => {
+                                option.value = !hidden_attrs[option.key];
+                                return option;
+                            });
+                            const is_visible = this.block_data.additional.product.sku_type === '0' && Object.values(this.block_data.additional.product.skus || {}).length > 1;
+
+                            return { active_options, header_name, form_type, is_visible }
+                          },
+                          template: `
+                          <div v-if="is_visible" class="s-editor-option-wrapper">
+                            <p class="s-semi-header text-gray small custom-mb-8">{{ header_name }}</p>
+                            <div class="s-editor-option-body">
+                                <div class="switch-wrap-group">
+                                    <div v-for="option in active_options" class="custom-mb-4">
+                                        <switch-toggle :activeName="form_type+option.key" :activeValue="option.value" @changeSwitch="changeSwitch($event, option.key)" :textValue="$t('custom.'+option.name)" switchClass="smaller"></switch-toggle>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                          `,
+                        components: {
+                            'SwitchToggle': that.vue_components['component-switch'],
+                        },
+                        methods: {
+                            changeSwitch(value, key) {
+                                const self = this;
+                                if (value) {
+                                    delete self.block_data.hidden_attrs[key];
+                                } else {
+                                    self.block_data.hidden_attrs[key] = 1;
+                                }
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                            },
+                        }
+                    },
                     "MenuDecorationGroup": {
                         props: {
                             group_config: { type: Object },
@@ -952,6 +1043,63 @@ var FormConstructor = ( function($) {
                             $(self.$el).find("#tooltip-max-width-toggle").waTooltip();
                         }
                     },
+                    "FullWidthToggleGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const header_name = this.group_config.name;
+                            //const element = that.states.elements['wrapper'];
+                            //const selected_element = that.states.selected_element;
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            let arr_option = that.storage_data[this.group_config.type].values[0];
+                            let activeValue = this.block_data?.block_props?.[form_type] || false;
+
+                            const disabledValue = false;
+                            return { header_name, activeValue, disabledValue, arr_option, form_type }
+                        },
+                        template: `
+                        <div class="switch-max-width-group flexbox middle space-12">
+                            <switch-toggle activeName="switch-max-width" :activeValue="activeValue" :disabled="disabledValue" @changeSwitch="changeSwitch" :textValue="$t('custom.' + arr_option.name)" switchClass="smaller no-shrink custon-mt-4" class="small"></switch-toggle>
+                           <!--<span id="tooltip-max-width-toggle" data-wa-tooltip-template="#tooltip-max-width-toggle1">
+                                <i class="fas fa-question-circle text-light-gray"></i>
+                            </span>
+                            <div class="wa-tooltip-template" id="tooltip-max-width-toggle1" >
+                                <div style="width: 240px"> { { $t('custom.tooltip-max-width-toggle') } }</div>
+                            </div>-->
+                        </div>
+                        `,
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'SwitchToggle': that.vue_components['component-switch'],
+                          },
+                        methods: {
+                            changeSwitch(option) {
+                                let self = this;
+
+                                if (option) {
+                                    if (!self.block_data.block_props) self.block_data.block_props = {};
+                                    self.block_data.block_props[self.form_type] = self.arr_option.value;
+                                }
+                                else {
+                                    if (self.block_data.block_props) delete self.block_data.block_props[self.form_type];
+                                }
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data);
+                                });
+
+                            },
+                        },
+                        mounted: function() {
+                            const self = this;
+                            //$(self.$el).find("#tooltip-max-width-toggle").waTooltip();
+                        }
+                    },
+
                     "FontStyleGroup": {
                         props: {
                             group_config: { type: Object },
@@ -970,22 +1118,30 @@ var FormConstructor = ( function($) {
                             const active_options = reactive(this.block_data?.block_props?.[form_type] ? this.block_data.block_props[form_type].split(' ') : []);
                             const button_class = 'nobutton';
                             let showLinkModal = false;
+                            let showAIPanel = false;
                             const parentsBlocks = Object.assign(that.states.parents || {}, { [that.states.form_config.type_name]: this.block_id });
                             //console.log(parents, this.block_data, that.states.form_config.type_name)
                             let active_link_options = {};
-                            return { active_link_options, parentsBlocks, for_key, selection, arr_options, button_class, form_type, active_options, tagsArr, showLinkModal}
+                            let prompt_options = that.storage_data['ai_prompt_data']?.[this.group_config.block_type];
+                            let aiFacility = prompt_options.facility;
+                            return { aiFacility, prompt_options, showAIPanel, active_link_options, parentsBlocks, for_key, selection, arr_options, button_class, form_type, active_options, tagsArr, showLinkModal}
                         },
                         template: `
                             <div class="font-style-group custom-mb-16">
-                            <template v-for="(item, key) in arr_options" :key="block_id-key">
-                                <custom-button :buttonClass="button_class" :iconClass="item.icon" @click="change(item.value)" :selfOption="item.value" :activeOptions="active_options" :title="$t(form_type+'.'+item.name)"></custom-button>
-                            </template>
+                                <button class="button smaller nobutton gray" title="Webasyst AI" @click="showAIPanel = !showAIPanel">
+                                    <span class="icon webasyst-ai"></span>
+                                </button>
+                                <template v-for="(item, key) in arr_options" :key="block_id-key">
+                                    <custom-button :buttonClass="button_class" :iconClass="item.icon" @click="change(item.value)" :selfOption="item.value" :activeOptions="active_options" :title="$t(form_type+'.'+item.name)"></custom-button>
+                                </template>
+                                <ai-generator v-if="showAIPanel" :group_config="group_config" :form_type="form_type" :facility="aiFacility" @generate="handleAiAnswer" @undo="undoElement" @closeForm="showAIPanel = !showAIPanel" :block_id="block_id" container_class="text-panel"></ai-generator>
                             </div>
                             <form-link v-if="showLinkModal" :active_link_options="active_link_options" :parents="parentsBlocks"  @closeDrawer="toggleModal" @goToParent="goToParent" @updateLink="change" :selection="selection" :key="for_key"></form-link>
-                        `,
+                            `,
                         //delimiters: ['{ { ', ' } }'],
                         components: {
                             'CustomButton': that.vue_components['custom-button'],
+                            'AiGenerator': that.vue_components['component-ai-generator'],
                             "FormLink": {
                                 props: {
                                     selection : { type: Object },
@@ -1207,6 +1363,7 @@ var FormConstructor = ( function($) {
                                     }
                                 }
                             },
+
                         },
                         methods: {
                             change: function(option, url = null) { //put classes to remove in temp_active_option
@@ -1229,7 +1386,7 @@ var FormConstructor = ( function($) {
                                 if (selected_text_length === 0) {
                                     const targetEl = self.getSelectionBoundaryElement()
                                     let tagN = targetEl.tagName;
-                                    console.log(targetEl, tagN)
+                                    //console.log(targetEl, tagN)
                                     if (self.tagsArr.indexOf(tagN) < 0) return;
                                     let rng = that.$iframe_wrapper[0].createRange()
                                     let sel = that.$iframe_wrapper[0].getSelection()
@@ -1258,6 +1415,52 @@ var FormConstructor = ( function($) {
                                     temp_active_options.push(option);
                                 }
                                 self.active_options = temp_active_options;
+                            },
+                            handleAiAnswer: function(data) {
+                                let self = this;
+                                let $editable = that.$target_wrapper.find('.style-wrapper');
+                                $editable = $editable.length ? $editable : that.$target_wrapper;
+                                self.oldElementHtml = $editable.html();
+
+                                let response_type = self.prompt_options?.response_type;
+                                //console.log(response_type, data?.someData?.[response_type])
+                                if (data?.someData?.[response_type]) {
+                                    let rng = that.$iframe_wrapper[0].createRange()
+                                    let sel = that.$iframe_wrapper[0].getSelection()
+                                    rng.selectNodeContents($editable[0])
+                                    sel.removeAllRanges()
+                                    sel.addRange(rng)
+
+                                    if (response_type !== 'list') {
+                                        console.log('text', $(data.someData[response_type]).text().replace(/\s+/g, " "))
+                                        //$editable.html($(data.someData[response_type]).html())
+                                        that.$iframe_wrapper[0].execCommand('insertText', false, $(data.someData[response_type]).text().replace(/\s+/g, " "));
+                                    }
+                                    else {
+                                        let list_html = '';
+                                        data.someData[response_type].forEach(function(elem) {
+                                            list_html = list_html + '<li>' + elem + '</li>';
+                                        })
+                                        $editable.html(list_html)
+                                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                            self.block_data.html = $editable.html();
+                                            bs.saveBlockData(self.block_data, false);
+                                        });
+                                    }
+                                }
+                                else return;
+
+                            },
+                            undoElement: function() {
+                                let self = this;
+                                let $editable = that.$target_wrapper.find('.style-wrapper');
+                                $editable = $editable.length ? $editable : that.$target_wrapper;
+                                if (self.oldElementHtml) $editable.html(self.oldElementHtml);
+                                else return;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    self.block_data.html = $editable.html();
+                                    bs.saveBlockData(self.block_data, false);
+                                });
                             },
                             toggleModal() {
                                 let self = this;
@@ -1588,6 +1791,324 @@ var FormConstructor = ( function($) {
                             }
                         }
                     },
+                    "CommonLinkGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        //emits: ['closeDrawer', 'updateLink'],
+                        delimiters: ['{ { ', ' } }'],
+                        data() {
+                            const arr_options = that.storage_data.link_dropdown_data;
+
+                            const arr_block_options = that.storage_data.link_block_data;
+                            const arr_pages_options = that.storage_data.link_page_data;
+                            const form_type = 'custom';
+                            const header_name = this.group_config.name;
+                            //let showSwitch = false;
+                            let showChildren = false;
+                            const group_header = this.group_config.name;
+                            const selected_element = that.states.selected_element;
+
+                            let selection_attr = {
+                                active_option: 'internal-link',
+                                active_block_option: null,
+                                active_pages_option: null,
+                                inputEmail: '',
+                                inputSubject: '',
+                                inputPhone: '',
+                                inputCheckbox: false,
+                                inputCheckboxNoFollow: false,
+                            };
+
+                            const show_buttons = false;
+                            const active_data = arr_options.filter( function(option) {
+                                return (option.value === 'internal-link');
+                            })[0];
+                            //
+                            return { header_name, selected_element, showChildren, show_buttons, selection_attr, active_data, group_header, arr_options, arr_block_options, arr_pages_options, form_type}
+                          },
+
+                        template: that.templates["component_common_link_group"],
+                        components: {
+                            'LinkActionDropdown': that.vue_components['component-dropdown'],
+                            'CustomButton': that.vue_components['custom-button'],
+                            'SwitchToggle': that.vue_components['component-switch'],
+                        },
+                        created: function() {
+                            let self = this;
+                            //self.$editable = that.$target_wrapper.find('.style-wrapper');
+                            //self.$editable = self.$editable.length ? self.$editable : that.$target_wrapper;
+                            let link_props = Object.assign({}, this.block_data?.link_props || {});
+                            if (self.selected_element) {
+                                link_props = Object.assign({}, this.block_data?.link_props?.[self.selected_element] || {});
+                            };
+                            self.isEmptyData = true;
+                            if (!jQuery.isEmptyObject(link_props)) {
+                                self.isEmptyData = false;
+                                let value = link_props['data-value'];
+                                self.showChildren = true;
+                                self.selection_attr.active_option = value;
+                                self.active_data = self.arr_options.filter( function(option) {
+                                    return (option.value === value);
+                                })[0];
+                                if (value === 'external-link') {
+                                    self.selection_attr.inputEmail = link_props["href"];
+                                }
+                                if (value === 'email-link' ) {
+                                    const temp = link_props["href"].split('mailto:')[1];
+                                    self.selection_attr.inputEmail = temp.split('?subject=')[0];
+                                    self.selection_attr.inputSubject = temp.split('?subject=')[1];
+                                }
+                                if (value === 'phone-link' ) {
+                                    self.selection_attr.inputPhone = link_props["href"].split('tel:')[1];
+                                }
+                                if (value === 'internal-link') {
+                                    self.selection_attr.active_pages_option = link_props["data-block"] || null;
+                                    if (self.selection_attr.active_pages_option === null) {
+                                        self.selection_attr.inputEmail = link_props["href"];
+                                    }
+                                }
+                                if (value === 'block-link' ) {
+                                    self.selection_attr.active_block_option = link_props["data-block"] || null;
+                                    if (self.selection_attr.active_block_option === null) {
+                                        self.selection_attr.inputEmail = link_props["href"];
+                                    }
+                                }
+                                if (link_props["target"] ) {
+                                    self.selection_attr.inputCheckbox = true;
+                                }
+                                if (link_props["rel"] ) {
+                                    self.selection_attr.inputCheckboxNoFollow = true;
+                                }
+                            }
+                        },
+                        mounted: function() {
+                            let self = this;
+                            self.mountTooltips()
+                        },
+                        methods: {
+                            change: function(option) {
+                                let self = this;
+                                self.active_data = self.arr_options.filter( function(opt) {
+                                    return (opt.value === option.value);
+                                })[0];
+                                self.show_buttons = true;
+                                setTimeout(()=> self.mountTooltips(), 0);
+                            },
+                            toggleChildren() {
+                                var self = this;
+                                $(self.$el).find(".s-editor-options-body").slideToggle(0);
+                                if (self.showChildren) {
+                                    self.deleteLink();
+                                }
+                                self.showChildren = !self.showChildren;
+                            },
+                            changeAnchor() {
+                                let self = this;
+                                self.show_buttons = true;
+                                let temp_input = self.selection_attr.inputEmail;
+                                if (temp_input !== '#' && temp_input !== '') {
+                                    let hash_pos = temp_input.indexOf('#');
+                                    if (hash_pos >= 0) {
+                                        self.selection_attr.inputEmail = '#' + temp_input.split('#')[1];
+                                    } else {
+                                        self.selection_attr.inputEmail = '#' + temp_input;
+                                    }
+                                }
+                            },
+                            changePagesDropdown: function(option) {
+                                let self = this;
+                                self.selection_attr.active_pages_option = option.value;
+                                self.show_buttons = true;
+                            },
+                            changeBlockDropdown: function(option) {
+                                let self = this;
+                                self.selection_attr.active_block_option = option.value;
+                                self.show_buttons = true;
+                            },
+                            mountTooltips: function() {
+                                let self = this;
+                                $(self.$el).find("#tooltip-internal-link")?.waTooltip();
+                                $(self.$el).find("#tooltip-block-link")?.waTooltip();
+                            },
+                            saveLink: function() {
+                                let self = this;
+                                let new_url = self.selection_attr.inputEmail;
+                                let active_data = self.active_data;
+                                let active_block_attr = '';
+
+                                if (active_data.value === 'email-link' ) {
+                                    new_url = 'mailto:' + new_url;
+                                    if (self.selection_attr.inputSubject) {
+                                        new_url = new_url + '?subject=' + self.selection_attr.inputSubject
+                                    }
+                                }
+                                if (active_data.value === 'phone-link' ) {
+                                    new_url = 'tel:' + self.selection_attr.inputPhone;
+                                }
+                                if (active_data.value === 'internal-link' ) {
+                                    active_block_attr = self.selection_attr.active_pages_option;
+                                    if (active_block_attr) {
+                                        new_url = self.arr_pages_options.filter( function(option) {
+                                            return (option.value === self.selection_attr.active_pages_option);
+                                        })[0]['url'];
+                                    }
+                                }
+                                if (active_data.value === 'block-link' ) {
+                                    active_block_attr = self.selection_attr.active_block_option;
+                                    if (active_block_attr) {
+                                        new_url = self.arr_block_options.filter( function(option) {
+                                            return (option.value === self.selection_attr.active_block_option);
+                                        })[0]['url'];
+                                    } else {
+                                        new_url = new_url;
+                                    }
+                                }
+                                if (new_url) {
+                                    let temp_link_props = {};
+
+                                    temp_link_props['href'] = new_url;
+                                    temp_link_props['data-value'] = active_data.value;
+
+                                    if (self.selection_attr.inputCheckbox) {
+                                        temp_link_props['target'] = '_blank';
+                                    }
+
+                                    if (self.selection_attr.inputCheckboxNoFollow) {
+                                        temp_link_props['rel'] = 'nofollow';
+                                    }
+
+                                    if (active_block_attr) {
+                                        temp_link_props['data-block'] = active_block_attr;
+                                    }
+
+                                    self.show_buttons = false;
+
+                                    if (!self.selected_element) {
+                                        self.block_data.link_props = temp_link_props;
+                                    } else {
+                                        if (!self.block_data.link_props) self.block_data.link_props = {};
+                                        self.block_data.link_props[self.selected_element] = temp_link_props;
+                                    }
+
+                                    $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                        bs.saveBlockData(self.block_data, false);
+
+                                    });
+                                    console.log('saveBlockData', self.block_data)
+                                    self.isEmptyData = false;
+                                }
+
+                            },
+                            deleteLink: function() {
+                                let self = this;
+                                //self.$editable.attr('href', '');
+                                if (!self.selected_element) {
+                                    if (self.block_data?.link_props) delete self.block_data.link_props;
+                                } else {
+                                    if (self.block_data?.link_props?.[self.selected_element]) delete self.block_data.link_props[self.selected_element];
+                                }
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data, false);
+                                });
+                                self.show_buttons = false;
+                                //self.showChildren = false;
+                                self.cleanForm()
+                            },
+                            cleanForm: function() {
+                                let self = this;
+                                self.show_buttons = false;
+                                self.selection_attr = {
+                                    active_option: 'internal-link',
+                                    active_block_option: null,
+                                    active_pages_option: null,
+                                    inputEmail: '',
+                                    inputSubject: '',
+                                    inputPhone: '',
+                                    inputCheckbox: false,
+                                    inputCheckboxNoFollow: false,
+                                };
+                                self.isEmptyData = true;
+                            }
+                        }
+                    },
+                    "ProductLinkGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        //emits: ['closeDrawer', 'updateLink'],
+                        data() {
+                            let self = this;
+                            const active_options = Object.assign({}, this.block_data?.link_props || {});
+                            self.storefront_object = active_options?.storefronts || {};
+                            let storefront_options =  [
+                                {name: 'storefront 1', value: 'internal-link'},
+                                {name: 'storefront 2', value: 'external-link'},
+                            ];
+                            if (self.storefront_object) {
+                                storefront_options = [];
+                                $.each(Object.values(self.storefront_object), function(i, option) {
+                                    storefront_options.push({
+                                        name: option.url_decoded || option.url,
+                                        value: option.url_decoded || option.url
+                                    });
+                                });
+                            }
+                            self.base_prod_url = this.block_data?.additional?.product?.url || '';
+                            let active_href = active_options?.href || '';
+                            let active_storefront = active_options?.storefront || '';
+                            const form_type = 'custom';
+                            let inputCheckboxNewPage = active_options?.target || false;
+                            let inputCheckboxNoFollow = active_options?.rel || false;
+
+                            const group_header = this.group_config.name;
+                            const link_name = this.block_data.type_name;
+
+                            return { link_name, active_storefront, group_header, storefront_options, form_type, active_href, inputCheckboxNewPage, inputCheckboxNoFollow}
+                          },
+
+                        template: that.templates["component_product_link_group"],
+                        components: {
+                            'LinkActionDropdown': that.vue_components['component-dropdown'],
+                            'CustomButton': that.vue_components['custom-button'],
+                        },
+                        created: function() {
+                            let self = this;
+                            self.$editable = that.$target_wrapper.find('.style-wrapper');
+                            self.$editable = self.$editable.length ? self.$editable : that.$target_wrapper;
+                        },
+                        mounted: function() {
+                            let self = this;
+                            self.mountTooltips()
+                        },
+                        methods: {
+                            changeStorefront: function(option) {
+                                let self = this;
+
+                                self.active_storefront = option.value;
+                                self.active_href = 'http://' + option.value + self.base_prod_url;
+                                self.saveLink();
+                            },
+                            mountTooltips: function() {
+                                let self = this;
+                                //$(self.$el).find("#tooltip-internal-link")?.waTooltip();
+                            },
+                            saveLink: function() {
+                                let self = this;
+                                self.block_data.link_props = {'href': self.active_href, 'storefront': self.active_storefront, 'rel': self.inputCheckboxNoFollow, 'target': self.inputCheckboxNewPage, 'storefronts': self.storefront_object};
+                                //console.log('saveLink', self.block_data.link_props, self.active_href)
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data, false);
+                                });
+                                console.log('saveBlockData', self.block_data)
+                            }
+                        }
+                    },
                     "TextColorGroup": {
                         props: {
                             group_config: { type: Object },
@@ -1631,7 +2152,6 @@ var FormConstructor = ( function($) {
                                     $(self.getSelectionBoundaryElement(false)).removeAttr("class");
                                 }
                                 self.block_data.html = $editable.html();
-
                             },
                             changePalette: function(option) {
                                 let self = this;
@@ -1798,7 +2318,7 @@ var FormConstructor = ( function($) {
                             changeCss(layer, index) {
                                 let self = this;
                                 self.backgroundCss = '';
-                                //console.log('changeCss',layer, index)
+                                console.log('changeCss',layer, index)
                                 if (!self.layers.length) { //clear block data if we dont have layers
                                     self.removeColor();
                                     return;
@@ -1815,10 +2335,15 @@ var FormConstructor = ( function($) {
                                     });
                                     self.changePalette(self.layers[0]);
                                     return;
-                                } else { //set manually settings
-                                    const manual_layers = self.layers.filter(function(option) { return option.type !== 'palette'})
+                                }
+                                 else { //set manually settings
+                                    const manual_layers = self.layers.filter(function(option) { return option.type !== 'palette' && option.type !== 'video'})
                                     $.each(manual_layers, function(i, l) {
-                                        self.backgroundCss = self.backgroundCss + l.value + (manual_layers.length-1 > i ? ', ' : '');
+                                        //if (l.type !== 'video') { //
+                                            self.backgroundCss = self.backgroundCss + l.value + (manual_layers.length-1 > i ? ', ' : '');
+                                        //} else {
+                                            //self.changeVideo(l);
+                                        //}
                                     });
                                     $.each(self.layers, function(i, l) { //update disable styles
                                         if (l.type === 'palette') l.disabled = 1
@@ -1856,6 +2381,16 @@ var FormConstructor = ( function($) {
                                 });
                                 console.log('saveBlockData', self.block_data)
 
+                            },
+                            changeVideo(layer){
+                                if (!self.element) {
+                                    if (!self.block_data.inline_props) self.block_data.inline_props = {};
+                                    self.block_data.inline_props['background-video'] = layer.value;
+                                } else {
+                                    if (!self.block_data.inline_props) self.block_data.inline_props = {};
+                                    if (!self.block_data.inline_props[self.element]) self.block_data.inline_props[self.element] = {};
+                                    self.block_data.inline_props[self.element]['background-video'] = layer.value;
+                                }
                             },
                             removeColor() {
                                 let self = this;
@@ -2307,7 +2842,7 @@ var FormConstructor = ( function($) {
                             const form_type = that.storage_data[this.group_config.type].type;
                             const arr_options = that.storage_data[this.group_config.type].values;
                             const selected_element = that.states.selected_element;
-                            self.active_option_object = this.block_data?.inline_props?.[form_type] || null;
+                            self.active_option_object = this.block_data?.inline_props?.[form_type] || this.block_data?.inline_props?.[selected_element]?.[form_type] || null;
                             let active_option = self.active_option_object?.type || null;
                             let showChildren = active_option ? true : false;
                             const header_name = this.group_config.name;
@@ -2333,56 +2868,33 @@ var FormConstructor = ( function($) {
                                 const self = this;
 
                                 let temp_active_option = self.arr_options.filter((obj) => obj.name === option.name)[0];
-                                //self.active_option_dropdown = temp_active_option.value;
                                 if (temp_active_option.type === 'custom') {
                                     temp_active_option.value = self.inputSize+self.inputUnit;
                                     temp_active_option.unit = self.inputUnit;
                                 }
                                 self.active_option = temp_active_option.type;
-
-                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    if (!self.selected_element) {
-                                        if (!self.block_data.inline_props) self.block_data.inline_props = {};
-                                        self.block_data.inline_props[self.form_type] = temp_active_option;
-                                    } else {
-                                        if (!self.block_data.inline_props) self.block_data.inline_props = {};
-                                        if (!self.block_data.inline_props[self.element]) self.block_data.inline_props[self.element] = {};
-                                        self.block_data.inline_props[self.element][self.form_type] = temp_active_option;
-                                    }
-                                    bs.saveBlockData(self.block_data);
-                                });
-
-                                console.log('saveBlockData', self.arr_options, self.active_option_object, temp_active_option, option);
+                                updateBlockData(self.form_type, 'inline_props', temp_active_option)
                             },
                             changeInput() {
                                 let self = this;
                                 self.change({name: 'Custom'});
-                                //const $dropdown = $(self.$el);
-                                //const $dropdown_toggle = $dropdown.find('> .dropdown-toggle');
-                                //$dropdown_toggle.find('.s-name').html('Self size: ' + self.inputSize);
                             },
                             changeUnit(option) {
                                 let self = this;
                                 self.inputUnit = option.value
-                                //self.changeInput();
                                 self.change({name: 'Custom'});
                             },
                             setDefault() {
                                 const self = this;
-                                //console.log('setDefault')
                                 if (self.active_option) {
                                     self.active_option = null;
                                     self.active_option_dropdown = self.arr_options[0].value;
                                     self.active_option_object = null;
                                     self.inputUnit = self.arr_options[0].unit;
                                     self.inputSize = self.arr_options[0].value.split(self.inputUnit)[0];
-                                    //self.$refs.child.toggleData(self.showChildren, self.arr_options[3]);
-                                    $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                        delete self.block_data.inline_props[self.form_type];
-                                        bs.saveBlockData(self.block_data);
-                                    });
-                                    console.log('saveBlockData', self.block_data);
-                                } else self.change({name: 'Custom'});
+                                    deleteBlockData(self.form_type, 'inline_props')
+
+                                } else self.change({name: 'Content'});
 
                             },
                             toggleChildren() {
@@ -2913,6 +3425,7 @@ var FormConstructor = ( function($) {
                             const toggle_options = that.storage_data.image_upload_toggle_data;
                             let image_data = this.block_data?.image ? this.block_data.image : '';
                             let active_toggle_option = image_data?.type ? image_data.type : 'upload';
+                            self.colors_variables_data = that.storage_data['colors_variables_data'];
                             const svg_placeholder = '<svg fill="currentColor"></svg>';
                             let svg_html = image_data['svg_html'] || '';
                             let url_text = image_data['url_text'] || '';
@@ -2944,7 +3457,7 @@ var FormConstructor = ( function($) {
                                     <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
                                 </div>
                                 <div class="width-100">
-                                    <svg-color-group @changeSvgColor="changeSvgColor" class="width-100 custom-mb-8" :block_data="block_data" :block_id="block_id"></svg-color-group>
+                                    <svg-color-group @changeSvgColor="changeSvgColor" @changeSvgColorPalette="changeSvgColorPalette" class="width-100 custom-mb-8" :block_data="block_data" :block_id="block_id"></svg-color-group>
                                      <div class="text-gray smaller">{{$t('custom.The specified color will update fill attribute')}}</div>
                                 </div>
                             </div>
@@ -3056,11 +3569,12 @@ var FormConstructor = ( function($) {
                                     block_data: { type: Object, default: {} },
                                     block_id: { type: Number},
                                 },
-                                emits: ["changeSvgColor"],
+                                emits: ["changeSvgColor", 'changeSvgColorPalette'],
                                 data() {
                                     const form_type = that.storage_data['SvgColorGroup'].type;
                                     const arr_options = that.storage_data['SvgColorGroup'];
-                                    let active_option = this.block_data?.image?.color ? { type: 'self_color', value: '#' + this.block_data?.image?.color, name: 'Self color'} : {};
+                                    let active_option = (this.block_data?.image?.color && typeof this.block_data?.image?.color === 'string') ? { type: 'self_color', value: '#' + this.block_data?.image?.color, name: 'Self color'} : (this.block_data?.image?.color ? this.block_data?.image?.color : {});
+                                    //let active_option = this.block_data?.image?.color ? { type: 'self_color', value: '#' + this.block_data?.image?.color, name: 'Self color'} : {};
                                     const semi_header = 'Color';
                                     const active_icon = that.storage_data['SvgColorGroup'].icon;
                                     return { arr_options, semi_header, active_option, form_type, active_icon}
@@ -3073,12 +3587,14 @@ var FormConstructor = ( function($) {
                                 methods: {
                                     change: function(option) {
                                         let self = this;
-                                        self.$emit('changeSvgColor', option);
-                                        active_option = self.active_option = { type: 'self_color', value: '#' + option, name: 'Self color'};
+                                        let temp_active_option = { type: 'self_color', value: '#' + option, name: 'Self color'};
+                                        self.$emit('changeSvgColor', temp_active_option);
+                                        //self.active_option = temp_active_option;
                                     },
                                     changePalette: function(option) {
                                         let self = this;
-
+                                        self.$emit('changeSvgColorPalette', option);
+                                        //self.active_option = option;
                                     }
                                 },
                                 mounted: function() {
@@ -3113,7 +3629,7 @@ var FormConstructor = ( function($) {
                                 const self = this;
                                 $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                     self.block_data.image = self.temp_image_data;
-                                    bs.saveBlockData(self.block_data, true);
+                                    bs.saveBlockData(self.block_data);
                                 });
                             },
                             changeSvg: function() {
@@ -3135,15 +3651,299 @@ var FormConstructor = ( function($) {
 
                             changeSvgColor: function(color) {
                                 const self = this;
+
+                                if (!self.svg_html.length) return;
+                                if (!self.temp_image_data?.fill) self.svg_html = self.removeFillAttributes(self.svg_html);
                                 const svg_node = $(self.svg_html);
-                                if (!svg_node.length) return;
-                                svg_node.attr({'fill': '#' + color})
+                                svg_node.attr({'fill': color.value})
                                 self.svg_html = svg_node[0].outerHTML;
-                                self.temp_image_data = {type: 'svg', color: color, 'svg_html': self.svg_html}
+                                self.temp_image_data = {type: 'svg', color: color, 'svg_html': self.svg_html, fill: 'removed'}
                                 self.$editable.html(self.svg_html);
                                 self.change();
                             },
+                            changeSvgColorPalette: function(option) {
+                                const self = this;
+                                if (!self.svg_html.length) return;
+                                if (!self.temp_image_data?.fill) self.svg_html = self.removeFillAttributes(self.svg_html);
+                                const svg_node = $(self.svg_html);
+                                svg_node.attr({'fill':  'var(' + self.colors_variables_data[option.value] + ')'})
+                                self.svg_html = svg_node[0].outerHTML;
+                                self.temp_image_data = {type: 'svg', color: option, 'svg_html': self.svg_html, fill: 'removed'}
+                                self.$editable.html(self.svg_html);
+                                self.change();
+                            },
+                            removeFillAttributes: function (svgString) {
+                                const parser = new DOMParser();
+                                const xmlDoc = parser.parseFromString(svgString, 'image/svg+xml');
 
+                                // Рекурсивное удаление fill и очистка style
+                                function removeFill(node) {
+                                  if (node.nodeType === 1) { // Проверка, что это элемент
+                                    // Удаление атрибута fill
+                                    if (node.hasAttribute('fill')) {
+                                      node.removeAttribute('fill');
+                                    }
+
+                                    // Очистка fill из style
+                                    if (node.hasAttribute('style')) {
+                                      const style = node.getAttribute('style');
+                                      const cleanedStyle = style
+                                        .split(';')
+                                        .map(s => s.trim())
+                                        .filter(s => !s.startsWith('fill:'))
+                                        .join('; ');
+
+                                      if (cleanedStyle) {
+                                        node.setAttribute('style', cleanedStyle);
+                                      } else {
+                                        node.removeAttribute('style');
+                                      }
+                                    }
+                                  }
+
+                                  // Рекурсивно обрабатываем дочерние узлы
+                                  node.childNodes.forEach(removeFill);
+                                }
+
+                                removeFill(xmlDoc.documentElement);
+
+                                const serializer = new XMLSerializer();
+                                return serializer.serializeToString(xmlDoc);
+                                //return svgString.replace(/\s*fill="[^"]*"/g, '').replace(/\s*fill:*"/g, '');
+                              }
+                        },
+                        mounted: function() {
+                            const self = this;
+                        }
+                    },
+                    "VideoUploadGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const self = this;
+                            const form_type = 'video-upload';
+                            const toggle_options = that.storage_data.video_upload_toggle_data;
+                            let video_data = this.block_data?.video ? this.block_data.video : '';
+                            let active_toggle_option = video_data?.type ? video_data.type : 'code';
+                            self.$editable = that.$target_wrapper.eq(0).find('.style-wrapper picture');
+
+                            return { form_type, video_data, active_toggle_option, toggle_options }
+                        },
+                        template: `
+                        <div class="s-editor-option-wrapper video-group-wrapper">
+                            <div class="s-editor-option-body custom-mt-8">
+                                <video-data-toggle @changeToggle="changeToggle" :options="toggle_options" :activeOption="active_toggle_option" :with_text="true" form_type="custom"></video-data-toggle>
+                            </div>
+                            <div class="s-editor-option-body custom-mt-20" v-if="active_toggle_option === 'upload'">
+                                <video-upload :block_data="block_data" :block_id="block_id"></video-upload>
+                            </div>
+                            <div class="s-editor-option-body custom-mt-8" v-if="active_toggle_option === 'code'">
+                                <custom-video :block_data="block_data" :block_id="block_id"></custom-video>
+                            </div>
+
+                        </div>`,
+                        computed: {
+                        },
+                        components: {
+                            'VideoDataToggle': that.vue_components['component-toggle'],
+                            'VideoUpload': {
+                                props: {
+                                    block_data: { type: Object, default: {} },
+                                    block_id: { type: Number},
+                                },
+                                emits: ["change"],
+                                data() {
+                                    const form_type = 'video-upload';
+                                    let video_data = this.block_data?.video?.type === 'upload' ? this.block_data.video : {};
+                                    let autoPlay = video_data?.auto_play || false;
+                                    let autoLoop = video_data?.auto_loop || false;
+                                    let muted = video_data?.muted || true;
+                                    let switch_disabled = video_data.name ? false : true;
+                                    return { muted, autoPlay, autoLoop, form_type, video_data, switch_disabled }
+                                },
+                                template: that.templates["component_video_upload_group"],
+                                delimiters: ['{ { ', ' } }'],
+                                components: {
+                                    'SwitchToggle': that.vue_components['component-switch'],
+                                },
+                                methods: {
+                                    change: function(option) {
+                                        const self = this;
+                                        that.is_new_block = false;
+                                        if (!option.target.files?.length) return false;
+                                        self.video_data = {'type': 'upload', 'name': option.target.files[0].name, 'auto_loop': self.autoLoop, 'auto_play': self.autoPlay, 'muted': self.muted} ;
+                                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                            self.block_data.video = self.video_data;
+                                            bs.saveBlockData(self.block_data, true);
+                                            bs.uploadFile(option.target.files[0], '');
+                                            self.switch_disabled = false;
+                                        });
+                                    },
+                                    changeSwitchPlay(option, str) {
+                                        let self = this;
+                                        if (!self.video_data.name) return false;
+                                        self.switch_disabled = true;
+                                        //console.log(self.autoPlay, option, str)
+                                        //self.autoPlay = !self.autoPlay;
+
+                                        self.video_data[str] = option;
+                                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                            self.block_data.video = self.video_data;
+                                            bs.saveBlockData(self.block_data, true);
+                                            self.switch_disabled = false
+                                        });
+                                        console.log(self.block_data.video)
+                                    },
+                                    cancelFile: function(option) {
+                                        const self = this;
+                                        if (!option.target.value.length) {
+                                            if (that.is_new_block) {
+                                                that.is_new_block = false;
+                                                self.removeBlock();
+                                            }
+                                            return false;
+                                        }
+                                    },
+                                    drop: function(option) {
+                                        const self = this;
+                                        const files = $(self.$el).find("#drop-area").data('upload')?.files;
+                                        that.is_new_block = false;
+                                        //console.log('drop', option.disabled, !files?.length)
+                                        if (option.disabled || !files?.length) { return false; }
+                                        self.temp_video_data = {type: 'upload', 'name':  files[0].name} ;
+                                        self.block_data.video = self.temp_video_data;
+                                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                            bs.saveBlockData(self.block_data, true);
+                                            bs.uploadFile(files[0], '')
+                                            self.switch_disabled = false;
+                                        });
+                                    },
+                                    removeBlock: function(){
+                                        const self = this;
+                                        const $block_wrapper = that.$target_wrapper.closest('.js-seq-wrapper');
+                                        if ($block_wrapper.length) {
+                                            $.wa.editor.removeBlock(self.block_id, $block_wrapper);
+                                            $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                                bs.hide();
+                                                $.wa.editor.selected_block_id = '';
+                                            });
+                                        }
+                                    },
+
+                                },
+                                mounted: function() {
+                                    const self = this;
+                                    $(self.$el).find("#drop-area").waUpload({
+                                        is_uploadbox: true,
+                                        show_file_name: true
+                                    })
+                                }
+                            },
+                            "CustomVideo": {
+                                props: {
+                                    group_config: { type: Object },
+                                    block_data: { type: Object, default: {} },
+                                    block_id: { type: Number},
+                                },
+                                emits: ["changeElement"],
+                                data() {
+                                    //const elements = that.states.elements;
+                                    const header_name = 'Embed code';
+                                    const placeholder = '<iframe src=""></iframe>';
+                                    return { header_name, placeholder }
+                                  },
+                                template: `
+                                <div class="s-editor-option-wrapper ">
+                                    <div class="video-group-wrapper custom-mb-12 custom-mt-12">
+                                        <div class="s-semi-header small custom-pb-20" v-html="
+                                            $t('custom.Get the embed code on **YouTube** or **Vimeo**, or another similar service')
+                                                .replace('**', '<a href=&quot;https://www.youtube.com/&quot; target=&quot;_blank&quot;>')
+                                                .replace('**', '</a>')
+                                                .replace('**', '<a href=&quot;https://vimeo.com/&quot; target=&quot;_blank&quot;>')
+                                                .replace('**', '</a>')
+                                        ">
+                                        </div>
+                                        <div class="s-semi-header text-gray small">{{$t('custom.' + header_name)}}</div>
+                                        <div class="video-group custom-mb-12 custom-mt-8">
+                                            <div class="value js-redactor-wrapper">
+                                                <textarea class="width-100 js-content-body" id="js-content-body" name="content" :placeholder="placeholder">{{block_data['html']}}</textarea>
+                                                <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="code-group-wrapper custom-mb-12 custom-mt-12">
+                                        <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                                    </div>
+                                </div>
+                                `,
+                                //delimiters: ['{ { ', ' } }'],
+                                components: {
+                                    'CustomButton': that.vue_components['custom-button'],
+                                  },
+                                methods: {},
+                                mounted: function() {
+                                    const self = this;
+                                    $default_picture = that.$target_wrapper.find('.iframe-picture-cover');
+                                    $textarea = $(self.$el).find('.js-content-body');
+
+                                    $textarea.on('input', function () {
+                                        let editor_val =  $textarea.val();
+
+                                        if (checkTagsErrors(editor_val, $textarea)) return;
+
+                                        self.temp_video_data = {type: 'code', 'html': editor_val}
+
+                                        self.block_data['html'] = editor_val;
+                                        //self.block_data['video'] = self.temp_video_data;
+
+                                        if (!editor_val.length) {
+                                            $default_picture.show();
+                                        } else {
+                                            $default_picture.hide()
+                                            self.block_data['video'] = self.temp_video_data;
+                                        };
+
+                                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                            bs.saveBlockData(self.block_data);
+                                            console.log('saveBlockData', self.block_data)
+                                        });
+                                    });
+
+                                    function checkTagsErrors(inputText, $textarea) {
+                                        let error_text = '';
+                                        let error_block = $textarea.parent().find('.state-error-hint');
+                                        if (checkForHtmlTagsExceptIframe(inputText)) error_text = 'error-tags';
+                                        if (checkIframeWithoutClosingTag(inputText)) error_text = 'error-open-tag';
+                                        if (error_text) {
+                                            error_block.text(error_block.data(error_text)).show();
+                                            $textarea.addClass('state-error');
+                                            setTimeout(() => { $textarea.removeClass('state-error'); error_block.hide();}, 3000);
+                                            return true;
+                                        }
+                                        error_block.hide();
+                                        return false
+                                    }
+                                }
+                            },
+                          },
+                        methods: {
+                            change: function() {
+                                const self = this;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    self.block_data.video = self.temp_video_data;
+                                    bs.saveBlockData(self.block_data, true);
+                                });
+                            },
+                            changeCode: function() {
+
+                            },
+                            changeToggle: function(option) {
+                                const self = this;
+                                self.active_toggle_option = option.value;
+                            },
                         },
                         mounted: function() {
                             const self = this;
@@ -3183,6 +3983,41 @@ var FormConstructor = ( function($) {
                             },
                         }
                     },
+                    "ImageSeoGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const header_name = this.group_config.name;
+                            let active_option_alt = this.block_data?.alt || '';
+                            let active_option_title = this.block_data?.title || '';
+                            //let showChildren =  active_option_alt || active_option_title ? true : false;
+                            return { header_name, active_option_alt, active_option_title}
+                          },
+                        template: that.templates["component_image_seo_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            //'TagsDropdown': that.vue_components['component-dropdown'],
+                          },
+                        methods: {
+                            change() {
+                                let self = this;
+                                self.block_data.alt = self.active_option_alt;
+                                self.block_data.title = self.active_option_title;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                    console.log('saveBlockData', self.block_data)
+                                });
+                            },
+                        },
+                        mounted: function() {
+                            const self = this;
+                            $(self.$el).find("#tooltip-alt").waTooltip();
+                            $(self.$el).find("#tooltip-title").waTooltip();
+                        }
+                    },
                     "IdGroup": {
                         props: {
                             group_config: { type: Object },
@@ -3194,7 +4029,8 @@ var FormConstructor = ( function($) {
                             const form_type = 'scroll-margin-top';
                             const selected_element = that.states.selected_element;
                             self.active_option_object = self.block_data?.inline_props?.[form_type] || self.block_data?.inline_props?.[selected_element]?.[form_type] || null;
-                            self.active_option_id = self.block_data?.id || null;
+                            self.active_option_id = (self.block_data?.id && typeof self.block_data.id === 'string') ? self.block_data?.id : (self.block_data?.id?.[selected_element]?.id || self.active_option_object?.id || null);
+                            //self.active_option_id = self.block_data?.id?.[selected_element]?.id || self.active_option_object?.id || null;
 
                             let showChildren =  self.active_option_id || self.active_option_object ? true : false;
                             const header_name = self.group_config.name;
@@ -3233,16 +4069,21 @@ var FormConstructor = ( function($) {
 
                                 if ((self.active_option_object?.id !== self.temp_active_option_object.id) && self.checkUniqErrors()) return;
 
-                                self.block_data.id = self.temp_active_option_object.id;
+                                //self.block_data.id = self.temp_active_option_object.id;
                                 self.active_option_object = self.temp_active_option_object;
                                 self.active_option_id = self.temp_active_option_object.id;
                                 if (!self.selected_element) {
                                     if (!self.block_data.inline_props) self.block_data.inline_props = {};
                                     self.block_data.inline_props[self.form_type] = self.temp_active_option_object;
+                                    self.block_data.id = self.active_option_id;
                                 } else {
                                     if (!self.block_data.inline_props) self.block_data.inline_props = {};
                                     if (!self.block_data.inline_props[self.selected_element]) self.block_data.inline_props[self.selected_element] = {};
                                     self.block_data.inline_props[self.selected_element][self.form_type] = self.temp_active_option_object;
+                                    if (!self.block_data.id || typeof self.block_data.id === 'string') self.block_data.id = {};
+                                    if (!self.block_data.id[self.selected_element]) self.block_data.id[self.selected_element] = {};
+                                    console.log(self.temp_active_option_object)
+                                    self.block_data.id[self.selected_element].id = self.active_option_id;
                                 }
                                 $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                     bs.saveBlockData(self.block_data);
@@ -3291,11 +4132,13 @@ var FormConstructor = ( function($) {
                                     self.inputId = '';
                                     //self.$refs.child.toggleData(self.showChildren, self.arr_options[3]);
                                     $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                        delete self.block_data.id;
-                                        if (!self.element) {
+                                        if (!self.selected_element) {
                                             if (self.block_data.inline_props) delete self.block_data.inline_props[self.form_type];
+                                            delete self.block_data.id;
                                         } else {
                                             if (self.block_data.inline_props && self.block_data.inline_props[self.selected_element]) delete self.block_data.inline_props[self.selected_element][self.form_type];
+                                            if (self.block_data.id && self.block_data.id[self.selected_element]) delete self.block_data.id[self.selected_element];
+                                            if (typeof self.block_data.id === 'string') delete self.block_data.id;
                                         }
                                         bs.saveBlockData(self.block_data);
                                     });
@@ -3358,9 +4201,15 @@ var FormConstructor = ( function($) {
                             //const elements = that.states.elements;
                             const arr_options = ['html', 'css', 'js'];
                             //const active_option = this.block_data?.tag;
+                            let showAIPanel = false;
+                            let prompt_options = that.storage_data['ai_prompt_data']?.[this.group_config.block_type];
+                            let aiFacility = prompt_options.facility;
+
                             const header_name = this.group_config.name;
                             const selected_tab = 'html';
-                            return { selected_tab, arr_options, header_name }
+                            this.editor_session = null;
+
+                            return { selected_tab, arr_options, header_name, showAIPanel, aiFacility, prompt_options }
                           },
                         template: `
                         <div class="s-editor-option-wrapper ">
@@ -3382,33 +4231,63 @@ var FormConstructor = ( function($) {
                                     <div class="value js-redactor-wrapper">
                                         <textarea style="display:none" class="js-content-body" id="js-content-body" name="content"> {{block_data[selected_tab]}}</textarea>
                                     </div>
-                                    <p class="hint custom-mt-8">{{$t('custom.JavaScript code is not executed here; check its result on the site')}}</p>
                                 </div>
                             </div>
-                            <div class="code-group-wrapper custom-mb-12 custom-mt-12 flexbox">
-                                <custom-button id="js-save-code" :buttonText="$t('custom.Save')" buttonClass="green blue" @click="saveCode"></custom-button>
-                                <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
-                                <custom-button v-show="selected_tab === 'html'" id="js-show-variables" iconClass="fa-dollar-sign" :title="$t('custom.Variables')" buttonClass="gray nobutton custom-ml-auto" @click="showVariables"></custom-button>
-                                <custom-button v-show="selected_tab === 'html'" id="js-show-cheatsheet" iconClass="fa-code" :title="$t('custom.CheatSheet')" buttonClass="gray nobutton" @click="showCheatSheet"></custom-button>
+                            <div class="code-group-wrapper custom-mb-12 custom-mt-12 sticky">
+                                <p class="hint custom-mt-8">{{$t('custom.custom_code_hint')}}</p>
+                                <div class="code-group-buttons flexbox">
+                                    <custom-button id="js-save-code" :buttonText="$t('custom.Save')" buttonClass="green blue" @click="saveCode"></custom-button>
+                                    <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                                    <button class="button smaller nobutton gray custom-ml-auto" title="Webasyst AI" @click="showAIPanel = !showAIPanel">
+                                        <span class="icon webasyst-ai"></span>
+                                    </button>
+                                    <custom-button v-show="selected_tab === 'html'" id="js-show-variables" iconClass="fa-dollar-sign" :title="$t('custom.Variables')" buttonClass="gray nobutton" @click="showVariables"></custom-button>
+                                    <custom-button v-show="selected_tab === 'html'" id="js-show-cheatsheet" iconClass="fa-code" :title="$t('custom.CheatSheet')" buttonClass="gray nobutton" @click="showCheatSheet"></custom-button>
+                                </div>
+                                <ai-generator v-if="showAIPanel" :group_config="group_config" :facility="aiFacility" @generate="handleAiAnswer" @undo="undoElement" @closeForm="showAIPanel = !showAIPanel" :block_id="block_id" container_class="custom-code-panel"></ai-generator>
                             </div>
                         </div>
                         `,
                         //delimiters: ['{ { ', ' } }'],
                         components: {
                             'CustomButton': that.vue_components['custom-button'],
+                            'AiGenerator': that.vue_components['component-ai-generator'],
                           },
                         methods: {
+                            handleAiAnswer: function(data) {
+                                let self = this;
+                                //let $editable = that.$target_wrapper.find('.style-wrapper');
+                                //$editable = $editable.length ? $editable : that.$target_wrapper;
+                                let response_type = self.prompt_options?.response_type;
+                                if (data?.someData?.[response_type]) {
+                                //self.oldElementHtml = $editable.html();
+                                self.oldElement = self.editor_session.getValue();
+                                self.editor_session.setValue(data?.someData?.[response_type]);
+                                self.saveCode();
+                                }
+                                //session.getValue();
+
+                            },
+                            undoElement: function() {
+                                let self = this;
+                                //let $editable = that.$target_wrapper.find('.style-wrapper');
+                                //$editable = $editable.length ? $editable : that.$target_wrapper;
+                                if (self.oldElement) {
+                                    //self.oldElement = session.getValue();
+                                    self.editor_session.setValue(self.oldElement);
+                                    self.saveCode();
+                                }
+                            },
                             changeTab(opt){
                                 const self = this;
                                 self.selected_tab = opt;
-                                let session = wa_editor.getSession();
-                                session.setValue(self.block_data[opt]);
+                                self.editor_session.setValue(self.block_data[opt]);
                                 if (opt == 'css') {
-                                    session.setMode("ace/mode/css");
+                                    self.editor_session.setMode("ace/mode/css");
                                 } else if (opt == 'js') {
-                                    session.setMode("ace/mode/javascript");
+                                    self.editor_session.setMode("ace/mode/javascript");
                                 } else {
-                                    session.setMode("ace/mode/smarty");
+                                    self.editor_session.setMode("ace/mode/smarty");
                                 }
                                 $button = $(self.$el).find('#js-save-code');
                                 $button.removeClass('yellow').addClass('green');
@@ -3416,11 +4295,10 @@ var FormConstructor = ( function($) {
                             },
                             saveCode(opt){
                                 const self = this;
-                                $button = $(self.$el).find('#js-save-code');
-                                let session = wa_editor.getSession();
+                                const $button = $(self.$el).find('#js-save-code');
 
                                 $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    self.block_data[self.selected_tab] = session.getValue();
+                                    self.block_data[self.selected_tab] = self.editor_session.getValue();
                                     bs.saveBlockData(self.block_data);
                                     $button.removeClass('yellow').addClass('green');
                                     console.log('saveBlockData', self.block_data)
@@ -3456,6 +4334,11 @@ var FormConstructor = ( function($) {
                             wa_editor.$blockScrolling = Infinity;
                             wa_editor.setOption('minLines', 15);
                             wa_editor.renderer.setShowGutter(false);
+                            self.editor_session = wa_editor.getSession();
+                            that.$sidebar.addClass('custom-code-mode');
+                        },
+                        unmounted: function() {
+                            that.$sidebar.removeClass('custom-code-mode');
                         }
                     },
                     "CustomMapGroup": {
@@ -3564,85 +4447,6 @@ var FormConstructor = ( function($) {
 
                         }
                     },
-                    "CustomVideoGroup": {
-                        props: {
-                            group_config: { type: Object },
-                            block_data: { type: Object, default: {} },
-                            block_id: { type: Number},
-                        },
-                        emits: ["changeElement"],
-                        data() {
-                            //const elements = that.states.elements;
-                            const header_name = this.group_config.name;
-                            const placeholder = '<iframe src=""></iframe>';
-                            return { header_name, placeholder }
-                          },
-                        template: `
-                        <div class="s-editor-option-wrapper ">
-                            <div class="video-group-wrapper custom-mb-12 custom-mt-12">
-                                <div class="s-semi-header small custom-pb-20" v-html="
-                                    $t('custom.Get the embed code on **YouTube** or **Vimeo**, or another similar service')
-                                        .replace('**', '<a href=&quot;https://www.youtube.com/&quot; target=&quot;_blank&quot;>')
-                                        .replace('**', '</a>')
-                                        .replace('**', '<a href=&quot;https://vimeo.com/&quot; target=&quot;_blank&quot;>')
-                                        .replace('**', '</a>')
-                                ">
-                                </div>
-                                <div class="s-semi-header text-gray small">{{header_name}}</div>
-                                <div class="video-group custom-mb-12 custom-mt-8">
-                                    <div class="value js-redactor-wrapper">
-                                        <textarea class="width-100 js-content-body" id="js-content-body" name="content" :placeholder="placeholder">{{block_data['html']}}</textarea>
-                                        <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="code-group-wrapper custom-mb-12 custom-mt-12">
-                                <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
-                            </div>
-                        </div>
-                        `,
-                        //delimiters: ['{ { ', ' } }'],
-                        components: {
-                            'CustomButton': that.vue_components['custom-button'],
-                          },
-                        methods: {},
-                        mounted: function() {
-                            const self = this;
-                            $default_picture = that.$target_wrapper.find('.iframe-picture-cover');
-                            $textarea = $(self.$el).find('.js-content-body');
-
-                            $textarea.on('input', function () {
-                                let editor_val =  $textarea.val();
-
-                                if (checkTagsErrors(editor_val, $textarea)) return;
-
-                                self.block_data['html'] = editor_val;
-                                if (!editor_val.length) {
-                                    $default_picture.show();
-                                } else $default_picture.hide();
-
-                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    bs.saveBlockData(self.block_data);
-                                    console.log('saveBlockData', self.block_data)
-                                });
-                            });
-
-                            function checkTagsErrors(inputText, $textarea) {
-                                let error_text = '';
-                                let error_block = $textarea.parent().find('.state-error-hint');
-                                if (checkForHtmlTagsExceptIframe(inputText)) error_text = 'error-tags';
-                                if (checkIframeWithoutClosingTag(inputText)) error_text = 'error-open-tag';
-                                if (error_text) {
-                                    error_block.text(error_block.data(error_text)).show();
-                                    $textarea.addClass('state-error');
-                                    setTimeout(() => { $textarea.removeClass('state-error'); error_block.hide();}, 3000);
-                                    return true;
-                                }
-                                error_block.hide();
-                                return false
-                            }
-                        }
-                    },
                     "CustomFormGroup": {
                         props: {
                             group_config: { type: Object },
@@ -3692,21 +4496,31 @@ var FormConstructor = ( function($) {
                             $default_picture = that.$target_wrapper.find('.iframe-picture-cover');
                             $textarea = $(self.$el).find('.js-content-body');
 
-                            $textarea.on('input', function () {
-                                let editor_val =  $textarea.val();
+                            let timer_id = null;
+                            $textarea.on('input', () => {
+                                if (timer_id) {
+                                    clearTimeout(timer_id);
+                                }
+                                timer_id = setTimeout(() => {
+                                    let editor_val =  $textarea.val();
+                                    if (typeof editor_val === 'string') {
+                                        editor_val = editor_val.trim();
+                                    }
 
-                                if (checkTagsErrors(editor_val, $textarea)) return;
+                                    if (checkTagsErrors(editor_val, $textarea)) return;
 
-                                self.block_data['html'] = editor_val;
-                                self.block_data['textarea_html'] = editor_val;
-                                /*if (!editor_val.length) {
-                                    $default_picture.show();
-                                } else $default_picture.hide();
-                                */
-                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    bs.saveBlockData(self.block_data);
-                                    console.log('saveBlockData', self.block_data)
-                                });
+                                    self.block_data['html'] = editor_val;
+                                    self.block_data['textarea_html'] = editor_val;
+                                    /*if (!editor_val.length) {
+                                        $default_picture.show();
+                                    } else $default_picture.hide();
+                                    */
+                                    $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                        bs.saveBlockData(self.block_data);
+                                        console.log('saveBlockData', self.block_data)
+                                    });
+                                    timer_id = null;
+                                }, 350);
                             });
 
                             function checkTagsErrors(inputText, $textarea) {
@@ -3725,6 +4539,76 @@ var FormConstructor = ( function($) {
                             }
                         }
                     },
+                    "CustomFormSelectionGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        emits: ["changeElement"],
+                        data() {
+                            const form_type = this.block_data?.form_type;
+                            const app_disabled = this.group_config.app_disabled;
+                            const app_url = this.group_config.app_url;
+                            const options = Object.values(this.group_config.options || []);
+                            const option_value = (this.block_data?.textarea_html || '').trim();
+
+                            return { form_type, app_disabled, app_url, options, option_value }
+                          },
+                        template: `
+                        <div class="s-editor-option-wrapper">
+                            <div v-if="app_disabled" class="alert small info">
+                                <i class="fas fa-info-circle fa-sm"></i>
+                                <span v-html="
+                                    $t('custom.To customize the form, install or enable the <a href={url}>{appName} app</a>',
+                                        { url: app_url, appName: $t('custom.form_'+form_type) }
+                                    )"
+                                /> <i class="fas fa-external-link-alt fa-sm"></i>
+                            </div>
+                            <div v-else class="form-group-wrapper custom-mb-12 custom-mt-12">
+                                <div class="form-group custom-mb-8">
+                                    <div class="s-editor-option-body value js-redactor-wrapper">
+                                        <component-dropdown :options="options" :placeholder="$t('Select form')" :active-option="option_value" :active-bold="true" :enable-icon="true" :form_type="'custom'" @customChange="updateSelectedBlock"></component-dropdown>
+                                        <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                    </div>
+                                </div>
+                                <div class="hint">
+                                    <span v-html="
+                                        $t('custom.You can edit or create a web form in the <a href={url}>{appName} app</a>',
+                                            { url: app_url, appName: $t('custom.form_'+form_type) }
+                                        )"
+                                    /> <i class="fas fa-external-link-alt fa-sm"></i>
+                                </div>
+                            </div>
+                            <div class="code-group-wrapper custom-mb-12 custom-mt-12">
+                                <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                            </div>
+                        </div>
+                        `,
+                        components: {
+                            'ComponentDropdown': that.vue_components['component-dropdown'],
+                        },
+                        methods: {
+                            updateSelectedBlock: function(option) {
+                                if (!option.value || option.value === 'form_add') {
+                                    return;
+                                }
+                                $default_picture = that.$target_wrapper.find('.iframe-picture-cover');
+                                $default_picture.remove();
+                                this.saveData(option.value);
+                            },
+                            saveData: function(editor_val) {
+                                const self = this;
+
+                                self.block_data['html'] = editor_val;
+                                self.block_data['textarea_html'] = editor_val;
+
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(self.block_data);
+                                });
+                            }
+                        }
+                    },
                     "ProductIdGroup": {
                         props: {
                             group_config: { type: Object },
@@ -3735,54 +4619,91 @@ var FormConstructor = ( function($) {
                             const form_type = 'product_id';
                             const active_id = this.block_data?.product_id;
                             const productName = active_id ? this.block_data?.additional?.product?.name : '';
+                            const productStatus = active_id && this.block_data?.additional?.product?.id ? this.block_data?.additional?.product?.status : null;
                             const header_name = this.group_config.name;
                             const wa_backend_url = $.site.backend_url;
-                            return { active_id, productName, header_name, form_type, wa_backend_url }
+                            //const wa_shop_url =  $.site.shop_url;
+                            return { active_id, productName, productStatus, header_name, form_type, wa_backend_url }
                         },
-                        template: `
-                        <div class="s-editor-option-wrapper">
-                            <div class="s-semi-header text-gray small">{ { header_name } }</div>
-                            <div class="s-editor-option-body custom-mt-8 ">
-                                <div class="state-with-inner-icon right width-100">
-                                    <input @input="inputAutocomplete($event.target.value)" v-model.trim="productName" class="width-100 smaller custom-mr-0" type="text" :name="active_id" :placeholder="$t('custom.Enter product name')">
-                                    <span class="icon text-gray" @click="productName = ''" v-show="productName"><i class="fas fa-times-circle" ></i></span>
-                                </div>
-
-                            </div>
-                        </div>
-                        `,
+                        template:  that.html_templates['component-product-id-group'],
                         delimiters: ['{ { ', ' } }'],
                         components: {
-                            //'ProductInfoDropdown': that.vue_components['component-dropdown'],
                         },
                         methods: {
                             inputAutocomplete(input) {
                                 let self = this;
-                                //console.log('inputAutocomplete', input, self.wa_backend_url+'shop/?module=backend&action=autocomplete&type=product')
-                                $.post(self.wa_backend_url+'shop/?module=backend&action=autocomplete&type=product', {
-                                    term: input,
-                                    with_image: 1,
-                                    with_all_skus: 1
-                                }, function(r) {
-                                    //console.log('Product autocomplete returned:', r);
-                                    $(self.$el).find("input").autocomplete({
-                                        source: r,
-                                        html: true,
-                                        appendTo: $(self.$el),
-                                        select: function (event, ui) {
-                                            self.block_data[self.form_type] = ui.item.id;
-                                            delete self.block_data.sku_id;
-                                            $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                                bs.saveBlockData(self.block_data);
-                                                console.log('saveBlockData', self.block_data)
-                                            });
-                                        }
-                                    });
-                                }, 'json');
+                                const link = self.wa_backend_url+'shop/?module=backend&action=autocomplete&type=product';
+                                $(self.$el).find("input").autocomplete({
+                                    source: function (request, response) {
+                                        var data = {
+                                            term: input,
+                                            with_image: 1,
+                                            with_all_skus: 1,
+                                            limit: 30,
+                                        };
+                                        $.post(link, data , function(response_data) {
+                                            if (!response_data.length) {
+                                            }
+                                            //console.log(response_data.data.products)
+                                            response(response_data);
+                                        }, "json")
+                                    },
+                                    minLength: 0,
+                                    delay: 300,
+                                    html: true,
+                                    //autoFocus: true,
+                                    appendTo: $(self.$el),
+                                    select: function (event, ui) {
+                                        self.block_data[self.form_type] = ui.item.id;
+                                        delete self.block_data.sku_id;
+                                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                            bs.saveBlockData(self.block_data)
+                                            console.log('saveBlockData', self.block_data);
+                                            reloadSettingsDrawerForSelectedBlock();
+                                        });
+
+                                    }
+                                }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                                    var html = "";
+                                    if (!item.id) {
+                                        html = $_template_autocomplete_product_empty.replace("%name%", item.value);
+                                    } else if (item.image_url) {
+                                        html = $_template_autocomplete_product_with_image
+                                            .replace("%image_url%", item.image_url)
+                                            .replace("%name%", item.value)
+                                            .replace("%id%", item.id);
+                                    } else {
+                                        html = $_template_autocomplete_product
+                                            .replace("%name%", item.value)
+                                            .replace("%id%", item.id);
+                                    }
+                                    return $("<li />").addClass("ui-menu-item-html").append(html).appendTo(ul);
+                                };
+
+                                $_template_autocomplete_product_with_image = `<div class="s-item-product-wrapper flexbox space-8 middle">
+                                        <div>
+                                            <div class="s-image" style="background-image: url('%image_url%');"></div>
+                                        </div>
+                                        <div class="middle" style="line-height: 120%;">
+                                            <span class="s-name">%name%</span>
+                                        </div>
+                                    </div>`;
+                                $_template_autocomplete_product_empty = `<div class="s-item-product-wrapper">
+                                        <div>
+                                            <span class="s-name">%name%</span>
+                                        </div>
+                                    </div>`;
+                                $_template_autocomplete_product = `<div class="s-item-product-wrapper flexbox space-8 middle">
+                                        <div>
+                                            <div class="s-image">
+                                                <span class="s-icon icon size-32"><i class="fas fa-image"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class="middle" style="line-height: 120%;">
+                                            <span class="s-name">%name%</span>
+                                        </div>
+                                    </div>`;
                             },
-                        },
-                        mounted: function() {
-                            let self = this;
                         }
                     },
                     "ProductInfoGroup": {
@@ -3851,19 +4772,19 @@ var FormConstructor = ( function($) {
                         },
                         data() {
                             const form_type = 'sku_id';
-                            let arr_options = Object.values(this.block_data?.additional?.product?.skus);
-                            formatted_options = [];
+                            const arr_options = Object.values(this.block_data?.additional?.product?.skus);
+                            const formatted_options = [];
 
                             $.each(arr_options, function(i, option) {
                                 formatted_options.push({
-                                    name: option.name,
+                                    name: option.name?.trim() ? option.name : option.sku,
                                     value: option.id
                                 });
                             });
 
                             const active_option = this.block_data?.[form_type];
                             const header_name = this.group_config.name;
-                            return { arr_options, header_name, active_option, form_type, formatted_options }
+                            return { header_name, active_option, form_type, formatted_options }
                         },
                         template: that.templates["component_product_sku_group"],
                         delimiters: ['{ { ', ' } }'],
@@ -3878,6 +4799,39 @@ var FormConstructor = ( function($) {
                                     bs.saveBlockData(self.block_data);
                                     console.log('saveBlockData', self.block_data)
                                 });
+                            },
+                        }
+                    },
+                    "ProductSkuElementLayoutGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
+                        },
+                        data() {
+                            const form_type = that.storage_data[this.group_config.type].type;
+                            let arr_options = that.storage_data[this.group_config.type].values;
+
+                            const active_option = this.block_data?.[form_type];
+                            const header_name = this.group_config.name;
+                            const form_type_custom = 'custom';
+                            const is_visible = Object.values(this.block_data.additional.product.skus || {}).length > 1;
+
+                            return { form_type_custom, arr_options, header_name, active_option, form_type, is_visible }
+                        },
+                        template: that.templates["component_columns_align_vertical_group"],
+                        delimiters: ['{ { ', ' } }'],
+                        components: {
+                            'ColumnsAlignDropdown': that.vue_components['component-dropdown'],
+                          },
+                          methods: {
+                            change: function(option) {
+                                let self = this;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    self.block_data[self.form_type] = option.value;
+                                    bs.saveBlockData(self.block_data);
+                                });
+                                self.active_option = option.value;
                             },
                         }
                     },
@@ -3940,7 +4894,7 @@ var FormConstructor = ( function($) {
                             return { is_broken_block, prev_move_icon, next_move_icon }
                         },
                         template: `
-                        <div class="main-button-group custom-mb-32 custom-mt-24">
+                        <div class="main-button-group custom-mb-32 custom-mt-8">
                             <custom-button buttonClass="light-gray" iconClass="fa-trash-alt" @click="removeBlock" :title="$t('custom.Delete')"></custom-button>
                             <custom-button buttonClass="light-gray" :iconClass="prev_move_icon" @click="reorderBlocks('up')" v-if="!is_broken_block" :title="$t('custom.Move')"></custom-button>
                             <custom-button buttonClass="light-gray" :iconClass="next_move_icon" @click="reorderBlocks('down')" v-if="!is_broken_block" :title="$t('custom.Move')"></custom-button>
@@ -4015,7 +4969,7 @@ var FormConstructor = ( function($) {
                     }
                 },*/
                 template: `
-                    <form-header :header="header" :parents="parents" @closeDrawer="close_drawer" @updateDrawer="update_drawer" @updateDrawerHor="update_drawer_hor" @goToParent="goToParent"></form-header>
+                    <form-header :header="header" :parents="parents" @closeDrawer="close_drawer" @updateDrawer="update_drawer" @updateDrawerHor="update_drawer_hor" @updateDrawerWidth="update_drawer_width" @goToParent="goToParent"></form-header>
                     <main-controls-group :key="block_id+media_prop" :block_id="block_id" :form_config="form_config" v-if="!(block_data?.indestructible || false)"></main-controls-group>
                     <component
                         v-for="(item, key) in settings_array"
@@ -4024,14 +4978,13 @@ var FormConstructor = ( function($) {
                         :block_data="block_data"
                         :block_id="block_id"
                         :key="block_id+media_prop+selected_element+force_key+key"
-                        >
+                    >
                     </component>
                     <div v-if="!settings_array.length" class="alert"><span class="">{{$t('custom.The settings will appear later')}}</span></div>
                     `,
                 methods: {
                     reset: function(data, force) {
                         const self = this;
-                        //that.media_prop = data.media_prop;
                         Object.assign(this.$data, data);
                         if (force) {
                             self.force_key++;
@@ -4056,14 +5009,20 @@ var FormConstructor = ( function($) {
                                 //$.wa.editor.selected_block_id = '';
                             });
                     },
+                    update_drawer_width: function() {
+                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                bs.updateWidth();
+                                //$.wa.editor.selected_block_id = '';
+                            });
+                    },
                     changeElement: function(element) {
                         const self = this;
                         self.selected_element = element;
                         that.states.selected_element = element
                     },
-                    goToParent: function(parent_id) {
+                    goToParent: function(parent) {
                         let self = this;
-                        updateSelectedBlock(parent_id)
+                        updateSelectedBlock(parent.id)
                     }
                 },
                 created: function () {
@@ -4088,6 +5047,16 @@ var FormConstructor = ( function($) {
                 //}
             }
 
+            function reloadSettingsDrawerForSelectedBlock() {
+                $.wa.editor._save_block_data_promise().then(() => {
+                    setTimeout(() => {
+                        if ($.wa.editor.selected_block_id) {
+                            $.wa.editor.setSelectedBlock($.wa.editor.selected_block_id, false, true);
+                        }
+                    });
+                });
+            }
+
             function checkForHtmlTagsExceptIframe(inputText) {
                 // Регулярное выражение для поиска HTML тегов, кроме <iframe>
                 const regex = /<(?!iframe\s*[^>]*>)(?!\/iframe\s*>)[^>]+>/g;
@@ -4105,13 +5074,47 @@ var FormConstructor = ( function($) {
             return false; // Возвращаем false, если все iframe имеют закрывающие теги
             }
 
+            /* желательно обновить все блоки с block_settings_drawer_promise на эту фукнцию*/
+            function updateBlockData(form_type, type_props = 'inline_props', data) {
+                const element = that.states.selected_element || null;
+                if (!element) {
+                    if (!that.states.block_data[type_props]) that.states.block_data[type_props] = {};
+                    that.states.block_data[type_props][form_type] = data;
+                } else {
+                    if (!that.states.block_data[type_props]) that.states.block_data[type_props] = {};
+                    if (!that.states.block_data[type_props][element]) that.states.block_data[type_props][element] = {};
+                    that.states.block_data[type_props][element][form_type]  = data;
+                }
+
+                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                    bs.saveBlockData(that.states.block_data);
+                    console.log('saveBlockData', that.states.block_data);
+                });
+            }
+
+            /* желательно обновить все блоки с block_settings_drawer_promise на эту фукнцию*/
+            function deleteBlockData(form_type, type_props = 'inline_props') {
+                const element = that.states.selected_element || null;
+                if (!element) {
+                    if (that.states.block_data[type_props]) delete that.states.block_data[type_props][form_type];
+                } else {
+                    if (that.states.block_data[type_props] && that.states.block_data[type_props][element]) delete that.states.block_data[type_props][element][form_type];
+                }
+
+                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                    bs.saveBlockData(that.states.block_data);
+                });
+            }
+
         };
 
         function appendIframeWrapperStyles(iframe_document) {
+            //console.log(Array.from(iframe_document[0].styleSheets));
             const root_style = Array.from(iframe_document[0].styleSheets)
                 .filter(
                     sheet =>
-                    sheet.href === null
+                    sheet
+                    //sheet.href === null
                 )
                 .reduce(
                     (acc, sheet) =>
@@ -4120,7 +5123,7 @@ var FormConstructor = ( function($) {
                         ...Array.from(sheet.cssRules).reduce(
                         (def, rule) =>
                             (def =
-                            rule.selectorText === ":root"
+                            (rule.selectorText === ":root")
                                 ? [
                                     ...def,
                                     rule
@@ -4134,11 +5137,10 @@ var FormConstructor = ( function($) {
 
                 if (root_style.length) {
                     const style = document.createElement('style');
-                    style.textContent = root_style[0]?.cssText || '';
+                    //console.log(root_style)
+                    style.textContent = root_style[0]?.cssText + root_style[1]?.cssText || '';
                     document.head.appendChild(style);
                 }
-
-                //console.log(iframe_document[0].styleSheets)
             }
 
         return FormConstructor;

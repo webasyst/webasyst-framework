@@ -6,6 +6,9 @@ class siteEditorSaveBlockDataController extends waJsonController
 {
     public function execute()
     {
+        if (!waLicensing::check('site')->isPremium()) {
+            return;
+        }
         $block_id = waRequest::request('block_id', null, 'int');
         $data = waRequest::post('data', null, 'string');
         $blockpage_blocks_model = new siteBlockpageBlocksModel();

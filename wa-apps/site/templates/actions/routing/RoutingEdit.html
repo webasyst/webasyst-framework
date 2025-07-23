@@ -27,16 +27,17 @@
                     {/if}
 
                     <div class="s-route-block" id="s-route-where">
-                        {* because rtrim removes repetitions *}
-                        {if $route.url}
-                            {if $route.url|substr:-1 == "*"}
-                                {$route.url = $route.url|substr:0:-1}
+                        {* because rtrim() removes repetitions *}
+                        {$_route_url = $route.url}
+                        {if $_route_url}
+                            {if $_route_url|substr:-1 == "*"}
+                                {$_route_url = $_route_url|substr:0:-1}
                             {/if}
-                            {if $route.url|substr:-1 == "/"}
-                                {$route.url = $route.url|substr:0:-1}
+                            {if $_route_url|substr:-1 == "/"}
+                                {$_route_url = $_route_url|substr:0:-1}
                             {/if}
                         {/if}
-                        <span class="gray">{$domain_decoded}/</span><input type="text" name="params[url]" value="{$route.url|escape}" class="js-url custom-m-0 bold large" />
+                        <span class="gray custom-pr-4">{$domain_decoded}/</span><input type="text" name="params[url]" value="{$_route_url|escape}" class="js-url custom-m-0 bold large" />
                     </div>
 
                     {if empty($route.redirect) && !isset($route.static_content) && !$app}

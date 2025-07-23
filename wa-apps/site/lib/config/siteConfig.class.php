@@ -314,6 +314,127 @@ class siteConfig extends waAppConfig
         return $error_domains_data;
     }
 
+    public function getHiddenTechSettlement()
+    {
+        return [
+            'app' => 'site',
+            'url' => 'tech-route-do-not-delete',
+            'priority_settlement' => true,
+            'site_tech_route' => true,
+            'private' => true,
+        ];
+    }
+
+    /**
+     * Will ensure serviceability of block pages on given domain by making sure at least one settlement
+     * has the priority_settlement flag. In case it does not, will add flag to existing settlement
+     * or (when none exist) create a new settlement marked as site_tech_route. This latter flag
+     * makes settlement invisible in site overview page as well as in theme usage dialog selector.
+     * @param mixed $domain id or domain name
+     * @param ?bool $has_block_pages whether there's at least one blockpage on domain. Will fetch count in DB if null.
+     * @param ?array $use_routes modify given routing array in place; if null then will include wa-config/routing.php and save modified values there.
+     */
+    public function ensureSettlementForDomain($domain, $has_block_pages=null, &$use_routes=null)
+    {
+        $domains = array_map(function($d) {
+            return $d['name'];
+        }, siteHelper::getDomains(true));
+        if (isset($domain['id'])) {
+            $domain_id = $domain['id'];
+        } else if (wa_is_int($domain)) {
+            $domain_id = $domain;
+        } else if (is_string($domain)) {
+            $domain_id = ifset(ref(array_flip($domains)), $domain, null);
+            if (empty($domain_id)) {
+                $domain_id = ifset(ref(array_flip(siteHelper::getDomains())), $domain, null);
+            }
+        }
+        if (empty($domain_id) || empty($domains[$domain_id])) {
+            throw new waException('Unknown domain');
+        }
+        $domain = $domains[$domain_id];
+        if ($has_block_pages === null) {
+            $has_block_pages = 0 < (new siteBlockpageModel())->countByField('domain_id', $domain_id);
+        }
+
+        if ($use_routes !== null) {
+            if (isset($use_routes[$domain]) && !is_array($use_routes[$domain])) {
+                throw new waException('domain is an alias');
+            }
+            $routes = array_filter(ifset($use_routes, $domain, []), function($r) {
+                return ifset($r, 'app', '') === 'site';
+            });
+        } else {
+            $routes = wa()->getRouting()->getByApp('site', $domain);
+        }
+
+        $update_settlements = [];
+        $create_settlements = [];
+        $delete_settlement_ids = [];
+        if (!$has_block_pages) {
+            // No block pages on domain: remove hidden settlement and we're done
+            foreach ($routes as $r_id => $r) {
+                if (!empty($r['site_tech_route'])) {
+                    $delete_settlement_ids[] = $r_id;
+                }
+            }
+        } else if (!$routes) {
+            // There are block pages but no settlements: create a hidden settlement
+            $create_settlements[] = $this->getHiddenTechSettlement();
+        } else {
+            // There are block pages and settlements already: make sure at least one settlement has priority_settlement flag
+            // and remove hidden settlement if another exists
+            if (count($routes) > 1) {
+                foreach ($routes as $r_id => $r) {
+                    if (!empty($r['site_tech_route'])) {
+                        $delete_settlement_ids[] = $r_id;
+                        unset($routes[$r_id]);
+                        break;
+                    }
+                }
+            }
+            foreach ($routes as $r_id => $r) {
+                if (!empty($r['priority_settlement'])) {
+                    $update_settlements = [];
+                    break;
+                }
+                $r['priority_settlement'] = true;
+                $update_settlements[$r_id] = $r;
+            }
+        }
+
+        if ($update_settlements || $create_settlements || $delete_settlement_ids) {
+            if ($use_routes !== null) {
+                $routes =& $use_routes;
+            } else {
+                $path = $this->getPath('config', 'routing');
+                if (file_exists($path)) {
+                    $routes = include($path);
+                } else {
+                    $routes = [
+                        $domain => [],
+                    ];
+                }
+            }
+
+            foreach ($delete_settlement_ids as $r_id) {
+                unset($routes[$domain][$r_id]);
+            }
+
+            foreach ($update_settlements as $r_id => $r) {
+                $routes[$domain][$r_id] = $r;
+            }
+
+            foreach ($create_settlements as $r) {
+                $routes[$domain][] = $r;
+            }
+
+            if (!empty($path)) {
+                waUtils::varExportToFile($routes, $path);
+            }
+        }
+    }
+
     public function throwFrontControllerDispatchException()
     {
         if (wa()->getEnv() == 'backend' && wa()->whichUI() == '1.3') {

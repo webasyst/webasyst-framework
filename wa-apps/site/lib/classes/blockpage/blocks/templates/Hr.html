@@ -22,10 +22,10 @@
 
 });</script>
 {else}
-<script>$(function() { "use strict";
+<script>(function() { "use strict";
     const block_id = {$data->getId()|json_encode};
     const $wrapper = $('.site-block-hr[data-block-id="'+block_id+'"]');
     const data = {$data->data|json_encode};
     updateBlockStyles($wrapper, data, block_id);
-});</script>
+})();</script>
 {/if}

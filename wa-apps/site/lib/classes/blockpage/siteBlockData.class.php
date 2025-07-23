@@ -31,6 +31,11 @@ class siteBlockData
         return ifset($this->db_row, 'page_id', null);
     }
 
+    public function getParentId()
+    {
+        return ifset($this->db_row, 'parent_id', null);
+    }
+
     public function setDbRow(array $block_db_row)
     {
         $this->db_row = $block_db_row;

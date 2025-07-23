@@ -21,6 +21,10 @@ class siteConfigureRedirectDeleteController extends waJsonController
             $path = $this->getConfig()->getPath('config', 'routing');
             $all_routes = file_exists($path) ? include($path) : array();
             $all_routes[$domain] = $routes;
+            try {
+                wa('site')->getConfig()->ensureSettlementForDomain($domain, null, $all_routes);
+            } catch (Throwable $e) {
+            }
 
             $params = array(
                 'domain' => $domain,

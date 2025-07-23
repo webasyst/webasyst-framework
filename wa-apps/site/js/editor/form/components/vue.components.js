@@ -5,34 +5,50 @@ var FormComponents = ( function($) {
         that.base_components = {
             'form-header': {
                 props: ["header", "parents"],
-                emits: ['closeDrawer', 'updateDrawer', 'updateDrawerHor', 'goToParent'],
+                emits: ['closeDrawer', 'updateDrawer', 'updateDrawerHor', 'updateDrawerWidth', 'goToParent'],
                 computed: {
                     isEmpty: function () {
                        return jQuery.isEmptyObject(this.parents)
-                    }
+                    },
+                    properParents: function () {
+                        return this.parents.length > 2 ? this.parents.slice(-3) : this.parents;
+                     },
+
                 },
                 template: `
-                <div class="block-settings-header flexbox full-width custom-mb-16" >
+                <div class="block-settings-header flexbox full-width custom-pb-16" >
                     <div class="flexbox vertical">
-                        <div class="form-breadcrumbs flexbox wrap space-8 custom-mb-4" v-if="!isEmpty">
-                            <span v-for="(parent, key, i) in parents" class="text-gray small">
-                                <span v-if="i > 0" class="custom-mr-4">/</span>
-                                <a href="javascript:void(0)" class="text-gray" @click="$emit('goToParent', parent)">
-                                    {{key}}
+                        <div class="form-breadcrumbs flexbox wrap space-4 custom-mb-4" v-if="!isEmpty">
+
+                            <span v-for="(parent, key) in properParents" class="text-gray small" >
+                                <a href="javascript:void(0)" class="text-gray" :title="parent.type_name" @click="$emit('goToParent', parent)" v-if="properParents.length > 2 && key == 0">
+                                    <i class="fas fa-arrow-circle-up text-gray icon custom-py-4 custom-pr-4"></i>
                                 </a>
+                                <span v-if="properParents.length < 3 || (properParents.length > 2 && key > 0)">
+                                    <span v-if="key > 0" class="custom-mr-2">/</span>
+                                    <a href="javascript:void(0)" class="text-gray" @click="$emit('goToParent', parent)">
+                                        {{parent.type_name}}
+                                    </a>
+                                </span>
+
                             </span>
                         </div>
                         <h5 class="custom-mt-0">{{$t('custom.' + header, header)}}</h5>
                     </div>
-                    <a href="javascript:void(0)" @click="$emit('updateDrawerHor')" class="drawer-update js-update-drawer-horizontal custom-ml-auto" :title="$t('custom.Toggle panel position')">
-                        <i class="fas fa-sort fa-rotate-90 text-gray icon size-16 custom-p-4"></i>
-                    </a>
-                    <a href="javascript:void(0)" @click="$emit('updateDrawer')" class="drawer-update js-update-drawer custom-ml-8" :title="$t('custom.Toggle panel size')">
-                        <i class="fas fa-sort text-gray icon size-16 custom-p-4"></i>
-                    </a>
-                    <a href="javascript:void(0)" @click="$emit('closeDrawer')" class="drawer-close js-close-drawer custom-ml-8" :title="$t('custom.Close panel')">
-                        <i class="fas fa-times text-gray icon size-16 custom-p-4"></i>
-                    </a>
+                    <div class="flexbox custom-ml-auto" style="gap: .375rem;" >
+                        <a href="javascript:void(0)" @click="$emit('updateDrawerWidth')" class="drawer-update-width js-update-drawer-width" :title="$t('custom.Toggle panel width')">
+                            <i class="fas fa-window-maximize text-gray icon size-16 custom-p-4"></i>
+                        </a>
+                        <a href="javascript:void(0)" @click="$emit('updateDrawerHor')" class="drawer-update js-update-drawer-horizontal" :title="$t('custom.Toggle panel position')">
+                            <i class="fas fa-sort fa-rotate-90 text-gray icon size-16 custom-p-4"></i>
+                        </a>
+                        <a href="javascript:void(0)" @click="$emit('updateDrawer')" class="drawer-update js-update-drawer" :title="$t('custom.Toggle panel size')">
+                            <i class="fas fa-sort text-gray icon size-16 custom-p-4"></i>
+                        </a>
+                        <a href="javascript:void(0)" @click="$emit('closeDrawer')" class="drawer-close js-close-drawer" :title="$t('custom.Close panel')">
+                            <i class="fas fa-times text-gray icon size-16 custom-p-4"></i>
+                        </a>
+                    </div>
                 </div>
                 `,
                 methods: {
@@ -45,11 +61,7 @@ var FormComponents = ( function($) {
                 iconClass: { type: String },
                 selfOption: { type: String },
                 activeOptions: { type: Array },
-                /*form_type: { type: String },
-                block_data: { type: Object, default: {} },
-                block_id: { type: Number},*/
                 },
-                //emits: ["click-event"],
                 template: `
                 <button class="button smaller" :class="formatted_button_class">
                     <i v-if="iconClass" class="fas" :class="iconClass"></i>
@@ -75,6 +87,7 @@ var FormComponents = ( function($) {
                     options: { type: Array, default: [] },
                     activeOption: { type: String }, // need to make id
                     activeIcon: { type: String },
+                    activeBold: { type: Boolean, default: false },
                     button_class: { type: String, default: "light-gray smaller" },
                     body_width: { type: String, default: "" },
                     body_class: { type: String, default: "" },
@@ -84,35 +97,48 @@ var FormComponents = ( function($) {
                     block_data: { type: Object, default: {} },
                     block_id: { type: Number},
                     media_prop: { type: String, default: "" },
-                    element: { type: String, default: "" }
+                    element: { type: String, default: "" },
                     //semi_header: { type: Boolean, default: false },
+                    enableIcon: { type: Boolean, default: false },
+                    placeholder: { type: String, default: '' }
                 },
                 emits: ["change", "customChange"],
                 data() {
                     let self = this,
-                        active_option = self.options[0],
                         formatted_options = [];
 
-                        $.each(self.options, function(i, option) {
-                            formatted_options.push({
-                                name: option.name,
-                                value: (self.media_prop? option[`value_${self.media_prop}`] : option.value)
-                            });
+                    self.default_value = self.options.filter( function(option) { //вычисляем что в массиве есть класс из текущего медиа набора
+                        return option.name === '0px';
+                    })[0] || self.options[0];
+                    let active_option = self.placeholder ? {} :self.default_value;
+
+                    $.each(self.options, function(i, option) {
+                        formatted_options.push({
+                            name: option.name,
+                            value: (self.media_prop? option[`value_${self.media_prop}`] : option.value),
+                            link_url: option.link_url,
+                            link_target: option.link_target,
+                            ...(self.enableIcon && option.icon ? { icon: option.icon } : {}),
                         });
+                    });
 
-                        if (self.activeOption) {
-                            const activeOptionsArr = self.activeOption.split(' ');
-                            var filter_search = formatted_options.filter( function(option) {
-                                return activeOptionsArr.includes(option.value);
-                            });
-                            active_option = (filter_search.length ? filter_search[0] : active_option);
+                    let is_show_placeholder = false;
+                    if (self.activeOption) {
+                        const activeOptionsArr = self.activeOption.split(' ');
+                        var filter_search = formatted_options.filter( function(option) {
+                            return activeOptionsArr.includes(option.value);
+                        });
+                        active_option = (filter_search.length ? filter_search[0] : active_option);
+                        if (self.placeholder && !filter_search.length) {
+                            is_show_placeholder = !('value' in active_option);
+                            active_option.name = self.placeholder;
                         }
-                        self.$target_wrapper = iframe_wrapper.find('.seq-child > [data-block-id=' + self.block_id + ']');
-                        //self.$editable = self.$target_wrapper.find('.style-wrapper');
-                        //if (self.element) self.$editable = self.$target_wrapper.find('.' + self.element);
-                        //self.$editable = self.$editable.length ? self.$editable : self.$target_wrapper;
+                    } else {
+                        is_show_placeholder = !!self.placeholder;
+                    }
+                    self.$target_wrapper = iframe_wrapper.find('.seq-child > [data-block-id=' + self.block_id + ']');
 
-                    return { active_option, formatted_options }
+                    return { active_option, formatted_options, is_show_placeholder }
                 },
 
                 template: $.form_storage.templates["component_dropdown"],
@@ -171,8 +197,7 @@ var FormComponents = ( function($) {
                     toggleData: function(option, def) {
                         let self = this;
                         if (option) self.change('removeData'); //remove data from block
-                        else self.change(def ? def: self.options[0]); //set default to block
-                        //console.log('toggleData', option, self.options[0])
+                        else self.change(def ? def: self.default_value); //set default to block
                     }
                 },
 
@@ -210,11 +235,13 @@ var FormComponents = ( function($) {
                 emits: ["change", "customChange"],
                 data() {
                     let self = this,
-                        //active_option = self.options[0],
                         formatted_options = [];
 
                     self.activeOptionsArr = self.activeOption?.split(' ') || [];
                     self.sizes_data = $.form_storage.data['media_sizes_data'];
+                    self.default_value = self.options.filter( function(option) { //вычисляем что в массиве есть класс из текущего медиа набора
+                        return option.name === '0px';
+                    })[0] || self.options[0];
 
                     $.each(self.options, function(i, option) {
                         if (self.media_prop && !option[`value_${self.media_prop}`]) return;
@@ -256,11 +283,11 @@ var FormComponents = ( function($) {
                                         return filter_search_inherited[0];
                                     }
                                 }
-                                return self.options[0];
+                                return self.default_value;
                             }
-                            return self.options[0];
+                            return self.default_value;
                         }
-                        return self.options[0];
+                        return self.default_value;
                     };
                 },
 
@@ -335,11 +362,11 @@ var FormComponents = ( function($) {
                                         self.active_option = filter_search_inherited[0];
                                     }
                                 } else {
-                                    self.active_option = self.options[0];
+                                    self.active_option = self.default_value;
                                     self.is_default_value = true;
                                 }
                             }  else {
-                                self.active_option = self.options[0]; self.is_default_value = true;
+                                self.active_option = self.default_value; self.is_default_value = true;
                             }
 
                             if (!self.element) {
@@ -350,7 +377,7 @@ var FormComponents = ( function($) {
                             }
 
                         } else {
-                            self.active_option = self.options[0];
+                            self.active_option = self.default_value;
                             //self.active_option.value = null;
                             if (!self.is_desktop) self.is_inherited_values = true;
                             self.is_default_value = true;
@@ -382,7 +409,7 @@ var FormComponents = ( function($) {
                     toggleData: function(option, def) {
                         let self = this;
                         if (option) self.change('removeData'); //remove data from block
-                        else self.change(def ? def: self.options[0]); //set default to block
+                        else self.change(def ? def: self.default_value); //set default to block
                     }
                 },
 
@@ -548,6 +575,219 @@ var FormComponents = ( function($) {
 
                 }
             },
+            "component-ai-generator": {
+                props: {
+                    prompt_options: { type: Array, default: [] },
+                    container_class: { type: String },
+                    facility: { type: String, default: '' },
+                    block_id: { type: Number},
+                    form_type: { type: String, default: ''},
+                    group_config: { type: Object, default: {} },
+                },
+                emits: ["generate", "undo", "closeForm"],
+                data() {
+                    let self = this,
+                        loading = false,
+                        success = false,
+                        show_settings = false,
+                        prompt = '',
+                        active_facility = self.facility,
+                        prompt_data = $.form_storage.data['ai_prompt_data'],
+                        current_prompt_data = prompt_data?.[self.group_config.block_type],
+                        prompt_settings = [];
+                        //active_option = {};
+
+                        if (!active_facility)
+                        {
+                            active_facility = current_prompt_data?.facility
+                        }
+                        //console.log(self.group_config.block_type, active_facility, current_prompt_data.facility)
+
+                    return { prompt, prompt_settings, show_settings, loading, success, current_prompt_data, active_facility }
+                },
+                template:  $.form_storage.html_templates['component-ai-generator'],
+                delimiters: ['{ { ', ' } }'],
+                mounted: function() {
+                    let self = this;
+                    self.$main_button = $(self.$el).find(".main-button");
+                    self.$prompt_container = $(self.$el).find(".prompt-container");
+                    self.resizeTextarea();
+                    self.getAiSettings()
+                },
+                methods: {
+                    openSettings() {
+                        console.log('openSettings')
+                    },
+                    /*changeSettings: function(option) {
+                        //self.$emit("update:activeOption", option);
+                    },*/
+                    generateAiData: function(opt) {
+                        let self = this;
+
+                        //loading process
+                        self.$prompt_container.slideToggle();
+                        self.loading = true;
+                        self.$main_button.attr('disabled', true).removeClass('normal');
+
+                        let settings_form = self.$prompt_container.find('form');
+                        let form_value_obj = {};
+                        let form_value_arr = settings_form.serializeArray();
+
+                        $.each(form_value_arr, function(index, element) {
+                            form_value_obj[element['name']] = element['value'];
+                        })
+
+                        /*const res = {
+                            "content": "\n  <!-- HTML-структура слайдера -->\n  <div class=\"slider\">\n    <div class=\"slide active\">\n      <img src=\"image1.jpg\" alt=\"Изображение 1\">\n    </div>\n    <div class=\"slide\">\n      <img src=\"image2.jpg\" alt=\"Изображение 2\">\n    </div>\n    <div class=\"slide\">\n      <img src=\"image3.jpg\" alt=\"Изображение 3\">\n    </div>\n\n    <!-- Кнопки для навигации по слайдам -->\n    <button class=\"prev\">&laquo;</button>\n    <button class=\"next\">&raquo;</button>\n  </div>\n\n  <!-- Стили для слайдера -->\n  <style>\n    .slider {\n      max-width: 100%;\n      position: relative;\n      overflow: hidden;\n    }\n\n    .slide {\n      display: none;\n      width: 100%;\n    }\n\n    .slide.active {\n      display: block;\n    }\n\n    .slide img {\n      width: 100%;\n      height: auto;\n    }\n\n    .prev, .next {\n      position: absolute;\n      top: 50%;\n      transform: translateY(-50%);\n      background-color: rgba(0, 0, 0, 0.5);\n      color: white;\n      border: none;\n      padding: 10px;\n      cursor: pointer;\n    }\n\n    .prev {\n      left: 10px;\n    }\n\n    .next {\n      right: 10px;\n    }\n  </style>\n\n  <!-- JavaScript для управления слайдером -->\n  <script>\n    // Получаем все слайды и кнопки\n    const slides = document.querySelectorAll('.slide');\n    const prevButton = document.querySelector('.prev');\n    const nextButton = document.querySelector('.next');\n\n    // Текущий активный слайд\n    let currentSlide = 0;\n\n    // Функция для отображения активного слайда\n    function showSlide(slideIndex) {\n      slides.forEach((slide) => {\n        slide.classList.remove('active');\n      });\n      slides[slideIndex].classList.add('active');\n    }\n\n    // Обработчики событий для кнопок\n    prevButton.addEventListener('click', () => {\n      currentSlide = (currentSlide > 0) ? currentSlide - 1 : slides.length - 1;\n      showSlide(currentSlide);\n    });\n\n    nextButton.addEventListener('click', () => {\n      currentSlide = (currentSlide < slides.length - 1) ? currentSlide + 1 : 0;\n      showSlide(currentSlide);\n    });\n  </script>\n"
+                        }
+                        self.$emit("generate", {'someData': res, 'prompt_options': self.prompt_options})
+                        */
+                        /*setTimeout(() => { //for tests
+                            self.success = true;
+                            self.loading = false;
+                            self.$main_button.removeClass('black').addClass('green');
+                        }, 2000)
+
+                        return*/
+
+                        let request_data = Object.assign({
+                            'facility': self.active_facility,
+                            'objective': self.prompt
+                            },
+                            form_value_obj);
+
+                            //console.log('AiRequest', request_data)
+
+                            self.genRequest = $.post('?module=blocks&action=aiGenerate', request_data, function(res){
+                                if (res?.status === 'ok') {
+                                    self.success = true;
+                                    self.loading = false;
+                                    self.$main_button.removeClass('black').addClass('green');
+                                    //console.log('AiAnswer', res)
+                                    if (res.data?.response) self.$emit("generate", {'someData': res.data.response, 'prompt_options': self.prompt_options})
+                                    self.closeTimer = setTimeout(() => {
+                                        self.closeForm();
+                                        //success process off
+                                    }, 3000)
+
+                                } else if (res?.errors) {
+                                    self.errorHandler(res.errors?.error, res.errors?.error_description)
+                                };
+                            }).always(function () {
+                            });
+                    },
+                    errorHandler(error, error_description = '') {
+                        const self = this;
+                        self.returnToPrompt()
+                        if (error === 'payment_required') {
+                            $top_up_link = $.site.lang === 'ru' ? 'https://www.webasyst.ru/pricing/#services' : 'https://www.webasyst.com/pricing/#services';
+                            //$error = $('<span class="alert warning custom-m-0" />').html(error_description.replace('%s', $top_up_link));
+                            //$error.on('click', 'a:not(.disabled)', ProductDescriptionAIGenerate.topUpBalanceHandler($.site.backend_url));
+                            self.$prompt_container.find('.top-up-error').show().find('a').attr('href', $top_up_link);
+                            return
+                        }
+                        self.$prompt_container.find('.state-error-hint').html(error).show();
+                    },
+                    topUpBalanceHandler(wa_backend_url) { // так сделано в ШС, если не нужно удалить
+                        return function(e) {
+                            e.preventDefault();
+                            let $button = $(this).addClass('disabled');
+                            $.get(wa_backend_url+'webasyst/?module=services&action=balanceUrl&service=AI', function (data) {
+                                let resp = data.data.response;
+                                let status = data.data.status || '-';
+                                let err = resp.error_description || resp.error || resp.errors || null;
+                                $button.removeClass('disabled');
+                                if (data.status === 'fail' || err) {
+                                    console.warn('balance', data);
+                                    alert(status + ' ' + err?.toString());
+                                } else if (typeof resp.url !== 'undefined') {
+                                    document.location = resp.url;
+                                }
+                            });
+                        };
+                    },
+                    cancelGeneration() {
+                        let self = this;
+                        self.genRequest.abort();
+                        self.returnToPrompt()
+                    },
+                    getAiSettings: function() {
+                        let self = this;
+                        let fields_values = self.current_prompt_data?.fields || {};
+                        $.post('?module=blocks&action=aiSettings',
+                            {
+                            'facility': self.active_facility,
+                            'locale': $.site.lang
+                            }).then(function(res){
+                                //console.log('AiSettings', res)
+                                if (res?.status === 'ok') {
+                                    let sections_fields = res.data?.sections?.[0]?.fields || [];
+                                    let fields = Object.assign({}, res.data?.fields || {});
+                                    self.prompt_settings = sections_fields
+                                    .slice()
+                                    .filter((d) => d !== "objective" && d !== "facility")
+                                    .map((d) => {
+                                        if (fields?.[d]) {
+                                            if (fields_values?.[d] || fields_values?.[d] === '') {
+                                                fields[d].value = fields_values[d]
+                                            };
+                                            if (d === 'locale') fields[d].value = $.site.lang === 'ru' ? 'ru_RU' : 'en_US';
+                                            return fields[d];
+                                        }
+                                    });
+
+                                    //console.log('AiSettings', self.prompt_settings, self.current_prompt_data?.fields, $.site.lang)
+                                } else if (Array.isArray(res?.errors)) {
+                                    console.error(res.errors[0][0]);
+                                } else {
+                                    console.error(res.errors?.error_description)
+                                }
+                        })
+                    },
+                    onEnter(event) {
+                        let self = this;
+                        //console.log(event)
+                        if (event.shiftKey) return
+                        event.preventDefault();
+                        if (!self.loading && !self.success && self.prompt) self.generateAiData();
+                        else if (self.loading) self.cancelGeneration();
+                    },
+
+                    undo() {
+                        let self = this;
+                        self.returnToPrompt()
+                        //self.cleanForm()
+                        self.$emit("undo")
+                    },
+                    cleanForm() {
+                        let self = this;
+                        self.prompt = '';
+                        self.returnToPrompt()
+                    },
+                    closeForm() {
+                        let self = this;
+                        self.$emit("closeForm")
+                    },
+                    returnToPrompt() {
+                        let self = this;
+                        if (self.closeTimer) clearTimeout(self.closeTimer);
+                        self.$prompt_container.slideToggle();
+                        self.success = false;
+                        self.loading = false;
+                        self.$main_button.removeClass('green').addClass('black').addClass('normal');
+                        self.$main_button.attr('disabled', false);
+                    },
+                    resizeTextarea() {
+                        let self = this;
+                        if (!self.prompt) self.$main_button.attr('disabled', true);
+                        else if (self.$main_button.attr('disabled')) self.$main_button.attr('disabled', false);
+                        if (self.$prompt_container.find('.state-error-hint').is(':visible')) self.$prompt_container.find('.state-error-hint').html('').hide();
+                        if (self.$prompt_container.find('.top-up-error').is(':visible')) self.$prompt_container.find('.top-up-error').hide();
+                        this.$refs.textarea.style.height = "auto";
+                        this.$refs.textarea.style.height = `${this.$refs.textarea.scrollHeight}px`;
+                    }
+                },
+            },
         };
         that.manual_components = {
 
@@ -669,39 +909,39 @@ var FormComponents = ( function($) {
                 data() {
                     let self = this;
                     let active_options = Object.assign({}, self.option);
+                    if (active_options?.type !== 'image') active_options = {};
                     let toggle_options = $.form_storage.data['image_toggle_data'];
-                    let image_data = active_options.file_name ? active_options.file_name : '';
                     let toggle_arr = Object.keys(toggle_options);
                     $.each(toggle_arr, function(i, d) {
                         if (!active_options[d]) active_options[d] = toggle_options[d][1].value;
                     })
-                    return { image_data, toggle_options, active_options }
+                    return { toggle_options, active_options }
                 },
 
                 template:
                 `<div class="flexbox vertical space-12 manual-image-container">
                     <div class="flexbox vertical space-4 image-upload">
-                        <div class="text-gray small">{ { $t('custom.Image') } }</div>
+                        <div class="text-gray">{ { $t('custom.Image') } }</div>
                         <div id="drop-area" @drop.stop.prevent="dropImage($event)">
                             <div class="upload s-small" >
                                 <label class="link">
-                                    <span class="button width-100 light-gray custom-mr-0 custom-mb-4" ><i class="fas fa-image"></i> { { option.file_name ? $t('custom.Change image') : $t('custom.Add image') } }</span>
+                                    <span class="button width-100 light-gray custom-mr-0 custom-mb-4" ><i class="fas fa-upload"></i> { { active_options.file_name ? $t('custom.Edit') : $t('custom.Upload') } }</span>
                                     <input name="namespace" type="file" autocomplete="off" @change="changeImage($event)" accept="image/*">
                                 </label>
-                                <span v-if="image_data" class="filename hint kek">{ { image_data } }</span>
+                                <span v-if="active_options.file_name" class="filename bold custom-mr-0">{ { active_options.file_name } }</span>
                             </div>
                         </div>
                     </div>
                     <div class="flexbox vertical space-4">
-                        <div class="text-gray small">{ { $t('custom.Filling the space') } }</div>
+                        <div class="text-gray custom-mb-6">{ { $t('custom.Filling the space') } }</div>
                         <option-toggle @changeToggle="changeOption" :options="toggle_options.space" :activeOption="active_options.space" form_type="custom"></option-toggle>
                     </div>
                     <div class="flexbox vertical space-4" v-show="active_options.space !== 'cover'">
-                        <div class="text-gray small">{ { $t('custom.X-axis alignment') } }</div>
+                        <div class="text-gray custom-mb-6">{ { $t('custom.X-axis alignment') } }</div>
                         <option-toggle @changeToggle="changeOption" :options="toggle_options.alignmentX" :activeOption="active_options.alignmentX" form_type="custom"></option-toggle>
                     </div>
                     <div class="flexbox vertical space-4" v-show="active_options.space !== 'contain no-repeat'">
-                        <div class="text-gray small">{ { $t('custom.Y-axis alignment') } }</div>
+                        <div class="text-gray custom-mb-6">{ { $t('custom.Y-axis alignment') } }</div>
                         <option-toggle @changeToggle="changeOption" :options="toggle_options.alignmentY" :activeOption="active_options.alignmentY" form_type="custom"></option-toggle>
                     </div>
                 </div>
@@ -760,6 +1000,86 @@ var FormComponents = ( function($) {
                         let temp_value = self.active_options.alignmentX + ' ' + self.active_options.alignmentY + space_value + ' url(' + self.active_options.file_url + ')'
                         return temp_value;
                     },
+                },
+
+                mounted: function() {
+                    const self = this;
+                    self.$wrapper = $(self.$el);
+
+                    self.$wrapper.find("#drop-area").waUpload({
+                        is_uploadbox: true,
+                        show_file_name: true
+                    })
+                }
+            },
+            'component-manual-video': {
+                props: {
+                    option: { type: Object, default: {} },
+                },
+                emits: ["change", "changeVideo"],
+                data() {
+                    let self = this;
+                    let active_options = Object.assign({}, self.option);
+                    if (active_options?.type !== 'video') active_options = {};
+                    //console.log('component-manual-video', active_options)
+
+                    return { active_options }
+                },
+
+                template:
+                `<div class="flexbox vertical space-12 manual-image-container">
+                    <div class="flexbox vertical space-4 image-upload">
+                        <div class="text-gray">{ { $t('custom.Background video') } }</div>
+                        <div id="drop-area" @drop.stop.prevent="dropVideo($event)">
+                            <div class="upload s-small" >
+                                <label class="link">
+                                    <span class="button width-100 light-gray custom-mr-0 custom-mb-4" ><i class="fas fa-upload"></i> { { active_options.file_name ? $t('custom.Edit') : $t('custom.Upload') } }</span>
+                                    <input name="namespace" type="file" autocomplete="off" @change="changeVideo($event)" accept="video/*">
+                                </label>
+                                <span v-if="active_options.file_name" class="filename bold custom-mt-8">{ { active_options.file_name } }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `,
+                delimiters: ['{ { ', ' } }'],
+                components: {
+                    //'OptionToggle': this.base_components['component-toggle'],
+                },
+                methods: {
+                    changeVideo: function(option) {
+                        const self = this;
+                        if (!self.active_options.file_url) {
+                            self.active_options.type = 'video';
+                            self.active_options.name = 'Video';
+                            self.active_options.css = '';
+                        }
+                        if (option.target.files?.length) {
+                            //let file_url = '';
+                            self.active_options.file_name = option.target.files[0].name;
+                            $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                const file_promise = bs.uploadFile(option.target.files[0], '');
+                                file_promise.then(function(url) {
+                                    self.active_options.file_url = url;
+                                    self.active_options.value = 'url(' + url + ')';
+                                    self.$emit("changeVideo", self.active_options);
+                                    return
+                                });
+                            });
+                         }
+                    },
+                    dropImage: function(option) {
+                        const self = this;
+                        const files = $(self.$el).find("#drop-area").data('upload')?.files;
+                        /*
+                        if (option.disabled || !files?.length) { return false; }
+
+                        $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                            self.block_data.image = files[0].name;
+                            bs.saveBlockData(self.block_data, false);
+                            bs.uploadFile(files[0], '');
+                        });*/
+                    }
                 },
 
                 mounted: function() {
@@ -1259,7 +1579,7 @@ var FormComponents = ( function($) {
                         active_scheme = active_option.scheme ? active_option.scheme : active_scheme;
                     }
                     //console.log(scheme_options)
-                    let style_t = active_option.css === 'gradient' ? ('color: transparent; background:'+ active_option.value) : 'color:' + 'var(' + colors_variables_data[active_option.value] + ')';
+                    let style_t = active_option.css ? ('color: transparent; background:'+ active_option.value) : 'color:' + 'var(' + colors_variables_data[active_option.value] + ')';
                     let toggle_options = $.form_storage.data[this.form_type + '_toggle_data'];
                     let availableGradient = toggle_options.filter( function(option) {
                         return option.value === 'image';
@@ -1272,9 +1592,9 @@ var FormComponents = ( function($) {
                 template:
                 `<div class="dropdown color-dropdown" :class="element">
                     <button class="dropdown-toggle button light-gray smaller" type="button" :class="button_class">
-                        <span class="s-icon icon custom-mr-4" v-if="active_option.type === 'image'"><i class="fas fa-image" ></i></span>
+                        <span class="s-icon icon custom-mr-4" v-if="active_option.type === 'image' || active_option.type === 'video'"><i class="fas" :class="'fa-' + active_option.type"></i></span>
                         <span class="s-icon icon custom-mr-4" v-else><i class="fas" :class="activeIcon" :style="style_t"></i></span>
-                        <span v-if="active_option.type === 'image'" class="s-name">{ { active_option.file_name  } }</span>
+                        <span v-if="active_option.type === 'image' || active_option.type === 'video'" class="s-name">{ { active_option.file_name  } }</span>
                         <span v-else class="s-name">{ { active_option.type !== 'palette' ? $t('custom.' + active_option.name) : $t('custom.Palette')  } }{ { active_option.type !== 'self_color' ? ': ' + $t('custom.' + active_option.name) : ': '+active_option.css } }</span>
                     </button>
                     <div class="dropdown-body" :class="body_class">
@@ -1303,7 +1623,7 @@ var FormComponents = ( function($) {
                                                 <span class="s-selected-icon icon size-10 text-white" v-if="active_option.value === color"><i class="fas fa-check"></i></span>
                                             </span>
                                         </div>
-                                        <div v-for="(palette, key) in palette_options" class="flexbox space-8 wrap">
+                                        <div v-for="(palette, key) in palette_options" class="flexbox space-8 wrap" :class="{'white-palette': key==='semi-transparent-white'}">
                                             <div class="s-name width-100 text-gray custom-pb-4 ">{ { $t('custom.' + key, key) } }</div>
                                             <span class="s-icon-wrapper" v-for="color in palette" @click="changePalette(color, key)">
                                                 <span class="s-icon icon size-32" :class="{'selected': active_option.value === color}"><i class="s-bordered-icon fas" :class="activeIcon" :style="{ color: 'var(' + colors_variables_data[color] + ')' }"></i></span>
@@ -1322,6 +1642,9 @@ var FormComponents = ( function($) {
                                     <div class="flexbox vertical space-16" v-show="active_toggle_option === 'image'">
                                         <manual-image @changeImg="changeImage" :option="active_option" :key="active_option.type"></manual-image>
                                     </div>
+                                    <div class="flexbox vertical space-16" v-show="active_toggle_option === 'video'">
+                                        <manual-video @changeVideo="changeImage" :option="active_option" :key="active_option.type"></manual-video>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -1332,6 +1655,7 @@ var FormComponents = ( function($) {
                 methods: {
                     change(optionColor, gradient) {
                         let self = this;
+                        console.log(optionColor, gradient)
                         const $dropdown = $(self.$el);
                         const $dropdown_toggle = $dropdown.find('> .dropdown-toggle');
                         let gradient_css = 'linear-gradient(#' + optionColor + ', #' + optionColor + ')';
@@ -1349,7 +1673,7 @@ var FormComponents = ( function($) {
                         //if (self.active_option === temp_active_option) return;
 
                         self.active_option = temp_active_option;
-                        $dropdown.find('.filename.hint').remove();
+                        $dropdown.find('.filename').remove();
                         self.$emit("changeCss", temp_active_option, self.layerIndex);
                     },
                     changeToggle(option) {
@@ -1377,10 +1701,9 @@ var FormComponents = ( function($) {
                         $dropdown_toggle.find('.s-icon svg').css('color', 'var(' + self.colors_variables_data[option] + ')');
                         $dropdown_toggle.find('.s-name').html(self.active_option.type + ' #' + temp_active_option.name);
                         self.active_option = temp_active_option;
-                        $dropdown.find('.filename.hint').remove();
+                        $dropdown.find('.filename').remove();
                         self.$emit("changeCss", temp_active_option, self.layerIndex);
                     },
-
                     changeImage(option) {
                         const self = this;
                         const $dropdown = $(self.$el);
@@ -1389,6 +1712,7 @@ var FormComponents = ( function($) {
                         $dropdown_toggle.find('.s-icon svg').css('color', temp_active_option.css);
                         $dropdown_toggle.find('.s-name').html(temp_active_option.file_name);
                         self.active_option = temp_active_option;
+                        console.log('changeImage', option)
                         self.$emit("changeCss", temp_active_option, self.layerIndex);
                     },
                     changeSwitch(active) {
@@ -1413,6 +1737,7 @@ var FormComponents = ( function($) {
                     'ManualColor': this.base_components['component-color-picker'],
                     'ManualImage': this.manual_components['component-manual-image'],
                     'ManualGradient': this.manual_components['component-manual-gradient'],
+                    'ManualVideo': this.manual_components['component-manual-video'],
                 },
                 mounted: function() {
                     let self = this;
@@ -1834,4 +2159,3 @@ var FormComponents = ( function($) {
 return FormComponents;
 
 })(jQuery);
-

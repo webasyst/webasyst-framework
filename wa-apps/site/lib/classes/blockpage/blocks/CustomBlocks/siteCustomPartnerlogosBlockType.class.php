@@ -42,6 +42,8 @@ class siteCustomPartnerlogosBlockType extends siteBlockType {
                 $this->elements['main']    => [
                     'padding-top'    => "p-t-18",
                     'padding-bottom' => "p-b-18",
+                    'padding-left' => 'p-l-blc',
+                    'padding-right' => 'p-r-blc',
                 ],
                 $this->elements['wrapper'] => [
                     'padding-top'    => "p-t-12",
@@ -69,7 +71,7 @@ class siteCustomPartnerlogosBlockType extends siteBlockType {
 
     public function getRawBlockSettingsFormConfig() {
         return [
-                'type_name'    => _w('Partner logos'),
+                'type_name'    => _w('Block'),
                 'sections'     => [
                     [
                         'type' => 'ColumnsGroup',
@@ -86,6 +88,10 @@ class siteCustomPartnerlogosBlockType extends siteBlockType {
                     [
                         'type' => 'TabsWrapperGroup',
                         'name' => _w('Tabs'),
+                    ],                    
+                    [   'type' => 'CommonLinkGroup',
+                        'name' => _w('Link or action'),
+                        'is_hidden' => true,
                     ],
                     [
                         'type' => 'MaxWidthToggleGroup',
@@ -94,6 +100,9 @@ class siteCustomPartnerlogosBlockType extends siteBlockType {
                     [
                         'type' => 'BackgroundColorGroup',
                         'name' => _w('Background'),
+                    ],
+                    [   'type' => 'HeightGroup',
+                        'name' => _w('Height'),
                     ],
                     [
                         'type' => 'PaddingGroup',
@@ -245,6 +254,8 @@ class siteCustomPartnerlogosBlockType extends siteBlockType {
         $block_props = [
             $this->column_elements['main']    => [
                 'padding-bottom' => 'p-b-0',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align'   => 'y-c',
@@ -279,6 +290,8 @@ class siteCustomPartnerlogosBlockType extends siteBlockType {
                 'flex-align-vertical' => 'a-c-c',
                 'padding-bottom'      => 'p-b-12',
                 'padding-top'         => 'p-t-12',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align' => 'y-c',

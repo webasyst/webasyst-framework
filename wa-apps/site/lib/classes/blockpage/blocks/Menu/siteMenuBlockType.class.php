@@ -44,7 +44,7 @@ class siteMenuBlockType extends siteBlockType
         $result->addChild($hseq, '');
 
         $column_props = array();
-        $column_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0"];
+        $column_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'padding-left' => "p-l-blc", 'padding-right' => "p-r-blc"];
         $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", 'flex-align-vertical' => "x-c", 'max-width' => "cnt"];
 
         $result->data = ['block_props' => $column_props, 'wrapper_props' => ['justify-align' => "y-j-cnt"]];
@@ -70,7 +70,8 @@ class siteMenuBlockType extends siteBlockType
     public function getRawBlockSettingsFormConfig()
     {
         return [
-            'type_name' => _w('Menu'),
+            'type_name' => _w('Block'),
+            'type_name_original' => _w('Menu'),
             'sections' => [
                 [   'type' => 'MenuToggleGroup',
                     'name' => _w('Menu toggle'),
@@ -86,6 +87,10 @@ class siteMenuBlockType extends siteBlockType
                 ],
                 [  'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],
+                [   'type' => 'CommonLinkGroup',
+                    'name' => _w('Link or action'),
+                    'is_hidden' => true,
                 ],
                 [   'type' => 'MaxWidthToggleGroup',
                     'name' => _w('Max width'),

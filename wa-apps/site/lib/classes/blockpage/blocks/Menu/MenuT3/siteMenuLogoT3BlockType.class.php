@@ -11,37 +11,96 @@ class siteMenuLogoT3BlockType extends siteBlockType
 
     public function getExampleBlockData()
     {
+        $logo = (new siteImageBlockType())->getExampleBlockData();
+        $logo->data['block_props'] = [
+            "margin-bottom" => "m-b-8",
+            "margin-right" => "m-r-12",
+            "margin-top" => "m-t-0",
+            'pictures-size' => "i-xl",
+        ];
+        $logo->data['indestructible'] = false;
+        $logo->data['default_image_url'] = wa()->getAppStaticUrl('site').'img/image.svg';
+        $svg_html = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" viewBox="0 0 64 64" fill-rule="evenodd">
+        <path d="M32,47 C40.2842712,47 47,40.2842712 47,32 C47,23.7157288 40.2842712,17 32,17 C23.7157288,17 17,23.7157288 17,32 C17,40.2842712 23.7157288,47 32,47 Z M32,50 C41.9411255,50 50,41.9411255 50,32 C50,22.0588745 41.9411255,14 32,14 C22.0588745,14 14,22.0588745 14,32 C14,41.9411255 22.0588745,50 32,50 Z"/>
+        <path d="M32,61 C15.9837423,61 3,48.0162577 3,32 C3,15.9837423 15.9837423,3 32,3 C48.0162577,3 61,15.9837423 61,32 C61,48.0162577 48.0162577,61 32,61 Z M32,52 C20.954305,52 12,43.045695 12,32 C12,20.954305 20.954305,12 32,12 C43.045695,12 52,20.954305 52,32 C52,43.045695 43.045695,52 32,52 Z"/>
+        </svg>';
+        $logo->data['image'] = ['type' => 'svg', 'svg_html' => $svg_html];
+
+        $header = (new siteHeadingBlockType())->getExampleBlockData();
+        $header->data = [
+            "html" => "<b>Nomen Societatis</b>",
+            "tag" => "h3",
+            "block_props" => [
+                'font-size' => [
+                    "name" => "Size #7", 
+                    "value" => "t-7", 
+                    "type" => "library",
+                    'unit' => 'px',
+                ], 
+                "font-header" => "t-hdn",
+                "margin-top" => "m-t-6",
+                "margin-bottom" => "m-b-2",
+                "align" => "t-l",
+            ],
+        ];
+        
+        $sub_column = (new siteMenuT3BlockType())->createSubColumn([
+            'block_props' => [
+                'padding-top' => 'p-t-4',
+                'padding-bottom' => 'p-b-6',
+            ],
+            'wrapper_props' => [
+                'justify-align' => 'j-s',
+            ],
+        ], [$header]);
+
+        $row = (new siteMenuT3BlockType())->createRow([
+            'block_props' => [
+                'padding-top' => 'p-t-6',
+                'padding-bottom' => 'p-b-6',
+            ],
+            'wrapper_props' => [
+                'justify-align' => 'j-s',
+                'flex-wrap' => 'n-wr-mb',
+            ],
+        ], [$logo, $sub_column]);
+
         $hseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq->data['is_horizontal'] = true;
         $hseq->data['indestructible'] = true;
         $hseq->data['is_complex'] = 'no_complex';
-        $vseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
-        $header = (new siteMenuItemBlockType())->getExampleBlockData();
-        $paragraph = (new siteMenuItemBlockType())->getExampleBlockData();
-        $logo = (new siteImageBlockType())->getExampleBlockData();
-        $logo->data['block_props'] = ["margin-bottom" => "m-b-0", 'border-radius' => "b-r-l",'width' => 'i-xxl'];
-        $logo->data['indestructible'] = false;
-        $logo->data['default_image_url'] = wa()->getAppStaticUrl('site').'img/image.svg';
-        $svg_html = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64" fill-rule="evenodd" fill="#ffffff">
-        <path d="M32,47 C40.2842712,47 47,40.2842712 47,32 C47,23.7157288 40.2842712,17 32,17 C23.7157288,17 17,23.7157288 17,32 C17,40.2842712 23.7157288,47 32,47 Z M32,50 C41.9411255,50 50,41.9411255 50,32 C50,22.0588745 41.9411255,14 32,14 C22.0588745,14 14,22.0588745 14,32 C14,41.9411255 22.0588745,50 32,50 Z"></path>
-        <path d="M32,61 C15.9837423,61 3,48.0162577 3,32 C3,15.9837423 15.9837423,3 32,3 C48.0162577,3 61,15.9837423 61,32 C61,48.0162577 48.0162577,61 32,61 Z M32,52 C20.954305,52 12,43.045695 12,32 C12,20.954305 20.954305,12 32,12 C43.045695,12 52,20.954305 52,32 C52,43.045695 43.045695,52 32,52 Z"></path>
-        </svg>';
-        $logo->data['image'] = ['type' => 'svg', 'svg_html' => $svg_html, 'color' => "ffffff"];
-        $header->data = ["html" => "Turpis egestas","tag" => "h1","block_props" => ['button-style' => ["name" => "Palette", "value" => "btn-wht-lnk", "type" => "palette"], "font-header" => "t-hdn","margin-top" => "m-t-4","margin-bottom" => "m-b-0","align" => "t-l", 'button-size' => 'inp-s p-l-12 p-r-12' ]];
-        $paragraph->data = ["html" => "Lobortis ante fames", "block_props" => ['button-style' => ["name" => "Palette", "value" => "btn-wht-lnk", "type" => "palette"], "font-header" => "t-rgl","margin-top" => "m-t-0","margin-bottom" => "m-b-0","align" => "t-l", 'button-size' => 'inp-xs p-l-11 p-r-11' ]];
-        $vseq->addChild($header);
-        $vseq->addChild($paragraph);
-        $hseq->addChild($logo);
-        $hseq->addChild($vseq);
+        $hseq->addChild($row);
 
         $result = $this->getEmptyBlockData();
         $result->addChild($hseq, '');
-        $card_props = array();
-        $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'padding-right' => "p-r-0"];
-        $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", "border-radius" => "b-r-l", 'flex-align' => "y-l"];
-        $result->data = ['block_props' => $card_props];
-        $result->data['elements'] = $this->elements;
-        $result->data['indestructible'] = true;
+        $result->data = [
+            'block_props' => [
+                $this->elements['main'] => [
+                    "margin-left" => "m-l-0",
+                    "margin-right" => "m-r-a",
+                    "padding-bottom" => "p-b-6",
+                    "padding-left" => "p-l-clm",
+                    "padding-right" => "p-r-clm",
+                    "padding-top" => "p-t-6",
+                ],
+                $this->elements['wrapper'] => [
+                    'flex-align' => "y-c",
+                ],
+            ],
+            'inline_props' => [
+                $this->elements['main'] => [
+                    'croll-margin-top' => [
+                        'value' => '',
+                        'unit' => 'px',
+                        'id' => 'logo',
+                    ],
+                ],
+            ],
+            'id' => [$this->elements['main'] => ['id' => 'logo']],
+            'elements' => $this->elements,
+            'indestructible' => false,
+        ];
+
         return $result;
     }
 
@@ -60,6 +119,10 @@ class siteMenuLogoT3BlockType extends siteBlockType
             'sections' => [
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],
+                [   'type' => 'CommonLinkGroup',
+                    'name' => _w('Link or action'),
+                    'is_hidden' => true,
                 ],
                 [   'type' => 'BackgroundColorGroup',
                     'name' => _w('Background'),

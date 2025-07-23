@@ -44,6 +44,8 @@ class siteCustomAdvantagesBlockType extends siteBlockType {
             $block_props[$this->elements['main']] = [
                 'padding-top'    => 'p-t-18',
                 'padding-bottom' => 'p-b-18',
+                'padding-left' => 'p-l-blc',
+                'padding-right' => 'p-r-blc',
             ];
             $block_props[$this->elements['wrapper']] = [
                 'padding-top'    => 'p-t-12',
@@ -86,7 +88,8 @@ class siteCustomAdvantagesBlockType extends siteBlockType {
      */
     public function getRawBlockSettingsFormConfig(): array {
         return [
-                'type_name'    => _w('Advantages'),
+                'type_name'    => _w('Block'),
+                'type_name_original'    => _w('Advantages'),
                 'sections'     => [
                     [
                         'type' => 'ColumnsGroup',
@@ -104,6 +107,10 @@ class siteCustomAdvantagesBlockType extends siteBlockType {
                         'type' => 'TabsWrapperGroup',
                         'name' => _w('Tabs'),
                     ],
+                    [   'type' => 'CommonLinkGroup',
+                        'name' => _w('Link or action'),
+                        'is_hidden' => true,
+                    ],
                     [
                         'type' => 'MaxWidthToggleGroup',
                         'name' => _w('Max width'),
@@ -111,6 +118,9 @@ class siteCustomAdvantagesBlockType extends siteBlockType {
                     [
                         'type' => 'BackgroundColorGroup',
                         'name' => _w('Background'),
+                    ],
+                    [   'type' => 'HeightGroup',
+                        'name' => _w('Height'),
                     ],
                     [
                         'type' => 'PaddingGroup',
@@ -189,6 +199,8 @@ class siteCustomAdvantagesBlockType extends siteBlockType {
                 $column_elements['main']    => [
                     'padding-top'    => "p-t-12",
                     'padding-bottom' => "p-b-12",
+                    'padding-left' => 'p-l-clm',
+                    'padding-right' => 'p-r-clm',
                 ],
                 $column_elements['wrapper'] => [
                     'flex-align'     => "y-c",

@@ -501,14 +501,17 @@ class siteConfigureRedirectSaveController extends waJsonController
         }
 
         // Make sure every domain has at least one priority_settlement of Site app
-        // if at least one Site settlement exists for that domain.
-        foreach ($all_routes as &$domain_routes) {
+        // if at least one Site settlement exists for that domain or it has block pages created
+        foreach ($all_routes as $domain => &$domain_routes) {
             if (is_array($domain_routes)) {
-                unset($site_route);
+                unset($site_route, $tech_route);
                 foreach ($domain_routes as &$route) {
                     if (ifset($route, 'app', '') === 'site') {
+                        if (!empty($route['site_tech_route'])) {
+                            $tech_route =& $route;
+                        }
                         if (!empty($route['priority_settlement'])) {
-                            continue 2;
+                            continue;
                         }
                         $site_route =& $route;
                     }
@@ -517,8 +520,14 @@ class siteConfigureRedirectSaveController extends waJsonController
                 if (!empty($site_route)) {
                     $site_route['priority_settlement'] = true;
                 }
+                if (empty($site_route) || !empty($tech_route)) {
+                    try {
+                        wa('site')->getConfig()->ensureSettlementForDomain($domain, null, $all_routes);
+                    } catch (Throwable $e) {
+                    }
+                }
             }
         }
-        unset($domain_routes, $route, $site_route);
+        unset($domain_routes, $route);
     }
 }

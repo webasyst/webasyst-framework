@@ -32,11 +32,11 @@
 </script>
 {else}
 <script>
-    $(function() { "use strict";
+    (function() { "use strict";
         const block_id = {$data->getId()|json_encode};
         const $wrapper = $('.site-block-list[data-block-id="'+block_id+'"]');
         const data = {$data->data|json_encode};
         updateBlockStyles($wrapper, data, block_id);
-    });
+    })();
 </script>
 {/if}

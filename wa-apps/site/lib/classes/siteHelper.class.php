@@ -613,4 +613,31 @@ class siteHelper
 
         return $slug;
     }
+
+    public static function updateFaviconsConfig(&$domain_config, $without_save = false)
+    {
+        $domain = waSystem::getInstance()->getRouting()->getDomain();
+        $data_folder = 'data/'.$domain;
+        $path = wa()->getDataPath('/'.$data_folder.'/', true, 'site');
+        $url = 'wa-data/public/site/'.$data_folder;
+
+        $domain_config['favicons'] = [];
+        if (file_exists($path.'favicon.ico')) {
+            $domain_config['favicons']['favicon.ico'] = 'favicon.ico?v='.filemtime($path.'favicon.ico');
+        }
+        if (file_exists($path.'favicon-96.png')) {
+            $domain_config['favicons']['favicon-96.png'] = $url.'/favicon-96.png?v='.filemtime($path.'favicon-96.png');
+        }
+        if (file_exists($path.'apple-touch-icon.png')) {
+            $domain_config['favicons']['apple-touch-icon.png'] = 'apple-touch-icon.png?v='.filemtime($path.'apple-touch-icon.png');
+        }
+        if (file_exists($path.'site.webmanifest')) {
+            $domain_config['favicons']['site.webmanifest'] = 'site.webmanifest?v='.filemtime($path.'site.webmanifest');
+        }
+
+        if (!$without_save) {
+            $domain_config_path = waSystem::getInstance()->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
+            waUtils::varExportToFile($domain_config, $domain_config_path);
+        }
+    }
 }

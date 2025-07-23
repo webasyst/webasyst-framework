@@ -10,6 +10,7 @@
         <title>{$wa->title()|escape}</title>
         <meta name="keywords" content="{$wa->meta('keywords')|escape}">
         <meta name="description" content="{$wa->meta('description')|escape}">
+        <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}">
         {if !empty($page_params.canonical)}
             <link rel="canonical" href="{$page_params.canonical}">
         {/if}

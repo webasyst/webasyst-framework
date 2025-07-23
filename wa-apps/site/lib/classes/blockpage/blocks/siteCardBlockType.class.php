@@ -21,7 +21,7 @@ class siteCardBlockType extends siteBlockType
         $result = $this->getEmptyBlockData();
         $result->addChild($vseq, '');
         $card_props = array();
-        $card_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
+        $card_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'padding-left' => "p-l-clm", 'padding-right' => "p-r-clm"];
         $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
         $result->data = ['block_props' => $card_props];
         $result->data['elements'] = $this->elements;

@@ -150,9 +150,9 @@ class siteConfigureAction extends waViewAction
             $domain_config['google_analytics'] = array('code' => '');
         }
         $this->view->assign('google_analytics', $domain_config['google_analytics']);
-        //$this->view->assign('url', $this->getDomainUrl($domain));
         $this->view->assign('ssl_all', ifset($domain_config, 'ssl_all', null));
         $this->view->assign('url_notification', ifset($domain_config, 'url_notification', false));
+        $this->view->assign('touchicon_title', ifset($domain_config, 'touchicon_title', ''));
 
         // Confirm when a site is deleted
         $domains = wa()->getRouting()->getDomains();
@@ -207,7 +207,7 @@ class siteConfigureAction extends waViewAction
         if (file_exists($path)) {
             $favicon = [
                 'name' => 'favicon.ico',
-                'icon' => wa()->getDataUrl('data/'.$domain.'/favicon.ico', true).'?'.filesize($path)
+                'icon' => wa()->getDataUrl('data/'.$domain.'/favicon.ico', true).'?'.filemtime($path)
             ];
         }
 
@@ -218,7 +218,7 @@ class siteConfigureAction extends waViewAction
         if (file_exists($path)) {
             $touchicon = [
                 'name' => 'apple-touch-icon.png',
-                'icon' => wa()->getDataUrl('data/'.$domain.'/apple-touch-icon.png', true).'?'.filesize($path)
+                'icon' => wa()->getDataUrl('data/'.$domain.'/apple-touch-icon.png', true).'?'.filemtime($path)
             ];
         }
 

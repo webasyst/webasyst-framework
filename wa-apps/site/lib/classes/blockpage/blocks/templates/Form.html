@@ -1,10 +1,25 @@
-{$static_classes_props = 'site-block-form style-wrapper f-w ovr-hdn vid-ifr'}
-{$html = ifset($data->data, 'html', '')}
+{$static_classes_props = 'site-block-form style-wrapper f-w'}
+{$form_type = $data->data['form_type']|default:''}
+{* if app not installed or not enabled - show empty block *}
+{if $form_type == 'mailer' && !$wa->mailer}
+    {$html = ''}
+{elseif $form_type == 'crm' && !$wa->crm}
+    {$html = ''}
+{elseif $form_type == 'helpdesk' && !$wa->helpdesk}
+    {$html = ''}
+{else}
+    {$html = ifset($data->data, 'html', '')}
+{/if}
+
+{$default_empty_image_url = "`$wa_app_static_url`img/form-background.svg"}
 {if $is_backend}
     <div class="child-iframe-cover"></div>
 {/if}
 {$anchor_id = $data->data['id']|default:0}
 <div {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_classes_props} m-l-a m-r-a" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    {if empty($html)}
+    <div class="iframe-picture-cover" style="background-image: url({$default_empty_image_url});"></div>
+    {/if}
     <div class="iframe-wrapper">
         {if $is_backend}{$wa->site->sanitizeHTML($html)}{else}{$html}{/if}
     </div>
@@ -16,21 +31,40 @@
     const block_id = {$data->getId()|json_encode};
     const wrapper_class = '.site-block-form[data-block-id="'+block_id+'"]';
     const $wrapper_parent = $(wrapper_class).parent();
-
+    const renderHTML = (html) => { $wrapper_parent.find('.iframe-wrapper').html(SiteEditorInsideIframe.sanitizeHTML(html)); };
+    {literal}
     $wrapper_parent.on('block_data_updated', wrapper_class, function(event, updated_block_id, data) {
         event.stopPropagation();
         if (+updated_block_id === +block_id) {
             updateBlockStyles($(this), data, block_id);
-            $(this).find('.iframe-wrapper').html(SiteEditorInsideIframe.sanitizeHTML(data.html));
+            const code = data.textarea_html;
+            if (code && code === data.html) {
+                const reg_exp = /{\$wa->(helpdesk|crm|mailer)->form\((\d+)\)}/;
+                const [, app_id, id] = (code.match(reg_exp) || []);
+                if (!app_id || !id) {
+                    renderHTML(data.html);
+                    return;
+                };
+                $.get('?module=editorForm&action=render', { id, app_id }, (html) => {
+                    renderHTML(code.replace(reg_exp, html));
+                });
+            } else {
+                {/literal}
+                {if $html != ''}
+                    renderHTML(data.html);
+                {/if}
+                {literal}
+            }
         }
     });
+    {/literal}
 });
 </script>
 {else}
-<script>$(function() { "use strict";
+<script>(function() { "use strict";
     const block_id = {$data->getId()|json_encode};
     const $wrapper = $('.site-block-form[data-block-id="'+block_id+'"]');
     const data = {$data->data|json_encode};
     updateBlockStyles($wrapper, data, block_id);
-});</script>
+})();</script>
 {/if}

@@ -25,10 +25,11 @@ class siteVideoBlockType extends siteBlockType
     protected function getRawBlockSettingsFormConfig()
     {
         return [
-            'type_name' => _w('Video or music'),
+            'type_name' => _w('Video'),
+            'tags' => 'element',
             'sections' => [
-                [   'type' => 'CustomVideoGroup',
-                    'name' => _w('Embed code'),
+                [   'type' => 'VideoUploadGroup',
+                    'name' => _w('Upload'),
                 ],
                 [   'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),

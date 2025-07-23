@@ -34,16 +34,29 @@ class BlockStorage
         return old_data;
     }
 
-    setData(block_id, data) {
+    setData(block_id, data, parent_id) {
         var old_data = this.getData(block_id);
         if (!this.data[block_id]) {
             this.data[block_id] = {
                 id: block_id,
+                parent_id: null,
+                parents: [],
                 files: {},
                 data: null
             };
         }
         this.data[block_id].data = {...data};
+        if (parent_id && !this.data[block_id].parent_id) {
+            let parent_form_config = this.getFormConfig(parent_id);
+            this.data[block_id].parent_id = parent_id;
+            this.data[block_id].parents = this.getParents(parent_id);
+            if (parent_form_config && parent_form_config.type_name && parent_form_config.type != 'site.VerticalSequence') {
+                this.data[block_id].parents = [{
+                    id: parent_id,
+                    type_name: parent_form_config.type_name,
+                }].concat(this.data[block_id].parents);
+            }
+        }
         return old_data;
     }
 

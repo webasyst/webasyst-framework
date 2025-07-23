@@ -58,7 +58,8 @@ class siteEditorPageSettingsSaveController extends waJsonController
                 if (!empty($data['parent_id'])) {
                     $parent_page = $blockpage_model->getById($data['parent_id']);
                     if (isset($parent_page['full_url'])) {
-                        $data['full_url'] = $parent_page['full_url'] . '/' . $data['url'];
+                        $parent_full_url = ltrim($parent_page['full_url'], '/');
+                        $data['full_url'] = $parent_full_url.($parent_full_url ? '/' : '').$data['url'];
                     }
                 }
             }
@@ -131,6 +132,11 @@ class siteEditorPageSettingsSaveController extends waJsonController
             $this->response = $blockpage_model->getById($page_id);
             $this->response['params'] = $blockpage_params_model->getById($page_id);
             $this->response['add'] = $is_new;
+
+            try {
+                wa('site')->getConfig()->ensureSettlementForDomain($domain_id, true);
+            } catch (Throwable $e) {
+            }
         }
     }
 

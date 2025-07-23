@@ -39,8 +39,7 @@
     {if !empty($canonical)}
         <link rel="canonical" href="{$canonical}">
     {/if}
-    <link rel="icon" href="/favicon.ico">
-    <link rel="shortcut icon" href="/favicon.ico">
+    {$wa->site->favicons()}{*will be removed after the release of the framework*}
     {if $wa->blog}
         <!-- rss -->
         {$rss=$wa->blog->rssUrl()}

@@ -1,6 +1,6 @@
 {$block_id = $data->getId()}
 {$elements = $data->data['elements']}
-{$static_main = "`$elements.main` clm f-w"}
+{$static_main = "`$elements.main` f-w"}
 {$static_wrapper = "`$elements.wrapper` style-wrapper cl"}
 
 <div class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_main}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
@@ -24,10 +24,10 @@
     })
 </script>
 {else}
-<script>$(function() { "use strict";
+<script>(function() { "use strict";
     const block_id = {$data->getId()|json_encode};
     const $wrapper = $('.site-block-card[data-block-id="'+block_id+'"]');
     const data = {$data->data|json_encode};
     updateBlockStyles($wrapper, data, block_id);
-});</script>
+})();</script>
 {/if}

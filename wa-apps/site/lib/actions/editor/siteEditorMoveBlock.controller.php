@@ -6,6 +6,9 @@ class siteEditorMoveBlockController extends waController
 {
     public function execute()
     {
+        if (!waLicensing::check('site')->isPremium()) {
+            return;
+        }
         $parent_block_id = waRequest::request('parent_block_id', null, 'int');
         if (!$parent_block_id || $parent_block_id < 0) {
             $parent_block_id = null;

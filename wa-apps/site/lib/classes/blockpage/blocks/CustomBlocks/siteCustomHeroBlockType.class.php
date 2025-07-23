@@ -54,7 +54,8 @@ class siteCustomHeroBlockType extends siteBlockType
         $column_props[$this->elements['main']] = [
             'padding-top' => "p-t-25 p-t-20-tb p-t-16-mb",
             'padding-bottom' => "p-b-25 p-b-20-tb p-b-16-mb",
-            'color' => 'f-w',
+            'padding-left' => 'p-l-blc',
+            'padding-right' => 'p-r-blc',
         ];
         $column_props[$this->elements['wrapper']] = [
             'padding-top' => "p-t-20 p-t-16-mb",
@@ -109,7 +110,7 @@ class siteCustomHeroBlockType extends siteBlockType
     public function getRawBlockSettingsFormConfig()
     {
         return [
-            'type_name' => _w('Columns'),
+            'type_name' => _w('Block'),
             'sections' => [
                 [
                     'type' => 'ColumnsGroup',
@@ -126,6 +127,10 @@ class siteCustomHeroBlockType extends siteBlockType
                 [
                     'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],                    
+                [   'type' => 'CommonLinkGroup',
+                    'name' => _w('Link or action'),
+                    'is_hidden' => true,
                 ],
                 [
                     'type' => 'MaxWidthToggleGroup',
@@ -186,6 +191,8 @@ class siteCustomHeroBlockType extends siteBlockType
                 $column_elements['main'] => [
                     'padding-top' => "p-t-20 p-t-12-tb",
                     'padding-bottom' => "p-b-20 p-b-12-tb",
+                    'padding-left' => 'p-l-clm',
+                    'padding-right' => 'p-r-clm',
                 ],
                 $column_elements['wrapper'] => [
                     'column-max-width' => "fx-9",

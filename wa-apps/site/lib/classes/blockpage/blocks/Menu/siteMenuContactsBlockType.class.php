@@ -28,7 +28,7 @@ class siteMenuContactsBlockType extends siteBlockType
         $result = $this->getEmptyBlockData();
         $result->addChild($hseq, '');
         $card_props = array();
-        $card_props[$this->elements['main']] = ['margin-bottom' => "m-b-a", 'margin-left' => "m-l-a", 'margin-top' => "m-t-a", 'padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'visibility' => "d-n-tb d-n-mb"];
+        $card_props[$this->elements['main']] = ['margin-bottom' => "m-b-a", 'margin-left' => "m-l-a", 'margin-top' => "m-t-a", 'padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'padding-left' => "p-l-clm", 'padding-right' => "p-r-clm", 'visibility' => "d-n-tb d-n-mb"];
         $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
         $result->data = ['block_props' => $card_props];
         $result->data['elements'] = $this->elements;
@@ -73,8 +73,8 @@ class siteMenuContactsBlockType extends siteBlockType
             ],
             'elements' => $this->elements,
             'semi_headers' => [
-                'main' => _w('Whole block'),
-                'wrapper' => _w('Container'),
+                'main' => _w('Whole column'),
+                'wrapper' => _w('Content'),
             ]
         ] + parent::getRawBlockSettingsFormConfig();
     }

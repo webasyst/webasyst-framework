@@ -71,7 +71,7 @@ class siteCustomHero3BlockType extends siteBlockType {
 
     public function getRawBlockSettingsFormConfig() {
         return [
-                'type_name'    => _w('Hero 3'),
+                'type_name'    => _w('Block'),
                 'sections'     => [
                     [
                         'type' => 'ColumnsGroup',
@@ -88,6 +88,10 @@ class siteCustomHero3BlockType extends siteBlockType {
                     [
                         'type' => 'TabsWrapperGroup',
                         'name' => _w('Tabs'),
+                    ],                    
+                    [   'type' => 'CommonLinkGroup',
+                        'name' => _w('Link or action'),
+                        'is_hidden' => true,
                     ],
                     [
                         'type' => 'MaxWidthToggleGroup',
@@ -241,7 +245,14 @@ class siteCustomHero3BlockType extends siteBlockType {
                                 ],
                             ],
                         ],
-                    ]
+                    ],
+                    $this->column_elements['wrapper'] => [
+                        'min-height' => [
+                            'name' => 'Fill parent',
+                            'value' => '100%',
+                            'type' => 'parent',
+                        ],
+                    ],
                 ],
             ],
             $vseq
@@ -343,7 +354,14 @@ class siteCustomHero3BlockType extends siteBlockType {
                                 ],
                             ],
                         ],
-                    ]
+                    ],
+                    $this->column_elements['wrapper'] => [
+                        'min-height' => [
+                            'name' => 'Fill parent',
+                            'value' => '100%',
+                            'type' => 'parent',
+                        ],
+                    ],
                 ],
             ],
             $vseq

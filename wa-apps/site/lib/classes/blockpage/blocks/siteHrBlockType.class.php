@@ -7,8 +7,8 @@ class siteHrBlockType extends siteBlockType
     public function getExampleBlockData()
     {
         $result = $this->getEmptyBlockData();
-        $result->data = ['tag' => 'hr', 'block_props' => ['margin-top' => "m-t-20", 'margin-bottom' => "m-b-20", 'border-color' => [ 'css' => '#0000001a','name' => '1-1', 'type' => 'palette', 'value' => 'bd-tr-1' ]]];
-        $result->data['inline_props'] = ['border-width' => ['value' => '3px', 'name' => 'Толщина 3', 'unit' => "px", 'type' => 'library']];
+        $result->data = ['tag' => 'hr', 'block_props' => ['margin-top' => "m-t-20", 'margin-bottom' => "m-b-20", 'border-width' => ['value' => 'b-w-s', 'name' => _w('Width 1'), 'unit' => "px", 'type' => 'library'], 'border-color' => [ 'css' => '#0000001a','name' => '1-1', 'type' => 'palette', 'value' => 'bd-tr-1' ]]];
+        //$result->data['inline_props'] = ['border-width' => ['value' => '3px', 'name' => 'Толщина 3', 'unit' => "px", 'type' => 'self_size']];
         return $result;
     }
     protected function getRawBlockSettingsFormConfig()

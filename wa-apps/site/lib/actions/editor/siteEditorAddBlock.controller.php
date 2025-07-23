@@ -42,7 +42,7 @@ class siteEditorAddBlockController extends waController
         if (empty($parent_block) && empty($parent_page)) {
             throw new waException('bad parameters', 400);
         }
-
+        $library = new siteBlockpageLibrary();
         if ($duplicate_block_id) {
             $block_type = siteBlockType::factory($original_block['type']);
             $block_data = $block_type->getEmptyBlockData()->setDbRow(['id' => null] + $original_block);
@@ -50,7 +50,7 @@ class siteEditorAddBlockController extends waController
             $this->copyChildrenBlocks($blockpage_blocks_model, $block_data, $original_block['id']);
             //}
         } else {
-            $library = new siteBlockpageLibrary();
+            //$library = new siteBlockpageLibrary();
             if ($type_id) {
                 $block_type_info = $library->getById($type_id);
             }
@@ -91,6 +91,12 @@ class siteEditorAddBlockController extends waController
     $.wa.editor.api.addBlockUndoOperation({$new_block_id}, wrapper);
 
     setTimeout(() => { //set NEW block selected
+        if ({$parent_block_id}) {
+            var parent_wrapper = wrapper.parent().closest('*[data-block-id]');
+            var parent_wrapper_id = parent_wrapper.data('block-id');
+            var parent_block_data = $.wa.editor.api.block_storage.getData(parent_wrapper_id);
+            if (parent_block_data) window.updateBlockStyles(parent_wrapper, parent_block_data, parent_wrapper_id);
+        }
         var block_wrapper = wrapper.find('.seq-child[data-block-id="{$new_block_id}"]');
         $.wa.editor.setSelectedBlock({$new_block_id}, block_wrapper, null, true);
     }, 0);

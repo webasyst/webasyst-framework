@@ -136,4 +136,42 @@ class siteViewHelper extends waAppViewHelper
 
         return $html;
     }
+
+    /**
+     * @deprecated will be removed after the release of the framework
+     *
+     * @return void
+     */
+    public function favicons()
+    {
+        $links = '';
+        $domain_config = waSystem::getInstance()->getRouting()->getDomainConfig();
+        $domain_favicons = ifset($domain_config['favicons']);
+        if (!is_array($domain_favicons)) {
+            siteHelper::updateFaviconsConfig($domain_config);
+            $domain_favicons = $domain_config['favicons'];
+        }
+
+        $wa_url = wa_url();
+        if (isset($domain_favicons['favicon.ico'])) {
+            $links .= '<link rel="icon" href="'.$wa_url.$domain_favicons['favicon.ico'].'" type="image/x-icon" />';
+        } else {
+            $links .= '<link rel="icon" href="'.$wa_url.'favicon.ico" type="image/x-icon" />';
+        }
+        if (isset($domain_favicons['favicon-96.png'])) {
+            $links .= '<link rel="icon" href="'.$wa_url.$domain_favicons['favicon-96.png'].'" sizes="96x96" type="image/png" />';
+        }
+        if (isset($domain_favicons['apple-touch-icon.png'])) {
+            $links .= '<link rel="apple-touch-icon" href="'.$wa_url.$domain_favicons['apple-touch-icon.png'].'" />';
+            if ($touchicon_title = htmlspecialchars($domain_config['touchicon_title'] ?? '')) {
+                $links .= '<meta name="apple-mobile-web-app-title" content="'.$touchicon_title.'" />';
+                $links .= '<meta name="application-name" content="'.$touchicon_title.'" />';
+            }
+        }
+        if (isset($domain_favicons['site.webmanifest'])) {
+            $links .= '<link rel="manifest" href="'.$wa_url.$domain_favicons['site.webmanifest'].'" crossorigin="use-credentials" />';
+        }
+
+        return $links;
+    }
 }

@@ -41,6 +41,8 @@ class siteCustomBanner2BlockType extends siteBlockType {
                 $this->elements['main']    => [
                     'padding-top'    => "p-t-18",
                     'padding-bottom' => "p-b-18",
+                    'padding-left' => 'p-l-blc',
+                    'padding-right' => 'p-r-blc',
                 ],
                 $this->elements['wrapper'] => [
                     'border-radius' => "b-r-l",
@@ -84,7 +86,8 @@ class siteCustomBanner2BlockType extends siteBlockType {
 
     public function getRawBlockSettingsFormConfig() {
         return [
-                'type_name'    => _w('Banner 2'),
+                'type_name'    => _w('Block'),
+                'type_name_original'    => _w('Banner 2'),
                 'sections'     => [
                     [
                         'type' => 'ColumnsGroup',
@@ -102,6 +105,10 @@ class siteCustomBanner2BlockType extends siteBlockType {
                         'type' => 'TabsWrapperGroup',
                         'name' => _w('Tabs'),
                     ],
+                    [   'type' => 'CommonLinkGroup',
+                        'name' => _w('Link or action'),
+                        'is_hidden' => true,
+                    ],
                     [
                         'type' => 'MaxWidthToggleGroup',
                         'name' => _w('Max width'),
@@ -109,6 +116,9 @@ class siteCustomBanner2BlockType extends siteBlockType {
                     [
                         'type' => 'BackgroundColorGroup',
                         'name' => _w('Background'),
+                    ],
+                    [   'type' => 'HeightGroup',
+                        'name' => _w('Height'),
                     ],
                     [
                         'type' => 'PaddingGroup',
@@ -220,6 +230,8 @@ class siteCustomBanner2BlockType extends siteBlockType {
         $block_props = [
             $this->column_elements['main']    => [
                 'flex-align-vertical' => 'a-c-c',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align' => 'y-c',
@@ -258,6 +270,8 @@ class siteCustomBanner2BlockType extends siteBlockType {
             $this->column_elements['main']    => [
                 'flex-align-vertical' => 'a-c-c',
                 'padding-bottom' => 'p-b-0',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align' => 'y-c',

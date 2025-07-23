@@ -13,11 +13,14 @@ class BlockSettingsDrawer
     $wrapper;
     form_constructor;
     position_number = 0;
+    position_number_hor = 0;
+    position_number_width = 0;
 
     constructor(options) {
         this.o = options;
         this.$wrapper = this.o.$wrapper;
         this.$sidebar = this.$wrapper.closest('.sidebar');
+        this.html_templates = this.o.html_templates;
     }
 
     /** Called by the core SiteEditor to show the drawer after user selects a block. */
@@ -69,17 +72,38 @@ class BlockSettingsDrawer
 
         /** Change position of drawer  */
         updatePositionHorizontal() {
-            this.position_number
-            switch (this.position_number) {
+            this.position_number_hor
+            switch (this.position_number_hor) {
                 case 0:
                     this.$sidebar.addClass('leftPosition');
                     break;
                 default:
                     this.$sidebar.removeClass('leftPosition')
-                    this.position_number = -1;
+                    this.position_number_hor = -1;
                     break;
             }
-            this.position_number++
+            this.position_number_hor++
+        }
+        /** Change width of drawer  */
+        updateWidth() {
+            this.position_number_width
+            switch (this.position_number_width) {
+                case 0:
+                    this.$sidebar.addClass('halfWidth');
+                    break;
+                case 1:
+                    this.$sidebar.removeClass('halfWidth').addClass('fullWidth');
+                    break;
+                default:
+                    this.$sidebar.removeClass('fullWidth')
+                    this.position_number_width = -1;
+                    break;
+            }
+            this.position_number_width++
+            // See transition in #editor-page .sidebar.block-settings-sidebar:hover
+            setTimeout(()  => {
+                wa_editor.resize();
+            }, 210);
         }
 
     /** Called by the core SiteEditor to (re-)initialize a form in the drawer
@@ -98,10 +122,11 @@ class BlockSettingsDrawer
                 block_data: block_data,
                 form_config: form_config,
                 media_prop: media_prop,
-                is_new_block: is_new_block
+                is_new_block: is_new_block,
+                html_templates: this.html_templates
             });
         }
-        //console.log('BlockSettingsDrawer.setForm()', form_config, block_data, media_prop);
+        console.log('BlockSettingsDrawer.setForm()', form_config, block_data, media_prop);
         this.updatePaddingRight(media_prop)
     }
 
@@ -117,7 +142,7 @@ class BlockSettingsDrawer
     /** Called by the core SiteEditor to update data without changing currently visible form.
      * May be called very often (e.g. on each character typed inside content-editable). */
     setData(block_data) {
-        // !!! TODO
+        // nothing to do
         //console.log('BlockSettingsDrawer.setData()', block_data);
     }
 

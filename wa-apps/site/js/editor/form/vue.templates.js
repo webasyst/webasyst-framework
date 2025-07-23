@@ -24,21 +24,21 @@
         <template v-if="disabled">
             <button class="dropdown-toggle button light-gray" type="button" :class="button_class" disabled>
                 <span class="s-icon icon custom-mr-4" v-if="activeIcon"><i class="fas" :class="activeIcon"></i></span>
-                <span class="s-name">{ { $t(form_type+'.'+active_option.name, active_option.name) } }</span>
+                <span :class="['s-name', { 'bold':activeBold }]">{ { $t(form_type+'.'+active_option.name, active_option.name) } }</span>
             </button>
         </template>
         <template v-else>
             <button class="dropdown-toggle button light-gray" type="button" :class="button_class">
                 <span class="s-icon icon custom-mr-4" v-if="activeIcon"><i class="fas" :class="activeIcon"></i></span>
-                <span class="s-name">{ { $t(form_type+'.'+active_option.name, active_option.name) } }</span>
+                <span :class="['s-name', { 'bold':activeBold, 'text-dark-gray':is_show_placeholder }]">{ { $t(form_type+'.'+active_option.name, active_option.name) } }</span>
             </button>
             <div class="dropdown-body" :class="body_class">
                 <ul class="menu">
                     <template v-for="option in formatted_options">
                         <li class="dropdown-item" v-on:click="change(option)" :class="{ 'selected': (option.value === active_option.value), 'disabled': (option.disabled) }">
-                            <a href="javascript:void(0);" data-id="option.value">
-                                <span class="s-icon icon custom-mr-4" v-if="option.icon"><i class="fas" :class="option.icon"></i></span>
-                                <span class="s-name">{ { $t(form_type+'.'+option.name, option.name) } }</span>
+                            <a :href="option.link_url ? option.link_url : 'javascript:void(0);'" :target="option.link_target" data-id="option.value">
+                                <span class="s-icon icon custom-mr-8" v-if="option.icon"><i class="fas" :class="option.icon"></i></span>
+                                <span class="s-name">{ { $t(form_type+'.'+option.name, option.name) } }<span v-if="option.link_url" class="custom-ml-8"><i class="fas fa-external-link-alt" style="font-size:0.75rem;"></i></span></span>
                             </a>
                         </li>
                     </template>
@@ -111,15 +111,15 @@
         </div>
         `,
         component_product_sku_group: `
-        <div class="s-editor-option-wrapper" v-if="formatted_options.length">
+        <div class="s-editor-option-wrapper" v-if="formatted_options.length > 1">
             <div class="s-semi-header text-gray small">{ { header_name } }</div>
-            <div class="s-editor-option-body custom-mt-8 ">
+            <div class="s-editor-option-body custom-mt-8">
                 <product-info-dropdown @customChange="change" :options="formatted_options" :activeOption="active_option" form_type="custom" :block_data="block_data" :block_id="block_id"></product-info-dropdown>
             </div>
         </div>
         `,
         component_columns_align_vertical_group: `
-        <div class="s-editor-option-wrapper">
+        <div v-if="is_visible" class="s-editor-option-wrapper">
             <div class="s-semi-header text-gray small">{ { header_name } }</div>
             <div class="s-editor-option-body custom-mt-8">
                 <columns-align-dropdown @customChange="change" :options="arr_options" :activeOption="active_option" :form_type="form_type_custom" :block_data="block_data" :block_id="block_id"></columns-align-dropdown>
@@ -210,7 +210,14 @@
         `,
         component_form_link_group: `
             <div class="sidebar right width-17rem link-settings-sidebar custom-p-16">
-                <form-header :header="$t('custom.'+link_header)" :parents="parents" @closeDrawer="$emit('closeDrawer')" @goToParent="goToParent"></form-header>
+                <div class="block-settings-header flexbox full-width custom-pb-16" >
+                    <div class="flexbox vertical">
+                        <h5 class="custom-mt-0">{{$t('custom.' + link_header, link_header)}}</h5>
+                    </div>
+                    <a href="javascript:void(0)" @click="$emit('closeDrawer')" class="drawer-close js-close-drawer custom-ml-8" :title="$t('custom.Close panel')">
+                        <i class="fas fa-times text-gray icon size-16 custom-p-4"></i>
+                    </a>
+                </div>
                 <div class="s-editor-option-wrapper custom-mb-16">
                     <div class="s-semi-header text-gray small">{{$t('custom.Action')}}</div>
                     <div class="s-editor-option-body custom-mt-8">
@@ -309,7 +316,7 @@
                     <div class="s-editor-option-body" style="flex-wrap: nowrap; gap: .25rem;">
                         <custom-button :buttonText="$t('custom.Save')" buttonClass="blue" @click="saveLink"></custom-button>
                         <!--<custom-button :buttonText="$t('custom.Cancel')" buttonClass="light-gray" @click="$emit('closeDrawer')">Cancel</custom-button>-->
-                        <custom-button buttonClass="light-gray text-red" @click="deleteLink" :title="$t('custom.Delete')" :buttonText="$t('custom.Delete')" v-show="!isEmptyData"></custom-button>
+                        <custom-button buttonClass="light-gray text-red"     @click="deleteLink" :title="$t('custom.Delete')" :buttonText="$t('custom.Delete')" v-show="!isEmptyData"></custom-button>
                     </div>
                 </div>
             </div>`,
@@ -420,6 +427,149 @@
                 </div>
             </div>
            `,
+        component_common_link_group: `
+           <div class="s-editor-option-wrappers custom-mb-24">
+                ${$.form_storage.share_parts.option_header}
+                <div class="s-editor-option-show" v-show="showChildren">
+                   <div class="s-editor-option-wrapper custom-mb-16">
+                       <!--<div class="s-semi-header text-gray small">{ { $t('custom.Action') } }</div>-->
+                       <div class="s-editor-option-body custom-mt-16">
+                           <link-action-dropdown @customChange="change" :options="arr_options" button_class="light-gray small" :activeOption="selection_attr.active_option" :form_type="form_type"></link-action-dropdown>
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper custom-mb-12" v-if="active_data.value === 'external-link'">
+                       <div class="s-semi-header text-gray small">{ { $t('custom.'+active_data.semi_header) } }</div>
+                       <div class="s-editor-option-body custom-mt-8">
+                           <input @input="show_buttons = true" v-model.trim="selection_attr.inputEmail" class="width-100 smaller custom-mr-0" type="text" :name="active_data.value" :placeholder="active_data.placeholder">
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper custom-mb-12" v-if="active_data.value === 'phone-link'">
+                       <div class="s-semi-header text-gray small">{ { $t('custom.'+active_data.semi_header) } }</div>
+                       <div class="s-editor-option-body custom-mt-8">
+                           <input @input="show_buttons = true" v-model="selection_attr.inputPhone" class="width-100 smaller custom-mr-0" type="text" :name="active_data.value" :placeholder="active_data.placeholder">
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper custom-mb-12" v-if="active_data.value === 'email-link'">
+                       <div class="s-semi-header text-gray small">{ { $t('custom.'+active_data.semi_header) } }</div>
+                       <div class="s-editor-option-body custom-mt-8 custom-mb-24">
+                           <input v-model.trim="selection_attr.inputEmail" class="width-100 smaller custom-mr-0" type="text" :name="active_data.value" :placeholder="active_data.placeholder">
+                       </div>
+                       <div class="s-semi-header text-gray small">{ { $t('custom.Email subject') } }</div>
+                       <div class="s-editor-option-body custom-mt-8">
+                           <input @input="show_buttons = true" v-model.trim="selection_attr.inputSubject" class="width-100 smaller custom-mr-0" type="text" name="selection_attr.inputSubject" placeholder="Например: письмо с сайта">
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper custom-mb-12" v-if="active_data.value === 'internal-link'">
+                       <div class="s-editor-header flexbox full-width">
+                       <div class="s-semi-header text-gray small">{ { $t('custom.Address') } }</div>
+                           <span id="tooltip-internal-link" data-wa-tooltip-template="#tooltip-internal1">
+                               <i class="fas fa-question-circle text-light-gray small"></i>
+                           </span>
+                           <div class="wa-tooltip-template" id="tooltip-internal1" >
+                               <div style="width: 240px"> { { $t('custom.tooltip-internal-link') } }<code>https://www.site.com</code>{{$t('custom.tooltip-internal-link2')}}</div>
+                           </div>
+                       </div>
+
+                       <div class="s-editor-option-body custom-mt-8">
+                           <input @input="show_buttons = true" v-model.trim="selection_attr.inputEmail" class="width-100 smaller custom-mr-0" type="text" :name="active_data.value" :placeholder="active_data.placeholder_internal">
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper custom-mb-12" v-if="active_data.value === 'block-link'">
+                       <div class="s-editor-header flexbox full-width">
+                           <div class="s-semi-header text-gray small">{ { $t('custom.Identifier') } }</div>
+                           <span id="tooltip-block-link" data-wa-tooltip-template="#tooltip-block1">
+                               <i class="fas fa-question-circle text-light-gray small"></i>
+                           </span>
+                           <div class="wa-tooltip-template" id="tooltip-block1" >
+                               <div style="width: 240px"> { { $t('custom.tooltip-block-link') } } <br><br> { { $t('custom.tooltip-block-link2') } }</div>
+                           </div>
+                       </div>
+                       <div class="s-editor-option-body custom-mt-8">
+                           <input @input="changeAnchor" v-model.trim="selection_attr.inputEmail" class="width-100 smaller custom-mr-0" type="text" :name="active_data.value" :placeholder="active_data.placeholder_internal">
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper small custom-mt-0 custom-mb-8" v-if="active_data.new_window">
+                       <label>
+                           <span class="wa-checkbox small">
+                               <input v-model="selection_attr.inputCheckbox" @change="show_buttons = true" type="checkbox" name="newWindowCheckbox">
+                               <span>
+                                   <span class="icon">
+                                       <i class="fas fa-check"></i>
+                                   </span>
+                               </span>
+                           </span>
+                           { { $t('custom.Open in new window') } }
+                       </label>
+                   </div>
+                   <div class="s-editor-option-wrapper small custom-mb-12" v-if="active_data.no_follow">
+                       <div class="s-editor-option-body">
+                           <label>
+                               <span class="wa-checkbox small">
+                                   <input v-model="selection_attr.inputCheckboxNoFollow" @change="show_buttons = true" type="checkbox" name="noFollowCheckbox">
+                                   <span>
+                                       <span class="icon">
+                                           <i class="fas fa-check"></i>
+                                       </span>
+                                   </span>
+                               </span>
+                               { { $t('custom.Prohibit the indexing of links by search engines') } }
+                           </label>
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper custom-mt-16" >
+                       <custom-button :buttonText="$t('custom.Save')" buttonClass="blue" @click="saveLink" v-show="show_buttons"></custom-button>
+                       <!--<custom-button buttonText="Cancel" buttonClass="light-gray" @click="$emit('closeDrawer')">Cancel</custom-button>
+                       <custom-button buttonClass="red" :buttonText="$t('custom.Delete')" @click="deleteLink" :title="$t('custom.Delete')" v-show="(show_buttons && !isEmptyData) || !isEmptyData"></custom-button>-->
+                   </div>
+               </div>
+           </div>
+          `,
+        component_product_link_group: `
+           <div class="s-editor-option-wrappers custom-mb-24">
+
+               <div class="s-editor-option-show" >
+                   <div class="s-editor-option-wrapper custom-mb-6">
+                       <div class="s-semi-header text-gray small">{{$t('custom.Storefront')}}</div>
+                       <div class="s-editor-option-body custom-mt-8">
+                           <link-action-dropdown @customChange="changeStorefront" :options="storefront_options" button_class="light-gray small" :activeOption="active_storefront" form_type="custom"></link-action-dropdown>
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper custom-mb-12" >
+                       <div class="s-editor-option-body custom-mt-8">
+                           <a :href="active_href" class="small" target="_blank">{{$t('custom.Product link')}} <span class="icon size-12"><i class="fas fa-external-link-alt"></i></span></a>
+                       </div>
+                   </div>
+                   <div class="s-editor-option-wrapper small custom-mt-0 custom-mb-8" >
+                       <label>
+                           <span class="wa-checkbox small">
+                               <input v-model="inputCheckboxNewPage" @change="saveLink" type="checkbox" name="newWindowCheckbox">
+                               <span>
+                                   <span class="icon">
+                                       <i class="fas fa-check"></i>
+                                   </span>
+                               </span>
+                           </span>
+                           {{$t('custom.Open in new window')}}
+                       </label>
+                   </div>
+                   <div class="s-editor-option-wrapper small custom-mb-12">
+                       <div class="s-editor-option-body">
+                           <label>
+                               <span class="wa-checkbox small">
+                                   <input v-model="inputCheckboxNoFollow" @change="saveLink" type="checkbox" name="noFollowCheckbox">
+                                   <span>
+                                       <span class="icon">
+                                           <i class="fas fa-check"></i>
+                                       </span>
+                                   </span>
+                               </span>
+                               {{$t('custom.Prohibit the indexing of links by search engines')}}
+                           </label>
+                       </div>
+                   </div>
+               </div>
+           </div>
+          `,
         component_button_style_group: `
            <div class="s-editor-option-wrapper">
                 <div class="s-semi-header text-gray small">{ { header_name } }</div>
@@ -436,6 +586,12 @@
                 </div>
             </div>
            `,
+        component_button_toggle_group: `
+            <div class="s-editor-option-wrapper">
+                <div class="switch-nobutton-group flexbox middle space-12">
+                    <switch-toggle activeName="switch-nobutton" :activeValue="active_class" :disabled=false @changeSwitch="changeSwitch" :textValue="$t('custom.Add nobutton style')" switchClass="smaller no-shrink custon-mt-4" class="small" ></switch-toggle>
+                </div>
+            </div>`,
         component_text_color_group: `
             <div class="s-editor-option-wrapper text-color">
                 <div class="s-semi-header text-gray small" v-if="semi_header">{ { $t('custom.' + semi_header, semi_header) } }</div>
@@ -486,9 +642,6 @@
                         :key="block_id+key+showChildren">
                     </component>
                 </div>
-                <!--<div class="s-editor-option-body custom-mt-8 width-100" v-if="header_name">
-                    <custom-button buttonClass="button light-gray width-100" :iconClass="buttonData.icon" :buttonText="$t('border_group.'+buttonData.name)" @click="toggleData(buttonData.value)" :key="buttonData.value"></custom-button>
-                </div>-->
             </div>
         </div>
         `,
@@ -667,9 +820,30 @@
                         <span class="button width-100 light-gray custom-mr-0 custom-mb-4" ><i class="fas fa-image"></i> { { image_data ? $t('custom.Change image') : $t('custom.Add image') } }</span>
                         <input name="namespace" type="file" autocomplete="off" @change="change($event)" @cancel="cancelFile($event)" accept="image/*">
                     </label>
-                    <span v-if="image_data" class="filename hint">{ { image_data } }</span>
+                    <span v-if="image_data" class="filename bold">{ { image_data } }</span>
                 </div>
             </div>
+        </div>
+        `,
+        component_video_upload_group: `
+        <div class="custom-mt-8 width-100 image-upload">
+
+            <div id="drop-area" @drop.stop.prevent="drop($event)">
+                <div class="upload s-small" >
+                    <div v-if="video_data.name" class="filename bold custom-mb-8">{ { video_data.name } }</div>
+                    <label class="link">
+                        <span class="button width-100 light-gray custom-mr-0 custom-mb-4" ><i class="fas fa-video"></i> { { video_data.name ? $t('custom.Change video') : $t('custom.Add video') } }</span>
+                        <input name="namespace" type="file" autocomplete="off" @change="change($event)" @cancel="cancelFile($event)" accept="video/*">
+                    </label>
+
+                </div>
+            </div>
+            <div class="s-semi-header hint custom-pb-0" v-html="
+                $t('custom.mp4 format is recommended')
+            "></div>
+            <switch-toggle activeName="switch-auto-play" :activeValue="video_data.auto_play" :disabled="switch_disabled" :key="switch_disabled" @changeSwitch="changeSwitchPlay($event, 'auto_play')" :textValue="$t('custom.Auto play')" switchClass="smaller no-shrink" class="custom-mt-12"></switch-toggle>
+            <switch-toggle activeName="switch-auto-loop" :activeValue="video_data.auto_loop" :disabled="switch_disabled" :key="switch_disabled" @changeSwitch="changeSwitchPlay($event, 'auto_loop')" :textValue="$t('custom.Auto loop')" switchClass="smaller no-shrink" class="custom-mt-12"></switch-toggle>
+            <switch-toggle activeName="switch-muted" :activeValue="video_data.muted" :disabled="switch_disabled" :key="switch_disabled" @changeSwitch="changeSwitchPlay($event, 'muted')" :textValue="$t('custom.Sound off')" switchClass="smaller no-shrink" class="custom-mt-12"></switch-toggle>
         </div>
         `,
         component_tags_group: `
@@ -682,6 +856,39 @@
             <div class="s-semi-header text-gray small custom-mt-8" v-if="semi_header">{ { $t('custom.' + semi_header) } }</div>
             <div class="s-editor-option-body custom-mt-8">
                 <tags-dropdown :options="arr_options" @customChange="change" :activeOption="active_option" :form_type="form_type" :block_data="block_data" :block_id="block_id"></tags-dropdown>
+            </div>
+        </div>
+        `,
+        component_image_seo_group: `
+        <div class="s-editor-option-wrapper">
+        <div class="s-editor-option-header flexbox full-width cursor-pointer">
+            <div class="s-header-name semibold small">
+                { { header_name } }
+            </div>
+        </div>
+            <div class="custom-mt-8">
+                <div class="s-semi-header text-gray small">
+                    { { $t('custom.alt for image') } }
+                    <span id="tooltip-alt" data-wa-tooltip-template="#tooltip-alt1">
+                        <i class="fas fa-question-circle text-light-gray"></i>
+                    </span>
+                    <div class="wa-tooltip-template" id="tooltip-alt1" >
+                        <div style="width: 240px"> { { $t('custom.tooltip-alt') } }</div>
+                    </div>
+                </div>
+                <input @change="change" v-model.trim="active_option_alt" class="small full-width custom-mt-8" type="text" name="alt" placeholder="alt">
+            </div>
+            <div class="custom-mt-16">
+                <div class="s-semi-header text-gray small">
+                    { { $t('custom.title for image') } }
+                    <span id="tooltip-title" data-wa-tooltip-template="#tooltip-title1">
+                        <i class="fas fa-question-circle text-light-gray"></i>
+                    </span>
+                    <div class="wa-tooltip-template" id="tooltip-title1" >
+                        <div style="width: 240px"> { { $t('custom.tooltip-title') } }</div>
+                    </div>
+                </div>
+                <input @change="change" v-model.trim="active_option_title" class="small full-width custom-mt-8" type="text" name="title" placeholder="title">
             </div>
         </div>
         `,
@@ -730,4 +937,3 @@
 
 
 })(jQuery);
-

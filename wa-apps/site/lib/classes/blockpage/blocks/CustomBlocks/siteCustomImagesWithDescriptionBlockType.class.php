@@ -79,6 +79,8 @@ class siteCustomImagesWithDescriptionBlockType extends siteBlockType {
         $block_props[$this->elements['main']] = [
             'padding-top'    => 'p-t-18',
             'padding-bottom' => 'p-b-18',
+            'padding-left' => 'p-l-blc',
+            'padding-right' => 'p-r-blc',
         ];
         $block_props[$this->elements['wrapper']] = [
             'padding-top'    => 'p-t-12',
@@ -131,7 +133,7 @@ class siteCustomImagesWithDescriptionBlockType extends siteBlockType {
      */
     public function getRawBlockSettingsFormConfig(): array {
         return [
-                'type_name'    => _w('Images with description'),
+                'type_name'    => _w('Block'),
                 'sections'     => $this->getFormSections(),
                 'elements'     => $this->elements,
                 'semi_headers' => [
@@ -152,8 +154,10 @@ class siteCustomImagesWithDescriptionBlockType extends siteBlockType {
             ['type' => 'RowsAlignGroup', 'name' => _w('Columns alignment')],
             ['type' => 'RowsWrapGroup', 'name' => _w('Wrap line')],
             ['type' => 'TabsWrapperGroup', 'name' => _w('Tabs')],
+            ['type' => 'CommonLinkGroup', 'name' => _w('Link or action'), 'is_hidden' => true],
             ['type' => 'MaxWidthToggleGroup', 'name' => _w('Max width')],
             ['type' => 'BackgroundColorGroup', 'name' => _w('Background')],
+            ['type' => 'HeightGroup', 'name' => _w('Height')],
             ['type' => 'PaddingGroup', 'name' => _w('Padding')],
             ['type' => 'MarginGroup', 'name' => _w('Margin')],
             ['type' => 'BorderGroup', 'name' => _w('Border')],
@@ -198,6 +202,8 @@ class siteCustomImagesWithDescriptionBlockType extends siteBlockType {
             $this->column_elements['main']    => [
                 'padding-top'         => 'p-t-12 p-t-10-mb',
                 'padding-bottom'      => 'p-b-12 p-b-10-mb',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align' => 'y-c',
@@ -248,6 +254,8 @@ class siteCustomImagesWithDescriptionBlockType extends siteBlockType {
                 'flex-align-vertical' => 'a-c-c',
                 'padding-bottom'      => 'p-b-12 p-b-10-mb',
                 'padding-top'         => 'p-t-12 p-t-10-mb',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align' => 'y-c',

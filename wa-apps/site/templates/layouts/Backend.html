@@ -23,6 +23,7 @@
             wa_url: {$wa_url|json_encode},
             app_url: {$wa_app_url|json_encode},
             backend_url: {$wa_backend_url|json_encode},
+            //shop_url: {$wa->getUrl('shop/frontend', [], true)|json_encode},
             is_debug: {$wa->debug()|json_encode},
             title_pattern: '%s — ' + {$wa->accountName(false)|json_encode},
             content_router_mode: {if empty($hide_wa_app_icons)}'xhr'{else}'reload'{/if},
@@ -35,8 +36,7 @@
     })();</script>
     {* CSS *}
     {$wa->css()}
-    <link href="{$wa_app_static_url}css/site.editor.css" rel="stylesheet">
-    <link href="{$wa_app_static_url}css/site.min.css?v={$wa->version()}" rel="stylesheet">
+    <link href="{$wa_app_static_url}css/site.backend.min.css?v={$wa->version()}" rel="stylesheet">
     <link href="{$wa_app_static_url}js/jquery/jquery-ui.css?v={$wa->version()}" rel="stylesheet">
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v{$wa->version(true)}"></script>
     {$wa->js()}

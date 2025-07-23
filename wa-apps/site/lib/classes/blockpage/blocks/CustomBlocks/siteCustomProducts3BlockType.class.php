@@ -121,6 +121,8 @@ class siteCustomProducts3BlockType extends siteBlockType {
         $block_props[$this->elements['main']] = [
             'padding-top'    => 'p-t-18',
             'padding-bottom' => 'p-b-18',
+            'padding-left' => 'p-l-blc',
+            'padding-right' => 'p-r-blc',
         ];
         $block_props[$this->elements['wrapper']] = [
             'padding-top'    => 'p-t-12',
@@ -173,7 +175,7 @@ class siteCustomProducts3BlockType extends siteBlockType {
      */
     public function getRawBlockSettingsFormConfig(): array {
         return [
-                'type_name'    => _w('Columns'),
+                'type_name'    => _w('Block'),
                 'sections'     => $this->getFormSections(),
                 'elements'     => $this->elements,
                 'semi_headers' => [
@@ -194,8 +196,10 @@ class siteCustomProducts3BlockType extends siteBlockType {
             ['type' => 'RowsAlignGroup', 'name' => _w('Columns alignment')],
             ['type' => 'RowsWrapGroup', 'name' => _w('Wrap line')],
             ['type' => 'TabsWrapperGroup', 'name' => _w('Tabs')],
+            ['type' => 'CommonLinkGroup', 'name' => _w('Link or action'), 'is_hidden' => true],
             ['type' => 'MaxWidthToggleGroup', 'name' => _w('Max width')],
             ['type' => 'BackgroundColorGroup', 'name' => _w('Background')],
+            ['type' => 'HeightGroup', 'name' => _w('Height')],
             ['type' => 'PaddingGroup', 'name' => _w('Padding')],
             ['type' => 'MarginGroup', 'name' => _w('Margin')],
             ['type' => 'BorderGroup', 'name' => _w('Border')],
@@ -213,13 +217,14 @@ class siteCustomProducts3BlockType extends siteBlockType {
      * @param siteBlockData $content
      * @return siteBlockData
      */
-    private function createColumn(string $column_classes, array $block_props, siteBlockData $content): siteBlockData {
+    private function createColumn(string $column_classes, array $props, siteBlockData $content): siteBlockData {
         $column = (new siteColumnBlockType())->getEmptyBlockData();
 
         $column->data = array_merge($this->column_base_props, [
             'elements'    => $this->column_elements,
             'column'      => $column_classes,
-            'block_props' => $block_props,
+            'block_props' => $props['block_props'] ?? [],
+            'inline_props' => $props['inline_props'] ?? [],
         ]);
 
         $column->addChild($content, '');
@@ -241,6 +246,8 @@ class siteCustomProducts3BlockType extends siteBlockType {
                 'flex-align-vertical' => 'a-c-c',
                 'padding-top'         => 'p-t-0',
                 'padding-bottom'      => 'p-b-0',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align' => 'y-c',
@@ -249,7 +256,9 @@ class siteCustomProducts3BlockType extends siteBlockType {
 
         return $this->createColumn(
             'st-9-lp st-9-tb st-7-mb st-9',
-            $block_props,
+            [
+                'block_props' => $block_props,
+            ],
             $vseq
         );
     }
@@ -267,6 +276,8 @@ class siteCustomProducts3BlockType extends siteBlockType {
             $this->column_elements['main']    => [
                 'flex-align-vertical' => 'a-c-c',
                 'padding-top'         => 'p-t-8',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align' => 'y-c',
@@ -275,7 +286,9 @@ class siteCustomProducts3BlockType extends siteBlockType {
 
         return $this->createColumn(
             'st-3 st-3-lp st-3-tb st-5-mb',
-            $block_props,
+            [
+                'block_props' => $block_props,
+            ],
             $vseq
         );
     }
@@ -298,6 +311,8 @@ class siteCustomProducts3BlockType extends siteBlockType {
             $this->column_elements['main']    => [
                 'padding-top'    => 'p-t-12',
                 'padding-bottom' => 'p-b-12',
+                'padding-left' => 'p-l-clm',
+                'padding-right' => 'p-r-clm',
             ],
             $this->column_elements['wrapper'] => [
                 'flex-align'     => 'y-c',
@@ -305,10 +320,22 @@ class siteCustomProducts3BlockType extends siteBlockType {
                 'padding-bottom' => 'p-b-12',
             ],
         ];
+        $inline_props = [
+            $this->column_elements['wrapper'] => [
+                'min-height' => [
+                    'name' => 'Fill parent',
+                    'value' => '100%',
+                    'type' => 'parent',
+                ],
+            ],
+        ];
 
         return $this->createColumn(
             'st-12-mb st-4 st-4-lp st-4-tb',
-            $block_props,
+            [
+                'block_props' => $block_props,
+                'inline_props' => $inline_props,
+            ],
             $vseq
         );
     }
@@ -446,6 +473,7 @@ class siteCustomProducts3BlockType extends siteBlockType {
                 'button-size'   => 'inp-m p-l-13 p-r-13',
                 'button-style'  => ['name' => 'Palette', 'value' => 'btn-blc-trnsp', 'type' => 'palette'],
                 'margin-bottom' => 'm-b-12',
+                'margin-top' => 'm-t-a',
             ],
         ];
 

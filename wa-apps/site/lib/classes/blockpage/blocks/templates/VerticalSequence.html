@@ -18,13 +18,13 @@
                 {if $is_columns}
                     <div class="dropdown">
                         <a class="btn button smaller">
-                            <span class="icon size-12">+</span>
+                            <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
                         </a>
                     </div>
                 {elseif $block_id}
                     <div class="dropdown" id="dropdown-{$value}-{$c.id|escape}">
                         <a class="btn button smaller circle dropdown-toggle without-arrow">
-                            <span class="icon size-12">+</span>
+                            <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
                         </a>
                         <div class="dropdown-body">
                             <div class="animation-box box">
@@ -34,7 +34,7 @@
                     </div>
                 {else}
                     <a class="btn button smaller">
-                        <span class="icon size-12">+</span>
+                        <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
                     </a>
                 {/if}
             {/if}
@@ -64,16 +64,6 @@
                     {_add_button value="2"}
                 </div>
             {/if}
-
-
-            {* This updates block data after new block has been added to page and whole VerticalSequence is reloaded *}
-            <script>$(() => setTimeout(function(){
-                $.wa.editor.updateBlockData({$c.id|json_encode}, {json_encode($c.data->data, constant('JSON_FORCE_OBJECT'))} || {});
-                {foreach $c.data->files as $file_key => $file}
-                    $.wa.editor.updateBlockFile({$c.id|json_encode}, {$file_key|json_encode}, {json_encode($file, constant('JSON_FORCE_OBJECT'))} || {});
-                {/foreach}
-                $.wa.editor.updateBlockSettingsFormConfig({$c.id|json_encode}, {json_encode($c.data->block_type->getBlockSettingsFormConfig(), constant('JSON_FORCE_OBJECT'))} || {});
-            }, 0));</script>
         </div>
     {/foreach}
 
@@ -84,7 +74,7 @@
         <div class="empty-seq-add {if $is_columns}js-add-column{else}js-add-element{/if}">
             <div class="dropdown" id="dropdown-empty-{$block_id}">
                 <a class="btn button smaller circle dropdown-toggle without-arrow">
-                    <span class="icon size-12">+</span>
+                    <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
                 </a>
                 <div class="dropdown-body">
                     <div class="animation-box box">
@@ -96,7 +86,7 @@
         {else}
         <div class="js-add-block">
             <a class="btn button small light-gray">
-                <span class="icon size-12 custom-mr-4">+</span> [`Add block to page`]
+                <span class="flexbox custom-mr-4"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>&nbsp;<span>[`Add block to page`]</span>
             </a>
         </div>
         {/if}

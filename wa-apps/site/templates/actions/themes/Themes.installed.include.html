@@ -10,10 +10,8 @@
         <div class="s-section-header">
             <span class="s-title">
                 <h4>[`Installed`]</h4>
-                <!-- TODO: loc -->
             </span>
             <button class="js-theme-upload-link button light-gray small" type="button"><i class="fas fa-cloud-upload-alt"></i> [`Upload custom theme`] <span class="hint">.tar.gz</span></button>
-            <!-- TODO: loc -->
         </div>
         <div id="js-installed-themes" class="s-themes-list-wrapper">
             <div class="s-themes-list custom-my-24">
@@ -26,7 +24,7 @@
 
                     {$_theme_id = $_theme->id}
                     {$_theme_url = "`$design_url`theme=`$_theme_id`&domain={$domain|urlencode}"}
-                    {if isset($used_domain_themes[$_theme_id])}
+                    {if !empty($used_domain_themes[$_theme_id])}
                         {$_theme_url = "`$_theme_url`&route=`$used_domain_themes[$_theme_id]`"}
                     {/if}
 
@@ -99,6 +97,10 @@
                     const is_active = $installed_themes.hasClass(active_class);
                     toggle(!is_active);
                 });
+
+                {if waRequest::get('is_extended')}
+                toggle(true)
+                {/if}
 
                 function toggle(show) {
                     const $icon = $toggle.find(".s-icon")[0],

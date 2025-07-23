@@ -189,7 +189,9 @@
                     {* FAVICON *}
                     <div class="field s-field-favicon">
                         {$has_favicon = !empty($favicon)}
-                        <div class="name">[`Favicon (.ico)`]</div>
+                        <div class="name">
+                            [`Site icon for browsers and search engines (favicon)`]
+                        </div>
                         <div class="value">
                             <div class="favicon-wrapper flexbox middle space-8 custom-pb-8" style="{if !$has_favicon}display: none{/if}">
                                 <i class="icon favicon-icon" style="background-image: url('{if $has_favicon}{$favicon.icon}{/if}');"></i>
@@ -210,6 +212,13 @@
                                 </div>
                             </div>
                             {if isset($favicon_message)}<div class="hint text-red custom-mt-8">{$favicon_message}</div>{/if}
+                            <div class="hint">
+                                [`Recommendations: square shape, 48x48 pixels size, PNG or ICO file format.`]
+                                <div class="semibold">
+                                    [`A PNG favicon will be additionally converted to the ICO format.`]
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -217,7 +226,7 @@
                     <div class="field s-field-touchicon">
 
                         {$has_touchicon = !empty($touchicon)}
-                        <div class="name">[`Touch icon for iOS (.png)`]</div>
+                        <div class="name">[`Icon for smartphones`]</div>
                         <div class="value">
                             <div class="touchicon-wrapper flexbox middle space-8 custom-pb-8" style="{if !$has_touchicon}display: none{/if}">
                                 <img src="{if $has_touchicon}{$touchicon.icon}{/if}" class="touchicon-icon">
@@ -238,8 +247,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="hint">[`from 152x152 and up to 1024x1024 px`]</div>
+                            <div class="hint">[`The icon is displayed, for instance, when a site label is added to smartphone home screen. Recommendations: square shape, from 192x192 to 1024x1024 pixels size, PNG file format.`]</div>
                             {if isset($touchicon_message)}<div class="hint text-red">{$touchicon_message}</div>{/if}
+                            <div class="custom-mt-8">
+                                <input type="text" name="touchicon_title" value="{$touchicon_title}">
+                                <div class="hint">[`Label under icon`]</div>
+                            </div>
                         </div>
                     </div>
 
@@ -569,6 +582,8 @@
                 that.$delete_content = options["$delete_content"];
                 that.redirect_after_delete = options["redirect_after_delete"];
                 that.storage = that.initStorage();
+                that.icon_mime_types = options["icon_mime_types"];
+                that.icon_extensions = options["icon_extensions"];
 
                 // INIT
                 that.initClass(options);
@@ -677,33 +692,28 @@
                     const tgt = evt.target || window.event.srcElement,
                         files = tgt.files,
                         file_ext = files[0].type;
-                    // FileReader support
-                    if (file_ext.includes('x-icon')){
+
+                    if (file_ext && that.icon_mime_types.includes(file_ext)) {
                         if (FileReader && files && files.length) {
                             const fr = new FileReader();
-
                             fr.onload = function () {
-
                                 $field_wrapper.find('i.favicon-icon').css('background-image', 'url(' + fr.result + ')');
                                 $field_wrapper.find('.favicon-name').text(files[0].name);
                                 $field_wrapper.find('.favicon-wrapper').show();
                             }
                             fr.readAsDataURL(files[0]);
-                        }
-                        // Not supported
-                        else {
+                        } else {
                             console.error('FileReader Not supported');
                         }
 
                         if ($input.val()) {
                             $file_delete.show();
-                        }
-                        else{
+                        } else{
                             $file_delete.hide();
                         }
-                    }
-                    else {
-                        $field_wrapper.find('.value').append('<div class="small text-red file-error">[`Files with extension *.ico are allowed only.`]</div>')
+                    } else {
+                        const msg = '[`Only files with name extensions %s are allowed.`]'.replace('%s', that.icon_extensions.map(ext => ('.'+ext)).join(', '));
+                        $field_wrapper.find('.value').append($('<div class="small text-red file-error" />').text(msg));
                         $input.val('');
                         $field_wrapper.find('.favicon-wrapper').hide();
                     }
@@ -1107,6 +1117,8 @@
             },
             dialog_add_app: {waRequest::get('dialog_add_app')|json_encode},
             scroll_to: {waRequest::get('scroll_to')|json_encode},
+            icon_extensions: ['icon', 'png'],
+            icon_mime_types: ['image/x-icon', 'image/vnd.microsoft.icon', 'image/png', 'image/jpeg', 'image/webp', 'image/gif'],
         });
     });
 

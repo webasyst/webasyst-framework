@@ -255,7 +255,7 @@
                                 {if $is_main}
                                     {" "}is-main
                                 {/if}
-                                {if $p.show_over_another_section}
+                                {if !empty($p.show_over_another_section)}
                                     {" "}url-overlap
                                 {/if}
                             {/strip}"
@@ -1699,3 +1699,28 @@
         {/literal}
 })();
 </script>
+{if waRequest::get('is_new_blockpage')}
+<script>
+    (function() {
+        {if $is_premium}
+            const defaults = "{waRequest::get('defaults')|default:''|urlencode}";
+            const params = new URLSearchParams({
+                is_new: 1,
+                domain_id: "{$domain_id}",
+                ...(defaults ? { defaults } : {})
+            });
+            $.get('?module=map&action=pageSettingsDialog&' + params, (html) => {
+                if (!html) return;
+                const dialog = $.waDialog({
+                    html
+                });
+            });
+        {else}
+            $.site.helper.showPremiumDialog();
+        {/if}
+        if (window.history) {
+            history.replaceState(null, '', "{$wa_app_url}map/overview/?domain_id={$domain_id}");
+        }
+    })();
+</script>
+{/if}

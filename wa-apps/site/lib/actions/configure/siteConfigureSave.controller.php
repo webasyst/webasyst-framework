@@ -150,21 +150,24 @@ class siteConfigureSaveController extends waJsonController
                 $save_config = true;
             }
 
+            $domain_config['touchicon_title'] = waRequest::post('touchicon_title', '', waRequest::TYPE_STRING_TRIM);
+
             //Delete cache problem domains
             $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');
             $cache_domain->delete();
             //Remove notification
             wa()->getStorage()->del('apps-count');
 
+            $this->saveFavicon();
+            $this->saveTouchicon();
+            siteHelper::updateFaviconsConfig($domain_config, true);
+
             if ($save_config && !waUtils::varExportToFile($domain_config, $domain_config_path)) {
                 $this->errors = sprintf(_w('Settings could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-config/apps/site/domains');
             } else {
                 $domain_config = $orig_domain_config;
             }
-
             $event_params['config'] = $domain_config;
-            $this->saveFavicon();
-            $this->saveTouchicon();
         }
         $this->saveRobots();
 
@@ -186,24 +189,60 @@ class siteConfigureSaveController extends waJsonController
     {
         $favicon = waRequest::file('favicon');
         if ($favicon->uploaded()) {
+            $allowed_extensions = ['ico', 'png'];
+            $allowed_mime_types = ['image/x-icon', 'image/vnd.microsoft.icon', 'image/png'];
             $ext = strtolower($favicon->extension);
-            $mime_favicon = $favicon->type === 'image/x-icon' || $favicon->type === 'image/vnd.microsoft.icon';
-            if ($ext !== 'ico' && !$mime_favicon) {
-                $this->errors = _w('Only files with name extension .ico are allowed.');
+            if (!in_array($ext, $allowed_extensions) && !in_array($favicon->type, $allowed_mime_types)) {
+                $this->errors = sprintf_wp(
+                    'Only files with name extensions %s are allowed.',
+                    implode(', ', array_map(function($ext) { return '.'.$ext; }, $allowed_extensions))
+                );
             } else {
                 $path = wa()->getDataPath('data/'.siteHelper::getDomain().'/', true);
                 if (!file_exists($path) || !is_writable($path)) {
                     $this->errors = sprintf(_w('File could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
-                } elseif (!$favicon->moveTo($path, 'favicon.ico')) {
-                    $this->errors = _w('Failed to upload file.');
+                } else {
+                    if ($ext === 'ico') {
+                        if (!$favicon->moveTo($path, 'favicon.ico')) {
+                            $this->errors = _w('Failed to upload file.');
+                        } else {
+                            $this->removeIcons([
+                                'favicon-96.png',
+                            ]);
+                        }
+                    } else {
+                        // if PNG favicon
+                        $image_width = $favicon->waImage()->width;
+                        $image_height = $favicon->waImage()->height;
+                        // create copies of icons with a different resolution
+
+                        $max_png_size = 16;
+                        $ico_sizes = [];
+                        foreach ([16, 32, 48] as $size) {
+                            if ($image_width >= $size && $image_height >= $size) {
+                                $max_png_size = $size;
+                                $ico_sizes[] = [$size, $size];
+                            }
+                        }
+
+                        $max_png_size = $image_width >= 96 && $image_height >= 96 ? 96 : $max_png_size;
+
+                        $favicon->waImage()->resize($max_png_size, $max_png_size)->save($path.'favicon-96.png');
+
+                        $imageToIco = new siteImageToIco($favicon->waImage()->file, $ico_sizes);
+                        if (!$imageToIco->save_ico($path.'favicon.ico')) {
+                            $this->errors = _w('Failed to upload file.');
+                        }
+                    }
                 }
             }
         } elseif ($favicon->error_code != UPLOAD_ERR_NO_FILE) {
             $this->errors = $favicon->error;
         } elseif (waRequest::post('remove_favicon')) {
-            $domain = siteHelper::getDomain();
-            $path = wa()->getDataPath(null, true).'/data/'.$domain.'/favicon.ico';
-            waFiles::delete($path);
+            $this->removeIcons([
+                'favicon.ico',
+                'favicon-96.png',
+            ]);
         }
     }
 
@@ -218,16 +257,87 @@ class siteConfigureSaveController extends waJsonController
                 $path = wa()->getDataPath('data/'.siteHelper::getDomain().'/', true);
                 if (!file_exists($path) || !is_writable($path)) {
                     $this->errors = sprintf(_w('File could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
-                } elseif (!$touchicon->moveTo($path, 'apple-touch-icon.png')) {
-                    $this->errors = _w('Failed to upload file.');
+                    return;
+                } else {
+                    $resized_image = $touchicon->waImage()->resize(180, 180);
+                    if (!$resized_image->save($path.'apple-touch-icon.png')) {
+                        $this->errors = _w('Failed to upload file.');
+                    }
                 }
             }
+            // create webmanifest for Android
+            $this->updateWebmanifest($touchicon->waImage());
+
         } elseif ($touchicon->error_code != UPLOAD_ERR_NO_FILE) {
             $this->errors = $touchicon->error;
         } elseif (waRequest::post('remove_touchicon')) {
-            $domain = siteHelper::getDomain();
-            $path = wa()->getDataPath(null, true).'/data/'.$domain.'/apple-touch-icon.png';
-            waFiles::delete($path);
+            $this->removeIcons([
+                'apple-touch-icon.png',
+                'favicon-192.png',
+                'site.webmanifest'
+            ]);
+        } else {
+            $this->updateWebmanifest();
+        }
+    }
+
+    protected function updateWebmanifest(?waImage $favicon = null)
+    {
+        $domain = siteHelper::getDomain();
+        $path = wa()->getDataPath('data/'.$domain.'/', true);
+        if (!file_exists($path) || !is_writable($path)) {
+            $this->errors = sprintf(_w('File could not be saved due to insufficient file write permissions for folder “%s”.'), 'wa-data/public/site/data/'.$domain);
+            return;
+        }
+
+        $manifest_file = $path.'site.webmanifest';
+        $manifest_icons = [
+            'favicon-192.png' => 192,
+        ];
+        if (file_exists($manifest_file)) {
+            $file_data = @file_get_contents($manifest_file);
+            if (!$file_data && !is_string($file_data)) {
+                throw new waException('Webmanifest is not correct.');
+            }
+            $data = waUtils::jsonDecode($file_data, true);
+
+            // remove old icons
+            if ($favicon) {
+                $this->removeIcons(array_keys($manifest_icons));
+                $data['icons'] = [];
+            }
+        } else {
+            $data = ['icons' => []];
+        }
+
+        $data = array_merge($data, [
+            'theme_color' => '#ffffff',
+            'background_color' => '#ffffff',
+            'display' => 'standalone'
+        ]);
+
+        if ($touchicon_title = waRequest::post('touchicon_title', '', waRequest::TYPE_STRING_TRIM)) {
+            $data['name'] = $touchicon_title;
+            $data['short_name'] = $touchicon_title;
+        }
+
+        if ($favicon) {
+            $data_url = wa()->getDataUrl('data/'.$domain.'/', true);
+            foreach ($manifest_icons as $icon => $size) {
+                $favicon_copy = clone $favicon;
+                if ($favicon_copy->resize($size, $size)->save($path.$icon)) {
+                    $icon_data = [
+                        'src' => $data_url.$icon.'?v='.filemtime($path.$icon),
+                        'sizes' => $size.'x'.$size,
+                        'type' => 'image/png'
+                    ];
+                    $data['icons'][] = $icon_data;
+                }
+            }
+        }
+
+        if (!empty($data['icons'])) {
+            waFiles::write($manifest_file, waUtils::jsonEncode($data));
         }
     }
 
@@ -242,6 +352,14 @@ class siteConfigureSaveController extends waJsonController
             }
         } elseif (file_exists($path.'robots.txt')) {
             waFiles::delete($path.'robots.txt');
+        }
+    }
+
+    private function removeIcons($icons)
+    {
+        $path = wa()->getDataPath(null, true).'/data/'.siteHelper::getDomain().'/';
+        foreach($icons as $icon) {
+            waFiles::delete($path.$icon, true);
         }
     }
 }

@@ -21,6 +21,7 @@ var that = $.site = {
         that.backend_url = opts.backend_url;
         that.app_url = opts.app_url;
         that.wa_url = opts.wa_url;
+        //that.shop_url = opts.shop_url;
     },
 
     initAfterLoad: function(opts) {

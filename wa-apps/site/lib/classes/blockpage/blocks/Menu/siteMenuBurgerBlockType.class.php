@@ -22,7 +22,7 @@ class siteMenuBurgerBlockType extends siteBlockType
         $result = $this->getEmptyBlockData();
         $result->addChild($hseq, '');
         $card_props = array();
-        $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'visibility' => 'd-n-tb d-n-lp d-n-ds'];
+        $card_props[$this->elements['main']] = ['padding-top' => "p-t-0", 'padding-bottom' => "p-b-0", 'padding-left' => "p-l-clm", 'padding-right' => "p-r-clm", 'visibility' => 'd-n-tb d-n-lp d-n-ds'];
         $card_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", "border-radius" => "b-r-l", 'flex-align' => "y-c"];
         $result->data = ['block_props' => $card_props];
         $result->data['elements'] = $this->elements;
@@ -67,8 +67,8 @@ class siteMenuBurgerBlockType extends siteBlockType
             ],
             'elements' => $this->elements,
             'semi_headers' => [
-                'main' => _w('Whole block'),
-                'wrapper' => _w('Container'),
+                'main' => _w('Whole column'),
+                'wrapper' => _w('Content'),
             ]
         ] + parent::getRawBlockSettingsFormConfig();
     }

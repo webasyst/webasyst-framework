@@ -80,6 +80,24 @@ function allJs() {
 // CSS function
 
 function css() {
+    const source = 'css/styl/site.backend.styl';
+
+    return src(source)
+        .pipe(stylus({
+            use: nib(),
+            compress: true
+        }))
+        .pipe(autoprefixer({
+            overrideBrowserslist: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(rename({
+            extname: '.min.css'
+        }))
+        .pipe(dest('./css/'));
+}
+
+function cssEditor() {
     const source = 'css/styl/site.styl';
 
     return src(source)
@@ -101,9 +119,9 @@ function css() {
 
 function watchFiles() {
     watch('css/styl/**/*.styl', css);
-    
+    watch('css/styl/**/*.styl', cssEditor);
     js_sources.forEach((p) => {
-        watchJs(p[1], p[0]);
+        watchJs(p[1], p[0]);    
     });
 
     function watchJs(files, output) {
@@ -113,4 +131,4 @@ function watchFiles() {
 
 
 exports.watch = watchFiles;
-exports.default = parallel(allJs(), css);
+exports.default = parallel(allJs(), css, cssEditor);

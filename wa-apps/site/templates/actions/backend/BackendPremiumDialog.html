@@ -1,5 +1,16 @@
 <div class="dialog s-premium">
     <style>
+        {if !empty($dont_blur_nav)}
+        .dialog.s-premium { top: 4rem; z-index: 99; }
+        .dialog.s-premium .dialog-body { transform: translateY(-4rem); }
+        @media screen and (max-width: 1366px) {
+            .dialog.s-premium .dialog-body { transform: translateY(-2rem); }
+        }
+        @media screen and (max-width: 760px) {
+            .dialog.s-premium .dialog-body { transform: none; }
+            .dialog.s-premium .dialog-footer { flex: 1 0 100px; }
+        }
+        {/if}
         .s-premium .s-premium-features > * { max-width: 344px; }
         .s-premium .s-premium-features ul { padding-inline-start: 1.875rem; }
         .s-premium .s-premium-features ul > li { position: relative; margin-top: 0.75rem; line-height: 1.5rem; }
@@ -15,13 +26,19 @@
             background-repeat: no-repeat;
         }
         .s-premium .s-premium-features ul > li .badge { font-weight: 400; }
-        @media screen and (min-width: 992px) {
+        @media screen and (min-width: 1024px) {
             .s-premium .dialog-body { width: 800px; }
+        }
+        @media screen and (max-width: 1024px) {
+            .s-premium .s-premium-features { justify-content: center; }
+            .s-premium .s-premium-features > *, .s-premium .s-premium-logo-wrapper { max-width: 420px; margin: 0 auto; }
         }
     </style>
     <div class="dialog-background"></div>
     <div class="dialog-body">
-        <a href="javascript:void(0)" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        {if empty($hide_close)}
+            <a href="javascript:void(0)" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+        {/if}
         <div class="dialog-content">
             <div class="s-premium-logo-wrapper align-center">
                 <div class="s-premium-logo custom-mb-8">
@@ -31,7 +48,7 @@
                 <div>[`Discover advanced features for your projects with the premium version.`]</div>
             </div>
 
-            <div class="s-premium-features flexbox vertical-mobile space-32 custom-mt-40 custom-ml-16">
+            <div class="s-premium-features flexbox space-32 wrap custom-mt-40 custom-ml-16">
                 <div>
                     <div class="align-center">
                         <div class="icon size-48">

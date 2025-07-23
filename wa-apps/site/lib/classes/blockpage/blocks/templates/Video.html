@@ -1,38 +1,162 @@
 {$static_classes_props = 'site-block-video style-wrapper f-w ovr-hdn vid-ifr'}
 {$default_empty_image_url = "`$wa_app_static_url`img/music-video-background.svg"}
 {$html = ifset($data->data, 'html', '')}
+{$is_upload_type = ifset($data->data['video'], 'type', false) === 'upload'}
+{if $is_upload_type}
+    {$video_src = $data->getFileUrl('')}
+    {$auto_play = ifset($data->data['video'], 'auto_play', false)}
+    {$auto_loop = ifset($data->data['video'], 'auto_loop', false)}
+    {$muted = ifset($data->data['video'], 'muted', false)}
+{/if}
+
 {$anchor_id = $data->data['id']|default:0}
 {if $is_backend}
     <div class="child-iframe-cover"></div>
 {/if}
 <div {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_classes_props} m-l-a m-r-a" data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
-    <div class="iframe-picture-cover" style="background-image: url({$default_empty_image_url}); {if !empty($html)}display: none;{/if}"></div>
+    <div class="iframe-picture-cover" style="background-image: url({$default_empty_image_url}); {if $is_upload_type || !empty($html)}display: none;{/if}"></div>
     <div class="iframe-wrapper">
-        {if $is_backend}{$wa->site->sanitizeHTML($html)}{else}{$html}{/if}
+        {if $is_upload_type}
+            <video id="customVideo" poster="{*$default_empty_image_url|escape*}" {if $auto_play}autoplay{/if} {if $auto_loop}loop{/if} {if $muted}muted{/if}>
+                <source src="{$video_src|default:''|escape}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div id="playPauseOverlayBtn">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 60%; height: 60%; fill: white;"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+        {else}
+            {if $is_backend}{$wa->site->sanitizeHTML($html)}{else}{$html}{/if}
+        {/if}
+
     </div>
 </div>
 
 {if $is_backend}
 <script>$(function() { "use strict";
-
     const block_id = {$data->getId()|json_encode};
     const wrapper_class = '.site-block-video[data-block-id="'+block_id+'"]';
     const $wrapper_parent = $(wrapper_class).parent();
+    const $video = $wrapper_parent.find('video');
+    const $iframe_wrapper = $wrapper_parent.find('.iframe-wrapper');
+
+    let base_data = {$data->data|json_encode};
 
     $wrapper_parent.on('block_data_updated', wrapper_class, function(event, updated_block_id, data) {
         event.stopPropagation();
         if (+updated_block_id === +block_id) {
             updateBlockStyles($(this), data, block_id);
-            $(this).find('.iframe-wrapper').html(SiteEditorInsideIframe.sanitizeHTML(data.html));
+            base_data = data;
+            if (data.video?.type === "code") {
+                $iframe_wrapper.html(SiteEditorInsideIframe.sanitizeHTML(data.html));
+            }
+        }
+    });
+
+    $wrapper_parent.on('block_file_updated', function(event, updated_block_id, key, file) {
+        if (updated_block_id == block_id && key == '' && base_data?.video?.type === "upload") {
+            if (file && file.url) {
+                $iframe_wrapper.html('<video id="customVideo"><source src="' + file.url + '" type="video/mp4" /></video><div id="playPauseOverlayBtn"> <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 60%; height: 60%; fill: white;"><path d="M8 5v14l11-7z"/></svg></div>')
+                $wrapper_parent.find('.iframe-picture-cover').hide();
+            } else {
+                $iframe_wrapper.html('<source src="" type="video/mp4')
+                $wrapper_parent.find('.iframe-picture-cover').show();
+                //'<img src="' + empty_url + '" />';
+            }
         }
     });
 });
 </script>
 {else}
-<script>$(function() { "use strict";
+<script>(function() { "use strict";
     const block_id = {$data->getId()|json_encode};
     const $wrapper = $('.site-block-video[data-block-id="'+block_id+'"]');
     const data = {$data->data|json_encode};
     updateBlockStyles($wrapper, data, block_id);
+})();</script>
+{/if}
+
+{if $is_upload_type}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.site-block-video[data-block-id="'+block_id+'"]');
+    const customVideo = $wrapper.find("#customVideo")[0];
+    const playPauseOverlayBtn = $wrapper.find("#playPauseOverlayBtn")[0];
+    let overlayButtonTimeout;
+
+    const playIconSVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 60%; height: 60%; fill: white;"><path d="M8 5v14l11-7z"/></svg>';
+    const pauseIconSVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 60%; height: 60%; fill: white;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+
+    function togglePlayPause() {
+      if (customVideo.paused || customVideo.ended) {
+        customVideo.play();
+      } else {
+        customVideo.pause();
+      }
+      updatePlayPauseButton();
+    }
+
+    function updatePlayPauseButton() {
+      if (customVideo.paused || customVideo.ended) {
+        playPauseOverlayBtn.innerHTML = playIconSVG;
+        playPauseOverlayBtn.classList.remove('fade-out');
+      } else {
+        playPauseOverlayBtn.innerHTML = pauseIconSVG;
+      }
+    }
+
+    function showOverlayButton() {
+      playPauseOverlayBtn.classList.remove('fade-out');
+      clearTimeout(overlayButtonTimeout);
+    }
+
+    function hideOverlayButtonAfterDelay() {
+      if (!customVideo.paused) {
+        clearTimeout(overlayButtonTimeout);
+        overlayButtonTimeout = setTimeout(function() {
+          playPauseOverlayBtn.classList.add('fade-out');
+        }, 3000);
+      }
+    }
+
+    playPauseOverlayBtn.addEventListener('click', togglePlayPause)
+
+    // События для автоскрытия кнопки
+    customVideo.addEventListener('play', function() {
+      updatePlayPauseButton();
+      hideOverlayButtonAfterDelay();
+    });
+
+    customVideo.addEventListener('pause', function() {
+      updatePlayPauseButton();
+      showOverlayButton();
+      clearTimeout(overlayButtonTimeout);
+    });
+
+    customVideo.addEventListener('ended', function() {
+      updatePlayPauseButton();
+      showOverlayButton();
+      clearTimeout(overlayButtonTimeout);
+    });
+
+    // Показываем кнопку при наведении мыши
+    customVideo.parentElement.addEventListener('mousemove', function() {
+      showOverlayButton();
+      hideOverlayButtonAfterDelay();
+    });
+
+    customVideo.parentElement.addEventListener('mouseleave', function() {
+      if (!customVideo.paused) {
+        hideOverlayButtonAfterDelay();
+      }
+    });
+
+    // Для тач устройств
+    customVideo.parentElement.addEventListener('touchstart', function() {
+      showOverlayButton();
+    }, { passive: true });
+
+    // Инициализация
+    updatePlayPauseButton();
 });</script>
+
 {/if}

@@ -15,9 +15,10 @@ class siteEditorAction extends waViewAction
             }
             $pages = $blockpage_model->getByDomain($domain_id);
             if (!$pages) {
-                $templates = new siteBlockpageTemplates();
-                $templates->createFromDefaultTemplate($domain_id);
-                $pages = $blockpage_model->getByDomain($domain_id);
+                // Page templates are currently not used, but may come back in future
+                //$templates = new siteBlockpageTemplates();
+                //$templates->createFromDefaultTemplate($domain_id);
+                //$pages = $blockpage_model->getByDomain($domain_id);
             }
             $page = reset($pages);
         } else {
@@ -107,10 +108,12 @@ class siteEditorAction extends waViewAction
             $bb = $b;
             while (!empty($bb['parent_id']) && !empty($blocks[$bb['parent_id']])) {
                 $bb = $blocks[$bb['parent_id']];
-                $parents[] = [
-                    'id' => $bb['id'],
-                    'type_name' => ifset($block_form_config, $bb['type'], 'type_name', $bb['type']),
-                ];
+                if ($bb['type'] != 'site.VerticalSequence') {
+                    $parents[] = [
+                        'id' => $bb['id'],
+                        'type_name' => ifset($block_form_config, $bb['type'], 'type_name', $bb['type']),
+                    ];
+                }
             }
             if (!empty($bb['parent_id'])) {
                 unset($blocks[$bb['id']]);
@@ -127,9 +130,6 @@ class siteEditorAction extends waViewAction
                 'files' => 0,
             ]);
             $b['parents'] = $parents;
-        }
-        foreach($blocks as &$b) {
-            unset($b['parent_id']);
         }
         unset($b);
         return [$blocks, $block_form_config];

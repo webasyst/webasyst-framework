@@ -21,6 +21,11 @@ class siteMapPageSettingsDialogAction extends waViewAction
     public function execute()
     {
         $is_new = waRequest::request('is_new', 0, 'int');
+        $defaults = waRequest::request('defaults', [], waRequest::TYPE_STRING_TRIM);
+        if ($defaults) {
+            $defaults = @urldecode($defaults);
+            $defaults = @json_decode($defaults, true);
+        }
 
         $page = [];
         $page_params = [];
@@ -85,13 +90,19 @@ class siteMapPageSettingsDialogAction extends waViewAction
         }
 
         if (!$this->page_id) {
-            $new_url = siteHelper::getIncrementUrl();
+            $new_url = ifset($defaults, 'url', siteHelper::getIncrementUrl());
             $page['full_url'] = (!empty($page['full_url']) ? $page['full_url'].'/' : ''). $new_url;
             $page = $page + [
-                'name' => _w('New page'),
+                'name' => ifset($defaults, 'name', _w('New page')),
                 'url' => $new_url,
+                'title' => ifset($defaults, 'title', ''),
                 'is_new' => $is_new,
             ];
+        }
+
+        if (!empty($defaults['params'])) {
+            $page_params['meta_keywords'] = ifset($defaults['params'], 'meta_keywords', '');
+            $page_params['meta_description'] = ifset($defaults['params'], 'meta_description', '');
         }
 
         $domain_decoded = (new waIdna())->decode(siteHelper::getDomain());

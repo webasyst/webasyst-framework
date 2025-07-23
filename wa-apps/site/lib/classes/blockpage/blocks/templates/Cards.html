@@ -3,7 +3,7 @@
     'wrapper' => '',
     'main' => ''
 ])}
-{$static_main = "`$elements.main` f-w blc"}
+{$static_main = "`$elements.main` f-w"}
 {$static_wrapper = "`$elements.wrapper` style-wrapper rw"}
 {$anchor_id = $data->data['id']|default:0}
 <section {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-block-id="{$block_id|escape}" data-page-id="{$data->getPageId()|escape}" data-static="{$static_main}" >
@@ -28,10 +28,10 @@
 </script>
 
 {else}
-<script>$(function() { "use strict";
+<script>(function() { "use strict";
     const block_id = {$data->getId()|json_encode};
     const $wrapper = $('.site-block-cards[data-block-id="'+block_id+'"]');
     const data = {$data->data|json_encode};
     updateBlockStyles($wrapper, data, block_id);
-});</script>
+})();</script>
 {/if}

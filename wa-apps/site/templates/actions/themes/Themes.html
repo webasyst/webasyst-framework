@@ -87,7 +87,7 @@
 <script type="text/javascript">
     $(function () {
         $.themes = {
-            $list: null,
+            $themes_installed: null,
             $content: null,
             $store_content: null,
             options: {
@@ -111,7 +111,7 @@
                 }
                 this.ready = true;
 
-                this.$list = $("#wa-themes-installed");
+                this.$themes_installed = $("#wa-themes-installed");
                 this.$content = $("#wa-theme-content");
                 this.$store_content = $("#wa-themes-store");
 
@@ -166,7 +166,7 @@
 
                 this.path.tail = null;
                 if (path.theme) {
-                    $theme = this.$list.find('.s-theme-wrapper[data-id="'+path.theme+'"]');
+                    $theme = this.$themes_installed.find('.s-theme-wrapper[data-id="'+path.theme+'"]');
                 }
 
                 var url = this.helper.getContentUrl($theme, path);
@@ -202,6 +202,11 @@
                 });
             },
 
+            reloadThemesInstalled: function() {
+                const is_extended_param = this.$themes_installed.find('.s-themes-list-wrapper.is-extended').length ? '&is_extended=1' : '';
+                this.$themes_installed.load('?module=themes&action=themesInstalled' + is_extended_param);
+            },
+
             helper: {
                 getContentUrl: function ($item, path) {
                     var url = '';
@@ -224,11 +229,11 @@
             },
 
             showList: function () {
-                this.$list.show();
+                this.$themes_installed.show();
                 this.$content.addClass('hidden')
             },
             hideList: function () {
-                this.$list.hide();
+                this.$themes_installed.hide();
             },
             showStore: function () {
                 this.$store_content.show();
@@ -250,7 +255,7 @@
         $.themes.init();
 
         {* запоминаем к настройкам какой темы нужно перейти после обновления страницы *}
-        $(document).on('installer_after_install_go_to_settings', function(e, data) {
+        $(document).on('installer_after_install_go_to_settings', (e, data) => {
             if (data.type === 'theme') {
                 sessionStorage.setItem('wa_theme_onload', data.id);
                 location.reload();
@@ -262,6 +267,10 @@
                 sessionStorage.removeItem('wa_theme_onload');
             }).click();
         }
+
+        $(document).on('installer_installation_successfull', () => {
+            $.themes.reloadThemesInstalled();
+        });
     });
 </script>
 

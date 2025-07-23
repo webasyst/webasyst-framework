@@ -68,7 +68,8 @@ class siteColumnsBlockType extends siteBlockType
         $column_count = $this->options['columns'];
 
         return [
-            'type_name' => _w('Columns'),
+            'type_name' => _w('Block'),
+            'type_name_original' => _w('Columns'),
             'sections' => [
                 [   'type' => 'ColumnsGroup',
                     'name' => _w('Columns'),

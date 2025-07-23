@@ -77,10 +77,10 @@ class siteFooterBottomBlockType extends siteBlockType
         $hseq = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq->data['is_horizontal'] = true;
         $hseq->data['is_complex'] = 'only_columns';
-        //$hseq->data['indestructible'] = true;
+        $hseq->data['indestructible'] = true;
         $column_count = ifset($this->options, 'columns', 2);
         $column_props = array();
-        $column_props[$this->elements['main']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", 'background' => ["name" => "grey shades","value" => "bg-bw-8", "type" => "palette","uuid" => 1, "layers" => [["name" => "grey shades", "value" => "bg-bw-8", "type" => "palette", "uuid" => 1]]]];
+        $column_props[$this->elements['main']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", 'padding-left' => "p-l-blc", 'padding-right' => "p-r-blc", 'background' => ["name" => "grey shades","value" => "bg-bw-8", "type" => "palette","uuid" => 1, "layers" => [["name" => "grey shades", "value" => "bg-bw-8", "type" => "palette", "uuid" => 1]]]];
         $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-10", 'padding-bottom' => "p-b-10", 'flex-align-vertical' => "x-c", 'max-width' => "cnt"];
         $result = $this->getEmptyBlockData();
         //$columns_arr = array();
@@ -106,7 +106,8 @@ class siteFooterBottomBlockType extends siteBlockType
     public function getRawBlockSettingsFormConfig()
     {
         return [
-            'type_name' => _w('Footer bottom'),
+            'type_name' => _w('Block'),
+            'type_name_original' => _w('Footer bottom'),
             'sections' => [
                 [   'type' => 'MenuToggleGroup',
                     'name' => _w('Footer toggle'),
@@ -119,6 +120,10 @@ class siteFooterBottomBlockType extends siteBlockType
                 ],
                 [  'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],
+                [   'type' => 'CommonLinkGroup',
+                    'name' => _w('Link or action'),
+                    'is_hidden' => true,
                 ],
                 [   'type' => 'MaxWidthToggleGroup',
                     'name' => _w('Max width'),

@@ -164,6 +164,11 @@ class siteBlockPage
         // render global block, it recursively takes care of the rest
         $all_blocks_html = $global_block_type->render($global_block_data->ensureAdditionalData(), $is_backend);
 
+        if ($is_backend) {
+            // Editor-specific data for JS: block settings forms, breadcrumbs
+            $all_blocks_html .= $this->renderScriptUpdateEditorData($global_block_data);
+        }
+
         $res = $this->formatGlobalJS($global_js)."\n".
                $this->formatGlobalCSS($global_css)."\n\n".
                $this->formatGlobalHTML($global_html)."\n\n".
@@ -175,6 +180,40 @@ class siteBlockPage
            $res = $theme_view->fetch('blockpage.wrapper.html');
        }
        return $res;
+    }
+
+    // This JS script updates block data inside backend editor after new block has been added to page and whole block is reloaded
+    protected function renderScriptUpdateEditorData($block_data, $wrap_with_script=true)
+    {
+        $c = $block_data;
+        $result = '$.wa.editor.updateBlockSettingsFormConfig('.
+            waUtils::jsonEncode($c->getId()).', '.
+            waUtils::jsonEncode($c->block_type->getBlockSettingsFormConfig(), JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE).' || {}'.
+        ");\n";
+        $result .= '$.wa.editor.updateBlockData('.
+            waUtils::jsonEncode($c->getId()).', '.
+            waUtils::jsonEncode($c->data, JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE).' || {}, '.
+            waUtils::jsonEncode(ifset($c->db_row, 'parent_id', null)).
+        ");\n";
+
+        foreach ($c->files as $file_key => $file) {
+            $result .= '$.wa.editor.updateBlockFile('.
+                waUtils::jsonEncode($c->getId()).', '.
+                waUtils::jsonEncode($file_key).', '.
+                waUtils::jsonEncode($file, JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE).' || {}'.
+            ");\n";
+        }
+
+        foreach($c->children as $child_key => $arr) {
+            foreach($arr as $child) {
+                $result .= $this->renderScriptUpdateEditorData($child, false);
+            }
+        }
+
+        if ($wrap_with_script) {
+            $result = "<script executor>$(()=>setTimeout(()=>{\n{$result}\n$('script[executor]').remove();},0));</script>";
+        }
+        return $result;
     }
 
     protected function getAllBlockTypesFromData(siteBlockData $data)

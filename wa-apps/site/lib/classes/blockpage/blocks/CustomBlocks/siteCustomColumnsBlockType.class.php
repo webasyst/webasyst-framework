@@ -40,7 +40,7 @@ class siteCustomColumnsBlockType extends siteBlockType
         $column_block_type->data['column'] = $column_wrapper_class;
 
         $column_props = array();
-        $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20"];
+        $column_props[$this->elements['main']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'padding-left' => 'p-l-clm', 'padding-right' => 'p-r-clm'];
         $column_props[$this->elements['wrapper']] = ['padding-top' => "p-t-20", 'padding-bottom' => "p-b-20", 'flex-align' => "y-c", 'max-width' => "cnt"];
 
         $result = $this->getEmptyBlockData();
@@ -67,7 +67,7 @@ class siteCustomColumnsBlockType extends siteBlockType
         $column_count = $this->options['columns'];
 
         return [
-            'type_name' => _w('Columns'),
+            'type_name' => _w('Block'),
             'sections' => [
                 [
                     'type' => 'ColumnsGroup',
@@ -84,6 +84,10 @@ class siteCustomColumnsBlockType extends siteBlockType
                 [
                     'type' => 'TabsWrapperGroup',
                     'name' => _w('Tabs'),
+                ],                    
+                [   'type' => 'CommonLinkGroup',
+                    'name' => _w('Link or action'),
+                    'is_hidden' => true,
                 ],
                 [
                     'type' => 'MaxWidthToggleGroup',

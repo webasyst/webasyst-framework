@@ -9,7 +9,7 @@
     'main' => ''
 ])}
 
-{$static_main = "`$elements.main` f-w blc"}
+{$static_main = "`$elements.main` f-w"}
 {$static_wrapper = "`$elements.wrapper` style-wrapper"}
 
 {$render_only_app_template = $is_backend || (!$is_backend && $enable_app_template)}
@@ -36,7 +36,7 @@
     const block_id = {$data->getId()|json_encode};
     const $block_wrapper = $('.site-block-menu[data-block-id="'+block_id+'"]');
     const data = {$data->data|json_encode};
-    
+
     $block_wrapper.on('block_data_updated', function(event, updated_block_id, data) {
         event.stopPropagation();
         if (updated_block_id == block_id) {
@@ -59,10 +59,10 @@
 
 </script>
 {else}
-<script>$(function() { "use strict";
+<script>(function() { "use strict";
     const block_id = {$data->getId()|json_encode};
     const $wrapper = $('.site-block-menu[data-block-id="'+block_id+'"]');
     const data = {$data->data|json_encode};
     updateBlockStyles($wrapper, data, block_id);
-});</script>
+})();</script>
 {/if}

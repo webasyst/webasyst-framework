@@ -116,7 +116,21 @@
             'icon': 'fa-circle',
             'values': [
                 {name: "Default", value: "#000", type: 'self_color'},
-            ]
+            ],
+            'palette': {
+                'black and white': [ "tx-blc", "tx-wh"],
+                'grey shades': ["tx-bw-1", "tx-bw-2", "tx-bw-3", "tx-bw-4", "tx-bw-5", "tx-bw-6", "tx-bw-7", "tx-bw-8"],
+                'semi-transparent-black': ["tx-b-opc-1", "tx-b-opc-2", "tx-b-opc-3", "tx-b-opc-4", "tx-b-opc-5", "tx-b-opc-6", "tx-b-opc-7", "tx-b-opc-8"],
+                'semi-transparent-white': ["tx-w-opc-1", "tx-w-opc-2", "tx-w-opc-3", "tx-w-opc-4", "tx-w-opc-5", "tx-w-opc-6", "tx-w-opc-7", "tx-w-opc-8"],
+                'scheme': {
+                    'monochrome': ["tx-brn-a", "tx-brn-a-1", "tx-brn-a-2", "tx-brn-a-8", "tx-brn-a-9"],
+                    'complementary': ['tx-brn-a', 'tx-brn-a-1', 'tx-brn-a-2', 'tx-brn-a-8', 'tx-brn-a-9', 'tx-brn-b', 'tx-brn-b-1', 'tx-brn-b-2', 'tx-brn-b-8', 'tx-brn-b-9'],
+                    'triadic': ['tx-brn-a', 'tx-brn-a-1', 'tx-brn-a-2', 'tx-brn-a-8', 'tx-brn-a-9', 'tx-brn-c', 'tx-brn-c-1', 'tx-brn-c-2', 'tx-brn-c-8', 'tx-brn-c-9', 'tx-brn-d', 'tx-brn-d-1', 'tx-brn-d-2', 'tx-brn-d-8', 'tx-brn-d-9'],
+                    'tetradic': ['tx-brn-a', 'tx-brn-a-1', 'tx-brn-a-2', 'tx-brn-a-8', 'tx-brn-a-9', 'tx-brn-e', 'tx-brn-e-1', 'tx-brn-e-2', 'tx-brn-e-8', 'tx-brn-e-9'],
+                    'separate-complementary': ['tx-brn-a', 'tx-brn-a-1', 'tx-brn-a-2', 'tx-brn-a-8', 'tx-brn-a-9', 'tx-brn-g', 'tx-brn-g-1', 'tx-brn-g-2', 'tx-brn-g-8', 'tx-brn-g-9', 'tx-brn-h', 'tx-brn-h-1', 'tx-brn-h-2', 'tx-brn-h-8', 'tx-brn-h-9'],
+                    'analog': ['tx-brn-a', 'tx-brn-a-1', 'tx-brn-a-2', 'tx-brn-a-8', 'tx-brn-a-9', 'tx-brn-j', 'tx-brn-j-1', 'tx-brn-j-2', 'tx-brn-j-8', 'tx-brn-j-9', 'tx-brn-k', 'tx-brn-k-1', 'tx-brn-k-2', 'tx-brn-k-8', 'tx-brn-k-9'],
+                }
+            }
         },
         BackgroundColorGroup: {
             'type': 'background',
@@ -172,9 +186,9 @@
                 {name: "Толщина 3", value: 'b-w-l ', unit: 'px', type: 'library'}
             ],
             'library': [
-                {name: "Толщина 3", value: 'b-w-l ', unit: 'px', type: 'library'},
-                {name: "Толщина 2", value: 'b-w-m ', unit: 'px', type: 'library'},
-                {name: "Толщина 1", value: 'b-w-s ', unit: 'px', type: 'library'},
+                {name: "Толщина 3", value: 'b-w-l', unit: 'px', type: 'library'},
+                {name: "Толщина 2", value: 'b-w-m', unit: 'px', type: 'library'},
+                {name: "Толщина 1", value: 'b-w-s', unit: 'px', type: 'library'},
             ]
         },
         BorderStyleGroup: {
@@ -335,6 +349,13 @@
                 {name: "nowrap", value: 'n-wr-ds', value_laptop: 'n-wr-lp', value_tablet: 'n-wr-tb', value_mobile: 'n-wr-mb'},
             ]
         },
+        RowsAttrsVisibilityGroup: {
+            'type': 'attrs-visibility',
+            'values': [
+                {name: "SKU code", value: 1, key: 'sku' },
+                {name: "Price", value: 1, key: 'price' },
+            ]
+        },
         MenuDecorationGroup: {
             'type': 'scroll-fix',
             'values': [
@@ -349,6 +370,12 @@
                 {name: "Width is limited", value: "cnt"},
             ]
         },
+        FullWidthToggleGroup: {
+            'type': 'full-width',
+            'values': [
+                {name: "Occupy the entire available width", value: "f-w"},
+            ]
+        },
         ColumnsAlignGroup: {
             'type': 'flex-align',
             'values': [
@@ -361,8 +388,11 @@
             'type': 'info_type',
             'values': [
                 {name: "Name", value: "name", icon: "fa-align-center"},
+                {name: "Summary", value: "summary", icon: "fa-align-left"},
                 {name: "Description", value: "description", icon: "fa-align-left"},
                 {name: "Price", value: "price", icon: "fa-align-left"},
+                {name: "Old price", value: "compare_price", icon: "fa-align-left"},
+                {name: "Stock", value: "stock", icon: "fa-align-left"},
             ]
         },
         ProductPictureGroup: {
@@ -371,6 +401,13 @@
                 {name: "Big", value: "url_big", icon: "fa-align-center"},
                 {name: "Crop", value: "url_crop", icon: "fa-align-left"},
                 {name: "Thumb", value: "url_thumb", icon: "fa-align-left"},
+            ]
+        },
+        ProductSkuElementLayoutGroup: {
+            'type': 'element_layout',
+            'values': [
+                {name: "product_widget_element_layout_line", value: "line"},
+                {name: "product_widget_element_layout_sku_above", value: "sku_above"},
             ]
         },
         ColumnsAlignVerticalGroup: {
@@ -488,10 +525,10 @@
                 'type': 'padding-left',
                 'icon': 'fa-arrow-left',
                 'values': [
-                    {name: "0px", value: "p-l-0", value_laptop: "p-l-0-lp", value_tablet: "p-l-0-tb", value_mobile: "p-l-0-mb"},
-                    /*{name: "Default for columns", value: "p-l-clm"},
+                    {name: "Default for columns", value: "p-l-clm"},
                     {name: "Default for blocks", value: "p-l-blc"},
-                    {name: "Default for blocks + columns", value: "p-l-blc-clm"},*/
+                    {name: "Default for blocks + columns", value: "p-l-blc-clm"},
+                    {name: "0px", value: "p-l-0", value_laptop: "p-l-0-lp", value_tablet: "p-l-0-tb", value_mobile: "p-l-0-mb"},
                     {name: "1px", value: "p-l-1", value_laptop: "p-l-1-lp", value_tablet: "p-l-1-tb", value_mobile: "p-l-1-mb"},
                     {name: "2px", value: "p-l-2", value_laptop: "p-l-2-lp", value_tablet: "p-l-2-tb", value_mobile: "p-l-2-mb"},
                     {name: "3px", value: "p-l-3", value_laptop: "p-l-3-lp", value_tablet: "p-l-3-tb", value_mobile: "p-l-3-mb"},
@@ -517,10 +554,10 @@
                 'type': 'padding-right',
                 'icon': 'fa-arrow-right',
                 'values': [
-                    {name: "0px", value: "p-r-0", value_laptop: "p-r-0-lp", value_tablet: "p-r-0-tb", value_mobile: "p-r-0-mb"},
                     {name: "Default for columns", value: "p-r-clm", variable: 1},
                     {name: "Default for blocks", value: "p-r-blc", variable: 1},
                     {name: "Default for blocks + columns", value: "p-r-blc-clm", variable: 1},
+                    {name: "0px", value: "p-r-0", value_laptop: "p-r-0-lp", value_tablet: "p-r-0-tb", value_mobile: "p-r-0-mb"},
                     {name: "1px", value: "p-r-1", value_laptop: "p-r-1-lp", value_tablet: "p-r-1-tb", value_mobile: "p-r-1-mb"},
                     {name: "2px", value: "p-r-2", value_laptop: "p-r-2-lp", value_tablet: "p-r-2-tb", value_mobile: "p-r-2-mb"},
                     {name: "3px", value: "p-r-3", value_laptop: "p-r-3-lp", value_tablet: "p-r-3-tb", value_mobile: "p-r-3-mb"},
@@ -690,9 +727,10 @@
         HeightGroup: {
             'type': 'min-height',
             'values': [
-                {name: "Custom", value: "300px", unit: 'px', type: 'custom'},
                 {name: "Content", value: "none", type: 'content'},
+                {name: "Custom", value: "300px", unit: 'px', type: 'custom'},
                 {name: "Browser height", value: "100vh", type: 'browser'},
+                {name: "Fill parent", value: "100%", type: 'parent'},
             ]
         },
         ListStyleGroup: {
@@ -733,6 +771,7 @@
             {name: 'Palette', value: 'palette', icon: 'fa-palette'},
             {name: 'Self color', value: 'self_color', icon: 'fa-eye-dropper'},
             {name: 'Image', value: 'image', icon: 'fa-image'},
+            {name: 'Video', value: 'video', icon: 'fa-video'},
         ],
         border_size_toggle_data: [
             {name: 'Library', value: 'library'},
@@ -750,6 +789,10 @@
             {name: 'Upload', value: 'upload'},
             {name: 'SVG', value: 'svg'},
             {name: 'Address', value: 'address'},
+        ],
+        video_upload_toggle_data: [
+            {name: 'Code', value: 'code'},
+            {name: 'Upload', value: 'upload'}
         ],
         border_button_data: {
             edited: {name: 'Remove border', value: 'empty', icon: 'fa-trash-alt'},
@@ -999,8 +1042,21 @@
             'bg-w-opc-8': '--w-opc-8',
             'tx-w-opc-8': '--w-opc-8',
             'br-w-opc-8': '--w-opc-8',
-            }
+            },
+            'ai_prompt_data': {
+                'site.Paragraph': {
+                    facility: 'site_text', response_type: 'content', fields: {emotion: 'positive', text_length: 'short', locale: 'ru_RU', audience_gender: ''}
+                    },
+                'site.Heading': {
+                    facility: 'site_text', response_type: 'content', fields: {emotion: 'positive', text_length: 'minimal', locale: 'ru_RU', audience_gender: ''}
+                    },
+                'site.List': {
+                    facility: 'site_list', response_type: 'list', fields: {emotion: 'positive', locale: $.site.lang, audience_gender: ''}
+                },
+                'site.CustomCode': {
+                    facility: 'site_html', response_type: 'content', fields: {locale: 'ru_RU'}
+                },
+            },
     }
 
 })(jQuery);
-

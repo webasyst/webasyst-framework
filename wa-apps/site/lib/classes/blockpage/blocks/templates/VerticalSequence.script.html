@@ -216,22 +216,29 @@ window.siteVseqController = (function() { "use strict";
             const $child = $(this);
             parent.$('body').trigger('close_dropdown'); //close all settings dropdowns
             let has_alt_down = $(document.body).hasClass('alt-down');
+            let has_shift_down = $(document.body).hasClass('shift-down');
             let no_child_seq = !$child.find('.js-seq-wrapper').length;
-            if (has_alt_down && no_child_seq) {
-                    let $selected_wrapper = $child.parent().closest('.seq-child');
-                    $.wa.editor.setSelectedBlock($selected_wrapper.data('block-id'), $selected_wrapper, e.target);
-                    return
+            
+            if (has_shift_down) {
+               if ($child.parent().closest('.seq-child').length) return;
             }
-
-            if ($child.closest('.js-seq-wrapper')[0] !== $wrapper[0] ) return; // Ignore events from child vseq instances
-
+            if (has_alt_down) {
+                if (!$child.find('.js-seq-wrapper').length) return;
+                    /*let $selected_wrapper = $child.parent().closest('.seq-child');
+                    $.wa.editor.setSelectedBlock($selected_wrapper.data('block-id'), $selected_wrapper, e.target);
+                    return*/
+            }
+          
+            if (($child.closest('.js-seq-wrapper')[0] !== $wrapper[0] ) || $(e.target.closest('.js-add-element')).length) return; // Ignore events from child vseq instances
+            
             //if ($(e.target).closest('.js-seq-wrapper')[0] !== $wrapper[0]) return; // Ignore events from child vseq instances
 
             const selection = window.getSelection()?.anchorNode?.parentElement;
             const selection_id = selection?.dataset.blockId;
-            if (selection_id && window.getSelection().type === 'Range' && +selection_id !== $child.data('block-id')) return;
+            if (selection_id && window.getSelection().type === 'Range' && +selection_id !== $child.data('block-id') && !has_shift_down && !has_alt_down) return;
             e.stopPropagation();
             e.preventDefault();
+            
             $.wa.editor.setSelectedBlock($child.data('block-id'), $child, e.target);
         });
 
@@ -333,12 +340,7 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
        let elem_static_classes = node.data('static') || '';
        node.attr('class', no_children + elem_static_classes + ' ' +elem_classes);
    }
-    if (data.id){
-        let node = $block_wrapper;
-        let node_id = data.id;
-        let current_id = node.attr('id');
-        if (node_id && (!current_id || current_id !== node_id)) node.attr('id', node_id);
-    }
+
     if (data.elements) { //For blocks with several wrappers
         let elements = Object.values(data.elements);
         //let temp_options = self.block_data?.[d]?.[type] || self.block_data?.[d]?.[self.selected_element]?.[type] || null;
@@ -346,9 +348,23 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
 
             let node = $block_wrapper.hasClass(elem) ? $block_wrapper : $block_wrapper.find('.'+elem);
 
+            if (data.id?.[elem]){
+                //let node = $block_wrapper;
+                let node_id = data.id?.[elem].id;
+                let current_id = node.attr('id');
+                if (node_id && (!current_id || current_id !== node_id)) node.attr('id', node_id);
+            } else if (data.id && typeof data.id === 'string' && i === 0) { //support for old settings
+                let node_id = data.id;
+                let current_id = node.attr('id');
+                if (node_id && (!current_id || current_id !== node_id)) node.attr('id', node_id);
+            }
             if (data.block_props?.[elem]){
                 let elem_classes = Object.values(data.block_props[elem]).map((e) => (typeof e === 'object') ? e.value : e).join(' ');
                 let elem_static_classes = node.data('static') || '';
+                if (elem === 'site-block-column') { //хак для колонок из старого релиза
+                    if (!data.block_props[elem]['padding-left']) elem_classes += " p-l-clm";
+                    if (!data.block_props[elem]['padding-right']) elem_classes += " p-r-clm";
+                }
                 node.attr('class', elem_static_classes + ' ' + elem_classes);
             };
             if (data.inline_props?.[elem]){
@@ -357,6 +373,17 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
                 $.each(keys, function(i, k) {
                     if (data.inline_props[elem][k]['value']) {
                         elem_styles += k + ': ' + data.inline_props[elem][k]['value'] + ';';
+                    }
+                    if (k === 'background' && data.inline_props[elem][k]?.['layers']) {
+                        const video_layer = Object.values(data.inline_props[elem][k]['layers']).filter(l => l.type === 'video');
+                        if (video_layer.length) {
+                            setBackgroundVideo(video_layer[0], node)
+                            elem_styles += 'z-index: 2;'
+                        } else {
+                            removeBackgroundVideo(node)
+                        }
+                    }else {
+                        removeBackgroundVideo(node)
                     }
                 })
                 node.attr('style', elem_styles);
@@ -378,6 +405,13 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
         return
     }
 
+    if (data.id && data.id !== 'object'){
+        let node = $block_wrapper;
+        let node_id = data.id;
+        let current_id = node.attr('id');
+        if (node_id && (!current_id || current_id !== node_id)) node.attr('id', node_id);
+    }
+
     if (data.block_props){
         let elem_classes = Object.values(data.block_props).map((e) => (typeof e === 'object') ? e.value : e).join(' ');
         let elem_static_classes = $block_wrapper.data('static') || '';
@@ -390,6 +424,17 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
         $.each(keys, function(i, k) {
             if (data.inline_props[k]['value']) {
                 elem_styles += k + ': ' + data.inline_props[k]['value'] + ';';
+            }
+            if (k === 'background' && data.inline_props[k]?.['layers']) {
+                const video_layer = Object.values(data.inline_props[k]['layers']).filter(l => l.type === 'video');
+                if (video_layer.length) {
+                    setBackgroundVideo(video_layer[0], $block_wrapper)
+                    elem_styles += 'z-index: 2;'
+                } else {
+                    removeBackgroundVideo($block_wrapper)
+                }
+            } else {
+                removeBackgroundVideo($block_wrapper)
             }
         })
         $block_wrapper.attr('style', elem_styles);
@@ -410,6 +455,18 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
         });
         $block_wrapper[0].parentNode.replaceChild(new_element, $block_wrapper[0]);
     }
+}
+
+function setBackgroundVideo(layer, node) {
+    let video = '<div class="video-background-wrapper"><video autoplay muted loop class="video-background"><source src="' + layer.file_url + '" type="video/mp4"></video></div>';
+    if (node.parent().find('>.video-background-wrapper').length) node.parent().find('>.video-background-wrapper source').attr('src', layer.file_url)
+    else {
+        node.after($(video))
+        node.css('z-index', 2)
+    }
+}
+function removeBackgroundVideo(node) {
+    if (node.parent().find('>.video-background-wrapper').length) node.parent().find('>.video-background-wrapper').remove();
 }
 
 function checkElementsSize($block_wrapper) {

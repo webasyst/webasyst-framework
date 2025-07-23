@@ -9,15 +9,42 @@
     'main' => ''
 ])}
 
-{$static_main = "`$elements.main` f-w blc"}
+{$static_main = "`$elements.main` f-w"}
 {$static_wrapper = "`$elements.wrapper` style-wrapper"}
 
 {$render_only_app_template = $is_backend || (!$is_backend && $enable_app_template)}
 {$render_only_block_template = $is_backend || (!$is_backend && !$enable_app_template)}
 {$anchor_id = $data->data['id']|default:0}
+
+{$href = ''}
+{$target = ''}
+{$rel = ''}
+{if !empty($data->data['link_props'][$elements.main])}
+    {$link_props = $data->data['link_props'][$elements.main]}
+    {$href = ifempty($link_props.href)}
+    {$target = ifempty($link_props.target)}
+    {$rel = ifempty($link_props.rel)}
+{/if}
+
 {if $render_only_block_template}
 <section {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_main}" style="{if $is_backend}visibility: hidden;{/if}{if $enable_app_template}display: none;{/if}" data-block-id="{$block_id|escape}" data-page-id="{$data->getPageId()|escape}" data-static="{$static_main}" >
+    {if !$is_backend && !empty($href)}
+        <a href="{$href}" {if $target}target="{$target}"{/if} {if $rel}rel="nofollow"{/if}></a>
+    {/if}
     <div class="{$static_wrapper}" data-static="{$static_wrapper}">
+        {$href = ''}
+        {$target = ''}
+        {$rel = ''}
+        {if !empty($data->data['link_props'][$elements.wrapper])}
+            {$link_props = $data->data['link_props'][$elements.wrapper]}
+            {$href = ifempty($link_props.href)}
+            {$target = ifempty($link_props.target)}
+            {$rel = ifempty($link_props.rel)}
+        {/if}
+        {if !$is_backend && !empty($href)}
+            <a href="{$href}" {if $target}target="{$target}"{/if} {if $rel}rel="nofollow"{/if}></a>
+        {/if}
+
         {foreach $children as $c}
             {$c.html}
         {/foreach}
@@ -31,38 +58,101 @@
 {/if}
 
 {if $is_backend}
-<script>
-    $(function() { "use strict";
-    const block_id = {$data->getId()|json_encode};
-    const $block_wrapper = $('.site-block-menu[data-block-id="'+block_id+'"]');
-    const data = {$data->data|json_encode};
-    
-    $block_wrapper.on('block_data_updated', function(event, updated_block_id, data) {
-        event.stopPropagation();
-        if (updated_block_id == block_id) {
-            updateBlockStyles($block_wrapper, data, block_id);
-        }
-    });
-    /*Set disabled param for menu settings*/
-    if (!data['app_template']['disabled'] && {if $empty_template}1{else}0{/if} ) {
-        data['app_template']['disabled'] = true;
-        $(() => setTimeout(function(){
-            $.wa.editor.updateBlockData(block_id, data);
-        }, 0));
-    } else {
-        data['app_template']['disabled'] = false;
-        $(() => setTimeout(function(){
-            $.wa.editor.updateBlockData(block_id, data);
-        }, 0));
-    }
-    })
+    <script>
+        $(function() { "use strict";
+        const block_id = {$data->getId()|json_encode};
+        const $block_wrapper = $('.site-block-menu[data-block-id="'+block_id+'"]');
+        const data = {$data->data|json_encode};
 
-</script>
+        $block_wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+            event.stopPropagation();
+            if (updated_block_id == block_id) {
+                updateBlockStyles($block_wrapper, data, block_id);
+            }
+        });
+        /*Set disabled param for menu settings*/
+        if (!data['app_template']['disabled'] && {if $empty_template}1{else}0{/if} ) {
+            data['app_template']['disabled'] = true;
+            $(() => setTimeout(function(){
+                $.wa.editor.updateBlockData(block_id, data);
+            }, 0));
+        } else {
+            data['app_template']['disabled'] = false;
+            $(() => setTimeout(function(){
+                $.wa.editor.updateBlockData(block_id, data);
+            }, 0));
+        }
+        })
+    </script>
 {else}
-<script>$(function() { "use strict";
-    const block_id = {$data->getId()|json_encode};
-    const $wrapper = $('.site-block-menu[data-block-id="'+block_id+'"]');
-    const data = {$data->data|json_encode};
-    updateBlockStyles($wrapper, data, block_id);
-});</script>
+    <script>(function() { "use strict";
+        const block_id = {$data->getId()|json_encode};
+        const $wrapper = $('.site-block-menu[data-block-id="'+block_id+'"]');
+        const data = {$data->data|json_encode};
+        updateBlockStyles($wrapper, data, block_id);
+    })();
+    </script>
 {/if}
+{$_blc_id = $anchor_id[$elements['main']]['id']|default:''}
+<style>
+    @media (max-width: 991px) {
+        .site-block-menu[data-block-id="{$data->getId()}"]:has(#{$_blc_id}bg) .seq-child {
+            z-index: 12;
+        }
+        .site-block-menu[data-block-id="{$data->getId()}"] .seq-child:has(#{$_blc_id}bg) {
+            order: 2;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 11;
+            height: 100dvh;
+            display: none;
+        }
+        .site-block-menu[data-block-id="{$data->getId()}"] .seq-child:has(#{$_blc_id}itms) {
+            order: 1;
+            max-width: 100%;
+            display: none;
+        }
+        .site-block-menu[data-block-id="{$data->getId()}"] #{$_blc_id}itms .seq-child .js-seq-wrapper {
+            flex-direction: column;
+        }
+        .site-block-menu[data-block-id="{$data->getId()}"] #{$_blc_id}gmb svg {
+            cursor: pointer;
+        }
+        {if !$is_backend}
+        .site-block-menu[data-block-id="{$data->getId()}"] #{$_blc_id}gmb .seq-child svg:nth-child(2) {
+            display: none;
+        }
+        {/if}
+    }
+</style>
+<script>
+    (function() { "use strict";
+        const block_menu = document.querySelector('.site-block-menu[data-block-id="{$data->getId()}"]');
+        const menu_items = block_menu.querySelector('.seq-child:has(#{$_blc_id}itms)');
+        const bg_column = block_menu.querySelector('.seq-child:has(#{$_blc_id}bg)');
+        const gmb_svg = block_menu.querySelector('#{$_blc_id}gmb')?.querySelectorAll('svg');
+
+        if (gmb_svg) {
+            gmb_svg.forEach(function(item){
+                item.addEventListener('click', function(){ 
+                    const is_bg_column_hidden = bg_column?.style.display === 'inherit';
+
+                    if (bg_column) {
+                        bg_column.style.display = (is_bg_column_hidden ? '' : 'inherit'); 
+                    }
+
+                    if (menu_items) {
+                        menu_items.style.display = (is_bg_column_hidden ? '' : 'inherit'); 
+                    }
+
+                    gmb_svg.forEach(function(item){
+                        item.style.display = 'inherit'
+                    });
+                    item.style.display = 'none'
+                });
+            });
+        }
+    })();
+</script>

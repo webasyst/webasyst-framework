@@ -6,10 +6,20 @@ class siteBackendDomainsAction extends waViewAction
 {
     public function execute()
     {
+        $domain_change_pending = (new waAppSettingsModel())->get('hosting', 'domain_change_pending');
+        $new_domain_name = null;
+        if ($domain_change_pending) {
+            $domain_change_pending = @json_decode($domain_change_pending, true);
+            if (!empty($domain_change_pending['new_domain_name'])) {
+                $new_domain_name = mb_strtolower($domain_change_pending['new_domain_name']);
+            }
+        }
+
         $domains = siteHelper::getDomains(true);
 
         foreach ($domains as &$d) {
             if (empty($d['is_alias'])) {
+                $d['is_pending'] = $new_domain_name === mb_strtolower($d['name']);
                 foreach (wa()->getRouting()->getRoutes($d['name']) as $r) {
                     if ($r['url'] === '*' && isset($r['redirect']) && substr($r['redirect'], 0, 4) === 'http') {
                         $d['redirect'] = $r['redirect'];
