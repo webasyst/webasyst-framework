@@ -287,7 +287,10 @@ class waRouting
 
         return $r;
     }
-
+    
+    /**
+     * @deprecated Use getRoute() instead
+     */
     public function getRouteParam($name)
     {
         if ($this->route && isset($this->route[$name])) {
