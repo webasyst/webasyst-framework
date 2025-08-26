@@ -383,7 +383,8 @@ HTML;
     {
         $links = '';
         $domain_favicons = ifset($domain_config['favicons']);
-        if (!is_array($domain_favicons)) {
+        if (!is_array($domain_favicons) && wa()->appExists('site')) {
+            wa('site');
             siteHelper::updateFaviconsConfig($domain_config);
             $domain_favicons = $domain_config['favicons'];
         }
