@@ -334,15 +334,27 @@ class installerServicesApi extends waWebasystIDApi
     public function getUserToken($force_refresh = false)
     {
         if (self::$user_token === null || $force_refresh) {
-            $token_params = wa()->getUser()->getWebasystTokenParams();
-            if (empty($token_params)) {
+
+            $lock_name = 'wa_get_user_token_' . wa()->getUser()->getId();
+            $locking_model = new waAppSettingsModel();
+            try {
+                $locking_model->exec("SELECT GET_LOCK(?, -1)", [ $lock_name ]);
+            } catch (Exception $e) {
                 return null;
             }
+
+            $token_params = wa()->getUser()->getWebasystTokenParams();
+            if (empty($token_params)) {
+                $locking_model->exec("SELECT RELEASE_LOCK(?)", [ $lock_name ]);
+                return null;
+            }
+
             if ($force_refresh) {
                 $ok = $this->refreshedTokenParams($token_params, wa()->getUser()->getId());
             } else {
                 $ok = $this->refreshTokenWhenExpired($token_params, wa()->getUser()->getId());
             }
+            $locking_model->exec("SELECT RELEASE_LOCK(?)", [ $lock_name ]);
             if (!$ok) {
                 return null;
             }

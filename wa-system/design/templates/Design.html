@@ -452,7 +452,8 @@
                                );
                                self.$design_container.find(".s-route-delete").closest('div').remove();
 
-                               const h1 = $route_where.text().trim() + $route_where.find('input').val() + '/';
+                               const url_path = $route_where.find('input').val();
+                               const h1 = $route_where.text().trim() + (url_path ? url_path + '/' : '');
                                const $back_btn = '<a href="#design/themes/" class="back" title="[`Back`]"><span class="icon size-32"><i class="fas fa-arrow-circle-left"></i></span></a>';
                                $('.s-app-settings').prepend('<h1 class="flexbox middle custom-mb-24 space-8">' + $back_btn + h1 + '</h1>');
                            });

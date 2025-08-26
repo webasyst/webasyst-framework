@@ -13,6 +13,7 @@ var WASettingsPush = ( function($) {
 
         // DYNAMIC VARS
         that.is_locked = false;
+        that.validators = [];
 
         // INIT
         that.initClass();
@@ -55,29 +56,45 @@ var WASettingsPush = ( function($) {
     };
 
     WASettingsPush.prototype.initSubmit = function () {
-        var that = this,
-            $errors = that.$wrapper.find('.js-errors');
+        const that = this,
+              $errors = that.$wrapper.find('.js-errors');
 
-        that.$form.on('submit', function (e) {
+        that.$form.on('submit', async function (e) {
             e.preventDefault();
             if (that.is_locked) {
                 return;
             }
 
+            that.is_locked = true;
             $errors.text('').hide();
             that.$button.prop('disabled', true);
-            var $button_text = that.$button.text(),
-                $loader_icon = ' <i class="fas fa-spinner fa-spin"></i>',
-                $success_icon = ' <i class="fas fa-check-circle"></i>';
+            const $button_text = that.$button.text(),
+                  $loader_icon = ' <i class="fas fa-spinner fa-spin"></i>',
+                  $success_icon = ' <i class="fas fa-check-circle"></i>';
             that.$button.empty().html($button_text + $loader_icon);
 
-            var href = that.$form.attr('action'),
-                data = that.$form.serialize();
+            const promises = [];
+            that.validators.forEach(async (func) => {
+                promises.push(func(e.target));
+            });
+            const validate_results = await Promise.all(promises);
+            const errors = validate_results.filter((result) => !!result);
+            if (errors.length > 0) {
+                $errors.text(errors.join("\n")).show();
+                that.is_locked = false;
+                that.$button.prop('disabled', false);
+                that.$button.empty().html($button_text);
+                return;
+            }
+
+            const href = that.$form.attr('action'),
+                  data = that.$form.serialize();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
                     if (res.data.reload) {
                         $.wa.content.reload();
+                        $(window).trigger('wa_push_settings_reload');
                         return;
                     } else {
                         that.$button.empty().html($button_text + $success_icon).removeClass('yellow');

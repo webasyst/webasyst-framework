@@ -39,7 +39,7 @@ class waDateValidator extends waValidator
         if (is_array($value)) {
             $error = null;
             $year = null;
-            if (isset($value['year'])) {
+            if (isset($value['year']) && $value['year'] !== null && $value['year'] !== '') {
                 $year = $value['year'];
                 if ($year < 1 || !is_numeric($year) || floor($year) != $year) {
                     $error = $this->getMessage('incorrect_date');
@@ -47,7 +47,7 @@ class waDateValidator extends waValidator
             }
 
             $month = null;
-            if (isset($value['month'])) {
+            if (isset($value['month']) && $value['month'] !== null && $value['month'] !== '') {
                 $month = $value['month'];
                 if ($month < 1 || $month > 12 || !is_numeric($month)) {
                     $error = $this->getMessage('incorrect_date');
@@ -55,7 +55,7 @@ class waDateValidator extends waValidator
             }
 
             $day = null;
-            if (isset($value['day'])) {
+            if (isset($value['day']) && $value['day'] !== null && $value['day'] !== '') {
                 $day = $value['day'];
                 if ($day < 1 || $day > 31 || !is_numeric($day)) {
                     $error = $this->getMessage('incorrect_date');

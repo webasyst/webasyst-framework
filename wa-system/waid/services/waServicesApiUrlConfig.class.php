@@ -21,7 +21,7 @@ class waServicesApiUrlConfig extends waWebasystIDConfig
 
     public function keepEndpointsSynchronized($force_renew = false)
     {
-        if ($force_renew || !isset($this->config['endpoints']) || time() - $this->getMTime() > $this->sync_endpoints_timeout) {
+        if ($force_renew || !isset($this->config['endpoints']) || time() - $this->getMTime() > self::ENDPOINTS_SYNC_TIMEOUT) {
             $endpoints = (new waServicesEndpointsConfig())->getEndpoints();
             if ($endpoints) {
                 $changed = !isset($this->config['endpoints']) || (isset($this->config['endpoints']) && $this->config['endpoints'] != $endpoints);

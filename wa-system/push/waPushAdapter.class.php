@@ -122,7 +122,7 @@ abstract class waPushAdapter
                 }
             }
         }
-
+        
         if ($name === null) {
             return $this->settings;
         } else {
@@ -144,7 +144,7 @@ abstract class waPushAdapter
         $default = array(
             'instance'            => & $this,
             'title_wrapper'       => '%s',
-            'description_wrapper' => '<br><div class="hint">%s</div>',
+            'description_wrapper' => '<div class="hint">%s</div>',
             'control_wrapper'     => '
 <div class="field">
     <div class="name">%s</div>
@@ -165,11 +165,15 @@ abstract class waPushAdapter
             }
 
             $row['value'] = $this->getSettings($name);
+            if (isset($row['value']) && is_array($row['value'])) {
+                $row['value'] = json_encode($row['value']);
+            }
 
             if (!empty($row['control_type'])) {
                 $controls[$name] = waHtmlControl::getControl($row['control_type'], $name, $row);
             }
         }
+        
         return implode("\n", $controls);
     }
 

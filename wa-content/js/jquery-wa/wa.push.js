@@ -84,7 +84,7 @@
             $bell_announcement.find('.js-submit').on("click", function() {
                 that.requestAllow();
                 WaBellAnnouncement.adhocHide(that.bell_ids.request_permissions);
-                if (window.Notification.permission !== "default") {
+                if (!["default", "prompt"].includes(window.Notification.permission)) {
                     that.timeout_id = setTimeout(() => {
                         WaBellAnnouncement.adhocHide(that.bell_ids.timeout); // prevent multiple notifications
                         WaBellAnnouncement.adhocShow($("<p />").html(that.loc.requestTimeoutMessage), that.bell_ids.timeout);

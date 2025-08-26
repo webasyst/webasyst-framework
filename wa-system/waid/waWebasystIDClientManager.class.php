@@ -334,7 +334,7 @@ class waWebasystIDClientManager
         }
 
         if ($status === 401 && ifset($response, 'error', '') === 'invalid_client') {
-            throw new waWebasystIDApiAuthException(_ws('Invalid Webasyst ID client credentials'));
+            throw new waWebasystIDApiAuthException(_ws('Invalid Webasyst ID client credentials.'));
         }
 
         if (isset($response['error'])) {

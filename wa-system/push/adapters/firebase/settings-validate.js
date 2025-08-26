@@ -25,7 +25,7 @@ import {
         }
 
         if (!api_key || !project_id || !app_id || !sender_id || !vapid_key || !json_key) {
-            return "Надо все поля заполнить";
+            return {_ws('Please fill in all fields.')|json_encode};
         }
 
         const is_supported = await isSupported();

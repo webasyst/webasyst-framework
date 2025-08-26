@@ -52,14 +52,25 @@ class waWebasystIDUrlsProvider
      * Be careful caching is ignoring here
      * @return bool
      */
-    public function ensureHealthyAuthEndpoint()
+    public function ensureHealthyAuthEndpoint($prevent_recursion = false)
     {
         $endpoints = $this->getEndpointsOfType('oauth2');
+
         foreach ($endpoints as $endpoint) {
             if ($this->health_checker->isEndpointHealthy($endpoint, true)) {
                 return true;
             }
         }
+
+        if (!$prevent_recursion && wa()->appExists('installer')) {
+            wa('installer');
+            $zone_detect_result = installerHelper::getInstaller()->detectBestZone();
+            if (!empty($zone_detect_result['is_zone_changed'])) {
+                $this->resetSelectedEndpoints();
+                return $this->ensureHealthyAuthEndpoint(true);
+            }
+        }
+
         return false;
     }
 
@@ -168,6 +179,12 @@ class waWebasystIDUrlsProvider
     {
         $cache = $this->getCache();
         $cache->delete();
+    }
+
+    public function resetSelectedEndpoints()
+    {
+        $this->selected = [];
+        $this->resetCache();
     }
 
     protected function getCache()

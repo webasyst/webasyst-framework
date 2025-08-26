@@ -96,4 +96,9 @@ class waFunctionCache
 
         return $result;
     }
+
+    public static function clearNamespace($namespace)
+    {
+        waFiles::delete(waSystem::getInstance()->getCachePath('cache', $namespace));
+    }
 }

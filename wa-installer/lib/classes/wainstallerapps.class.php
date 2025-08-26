@@ -17,6 +17,7 @@ class waInstallerApps
     private $installed_apps = array();
     private $installed_extras = array();
     private $sources;
+    private $sources_all_zones;
     private static $root_path;
     private static $locale;
     private static $cache_ttl;
@@ -32,12 +33,15 @@ class waInstallerApps
 
     private $server_data = array();
 
+    private $app_settings_model;
+
     const CONFIG_GENERIC = 'wa-config/config.php';
     const CONFIG_DB = 'wa-config/db.php';
     const CONFIG_APPS = 'wa-config/apps.php';
     const CONFIG_APP_PLUGINS = 'wa-config/apps/%s/plugins.php';
     const CONFIG_ROUTING = 'wa-config/routing.php';
     const CONFIG_SOURCES = 'wa-installer/lib/config/sources.php';
+    const CONFIG_SOURCES_UPDATABLE = 'wa-config/sources.php';
 
     const ITEM_CONFIG = 'wa-apps/%s/lib/config/app.php';
     const ITEM_ROBOTS = 'wa-apps/%s/lib/config/robots.txt';
@@ -63,6 +67,10 @@ class waInstallerApps
     const ACTION_REPAIR = 'repair';
     const ACTION_INSTALL = 'install';
     const ACTION_NONE = 'none';
+
+    const ENDPOINTS_ZONE_KEY = 'endpoints_zone';
+    const ENDPOINTS_SYNC_TIME_KEY = 'updates_endpoints_sync_time';
+    const ENDPOINTS_SYNC_TIMEOUT = 14400;    // 4 hours
 
     /**
      * Item's statuses list at common config
@@ -278,16 +286,38 @@ class waInstallerApps
             wa('installer')->event('sources_not_found');
         }
 
-        $path = self::$root_path . self::CONFIG_SOURCES;
+        $path = self::$root_path . self::CONFIG_SOURCES_UPDATABLE;
+        if (!is_readable($path)) {
+            $path = self::$root_path . self::CONFIG_SOURCES;
+        }
+
         if (is_readable($path)) {
             if (class_exists('waConfigCache')) {
                 $config_cache = waConfigCache::getInstance();
-                $this->sources = $config_cache->includeFile($path, false);
+                $this->sources = $this->sources_all_zones = $config_cache->includeFile($path, false);
             } else {
-                $this->sources = include($path);
+                $this->sources = $this->sources_all_zones = include($path);
+            }
+
+            if (isset($this->sources['zones'])) {
+                $installer_zone = null;
+                if (class_exists('waAppSettingsModel')) {
+                    try {
+                        $installer_zone = $this->getAppSettingsModel()->get('webasyst', self::ENDPOINTS_ZONE_KEY);
+                    } catch (Exception $e) {
+                        // do nothing
+                    }
+                    if (empty($installer_zone) && wa()->getLocale() === 'ru_RU') {
+                        $installer_zone = 'ru';
+                    }
+                }
+                if (!empty($installer_zone) && !empty($this->sources['zones'][$installer_zone])) {
+                    $this->sources = $this->sources['zones'][$installer_zone];
+                }
+                unset($this->sources['zones']);
             }
         } else {
-            $this->sources = [];
+            $this->sources = $this->sources_all_zones = [];
         }
 
         //TODO USE config or etc
@@ -310,7 +340,7 @@ class waInstallerApps
         return array(self::VENDOR_SELF);
     }
 
-    private function getSources($key, $vendors = array())
+    private function getSources($key, $vendors = array(), $zone = null)
     {
         if (!is_array($vendors) && $vendors) {
             $vendors = array($vendors);
@@ -320,19 +350,30 @@ class waInstallerApps
             throw new Exception('Empty sources list');
         }
 
-        if (empty($this->sources[$key])) {
+        $sources = $this->sources;
+        if (!empty($zone)) {
+            if ($zone === 'default') {
+                $sources = $this->sources_all_zones;
+                unset($sources['zones']);
+            } elseif (!empty($this->sources_all_zones['zones'][$zone])) {
+                $sources = $this->sources_all_zones['zones'][$zone];
+            }
+        }
+
+        if (empty($sources[$key])) {
             throw new Exception(sprintf('Not found sources for %s', $key));
         }
-        $sources = array();
-        foreach ((array)$this->sources[$key] as $vendor => $source) {
+
+        $result = array();
+        foreach ((array)$sources[$key] as $vendor => $source) {
             if (!$vendor) {
                 $vendor = self::VENDOR_SELF;
             }
             if (!$vendors || in_array($vendor, $vendors)) {
-                $sources[$vendor] = $source;
+                $result[$vendor] = $source;
             }
         }
-        return $sources;
+        return $result;
     }
 
     /**
@@ -2268,6 +2309,179 @@ class waInstallerApps
         }
     }
 
+    /**
+     * Actualize sources endpoints for all zones
+     * Check & update current endpoints zone
+     */
+    public function syncSourcesEndpoints($force = false)
+    {
+        $updatable_sources_config_path = self::$root_path . self::CONFIG_SOURCES_UPDATABLE;
+        if (file_exists($updatable_sources_config_path) && !is_writable($updatable_sources_config_path)) {
+            if (class_exists('waLog')) {
+                waLog::log('Cannot update sources: ' . $updatable_sources_config_path . ' is not writable.');
+            }
+            return;
+        }
+
+        if (!class_exists('waAppSettingsModel') || !class_exists('waNet') || !class_exists('waUtils')) {
+            return;
+        }
+        
+        $last_sync_time = $this->getAppSettingsModel()->get('webasyst', self::ENDPOINTS_SYNC_TIME_KEY, 0);
+        if (!$force && time() - $last_sync_time <= self::ENDPOINTS_SYNC_TIMEOUT) {
+            // already synced
+            return;
+        }
+
+        $result = $this->getEndpoints('updates');
+
+        if (isset($result['status']) && $result['status'] === 'ok' && !empty($result['data']['endpoints'])) {
+            $sources = $result['data']['endpoints'];
+            if ($sources != $this->sources_all_zones) {
+                // update sources config
+                try {
+                    waUtils::varExportToFile($sources, $updatable_sources_config_path);
+                } catch (Exception $e) {
+                    if (class_exists('waLog')) {
+                        waLog::log('Failed saving sources endpoints: ' . $e->getMessage());
+                    }
+                }
+                $this->sources_all_zones = $sources;
+            }
+        }
+        $this->getAppSettingsModel()->set('webasyst', self::ENDPOINTS_SYNC_TIME_KEY, time());
+    }
+
+    private function waNetQuery($url, $timeout = 5)
+    {
+        if (empty($url)) {
+            return null;
+        }
+
+        return (new waNet([
+            'timeout' => $timeout,
+            'format' => waNet::FORMAT_JSON
+        ]))->query($url);
+    }
+
+    public function zonedNetQuery(callable $get_url, $timeout = 5, ...$params)
+    {
+        $result = null;
+        $url = $get_url(...$params);
+        try {
+            $result = $this->waNetQuery($url, $timeout);
+        } catch (waNetTimeoutException $e) {
+            // current endpoints zone is not valid or not accessable
+            // try other endpoints zones
+            $zone_detect_result = installerHelper::getInstaller()->detectBestZone();
+            if (!empty($zone_detect_result['is_zone_changed'])) {
+                $url = $get_url(...$params);
+                try {
+                    $result = $this->waNetQuery($url, $timeout);
+                } catch (Exception $e) {
+                    if (class_exists('waLog')) {
+                        waLog::log('Failed getting url: ' . $url . ' : ' . $e->getMessage());
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            if (class_exists('waLog')) {
+                waLog::log('Failed getting url: ' . $url . ' : ' . $e->getMessage());
+            }
+        }
+        return $result;
+    }
+
+    public function getEndpoints($app)
+    {
+        return $this->zonedNetQuery([$this, 'getEndpointsUrl'], 5, $app);
+    }
+
+    public function detectBestZone()
+    {
+        if (empty($this->sources_all_zones['zones'])) {
+            return null;
+        }
+
+        $endpoints_zones = array_keys($this->sources_all_zones['zones']);
+        $endpoints_zones[] = 'default';
+        $zoned_urls = array_reduce($endpoints_zones, function ($result, $zone) {
+            $result[$zone] = $this->getEndpointsUrl('no', $zone);
+            return $result;
+        }, []);
+        $zoned_urls = array_unique($zoned_urls);
+        
+        try {
+            $multi = curl_multi_init();
+
+            foreach ($zoned_urls as $zone => $url) {
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+                curl_setopt($ch, CURLOPT_USERAGENT, sprintf('Webasyst-Framework/%s', wa()->getVersion('webasyst')));
+                curl_setopt($ch, CURLOPT_NOBODY, true);
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+                curl_multi_add_handle($multi, $ch);
+            }
+            unset($inst);
+
+            $zoned_urls = array_flip($zoned_urls);
+            $zone = null;
+            $active = null;
+            do {
+                $mrc = curl_multi_exec($multi, $active);
+            } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+            while ($active && $mrc == CURLM_OK) {
+                if (curl_multi_select($multi) == -1) {
+                    usleep(100);
+                    continue;
+                }
+
+                do {
+                    $mrc = curl_multi_exec($multi, $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+                if ($mhinfo = curl_multi_info_read($multi)) {
+                    $chinfo = curl_getinfo($mhinfo['handle']);
+                    if ($chinfo['http_code'] == 200) {
+                        $zone = $zoned_urls[$chinfo['url']];
+                        break;
+                    }
+                    curl_multi_remove_handle($multi, $mhinfo['handle']);
+                    curl_close($mhinfo['handle']);
+                }
+            }
+            curl_multi_close($multi);
+        } catch (Exception $e) {
+            return null;
+        }
+
+        $is_zone_changed = false;
+        if (!empty($zone) && class_exists('waAppSettingsModel') && 
+            $this->getAppSettingsModel()->get('webasyst', self::ENDPOINTS_ZONE_KEY) !== $zone
+        ) {
+            // zone changed
+            $is_zone_changed = true;
+            $this->getAppSettingsModel()->set('webasyst', self::ENDPOINTS_ZONE_KEY, $zone);
+            $this->sources = $this->sources_all_zones;
+            if (isset($this->sources['zones']) && !empty($this->sources['zones'][$zone])) {
+                $this->sources = $this->sources['zones'][$zone];
+            }
+            unset($this->sources['zones']);
+            
+            if (wa()->appExists('installer')) {
+                wa('installer')->getConfig()->clearInitDataCache();
+            }
+        }
+
+        return [
+            'is_zone_changed' => $is_zone_changed,
+            'zone' => $zone,
+        ];
+    }
+
     private function getExtrasPath($app_id, $type = 'plugins')
     {
         if (preg_match('@^wa-plugins/@', $app_id)) {
@@ -2293,10 +2507,10 @@ class waInstallerApps
      * @throws Exception
      * @since 3.0
      */
-    private function buildUpdatesUrl($version = '3.0', $vendor = self::VENDOR_SELF, $api_method = null)
+    private function buildUpdatesUrl($version = '3.0', $vendor = self::VENDOR_SELF, $api_method = null, $zone = null)
     {
         $result = false;
-        $sources = $this->getSources(self::LIST_APPS, $vendor);
+        $sources = $this->getSources(self::LIST_APPS, $vendor, $zone);
         if (!empty($sources[$vendor])) {
             $result = preg_replace('@apps/list/$@', "{$version}/", $sources[$vendor]);
         }
@@ -2404,12 +2618,23 @@ class waInstallerApps
         }
     }
 
-    public function getEndpointsUrl()
+    public function getEndpointsUrl($app = null, $zone = null)
     {
         try {
-            return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'config/endpoints');
+            return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'config/endpoints', $zone) . '?zoned=1&app=' . $app;
         } catch (Exception $e) {
             throw new Exception('Unable to build URL to get endpoints');
         }
+    }
+
+    private function getAppSettingsModel()
+    {
+        if (!class_exists('waAppSettingsModel')) {
+            return null;
+        }
+        if (empty($this->app_settings_model)) {
+            $this->app_settings_model = new waAppSettingsModel();
+        }
+        return $this->app_settings_model;
     }
 }

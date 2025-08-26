@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-07-04 11:59+0300\n"
+"PO-Revision-Date: 2025-08-19 15:29+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -7840,11 +7840,137 @@ msgstr "Проверить ошибки"
 msgid "Privacy"
 msgstr "Персональные данные"
 
-msgid "Depending on jurisdiction, your business may require to keep the log of all agreements to terms of service and privacy policy commited by your site users. In Webasyst, all agreements performed via basic routines and standard apps, are recorded into the database to help you being in compliance with the law."
-msgstr "В зависимости от юрисдикции вашему бизнесу может потребоваться вести журнал учета согласий с политикой обработки персональных данных. В Webasyst все согласия, принятые через настроенные с помощью стандартных механизмов и приложений функции, автоматически фиксируются в журнале для соответствия нормам закона. <a href=\"https://support.webasyst.ru/47766/fz-152-settings/\" target=\"_blank\">Подробнее о настройках и соответствии 152-ФЗ &rsaquo;</a>"
+msgid "Depending on the local jurisdiction, your business may be required to keep the log of consent to the terms of service and privacy policy confirmed by your site visitors. In Webasyst, all such confirmations, when performed via built-in system routines, are recorded to the database to help you comply with the law."
+msgstr "В зависимости от юрисдикции вашему бизнесу может предъявляться требование вести журнал учета подтверждений согласия с политикой обработки персональных данных посетителями сайта. В Webasyst такие подтверждения, полученные через встроенные системные механизмы, фиксируются автоматически для соответствия нормам закона. <a href=\"https://support.webasyst.ru/47766/fz-152-settings/\" target=\"_blank\">Подробнее о настройках и соответствии 152-ФЗ &rsaquo;</a>"
 
-msgid "Download agreement log"
-msgstr "Скачать журнал согласий"
+msgid "Download consent log"
+msgstr "Скачать журнал"
 
 msgid "Download with full policy text"
-msgstr "Скачать с полным текстом согласия"
+msgstr "Скачать с полным текстом соглашения"
+
+msgid "System error (see file %s.log for details)."
+msgstr "Системная ошибка (см. подробнее в файле %s.log)."
+
+msgid "Open"
+msgstr "Открыть"
+
+msgid "Invalid Webasyst ID client credentials."
+msgstr "Неверные параметры подключения клиента Webasyst ID."
+
+msgid "Webasyst ID must be connected in order to use the Webasyst search service."
+msgstr "Webasyst ID должен быть подключен для использования сервиса поиска Webasyst."
+
+msgid "Service temporarily unavailable. Please try again later."
+msgstr "Сервис временно недоступен. Пожалуйста, повторите попытку позднее."
+
+msgid "Unable to find relevant documents."
+msgstr "Не удалось найти подходящие документы."
+
+msgid "Project ID"
+msgstr "Project ID"
+
+msgid "Create a project in the <a %s>Firebase Console</a> and copy a <strong>Project ID</strong> under the <em>General</em> tab in the project settings."
+msgstr "Создайте проект в <a %s>Консоли Firebase</a> и скопируйте <strong>Project ID</strong> на вкладке «<em>General</em>» в настройках проекта."
+
+msgid "Copy the <strong>Sender ID</strong> under the <em>Cloud Messaging</em> tab in the <a %s>project settings</a>."
+msgstr "Скопируйте <strong>Sender ID</strong> на вкладке «<em>Cloud Messaging</em>» в <a %s>настройках проекта</a>."
+
+msgid "App ID"
+msgstr "App ID"
+
+msgid "Copy the <strong>App ID</strong> under the <em>General</em> tab in the <a %s>project settings</a>."
+msgstr "Скопируйте <strong>App ID</strong> на вкладке «<em>General</em>» в <a %s>настройках проекта</a>."
+
+msgid "Copy the <strong>API key</strong> at <em>APIs & Services › <a %s>Credentials</a></em> in the Google Cloud console. <strong>Do not create a new API key</strong>, use the one auto-created by Firebase."
+msgstr "Скопируйте <strong>ключ API</strong> в «<em>APIs & Services › <a %s>Credentials</a></em>» в консоли Google Cloud. <strong>Не создавайте новый ключ API</strong> — используйте тот, который автоматически создан Firebase."
+
+msgid "VAPID Public Key"
+msgstr "Публичный ключ VAPID"
+
+msgid "To generate a Voluntary Application Server Identification (VAPID) key pair:"
+msgstr "Чтобы сгенерировать пару ключей Voluntary Application Server Identification (VAPID):"
+
+msgid "Open the <em><a %s>Cloud Messaging</a></em> tab in the Firebase console’s <em>Settings</em> section and scroll to the <em>Web configuration</em> section."
+msgstr "Откройте вкладку «<em><a %s>Cloud Messaging</a></em>» в разделе «<em>Settings</em>» консоли Firebase и прокрутите страницу до раздела «<em>Web configuration</em>»."
+
+msgid "Under the <em>Web Push certificates</em> tab, click on <strong>Generate Key Pair</strong>. The console will display a notice about the generated key pair as well as the public key and its adding date."
+msgstr "На вкладке «<em>Web Push certificates</em>» нажмите на «<strong>Generate Key Pair</strong>». Консоль покажет уведомление о сгенерированной паре ключей, а также публичный ключ и дату его добавления."
+
+msgid "Private Key JSON"
+msgstr "Приватный JSON-ключ"
+
+msgid "To generate a private key file for your service account:"
+msgstr "Чтобы сгенерировать приватный ключ для вашего сервисного аккаунта:"
+
+msgid "In the Firebase console, open <em>Settings › <a %s>Service Accounts</a></em>."
+msgstr "В консоли Firebase откройте раздел «<em>Settings › <a %s>Service Accounts</a></em>»."
+
+msgid "Click <strong>Generate New Private Key</strong> and confirm the key creation by clicking <em>Generate Key</em>."
+msgstr "Нажмите на «<strong>Generate New Private Key</strong>» и подтвердите генерацию ключа нажатием на «<em>Generate Key</em>»."
+
+msgid "Select the downloaded JSON file."
+msgstr "Выберите скачанный JSON-файл."
+
+msgid "An error occurred while getting the Firebase messaging subscriber token. Please check your Firebase settings."
+msgstr "При получении токена подписчика на сообщения Firebase возникла ошибка. Проверьте настройки Firebase."
+
+msgid "Upload JSON key file"
+msgstr "Загрузите JSON-файл ключа"
+
+msgid "Show JSON key"
+msgstr "Показать JSON-ключ"
+
+msgid "Full settings validation not available: missing HTTPS connection."
+msgstr "Полная валидация настроек недоступна: отсутствует HTTPS-подключение."
+
+msgid "Full settings validation not available: notifications are blocked by user settings."
+msgstr "Полная валидация настроек недоступна: уведомления заблокированы настройками пользователя."
+
+msgid "The selected file does not contain JSON."
+msgstr "Выбранный файл не содержит JSON."
+
+msgid "File reading error. Please try again."
+msgstr "Ошибка чтения файла. Пожалуйста, повторите попытку."
+
+msgid "Copy & paste the public key value into the field above."
+msgstr "Скопируйте публичный ключ и вставьте его в поле выше."
+
+msgid "Key"
+msgstr "Ключ"
+
+msgid "Application ID"
+msgstr "Application ID"
+
+msgid "Public app key"
+msgstr "Публичный ключ приложения"
+
+msgid "Secret app key"
+msgstr "Секретный ключ приложения"
+
+msgid "Client Secret"
+msgstr "Client Secret"
+
+msgid "Webasyst AI"
+msgstr "Webasyst AI"
+
+msgid "Open the <em>General</em> tab in the <a %s>project settings</a> and scroll to <em>Your apps</em> section. Select the <strong>Web</strong> platform and create the app. Copy the <strong>App ID</strong> value of the created app."
+msgstr "Откройте вкладку «<em>General</em>» в <a %s>настройках проекта</a> и прокрутите страницу к секции «<em>Your apps</em>». Выберите платформу «<strong>Web</strong>» и создайте приложение. Скопируйте значение <strong>App ID</strong> созданного приложения."
+
+msgid "Write with AI"
+msgstr "Написать с ИИ"
+
+msgid "Please fill in all fields."
+msgstr "Пожалуйста, заполните все поля."
+
+msgid "A “%s” value is required."
+msgstr "Требуется значение «%s»."
+
+msgid "Invalid “%s” value format. A JSON structure is required."
+msgstr "Неверный формат значения «%s». Требуется структура JSON."
+
+msgid "The “%s” value must contain the <em>private_key</em> key."
+msgstr "Значение «%s» должно содержать элемент <em>private_key</em>."
+
+msgid "The “%s” value does not correspond to the specified Project ID."
+msgstr "Указанное значение «%s» не соответствует указанному Project ID."

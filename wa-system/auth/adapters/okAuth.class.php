@@ -5,7 +5,7 @@
  *
  * https://id.vk.com/about/business/go/docs/ru/vkid/latest/oauth/oauth-ok/server
  * https://apiok.ru/dev/app/create
- * 
+ *
  */
 
 class okAuth extends waOAuth2Adapter
@@ -106,8 +106,8 @@ class okAuth extends waOAuth2Adapter
     {
         return array(
             'app_id' => _ws('Application ID'),
-            'app_key' => _ws('Публичный ключ приложения'),
-            'app_secret' => _ws('Секретный ключ приложения'),
+            'app_key' => _ws('Public app key'),
+            'app_secret' => _ws('Secret app key'),
         );
     }
 

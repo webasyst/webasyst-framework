@@ -10,7 +10,7 @@
         <div class="js-push-loading spinner"></div>
         <div class="js-push-false hidden">
             <p>[`Web push notifications are currently disabled in your browser.`]</p>
-            <a class="button small outlined js-push-request">[`Enable`]</a>
+            <button class="button small outlined js-push-request">[`Enable`]</button>
         </div>
         <div class="js-push-ok hidden">
             <p>[`Web push notifications are enabled in your browser.`]</p>
@@ -25,7 +25,7 @@
             $('.js-browser-push-block').removeClass('hidden');
             $.wa_push.init({
                 force_no_mute: true,
-                func: initControls
+                func: initControlsAsync
             });
 
             $(window).on('wa_push_status_changed', function(e, is_ok) {
@@ -37,23 +37,41 @@
                 $('.js-push-loading').addClass('hidden');
             });
 
+            function initControlsAsync() {
+                if (window.location.protocol === 'http:') {
+                    $.wa_push.showHttpPermissionAlert();
+                    return;
+                }
+                const timeout_id = setTimeout(initControls, 5000);
+                $(window).on('wa_push_loaded', () => {
+                    clearTimeout(timeout_id);
+                    initControls();
+                });
+            }
+
             function initControls() {
                 if (typeof $.wa_push.check === 'function') {
                     $.wa_push.check(togglePushStatus);
 
-                    $('.js-push-request').on('click', () => {
+                    $('.js-push-request').off('click').on('click', () => {
                         $('.js-push-error').html('').addClass('hidden');
+                        if (window.Notification.permission === "denied") {
+                            $.wa_push.showDeniedPermissionAlert();
+                            return;
+                        }
                         $.wa_push.check(togglePushStatus);
                         $.wa_push.requestAllow();
                         WaBellAnnouncement.adhocHide($.wa_push.bell_ids.request_permissions);
-                        $.wa_push.timeout_id = setTimeout(() => {
-                            WaBellAnnouncement.adhocHide($.wa_push.bell_ids.timeout); // prevent multiple notifications
-                            WaBellAnnouncement.adhocShow($("<p />").html($.wa_push.loc.requestTimeoutMessage), $.wa_push.bell_ids.timeout);
-                            $.wa_push.timeout_id = undefined;
-                        }, 1000);
+                        if (!["default", "prompt"].includes(window.Notification.permission)) {
+                            $.wa_push.timeout_id = setTimeout(() => {
+                                WaBellAnnouncement.adhocHide($.wa_push.bell_ids.timeout); // prevent multiple notifications
+                                WaBellAnnouncement.adhocShow($("<p />").html($.wa_push.loc.requestTimeoutMessage), $.wa_push.bell_ids.timeout);
+                                $.wa_push.timeout_id = undefined;
+                            }, 1000);
+                        }
                     });
 
-                    $('.js-push-test').on('click', () => {
+                    $('.js-push-test').off('click').on('click', () => {
                         $('.js-push-test').addClass('disabled');
                         $('.js-push-error').html('').addClass('hidden');
                         $.wa_push.sendTest(() => {
@@ -145,7 +163,7 @@
 </div>
 <script type="text/javascript">
     (function($) {
-        new WASettingsPush({
+        window.waSettingsPush = new WASettingsPush({
             $wrapper: $("#s-push-settings-page"),
             wa2: true
         });

@@ -78,6 +78,8 @@ class waAPIController
             wa()->getFrontController()->execute(null, 'api', 'revoke');
         } elseif ($request_url == 'api.php/token-headless') {
             wa()->getFrontController()->execute(null, 'api', 'tokenHeadless');
+        } elseif ($request_url == 'api.php/license-cache') {
+            wa()->getFrontController()->execute(null, 'api', 'licenseCache');
         } elseif ($request_url == 'api.php/profile-update') {
             wa()->getFrontController()->execute(null, 'api', 'profileUpdate');
         } elseif (strpos($request_url, 'api.php/cron/') === 0 && count(explode('/', $request_url)) === 4) {

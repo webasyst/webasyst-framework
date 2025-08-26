@@ -57,6 +57,12 @@ class webasystDashboardAnnouncementsAIActions  extends waActions
         if (!empty($response['content'])) {
             $this->displayJson($response['content']);
         } else if (!empty($response['error_description']) || !empty($response['error'])) {
+            if (ifset($response, 'error', null) === 'payment_required') {
+                $result = (new waServicesApi)->getBalanceCreditUrl('AI');
+                if (ifset($result, 'response', 'url', false)) {
+                    $response['error_description'] = str_replace('%s', 'href="'.$result['response']['url'].'"', $response['error_description']);
+                }
+            }
             $this->displayJson(null, $response);
         } else {
             throw new waException("Unable to contact AI API", 500);

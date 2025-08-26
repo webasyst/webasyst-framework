@@ -244,9 +244,15 @@ class waRouting
         }
 
         $r = $this->dispatchRoutes($routes, $url);
-        if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
+        if ($r) {
+            $this->processStaticRoute($r);
+        }
+        if (!$r || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
             $r2 = $this->dispatchRoutes($this->getRoutes(), $url.'/');
             if ($r2 && (!$r || $r2['url'] != '*')) {
+                if (isset($r2['redirect'])) {
+                    $this->processStaticRoute($r2);
+                }
                 $this->system->getResponse()->redirect($this->system->getRootUrl().$url.'/', 301);
             }
         }
@@ -286,6 +292,54 @@ class waRouting
         }
 
         return $r;
+    }
+
+    /**
+     * @since 3.8.0
+     */
+    public function dispatchFullUrl($absolute_url) 
+    {
+        // save waRequest::param() because waRouting->dispatchRoutes() changes it as a side effect
+        $request_params = waRequest::param();
+
+        // Figure out app and global routing settlement and in-app url
+        $u = parse_url($absolute_url);
+        $url = ltrim($u['path'], '/');
+        $domain = $u['host'];
+        $u = trim($this->system->getRootUrl(), '/');
+        if ($u) {
+            $domain .= '/'.$u;
+        }
+        $settlement = $this->dispatchRoutes(ifset($this->routes, $domain, []), $url);
+
+        // Figure out in-app settlement and params
+        if (!empty($settlement['app']) && wa()->appExists($settlement['app'])) {
+            $settlement['_domain'] = $domain;
+            $old_route = [$this->route, $this->domain, $this->root_url];
+            $old_domain = $this->domain;
+            $old_root_url = $this->root_url;
+            $this->setRoute($settlement, $domain);
+            $new_params = waRequest::param();
+            $u = $settlement['url'];
+            if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $u, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
+                $offset = 0;
+                foreach ($match as $m) {
+                    $v = $m[1][0];
+                    $s = (isset($new_params[$v]) && $v != 'url') ? $new_params[$v] : '';
+                    $u = substr($u, 0, $m[0][1] + $offset).$s.substr($u, $m[0][1] + $offset + strlen($m[0][0]));
+                    $offset += strlen($s) - strlen($m[0][0]);
+                }
+            }
+            $this->root_url = (string) self::clearUrl($u);
+            $in_app_url = isset($new_params['url']) ? $new_params['url'] : substr($url, strlen($this->root_url));
+            $app_route = $this->dispatchRoutes($this->getAppRoutes($settlement['app'], $settlement, true), $in_app_url);
+            list($this->route, $this->domain, $this->root_url) = $old_route;
+            $new_params = waRequest::param();
+            $url_params = array_diff_key($new_params, $settlement, $app_route) + array_intersect_key($new_params, ['url' => 1]);
+        }
+
+        waRequest::setParam($request_params);
+        return [ifset($settlement), ifset($app_route), ifset($url_params)];
     }
 
     public function getRouteParam($name)
@@ -444,27 +498,9 @@ class waRouting
                             }
                         }
                     }
-                    $redirect_code = (!empty($r['code']) && $r['code'] == 302) ? 302 : 301;
-                    wa()->getResponse()->redirect($r['redirect'], $redirect_code);
+                    return $r;
                 } elseif (isset($r['static_content'])) {
-                    $response = wa()->getResponse();
-                    switch (ifset($r['static_content_type'])){
-                        case 'text/plain':
-                            $response->addHeader('Content-Type', 'text/plain; charset=utf-8');
-                            break;
-                        case 'text/html':
-                            $response->addHeader('Content-Type', 'text/html; charset=utf-8');
-                            break;
-                        default:
-                            if ($type = waFiles::getMimeType($r['url'])) {
-                                $response->addHeader('Content-Type', $type);
-                            }
-
-                            break;
-                    }
-                    $response->sendHeaders();
-                    print $r['static_content'];
-                    exit;
+                    return $r;
                 }
                 if ($vars) {
                     array_shift($match);
@@ -484,6 +520,32 @@ class waRouting
             }
         }
         return $result;
+    }
+
+    protected function processStaticRoute($r)
+    {
+        if (isset($r['redirect']) && empty($r['disabled'])) {
+            $redirect_code = (!empty($r['code']) && $r['code'] == 302) ? 302 : 301;
+            wa()->getResponse()->redirect($r['redirect'], $redirect_code);
+        } elseif (isset($r['static_content'])) {
+            $response = wa()->getResponse();
+            switch (ifset($r['static_content_type'])){
+                case 'text/plain':
+                    $response->addHeader('Content-Type', 'text/plain; charset=utf-8');
+                    break;
+                case 'text/html':
+                    $response->addHeader('Content-Type', 'text/html; charset=utf-8');
+                    break;
+                default:
+                    if ($type = waFiles::getMimeType($r['url'])) {
+                        $response->addHeader('Content-Type', $type);
+                    }
+                    break;
+            }
+            $response->sendHeaders();
+            print $r['static_content'];
+            exit;
+        }
     }
 
     /**

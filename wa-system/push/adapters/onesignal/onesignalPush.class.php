@@ -143,6 +143,7 @@ class onesignalPush extends waPushAdapter
                     'title'        => _ws('User Auth Key'),
                     'control_type' => waHtmlControl::INPUT,
                     'description'  => '<p class="hint state-caution-hint">'._ws('Authentication by User Auth Key is deprecated. You need to set up Organization ID and Organization API Auth Key.').'</p>',
+                    'translate' => false,
                 ]
             ];
         }
@@ -153,6 +154,7 @@ class onesignalPush extends waPushAdapter
             'description'  => '<p class="hint">'.sprintf_wp('How to find the <em>Organization ID</em>: Navigate to the Organization from %s. The Organization ID is the UUID found in the URL after <em>/organizations/</em>.',
                 sprintf_wp('<%s>organization list page<%s><%s>', 'a href="https://dashboard.onesignal.com/organizations/" target="_blank"', 'i class="icon16 new-window"></i', '/a')).
                 '</p>',
+            'translate' => false,
         ];
 
         $view = wa('webasyst')->getView();
@@ -168,6 +170,7 @@ class onesignalPush extends waPushAdapter
             'title'        => _ws('Organization API Auth Key'),
             'control_type' => waHtmlControl::INPUT,
             'description'  => $description,
+            'translate' => false,
         ];
 
         foreach ($domains as $domain => $domain_data) {
@@ -177,6 +180,7 @@ class onesignalPush extends waPushAdapter
                     'control_type' => waHtmlControl::INPUT,
                     'description'  => sprintf_wp('Create an API key on the %s page.',
                         '<a href="https://dashboard.onesignal.com/apps/'.$domain_data['id'].'/settings/keys_and_ids" target="_blank">App Keys &amp; IDs<i class="icon16 new-window"></i></a>'),
+                    'translate' => false,
                 ];
             }
         }

@@ -157,6 +157,7 @@ class installerHelper
             );
             $app_settings_model = new waAppSettingsModel();
             $errors = (array)json_decode($app_settings_model->get('installer', 'errors', '[]'));
+            self::getInstaller()->syncSourcesEndpoints();
             $items = self::getInstaller()->getUpdates($vendor);
             $changed = false;
             $actions = array(

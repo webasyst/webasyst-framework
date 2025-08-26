@@ -497,13 +497,15 @@ class WaHeaderAnnouncement {
 
         return true;
     }
-    resetErrors () {
-        this.$form.find('.state-error').removeClass('state-error');
-        this.$form.find('.state-error-hint:not(#js-announcement-error)').remove();
+    resetErrors (only_message = false) {
+        if (!only_message) {
+            this.$form.find('.state-error').removeClass('state-error');
+            this.$form.find('.state-error-hint:not(#js-announcement-error)').remove();
+        }
         $('#js-announcement-error').addClass('hidden');
     }
     handleError (error) {
-        if (error.field) {
+        if (error?.field) {
             let $control = this.$form.find(`[name="${error.field}"]`);
             if (error.field === 'data[text]') {
                 $control = $control.redactor('core.box');
@@ -517,7 +519,7 @@ class WaHeaderAnnouncement {
                 $(`<div class="state-error-hint">${error.error_description}<div>`).insertAfter($control.last());
             }
         } else {
-            this.handleSaveError(error.error_description);
+            this.handleSaveError(error?.error_description || error?.error);
         }
     }
     handleSaveError (r) {
@@ -530,7 +532,7 @@ class WaHeaderAnnouncement {
 
         const $error = $('#js-announcement-error');
         if (error_msg) {
-            $error.text(error_msg);
+            $error.html(error_msg);
         }
         $error.removeClass('hidden');
     }
@@ -813,28 +815,40 @@ class WaHeaderAnnouncement {
     }
 
     initAIWrite () {
-        const $wrapper = $('#js-wa-announcement-ai-write-dropdown').waDropdown({
-            hover: false,
-            hide: false
-        });
+        const $wrapper = $('#js-wa-announcement-ai-write-dropdown');
         const $prompt = $wrapper.find('.js-prompt');
         const $submit = $wrapper.find('.js-submit');
         const $repeat_submit = $wrapper.find('.js-repeat-submit');
         const $error = $wrapper.find('.js-error');
         const redactor = this.redactor;
+        const resetData = () => {
+            $submit.removeClass(['is-submit', 'is-error', 'is-success']);
+            $submit.prop('disabled', true);
+            $repeat_submit.hide();
+            $error.empty();
+        };
+
+        $wrapper.waDropdown({
+            hover: false,
+            hide: false,
+            close: () => {
+                resetData();
+                $submit.css('width', 'auto');
+                $prompt.val('');
+            }
+        });
 
         const submit = async (repeat = false) => {
-            $error.empty();
-            if (repeat) {
-                $repeat_submit.hide();
-                $submit.removeClass(['is-submit', 'is-success', 'is-error']);
+            if (!repeat && $submit.hasClass('is-submit')) {
+                $wrapper.data('dropdown').hide();
+                return;
             }
-            $submit.prop('disabled', true);
+            resetData();
             $submit.css('width', $submit.css('width'));
             $submit.addClass('is-submit');
             $submit.animate({ width: '35px' }, 50);
-            await new Promise((resolve) => setTimeout(() => resolve(), 1000));
 
+            await new Promise((resolve) => setTimeout(() => resolve(), 1000));
             const text = $prompt.val();
             const emotion = $wrapper.find('.js-emotion').val(); // TODO: soon remove
             $.post(this.url_api + 'ai/write', { text, emotion }, (r) => {
@@ -870,20 +884,15 @@ class WaHeaderAnnouncement {
 
     initAISpellcheck () {
         const $submit = $('#js-wa-announcement-ai-spellcheck');
-        const $error = $('#js-announcement-error');
 
         const submit = () => {
-            $error.addClass('hidden');
+            this.resetErrors(true);
             $submit.prop('disabled', true);
             const $loading = $submit.find('.webasyst-magic-wand-ai').addClass('shimmer');
             const text = this.redactor.code.get();
             $.post(this.url_api + 'ai/spellcheck', { text }, (r) => {
                 if (r.errors) {
-                    const error = r.errors.error_description || r.errors.error;
-                    if (error) {
-                        $error.text(error);
-                    }
-                    $error.removeClass('hidden');
+                    this.handleError(r.errors);
                 } else if (r.data) {
                     this.redactor.code.set(r.data);
                 }

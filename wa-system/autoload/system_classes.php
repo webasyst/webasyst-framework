@@ -259,6 +259,7 @@ return array(
     'waServicesApi'                            => 'waid/services/waServicesApi.class.php',
     'waServicesEndpointsConfig'                => 'waid/services/waServicesEndpointsConfig.class.php',
     'waServicesUrlsProvider'                   => 'waid/services/waServicesUrlsProvider.class.php',
+    'waServicesSearch'                         => 'waid/services/waServicesSearch.class.php',
 
     // </WEBASYST ID MODULE>
 );

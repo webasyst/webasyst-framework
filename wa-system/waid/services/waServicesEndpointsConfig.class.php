@@ -3,13 +3,9 @@
 class waServicesEndpointsConfig extends waWebasystIDEndpointsConfig
 {
 
-    public function getUrl()
+    protected function getApp()
     {
-        $installer_apps = $this->getInstallerApps();
-        if (!$installer_apps) {
-            return '';
-        }
-        return $installer_apps->getEndpointsUrl() . '?app=balance';
+        return 'balance';
     }
 
     protected function typecastEndpoints(array $endpoints)

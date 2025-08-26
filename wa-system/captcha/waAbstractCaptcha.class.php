@@ -50,6 +50,11 @@ abstract class waAbstractCaptcha
      */
     abstract public function display();
 
+    public function isInvisible()
+    {
+        return false;
+    }
+
     /**
      * @param null|string $key
      * @param mixed $default

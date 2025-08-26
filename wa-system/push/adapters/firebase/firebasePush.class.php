@@ -242,17 +242,29 @@ class firebasePush extends waPushAdapter
     {
         $json_key = $settings[self::JSON_KEY];
         if (empty($json_key)) {
-            return 'JSON key обязателен!';
+            return sprintf(
+                _ws('A “%s” value is required.'),
+                _ws('Private Key JSON')
+            );
         }
         $json_key = json_decode($json_key, true);
         if (empty($json_key) || !is_array($json_key)) {
-            return 'Неверный формат JSON key - это должна быть структура JSON';
+            return sprintf(
+                _ws('Invalid “%s” value format. A JSON structure is required.'),
+                _ws('Private Key JSON')
+            );
         }
         if (empty($json_key['private_key'])) {
-            return 'JSON key должен содержать private_key';
+            return sprintf(
+                _ws('The “%s” value must contain the <em>private_key</em> key.'),
+                _ws('Private Key JSON')
+            );
         }
         if (empty($json_key['project_id']) || $json_key['project_id'] != $settings[self::PROJECT_ID]) {
-            return 'Указанный JSON key не соответствует указанному Project ID';
+            return sprintf(
+                _ws('The “%s” value does not correspond to the specified Project ID.'),
+                _ws('Private Key JSON')
+            );
         }
 
         set_error_handler(function ($errno, $err_str, $err_file, $err_line) {

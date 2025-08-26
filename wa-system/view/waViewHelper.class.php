@@ -269,9 +269,12 @@ class waViewHelper
 
         if (file_exists($domain_config_path)) {
             /**
-             * @var $domain_config array
+             * @var array
              */
             $domain_config = include($domain_config_path);
+
+            $html .= $this->getFavicons($domain_config);
+
             if (!empty($domain_config['head_js'])) {
                 $html .= $domain_config['head_js'];
             }
@@ -315,7 +318,7 @@ HTML;
             $html .= '<link rel="canonical" href="' . htmlspecialchars($canonical) . '">' . PHP_EOL;
         }
 
-        if ($this->getEnv() == 'frontend' && $this->getConfig()->isFrontendAnnouncementsEnabled()) {
+        if ($this->getEnv() == 'frontend' && ($this->app_id === 'shop' || $this->getConfig()->isFrontendAnnouncementsEnabled())) {
             $html .= $this->getCachedFrontAnnouncements();
         }
 
@@ -350,7 +353,7 @@ HTML;
         $announcements = array_filter($records, function ($key) {
             return strpos($key, 'a-') === 0;
         }, ARRAY_FILTER_USE_KEY);
-        $announcements = array_map(function ($announcement) { 
+        $announcements = array_map(function ($announcement) {
             return json_decode($announcement, true);
         }, $announcements);
 
@@ -374,6 +377,38 @@ HTML;
         return array_reduce($announcements, function ($result, $announcement) {
             return $result . $announcement['html']['front'];
         }, '');
+    }
+
+    private function getFavicons($domain_config)
+    {
+        $links = '';
+        $domain_favicons = ifset($domain_config['favicons']);
+        if (!is_array($domain_favicons)) {
+            siteHelper::updateFaviconsConfig($domain_config);
+            $domain_favicons = $domain_config['favicons'];
+        }
+
+        $wa_url = wa_url();
+        if (isset($domain_favicons['favicon.ico'])) {
+            $links .= '<link rel="icon" href="'.$wa_url.$domain_favicons['favicon.ico'].'" type="image/x-icon" />';
+        } else {
+            $links .= '<link rel="icon" href="'.$wa_url.'favicon.ico" type="image/x-icon" />';
+        }
+        if (isset($domain_favicons['favicon-96.png'])) {
+            $links .= '<link rel="icon" href="'.$wa_url.$domain_favicons['favicon-96.png'].'" sizes="96x96" type="image/png" />';
+        }
+        if (isset($domain_favicons['apple-touch-icon.png'])) {
+            $links .= '<link rel="apple-touch-icon" href="'.$wa_url.$domain_favicons['apple-touch-icon.png'].'" />';
+            if ($touchicon_title = htmlspecialchars($domain_config['touchicon_title'] ?? '')) {
+                $links .= '<meta name="apple-mobile-web-app-title" content="'.$touchicon_title.'" />';
+                $links .= '<meta name="application-name" content="'.$touchicon_title.'" />';
+            }
+        }
+        if (isset($domain_favicons['site.webmanifest'])) {
+            $links .= '<link rel="manifest" href="'.$wa_url.$domain_favicons['site.webmanifest'].'" crossorigin="use-credentials" />';
+        }
+
+        return $links;
     }
 
     public function headJs()

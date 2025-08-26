@@ -3,11 +3,11 @@
 class waWebasystIDConfig
 {
     const ENDPOINTS_SYNC_TIME_KEY = 'waid_endpoints_sync_time';
+    const ENDPOINTS_SYNC_TIMEOUT = 14400; // 4 hours
 
     protected $config = [];
     protected $config_path;
-
-    protected $sync_endpoints_timeout = 86400;    // 24 hours
+    protected $app_settings_model;
 
     /**
      * waWebasystIDConfig constructor.
@@ -39,8 +39,7 @@ class waWebasystIDConfig
      */
     protected function getMTime()
     {
-        $app_settings_model = new waAppSettingsModel();
-        $time = $app_settings_model->get('webasyst', $this->getSettingsKey(), '');
+        $time = $this->getAppSettingsModel()->get('webasyst', $this->getSettingsKey(), '');
         if (wa_is_int($time) && $time > 0) {
             return $time;
         }
@@ -49,8 +48,7 @@ class waWebasystIDConfig
 
     protected function updateMTime()
     {
-        $app_settings_model = new waAppSettingsModel();
-        $app_settings_model->set('webasyst', $this->getSettingsKey(), time());
+        $this->getAppSettingsModel()->set('webasyst', $this->getSettingsKey(), time());
     }
 
     protected function getSettingsKey()
@@ -83,15 +81,35 @@ class waWebasystIDConfig
         if (isset($this->config['custom_endpoints']) && is_array($this->config['custom_endpoints'])) {
             return $this->config['custom_endpoints'];
         }
+
+        if (!empty($this->config['endpoints']['zones'])) {
+            $endpoints_zone = $this->getEndpointsZone();
+            if (!empty($endpoints_zone) && isset($this->config['endpoints']['zones'][$endpoints_zone]) && is_array($this->config['endpoints']['zones'][$endpoints_zone])) {
+                return $this->config['endpoints']['zones'][$endpoints_zone];
+            }
+        }
+
         return isset($this->config['endpoints']) && is_array($this->config['endpoints']) ? $this->config['endpoints'] : [];
+    }
+
+    protected function getEndpointsZone()
+    {
+        if (!class_exists('waInstallerApps')) {
+            $autoload = waAutoload::getInstance();
+            $autoload->add('waInstallerApps', 'wa-installer/lib/classes/wainstallerapps.class.php');
+        }
+        if (!class_exists('waInstallerApps')) {
+            return null;
+        }
+        return $this->getAppSettingsModel()->get('webasyst', waInstallerApps::ENDPOINTS_ZONE_KEY);
     }
 
     /**
      * Update (actualize) endpoints when timeout passed
      */
-    public function keepEndpointsSynchronized()
+    public function keepEndpointsSynchronized($force_renew = false)
     {
-        if (!isset($this->config['endpoints']) || time() - $this->getMTime() > $this->sync_endpoints_timeout) {
+        if ($force_renew || !isset($this->config['endpoints']) || time() - $this->getMTime() > self::ENDPOINTS_SYNC_TIMEOUT) {
             $endpoints = (new waWebasystIDEndpointsConfig())->getEndpoints();
             if ($endpoints) {
                 $changed = !isset($this->config['endpoints']) || (isset($this->config['endpoints']) && $this->config['endpoints'] != $endpoints);
@@ -101,6 +119,13 @@ class waWebasystIDConfig
                 }
             }
             $this->updateMTime();
+        }
+    }
+
+    public function reset()
+    {
+        if (file_exists($this->config_path)) {
+            unlink($this->config_path);
         }
     }
 
@@ -159,5 +184,13 @@ class waWebasystIDConfig
         return [
             'endpoints' => $endpoints
         ];
+    }
+
+    protected function getAppSettingsModel()
+    {
+        if (!empty($this->app_settings_model)) {
+            return $this->app_settings_model;
+        }
+        return $this->app_settings_model = new waAppSettingsModel();
     }
 }

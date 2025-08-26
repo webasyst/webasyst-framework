@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -600,3 +600,12 @@ msgstr "Службы"
 
 msgid "Home"
 msgstr "Главная"
+
+msgid "Response code: %s."
+msgstr "Код ответа: %s."
+
+msgid "Remaining Webasyst AI prompts: %s."
+msgstr "Доступно запросов к Webasyst AI: %s."
+
+msgid "Webasyst CRON API error."
+msgstr "Ошибка Webasyst CRON API."

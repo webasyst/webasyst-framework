@@ -98,8 +98,8 @@
     OneSignalDeferred.push(async function() {
         await OneSignal.Notifications.addEventListener("foregroundWillDisplay", (event) => {
             console.log(event.notification);
-            $.wa_push.clearTimeout();
             if (event.notification.additionalData?.test) {
+                $.wa_push.clearTimeout();
                 $.wa_push.is_test_push_recieved = true;
                 $.wa_push.showPush(loc.testSuccessText + '<br><span class="small"><strong>' + event.notification.title + '</strong><br>' + event.notification.body + '</span>');
             }
@@ -221,6 +221,10 @@
                 func(false, loc.resetPermissionText);
             }
         }
+    });
+
+    OneSignalDeferred.push(function() {
+        $(window).trigger('wa_push_loaded');
     });
 
 }(window.jQuery));
