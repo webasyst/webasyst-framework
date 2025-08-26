@@ -1,24 +1,43 @@
-importScripts('https://www.gstatic.com/firebasejs/3.7.2/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/3.7.2/firebase-messaging.js');
+importScripts(
+    "https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"
+);
+importScripts(
+    "https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging-compat.js"
+);
 
-firebase.initializeApp({
-    messagingSenderId: {$sender_id|json_encode}
-});
+(function (self) {
 
+const firebaseConfig = {
+    apiKey: {$api_key|json_encode},
+    authDomain: {$project_id|json_encode} + ".firebaseapp.com",
+    projectId: {$project_id|json_encode},
+    storageBucket: {$project_id|json_encode} + ".firebasestorage.app",
+    messagingSenderId: {$sender_id|json_encode},
+    appId: {$app_id|json_encode}
+};
+
+firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// Customize notification handler
-messaging.setBackgroundMessageHandler(function(payload) {
+messaging.onBackgroundMessage(function(payload) {
     console.log('Handling background message', payload);
-
-    // Copy data object to get parameters in the click handler
-    payload.data.data = JSON.parse(JSON.stringify(payload.data));
-
-    return self.registration.showNotification(payload.data.title, payload.data);
+    if (!('notification' in payload) && payload.data?.title && payload.data?.body) {
+        self.registration.showNotification(
+            payload.data.title, {
+                body: payload.data.body,
+                image: payload.data.image,
+                icon: payload.data.image,
+                data: payload.data
+            }
+        );
+    }
 });
 
 self.addEventListener('notificationclick', function(event) {
-    const target = event.notification.data.click_action || '/';
+    // Notification clicked.
+    console.log('Handling notification click', event.notification);
+
+    const target = event.notification.data?.link || '/';
     event.notification.close();
 
     // This looks to see if the current is already open and focuses if it is
@@ -37,3 +56,5 @@ self.addEventListener('notificationclick', function(event) {
         return clients.openWindow(target);
     }));
 });
+
+})(self);

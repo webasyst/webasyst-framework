@@ -1,0 +1,132 @@
+{if !empty($validator_path)}
+<span class="js-json-key-file custom-mr-8">
+    <span class="upload">
+        <label class="button outlined js-add-json-key">
+            <i class="fas fa-key"></i>
+            <span>[s`Upload JSON key file`]</span>
+            <input type="file" autocomplete="off" class="js-json-key-file-input">
+        </label>
+    </span>
+</span>
+
+<a href="javascript:void(0);" class="js-show-json-key hidden">[s`Show JSON key`]</a>
+<pre class="js-json-key-container" style="display: none; overflow-x: auto; width: 100%;
+    min-height: 50px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 5px;
+    background: var(--background-color-blockquote);
+    color: var(--text-color);
+    font-size: .9rem;
+    line-height: 1.25em;
+    resize: vertical;
+    border: 0 none !important;
+    padding: 1rem !important;"></pre>
+<div class="state-caution js-json-key-error"></div>
+<script>
+(function($) { "use strict";
+
+    const validator_path = {$validator_path|json_encode};
+
+    if (!$ || !validator_path) return;
+
+    const id = '#firebase-validator-' + Date.now();
+
+    if ($(id).length == 0) {
+        const script = document.createElement("script");
+        script.type = "module";
+        script.async = true;
+
+        document.getElementsByTagName("head")[0].appendChild(script);
+
+        const $script = $(script)
+                .attr("id", id)
+                .attr("src", validator_path);
+    }
+
+    if (window.location.protocol === 'http:') {
+        $('div.js-push-adapter-settings[data-adapter-id="firebase"]').prepend($('<p class="state-caution">[s`Full settings validation not available: missing HTTPS connection.`]</p>'));
+    } else if (window.Notification.permission === "denied") {
+        $('div.js-push-adapter-settings[data-adapter-id="firebase"]').prepend($('<p class="state-caution">[s`Full settings validation not available: notifications are blocked by user settings.`]</p>'));
+    }
+
+    $('input[name="push_settings[firebase][project_id]"]').on('input', function() {
+        const value = $(this).val();
+        const href = 'https://console.firebase.google.com/project/' + (value || '_') + '/settings/';
+        $('.js-firebase-api_key-link').attr('href', 'https://console.cloud.google.com/apis/credentials?project=' + value);
+        $('.js-firebase-json_key-link').attr('href', href + 'serviceaccounts/adminsdk');
+        $('.js-firebase-app_id-link').attr('href', href + 'general');
+        $('.js-firebase-sender_id-link').attr('href', href + 'cloudmessaging');
+        $('.js-firebase-vapid_key-link').attr('href', href + 'cloudmessaging');
+    });
+    $('input[name="push_settings[firebase][app_id]"]').addClass('long');
+    //$('input[name="push_settings[firebase][sender_id]"]').addClass('long');
+    $('input[name="push_settings[firebase][api_key]"]').addClass('long');
+    $('input[name="push_settings[firebase][vapid_key]"]').addClass('long');
+    const $json_key_textarea = $('textarea[name="push_settings[firebase][json_key]"]');
+    const $json_key_show_link = $('.js-show-json-key');
+    const $json_key_error = $('.js-json-key-error');
+    const $json_key_container = $('.js-json-key-container');
+
+    $(".js-json-key-file").waUpload({
+        show_file_name: false
+    });
+
+    $json_key_textarea
+        //.addClass('full-width')
+        //.addClass('smaller')
+        .addClass('hidden')
+        //.css('height', '30em')
+        .closest('div.field').addClass('vertical');
+
+    if ($json_key_textarea.val()) {
+        try {
+            $json_key_container.html(JSON.stringify(JSON.parse($json_key_textarea.val()), null, 2));
+            $json_key_show_link.removeClass('hidden');
+        } catch (e) {
+            $json_key_textarea.val('');
+        }
+    }
+
+    $json_key_show_link.on('click', function(e) {
+        e.preventDefault();
+        $json_key_container.toggle();
+    });
+
+    $(".js-json-key-file-input").on('change', async function(e) {
+        const [file] = this.files;
+        if (!file || !file.type.startsWith('application/json')) {
+            $json_key_textarea.val('');
+            $json_key_container.html('').hide();
+            if (file) $json_key_error.html('[s`The selected file does not contain JSON.`]');
+            $json_key_show_link.addClass('hidden');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            $json_key_textarea.val(reader.result);
+            try {
+                $json_key_container.html(JSON.stringify(JSON.parse(reader.result), null, 2));
+                $json_key_error.html('');
+                $json_key_show_link.removeClass('hidden');
+            } catch (e) {
+                $json_key_textarea.val('');
+                $json_key_container.html('').hide();
+                $json_key_error.html('[s`The selected file does not contain JSON.`]');
+                $json_key_show_link.addClass('hidden');
+            }
+        };
+        reader.onerror = () => {
+            console.log("File reading error. Please try again.", reader.error);
+            $json_key_error.html('[s`File reading error. Please try again.`]');
+            $json_key_textarea.val('');
+            $json_key_container.html('').hide();
+            $json_key_show_link.addClass('hidden');
+        };
+        reader.readAsText(file);
+    });
+
+}(window.jQuery));
+</script>
+{/if}
