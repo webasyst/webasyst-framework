@@ -136,7 +136,11 @@ class waImageImagick extends waImage
         }
 
         $this->im->setImageCompressionQuality($quality);
+        $profiles = $this->im->getImageProfiles("icc", true);
         $this->im->stripImage();
+        if(!empty($profiles)) {
+            $this->im->profileImage("icc", $profiles['icc']);
+        }
         if ($this->im->getNumberImages() > 1 && $extension == "gif") {
             $res = $this->im->writeImages($file, true);
         }
