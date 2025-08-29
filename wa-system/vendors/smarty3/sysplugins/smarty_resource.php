@@ -77,10 +77,10 @@ abstract class Smarty_Resource {
     /**
      * populate Source Object with meta data from Resource
      *
-     * @param Smarty_Template_Source   $source source object
-     * @param Smarty_Internal_Template $_template     template object
+     * @param Smarty_Template_Source $source source object
+     * @param Smarty_Internal_Template|null $_template template object
      */
-    public abstract function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template=null);
+    public abstract function populate(Smarty_Template_Source $source, ?Smarty_Internal_Template $_template=null);
 
     /**
      * populate Source Object with timestamp and exists from Resource
@@ -194,12 +194,12 @@ abstract class Smarty_Resource {
     /**
      * build template filepath by traversing the template_dir array
      *
-     * @param Smarty_Template_Source   $source    source object
-     * @param Smarty_Internal_Template $_template template object
+     * @param Smarty_Template_Source $source source object
+     * @param Smarty_Internal_Template|null $_template template object
      * @return string fully qualified filepath
      * @throws SmartyException if default template handler is registered but not callable
      */
-    protected function buildFilepath(Smarty_Template_Source $source, Smarty_Internal_Template $_template=null)
+    protected function buildFilepath(Smarty_Template_Source $source, ?Smarty_Internal_Template $_template=null)
     {
         $file = $source->name;
         if ($source instanceof Smarty_Config_Source) {
@@ -499,12 +499,13 @@ abstract class Smarty_Resource {
      *
      * Either [$_template] or [$smarty, $template_resource] must be specified
      *
-     * @param Smarty_Internal_Template $_template         template object
-     * @param Smarty                   $smarty            smarty object
-     * @param string                   $template_resource resource identifier
+     * @param Smarty_Internal_Template|null $_template template object
+     * @param Smarty|null $smarty smarty object
+     * @param null $template_resource resource identifier
      * @return Smarty_Template_Source Source Object
+     * @throws SmartyException
      */
-    public static function source(Smarty_Internal_Template $_template=null, Smarty $smarty=null, $template_resource=null)
+    public static function source(?Smarty_Internal_Template $_template=null, ?Smarty $smarty=null, $template_resource=null)
     {
         if ($_template) {
             $smarty = $_template->smarty;

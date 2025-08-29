@@ -78,13 +78,13 @@
         }
 
         /**
-        * Read the cached template and process its header
-        *
-        * @param Smarty_Internal_Template $_template template object
-        * @param Smarty_Template_Cached $cached cached object
-        * @return booelan true or false if the cached content does not exist
-        */
-        public function process(Smarty_Internal_Template $_template, Smarty_Template_Cached $cached=null)
+         * Read the cached template and process its header
+         *
+         * @param Smarty_Internal_Template $_template template object
+         * @param Smarty_Template_Cached|null $cached cached object
+         * @return booelan true or false if the cached content does not exist
+         */
+        public function process(Smarty_Internal_Template $_template, ?Smarty_Template_Cached $cached=null)
         {
             $_smarty_tpl = $_template;
             return @include $_template->cached->filepath;
