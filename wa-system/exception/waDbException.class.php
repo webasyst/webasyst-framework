@@ -19,7 +19,7 @@ class waDbException extends waException
     {
         $this->real_message = $new_message = $message;
         if (!waSystemConfig::isDebug() && !defined('WA_TEST_ENVIRONMENT')) {
-            $new_message = "Database error. See log for details.";
+            $new_message = _ws('Database error. See log files for details.');
         }
         parent::__construct($new_message, $code, $previous);
         if (!waConfig::get('disable_exception_log')) {

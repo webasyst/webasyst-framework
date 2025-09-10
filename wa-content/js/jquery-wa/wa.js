@@ -2391,7 +2391,7 @@
             that.is_click = that.options.trigger === 'click' || that.$wrapper.getAttribute('data-wa-tooltip-trigger') === 'click' || false;
             that.icon = that.options.icon || that.$wrapper.getAttribute('data-wa-tooltip-icon') || false;
             that.template = that.options.template || that.$wrapper.getAttribute('data-wa-tooltip-template') || false
-
+            that.tippy = {};
             that.wa_url =  window.wa_url || '/';
 
             //
@@ -2400,15 +2400,24 @@
                 that.options.allowHTML = true;
             }
 
+            that._promise = new Promise((resolve, reject) => {
+                that._resolve = resolve;
+                that._reject = reject;
+            });
+
             // INIT
             if (window.Popper && window.tippy) {
                 that.init()
             } else {
                 // DYNAMIC LOAD SOURCE
                 (async () => {
-                    await import(`${that.wa_url}wa-content/js/tippy/popper.min.js`).then((async () => {
-                        await import(`${that.wa_url}wa-content/js/tippy/wa.tooltip.js`).then(() => that.init())
-                    }))
+                    try {
+                        await import(`${that.wa_url}wa-content/js/tippy/popper.min.js`)
+                        await import(`${that.wa_url}wa-content/js/tippy/wa.tooltip.js`)
+                        that.init()
+                    } catch (error) {
+                        that._reject(error);
+                    }
                 })()
             }
         }
@@ -2419,6 +2428,8 @@
             that.options.onCreate = function (tooltip) {
                 that.setIcon(tooltip);
                 that.setClass(tooltip);
+
+                that.tippy = tooltip;
             }
 
             that.setContent();
@@ -2428,10 +2439,13 @@
 
             /* remove tooltip without text*/
             if (!tooltip.popper.innerText) {
-                tooltip.destroy()
+                tooltip.destroy();
+                return;
             }
 
-            that.$wrapper.dataset.tooltip = tooltip;
+            that.tippy = tooltip;
+
+            that._resolve(that.tippy);
         };
 
         Tooltip.prototype.setContent = function () {

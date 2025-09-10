@@ -322,6 +322,15 @@ HTML;
             $html .= $this->getCachedFrontAnnouncements();
         }
 
+        if ($this->getEnv() == 'frontend') {
+            $params = ['domain' => $domain];
+            $event_result = wa()->event([wa()->getApp(), 'wa.frontend_head'], $params);
+            foreach ($event_result as $_result) {
+                $html .= $_result;
+            }
+            unset($_result);           
+        }
+
         return $html;
     }
 

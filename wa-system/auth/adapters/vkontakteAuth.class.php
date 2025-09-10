@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @see https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/api-integration/api-description
+ * @see https://id.vk.ru/about/business/go/docs/ru/vkid/latest/vk-id/connection/api-integration/api-description
  */
 class vkontakteAuth extends waOAuth2Adapter
 {
-    const OAUTH_URL = "https://id.vk.com/";
+    const OAUTH_URL = "https://id.vk.ru/";
 
     protected $check_state = true;
 
     /**
      * @return string
-     * @see http://vk.com/dev/oauth_dialog
+     * @see http://vk.ru/dev/oauth_dialog
      */
     public function getRedirectUri()
     {
@@ -122,7 +122,7 @@ class vkontakteAuth extends waOAuth2Adapter
 
     public function getName()
     {
-        return wa()->getLocale() == 'en_US' ? 'VK' : 'ВКонтакте';
+        return wa()->getLocale() == 'en_US' ? 'VK' : 'VK';
     }
 
     protected function generateCodeChallenge()

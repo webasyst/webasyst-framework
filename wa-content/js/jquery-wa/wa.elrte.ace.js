@@ -154,6 +154,8 @@ function waEditorAceInit(options)
     $(window).resize(function() {
         wa_editor.resize();
     });
+
+    return wa_editor;
 }
 
 function waEditorUpdateSource(options) {

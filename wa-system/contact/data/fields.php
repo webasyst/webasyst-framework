@@ -71,23 +71,24 @@ return array(
         'multi' => true,
         'type' => 'IM',
         'ext' => array(
-            'whatsapp' => 'WhatsApp',
+            'vk' => 'VK Messenger',
             'telegram' => 'Telegram',
-            'skype' => 'Skype',
+            'max' => 'MAX',
+            'whatsapp' => 'WhatsApp',
             'viber' => 'Viber',
             'facebook' => 'Facebook Messenger',
+            'wechat' => 'WeChat',
+            'qq' => 'QQ',
+            'line' => 'Line',
+            'signal' => 'Signal',
+            'skype' => 'Skype',
             'discord' => 'Discord',
             'slack' => 'Slack',
-            'wechat' => 'WeChat',
-            'signal' => 'Signal',
             'imessage' => 'iMessage',
-            'line' => 'Line',
-            'qq' => 'QQ',
-            'icq' => 'ICQ'
         ),
         'formats' => array(
-                'top' => new waContactIMTopFormatter(),
-                'js' => new waContactIMJSFormatter()
+            'top' => new waContactIMTopFormatter(),
+            'js' => new waContactIMJSFormatter()
         ),
         'top' => true
     )),
