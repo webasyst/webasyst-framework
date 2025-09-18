@@ -20,8 +20,8 @@ class yandexAuth extends waOAuth2Adapter
     public function getControls()
     {
         return array(
-            'app_id'     => _ws('Client ID'),
-            'app_secret' => _ws('Client secret'),
+            'app_id'     => 'ClientID',
+            'app_secret' => 'Client secret',
         );
     }
 

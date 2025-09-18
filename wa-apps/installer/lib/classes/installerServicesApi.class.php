@@ -106,6 +106,7 @@ class installerServicesApi extends waWebasystIDApi
         if (empty($token)) {
             throw new waException('Unable to get access token for Webasyst service API');
         }
+        $net_options += $this->getDefaultNetOptionsByService($service);
         $resp = $this->requestApiUrl($url, $token, $params, $http_method, $net_options);
         if ($resp['status'] == 401) {
             $token = $this->getToken($use_system_token, true);
@@ -377,5 +378,14 @@ class installerServicesApi extends waWebasystIDApi
         $this->provider = new waServicesUrlsProvider([
             'config' => $config
         ]);
+    }
+
+    protected function getDefaultNetOptionsByService($service): array
+    {
+        switch ($service) {
+            case 'AI':
+                return ['timeout' => 30];
+        }
+        return [];
     }
 }

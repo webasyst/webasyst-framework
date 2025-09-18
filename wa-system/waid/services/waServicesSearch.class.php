@@ -67,6 +67,7 @@ class waServicesSearch
                 'facility' => 'documents_question',
                 'objective' => $this->query,
                 'documents' => array_column($this->documents, 'text'),
+                'text_format' => ifset($this->options, 'text_format', 'markdown'),
             ], 'POST', [
                 'timeout' => 30,
             ]);

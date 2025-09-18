@@ -81,7 +81,6 @@ return array(
             'qq' => 'QQ',
             'line' => 'Line',
             'signal' => 'Signal',
-            'skype' => 'Skype',
             'discord' => 'Discord',
             'slack' => 'Slack',
             'imessage' => 'iMessage',

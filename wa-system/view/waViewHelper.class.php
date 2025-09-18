@@ -393,9 +393,14 @@ HTML;
         $links = '';
         $domain_favicons = ifset($domain_config['favicons']);
         if (!is_array($domain_favicons) && wa()->appExists('site')) {
-            wa('site');
-            siteHelper::updateFaviconsConfig($domain_config);
-            $domain_favicons = $domain_config['favicons'];
+            try {
+                wa('site');
+                if (method_exists('siteHelper','updateFaviconsConfig')) {
+                    siteHelper::updateFaviconsConfig($domain_config);
+                    $domain_favicons = $domain_config['favicons'];
+                }
+            } catch (Throwable $e) {
+            }
         }
 
         $wa_url = wa_url();
@@ -1660,7 +1665,7 @@ HTML;
             foreach ($one_or_more_links as $link) {
                 while (empty($link['id']) || isset($links[$link['id']])) {
                     $link['id'] = $plugin_app_id.$i;
-                    $i++;
+                    $i = ifempty($i, 0) + 1;
                 }
 
                 // Do not show tabs user has no access to and would not be able to load

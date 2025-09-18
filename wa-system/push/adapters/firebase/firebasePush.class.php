@@ -23,6 +23,22 @@ class firebasePush extends waPushAdapter
     public function __construct($options = [])
     {
         $vendor_dir = dirname(__FILE__).'/vendor/';
+
+        require_once($vendor_dir.'autoload.php');
+        return;
+
+        if (!interface_exists('\Psr\Http\Message\UriInterface')) {
+            require_once($vendor_dir.'psr/http-message/src/UriInterface.php');
+            require_once($vendor_dir.'psr/http-message/src/StreamInterface.php');
+            require_once($vendor_dir.'psr/http-message/src/MessageInterface.php');
+            require_once($vendor_dir.'psr/http-message/src/ResponseInterface.php');
+            require_once($vendor_dir.'psr/http-client/src/ClientExceptionInterface.php');
+            require_once($vendor_dir.'psr/http-client/src/RequestExceptionInterface.php');
+            require_once($vendor_dir.'psr/http-client/src/ClientInterface.php');
+            require_once($vendor_dir.'psr/http-message/src/MessageInterface.php');
+            require_once($vendor_dir.'psr/http-message/src/RequestInterface.php');
+        }
+
         require_once($vendor_dir.'google/auth/src/UpdateMetadataInterface.php');
         require_once($vendor_dir.'google/auth/src/FetchAuthTokenInterface.php');
         require_once($vendor_dir.'google/auth/src/GetUniverseDomainInterface.php');
@@ -32,9 +48,7 @@ class firebasePush extends waPushAdapter
         require_once($vendor_dir.'google/auth/src/GetQuotaProjectInterface.php');
         require_once($vendor_dir.'google/auth/src/SignBlobInterface.php');
         require_once($vendor_dir.'google/auth/src/ProjectIdProviderInterface.php');
-        require_once($vendor_dir.'psr/http-message/src/UriInterface.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/Uri.php');
-        require_once($vendor_dir.'psr/http-message/src/StreamInterface.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/Stream.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/Utils.php');
         require_once($vendor_dir.'google/auth/src/HttpHandler/Guzzle6HttpHandler.php');
@@ -53,8 +67,6 @@ class firebasePush extends waPushAdapter
         require_once($vendor_dir.'guzzlehttp/guzzle/src/Handler/HeaderProcessor.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/MessageTrait.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/Message.php');
-        require_once($vendor_dir.'psr/http-message/src/MessageInterface.php');
-        require_once($vendor_dir.'psr/http-message/src/ResponseInterface.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/Response.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/Handler/EasyHandle.php');
         require_once($vendor_dir.'guzzlehttp/promises/src/TaskQueueInterface.php');
@@ -70,8 +82,6 @@ class firebasePush extends waPushAdapter
         require_once($vendor_dir.'guzzlehttp/guzzle/src/Utils.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/MimeType.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/PrepareBodyMiddleware.php');
-        require_once($vendor_dir.'psr/http-client/src/ClientExceptionInterface.php');
-        require_once($vendor_dir.'psr/http-client/src/RequestExceptionInterface.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/BodySummarizerInterface.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/BodySummarizer.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/Exception/GuzzleException.php');
@@ -84,23 +94,12 @@ class firebasePush extends waPushAdapter
         require_once($vendor_dir.'guzzlehttp/guzzle/src/HandlerStack.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/ClientTrait.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/ClientInterface.php');
-        require_once($vendor_dir.'psr/http-client/src/ClientInterface.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/RedirectMiddleware.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/RequestOptions.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/UriResolver.php');
-        require_once($vendor_dir.'psr/http-message/src/MessageInterface.php');
-        require_once($vendor_dir.'psr/http-message/src/RequestInterface.php');
         require_once($vendor_dir.'guzzlehttp/psr7/src/Request.php');
         require_once($vendor_dir.'guzzlehttp/promises/src/Create.php');
         require_once($vendor_dir.'guzzlehttp/guzzle/src/Client.php');
-/*
-        $this->request([ 'message' => [
-            'notification' => [
-                'title'        => 'Test from DEV',
-                'body'         => 'Notification from DEV',
-            ],
-            'token' => 'cYGZAXowkY8:APA91bFN6vd_RQKWZeq-m2SntQzUV6LRz901V38WXhlWaeAvFmjriX3UllLPAkFgN4dNj5-LoK55DrxjF9rMnTiWUv65lVLfn9Z94-yh3_7yb0knUK70HvcukQ3hlG6oDHbJfOn2-A3h',
-        ]]); */
     }
 
     //

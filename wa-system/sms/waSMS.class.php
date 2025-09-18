@@ -52,6 +52,15 @@ class waSMS
         }
     }
 
+    /** @since 3.8.2 */
+    public static function isConfigured()
+    {
+        if (self::$config) {
+            return true;
+        }
+        return !!self::getNoSettingsAdapter();
+    }
+
     /**
      * @param string $from
      * @throws waException

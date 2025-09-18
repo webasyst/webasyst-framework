@@ -22,8 +22,20 @@ class waAPIException extends Exception
             $this->response['error_description'] = $this->error_description;
         }
         if (defined('WA_API_EXCEPTION_STACK_TRACE') && WA_API_EXCEPTION_STACK_TRACE) {
-            $this->response['trace'] = $this->getTraceAsString();
+            $this->response['trace'] = $this->getFullTraceAsString();
         }
+    }
+
+    public function getFullTraceAsString()
+    {
+        $result = '## '.$this->getFile().'('.$this->getLine().")\n";
+        $result .= $this->getTraceAsString();
+
+        $root_path = realpath(dirname(__FILE__).'/../..');
+        $root_path = str_replace('\\', '/', $root_path);
+        $root_path = preg_quote($root_path, '~');
+        $result = str_replace('\\', '/', $result);
+        return preg_replace("~(^|\s|'|\"){$root_path}/?~", '$1', $result);
     }
 
     public function __toString()

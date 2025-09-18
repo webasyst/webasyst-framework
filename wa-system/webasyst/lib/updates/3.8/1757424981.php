@@ -15,7 +15,6 @@ if ($_im_field instanceof waContactStringField) {
             'qq' => 'QQ',
             'line' => 'Line',
             'signal' => 'Signal',
-            'skype' => 'Skype',
             'discord' => 'Discord',
             'slack' => 'Slack',
         ], $_ext_variants);

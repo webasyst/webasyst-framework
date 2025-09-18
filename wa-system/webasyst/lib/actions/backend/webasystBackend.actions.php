@@ -182,13 +182,15 @@ class webasystBackendActions extends waViewActions
         }
         unset($c);
 
-        $sms_plugins_exists = false;
+        $sms_plugins_exists = $sms_plugins_configured = waSMS::isConfigured();
         try {
-            $sms_dir_iterator = new FilesystemIterator($this->getConfig()->getPath('plugins') . '/sms/', FilesystemIterator::SKIP_DOTS);
-            foreach ($sms_dir_iterator as $file_info) {
-                if ($file_info->isDir()) {
-                    $sms_plugins_exists = true;
-                    break;
+            if (!$sms_plugins_exists) {
+                $sms_dir_iterator = new FilesystemIterator($this->getConfig()->getPath('plugins') . '/sms/', FilesystemIterator::SKIP_DOTS);
+                foreach ($sms_dir_iterator as $file_info) {
+                    if ($file_info->isDir()) {
+                        $sms_plugins_exists = true;
+                        break;
+                    }
                 }
             }
         } catch (Throwable $e) {
@@ -229,7 +231,7 @@ class webasystBackendActions extends waViewActions
             'has_team_app_access'      => wa()->getUser()->getRights('team', 'backend') > 0,
             'teams'                    => $this->getTeams(),
             'sms_plugins_exists'       => $sms_plugins_exists,
-            'sms_plugins_configured'   => (bool)wa()->getConfig()->getConfigFile('sms'),
+            'sms_plugins_configured'   => $sms_plugins_configured,
         ]);
     }
 
