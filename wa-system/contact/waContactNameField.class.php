@@ -50,7 +50,7 @@ class waContactNameField extends waContactStringField
         return $this->format($name, $format);
     }
 
-    public function prepareSave($value, waContact $contact = null) {
+    public function prepareSave($value, ?waContact $contact = null) {
 
         if (!$contact) {
             return $value;

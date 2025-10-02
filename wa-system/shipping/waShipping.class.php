@@ -510,7 +510,7 @@ abstract class waShipping extends waSystemPlugin
      * @param array $params
      * @return array
      */
-    public function getStateFields($state, waOrder $order = null, $params = array())
+    public function getStateFields($state, ?waOrder $order = null, $params = array())
     {
         $this->addItems($order->items);
         $this->setAddress($order->shipping_address);
@@ -569,7 +569,7 @@ abstract class waShipping extends waSystemPlugin
      * @return array[string]['name']string printform's name
      * @return array[string]['description']string printform's description
      */
-    public function getPrintForms(waOrder $order = null)
+    public function getPrintForms(?waOrder $order = null)
     {
         return array();
     }

@@ -40,7 +40,7 @@ class webasystConfig extends waAppConfig
         return $counts;
     }
 
-    public function initUserWidgets($force = false, waContact $contact = null)
+    public function initUserWidgets($force = false, ?waContact $contact = null)
     {
         if (!$contact) {
             $contact = wa()->getUser();
