@@ -94,6 +94,16 @@ class waWebasystIDConfig
 
     protected function getEndpointsZone()
     {
+        $config_path = waSystem::getInstance()->getConfigPath().'/config.php';
+        $config = file_exists($config_path) ? include($config_path) : [];
+        if (!is_array($config)) {
+            $config = [];
+        }
+        $zone_jail = isset($config['zone_jail']) ? $config['zone_jail'] : null;
+        if (!empty($zone_jail) && $zone_jail !== 'auto') {
+            return $zone_jail;
+        }
+
         if (!class_exists('waInstallerApps')) {
             $autoload = waAutoload::getInstance();
             $autoload->add('waInstallerApps', 'wa-installer/lib/classes/wainstallerapps.class.php');

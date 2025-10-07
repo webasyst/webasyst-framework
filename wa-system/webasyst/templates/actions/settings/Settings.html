@@ -222,8 +222,32 @@
                     </div>
                 {/if}
 
-
+                {* Geo zones *}
+                {if !empty($zones)}
+                    <div class="field">
+                        <div class="name for-input">
+                            <label for="config-locale">[s`Geo zone`]</label>
+                        </div>
+                        <div class="value">
+                            <div class="wa-select small">
+                                <select name="config[zone_jail]" id="config-zone">
+                                    {$_zone_jail_selected = 'auto'}
+                                    {if !empty($config.zone_jail)}
+                                        {$_zone_jail_selected = $config.zone_jail}
+                                    {elseif $settings.locale == 'ru_RU'}
+                                        {$_zone_jail_selected = 'ru'}
+                                    {/if}
+                                    {foreach $zones as $_zone => $_zone_name}
+                                        <option value="{$_zone|escape}"{if $_zone_jail_selected == $_zone} selected="selected"{/if}>{$_zone_name|escape}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                            <p class="hint">[s`Preferred geographic location of Webasyst updates & services servers`]</p>
+                        </div>
+                    </div>
+                {/if}
             </div>
+
             <div class="fields-group custom-pt-20 blank">
 
                 {* Debug mode *}

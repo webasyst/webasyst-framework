@@ -300,8 +300,8 @@ class waInstallerApps
             }
 
             if (isset($this->sources['zones'])) {
-                $installer_zone = null;
-                if (class_exists('waAppSettingsModel')) {
+                $installer_zone = self::getGenericConfig('zone_jail', 'auto');
+                if ((empty($installer_zone) || $installer_zone === 'auto') && class_exists('waAppSettingsModel')) {
                     try {
                         $installer_zone = $this->getAppSettingsModel()->get('webasyst', self::ENDPOINTS_ZONE_KEY);
                     } catch (Exception $e) {
@@ -2347,6 +2347,11 @@ class waInstallerApps
                     }
                 }
                 $this->sources_all_zones = $sources;
+
+                $zone_jail = self::getGenericConfig('zone_jail', null);
+                if (!empty($this->sources_all_zones['zone_jail']) && empty($zone_jail)) {
+                    self::updateGenericConfig(['zone_jail' => $this->sources_all_zones['zone_jail']]);
+                }
             }
         }
         $this->getAppSettingsModel()->set('webasyst', self::ENDPOINTS_SYNC_TIME_KEY, time());
@@ -2401,6 +2406,14 @@ class waInstallerApps
     {
         if (empty($this->sources_all_zones['zones'])) {
             return null;
+        }
+
+        $zone_jail = self::getGenericConfig('zone_jail', 'auto');
+        if (!empty($zone_jail) && $zone_jail !== 'auto') {
+            return [
+                'is_zone_changed' => false,
+                'zone' => $zone_jail,
+            ];
         }
 
         $endpoints_zones = array_keys($this->sources_all_zones['zones']);

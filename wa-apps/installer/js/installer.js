@@ -651,6 +651,9 @@ String.prototype.translate = function () {
                                         success_handler(data.data);
                                     }
                                     if (data.data.redirect) {
+                                        if (data.data.nothing_to_update && data.data.error) {
+                                            alert(data.data.error);
+                                        }
                                         location.href = data.data.redirect;
                                     }
                                     break;

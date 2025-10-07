@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-09-09 16:57+0300\n"
+"PO-Revision-Date: 2025-10-02 12:32+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -7980,3 +7980,15 @@ msgstr "Указанное значение «%s» не соответствуе
 
 msgid "Database error. See log files for details."
 msgstr "Ошибка базы данных. Подробную информацию см. в файлах логов."
+
+msgid "Geo zone"
+msgstr "Географическая зона"
+
+msgid "Preferred geographic location of Webasyst updates & services servers"
+msgstr "Предпочтительное географическое расположение сервера обновлений и других сервисов Webasyst"
+
+msgid "Global"
+msgstr "Глобальная"
+
+msgid "Auto-detection"
+msgstr "Автоопределение"

@@ -131,12 +131,29 @@ class waWebasystIDApi
     public function getProfileUpdated(waContact $contact, $code)
     {
         $token_params = $contact->getWebasystTokenParams();
-        $ok = $this->refreshTokenWhenExpired($token_params, $contact->getId());
-        if (!$ok) {
+        if (empty($token_params)) {
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => sprintf("There is no WAID token for contact %s", $contact->getId())
+            ]);
+        } elseif (!$this->refreshTokenWhenExpired($token_params, $contact->getId())) {
+            $token_params = null;
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => sprintf("Can't refresh token for contact %s", $contact->getId())
+            ]);
+        }
+
+        $access_token = empty($token_params) ? (new waWebasystIDClientManager)->getSystemAccessToken() : $token_params['access_token'];
+        if (empty($access_token)) {
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => "Can't get system token",
+            ]);
             return null;
         }
 
-        $response = $this->requestApiMethod('profile-updated', $token_params['access_token'], ['code' => $code]);
+        $response = $this->requestApiMethod('profile-updated', $access_token, ['code' => $code]);
         if ($response['status'] == 200) {
             return $response['response'];
         }
@@ -572,7 +589,7 @@ class waWebasystIDApi
         $headers = [
             'Authorization' => "Bearer {$access_token}"
         ];
-
+        
         $net = new waNet($net_options, $headers);
 
         $exception = null;

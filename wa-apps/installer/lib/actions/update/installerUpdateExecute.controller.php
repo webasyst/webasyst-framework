@@ -179,11 +179,23 @@ class installerUpdateExecuteController extends waJsonController
                         }
                     }
                 } else {
-                    $updater->flush();
-                    throw new waException(sprintf('Nothing to update at thread %s', $this->thread_id));
+                    try {
+                        $updater->flush();
+                    } catch (Exception $ex) {
+                        // ignore unlink errors during cleanup
+                    }
+                    $this->response = [
+                        'nothing_to_update' => true,
+                        'error' => _w('Не удалось получить информацию о ходе процесса. Перезапустите, пожалуйста, процесс установки.'),
+                        'redirect' => wa()->getUrl('installer').'updates/',
+                    ];
                 }
             } else {
-                throw new waException('Empty thread id');
+                $this->response = [
+                    'nothing_to_update' => true,
+                    'error' => _w('Ошибка обновления. Перезапустите, пожалуйста, процесс установки.'),
+                    'redirect' => wa()->getUrl('installer').'updates/',
+                ];
             }
 
         } catch (Exception $ex) {

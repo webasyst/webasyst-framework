@@ -217,6 +217,9 @@ class waAPIController
 
     protected function hasAppLicense($app)
     {
+        if (!wa()->appExists('installer')) {
+            return true;
+        }
         waSystem::getInstance('installer');
         $ann_list = (new installerAnnouncementList)->withFilteredByApp($app)->getTopHeaderList();
         $ann_list = array_filter($ann_list, function ($a) use ($app) {

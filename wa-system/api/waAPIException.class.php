@@ -14,6 +14,7 @@ class waAPIException extends Exception
             $error_description = null;
         }
         $this->message = $this->error = $error;
+        $this->message .= ': '.$error_description;
         $this->code = $this->status_code = $status_code;
         $this->error_description = $error_description;
 

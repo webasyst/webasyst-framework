@@ -48,9 +48,26 @@ class webasystSettingsAction extends webasystSettingsViewAction
 
         // Parse wa-config/config.php
         $config_path = waSystem::getInstance()->getConfigPath().'/config.php';
-        $config = file_exists($config_path) ? include($config_path) : array();
+        $config = file_exists($config_path) ? include($config_path) : [];
         if (!is_array($config)) {
-            $config = array();
+            $config = [];
+        }
+
+        $sources_path = waSystem::getInstance()->getConfigPath().'/sources.php';
+        $sources = file_exists($sources_path) ? include($sources_path) : [];
+        if (!is_array($sources)) {
+            $sources = [];
+        }
+        $zones = empty($sources['zones']) ? [] : array_keys($sources['zones']);
+        $zones = array_combine($zones, array_map('strtoupper', $zones));
+        if (!empty($zones)) {
+            $zones = ['auto' => _ws('Auto-detection')] + $zones;
+            if (!empty($zones['ru'])) {
+                $zones['ru'] = _ws('Russia');
+            }
+            if (!empty($zones['en'])) {
+                $zones['en'] = _ws('Global');
+            }
         }
 
         // PHP Version
@@ -70,7 +87,7 @@ class webasystSettingsAction extends webasystSettingsViewAction
             )
         );
 
-        $this->view->assign(array(
+        $this->view->assign([
             'settings'             => $settings,
             'locales'              => $locales,
             'locale_adapters_list' => $locale_adapters_list,
@@ -83,7 +100,8 @@ class webasystSettingsAction extends webasystSettingsViewAction
             'gradients'            => $this->logo_settings->getGradients(),
             'image_adapters_list'  => $image_adapter_list,
             'image_adapter'        => $image_adapter,
-        ));
+            'zones'                => $zones,
+        ]);
     }
 
 }
