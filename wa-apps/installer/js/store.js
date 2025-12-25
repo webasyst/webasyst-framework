@@ -331,6 +331,9 @@ var InstallerStore = (function ($) {
 
         if (data.trial) {
             fields.push({name: 'trial', value: data.trial});
+            if(data.type === 'theme') {
+                fields.push({name: 'is_trial_theme', value: 1});
+            }
         }
 
         if (!that.options.in_app) {
@@ -731,9 +734,13 @@ var InstallerStore = (function ($) {
                 onOpen($dialog, dialog) {
                     const search_msg_code = '/*msg_code=';
                     let enable_alert = false;
+                    const is_trial_theme = fields.some(item => item.name === 'is_trial_theme');
 
                     if (html.includes(search_msg_code)) {
-                        const allowed_msg_code = ['update_in_progress', 'dev_mode_is_on']
+                        const allowed_msg_code = ['dev_mode_is_on'];
+                        if(!is_trial_theme) {
+                            allowed_msg_code.push('update_in_progress');
+                        }
                         const start_index = html.indexOf(search_msg_code) + search_msg_code.length;
                         const end_index = html.indexOf('*/', start_index);
                         const msg_code = end_index !== -1 ? html.slice(start_index, end_index) : null;
@@ -751,7 +758,7 @@ var InstallerStore = (function ($) {
                         $dialog.next('.dialog').remove();
                     }
 
-                    $dialog.trigger('installer_dialog_ready', [dialog, $dialog]);
+                    $dialog.trigger('installer_dialog_ready', [dialog, $dialog, is_trial_theme]);
                     $dialog.on('installer_installation_successfull', function() {
                         if (that.options.in_app) {
                             dialog.$content.find('.progressbar').hide();

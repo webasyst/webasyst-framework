@@ -3,8 +3,8 @@
 return array(
     'name'         => 'Webasyst',
     'prefix'       => 'webasyst',
-    'version'      => '3.8.4',
-    'critical'     => '3.8.4',
+    'version'      => '4.0.0', // developer preview
+    'critical'     => '4.0.0',
     'vendor'       => 'webasyst',
     'csrf'         => true,
     'header_items' => array(

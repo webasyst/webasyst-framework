@@ -160,6 +160,7 @@ return array(
     'waAppPayment'                      => 'payment/waAppPayment.class.php',
     'waOrder'                           => 'payment/waOrder.class.php',
     'waPayment'                         => 'payment/waPayment.class.php',
+    'waPayPayment'                      => 'payment/waPayPayment.class.php',
 
     'waRequest'                         => 'request/waRequest.class.php',
     'waRequestFile'                     => 'request/waRequestFile.class.php',

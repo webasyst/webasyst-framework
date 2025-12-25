@@ -59,7 +59,7 @@ HELP;
                     }
                     $this->initPath();
                     if (file_exists($this->path)) {
-                        $errors[] = "Plugin directory '$this->plugin_id' already exists in the application $this->app_id";
+                        $errors[] = "Plugin subdirectory '$this->plugin_id' already exists in the $this->app_id app’s directory.";
                     }
                 }
             } else {

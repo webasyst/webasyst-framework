@@ -17,11 +17,11 @@
     <div class="sidebar-header box custom-pb-0">
 
         <div class="custom-mt-12 align-center">
-            <h3 class="custom-mb-12">
+            <h3 class="custom-mb-12 flexbox middle space-12" style="justify-content: center;">
                 <a href="#/design/themes/" title="[s`Back`]" class="back">
                     <i class="fas fa-arrow-circle-left"></i>
                 </a>
-                <span data-href="#" class="disabled" id="wa-theme-active">
+                <span data-href="#" class="disabled text-ellipsis" id="wa-theme-active">
                     <span class="js-url bold">
                         {$theme.name|escape}
                     </span>
@@ -56,14 +56,14 @@
             <li data-action="theme" class="info selected custom-pb-0" data-is-nav>
                 <a class="wa-themes-link semibold" href="{$design_url}theme={$theme.id}&action=theme">
                     <i class="fas fa-tasks"></i>
-                    [s`Appearance`]
+                    [s`Settings`]
                 </a>
             </li>
 
             <li data-action="edit" class="templates custom-pb-0" style="display: none;" data-is-nav>
                 <a href="{$design_url}theme={$theme.id}&action=edit" class="semibold">
                     <i class="fas fa-code"></i>
-                    [s`Templates`]
+                    [s`Code`]
                 </a>
             </li>
         </ul>
@@ -74,12 +74,6 @@
             <section class="wa-theme-settings js-theme-settings-section">
                 {skeleton_sidebar}
             </section>
-
-            <div class="box align-center">
-                <a href="javascript:void(0)" class="button light-gray rounded small js-theme-info-link">
-                    <span>[s`About this theme`]</span>
-                </a>
-            </div>
 
             {* Installer review widget *}
             {if $need_show_review_widget}
@@ -95,16 +89,36 @@
                         <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes.`]', implode(', ', $edit_data.theme_usages_decoded), $edit_data.route_url_decoded)}
                     </div>
                 {/if}
-                <ul class="menu wa-theme-templates">
-                    {foreach $edit_data.theme_files as $f_id => $f}
-                        <li class="{if $f_id == $edit_data.file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
-                            <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f_id|escape}">
-                                <i class="{if substr($f_id, -4)=='.css'}fab fa-css3{elseif substr($f_id, -3)=='.js'}fab fa-js-square{else}fas fa-file-code{/if}"></i>
-                                <span>{$f_id|escape|truncate:25:'...':false:true}</span>
-                                <span class="count small">{if !empty($f.parent_exists)}<i class="fas fa-link" title="{if !empty($f.parent_exists)}[s`parent theme file`]{/if}"></i>{/if}</span>
-                            </a>
-                        </li>
-                    {/foreach}
+                <input type="text" class="form-control search-input js-theme-files-search small custom-mt-16 custom-mx-16" placeholder="[s`Find file`]">
+                <ul class="menu ellipsis wa-theme-templates">
+                    {function renderFileTree theme_files=$edit_data.theme_files_tree level=0 parent_path=''}
+                        {$_level_padding = "calc(0.55rem * `$level` + 0.75rem)"}
+                        {foreach $theme_files as $f_id => $f}
+                            {if $f.type == 'dir'}
+                                {$current_dir_path = "`$parent_path``$f_id`/"}
+                                {$is_expanded = (!empty($edit_data.file.id) && strpos($edit_data.file.id, $current_dir_path) === 0)}
+
+                                <li>
+                                    <span class="item js-directory-toggle"{if $level > 0} style="padding-left:{$_level_padding};"{/if}>
+                                        <i class="fas fa-folder"></i>
+                                        <span>{$f_id|escape}</span>
+                                    </span>
+                                    <ul class="menu ellipsis"{if !$is_expanded} style="display: none;"{/if}>
+                                        {renderFileTree theme_files=$f.children level=$level+1 parent_path=$current_dir_path}
+                                    </ul>
+                                </li>
+                            {else}
+                                <li class="{if $f.path == $edit_data.file.id}selected {/if}{if $f@first && $level == 0}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}" data-filename="{$f_id|escape}">
+                                    <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f.path|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f.path|escape}"{if $level > 0} style="padding-left:{$_level_padding};"{/if}>
+                                        <i class="{if substr($f.path, -4)=='.css'}fab fa-css3{elseif substr($f.path, -3)=='.js'}fab fa-js-square{else}fas fa-file-code{/if}"></i>
+                                        <span>{$f_id|escape}</span>
+                                        <span class="count small">{if !empty($f.parent_exists)}<i class="fas fa-link" title="{if !empty($f.parent_exists)}[s`parent theme file`]{/if}"></i>{/if}</span>
+                                    </a>
+                                </li>
+                            {/if}
+                        {/foreach}
+                    {/function}
+                    {renderFileTree theme_files=$edit_data.theme_files_tree}
                     <li class="top-padded">
                         <a class="small" href="{$design_url}theme={$theme.id}&file=" title="[s`New file`]">
                             <i class="fas fa-plus-circle"></i>
@@ -244,6 +258,8 @@
                         .find('a[data-divider-id=' + current_menu_id + ']')
                         .trigger('click');
                 }
+                // Обновляем ссылку "Информация о теме" после загрузки контента
+                self.updateThemeInfoLink();
             })
 
             $(document).ready(function () {
@@ -264,6 +280,8 @@
             this.themePreview();
             this.themeUpload();
             this.goToThemeSettings();
+            this.themeFilesSearch();
+            this.themeDirToggle();
         }
 
         waDesignHash(url) {
@@ -296,6 +314,32 @@
            return params;
         }
 
+        updateSettingsLink() {
+            const params = this.waDesignParams(location.hash);
+            const $link = this.$theme_settings_section.find('.js-theme-settings-link');
+            if ($link.length && params.theme) {
+                 let href = '#/design/theme=' + params.theme + '&action=settings';
+                 if (params.domain) href += '&domain=' + params.domain;
+                 if (params.route) href += '&route=' + params.route;
+                 $link.attr('href', href);
+            }
+        }
+
+        updateThemeInfoLink() {
+            const params = this.waDesignParams(location.hash);
+            const $link = $('.js-theme-info-link');
+            if ($link.length && params.theme) {
+                 let href = '#/design/theme=' + params.theme;
+                 // Не добавляем action=theme, если уже есть другой action
+                 if (!params.action || params.action === 'theme') {
+                     href += '&action=theme';
+                 }
+                 if (params.domain) href += '&domain=' + params.domain;
+                 if (params.route) href += '&route=' + params.route;
+                 $link.attr('href', href);
+            }
+        }
+
         waDesignLoad(hash) {
             const self = this;
 
@@ -311,7 +355,7 @@
             var theme_is_trial = false,
                hash_params = self.waDesignParams(hash || location.hash);
 
-            if (hash_params.hasOwnProperty('themes') || (hash_params.hasOwnProperty('action') && hash_params['action'] == 'settings')) {
+            if (hash_params.hasOwnProperty('themes')) {
                self.$theme_sidebar.hide();
             }else{
                self.$theme_sidebar.show();
@@ -439,6 +483,7 @@
                                $tmp_li.find('a').click();
                            }
                         } else {
+                            window.scrollTo(0,0);
                            self.$design_container.load($li.data('routing') + '&reload_on_change=1&ui=2.0', function () {
                                self.reStyleSettingsPage('settings');
                                self.$design_container.find(".back").remove(); // deprecated?
@@ -451,14 +496,38 @@
                                    )
                                );
                                self.$design_container.find(".s-route-delete").closest('div').remove();
-
-                               const url_path = $route_where.find('input').val();
-                               const h1 = $route_where.text().trim() + (url_path ? url_path + '/' : '');
-                               const $back_btn = '<a href="#design/themes/" class="back" title="[`Back`]"><span class="icon size-32"><i class="fas fa-arrow-circle-left"></i></span></a>';
-                               $('.s-app-settings').prepend('<h1 class="flexbox middle custom-mb-24 space-8">' + $back_btn + h1 + '</h1>');
                            });
 
-                           self.$theme_settings_section.load("?module=design&action=theme&theme="+hash_params['theme']+"&onlySettings=1");
+                           // Загружаем полное содержимое темы, чтобы получить меню js-theme-settings-list
+                           // Это нужно для работы клика по "Настройки" в сайдбаре
+                           // Загружаем только если содержимое еще не загружено (при первой загрузке страницы)
+                           // или если тема изменилась (при переключении между темами)
+                           const currentThemeId = self.$theme_settings_section.data('theme-id');
+                           const newThemeId = hash_params['theme'];
+
+                               // Показываем скелетон пока загружается содержимое
+                               self.$theme_settings_section.html(self.skeleton_sidebar);
+                               // Если тема изменилась, сбрасываем menu-id и sessionStorage
+                               if (currentThemeId !== undefined && currentThemeId !== newThemeId) {
+                                   self.$theme_settings_section.removeData('menu-id');
+                                   sessionStorage.removeItem('wa_design_menu_id');
+                               }
+                               // Загружаем содержимое темы через GET запрос, чтобы извлечь меню
+                               $.get("?module=design&action=theme&theme="+newThemeId+"&route="+li_route, function(html) {
+                                   // Парсим HTML и извлекаем только меню
+                                   const $theme_settings_list = $('<div>').html(html).find('.js-theme-settings-hidden-list');
+                                   if ($theme_settings_list.length) {
+                                       self.$theme_settings_section.html($theme_settings_list.html());
+                                   }
+                                   // Обновляем ссылку "Информация о теме" в сайдбаре
+                                   self.updateThemeInfoLink();
+                                   // Отмечаем, что содержимое загружено для текущей темы
+                                   self.$theme_settings_section.data('loaded', true);
+                                   self.$theme_settings_section.data('theme-id', newThemeId);
+
+                                   $('.js-theme-settings-link').closest('li').addClass('selected');
+                               });
+
                         }
                     } else {
                         if (hash_params['route']) {
@@ -503,7 +572,7 @@
                            $('.js-tab-content').removeClass('selected');
                            $('.js-tab-content[data-id="edit"]').addClass('selected');
                            let _hash = hash.replace('action=edit', 'action=editFiles');
-                           $("#wa-design-sidebar").load("?module=design&action=editFiles&" + _hash);
+                           $("#wa-design-sidebar").html(self.skeleton_sidebar).load("?module=design&action=editFiles&" + _hash);
                        }
                     } else if (!!~hash.indexOf('action=theme')) {
                        self.$design_actions.filter('.selected').removeClass('selected');
@@ -522,11 +591,137 @@
                            }
                        } catch (e) {
                        }
+                   });
+               }
+               // Обновляем ссылки только если сайдбар уже загружен
+               if (self.$theme_settings_section.data('loaded')) {
+                   self.updateThemeInfoLink();
+               }
+           } else {
+              self.$theme_list.find("li:not([data-is-nav]) a:first").click();
+           }
+        }
+
+        themeFilesSearch(){
+            const self = this;
+
+            // Обработчик для динамически загружаемого контента
+            $(document).on('input', '.js-theme-files-search', function() {
+                const $searchInput = $(this);
+                const searchQuery = $searchInput.val().toLowerCase().trim();
+                const $fileList = $searchInput.closest('.wa-theme-block').find('.wa-theme-templates');
+
+                if (!searchQuery) {
+                    // Если поиск пустой, показываем все элементы и сбрасываем раскрытие
+                    $fileList.find('li').show();
+                    $fileList.find('.directory-toggle').each(function() {
+                        const $toggle = $(this);
+                        const $submenu = $toggle.siblings('ul.menu');
+                        if ($toggle.data('expanded') === true) {
+                            $submenu.slideUp();
+                            $toggle.data('expanded', false);
+                            $toggle.attr('data-expanded', 'false');
+                        }
                     });
+                    return;
                 }
-            } else {
-               self.$theme_list.find("li:not([data-is-nav]) a:first").click();
-            }
+
+                // Функция для раскрытия всех родительских папок
+                const expandParents = function($element) {
+                    let $parent = $element.parent().closest('li');
+                    while ($parent.length) {
+                        const $toggle = $parent.find('.directory-toggle').first();
+                        if ($toggle.length) {
+                            const $submenu = $toggle.siblings('ul.menu');
+                            if ($toggle.data('expanded') !== true) {
+                                $submenu.slideDown();
+                                $toggle.data('expanded', true);
+                                $toggle.attr('data-expanded', 'true');
+                            }
+                        }
+                        $parent = $parent.parent().closest('li');
+                    }
+                };
+
+                // Функция для проверки, содержит ли папка совпадающие файлы
+                const folderContainsMatch = function($folder) {
+                    let hasMatch = false;
+                    const $submenu = $folder.siblings('ul.menu');
+                    const $children = $submenu.find('li');
+
+                    $children.each(function() {
+                        const $child = $(this);
+                        const $childToggle = $child.find('.directory-toggle');
+
+                        if ($childToggle.length) {
+                            // Это папка, проверяем рекурсивно
+                            if (folderContainsMatch($childToggle)) {
+                                hasMatch = true;
+                            }
+                        } else {
+                            // Это файл
+                            const filename = $child.attr('data-filename') || '';
+                            if (filename.toLowerCase().indexOf(searchQuery) !== -1) {
+                                hasMatch = true;
+                            }
+                        }
+                    });
+
+                    return hasMatch;
+                };
+
+                // Обрабатываем все элементы списка
+                $fileList.find('li').each(function() {
+                    const $li = $(this);
+                    const $toggle = $li.find('.directory-toggle');
+
+                    if ($toggle.length) {
+                        // Это папка
+                        const folderName = $toggle.find('span').not('.toggle-icon').text().toLowerCase();
+                        const folderMatches = folderName.indexOf(searchQuery) !== -1;
+                        const containsMatch = folderContainsMatch($toggle);
+
+                        if (folderMatches || containsMatch) {
+                            $li.show();
+                            // Раскрываем папку, если она содержит совпадения
+                            if (containsMatch) {
+                                const $submenu = $toggle.siblings('ul.menu');
+                                if ($toggle.data('expanded') !== true) {
+                                    $submenu.slideDown();
+                                    $toggle.data('expanded', true);
+                                    $toggle.attr('data-expanded', 'true');
+                                }
+                            }
+                        } else {
+                            $li.hide();
+                        }
+                    } else {
+                        // Это файл
+                        const filename = $li.attr('data-filename') || '';
+                        if (filename.toLowerCase().indexOf(searchQuery) !== -1) {
+                            $li.show();
+                            // Раскрываем все родительские папки
+                            expandParents($li);
+                        } else {
+                            $li.hide();
+                        }
+                    }
+                });
+            });
+        }
+
+        themeDirToggle() {
+            $('#wa-design-sidebar').on('click', '.js-directory-toggle', function(e) {
+                e.preventDefault();
+                const $menu = $(this).next('.menu');
+                const is_visible = $menu.is(':visible');
+
+                if(is_visible) {
+                    $menu.slideUp();
+                } else {
+                    $menu.slideDown();
+                }
+            });
         }
 
         /**
@@ -570,7 +765,43 @@
                     $theme_info_section = $('.js-theme-info-section'),
                     menu_id = $self.data('divider-id'),
                     $settings_section = $('.js-settings-list'),
-                    $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`);
+                    $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`),
+                    href = $self.attr('href');
+
+                // Если это ссылка "Информация о теме" обрабатываем её как элемент с menu_id = -1
+                if ($self.hasClass('js-theme-info-link')) {
+                    e.stopPropagation();
+
+                    menu_id = -1;
+
+                    self.$theme_settings_section.data('menu-id', menu_id);
+
+                    // Переключаем секции
+                    $theme_info_section.show();
+                    $settings_section.hide();
+
+                    $(document).on('wa_design_loaded', function () {
+                        if (!self.$bottombar.length) {
+                            self.$bottombar = $('.bottombar');
+                        }
+                        self.$bottombar.hide();
+
+                        self.$theme_settings_section.find('li.selected').removeClass('selected');
+                        self.$theme_settings_section.find('li:has(.js-theme-info-link)').addClass('selected');
+                    });
+
+                    if (!self.$bottombar.length) {
+                        self.$bottombar = $('.bottombar');
+                    }
+                    self.$bottombar.hide();
+
+                    self.$theme_settings_section.find('li.selected').removeClass('selected');
+                    self.$theme_settings_section.find('li:has(.js-theme-info-link)').addClass('selected');
+
+                    sessionStorage.removeItem('wa_design_menu_id');
+
+                    return;
+                }
 
                 let hash = self.waDesignHash(location.hash)
                 if (hash.length) {
@@ -582,11 +813,15 @@
                     }
                 }
 
-                $li.addClass('selected').siblings().removeClass('selected');
+                self.$theme_settings_section.find('li.selected').removeClass('selected');
+                $li.addClass('selected');
 
                 if (!self.$bottombar.length) {
                     self.$bottombar = $('.bottombar');
                 }
+
+                // Устанавливаем menu_id перед загрузкой контента, чтобы код в Theme.html мог правильно обработать его
+                self.$theme_settings_section.data('menu-id', menu_id);
 
                 $(document).on('wa_design_loaded', function () {
                     self.$bottombar = $('.bottombar');
@@ -595,8 +830,23 @@
                     } else {
                         self.$bottombar.hide();
                     }
+
+                    // Переключаем секции после загрузки контента
+                    if (menu_id >= 0) {
+                        $theme_info_section.hide();
+                        $settings_section.show();
+                        $settings_section_selected.addClass('selected').siblings().removeClass('selected');
+                        self.$bottombar.show();
+                        sessionStorage.setItem('wa_design_menu_id', menu_id);
+                    } else {
+                        $settings_section.hide();
+                        $theme_info_section.show();
+                        self.$bottombar.hide();
+                        sessionStorage.removeItem('wa_design_menu_id');
+                    }
                 })
 
+                // Переключаем секции сразу, если контент уже загружен
                 if (menu_id >= 0) {
                     $theme_info_section.hide();
                     $settings_section.show();
@@ -641,7 +891,11 @@
                     const $theme_active = $("#wa-theme-active"),
                         $theme_active_url = $theme_active.find('.js-url');
 
-                    $theme_active_url.html($self.find('.js-url').clone().children().remove().end().html());
+                    if($self.closest('li').attr('data-routing')) {
+                        $theme_active_url.html($self.data('route-url'));
+                    }else{
+                        $theme_active_url.html($self.find('.js-url').clone().children().remove().end().html());
+                    }
 
                     let $menu_link = $('#wa-theme-active')
                     let menu_link_href = $theme_active.data('href');

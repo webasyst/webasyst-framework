@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-10-02 12:32+0300\n"
+"PO-Revision-Date: 2025-12-17 17:14+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -3349,8 +3349,8 @@ msgstr "URL бекенда Webasyst (относительный)."
 msgid "URL of the current app’s design theme directory (relative)."
 msgstr "URL директории с файлами текущей темы дизайна (относительный)."
 
-msgid "Returns current page’s relative URL, or absolute if the argument is set to <em>true</em>."
-msgstr "Возвращает относительный URL текущей страницы, или абсолютный, если указать значение аргумента <em>true</em>."
+msgid "Returns current page’s relative URL by default. The first parameter set to <code>true</code> makes the returned URL absolute. The second parameter set to <code>true</code> removes all GET parameters from the URL."
+msgstr "Возвращает относительный URL текущей страницы по умолчанию. Значение первого параметра <code>true</code> сделает возвращаемый URL абсолютным. Значение второго параметра <code>true</code> удалит из URL все GET-параметры."
 
 msgid "Returns current domain’s root URL (absolute)."
 msgstr "Возвращает корневой URL текущего домена (абсолютный)."
@@ -3952,7 +3952,7 @@ msgstr "Заголовок для соцсетей"
 msgid "Social sharing image URL"
 msgstr "URL изображения для соцсетей"
 
-msgid "If not set, a social network will attempt to determine preview image on it’s own."
+msgid "If not set, a social network will attempt to automatically determine a preview image."
 msgstr "Если адрес не указан явно, соцсеть автоматически выберет одно из изображений на странице"
 
 msgid "Social sharing video URL"
@@ -5533,8 +5533,8 @@ msgstr "Webasyst переходит на версии PHP 5.6 и выше."
 msgid "Database"
 msgstr "База данных"
 
-msgid "To add emoji support enable <b>Debug mode</b> in <b>General settings</b>."
-msgstr "Чтобы добавить поддержку эмодзи, включите <b>Режим отладки (debug mode)</b> в <b>Общих настройках</b>."
+msgid "To add emoji support, enable the <b>Debug mode</b> in the <em>General</em> settings section."
+msgstr "Чтобы добавить поддержку эмодзи, включите <b>Режим отладки (debug mode)</b> в разделе настроек «<em>Главное</em>»."
 
 msgid "supports emoji"
 msgstr "поддерживает эмодзи"
@@ -7992,3 +7992,27 @@ msgstr "Глобальная"
 
 msgid "Auto-detection"
 msgstr "Автоопределение"
+
+msgid "Webasyst CRON service is not available on localhost"
+msgstr "Служба Webasyst CRON недоступна на локальном хосте"
+
+msgid "The design theme %s does not offer turnkey settings."
+msgstr "Тема дизайна «%s» не поддерживает настройки внешнего вида."
+
+msgid "Shopping platform by <a href=\"https://www.shop-script.com\">Shop-Script</a>"
+msgstr "Магазин работает на <a href=\"https://www.shop-script.ru\">Shop-Script</a>"
+
+msgid "Made on <a href=\"https://www.webasyst.com\">Webasyst</a>"
+msgstr "Сайт работает на <a href=\"https://www.webasyst.ru\">Webasyst</a>"
+
+msgid "READY"
+msgstr "OK"
+
+msgid "RUNNING"
+msgstr "Выполняется"
+
+msgid "FAILED"
+msgstr "Неудачно"
+
+msgid "FINISHED"
+msgstr "Остановлено"

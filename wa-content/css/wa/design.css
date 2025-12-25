@@ -287,7 +287,49 @@ and (orientation : portrait) {
     overflow: unset;
     border: 0 none;
 }
-
+.is-wa2 #wa-design-container .value .wa-theme-color-select li {
+    width: 3rem;
+    aspect-ratio: 1/1;
+    background-color: var(--wa-theme-color);
+    border: 1px solid var(--border-color-soft);
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.is-wa2 #wa-design-container .value .wa-theme-color-select li.selected {
+    --clr:  color-mix(in hsl, var(--wa-theme-color) 100%, white 50%);
+    box-shadow: 0 0 0 4px var(--clr);
+}
+.is-wa2 #wa-design-container .value .wa-theme-color-select.light-mark li.selected {
+    --clr:  color-mix(in hsl, var(--wa-theme-color) 100%, black 10%);
+    box-shadow: 0 0 0 4px var(--clr);
+}
+.is-wa2 #wa-design-container .value .wa-theme-color-select li:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color-btn-light-gray);
+    color: var(--gray);
+}
+.is-wa2 #wa-design-container .value:has(.light-mark) {
+    background-color: #fff;
+    border-radius: 1rem;
+}
+.is-wa2 #wa-design-container .value:has(.dark-mark) {
+    background-color: #19172c;
+    border-radius: 1rem;
+}
+.is-wa2 #wa-design-container .value:has(.dark-mark) .wa-theme-color-select li {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+.is-wa2 #wa-design-container .value:has(.dark-mark) .wa-theme-color-select li:last-child {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.is-wa2 #wa-design-container .value:has(.light-mark) .wa-theme-color-select li {
+    border-color: rgba(0, 20, 80, 0.1);
+}
+.is-wa2 #wa-design-container .value:has(.light-mark) .wa-theme-color-select li:last-child {
+    background-color: rgba(0, 20, 80, 0.1);
+}
 .is-wa2 #wa-design-container .bottombar {
     background-color: var(--background-color);
 }

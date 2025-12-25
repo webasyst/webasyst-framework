@@ -140,7 +140,7 @@ class waContactDataStorage extends waContactStorage
                             $ext = '';
                             $status = null;
                         }
-                        if (!strlen($v)) {
+                        if ($v === null || !strlen($v)) {
                             $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                                     WHERE contact_id = i:id AND field = s:field AND sort = i:sort";
                             $this->getModel()->exec($sql, array('id' => $contact_id, 'field' => $field, 'sort' => $sort));

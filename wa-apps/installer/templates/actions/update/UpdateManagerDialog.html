@@ -50,7 +50,7 @@
 
         var installation_in_progress = true;
 
-        $dialog.on('installer_dialog_ready', function(event, dialog) {
+        $dialog.on('installer_dialog_ready', function(event, dialog, is_trial_theme) {
 
             let animator = new ProgressbarAnimation($progressbar.waProgressbar({
                     "display-text": false
@@ -62,9 +62,14 @@
                 if (installation_finished) {
                     $dialog.trigger('installer_installation_successfull');
                 } else {
-                    $dialog.trigger('installer_installation_failed');
-                    dialog.close();
-                    $.waDialog.alert(general_error_alert_params);
+                    if(is_trial_theme) {
+                        // считаем, что при установке пробной версии темы, ошибка не критична
+                        setTimeout(() => $dialog.trigger('installer_installation_successfull'), 3000);
+                    } else {
+                        $dialog.trigger('installer_installation_failed');
+                        dialog.close();
+                        $.waDialog.alert(general_error_alert_params);
+                    }
                 }
             });
 

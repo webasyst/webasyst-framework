@@ -343,6 +343,7 @@ class waTheme implements ArrayAccess
                             );
                             if ($s['control_type'] === 'group_divider') {
                                 $settings_group = $s['value'];
+                                $s['icon_class'] = isset($setting['icon_class']) ? (string)$setting['icon_class'] : 'fas fa-sliders-h';
                             }
                             if ($var === '') {
                                 if ($s['control_type'] === 'group_divider') {

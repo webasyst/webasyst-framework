@@ -235,7 +235,7 @@ class webasystDashboardActions extends waActions
             'settings_controls' => $widget->getControls(array(
                 'id' => $widget->getInfo('widget'),
                 'namespace' => 'widget_'.$id,
-                'description_wrapper' => '<br><span class="hint">%s</span>',
+                'description_wrapper' => '<p class="hint">%s</p>',
                 'control_wrapper' => '<div class="name">%s</div><div class="value">%s %s</div>',
                 'title_wrapper' => '%s',
             )),

@@ -1454,6 +1454,23 @@ var WAThemeSettings = ( function($) {
             p.off('focus', '#' + field.attr('id')).on('focus', '#' + field.attr('id'), onFocus);
         });
 
+        // Color selectors
+        that.$form.find(".js-theme-color-select").on('click', 'li', function() {
+            const $li = $(this);
+            const $wrapper = $li.closest('.value');
+            const value = $li.data('value');
+            const $picker_block = $wrapper.find('.color-picker');
+
+            if ($li.attr('data-picker') === '') {
+                $picker_block.slideToggle(200);
+            }else{
+                $picker_block.slideUp(200);
+            }
+            $li.addClass('selected').siblings().removeClass('selected');
+            $wrapper.find('input.color').val(value).change();
+            that.$button.removeClass('green').addClass('yellow');
+        });
+
         // Colorpickers
         that.$form.find('.color').each(function() {
             var $input = $(this);
@@ -1462,8 +1479,13 @@ var WAThemeSettings = ( function($) {
                 farbtastic = $.farbtastic($picker, function(color) {
                     $replacer.css('color', color);
                     $input.val(color);
+                    if (timer_id) {
+                        clearTimeout(timer_id);
+                    }
+                    timer_id = setTimeout(function() {
+                        $input.change();
+                    }, 90);
                 });
-
 
             farbtastic.setColor('#'+$input.val());
 
@@ -1473,13 +1495,13 @@ var WAThemeSettings = ( function($) {
             });
 
             var timer_id;
-            $input.unbind('keydown').bind('keydown', function() {
+            $input.unbind('keydown').bind('keydown change', function(e) {
                 if (timer_id) {
                     clearTimeout(timer_id);
                 }
                 timer_id = setTimeout(function() {
                     farbtastic.setColor($input.val());
-                }, 250);
+                }, 90);
             });
 
             $picker.on('click', function () {

@@ -31,7 +31,7 @@ HELP;
             if ($this->app_id == 'webasyst') {
                 $errors[] = "Widget directory '$this->widget_id' already exists.";
             } else {
-                $errors[] = "Widget directory '$this->widget_id' already exists in the application $this->app_id.";
+                $errors[] = "Widget subdirectory '$this->widget_id' already exists in the $this->app_id app’s directory.";
             }
         }
         return $errors;

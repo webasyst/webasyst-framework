@@ -684,7 +684,7 @@ class waModel
      *      'name=VALUES(name)'
      *);<pre>
      *
-     * @return resource|bool Returns true if there are no data to be inserted.
+     * @return waDbResultInsert|bool Returns true if there are no data to be inserted.
      * @throws waException
      */
     public function multipleInsert($data)

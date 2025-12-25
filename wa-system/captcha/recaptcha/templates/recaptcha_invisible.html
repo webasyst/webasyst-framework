@@ -31,6 +31,7 @@
       document.cookie = "g-recaptcha-response=" + encodeURIComponent(response_id) + "; max-age=300";
       $('input[name="g-recaptcha-response"]').val(response_id);
       window.grecaptcha_once = response_id;
+      $(window).trigger('wa_recaptcha_loaded');
       window.captchaInitialized = true;
     };
 
@@ -102,5 +103,9 @@
       $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadWaRecaptchaCallback");
     });
   })();
+</script>
+{else}
+<script>
+  window.captchaInitialized = true;
 </script>
 {/if}

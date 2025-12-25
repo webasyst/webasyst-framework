@@ -1,56 +1,18 @@
 {if !empty($app_themes)}
-    <ul class="chips s-chips-small rounded">
-        {foreach $routes as $r}
-            {$r.theme = $r.theme|default:'default'}
-            {$r.theme_mobile = $r.theme_mobile|default:'default'}
+    <div class="s-installed-themes-section" id="js-installed-themes-section">
+        <div class="s-themes-list">
+            {foreach $routes as $r}
+                {$r.theme = $r.theme|default:'default'}
+                {$r.theme_mobile = $r.theme_mobile|default:'default'}
 
-            {* because rtrim removes repetitions *}
-            {if $r.url && $r.url|substr:-1 == "*"}
-                {$r.url = $r.url|substr:0:-1}
-            {/if}
+                {* because rtrim removes repetitions *}
+                {if $r.url && $r.url|substr:-1 == "*"}
+                    {$r.url = $r.url|substr:0:-1}
+                {/if}
 
-            {if isset($app_themes[$r.theme])}
-            <li>
-                <a href="#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings" title="">
-                    <i class="fas fa-cog text-blue"></i>
-                    {sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}
-                    <span class="count">{$app_themes[$r.theme]->getName()|escape}</span>
-                </a>
-            </li>
-            {/if}
+                {if isset($app_themes[$r.theme])}
+                    {$_theme = $app_themes[$r.theme]}
 
-            {if isset($app_themes[$r.theme_mobile]) && $r.theme != $r.theme_mobile}
-            <li>
-                <a href="#/design/theme={$r.theme_mobile}&domain={$r._domain}&route={$r._id}&action=settings" title="">
-                    <i class="fas fa-cog text-blue"></i>
-                    {sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}
-                    <span class="count">{$app_themes[$r.theme_mobile]->getName()|escape}</span>
-                    <span class="count"><i class="fas fa-mobile-alt"></i></span>
-                </a>
-            </li>
-            {/if}
-
-        {/foreach}
-    </ul>
-
-    <div class="s-installed-themes-section is-extended" id="js-installed-themes-section">
-        <div class="s-section-header flexbox wrap middle">
-            <span class="s-title js-toggle wide">
-                <i class="s-icon fas fa-caret-right"></i> [`Installed themes`]
-            </span>
-            {if $wa->user()->getRights('installer')}
-                <div class="box custom-mt-0">
-                    <a href="#" class="js-theme-upload-link button rounded light-gray small nowrap">
-                        <i class="fas fa-cloud-upload-alt text-blue custom-mr-4"></i>
-                        <span>[s`Upload custom theme`]</span>
-                    </a>
-                </div>
-            {/if}
-        </div>
-        <div class="s-hidden">
-            <div class="s-themes-list">
-                {foreach $app_themes as $_theme}
-                    {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
                     {$_name = $_theme->getName()}
                     {$_cover_image = $_theme->getCover()}
                     {if empty($_cover_image)}
@@ -58,47 +20,98 @@
                     {/if}
 
                     {$_theme_id = $_theme->id}
-                    {$_theme_url = "`$design_url`theme=`$_theme_id`"}
-                    {$_is_active = in_array($_theme_id, $used_app_themes)}
+                    {$_theme_url = "#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings"}
 
-                    <div class="s-theme-wrapper{if $_theme_is_trial} is-trial{/if}" data-id="{$_theme_id|escape}" data-load="?module=design&action=theme&theme={$_theme_id|escape}">
-                        <a class="s-image-wrapper" href="{$_theme_url|escape}" title="{$_name|escape}">
+                    <div class="s-theme-wrapper">
+                        <a class="s-image-wrapper" href="{$_theme_url|escape}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}">
                             <img src="{$_cover_image|escape}" alt="{$_name|escape}">
                         </a>
+                        <a class="s-iframe-wrapper hidden" href="{$_theme_url|escape}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}">
+                            <iframe src="{'//'|cat:waIdna::dec($r._domain)|cat:'/'|cat:$r.url}" onload="this.closest('.s-theme-wrapper').querySelector('.s-image-wrapper').remove();this.closest('.s-iframe-wrapper').classList.remove('hidden');"></iframe>
+                        </a>
+
                         <div class="s-name-wrapper">
-                            <a class="s-name" href="{$_theme_url}" title="{$_name|escape}">
-                                {$_name|escape}
+                            <a class="s-name" href="{$_theme_url}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}">
+                                {waIdna::dec($r._domain)}{if !empty($r.url)}/{$r.url|escape}{/if}
                             </a>
                         </div>
                         <div class="s-statuses">
-                            {if !empty($_is_active)}
-                                <span class="s-status green bold"><i class="fas fa-check"></i> [`In use`]</span>
-                            {elseif isset($used_apps_themes[$_theme_id])}
-                                <span class="s-status"><i class="fas fa-check"></i> [`Used by other apps.`]</span>
-                            {else}
-                                <span class="s-status gray">[`Not in use`]</span>
-                            {/if}
+                            <span class="s-status gray">{$_name|escape}</span>
                         </div>
                     </div>
-                {/foreach}
-            </div>
+                {/if}
+
+                {if isset($app_themes[$r.theme_mobile]) && $r.theme != $r.theme_mobile}
+                    {$_theme = $app_themes[$r.theme_mobile]}
+
+                    {$_name = $_theme->getName()}
+                    {$_cover_image = $_theme->getCover()}
+                    {if empty($_cover_image)}
+                        {$_cover_image = "`$wa_url`wa-content/img/design/themes/no-image.png"}
+                    {/if}
+
+                    {$_theme_id = $_theme->id}
+                    {$_theme_url = "#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings"}
+
+                    <div class="s-theme-wrapper">
+                        <a class="s-image-wrapper" href="{$_theme_url|escape}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}">
+                            <img src="{$_cover_image|escape}" alt="{$_name|escape}">
+                        </a>
+                        <a class="s-iframe-wrapper hidden" href="{$_theme_url|escape}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}">
+                            <iframe src="{'//'|cat:waIdna::dec($r._domain)|cat:'/'|cat:$r.url}" onload="this.closest('.s-theme-wrapper').querySelector('.s-image-wrapper').remove();this.closest('.s-iframe-wrapper').classList.remove('hidden');"></iframe>
+                        </a>
+
+                        <div class="s-name-wrapper">
+                            <a class="s-name" href="{$_theme_url}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}">
+                                {waIdna::dec($r._domain)}{if !empty($r.url)}/{$r.url|escape}{/if}
+                            </a>
+                        </div>
+                        <div class="s-statuses">
+                            <span class="s-status gray">{$_name|escape}</span>
+                        </div>
+                    </div>
+                {/if}
+
+            {/foreach}
+
+            {foreach $app_themes as $_theme}
+                {$_theme_id = $_theme->id}
+                {if in_array($_theme_id, $used_app_themes)}{continue}{/if}
+
+                {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+                {$_name = $_theme->getName()}
+                {$_cover_image = $_theme->getCover()}
+                {if empty($_cover_image)}
+                    {$_cover_image = "`$wa_url`wa-content/img/design/themes/no-image.png"}
+                {/if}
+
+
+                {$_theme_url = "`$design_url`theme=`$_theme_id`"}
+
+                <div class="s-theme-wrapper{if $_theme_is_trial} is-trial{/if}" data-id="{$_theme_id|escape}" data-load="?module=design&action=theme&theme={$_theme_id|escape}">
+                    <a class="s-image-wrapper" href="{$_theme_url|escape}" title="{$_name|escape}">
+                        <img src="{$_cover_image|escape}" alt="{$_name|escape}">
+                    </a>
+
+                    <div class="s-name-wrapper">
+                        <a class="s-name text-gray" href="{$_theme_url}" title="{$_name|escape}">
+                            {$_name|escape}
+                        </a>
+                    </div>
+                    <div class="s-statuses">
+                        {if isset($used_apps_themes[$_theme_id])}
+                            <span class="s-status"><i class="fas fa-check"></i> [`Used by other apps.`]</span>
+                        {else}
+                            <span class="s-status gray">[`Not in use`]</span>
+                        {/if}
+                    </div>
+                </div>
+            {/foreach}
         </div>
 
         <script>
             ( function($) {
-                const $wrapper = $("#js-installed-themes-section"),
-                    $toggle = $wrapper.find(".js-toggle");
-
-                let storage_name = "webasyst/backend/installed_themes_view",
-                    active_class = "is-extended";
-
-                $toggle.on("click", function(event) {
-                    event.preventDefault();
-                    let is_active = $wrapper.hasClass(active_class);
-                    toggle(!is_active);
-                });
-
-                $wrapper.on("click", "a", function(event) {
+                $("#js-installed-themes-section").on("click", "a", function(event) {
                     event.stopPropagation();
                     let $theme = $(this).closest(".s-theme-wrapper");
 
@@ -119,29 +132,6 @@
                     $preview_dd.find('.wa-theme-preview').removeClass('dropdown-toggle').find('.fa-external-link-alt').removeClass('hidden');
                     $preview_dd.find('.dropdown-body > ul').empty();
                 });
-
-                showOnLoad();
-
-                function showOnLoad() {
-                    let storage = localStorage.getItem(storage_name);
-                    toggle( (storage !== "inactive") );
-                }
-
-                function toggle(show) {
-                    const $icon = $toggle.find(".s-icon")[0],
-                        bottom_icon_class = "fa-rotate-90";
-
-                    if (show) {
-                        $icon.classList.add(bottom_icon_class);
-                        $wrapper.addClass(active_class);
-                    } else {
-                        $icon.classList.remove(bottom_icon_class);
-                        $wrapper.removeClass(active_class);
-                    }
-
-                    localStorage.setItem(storage_name, ( show ? "active" : "inactive") );
-                }
-
 
                 {if $wa->user()->getRights('installer')}
                 $(".js-theme-upload-link").on('click', function (e) {

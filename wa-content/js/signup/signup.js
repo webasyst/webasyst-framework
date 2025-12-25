@@ -892,9 +892,9 @@ var WaSignup = ( function($) {
         var that = this,
             $wrapper = that.$wrapper;
 
-        // If recaptcha presented and loaded
+        // If captcha presented and loaded
         if ($wrapper.find('.wa-captcha-field').length) {
-            $(window).one('wa_recaptcha_loaded wa_captcha_loaded', function () {
+            $(window).one('wa_recaptcha_loaded wa_captcha_loaded wa_smartcaptcha_loaded', function () {
                 that.triggerEvent('wa_auth_form_loaded');
                 that.triggerEvent('wa_auth_form_change_view');
             });
