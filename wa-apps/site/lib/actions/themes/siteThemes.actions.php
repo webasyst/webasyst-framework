@@ -98,7 +98,7 @@ class siteThemesActions extends waDesignActions
             }
 
             $app_themes = wa()->getThemes('site', true);
-            usort($app_themes, function($a, $b) use ($used_domain_themes, $used_app_themes) {
+            uasort($app_themes, static function($a, $b) use ($used_domain_themes, $used_app_themes) {
                 $a_used_domain = isset($used_domain_themes[$a->id]);
                 $b_used_domain = isset($used_domain_themes[$b->id]);
                 $a_used_app = isset($used_app_themes[$a->id]);

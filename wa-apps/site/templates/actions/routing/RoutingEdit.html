@@ -139,7 +139,7 @@
                     {if $app}
                         <div class="field-group">
                             <div class="field">
-                                <div class="name">[`Settlement name`]</div>
+                                <div class="name for-input">[`Route name`]</div>
                                 <div class="value">
                                     <input type="text" name="params[_name]" value="{$route_name|escape}" class="bold" /><br />
                                     <span class="hint">[`The name is used in the <em>$wa->apps</em> navigation menu of this website.`]</span>
@@ -147,11 +147,11 @@
                             </div>
                             {if $themes}
                                 <div class="field">
-                                    <div class="name">[`Design theme`]</div>
+                                    <div class="name for-input">[`Design theme`]</div>
                                     <div class="value">
                                         <ul>
                                             <li>
-                                                <div class="dropdown small js-theme-select">
+                                                <div class="dropdown js-theme-select">
                                                     {$used_theme = (!empty($themes[ifset($route['theme'])])) ? $route['theme'] : 'default'}
                                                     <button class="dropdown-toggle button light-gray" type="button">{$themes[$used_theme]}</button>
                                                     <div class="dropdown-body dd-wide">
@@ -197,7 +197,7 @@
                                                     <span class="small">[`Use another theme for mobile phones`]</span>
                                                 </label>
                                                 {$used_theme_mobile = (!empty($themes[ifset($route['theme_mobile'])])) ? $route['theme_mobile'] : 'default'}
-                                                <div class="wa-select small{if $used_theme == $used_theme_mobile} hidden{/if}">
+                                                <div class="wa-select smaller{if $used_theme == $used_theme_mobile} hidden{/if}">
                                                     {html_options name="params[theme_mobile]" options=$themes selected=$used_theme_mobile}
                                                 </div>
                                             </li>
@@ -205,13 +205,13 @@
                                     </div>
                                 </div>
                                 <div class="field">
-                                    <div class="name">[`Language`]</div>
+                                    <div class="name for-input">[`Language`]</div>
                                     <div class="value">
                                         {if !strlen($route_id)}{$_l=$wa->locale()}{else}{$_l=ifset($route.locale, '')}{/if}
                                         <div class="wa-select">
                                             {html_options name="params[locale]" options=$locales selected=$_l}</div><br>
-                                        <span class="hint">[`Select a language to translate text strings in website frontend.`]<br>
-                            [`If “Auto” option is selected, website language will be determined by user browser settings.`]</span>
+                                        <p class="hint">[`Select a language to translate text strings in website frontend.`]<br>
+                            [`If “Auto” option is selected, website language will be determined by user browser settings.`]</p>
                                     </div>
                                 </div>
                             {/if}
@@ -249,10 +249,11 @@
                                     <p class="hint ssl_server_https bold" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]</p>
                                     <p class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></p>
                                     <p class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this section.`]
-                                <br>
-                                [`This option will work only if an SSL certificate is installed for your domain name.`]
-                                <br>
-                                {sprintf(_w('To enable redirect to HTTPS for <em>all</em> website settlements, change this option in <a href="%s#/settings/">common site settings</a>.'), $site_url)}</p>
+                                        <br>
+                                        [`This option will work only if an SSL certificate is installed for your domain name.`]
+                                        <br>
+                                        {sprintf(_w('To enable redirect to HTTPS for <em>all</em> website settlements, change this option in <a href="%s#/settings/">common site settings</a>.'), $site_url)}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -269,7 +270,7 @@
                                             </div>
                                         {/if}
                                     {else}
-                                        <h5 class="heading clear-both"><br>{$p}<br><br></h5>
+                                        <h4 class="bordered-top"><br>{$p}<br><br></h4>
                                     {/if}
                                 {/foreach}
                             {/if}
@@ -597,6 +598,7 @@
                         $settings_form_status.html('<i class="fas fa-check-circle"></i> [`Saved`]').fadeOut('slow', function () {
                             // site_routing_full();
                         });
+                        form_changed = false;
                         $form.trigger('routing_edit_saved');
                     } else if (response.status === 'fail') {
                         $settings_form_status.html('<span class="small" style="color: #f00;">' + response.errors + '</span>');
@@ -708,13 +710,26 @@
 
             // show unsaved form dialog
             (function () {
-                const $all_links = $('#wa a:not([target="_blank"],[data-id])');
+                const $all_links = $('#wa a:not([target="_blank"],[data-id],[data-preview-label],.js-theme-info-link)');
                 const all_links_event = 'click.wa_routing_edit';
                 const unbindEvent = () => $all_links.off(all_links_event);
 
+                // Флаг для предотвращения множественных диалогов
+                let dialog_shown = false;
+
                 $all_links.off(all_links_event).on(all_links_event, function (e) {
+                    // Предотвращаем множественные диалоги
+                    if (dialog_shown) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+
                     if (!form_changed) {
-                        unbindEvent();
+                        // Отписываемся только если это не клик по ссылке (программный вызов)
+                        if (!e) {
+                            unbindEvent();
+                        }
                         return true;
                     }
                     const $a = $(this);
@@ -725,10 +740,14 @@
                     e.preventDefault();
                     e.stopPropagation();
 
+                    // Устанавливаем флаг перед показом диалога
+                    dialog_shown = true;
+
                     $.confirmUnsaved({
                         onSave() {
                             $form.off('routing_edit_saved').on('routing_edit_saved', () => {
                                 form_changed = false;
+                                dialog_shown = false; // Сбрасываем флаг
                                 unbindEvent();
                                 setTimeout(() => { location.href = $a.attr('href') });
                             });
@@ -737,6 +756,7 @@
                         },
                         onLeave() {
                             form_changed = false;
+                            dialog_shown = false; // Сбрасываем флаг
                             unbindEvent();
                             setTimeout(() => { location.href = $a.attr('href') });
                         }

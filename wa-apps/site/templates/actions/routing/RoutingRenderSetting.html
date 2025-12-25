@@ -9,7 +9,7 @@
     <input type="hidden" name="params[{$info.id}]" value="{$value|escape}">
 
 {elseif $info.type == 'input'}
-    <input type="text" name="params[{$info.id}]" value="{$value|escape}">
+    <input type="text" class="long" name="params[{$info.id}]" value="{$value|escape}">
     {if !empty($info.description)}
         <p class="hint">{$info.description}</p>
     {/if}
@@ -21,7 +21,7 @@
     {/if}
 
 {elseif $info.type == 'select'}
-    <div class="wa-select">
+    <div class="wa-select small">
         <select name="params[{$info.id}]">
             {foreach $info.items as $_k => $_v}
                 {if !is_array($_v)}
@@ -49,7 +49,7 @@
             </span>
             {renderName value=$_v.name}
             {if !empty($info.description)}
-                <span class="hint">{$info.description}</span>
+                <p class="hint">{$info.description}</p>
             {/if}
         </label>
     {/foreach}
@@ -71,7 +71,7 @@
                 </span>
                 {renderName value=$_v.name}
                 {if !empty($_v.description)}
-                    <span class="hint">{$_v.description}</span>
+                    <p class="hint">{$_v.description}</p>
                 {/if}
             </label>
         {/foreach}
@@ -88,7 +88,7 @@
         </label>
     {/if}
     {if !empty($info.description)}
-        <span class="hint">{$info.description}</span>
+        <p class="hint">{$info.description}</p>
     {/if}
 
 {elseif $info.type == 'radio_select'}
@@ -104,11 +104,11 @@
                 </span>
                 {renderName value=$_v.name}
                 {if !empty($_v.description)}
-                    <span class="hint">{$_v.description}</span>
+                    <p class="hint">{$_v.description}</p>
                 {/if}
             </label>
             {if isset($_v.items)}
-                <div class="wa-select">
+                <div class="wa-select small">
                     <select{if $value != $_k || !isset($_v['items'][$value])} disabled="disabled"{/if} name="params[{$info.id}]">
                         {foreach $_v.items as $_k2 => $_v2}
                             <option{if $_k2 == $value} selected="selected"{/if} value="{$_k2|escape}">{$_v2|escape}</option>
@@ -161,7 +161,7 @@
                 </span>
                 {renderName value=$_v.name}
                 {if !empty($_v.description)}
-                    <span class="hint">{$_v.description}</span>
+                    <p class="hint">{$_v.description}</p>
                 {/if}
             </label>
             {if isset($_v['items'])}
@@ -184,7 +184,7 @@
                                     </span>
                                     {renderName value=$_v2.name}
                                     {if !empty($_v2.description)}
-                                        <span class="hint">{$_v2.description}</span>
+                                        <p class="hint">{$_v2.description}</p>
                                     {/if}
                                 </label>
                             </li>
@@ -226,7 +226,7 @@
                 </span>
                 {renderName value=$_v.name}
                 {if !empty($_v.description)}
-                    <span class="hint">{$_v.description}</span>
+                    <p class="hint">{$_v.description}</p>
                 {/if}
             </label>
             {if $_last}

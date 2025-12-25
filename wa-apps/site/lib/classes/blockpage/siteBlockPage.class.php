@@ -139,6 +139,9 @@ class siteBlockPage
             wa()->setLocale($page_locale);
         }
 
+        if ($this->data['theme']) {
+            waRequest::setParam('theme', $this->data['theme']);
+        }
         if (!empty($only_block)) {
             $global_block_type = $only_block->block_type;
             $global_block_data = $only_block;
@@ -153,9 +156,7 @@ class siteBlockPage
             if ($this->data['theme']) {
                 $theme = new waTheme($this->data['theme'], 'site');
                 $theme_view = new siteEditorView(wa('site'));
-                if($theme_view->setThemeTemplate($theme, 'blockpage.wrapper.html')) {
-                    waRequest::setParam('theme', $this->data['theme']);
-                } else {
+                if(!$theme_view->setThemeTemplate($theme, 'blockpage.wrapper.html')) {
                     $theme_view = null;
                 }
             }

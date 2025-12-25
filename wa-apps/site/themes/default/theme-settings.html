@@ -1,0 +1,262 @@
+<!-- Кнопка для открытия визуального редактора -->
+<div class="theme-editor-trigger-wrapper">
+    <button id="openThemeEditor" class="theme-editor-trigger" title="Настроить тему">
+        <span class="theme-editor-trigger-badge" id="editorBadge">●</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 3C6.13 3 3 6.13 3 10C3 13.87 6.13 17 10 17C13.87 17 17 13.87 17 10C17 6.13 13.87 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15Z" fill="currentColor"/>
+            <path d="M10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+        </svg>
+        [`Визуальные настройки`]
+    </button>
+</div>
+<!-- Модальное окно визуального редактора темы -->
+<div id="themeEditorModal" class="theme-editor-modal">
+    <div class="theme-editor-modal-content" id="themeEditorContent">
+        <!-- Заголовок с возможностью перемещения -->
+        <div class="theme-editor-header" id="themeEditorHeader">
+            <div class="theme-editor-title">
+                <span>[`Визуальные настройки темы`]</span>
+            </div>
+            <div class="theme-editor-header-actions">
+                <button class="theme-editor-minimize" id="minimizeThemeEditor" title="[`Свернуть`]">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M19 13H5v-2h14v2z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="theme-editor-close" id="closeThemeEditor" title="[`Закрыть`]">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <div class="theme-editor-tabs">
+            <button class="theme-editor-tab active" data-tab="general">
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                [`Общие`]
+            </button>
+            <button class="theme-editor-tab" data-tab="colors">
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <circle cx="10" cy="10" r="7" fill="currentColor"/>
+                </svg>
+                [`Цвета`]
+            </button>
+            <button class="theme-editor-tab" data-tab="fonts">
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <text x="3" y="15" font-size="14" font-weight="bold" fill="currentColor">Aa</text>
+                </svg>
+                [`Шрифты`]
+            </button>
+        </div>
+
+        <!-- Содержимое вкладок -->
+        <div class="theme-editor-body">
+
+            <!-- Вкладка: Общие -->
+            <div class="theme-editor-panel active" data-panel="general">
+
+                <!-- Скругление углов -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>[`Скругление углов`]</span>
+                        <span class="theme-editor-hint">[`Радиус закругления элементов интерфейса`]</span>
+                    </label>
+                    <div class="theme-editor-control">
+                        <input type="range"
+                               id="borderRadiusSlider"
+                               min="0"
+                               max="30"
+                               value="12"
+                               step="1"
+                               class="theme-editor-slider">
+                        <div class="theme-editor-value-input">
+                            <input type="number"
+                                   id="borderRadiusInput"
+                                   value="12"
+                                   min="0"
+                                   max="30"
+                                   step="1">
+                            <span class="theme-editor-unit">px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Цветовая схема -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>[`Цветовая схема`]</span>
+                        <span class="theme-editor-hint">[`Светлая или тёмная тема оформления`]</span>
+                    </label>
+                    <div class="theme-editor-radio-group">
+                        <label class="theme-editor-radio">
+                            <input type="radio" name="colorScheme" value="auto" checked>
+                            <span class="theme-editor-radio-label">
+                                <svg width="20" height="20" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M10 3 A7 7 0 0 1 10 17 Z" fill="currentColor"/>
+                                </svg>
+                                [`Авто`]
+                            </span>
+                        </label>
+                        <label class="theme-editor-radio">
+                            <input type="radio" name="colorScheme" value="light">
+                            <span class="theme-editor-radio-label">
+                                <svg width="20" height="20" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="7" fill="currentColor"/>
+                                </svg>
+                                [`Светлая`]
+                            </span>
+                        </label>
+                        <label class="theme-editor-radio">
+                            <input type="radio" name="colorScheme" value="dark">
+                            <span class="theme-editor-radio-label">
+                                <svg width="20" height="20" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                [`Тёмная`]
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Вкладка: Цвета -->
+            <div class="theme-editor-panel" data-panel="colors">
+
+                <!-- Акцентный цвет -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>[`Акцентный цвет`]</span>
+                        <span class="theme-editor-hint">[`Основной цвет для кнопок и ссылок`]</span>
+                    </label>
+                    <div class="theme-editor-color-grid" id="accentColorGrid">
+                        <button class="theme-editor-color-option active" data-color="#A538DC" style="background-color: #A538DC;" title="Сиреневый"></button>
+                        <button class="theme-editor-color-option" data-color="#BC2192" style="background-color: #BC2192;" title="Розовый"></button>
+                        <button class="theme-editor-color-option" data-color="#BA2621" style="background-color: #BA2621;" title="Красный"></button>
+                        <button class="theme-editor-color-option" data-color="#B37120" style="background-color: #B37120;" title="Оранжевый"></button>
+                        <button class="theme-editor-color-option" data-color="#7D9B1B" style="background-color: #7D9B1B;" title="Оливковый"></button>
+                        <button class="theme-editor-color-option" data-color="#2E941A" style="background-color: #2E941A;" title="Зелёный"></button>
+                        <button class="theme-editor-color-option" data-color="#178269" style="background-color: #178269;" title="Бирюзовый"></button>
+                        <button class="theme-editor-color-option" data-color="#1D94A6" style="background-color: #1D94A6;" title="Голубой"></button>
+                        <button class="theme-editor-color-option" data-color="#516DE0" style="background-color: #516DE0;" title="Синий"></button>
+                        <button class="theme-editor-color-option" data-color="#7041DD" style="background-color: #7041DD;" title="Фиолетовый"></button>
+                    </div>
+                </div>
+
+                <!-- Фон светлой темы -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>[`Фон светлой темы`]</span>
+                        <span class="theme-editor-hint">[`Цвет фона в светлом режиме`]</span>
+                    </label>
+                    <div class="theme-editor-color-grid" id="bgColorLightGrid">
+                        <button class="theme-editor-color-option active" data-color="#ffffff" style="background-color: #ffffff; border: 1px solid #e0e0e0;" title="Белый"></button>
+                        <button class="theme-editor-color-option" data-color="#F0F0F0" style="background-color: #F0F0F0;" title="Светло-серый"></button>
+                        <button class="theme-editor-color-option" data-color="#E9E4EC" style="background-color: #E9E4EC;" title="Светло-сиреневый"></button>
+                        <button class="theme-editor-color-option" data-color="#ECE4EA" style="background-color: #ECE4EA;" title="Светло-розовый"></button>
+                        <button class="theme-editor-color-option" data-color="#EDE4E3" style="background-color: #EDE4E3;" title="Светло-красный"></button>
+                        <button class="theme-editor-color-option" data-color="#EBE5E0" style="background-color: #EBE5E0;" title="Светло-оранжевый"></button>
+                        <button class="theme-editor-color-option" data-color="#E6E8DE" style="background-color: #E6E8DE;" title="Светло-оливковый"></button>
+                        <button class="theme-editor-color-option" data-color="#E8EFE7" style="background-color: #E8EFE7;" title="Светло-зелёный"></button>
+                        <button class="theme-editor-color-option" data-color="#E4ECEA" style="background-color: #E4ECEA;" title="Светло-бирюзовый"></button>
+                        <button class="theme-editor-color-option" data-color="#E4EBEC" style="background-color: #E4EBEC;" title="Светло-голубой"></button>
+                    </div>
+                </div>
+
+                <!-- Фон тёмной темы -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>[`Фон тёмной темы`]</span>
+                        <span class="theme-editor-hint">[`Цвет фона в тёмном режиме`]</span>
+                    </label>
+                    <div class="theme-editor-color-grid" id="bgColorDarkGrid">
+                        <button class="theme-editor-color-option active" data-color="#000000" style="background-color: #000000;" title="Чёрный"></button>
+                        <button class="theme-editor-color-option" data-color="#262626" style="background-color: #262626;" title="Тёмно-серый"></button>
+                        <button class="theme-editor-color-option" data-color="#28212C" style="background-color: #28212C;" title="Тёмно-сиреневый"></button>
+                        <button class="theme-editor-color-option" data-color="#261C23" style="background-color: #261C23;" title="Тёмно-розовый"></button>
+                        <button class="theme-editor-color-option" data-color="#261D1C" style="background-color: #261D1C;" title="Тёмно-красный"></button>
+                        <button class="theme-editor-color-option" data-color="#2B2621" style="background-color: #2B2621;" title="Тёмно-оранжевый"></button>
+                        <button class="theme-editor-color-option" data-color="#292B22" style="background-color: #292B22;" title="Тёмно-оливковый"></button>
+                        <button class="theme-editor-color-option" data-color="#272C26" style="background-color: #272C26;" title="Тёмно-зелёный"></button>
+                        <button class="theme-editor-color-option" data-color="#252D2B" style="background-color: #252D2B;" title="Тёмно-бирюзовый"></button>
+                        <button class="theme-editor-color-option" data-color="#252C2D" style="background-color: #252C2D;" title="Тёмно-голубой"></button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Вкладка: Шрифты -->
+            <div class="theme-editor-panel" data-panel="fonts">
+
+                <!-- Семейство шрифтов -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>[`Семейство шрифтов`]</span>
+                        <span class="theme-editor-hint">[`Основной шрифт для всего текста`]</span>
+                    </label>
+                    <select id="fontFamilySelect" class="theme-editor-select">
+                        <option value="Rubik">Rubik (Google Fonts)</option>
+                        <option value="Helvetica Neue">Helvetica (Arial)</option>
+                        <option value="Trebuchet MS">Trebuchet MS</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Georgia, Times">Georgia</option>
+                        <option value="Fira Sans">Fira Sans (Google Fonts)</option>
+                        <option value="Open Sans">Open Sans (Google Fonts)</option>
+                        <option value="PT Sans">PT Sans (Google Fonts)</option>
+                        <option value="PT Serif">PT Serif (Google Fonts)</option>
+                        <option value="PT Sans Caption">PT Sans + PT Serif (Google Fonts)</option>
+                        <option value="Roboto">Roboto (Google Fonts)</option>
+                        <option value="Lora">Lora (Google Fonts)</option>
+                        <option value="Ubuntu">Ubuntu (Google Fonts)</option>
+                    </select>
+                </div>
+
+                <!-- Размер шрифта -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>[`Размер шрифта`]</span>
+                        <span class="theme-editor-hint">[`Базовый размер текста на сайте`]</span>
+                    </label>
+                    <div class="theme-editor-control">
+                        <input type="range"
+                               id="fontSizeSlider"
+                               min="12"
+                               max="18"
+                               value="16"
+                               step="1"
+                               class="theme-editor-slider">
+                        <div class="theme-editor-value-input">
+                            <input type="number"
+                                   id="fontSizeInput"
+                                   value="16"
+                                   min="12"
+                                   max="18"
+                                   step="1">
+                            <span class="theme-editor-unit">px</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Футер с кнопками -->
+        <div class="theme-editor-footer">
+            <button class="theme-editor-btn-secondary" id="resetSettings">
+                [`Сбросить`]
+            </button>
+            <button class="theme-editor-btn-primary" id="saveSettings">
+                [`Сохранить`]
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<link rel="stylesheet" href="{$wa_theme_url}css/theme-settings.css?v{$wa_theme_version}">

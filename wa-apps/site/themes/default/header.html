@@ -4,7 +4,9 @@
         {* get selected node (a little magic here): for Site app, due to it's page-only functionality, page heirarchy and ambiguous select highlighe conditions for root app URL we get selected node in 2 foreach's, while for other apps single foreach for pages is ok due to their own content for homepage *}
         {$selected_node = null}
         {foreach $pages as $p}
-            {if $wa->currentUrl()|strstr:$p.url && strlen($p.url) >= strlen(ifset($selected_node, 'url', ''))}{$selected_node = $p}{/if}
+            {if $wa->currentUrl()|strstr:$p.url && strlen($p.url) >= strlen(ifset($selected_node, 'url', ''))}
+                {$selected_node = $p}
+            {/if}
         {/foreach}
         {if !$selected_node}{$selected_node.id = null}{/if}
 

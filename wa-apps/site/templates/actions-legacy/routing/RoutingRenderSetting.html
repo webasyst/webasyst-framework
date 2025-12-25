@@ -9,13 +9,13 @@
     <input type="hidden" name="params[{$info.id}]" value="{$value|escape}">
 
 {elseif $info.type == 'input'}
-    <input type="text" name="params[{$info.id}]" value="{$value|escape}">
+    <input type="text" class="longer" name="params[{$info.id}]" value="{$value|escape}">
     {if !empty($info.description)}
         <p class="hint">{$info.description}</p>
     {/if}
 
 {elseif $info.type == 'textarea'}
-    <textarea name="params[{$info.id}]">{$value|escape}</textarea>
+    <textarea class="width-100" name="params[{$info.id}]">{$value|escape}</textarea>
     {if !empty($info.description)}
         <p class="hint">{$info.description}</p>
     {/if}

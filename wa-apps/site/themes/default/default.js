@@ -9,7 +9,9 @@ $.ajaxSetup({ cache: false });
         activeClass: "submenu-is-shown",
         activeShadowClass: "is-shadow-shown",
         showTime: 200,
-        $last_li: false
+        $last_li: false,
+        $pagesClone: null,
+        $departments: null,
     };
 
     var bindEvents = function() {
@@ -91,7 +93,20 @@ $.ajaxSetup({ cache: false });
 
     var showSubMenu = function( $li ) {
         var is_active = $li.hasClass(storage.activeClass),
-            has_sub_menu = ( $li.find(".flyout").length );
+            has_sub_menu = ( $li.find(".flyout").length ),
+            hasPagesClone = 0;
+
+            if (MatchMedia("only screen and (max-width: 768px)")) {
+                hasPagesClone = ($li.find(".is-pages").length);
+
+                if(!storage.$departments) {
+                    storage.$departments = $li.find(".departments");
+                }
+
+                if(!storage.$pagesClone) {
+                    storage.$pagesClone = $(".is-pages").clone(true);
+                }
+            }
 
         if (is_active) {
             clearTimeout( leave );
@@ -108,6 +123,11 @@ $.ajaxSetup({ cache: false });
 
                     $li.addClass(storage.activeClass);
                     toggleMainOrnament(true);
+                    if (MatchMedia("only screen and (max-width: 768px)")) {
+                        if (!hasPagesClone) {
+                            storage.$departments.prepend(storage.$pagesClone);
+                        }
+                    }
                 }, storage.showTime);
             }
         }
@@ -157,56 +177,233 @@ var MatchMedia = function( media_query ) {
 };
 
 $(document).ready(function() {
-    const $header_container = $('#header-container');
     const $body = $('body');
     // MOBILE nav slide-out menu
-    $('#mobile-nav-toggle').click( function(){
+    const $mobileToggle = $('#mobile-nav-toggle');
+    const $headerContainer = $('#header-container');
+    $mobileToggle.click( function(){
         if (!$('.nav-negative').length) {
-            $body.prepend($('header .apps').clone().removeClass('apps').addClass('nav-negative'));
-            $body.prepend($('header .auth').clone().addClass('nav-negative'));
-            $body.prepend($('header .offline').clone().addClass('nav-negative'));
-            $('.nav-negative').hide().slideToggle(200);
+            $('.mobile-nav').prepend($('header .apps').clone().removeClass('apps').addClass('nav-negative'));
+            $('.mobile-nav').prepend($('header .auth').clone().addClass('nav-negative'));
+            $('.mobile-nav').prepend($('header .offline').clone().addClass('nav-negative'));
+            $('.mobile-nav').toggleClass('opened').hide().slideToggle(200);
         } else {
-            $('.nav-negative').slideToggle(200);
+            $('.mobile-nav').toggleClass('opened').slideToggle(200);
         }
-        $header_container.toggleClass('no-margin');
+
+        if ($headerContainer.hasClass('search-active')) {
+            $headerContainer.removeClass('search-active');
+        }
+
+        $(this).toggleClass('opened');
+        
         $("html, body").animate({ scrollTop: 0 }, 200);
         return false;
     });
 
-    // STICKY CART for non-mobile
-    var $clone = null;
-
-    $(window).scroll(function(){
-        var is_mobile_case = MatchMedia("only screen and (max-width: 760px)");
-        if (!is_mobile_case) {
-            var scroll_top = $(this).scrollTop();
-            var $cart = $("#cart");
-
-            if ( scroll_top >= 55 && !$cart.hasClass( "fixed" ) && !$cart.hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
-                $cart.hide();
-
-                if (!$clone) {
-                    $clone = $("<div />").css({
-                        width: $cart.outerWidth(),
-                        height: "1rem"
-                    });
-                    $cart.before($clone);
-                }
-
-                $cart.addClass( "fixed" );
-
-                $cart.show();
-                // $cart.slideToggle(200);
-            } else if ( scroll_top < 50 && $("#cart").hasClass( "fixed" ) ) {
-
-                $cart.removeClass( "fixed" );
-                $cart.css({ "width": "auto" });
-
-                if ($clone) { $clone.remove(); $clone = null; }
-            }
+    $(document).on('click', function(e) {
+        if (!$mobileToggle.is(e.target) && $mobileToggle.hasClass('opened')) {
+            $mobileToggle.removeClass('opened');
+            $('.mobile-nav').removeClass('opened').slideUp(200);
         }
     });
+
+    const debounce = (callback, delay = 100) => {
+        let timeoutId = null;
+
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => callback.apply(null, args), delay);
+        };
+    };
+
+    const initAppsOverflowMenu = () => {
+        const navList = document.querySelector('#globalnav .globalnav-bar nav .apps');
+
+        if (!navList || navList.querySelector('.apps-overflow')) {
+            return;
+        }
+
+        const overflowItem = document.createElement('li');
+        overflowItem.className = 'apps-overflow';
+
+        const overflowToggle = document.createElement('a');
+        overflowToggle.href = '#';
+        overflowToggle.className = 'apps-overflow-toggle chevron down';
+        overflowToggle.textContent = navList.dataset.moreText;
+        overflowToggle.setAttribute('aria-haspopup', 'true');
+        overflowToggle.setAttribute('aria-expanded', 'false');
+
+        const overflowMenu = document.createElement('ul');
+        overflowMenu.className = 'apps-overflow-menu';
+
+        overflowItem.appendChild(overflowToggle);
+        overflowItem.appendChild(overflowMenu);
+        navList.appendChild(overflowItem);
+
+        const moveBackToNav = () => {
+            while (overflowMenu.firstChild) {
+                navList.insertBefore(overflowMenu.firstChild, overflowItem);
+            }
+        };
+
+        const closeMenu = () => {
+            overflowItem.classList.remove('open');
+            overflowToggle.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('click', handleDocumentClick);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+
+        const openMenu = () => {
+            if (!overflowMenu.children.length) {
+                return;
+            }
+
+            overflowItem.classList.add('open');
+            overflowToggle.setAttribute('aria-expanded', 'true');
+            document.addEventListener('click', handleDocumentClick);
+            document.addEventListener('keydown', handleKeyDown);
+
+            const firstLink = overflowMenu.querySelector('a, button, [tabindex]');
+            if (firstLink) {
+                firstLink.focus({ preventScroll: true });
+            }
+        };
+
+        const handleDocumentClick = (event) => {
+            if (!overflowItem.contains(event.target)) {
+                closeMenu();
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                closeMenu();
+            }
+        };
+
+        overflowToggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (overflowItem.classList.contains('open')) {
+                closeMenu();
+            } else {
+                document.querySelectorAll('.apps-overflow.open').forEach((item) => {
+                    item.classList.remove('open');
+                    item.querySelector('.apps-overflow-toggle')?.setAttribute('aria-expanded', 'false');
+                });
+
+                openMenu();
+            }
+        });
+
+        const updateOverflow = () => {
+            closeMenu();
+            moveBackToNav();
+
+            if (!navList.contains(overflowItem)) {
+                navList.appendChild(overflowItem);
+            }
+
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            const availableWidth = navList.parentElement ? navList.parentElement.clientWidth : navList.clientWidth;
+
+            overflowItem.style.display = 'none';
+
+            if (isMobile || !availableWidth) {
+                return;
+            }
+
+            overflowItem.style.display = '';
+
+            const navItems = Array.from(navList.children).filter((li) => li !== overflowItem);
+
+            // пока список шире контейнера — переносим крайний пункт в выпадающее меню
+            while (navList.scrollWidth > availableWidth && navItems.length) {
+                const item = navItems.pop();
+                if (item) {
+                    overflowMenu.prepend(item);
+                }
+            }
+
+            if (!overflowMenu.children.length) {
+                overflowItem.style.display = 'none';
+            }
+        };
+
+        const debouncedUpdate = debounce(updateOverflow, 120);
+
+        const parentForObserve = navList.parentElement || navList;
+        if (window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(debouncedUpdate);
+            resizeObserver.observe(parentForObserve);
+        }
+
+        window.addEventListener('resize', debouncedUpdate);
+        updateOverflow();
+    };
+
+    initAppsOverflowMenu();
+
+    // STICKY CART for non-mobile
+    (() => {
+        let observer = null;
+
+        const init = () => {
+            const cartElement = document.getElementById('cart');
+            const headerElement = document.querySelector('.globalheader');
+
+            if (!cartElement || !headerElement) return;
+
+            if (document.querySelector('.cart-summary-page')) return;
+
+            const mediaQuery = window.matchMedia("only screen and (max-width: 768px)");
+
+            const setupObserver = (isMobile) => {
+                if (observer) {
+                    observer.disconnect();
+                    observer = null;
+                }
+
+                if (isMobile) {
+                    cartElement.classList.remove('fixed');
+                    return;
+                }
+
+                observer = new IntersectionObserver(
+                    (entries) => {
+                        const [entry] = entries;
+
+                        if (!entry.isIntersecting && !cartElement.classList.contains('empty')) {
+                            cartElement.classList.add('fixed');
+                        } else {
+                            cartElement.classList.remove('fixed');
+                        }
+                    },
+                    {
+                        root: null,
+                        threshold: 0,
+                        rootMargin: '0px'
+                    }
+                );
+
+                observer.observe(headerElement);
+            };
+
+            setupObserver(mediaQuery.matches);
+
+            mediaQuery.addEventListener('change', (e) => {
+                setupObserver(e.matches);
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
 });
 
 // MAILER app email subscribe form

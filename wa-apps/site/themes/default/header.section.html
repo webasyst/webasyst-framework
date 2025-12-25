@@ -9,11 +9,10 @@
  <header class="globalheader"{if $theme_settings.header_custom_image} style="background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');"{/if}>
 
      {if count($wa->apps())>0 || $wa->isAuthEnabled()}
-
          <!-- GLOBAL NAVIGATION -->
-         <div id="globalnav"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};"{/if}>
+         <div id="globalnav">
              <div class="container">
-                 <div class="globalnav-bar wa-flex align-items-center space-3">
+                 <div class="globalnav-bar wa-flex align-items-center space-2">
                      {if $theme_settings.header_sitename || $theme_settings.logo}
                          <h2>
                              <a href="{$wa_url}">
@@ -28,9 +27,9 @@
                      {/if}
                      {$_hide_cart = $wa->globals("hideCart")}
 
-                     <nav class="wa-flex wa-flex-fill overflow-hidden{if !empty($_hide_cart) && !$wa->isAuthEnabled()} wa-mr-0{/if}">
+                     <nav class="wa-flex{if !empty($_hide_cart) && !$wa->isAuthEnabled()} wa-mr-0{/if} wa-hide-m">
                          {strip}
-                         <ul class="apps">
+                         <ul class="apps" data-more-text="[`More`]">
                                  {$_links = []}
                                  {if $theme_settings.header_links == 'site-pages'}
                                      {if $wa->site}{$_links = $wa->site->pages()}{/if}
@@ -54,51 +53,72 @@
                          {/strip}
                      </nav>
 
-                     <div class="wa-flex wa-ml-auto wa-mr-0">
+                     <div class="wa-flex wa-flex-fill justify-content-center space-1 wa-ml-auto wa-mr-auto wa-hide-m">
+                         <a href="tel:+12345678900" class="nowrap">+1 (234) 567-89-00</a>
+
+                         {if $wa->shop && !empty($theme_settings.use_shop_schedule) && method_exists($wa->shop, 'schedule')}
+                             {$_schedule = $wa->shop->schedule()}
+
+                             <div class="schedule">
+                                 <div class="schedule-title chevron down nowrap" title="{_wd("shop", "Business hours")}">
+                                     {_wd("shop", "Business hours")}
+                                 </div>
+
+                                 <ul class="schedule-dropdown">
+                                     {foreach $_schedule.current_week as $_day}
+                                         <li class="s-day-wrapper">
+                                             <div class="s-date">{$_day.name|escape}</div>
+                                             <div class="s-value">
+                                                 {if !empty($_day.work)}
+                                                     <div class="s-time">{$_day.start_work|escape} — {$_day.end_work|escape}</div>
+                                                 {else}
+                                                     <div class="s-text">{_wd("shop", "day off")}</div>
+                                                 {/if}
+                                             </div>
+                                         </li>
+                                     {/foreach}
+                                 </ul>
+                             </div>
+                         {elseif !empty($theme_settings.manual_schedule)}
+                             <div class="schedule">
+                                 <span class="schedule-title">{$theme_settings.manual_schedule|escape}</span>
+                             </div>
+                         {/if}
+                     </div>
+
+                     <div class="wa-flex wa-ml-auto wa-mr-0 align-items-center">
                          {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
                          && !empty($theme_settings.show_cart) && empty($_hide_cart)}
                              <!-- cart -->
-                             {$cart_total = $wa->shop->cart->total()}
-                             <div id="cart" class="cart wa-flex{if !$cart_total} empty{/if}">
-                                 <div class="container">
+                             {$cart_count = $wa->shop->cart->count()}
+                             <div id="cart" class="cart wa-flex{if !$cart_count} empty{/if}">
+                                <div id="cart-content">
+                                    {* <div class="cart-just-added">
+                                    %s is now in your shopping cart
+                                    </div> *}
+                                </div>
                                  <a href="{$_cart_url}" class="cart-summary">
                                      <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
                                          <use xlink:href="#img-cart"></use>
                                      </svg>
-                                     <span class="wa-mr-8 wa-ml-4 h-cart-title">[s`Cart`]</span>
-                                     <strong class="s-badge s-badge-rounded cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                                     <span class="wa-mr-4 wa-ml-4 h-cart-title">[s`Cart`]</span>
+                                     <strong class="cart-total">{if $cart_count > 0}{$cart_count}{/if}</strong>
                                  </a>
-                                 <div id="cart-content">
-                                     {* <div class="cart-just-added">
-                                        %s is now in your shopping cart
-                                     </div> *}
-                                 </div>
-                                 <a href="{$_cart_url}" class="cart-to-checkout" style="display: none;">
-                                     [s`View cart`]
-                                 </a>
-
-                                 {strip}
-                                     {capture assign="_loading_template"}
-                                         <div class="s-loading-section">
-                                             <div class="s-loading-content">
-                                                 <i class="icon16 loading"></i>
-                                             </div>
-                                         </div>
-                                     {/capture}
-                                 {/strip}
-
                                  <script>
                                      ( function($) {
                                          var is_loading = false;
                                          $("#cart").on("click", function() {
                                              if (!is_loading) {
                                                  is_loading = true;
-                                                 $("body").append({$_loading_template|json_encode});
+                                                 $("body").append(`<div class="s-loading-section">
+                                                                        <div class="s-loading-content">
+                                                                            <i class="icon16 loading"></i>
+                                                                        </div>
+                                                                    </div>`);
                                              }
                                          });
                                      })(jQuery);
                                  </script>
-                                 </div>
                              </div>
                          {/if}
 
@@ -109,22 +129,24 @@
                                      {if $wa->user()->isAuth()}
                                          {if $wa->myUrl()}
                                              <li>
-                                                 <a href="{$wa->myUrl()}"><i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i></a>
+                                                 <a href="{$wa->myUrl()}">
+                                                    <i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i>
+                                                 </a>
                                              </li>
                                          {else}
-                                             <li><strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></li>
+                                             <li>{$wa->user('firstname')|default:'[`My account`]'}</li>
                                          {/if}
-                                         <li><a href="?logout" class="auth-logout">[s`Log out`]</a></li>
+                                         <li><a href="?logout">[`Logout`]</a></li>
                                      {else}
                                          <li>
-                                             <a href="{$wa->loginUrl()}" class="not-visited text-white">
+                                             <a href="{$wa->loginUrl()}" class="not-visited">
                                                  <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
                                                      <use xlink:href="#img-person"></use>
                                                  </svg>
                                              </a>
                                          </li>
-                                         <li>
-                                             <a href="{$wa->loginUrl()}" class="not-visited text-gray">[s`Log in`]</a>
+                                         <li class="wa-flex-fill">
+                                             <a href="{$wa->loginUrl()}" class="not-visited wa-pl-4 wa-flex-fill">[s`Log in`]</a>
                                          </li>
                                          {*<li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>*}
                                      {/if}
@@ -132,8 +154,12 @@
                              {/strip}
                          {/if}
                      </div>
-                     <button id="mobile-nav-toggle">
-                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
+                     <button id="mobile-nav-toggle" class="wa-show-m">
+                        <svg viewBox="0 0 19 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="hamburger-icon">
+                            <path class="hamburger-line hamburger-line-1" fill-rule="evenodd" clip-rule="evenodd" d="M0 1.05C0 0.470101 0.470101 0 1.05 0H17.3836C17.9635 0 18.4336 0.470101 18.4336 1.05C18.4336 1.6299 17.9635 2.1 17.3836 2.1H1.05C0.470101 2.1 0 1.6299 0 1.05Z" fill="#828282"/>
+                            <path class="hamburger-line hamburger-line-2" fill-rule="evenodd" clip-rule="evenodd" d="M0 6.88333C0 6.30343 0.470101 5.83333 1.05 5.83333H17.3836C17.9635 5.83333 18.4336 6.30343 18.4336 6.88333C18.4336 7.46323 17.9635 7.93333 17.3836 7.93333H1.05C0.470101 7.93333 0 7.46323 0 6.88333Z" fill="#828282"/>
+                            <path class="hamburger-line hamburger-line-3" fill-rule="evenodd" clip-rule="evenodd" d="M0 12.7167C0 12.1368 0.470101 11.6667 1.05 11.6667H17.3836C17.9635 11.6667 18.4336 12.1368 18.4336 12.7167C18.4336 13.2966 17.9635 13.7667 17.3836 13.7667H1.05C0.470101 13.7667 0 13.2966 0 12.7167Z" fill="#828282"/>
+                        </svg>
                      </button>
                  </div>
              </div>
@@ -141,7 +167,17 @@
      {/if}
 
      {if empty ($_is_order_page)}
-     <!-- APP NAVIGATION -->
-     <div class="container appnav wa-flex justify-content-between align-items-center" id="header-container"{if $theme_settings.header_scheme|strstr:'andgray'} style="border-top: 1px solid transparent;"{/if}>{if $wa->globals('isMyAccount')}{* focused personal accounts navigation *}{$wa->myNav('pages')}{else}<!-- Site app page list -->{include file="`$wa_active_theme_path`/header.html" inline}{/if}</div>
+         <!-- APP NAVIGATION -->
+         <div class="container appnav wa-flex space-1{if !empty($theme_settings.show_header_search)} wa-justify-content-between{/if} align-items-center" id="header-container">
+             {if $wa->globals('isMyAccount')}
+                 {* focused personal accounts navigation *}
+                 {$wa->myNav('pages')}
+             {else}
+                 <!-- Site app page list -->
+                 {include file="`$wa_active_theme_path`/header.html" inline}
+             {/if}
+         </div>
      {/if}
+
+     <div class="mobile-nav"></div>
  </header>

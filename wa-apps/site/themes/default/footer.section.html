@@ -14,14 +14,14 @@
         {if !empty($theme_settings.footer_subscribe_form_use) && $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
             <div class="mailer-subscribe">
                 <div class="container">
-                    <div class="s-subscribe-section row cols1-mobile" id="js-subscribe-section">
+                    <div class="s-subscribe-section row cols2 cols1-mobile gap20 align-items-center" id="js-subscribe-section">
                         {if !empty($theme_settings.footer_subscribe_form_title)}
                             <p class="col w5 s-subscribe-section--title wa-mb-4 wa-pl-4">{$theme_settings.footer_subscribe_form_title}</p>
                         {/if}
                         <form class="col w7">
                             <div class="row">
                                 <input class="wa-flex-fill wa-mr-16 wa-mt-4 js-email-field" type="email" name="email" placeholder="your@email.here" required>
-                                <button class="text-white js-submit-button wa-mt-4" type="submit">[s`Subscribe`]</button>
+                                <button class="text-white js-submit-button wa-mt-4 blink" type="submit">[s`Subscribe`]</button>
                             </div>
                             <div class="s-hidden">{$wa->captcha(['app_id'=>'mailer'])}</div>
                         </form>
@@ -39,16 +39,16 @@
                         </script>
                     </div>
                     {if !empty($theme_settings.footer_subscribe_personal_data)}
-                        <div class="s-subscribe-personal-data wa-mt-24">{$theme_settings.footer_subscribe_personal_data}</div>
+                        <div class="s-subscribe-personal-data wa-mt-22 small">{$theme_settings.footer_subscribe_personal_data}</div>
                     {/if}
                 </div>
             </div>
         {/if}
         <div class="container">
             {if !empty($theme_settings.footer_links)}
-            <div class="row gap20 cols4 cols1-mobile cols2-tablet">
+            <div class="row gap32 cols1-mobile cols2-tablet">
 
-                <div class="footer-block contact-us col w3">
+                <div class="footer-block contact-us small col">
                     <div class="social">
                         {if $wa->blog && !empty($rss)}
                             <a class="wa-mb-0" href="{$rss}" title="[s`RSS`]">
@@ -101,23 +101,23 @@
                 </div>
 
                 {if $wa->shop}
-                    <div class="footer-block col w3">
-                        <a href="{$wa->getUrl('shop/frontend')}" class="top">[s`Shop`]</a>
+                    <div class="footer-block col small">
+                        <a href="{$wa->getUrl('shop/frontend')}" class="top larger wa-mb-24 text-black-auto">[s`Shop`]</a>
                         <a href="{$_cart_url}">[s`Cart`]</a>
                     </div>
                 {/if}
 
                 {if $wa->photos}
-                    <div class="footer-block col w3">
-                        <a href="{$wa->getUrl('photos/frontend')}" class="top">[s`Photos`]</a>
+                    <div class="footer-block col small">
+                        <a href="{$wa->getUrl('photos/frontend')}" class="top larger wa-mb-24 text-black-auto">[s`Photos`]</a>
                         <a href="{$wa->getUrl('photos/frontend')}">[s`Photostream`]</a>
                         <a href="{$wa->getUrl('photos/frontend')}favorites/">[s`Favorites`]</a>
                     </div>
                 {/if}
 
                 {if $wa->blog}
-                    <div class="footer-block col w3">
-                        <a href="{$wa->getUrl('blog/frontend')}" class="top">[s`Blog`]</a>
+                    <div class="footer-block col small">
+                        <a href="{$wa->getUrl('blog/frontend')}" class="top larger wa-mb-24 text-black-auto">[s`Blog`]</a>
                         <a href="{$wa->blog->rssUrl()}">[s`RSS`]</a>
                         {$blogs = $wa->blog->blogs()}
                         {foreach $blogs as $b}
@@ -141,15 +141,23 @@
         <div class="appfooter">
             <div class="container">
                 <div class="row gap16 justify-content-between align-items-center">
-                    <div class="copyright">
-                        &copy; {time()|wa_datetime:"Y"}
-                        <a href="{$wa_url}">{$wa->accountName()}</a>
-                    </div>
                     {include file="`$wa_active_theme_path`/footer.html" inline}
+                    {if $wa->shop}
+                        {if !shopLicensing::isPremium() || empty($theme_settings.poweredby_off)}
+                        <div class="poweredby" role="complementary">
+                            <a href="[s`https://www.webasyst.com`]"><i class="webasyst-magic-wand" title="Webasyst"></i></a>
+                            [s`Shopping platform by <a href="https://www.shop-script.com">Shop-Script</a>`]
+                        </div>
+                        {/if}
+                    {else if empty($theme_settings.poweredby_off)}
+                        <div class="poweredby" role="complementary">
+                            <i class="webasyst-magic-wand" title="Webasyst"></i>
+                            [s`Made on <a href="https://www.webasyst.com">Webasyst</a>`]
+                        </div>
+                    {/if}
                 </div>
-
-                {if empty($theme_settings.footer_notice)}
-                    <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
+                {if !empty($theme_settings.footer_notice)}
+                    <div class="s-footer-notice small">{$theme_settings.footer_notice}</div>
                 {/if}
             </div>
         </div>

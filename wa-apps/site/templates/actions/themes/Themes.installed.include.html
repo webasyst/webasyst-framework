@@ -6,6 +6,22 @@
         }
     </style>
     {$count_app_themes = $app_themes|count}
+    {$_themes_url = []}
+    {foreach $routes as $r}
+        {$r.theme = $r.theme|default:'default'}
+        {$r.theme_mobile = $r.theme_mobile|default:'default'}
+        {* because rtrim removes repetitions *}
+        {if $r.url && $r.url|substr:-1 == "*"}
+            {$r.url = $r.url|substr:0:-1}
+        {/if}
+        {if isset($app_themes[$r.theme])}
+            {$_themes_url[$r.theme] = '//'|cat:waIdna::dec($r._domain)|cat:'/'|cat:$r.url}
+        {/if}
+        {if isset($app_themes[$r.theme_mobile]) && $r.theme != $r.theme_mobile}
+            {$_themes_url[$r.theme_mobile] = '//'|cat:waIdna::dec($r._domain)|cat:'/'|cat:$r.url}
+        {/if}
+    {/foreach}
+
     <div class="s-installed-themes-section">
         <div class="s-section-header">
             <span class="s-title">
@@ -29,9 +45,18 @@
                     {/if}
 
                     <div class="s-theme-wrapper" data-id="{$_theme_id|escape}" data-load="?module=design&action=theme&theme={$_theme_id|escape}">
-                        <a class="s-image-wrapper card" href="{$_theme_url|escape}" title="{$_name|escape}">
-                            <img src="{$_cover_image|escape}" alt="{$_name|escape}">
-                        </a>
+                        {if empty($_themes_url[$_theme_id])}
+                            <a class="s-image-wrapper card" href="{$_theme_url|escape}" title="{$_name|escape}">
+                                <img src="{$_cover_image|escape}" alt="{$_name|escape}">
+                            </a>
+                        {else}
+                            <a class="s-image-wrapper card" href="{$_theme_url|escape}" title="{$_name|escape}">
+                                <img src="{$_cover_image|escape}" alt="{$_name|escape}">
+                            </a>
+                            <a class="s-iframe-wrapper card hidden" href="{$_theme_url|escape}" title="{$_name|escape}">
+                                <iframe src="{$_themes_url[$_theme_id]|default:''}" onload="this.closest('.s-theme-wrapper').querySelector('.s-image-wrapper').remove();this.closest('.s-iframe-wrapper').classList.remove('hidden');"></iframe>
+                            </a>
+                        {/if}
                         <div class="s-name-wrapper">
                             <a class="s-name" href="{$_theme_url}" title="{$_name|escape}">
                                 {$_name|escape}

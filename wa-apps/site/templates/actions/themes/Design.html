@@ -164,16 +164,38 @@
                                 <i class="fas fa-exclamation-triangle fa-sm"></i> [s`This design theme is also used in other sections of your sites. Editing its design templates will affect the appearance of all these site sections.`]
                             </div>
                         {/if}
-                        <ul class="menu wa-theme-templates">
-                            {foreach $edit_data.theme_files as $f_id => $f}
-                                <li class="{if $f_id == $edit_data.file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
-                                    <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f_id|escape}">
-                                        <i class="{if substr($f_id, -4)=='.css'}fab fa-css3{elseif substr($f_id, -3)=='.js'}fab fa-js-square{else}fas fa-file-code{/if}"></i>
-                                        <span>{$f_id|escape|truncate:25:'...':false:true}</span>
-                                        <span class="count small">{if !empty($f.parent_exists)}<i class="fas fa-link" title="{if !empty($f.parent_exists)}[s`parent theme file`]{/if}"></i>{/if}</span>
-                                    </a>
-                                </li>
-                            {/foreach}
+                        <div class="search-input custom-mx-12 custom-mt-16">
+                            <input type="search" class="js-theme-files-search small width-100" placeholder="[s`Search`]">
+                        </div>
+                        <ul class="menu ellipsis wa-theme-templates">
+                            {function renderFileTree theme_files=$edit_data.theme_files_tree level=0 parent_path=''}
+                                {$_level_padding = "calc(0.55rem * `$level` + 0.75rem)"}
+                                {foreach $theme_files as $f_id => $f}
+                                    {if $f.type == 'dir'}
+                                        {$current_dir_path = "`$parent_path``$f_id`/"}
+                                        {$is_expanded = (!empty($edit_data.file.id) && strpos($edit_data.file.id, $current_dir_path) === 0)}
+                                        
+                                        <li>
+                                            <span class="item js-directory-toggle"{if $level > 0} style="padding-left:{$_level_padding};"{/if}>
+                                                <i class="fas fa-folder"></i>
+                                                <span>{$f_id|escape}</span>
+                                            </span>
+                                            <ul class="menu ellipsis"{if !$is_expanded} style="display: none;"{/if}>
+                                                {renderFileTree theme_files=$f.children level=$level+1 parent_path=$current_dir_path}
+                                            </ul>
+                                        </li>
+                                    {else}
+                                        <li class="{if $f.path == $edit_data.file.id}selected {/if}{if $f@first && $level == 0}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}" data-filename="{$f_id|escape}">
+                                            <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f.path|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f.path|escape}"{if $level > 0} style="padding-left:{$_level_padding};"{/if}>
+                                                <i class="{if substr($f.path, -4)=='.css'}fab fa-css3{elseif substr($f.path, -3)=='.js'}fab fa-js-square{else}fas fa-file-code{/if}"></i>
+                                                <span>{$f_id|escape}</span>
+                                                <span class="count small">{if !empty($f.parent_exists)}<i class="fas fa-link" title="{if !empty($f.parent_exists)}[s`parent theme file`]{/if}"></i>{/if}</span>
+                                            </a>
+                                        </li>
+                                    {/if}
+                                {/foreach}
+                            {/function}
+                            {renderFileTree theme_files=$edit_data.theme_files_tree}
                             <li class="top-padded">
                                 <a class="small" href="{$design_url}theme={$theme.id}&file=" title="[s`New file`]">
                                     <i class="fas fa-plus-circle"></i>
@@ -771,6 +793,7 @@
                 {if !$options.is_ajax}
                     waDesignLoad();
                 {/if}
+                themeFilesSearch();
             });
 
             function handleError(data, $dialog) {
@@ -888,6 +911,124 @@
                     }, 200);
                 });
             }
+
+
+            function themeFilesSearch(){
+                const self = this;
+
+                // Обработчик для динамически загружаемого контента
+                $(document).on('input', '.js-theme-files-search', function() {
+                    const $searchInput = $(this);
+                    const searchQuery = $searchInput.val().toLowerCase().trim();
+                    const $fileList = $searchInput.closest('#wa-design-sidebar').find('.wa-theme-templates');
+                    
+                    if (!searchQuery) {
+                        // Если поиск пустой, показываем все элементы и сбрасываем раскрытие
+                        $fileList.find('li').show();
+                        $fileList.find('.js-directory-toggle').each(function() {
+                            const $toggle = $(this);
+                            const $submenu = $toggle.siblings('ul.menu');
+                            if ($toggle.attr('data-expanded') === 'true') {
+                                $submenu.slideUp();
+                                $toggle.attr('data-expanded', 'false');
+                            }
+                        });
+                        return;
+                    }
+
+                    // Функция для раскрытия всех родительских папок
+                    const expandParents = function($element) {
+                        let $parent = $element.parent().closest('li');
+                        while ($parent.length) {
+                            const $toggle = $parent.find('.js-directory-toggle').first();
+                            if ($toggle.length) {
+                                const $submenu = $toggle.siblings('ul.menu');
+                                if ($toggle.attr('data-expanded') !== 'true') {
+                                    $submenu.slideDown();
+                                    $toggle.attr('data-expanded', 'true');
+                                }
+                            }
+                            $parent = $parent.parent().closest('li');
+                        }
+                    };
+
+                    // Функция для проверки, содержит ли папка совпадающие файлы
+                    const folderContainsMatch = function($folder) {
+                        let hasMatch = false;
+                        const $submenu = $folder.siblings('ul.menu');
+                        const $children = $submenu.find('li');
+                        
+                        $children.each(function() {
+                            const $child = $(this);
+                            const $childToggle = $child.find('.js-directory-toggle');
+                            
+                            if ($childToggle.length) {
+                                // Это папка, проверяем рекурсивно
+                                if (folderContainsMatch($childToggle)) {
+                                    hasMatch = true;
+                                }
+                            } else {
+                                // Это файл
+                                const filename = $child.attr('data-filename') || '';
+                                if (filename.toLowerCase().indexOf(searchQuery) !== -1) {
+                                    hasMatch = true;
+                                }
+                            }
+                        });
+                        
+                        return hasMatch;
+                    };
+
+                    // Обрабатываем все элементы списка
+                    $fileList.find('li').each(function() {
+                        const $li = $(this);
+                        const $toggle = $li.find('.js-directory-toggle');
+                        
+                        if ($toggle.length) {
+                            // Это папка
+                            const folderName = $toggle.find('span').not('.toggle-icon').text().toLowerCase();
+                            const folderMatches = folderName.indexOf(searchQuery) !== -1;
+                            const containsMatch = folderContainsMatch($toggle);
+                            
+                            if (folderMatches || containsMatch) {
+                                $li.show();
+                                // Раскрываем папку, если она содержит совпадения
+                                if (containsMatch) {
+                                    const $submenu = $toggle.siblings('ul.menu');
+                                    if ($toggle.attr('data-expanded') !== 'true') {
+                                        $submenu.slideDown();
+                                        $toggle.attr('data-expanded', 'true');
+                                    }
+                                }
+                            } else {
+                                $li.hide();
+                            }
+                        } else {
+                            // Это файл
+                            const filename = $li.attr('data-filename') || '';
+                            if (filename.toLowerCase().indexOf(searchQuery) !== -1) {
+                                $li.show();
+                                // Раскрываем все родительские папки
+                                expandParents($li);
+                            } else {
+                                $li.hide();
+                            }
+                        }
+                    });
+                });
+            }
+
+            $('#wa-design-sidebar').on('click', '.js-directory-toggle', function(e) {
+                e.preventDefault();
+                const $menu = $(this).next('.menu');
+                const is_visible = $menu.is(':visible');
+                
+                if(is_visible) {
+                    $menu.slideUp();
+                } else {
+                    $menu.slideDown();
+                }
+            });
         </script>
             {if !$wa->isMobile()}</div>{/if}
 </div>

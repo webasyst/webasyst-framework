@@ -2,13 +2,7 @@
 {strip}
 
 {$html_class_array = []}
-{$_color_scheme_class = 'color_scheme_'|cat:str_replace('img/themesettings/','',str_replace('.png','',$theme_settings.color_scheme))}
-{$_color_scheme = str_replace('img/themesettings/','',str_replace('.png','',$theme_settings.color_scheme))}
-{$_scheme_colors = ['white' => '#fff','yellow' => '#fb0','green' => '#6fb541','blue' => '#4e81cc','purple' => '#9a81b3','gray' => '#9c9c9c','pink' => '#e871b1','cyan' => '#3ac1bf','lime' => '#b5ce10','red' => '#cf2219']}
 
-{if $theme_settings.color_scheme}{$html_class_array[] = $_color_scheme_class}{/if}
-{if $theme_settings.font_size}{$html_class_array[] = $theme_settings.font_size}{/if}
-{if $theme_settings.font_family}{$html_class_array[] = $theme_settings.font_family}{/if}
 {if $wa->globals('isMyAccount')}{$html_class_array[] = 'my'}{/if}
 
 {if $wa->shop}
@@ -32,14 +26,10 @@
     <title>{$wa->title()}</title>
     <meta name="keywords" content="{$wa->meta('keywords')|escape}">
     <meta name="description" content="{$wa->meta('description')|escape}">
-    {if $theme_settings['header_customcolor']}
-        <meta name="theme-color" content="{$theme_settings['header_customcolor']|escape}">
-    {/if}
 
     {if !empty($canonical)}
         <link rel="canonical" href="{$canonical}">
     {/if}
-    {$wa->site->favicons()}{*will be removed after the release of the framework*}
     {if $wa->blog}
         <!-- rss -->
         {$rss=$wa->blog->rssUrl()}
@@ -52,16 +42,20 @@
     {/if}
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
     {$wa->css()} {* links active plugins CSS *}
+    {if empty($theme_settings.font_family)}{$theme_settings.font_family = 'Rubik'}{/if}
     {if !empty($theme_settings.font_family) && ($theme_settings.font_family != 'Trebuchet MS' || $theme_settings.font_family != 'Verdana' || $theme_settings.font_family != 'Georgia, Times')}
-        {if $theme_settings.font_family == 'Fira Sans'}{$_real_font_name = 'Fira+Sans:400,500,700,400italic,500italic,700italic'}{/if}
-        {if $theme_settings.font_family == 'Open Sans'}{$_real_font_name = 'Open+Sans:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family == 'PT Sans'}{$_real_font_name = 'PT+Sans:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family == 'PT Serif'}{$_real_font_name = 'PT+Serif:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family == 'PT Sans Caption'}{$_real_font_name = 'PT+Sans+Caption:400,700|PT+Serif:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family == 'Roboto'}{$_real_font_name = 'Roboto:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family == 'Lora'}{$_real_font_name = 'Lora:400,700,700italic,400italic'}{/if}
-        {if $theme_settings.font_family == 'Ubuntu'}{$_real_font_name = 'Ubuntu:400,700,700italic,400italic'}{/if}
-        <link href='https://fonts.googleapis.com/css?family={$_real_font_name}&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+        {if $theme_settings.font_family == 'Fira Sans'}{$_real_font_name = 'Fira+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap'}{/if}
+        {if $theme_settings.font_family == 'Open Sans'}{$_real_font_name = 'Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
+        {if $theme_settings.font_family == 'PT Sans'}{$_real_font_name = 'PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
+        {if $theme_settings.font_family == 'PT Serif'}{$_real_font_name = 'PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
+        {if $theme_settings.font_family == 'PT Sans Caption'}{$_real_font_name = 'PT+Sans+Caption:ital,wght@0,400;0,700;1,400;1,700&display=swap|PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
+        {if $theme_settings.font_family == 'Roboto'}{$_real_font_name = 'Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
+        {if $theme_settings.font_family == 'Lora'}{$_real_font_name = 'Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
+        {if $theme_settings.font_family == 'Ubuntu'}{$_real_font_name = 'Ubuntu:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
+        {if $theme_settings.font_family == 'Rubik'}{$_real_font_name = 'Rubik:ital,wght@0,300..900;1,300..900&display=swap'}{/if}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family={$_real_font_name}" rel="stylesheet">
     {/if}
 
     <!-- js -->
@@ -78,85 +72,26 @@
 
     <!-- custom colors -->
     <style>
-        html {
-        {if $theme_settings.font_family}
-            --font-family: '{$theme_settings.font_family}', sans-serif;
-        {/if}
-        {if $theme_settings.font_size}
-            --font-size: {$theme_settings.font_size};
-        {/if}
-        {if $theme_settings.color_text}
-            --text-color: {$theme_settings.color_text};
-        {/if}
-        {if $theme_settings.color_hint}
-            --hint-color: {$theme_settings.color_hint};
-        {/if}
-        {if $theme_settings.color_links}
-            --link-color: {$theme_settings.color_links};
-        {/if}
-        {if $theme_settings.color_links_hover}
-            --link-hover-color: {$theme_settings.color_links_hover};
-        {/if}
-        {if $theme_settings.color_links_visited}
-            --link-visited-color: {$theme_settings.color_links_visited};
-        {/if}
-        {if $theme_settings.header_scheme|strstr:'white.'}
-            --header-bg-color:                  #fff;
-            --header-link-color:               var(--gray1);
-            --header-link-hover-color:         var(--black);
-            --header-apps-link-color:          var(--gray3);
-            --header-apps-link-selected-color: var(--black);
-        {/if}
-        {if $theme_settings.header_scheme|strstr:'whiteandgray.'}
-            --header-bg-color: #eee;
-            --header-link-color:               var(--gray1);
-            --header-link-hover-color:         var(--black);
-            --header-apps-link-color:          var(--gray3);
-            --header-apps-link-selected-color: var(--black);
-        {/if}
-        {if $theme_settings.header_customcolor}
-            --header-bg-color: {$theme_settings.header_customcolor};
-        {/if}
-        {if $theme_settings.header_customcolor_links}
-            --header-link-color: {$theme_settings.header_customcolor_links};
-        {/if}
-
-        {if empty($theme_settings.color_custom)}
-            --header-menu-bg-color: {$_scheme_colors[$_color_scheme]};
-            {if $_color_scheme != 'white' && $_color_scheme != 'yellow'}
-                --header-menu-pages-link-color:    var(--white)
+        :root {
+            {if $theme_settings.color_scheme == 'light'}
+                color-scheme: light;
             {/if}
-        {/if}
-
-        {if $theme_settings.color_custom}
-            --header-menu-bg-color: {$theme_settings.color_custom};
-        {/if}
-        {if $theme_settings.color_custom_links}
-            --header-menu-link-color: {$theme_settings.color_custom_links};
-        {/if}
-
+            {if $theme_settings.color_scheme == 'dark'}
+                color-scheme: dark;
+            {/if}
+            --accent-color: {$theme_settings.color_accent};
+            --bg-color-light: {$theme_settings.color_background_light};
+            --bg-color-dark: {$theme_settings.color_background_dark};
+            {if $theme_settings.border_radius}
+                --element-border-radius: {$theme_settings.border_radius};
+            {/if}
+            {if $theme_settings.font_family}
+                --font-family: "{$theme_settings.font_family}", sans-serif;
+            {/if}
+            {if $theme_settings.font_size}
+                --font-size: {$theme_settings.font_size};
+            {/if}
         }
-
-
-
-        {if $theme_settings.header_customcolor_links}
-            header h2 a, header h2 a:hover,
-            header .apps li a, header .apps li a:hover,
-            header .auth li a, header .auth li a:hover,
-            header .auth li a strong, header .auth li a:hover strong,
-            header #globalnav.light .apps li a, header #globalnav.light .apps li a:hover,
-            header #globalnav.light .apps li.selected a,
-            header #globalnav.light .apps li.selected a:hover { color: {$theme_settings.header_customcolor_links} !important; }
-            header #globalnav.light .apps li.selected a { font-weight: bold; }
-            header #globalnav.light h2 a,
-            header #globalnav.light h2 a:hover { color: {$theme_settings.header_customcolor_links} !important; }
-            header .apps li.selected a { background: transparent; }
-        {/if}
-        {if $theme_settings.color_custom_links}
-            header .pages li a, header .pages li a:hover,
-            .color_scheme_white header .pages li a,
-            .color_scheme_white header .pages li a:hover { color: {$theme_settings.color_custom_links} !important; }
-        {/if}
         {if !empty($is_blockpage)}
             .maincontent > .container { margin: 0; max-width: unset; }
         {/if}
@@ -179,11 +114,6 @@
 
     <!-- FOOTER -->
     {include file="footer.section.html" inline}
-
-    {* admin-only slideout sidebar for nice and smooth real time theme customizations *}
-    {* DEPRECATED if $wa->user()->isAdmin()}
-        {include file="admin-sidebar.html" inline}
-    {/if *}
 
     <svg display="none">
         <defs>
@@ -236,5 +166,55 @@
             }
         })();
     </script>
+
+    {if $theme_settings.cookie_show && !waRequest::cookie('cookie_allowed')}
+        <div id="cookie-agreement">
+            <div class="cookie-agreement-content wa-pl-12 wa-pr-12 wa-pt-12 wa-pb-12">
+                <div class="text-gray smaller">
+                    {$theme_settings.cookie_text|default:''}
+                </div>
+                <button class="button blink smallest wa-mt-12" onclick="acceptCookies()">{$theme_settings.cookie_button|default:''}</button>
+            </div>
+        </div>
+        <script>
+            {literal}
+            function setCookie(name, value, days = 365) {
+                const expires = new Date();
+                expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+                document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+            }
+
+            function acceptCookies() {
+                setCookie('cookie_allowed', '1');
+                const popup = document.getElementById('cookie-agreement');
+                popup.style.transition = 'all 0.3s ease';
+                popup.style.opacity = '0';
+                popup.style.transform = 'translateY(1rem)';
+
+                setTimeout(() => popup.remove(), 300);
+            }
+            {/literal}
+        </script>
+    {/if}
+
+    {if $wa->user()->isAdmin()}
+        <script src="{$wa_theme_url}js/theme-settings.js?v{$wa_theme_version}"></script>
+        {include file="theme-settings.html" inline}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // Инициализация редактора темы с возможностью передачи параметров
+                new ThemeEditor({
+                    locale: {
+                        'save_settings_error': '[`Ошибка сохранения настроек`]',
+                        'save_success': '[`Настройки сохранены`]',
+                        'reset_confirm': '[`Сбросить все настройки к значениям по умолчанию?`]',
+                        'reset_success': '[`Настройки сброшены`]',
+                        'maximize_title': '[`Развернуть окно настроек`]',
+                        'restore_title': '[`Настроить тему`]'
+                    }
+                });
+            });
+        </script>
+    {/if}
 </body>
 </html>
