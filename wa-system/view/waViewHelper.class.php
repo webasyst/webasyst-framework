@@ -69,8 +69,6 @@ class waViewHelper
      */
     public function appIconUrl($app_id, $absolute = false)
     {
-        $static_app_url = wa()->getAppStaticUrl($app_id, $absolute);
-
         $app_info = wa()->getAppInfo($app_id);
 
         $icon = '';
@@ -88,13 +86,13 @@ class waViewHelper
         }
 
         $icon = ltrim($icon, '/');
-        $prefix = wa()->getAppStaticUrl($app_id);
+        $prefix = ltrim(wa()->getAppStaticUrl($app_id), '/');
         $prefix_len = strlen($prefix);
-
         if (substr($icon, 0, $prefix_len) === $prefix) {
             $icon = substr($icon, $prefix_len);
         }
 
+        $static_app_url = wa()->getAppStaticUrl($app_id, $absolute);
         return $static_app_url . $icon;
     }
 

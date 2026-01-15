@@ -411,14 +411,88 @@ function _w($msgid1, $msgid2 = null, $n = null, $sprintf = true)
 }
 
 /**
- * Copy of sprintf() with the first (string) argument passed to _wp() beforehand.
+ * Returns a formatted string with support for both positional and named placeholders.
+ * The function processes the format string through _wp() translation before formatting.
+ *
+ * This function operates in two distinct modes:
+ * - **Named placeholders mode**: When the second argument is an associative array,
+ *   replaces named placeholders in the format string with corresponding values from the array.
+ * - **Positional placeholders mode**: When additional arguments are passed (not a single array),
+ *   works like standard sprintf() with positional placeholders.
+ *
+ * Named placeholders in the format string must be enclosed in square brackets, e.g., `[name]`.
+ * Placeholders are replaced with corresponding values from the associative array.
+ * If a placeholder in the format string has no corresponding key in the array, it remains unchanged.
+ *
+ * @param string $format The format string. May contain:
+ *     - For positional mode: Standard sprintf() placeholders (e.g., %s, %d).
+ *     - For named mode: Named placeholders in square brackets (e.g., [name], [count]).
+ *     The format string is first processed by _wp() for translation.
+ * @param array|mixed ...$args Operation depends on argument count and type:
+ *     - If no additional arguments: Returns the translated format string unchanged.
+ *     - If one argument and it's an array: Named placeholder mode.
+ *       Associative array where keys match placeholder names (without brackets)
+ *       and values are replacement values.
+ *     - If one or more arguments (not a single array): Positional placeholder mode.
+ *       Arguments are used in order to replace sprintf() placeholders in the format string.
+ *
+ * @return string Formatted string according to the provided format and arguments.
+ *
  * @throws waException
+ *
+ * @example <pre>
+ * // Named placeholder mode
+ * echo sprintf_wp('Hello [name]! You have [count] messages.', [
+ *     'name' => 'John',
+ *     'count' => 5
+ * ]);
+ * // Output: Hello John! You have 5 messages.
+ *
+ * // Positional placeholder mode (like sprintf)
+ * echo sprintf_wp('Hello %s! You have %d messages.', 'John', 5);
+ * // Output: Hello John! You have 5 messages.
+ *
+ * // Mixed example with HTML
+ * echo sprintf_wp('Click [link_start]here[link_end] for details, [username].', [
+ *     'link_start' => '<a href="/details">',
+ *     'link_end' => '</a>',
+ *     'username' => 'John',
+ * ]);
+ * // Output: Click <a href="/details">here</a> for details, John.
+ * </pre>
+ *
+ * @see _wp() For string translation functionality.
+ * @see sprintf() For positional placeholder formatting rules.
+ * @since 4.0.0   Named placeholder mode was added in v.4.0.0.
  */
 function sprintf_wp()
 {
     $args = func_get_args();
-    array_unshift($args, _wp(array_shift($args), null, null, false));
-    return call_user_func_array('sprintf', $args);
+    $arg_count = count($args);
+
+    $format = _wp(array_shift($args), null, null, false);
+
+    if ($arg_count === 1) {
+        return $format;
+    }
+
+    if ($arg_count === 2 && is_array($args[0])) {
+        $named_args = $args[0];
+
+        if (empty($named_args)) {
+            return $format;
+        }
+
+        $replacements = [];
+        foreach ($named_args as $key => $value) {
+            $replacements["[$key]"] = $value;
+        }
+
+        return strtr($format, $replacements);
+    }
+
+    array_unshift($args, $format);
+    return sprintf(...$args);
 }
 
 /**

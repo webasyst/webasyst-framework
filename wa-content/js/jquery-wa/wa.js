@@ -14,6 +14,8 @@
 
         plugin_options = ( typeof plugin_options === "object" ? plugin_options : {});
 
+        initLoadingIcon();
+
         if (return_instance) { result = getInstance(); } else { init(); }
 
         return result;
@@ -52,6 +54,24 @@
             }
 
             return deferred.promise();
+        }
+
+        function initLoadingIcon() {
+            const $spinner = $('<span style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);"><i class="fas fa-spinner wa-animation-spin"></i></span>');
+
+            const _search = plugin_options.search;
+            plugin_options.search = function () {
+                if ($(this).parent().hasClass('state-with-inner-icon')) {
+                    $(this).after($spinner);
+                }
+                if (typeof _search === 'function') _search.call(this, ...arguments);
+            };
+
+            const _response = plugin_options.response;
+            plugin_options.response = function () {
+                $spinner.remove();
+                if (typeof _response === 'function') _response.call(this, ...arguments);
+            };
         }
     };
 
@@ -3915,22 +3935,29 @@
                 return Math.max(bytes, 0.01).toFixed(2) + ((i >=0)? (' ' + $_(['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i])):'');
             }
         },
+        async copyToClipboard(plain, rich) {
+            if (typeof window.ClipboardItem !== 'undefined') {
+                const clipboard_item = new ClipboardItem({
+                    'text/plain': new Blob([plain], {
+                        type: 'text/plain'
+                    }),
+                    'text/html': new Blob([rich ?? plain], {
+                        type: 'text/html'
+                    }),
+                });
 
-        copyToClipboard(text) {
-            if (navigator.clipboard && window.isSecureContext) {
-                return navigator.clipboard.writeText(text);
+                await navigator.clipboard.write([clipboard_item]);
             } else {
-                const textArea = document.createElement("textarea");
+                const callback = event => {
+                    event.clipboardData.setData('text/plain', plain);
+                    event.clipboardData.setData('text/html', rich ?? plain);
+                    event.preventDefault();
+                };
 
-                textArea.value = text;
-                textArea.style.position = "absolute";
-                textArea.style.opacity = '0';
-
-                document.body.appendChild(textArea);
-                textArea.select();
-                return new Promise((res, rej) => {
+                await new Promise((res, rej) => {
+                    document.addEventListener('copy', callback);
                     document.execCommand('copy') ? res() : rej();
-                    textArea.remove();
+                    document.removeEventListener('copy', callback);
                 });
             }
         },

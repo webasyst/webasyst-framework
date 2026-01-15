@@ -664,13 +664,11 @@ class waAuth implements waiAuth
         // If try logging in by LOGIN
         if ($login_field_id === self::LOGIN_FIELD_LOGIN) {
 
-            // At least one of "log-in" field MUST exist
-            if (!$email_row && !$phone_row) {
-                throw $error;
-            }
-
-            // At least one of "log-in" field MUST NOT BE unconfirmed
-            if ($email_row['status'] == waContactEmailsModel::STATUS_UNCONFIRMED && $phone_row['status'] == waContactDataModel::STATUS_UNCONFIRMED) {
+            // At least one of "log-in" field MUST exist, and
+            // at least one of "log-in" field MUST NOT BE unconfirmed
+            if (   (!$email_row || $email_row['status'] == waContactEmailsModel::STATUS_UNCONFIRMED) 
+                && (!$phone_row || $phone_row['status'] == waContactDataModel::STATUS_UNCONFIRMED)) 
+            {
                 throw $error;
             }
 

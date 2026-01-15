@@ -186,7 +186,7 @@ var WaLoginAbstractForm = ( function($) {
                 $(window).one('wa_recaptcha_loaded wa_captcha_loaded wa_smartcaptcha_loaded', authFormInited);
             }
 
-            if ($wrapper.find('.wa-captcha-field').find('[name="g-recaptcha-response"]').length) {
+            if ($wrapper.find('.wa-captcha-field').find('[name="g-recaptcha-response"],[name="smart-token"]').length) {
                 const observer = new MutationObserver(mutations => {
                     for(let mutation of mutations) {
                         if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
@@ -195,7 +195,7 @@ var WaLoginAbstractForm = ( function($) {
                         }
                     }
                 })
-                observer.observe($wrapper.find('.wa-captcha-field').find('[name="g-recaptcha-response"]')[0], {attributes: true});
+                observer.observe($wrapper.find('.wa-captcha-field').find('[name="g-recaptcha-response"],[name="smart-token"]')[0], {attributes: true});
             }
         } else {
             that.triggerEvent('wa_auth_form_loaded');
@@ -696,7 +696,7 @@ var WaLoginAbstractForm = ( function($) {
         $loading.show();
         $button.attr('disabled', true);
 
-        if (!document.cookie.includes('_csrf=') && !that.captchaInitialized) {
+        if (!that.captchaInitialized) {
             // Если капча еще не инициализирована, откладываем выполнение submit
             that.pendingSubmit = function() {
                 that.submit(options);

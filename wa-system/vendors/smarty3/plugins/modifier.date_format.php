@@ -55,11 +55,11 @@ function smarty_modifier_date_format($string, $format=null, $default_date='', $f
                 $_win_to[] = sprintf('%\' 2d', date('h', $timestamp));
             } 
             $format = str_replace($_win_from, $_win_to, $format);
-        } 
-        return strftime($format, $timestamp);
-    } else {
-        return date($format, $timestamp);
+        }
+        $format = str_replace(['%', 'b'], ['', 'M'], $format);
     }
-} 
+
+    return date($format, $timestamp);
+}
 
 ?>

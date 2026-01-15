@@ -87,7 +87,7 @@ class waCSV
     public function upload($name)
     {
         if (!isset($_FILES[$name]) || $_FILES[$name]['error']) {
-            throw new waException(_ws("Error uploading file"));
+            throw new waException(_ws("File upload error."));
         }
 
         $file_info = explode(".", $_FILES[$name]['name']);
@@ -99,7 +99,7 @@ class waCSV
         if (move_uploaded_file($_FILES[$name]['tmp_name'], $this->getPath($file))) {
             $this->file = $this->getPath($file);
         } else {
-            throw new waException(_ws('Error moving file'));
+            throw new waException(_ws('File moving error.'));
         }
         return $file;
     }
@@ -116,7 +116,7 @@ class waCSV
         if (file_put_contents($this->getPath($file), $content)) {
             $this->file = $this->getPath($file);
         } else {
-            throw new waException(_ws('Error moving file'));
+            throw new waException(_ws('File moving error.'));
         }
         return $file;
     }
@@ -134,11 +134,11 @@ class waCSV
     public function getInfo()
     {
         if (!$this->file || !file_exists($this->file)) {
-            throw new waException(_ws('File does not exist'));
+            throw new waException(_ws('The file does not exist.'));
         }
         $h = fopen($this->file, "r");
         if (!$h) {
-            throw new waException(_ws("Error open file"));
+            throw new waException(_ws("File opening error."));
         }
         // Read the first string
         $string = fgets($h, $this->length);
@@ -248,7 +248,7 @@ class waCSV
         if (!$this->handler) {
             $this->handler = fopen($this->file, "r");
             if (!$this->handler) {
-                throw new waException(_ws("Error open file"));
+                throw new waException(_ws("File opening error."));
             }
             if (!$this->first_line) {
                 $fields = $this->encodeArray(fgetcsv($this->handler, $this->length, $this->delimiter));

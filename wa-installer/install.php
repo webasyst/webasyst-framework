@@ -552,6 +552,13 @@ HTML;
                     // Install from an archive: all apps and themes are inside wa-sources dir
                     //
 
+                    if (function_exists('set_time_limit')) {
+                        $current_max_exec_time = ini_get('max_execution_time');
+                        if ($current_max_exec_time > 0 && $current_max_exec_time < 287) {
+                            @set_time_limit(287); // 5 min is common nginx timeout
+                        }
+                    }
+
                     // Set up installer to run full cycle, starting from archive
                     $installer->setState(['stage' => false]);
 

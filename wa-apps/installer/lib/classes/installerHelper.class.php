@@ -471,6 +471,20 @@ class installerHelper
         return $license;
     }
 
+    /** @since 4.0.0 */
+    public static function getGeoZone()
+    {
+        $installer_zone = SystemConfig::systemOption('zone_jail') ?? 'auto';
+        if (empty($installer_zone) || $installer_zone === 'auto') {
+            wa('installer');
+            $installer_zone = (new waAppSettingsModel())->get('webasyst', waInstallerApps::ENDPOINTS_ZONE_KEY);
+        }
+        if (empty($installer_zone) || $installer_zone === 'auto') {
+            $installer_zone = substr(wa()->getLocale(), 0, 2);
+        }
+        return $installer_zone;
+    }
+
     /**
      * @param $app_id
      * @param $plugin_id

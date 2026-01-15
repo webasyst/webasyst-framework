@@ -57,7 +57,7 @@ class waPluginsActions extends waActions
                 $params['id'] = $plugin_id;
                 $params['namespace'] = $namespace;
                 $params['title_wrapper'] = '%s';
-                $params['description_wrapper'] = '<br><span class="hint">%s</span>';
+                $params['description_wrapper'] = '<p class="hint">%s</p>';
                 $params['control_wrapper'] = '<div class="name">%s</div><div class="value">%s %s</div>';
 
                 $settings_controls = $plugin->getControls($params);

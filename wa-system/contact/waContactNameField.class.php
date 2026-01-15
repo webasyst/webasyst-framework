@@ -62,7 +62,10 @@ class waContactNameField extends waContactStringField
             $mdl = trim(ifset($contact, 'middlename', ''));
             $lst = trim(ifset($contact, 'lastname', ''));
             $cmp = trim(ifset($contact, 'company', ''));
-            $eml = trim($contact->get('email', 'default'));
+            $eml = $contact->get('email', 'default');
+            if (!empty($eml)) {
+                $eml = trim($eml);
+            }
 
             $name = array();
             if ($fst || $fst === '0' || $mdl || $mdl === '0' || $lst || $lst === '0')

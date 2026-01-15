@@ -1,0 +1,61 @@
+{*
+ * see waPayPayment->getSettingsHTML()
+ *}
+<p class="small">
+    [`Выберите и настройте параметры аккаунта в платежной системе, которая будет обрабатывать платеж и отвечать за генерацию QR-кода на оплаты и ссылку на оплату банковской картой.`]
+</p>
+
+<ul class="tabs bordered-bottom" id="js-provider-tabs">
+    <li><a href="javascript:void(0)"></a></li>
+</ul>
+
+<div id="js-form-wrapper">
+    {$fields_html}
+</div>
+
+<script>(function() {
+    //
+    // Initialize ul.tabs to work as 'provider' selector
+    //
+    const $form_wrapper = $('#js-form-wrapper');
+    const $provider_select = $('#wahtmlcontrol_payment_settings_provider');
+    const $ul_tabs = $('#js-provider-tabs');
+
+    $provider_select.closest('.field').hide();
+
+    {if $is_new}
+        // init wizard
+        $('#s-settings-payment-setup').prepend({{include file="./waPaySettingsWizard.inc.html" inline}|json_encode});
+    {/if}
+
+    // Create tabs based on select options
+    const $li_template = $('#js-provider-tabs').children('li').first().detach();
+    $provider_select.find('option').each(function() {
+        const $option = $(this);
+        const $li = $li_template.clone();
+        $li.data('value', $option.attr('value')).children('a').html($option.html());
+        if ($li.data('value') == $provider_select.val()) {
+            $li.addClass('selected');
+        }
+        $ul_tabs.append($li);
+    });
+
+    // Show initially selected tab
+    showProviderTab($ul_tabs.children('.selected').first().data('value'));
+
+    // When user clicks on a tab, show corresponding fields
+    $ul_tabs.on('click', 'li', function() {
+        const $li = $(this);
+        $li.addClass('selected').siblings().removeClass('selected');
+        $provider_select.val($li.data('value'));
+        showProviderTab($li.data('value'));
+    });
+
+    // Validate required fields of a given
+
+    // Helper to show fields that belong to a biven provider
+    function showProviderTab(provider) {
+        $form_wrapper.find('.field-provider-specific').closest('.field').hide();
+        $form_wrapper.find('.provider-'+provider).closest('.field').show();
+    }
+}());</script>

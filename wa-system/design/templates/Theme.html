@@ -1,5 +1,4 @@
 {$_is_trial = $theme.type === waTheme::TRIAL}
-{$is_only_settings = $only_settings|default:false}
 {$has_theme_usage_any_app = $has_theme_usage_any_app || !empty($fallback_has_theme_usage)}
 {$has_theme_usage = $has_theme_usage || !empty($fallback_has_theme_usage)}
 
@@ -65,7 +64,7 @@
                         </span>
                     {/if}
                 </div>
-                <div class="value{if in_array($_setting.control_type, ['select', 'radio', 'checkbox', 'file'])} no-shift{/if}">
+                <div class="value">
 
                     {* SELECT *}
                     {if $_setting.control_type == 'select'}
@@ -81,21 +80,43 @@
                     {* RADIO *}
                     {elseif $_setting.control_type == 'radio'}
                         {foreach $_setting.options as $v => $o}
-                            <label>
+                            <label class="custom-mb-16{if empty($o.description)} custom-mr-16{/if}">
                                 <span class="wa-radio">
                                     <input {if ifset($_setting.value)==$v}checked{/if} type="radio" value="{$v}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" >
                                      <span></span>
                                 </span>
                                 {$o.name}
                                 {if !empty($o.description)}
-                                    <p class="hint">{$o.description}</p>
+                                    <p class="hint custom-mb-12">{$o.description}</p>
                                 {/if}
                             </label>
                         {/foreach}
 
                     {* COLOR *}
-                    {elseif $_setting.control_type == 'color'}
-                        <input class="color small" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
+                    {elseif $_setting.control_type == 'color' || $_setting.control_type == 'color_select'}
+                        {if $_setting.control_type == 'color_select'}
+                            {$_mark_class = ''}
+                            {if strpos($_setting.var, 'light') !== false}
+                                {$_mark_class = ' light-mark'}
+                            {/if}
+                            {if strpos($_setting.var, 'dark') !== false}
+                                {$_mark_class = ' dark-mark'}
+                            {/if}
+                            <ul class="wa-theme-color-select js-theme-color-select custom-m-0 custom-p-16 flexbox wrap space-16 middle{$_mark_class}">
+                                {foreach $_setting.options as $k => $v}
+                                    <li class="custom-m-0{if $_setting.value == $k} selected{/if}" data-value="{$k}" title="{$v|default:$k|escape}" style="--wa-theme-color:{$k};"></li>
+                                {/foreach}
+                                <li class="custom-m-0{if !in_array($_setting.value, array_keys($_setting.options))} selected{/if}" data-value="{$_setting.value}" data-picker>
+                                    <i class="fas fa-eye-dropper"></i>
+                                </li>
+                            </ul>
+                            <div class="color-picker"{if in_array($_setting.value, array_keys($_setting.options))} style="display: none;"{/if}>
+                                <input class="color small" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
+                            </div>
+                        {/if}
+                        {if $_setting.control_type == 'color'}
+                            <input class="color small" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
+                        {/if}
                         {if !empty($_setting.description)}
                             <div class="hint">{$_setting.description}</div>
                         {/if}
@@ -167,9 +188,9 @@
                     {else}
                         <div>
                             {if !$_setting.value || strlen($_setting.value) <= 50}
-                                <input class="flexible small" id="flex-settings-{$_setting_var}" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value|escape}">
+                                <input class="longer flexible small" id="flex-settings-{$_setting_var}" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value|escape}">
                             {else}
-                                <textarea class="flexible small" id="flex-settings-{$_setting_var}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">{$_setting.value|escape}</textarea>
+                                <textarea class="width-80 width-100-mobile flexible small" id="flex-settings-{$_setting_var}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">{$_setting.value|escape}</textarea>
                             {/if}
                         </div>
                         {if !empty($_setting.description)}
@@ -630,22 +651,62 @@
 
         {* Theme navigation *}
         <div class="js-theme-settings-hidden-list" id="wa-theme-settings-hidden-list" style="display: none">
-            {if ($has_theme_usage_any_app || $_is_trial || $has_theme_usage) && !empty($settings.items) && !empty($global_group_divideres)}
+            {if ($has_theme_usage_any_app || $_is_trial || $has_theme_usage)}
+                {if !empty($theme_routes)}
+                    {if count($theme_routes) == 1}
+                        {$theme_route = $theme_routes[0]}
+                    {else}
+                        {foreach $theme_routes as $r}
+                            {if $r._id == $current_route}
+                                {$theme_route = $r}
+                                {break}
+                            {/if}
+                        {/foreach}
+                    {/if}
+                    {if !empty($theme_route)}
+                        <ul class="menu custom-mb-0">
+                            <li>
+                                <a href="#/design/theme={$theme.id|escape}&domain={$theme_route._domain}&route={$theme_route._id}&action=settings" class="js-theme-settings-link">
+                                    <i class="fas fa-cog"></i>
+                                    <span>{waIdna::dec($theme_route._url_title)|default:'[`Settings`]'|escape}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    {/if}
+                {/if}
 
-                <ul class="menu js-theme-settings-list">
-                    <li class="{if !$is_only_settings}selected {/if}bottom-padded hidden">
-                        <a href="javascript:void(0);" data-divider-id="-1">
-                            <span>{$theme.name}</span>
+                <ul class="menu{if !empty($theme_route)} custom-mt-0{/if} custom-mb-0 js-theme-settings-list">
+                    <li class="bottom-padded">
+                        <a href="javascript:void(0)" class="js-theme-info-link">
+                            <i class="fas fa-info-circle"></i>
+                            <span>{sprintf('[s`Theme %s`]', $theme.name|escape)}</span>
                         </a>
                     </li>
-                    {foreach $global_group_divideres as $_divider_id => $_divider_name}
-                        <li>
-                            <a href="javascript:void(0);" data-divider-id="{$_divider_id|escape}">
-                                <span>{strip_tags($_divider_name)}</span>
+                </ul>
+
+                {if empty($settings.items) || empty($global_group_divideres)}
+                    <div class="box align-center js-theme-not-use">
+                        <p class="gray small custom-mt-16">
+                            {sprintf(_ws('Design theme %s does not offer turnkey settings.'), $theme.name|escape)}
+                        </p>
+                    </div>
+                {elseif !empty($settings.items) && !empty($global_group_divideres)}
+                    <ul class="menu js-theme-settings-list">
+                        <li class="selected bottom-padded hidden">
+                            <a href="javascript:void(0);" data-divider-id="-1">
+                                <span>{$theme.name}</span>
                             </a>
                         </li>
-                    {/foreach}
-                </ul>
+                        {foreach $global_group_divideres as $_divider_id => $_divider}
+                            <li>
+                                <a href="javascript:void(0);" data-divider-id="{$_divider_id|escape}">
+                                    <i class="{strip_tags($_divider.icon_class)}"></i>
+                                    <span>{strip_tags($_divider.name)}</span>
+                                </a>
+                            </li>
+                        {/foreach}
+                    </ul>
+                {/if}
             {else}
                 <div class="box align-center js-theme-not-use">
                     <p class="gray small custom-mt-16">
@@ -716,9 +777,25 @@
         if (url_params.action) {
             action = ''
         }
+
         $('.js-theme-info-link')
             .attr('href', '{$design_url}theme={$theme.id|escape}' + action)
-            .off('click.wa_theme_info_link').on('click.wa_theme_info_link', () => sessionStorage.removeItem('wa_design_menu_id'));
+            .off('click.wa_theme_info_link').on('click.wa_theme_info_link', function(e) {
+                e.preventDefault();
+                sessionStorage.removeItem('wa_design_menu_id');
+                const $theme_settings_section = $('.js-theme-settings-section');
+                $theme_settings_section.data('menu-id', -1);
+                const $theme_info_section = $('.js-theme-info-section');
+                const $settings_section = $('.js-settings-list');
+                $settings_section.hide();
+                $theme_info_section.show();
+                $('.bottombar').hide();
+                const href = $(this).attr('href');
+                $.wa.setHash(href.replace(/.*?#/, '#'));
+                if (typeof window.waDesign !== 'undefined' && window.waDesign.waDesignLoad) {
+                    window.waDesign.waDesignLoad(href.replace(/.*?#\//, '').replace(/\/$/, ''));
+                }
+            });
 
         $('.js-tabs-menu.js-design-actions').find('[data-action="theme"] a').attr('href', '#/design/theme={$theme.id|escape}');
 
@@ -732,9 +809,12 @@
             $settings_menu_selected.closest('li').addClass('selected').siblings().removeClass('selected')
             if(menu_id != -1){
                 $theme_info_section.hide();
+                $settings_section.show();
+                $settings_section_selected.addClass('selected').siblings().removeClass('selected')
+            } else {
+                $settings_section.hide();
+                $theme_info_section.show();
             }
-            $settings_section.show();
-            $settings_section_selected.addClass('selected').siblings().removeClass('selected')
         }
 
         if ($theme_settings_list.length) {

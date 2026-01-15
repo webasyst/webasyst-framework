@@ -248,7 +248,8 @@ class waDesignActions extends waActions
             'theme_usages_decoded' => $theme_usages_decoded,
             'route_url'            => $route_url,
             'route_url_decoded'    => $route_url_decoded,
-            'theme_files'          => $theme_files
+            'theme_files'          => $theme_files,
+            'theme_files_tree'     => $this->buildFileTree($theme_files),
         );
 
         if ($theme->parent_theme_id) {
@@ -579,8 +580,13 @@ HTACCESS;
             $this->displayJson(array());
         } else {
             $theme_original = new waTheme($theme_id, true, 'original');
+            $theme_files = $theme->getFiles(true);
+            uasort($theme_files, static function ($a, $b) {
+                return (!empty($a['modified'])) <=> (!empty($b['modified']));
+            });
             $data = array(
                 'theme'                  => $theme,
+                'theme_files'            => $theme_files,
                 'theme_original_version' => $theme_original->version,
                 'theme_problem_files'    => $theme->problemFiles(),
             );
@@ -820,7 +826,8 @@ HTACCESS;
             if (!empty($settings['items'])) {
                 foreach ($settings['items'] as $index => $setting) {
                     if ($setting['control_type'] == 'group_divider' && $setting['level'] == 1 && !empty($setting['items'])) {
-                        $global_group_divideres[$index] = $setting['name'];
+                        $global_group_divideres[$index]['name'] = $setting['name'];
+                        $global_group_divideres[$index]['icon_class'] = $setting['icon_class'] ?? 'fas fa-sliders-h';
                     }
                 }
             }
@@ -914,7 +921,6 @@ HTACCESS;
                 $theme_parent_warning_requirements = $current_theme->parent_theme->getWarningRequirements();
             }
 
-            $only_settings = waRequest::get('onlySettings');
             $domains = wa()->getRouting()->getDomains();
             $apps = wa()->getApps();
 
@@ -1007,8 +1013,8 @@ HTACCESS;
                 'route_url'                           => $route_url,
                 'apps'                                => $apps,
                 'need_show_review_widget'             => $this->needShowReviewWidget($theme_id),
-                'only_settings'                       => $only_settings,
                 'current_domain'                      => $_d,
+                'current_route'                       => waRequest::get('route'),
                 'settlements_by_domain'               => $settlements_by_domain,
                 'has_theme_usage'                     => $has_theme_usage,
             ]);
@@ -1316,6 +1322,7 @@ HTACCESS;
                 'group'        => '',
                 'level'        => 1,
                 'name'         => _ws('General settings'),
+                'icon'         => 'fas fa-sliders-h',
             ));
         }
 
@@ -1890,5 +1897,89 @@ HTACCESS;
     private function needShowReviewWidget($theme_id)
     {
         return wa()->appExists('installer') && $theme_id != 'default';
+    }
+
+    /**
+     * Преобразует плоский массив файлов в древовидную структуру
+     *
+     * @param array $files Плоский массив файлов
+     * @return array Древовидная структура
+     */
+    protected function buildFileTree(array $files): array
+    {
+        $tree = [];
+
+        foreach ($files as $file_path => $file_data) {
+            $parts = explode('/', $file_path);
+            $current = &$tree;
+
+            // Проходим по всем частям пути
+            foreach ($parts as $i => $iValue) {
+                $part = $iValue;
+                $is_last = ($i === count($parts) - 1);
+
+                if ($is_last) {
+                    // Это файл
+                    $current[$part] = array_merge($file_data, [
+                        'type' => 'file',
+                        'path' => $file_path
+                    ]);
+                } else {
+                    // Это директория
+                    if (!isset($current[$part])) {
+                        $current[$part] = [
+                            'type' => 'dir',
+                            'children' => []
+                        ];
+                    } elseif (!isset($current[$part]['children'])) {
+                        // Если элемент уже существует как файл, преобразуем его в директорию
+                        $existing = $current[$part];
+                        $current[$part] = [
+                            'type' => 'dir',
+                            'children' => []
+                        ];
+                        // Если существующий элемент был файлом, добавляем его обратно
+                        if (isset($existing['type']) && $existing['type'] === 'file') {
+                            $current[$part]['children'][$part] = $existing;
+                        }
+                    }
+                    $current = &$current[$part]['children'];
+                }
+            }
+            unset($current);
+        }
+
+        // Сортируем дерево: сначала директории, потом файлы
+        return $this->sortFileTree($tree);
+    }
+
+    /**
+     * Сортирует дерево файлов: сначала директории, потом файлы
+     *
+     * @param array $tree
+     * @return array
+     */
+    protected function sortFileTree(array $tree): array
+    {
+        $dirs = [];
+        $files = [];
+
+        foreach ($tree as $key => $value) {
+            if (isset($value['type']) && $value['type'] === 'dir') {
+                $dirs[$key] = $value;
+                // Рекурсивно сортируем дочерние элементы
+                if (isset($value['children'])) {
+                    $dirs[$key]['children'] = $this->sortFileTree($value['children']);
+                }
+            } else {
+                $files[$key] = $value;
+            }
+        }
+
+        // Сортируем директории и файлы по имени
+        ksort($dirs);
+        ksort($files);
+
+        return array_merge($dirs, $files);
     }
 }

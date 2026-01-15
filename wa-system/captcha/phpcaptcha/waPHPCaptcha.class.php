@@ -130,7 +130,7 @@ class waPHPCaptcha extends waAbstractCaptcha
         }
 
         $array_mix = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
-        srand ((float)microtime()*1000000);
+        srand((int)((float)microtime()*1000000));
         shuffle ($array_mix);
         return implode("", $array_mix);
     }

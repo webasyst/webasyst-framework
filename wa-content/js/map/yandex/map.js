@@ -143,11 +143,13 @@ window.waYandexMap = ( function($) {
             options = that.options;
 
         ymaps.ready(function () {
-            new ymaps.Map($map.attr('id'), {
+            var geo_point = new ymaps.Placemark(that.center);
+            var map = new ymaps.Map($map.attr('id'), {
                 center: that.center,
                 zoom: options.zoom || 10,
                 controls: ['smallMapDefaultSet']
             });
+            map.geoObjects.add(geo_point);
         });
     };
 

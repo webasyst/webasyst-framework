@@ -266,11 +266,15 @@ class waWebasystIDUrlsProvider
 
     protected function getEndpointsOfType($type)
     {
+        $config = $this->config->getEndpoints();
         $endpoints = [];
-        foreach ($this->config->getEndpoints() as $endpoint) {
+        foreach ($config as $endpoint) {
             if (!empty($endpoint[$type])) {
                 $endpoints[] = $endpoint[$type];
             }
+        }
+        if (empty($endpoints) && !empty($config[$type])) {
+            $endpoints[] = $config[$type];
         }
         return $endpoints;
     }

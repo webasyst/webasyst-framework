@@ -25,12 +25,12 @@ abstract class waSystemPlugin
      * See $this->getSettings().
      * @var array
      */
-    private $settings = null;
+    protected $settings = null;
     /**
      * Cache for settings.php
      * @var array
      */
-    private $config;
+    protected $config;
     /**
      * Path to plugin directory (no trailing slash).
      * @var string
@@ -159,6 +159,17 @@ abstract class waSystemPlugin
     public static function enumerate($options = array(), $type = null)
     {
         $plugins = array();
+        if ($type === waPayment::PLUGIN_TYPE) {
+            $list_wa_pay = true;
+            try {
+                wa('installer');
+                $list_wa_pay = installerHelper::getGeoZone() === 'ru';
+            } catch (Throwable $e) {
+            }
+            if ($list_wa_pay) {
+                $plugins['pay'] = self::info('pay', $options, $type);
+            }
+        }
         foreach (waFiles::listdir(self::getPath($type)) as $id) {
             $info = self::info($id, $options, $type);
             if ($info) {
@@ -205,6 +216,10 @@ abstract class waSystemPlugin
      */
     public static function info($id, $options = array(), $type = null)
     {
+        if ($type === waPayment::PLUGIN_TYPE && $id == 'pay') {
+            return waPayPayment::waPayPluginInfo();
+        }
+
         $base_path = self::getPath($type, $id);
         $config_path = $base_path.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'plugin.php';
 
@@ -425,7 +440,7 @@ abstract class waSystemPlugin
      */
     public static function factory($id, $key = null, $type = null)
     {
-        $id = strtolower($id);
+        $id = strtolower((string)$id);
         $base_path = self::getPath($type, $id);
         if (!$base_path) {
             throw new waException(sprintf('Invalid module ID %s', $id));
@@ -435,6 +450,9 @@ abstract class waSystemPlugin
             require_once($path);
         }
         $class = $id.ucfirst($type);
+        if (!class_exists($class) && $id == 'pay' && $type === waPayment::PLUGIN_TYPE) {
+            $class = 'waPayPayment';
+        }
 
         if (class_exists($class)) {
             $plugin = new $class($key);
@@ -486,7 +504,7 @@ abstract class waSystemPlugin
         $default = array(
             'instance'            => &$this,
             'title_wrapper'       => '%s',
-            'description_wrapper' => '<br><span class="hint">%s</span>',
+            'description_wrapper' => '<p class="hint">%s</p>',
             'translate'           => array(&$this, '_w'),
             'control_wrapper'     => '
 <div class="field">
@@ -544,7 +562,7 @@ abstract class waSystemPlugin
         return implode("\n", $controls);
     }
 
-    private function config()
+    protected function config()
     {
         if ($this->config === null) {
             if ($this->path) {
@@ -575,7 +593,11 @@ abstract class waSystemPlugin
     }
 
     /**
-     * @param array $settings
+     * Called by app when user saves plugin settings. Plugin is expected to post-process and
+     * save its settings either via $this->getAdapter()->setSettings($this->id, $this->key, $name, $value)
+     * or plugin's own storage (e.g. a DB table).
+     * 
+     * @param array $settings   form fields rendered by $this->getSettingsHTML()
      * @return array
      * @throws waException
      */

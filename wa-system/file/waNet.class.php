@@ -177,6 +177,7 @@ class waNet
      */
     public function query($url, $content = array(), $method = self::METHOD_GET, $callback = null)
     {
+        $method = strtoupper($method);
         $transport = $this->getTransport($url);
 
         $this->buildRequest($url, $content, $method);
@@ -459,11 +460,11 @@ class waNet
                 return $this->response_header[$header];
             }
 
-            $header_alias = $header = str_replace('-', '_', $header);
+            $header_alias = str_replace('-', '_', $header);
 
             foreach ($this->response_header as $field => $value) {
                 // Ignore register of headers according to RFC
-                if (strcasecmp($field, $header) === 0 || strcasecmp($header_alias, $header) === 0) {
+                if (strcasecmp($field, $header) === 0 || strcasecmp($field, $header_alias) === 0) {
                     return $value;
                 }
             }

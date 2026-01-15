@@ -39,6 +39,11 @@ class installerServicesApi extends waWebasystIDApi
         return self::$is_connected;
     }
 
+    public function unsetIsConnected()
+    {
+        self::$is_connected = null;
+    }
+
     public function isBrokenConnection()
     {
         if ($this->isConnected()) return false;
@@ -230,15 +235,23 @@ class installerServicesApi extends waWebasystIDApi
         ], waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON]);
     }
 
-    public function schedule($cron_expression, 
-        $action, 
-        $app_id = null, 
+    public function schedule($cron_expression,
+        $action,
+        $app_id = null,
         $get_params = [],
-        $method = waNet::METHOD_GET, 
-        $timeout = null, 
-        $request_format = null, 
+        $method = waNet::METHOD_GET,
+        $timeout = null,
+        $request_format = null,
         $request_body_data = null
     ) {
+        $root_url = wa()->getRootUrl(true);
+        $host = parse_url($root_url, PHP_URL_HOST);
+        $host_parts = explode('.', $host);
+        $tld = end($host_parts);
+        if (in_array($tld, ['localhost', 'local', 'localdomain', 'loc', 'test']) || $host === '127.0.0.1') {
+            throw new waException(_ws('The Webasyst CRON service is not available on local hosts.'), 404);
+        }
+
         $app_id = ifempty($app_id, wa()->getApp());
         $query_string = http_build_query($get_params);
         if (!empty($query_string)) {
@@ -246,7 +259,7 @@ class installerServicesApi extends waWebasystIDApi
         }
         $data =  [
             'cron_expression' => $cron_expression,
-            'url' => wa()->getRootUrl(true) . 'api.php/cron/' . $app_id . '/' . $action . $query_string,
+            'url' => $root_url . 'api.php/cron/' . $app_id . '/' . $action . $query_string,
             'app_id' => $app_id,
             'action' => $action,
             'method' => $method,
@@ -266,13 +279,14 @@ class installerServicesApi extends waWebasystIDApi
                     $data['request_content_type'] = 'application/x-www-form-urlencoded';
                     $data['request_body'] = http_build_query($request_body_data);
                     break;
-            }            
+            }
         }
 
         $api_result = $this->serviceCall(self::CRON_SERVICE, $data, waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON], 'jobs');
         if (empty($api_result['status']) || $api_result['status'] >= 300) {
+            $this->logError($data);
             $this->logError($api_result);
-            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst CRON API error.')), $api_result['status']);
+            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst CRON API error.')), ifempty($api_result, 'status', 500));
         } else {
             return ifset($api_result, 'response', null);
         }
@@ -284,9 +298,22 @@ class installerServicesApi extends waWebasystIDApi
         $api_result = $this->serviceCall(self::CRON_SERVICE, [], waNet::METHOD_GET, [], $path);
         if (empty($api_result['status']) || $api_result['status'] >= 300) {
             $this->logError($api_result);
-            throw new waException(_w('Webasyst CRON API error.'));
+            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst CRON API error.')), ifempty($api_result, 'status', 500));
         } else {
             return ifset($api_result, 'response', []);
+        }
+    }
+
+    public function deleteJob($action, $app_id = null)
+    {
+        $app_id = ifempty($app_id, wa()->getApp());
+        $path = 'jobs/app/' . $app_id . '/' . $action;
+        $api_result = $this->serviceCall(self::CRON_SERVICE, [], waNet::METHOD_DELETE, [], $path);
+        if (empty($api_result['status']) || $api_result['status'] >= 300) {
+            $this->logError($api_result);
+            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst CRON API error.')), ifempty($api_result, 'status', 500));
+        } else {
+            return ifset($api_result, 'response', null);
         }
     }
 
@@ -385,6 +412,11 @@ class installerServicesApi extends waWebasystIDApi
         switch ($service) {
             case 'AI':
                 return ['timeout' => 30];
+            case 'PAY':
+            case 'PAY_SETTINGS':
+                return [
+                    'request_format' => waNet::FORMAT_JSON,
+                ];
         }
         return [];
     }
