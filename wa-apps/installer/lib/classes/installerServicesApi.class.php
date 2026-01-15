@@ -39,6 +39,11 @@ class installerServicesApi extends waWebasystIDApi
         return self::$is_connected;
     }
 
+    public function unsetIsConnected()
+    {
+        self::$is_connected = null;
+    }
+
     public function isBrokenConnection()
     {
         if ($this->isConnected()) return false;
@@ -230,13 +235,13 @@ class installerServicesApi extends waWebasystIDApi
         ], waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON]);
     }
 
-    public function schedule($cron_expression, 
-        $action, 
-        $app_id = null, 
+    public function schedule($cron_expression,
+        $action,
+        $app_id = null,
         $get_params = [],
-        $method = waNet::METHOD_GET, 
-        $timeout = null, 
-        $request_format = null, 
+        $method = waNet::METHOD_GET,
+        $timeout = null,
+        $request_format = null,
         $request_body_data = null
     ) {
         $root_url = wa()->getRootUrl(true);
@@ -244,7 +249,7 @@ class installerServicesApi extends waWebasystIDApi
         $host_parts = explode('.', $host);
         $tld = end($host_parts);
         if (in_array($tld, ['localhost', 'local', 'localdomain', 'loc', 'test']) || $host === '127.0.0.1') {
-            throw new waException(_ws('Webasyst CRON service is not available on localhost'), 404);
+            throw new waException(_ws('The Webasyst CRON service is not available on local hosts.'), 404);
         }
 
         $app_id = ifempty($app_id, wa()->getApp());
@@ -274,7 +279,7 @@ class installerServicesApi extends waWebasystIDApi
                     $data['request_content_type'] = 'application/x-www-form-urlencoded';
                     $data['request_body'] = http_build_query($request_body_data);
                     break;
-            }            
+            }
         }
 
         $api_result = $this->serviceCall(self::CRON_SERVICE, $data, waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON], 'jobs');

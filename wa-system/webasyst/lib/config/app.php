@@ -3,7 +3,7 @@
 return array(
     'name'         => 'Webasyst',
     'prefix'       => 'webasyst',
-    'version'      => '4.0.0', // developer preview
+    'version'      => '4.0.0',
     'critical'     => '4.0.0',
     'vendor'       => 'webasyst',
     'csrf'         => true,

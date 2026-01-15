@@ -186,14 +186,14 @@ class installerUpdateExecuteController extends waJsonController
                     }
                     $this->response = [
                         'nothing_to_update' => true,
-                        'error' => _w('Не удалось получить информацию о ходе процесса. Перезапустите, пожалуйста, процесс установки.'),
+                        'error' => _w('Failed to get information about the process progress. Please restart the installation.'),
                         'redirect' => wa()->getUrl('installer').'updates/',
                     ];
                 }
             } else {
                 $this->response = [
                     'nothing_to_update' => true,
-                    'error' => _w('Ошибка обновления. Перезапустите, пожалуйста, процесс установки.'),
+                    'error' => _w('Update error. Please restart the installation.'),
                     'redirect' => wa()->getUrl('installer').'updates/',
                 ];
             }

@@ -63,28 +63,40 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'shop_id' => [
                     'value'        => '',
                     'title'        => 'Идентификатор магазина',
-                    'description'  => '',
+                    'description'  => 'Выдается ЮКассой после подключения.',
                     'control_type' => waHtmlControl::INPUT,
                     'class'        => ['field-provider-specific', 'provider-yookassa', 'required'],
                 ],
                 'shop_password' => [
                     'value'        => '',
                     'title'        => 'Секретный ключ',
-                    'description'  => '',
                     'control_type' => waHtmlControl::INPUT,
                     'class'        => ['field-provider-specific', 'provider-yookassa', 'required'],
+                    'description'  => <<<HTML
+<span class="js-yandexkassa-registration-link" style="background-color: #e3ffc8; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
+Подключаясь к ЮКассе <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8%</b> на 3&nbsp;месяца.
+</span>
+<span class="js-yandexkassa-registration-link" style="font-weight: normal; font-size: 14px;color: black;">
+Чтобы получить shopID и ключ, <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">отправьте заявку на подключение</a>.
+</span>
+<br><br>
+HTML
                 ],
                 'receipt' => [
                     'value'        => '',
                     'title'        => 'Формировать чек оплаты',
-                    'description'  => '',
+                    'description'  => 'Если включена фискализация, то клиенты смогут использовать этот способ оплаты только в следующих случаях:'
+            .'<br>'
+            .'— к элементам заказа и стоимости доставки не применяются налоги'
+            .'<br>'
+            .'— налог составляет 0%, 5%, 7%, 10%, 20% либо 22% и <em>включён</em> в стоимость элементов заказа и стоимость доставки',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-yookassa'],
                 ],
                 'payment_subject_type_product' => [
                     'value'        => 'commodity',
                     'title'        => 'Предмет расчёта в чеках для товаров',
-                    'description'  => '',
+                    'description'  => 'Категория ваших товаров в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
                         return ['value' => $value, 'title' => $value];
@@ -94,7 +106,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_subject_type_service' => [
                     'value'        => 'service',
                     'title'        => 'Предмет расчёта в чеках для услуг',
-                    'description'  => '',
+                    'description'  => 'Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
                         return ['value' => $value, 'title' => $value];
@@ -104,7 +116,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_subject_type_shipping' => [
                     'value'        => 'service',
                     'title'        => 'Предмет расчёта в чеках для доставки',
-                    'description'  => '',
+                    'description'  => 'Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
                         return ['value' => $value, 'title' => $value];
@@ -114,7 +126,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_method_type' => [
                     'value'        => 'full_payment',
                     'title'        => 'Признак способа расчета в чеках',
-                    'description'  => '',
+                    'description'  => 'Категория способа оплаты всех позиций в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
                         return ['value' => $value, 'title' => $value];
@@ -124,18 +136,21 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'taxes' => [
                     'value'        => 'no',
                     'title'        => 'Передача ставок НДС',
-                    'description'  => '',
+                    'description'  => 'Если ваша организация работает по ОСН, выберите вариант «Передавать ставки НДС по каждой позиции».<br>
+Ставка НДС может быть равна 0%, 5%, 7%, 10%, 20% или 22%. В настройках налогов в приложении выберите, чтобы НДС был включён в цену товара.<br>
+Если вы работаете по другой системе налогообложения, выберите «НДС не облагается».',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
-                        ['value' => 'no', 'title' => _ws('НДС не облагается')],
-                        ['value' => 'map', 'title' => _ws('Передавать ставки НДС по каждой позиции')],
+                        ['value' => 'no', 'title' => 'НДС не облагается'],
+                        ['value' => 'map', 'title' => 'Передавать ставки НДС по каждой позиции'],
                     ],
                     'class'        => ['field-provider-specific', 'provider-yookassa'],
                 ],
                 'tax_system_code' => [
                     'value'        => '0',
                     'title'        => 'Код системы налогообложения',
-                    'description'  => '',
+                    'description'  => 'Параметр <code>taxSystem</code>. Выберите нужное значение, только если вы используете несколько систем налогообложения.
+В остальных случаях оставьте вариант «Не передавать».',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => '0', 'title' => 'Не передавать'],
@@ -151,7 +166,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'merchant_currency' => [
                     'value'        => 'RUB',
                     'title'        => 'Валюта',
-                    'description'  => '',
+                    'description'  => 'Выберите валюту, отличную от российского рубля, чтобы принимать платежи в этой валюте.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => 'RUB', 'title' => 'RUB'],
@@ -175,21 +190,25 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'terminal_key' => [
                     'value'        => '',
                     'title'        => 'Terminal ID',
-                    'description'  => '',
+                    'description'  => 'Выдается Т-Кассой после подключения.',
                     'control_type' => waHtmlControl::INPUT,
                     'class'        => ['field-provider-specific', 'provider-tbank', 'required'],
                 ],
                 'terminal_password' => [
                     'value'        => '',
                     'title'        => 'Пароль',
-                    'description'  => '',
                     'control_type' => waHtmlControl::INPUT,
                     'class'        => ['field-provider-specific', 'provider-tbank', 'required'],
+                    'description'  => <<<HTML
+<span class="js-tkassa-registration-link" style="background-color: #e3ffc8; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
+Подключайтесь к Т-Кассе <b><a href="https://www.tbank.ru/kassa/?utm_source=partners_sme&utm_medium=prt.utl&utm_campaign=business.int_acquiring.5-3AKNBMR5&partnerId=5-3AKNBMR5&agentId=1-5UKK6AD&agentSsoId=716fa180-4245-46d4-bff0-eb2926d52c32" target="_blank" style="color: #09f;">через Webasyst по этой ссылке</a> и получите ставку 2,7% с дальнейшим понижением</b>. Данные для заполнения Terminal ID и пароля будут выданы сразу после подключения.
+</span>
+HTML
                 ],
                 'currency_id' => [
                     'value'        => 'RUB',
                     'title'        => 'Валюта',
-                    'description'  => '',
+                    'description'  => 'Валюта, в которой будут выполняться платежи',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => 'RUB', 'title' => 'RUB'],
@@ -199,14 +218,18 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'two_steps' => [
                     'value'        => '',
                     'title'        => 'Использовать двухстадийную оплату',
-                    'description'  => '',
+                    'description'  => 'Вариант обработки платежей, выбранный при заключении договора с Т-Кассой.<br>Двухстадийную схему подключения можно использовать только с поддерживаемым приложением, например, Shop-Script версии не ниже 8.6.',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-tbank'],
                 ],
                 'check_data_tax' => [
                     'value'        => '',
                     'title'        => 'Формировать чек оплаты',
-                    'description'  => '',
+                    'description'  => 'Если включена интеграция с онлайн-кассами, то клиенты смогут использовать этот способ оплаты только в следующих случаях:'
+            .'<br>'
+            .'— к элементам заказа и стоимости доставки не применяются налоги;'
+            .'<br>'
+            .'— налог составляет 0%, 5%, 7%, 10%, 20% либо 22% и <em>включен</em> в стоимость позиций заказа и стоимость доставки.',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-tbank'],
                 ],
@@ -228,7 +251,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_object_type_product' => [
                     'value'        => 'commodity',
                     'title'        => 'Предмет расчёта в чеках для товаров',
-                    'description'  => '',
+                    'description'  => 'Категория ваших товаров в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
                         return ['value' => $value, 'title' => $value];
@@ -238,7 +261,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_object_type_service' => [
                     'value'        => 'service',
                     'title'        => 'Предмет расчёта в чеках для услуг',
-                    'description'  => '',
+                    'description'  => 'Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
                         return ['value' => $value, 'title' => $value];
@@ -248,7 +271,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_object_type_shipping' => [
                     'value'        => 'service',
                     'title'        => 'Предмет расчёта в чеках для доставки',
-                    'description'  => '',
+                    'description'  => 'Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
                         return ['value' => $value, 'title' => $value];
@@ -258,7 +281,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_method_type_tbank' => [
                     'value'        => 'full_payment',
                     'title'        => 'Признак способа расчета в чеках',
-                    'description'  => '',
+                    'description'  => 'Категория способа оплаты всех позиций в чеке — для передачи в налоговую инспекцию',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
                         return ['value' => $value, 'title' => $value];
@@ -268,7 +291,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_ffd' => [
                     'value'        => '1.2',
                     'title'        => 'Версия ФФД',
-                    'description'  => '',
+                    'description'  => 'Текущая выбранная версия должна совпадать с версией в настройках ОФД.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => '1.05', 'title' => '1.05'],
@@ -279,7 +302,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'payment_language' => [
                     'value'        => 'ru',
                     'title'        => 'Язык платежной формы',
-                    'description'  => '',
+                    'description'  => 'Выберите язык платежной формы для своих клиентов.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => 'ru', 'title' => 'Русский'],
@@ -289,8 +312,8 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 ],
                 'testmode' => [
                     'value'        => '',
-                    'title'        => 'Флаг тестового режима',
-                    'description'  => '',
+                    'title'        => 'Тестовый режим',
+                    'description'  => 'Только для тестирования по старой схеме через платежный шлюз <em>https://rest-api-test.tinkoff.ru/rest/</em>.',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-tbank'],
                 ],
@@ -339,8 +362,18 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
 
     public function getGuide($params = array())
     {
-        // !!! TODO remove
-        return '<pre>'."\nРезультат последней операции сохранения на сервер Webasyst Pay:\n".wa_dump_helper(ref($this->getSettings('last_save_response'))).'</pre>';
+        if (SystemConfig::isDebug()) {
+            return <<<HTML
+                <span class="small" id="js-toggle-debug-info"><i class="fas fa-caret-right"></i><i class="fas fa-caret-down hidden"></i> Webasyst Pay communication debug</span>
+                <script>(function(){
+                    const header = $('#js-toggle-debug-info').click(function() {
+                        header.siblings('pre').toggleClass('hidden');
+                        header.find('.fa-caret-down,.fa-caret-right').toggleClass('hidden');
+                    });
+                }());</script>
+HTML
+            .'<pre class="hidden">'.wa_dump_helper(ref($this->getSettings('last_save_response'))).'</pre>';
+        }
     }
 
     /**
@@ -444,7 +477,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
         }
 
         return [[
-            'name' => _ws('Оплатить картой'),
+            'name' => 'Оплатить картой',
             'description' => 'МИР, Visa, MasterCard, SberPay, T-Pay, карты российских банков',
             //'logo' => ifset($opt, 'logo', $m['logo']),
             'payment_form_data' => [],
@@ -464,7 +497,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
             //} else if ($error == 'already_in_progress') {
             //} else if ($error == 'already_refunded') {
             }
-            return _ws('Состояние платежа изменилось — обновите страницу.');
+            return 'Состояние платежа изменилось — обновите страницу.';
         }
 
         $provider = $this->getSettings('provider');
@@ -484,7 +517,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
             if ($auto_submit) {
                 return '<script>window.location = '.json_encode($payment_url).';</script>';
             } else {
-                $button_text = _ws("Оплатить заказ");
+                $button_text = 'Оплатить заказ';
                 return <<<EOF
                     <form action="{$payment_url}" method="get" target="_top">
                         <input type="submit" value="{$button_text}" />
@@ -493,7 +526,7 @@ EOF;
             }
         }
 
-        return ifset($response, 'response', 'text', _ws('Способ оплаты Webasyst Pay не настроен.'));
+        return ifset($response, 'response', 'text', 'Способ оплаты Webasyst Pay не настроен.');
     }
 
     public function image($order_data)
@@ -504,8 +537,8 @@ EOF;
         $payment_url = ifset($response, 'response', 'qr_image', null);
         if ($payment_url) {
             $result = [
-                'name' => _ws('СБП'),
-                'description' => _ws('Отсканируйте QR-код в приложении своего банка для быстрой оплаты'),
+                'name' => 'СБП',
+                'description' => 'Отсканируйте QR-код в приложении своего банка для быстрой оплаты.',
                 'image_data_url' => $payment_url,
             ];
             $payload = ifset($response, 'response', 'qr_payload', null);
@@ -517,7 +550,7 @@ EOF;
         }
 
         $error = ifempty($response, 'response', 'error_description', ifset($response, 'response', 'error', null));
-        $error = ifempty($error, _ws('Способ оплаты Webasyst Pay не настроен.'));
+        $error = ifempty($error, 'Способ оплаты Webasyst Pay не настроен.');
         throw new waException($error);
     }
 
@@ -531,13 +564,13 @@ EOF;
         $response = $this->apiQuery('PAY', 'refund', $request_data, waNet::METHOD_POST);
         if ($response['status'] != 204 && $response['status'] != 200) {
             self::log($this->id, [
-                _ws('Ошибка при попытке выполнить возврат через API Webasyst Pay'),
+                'Ошибка при попытке выполнить возврат через API Webasyst Pay.',
                 'method' => __METHOD__,
                 'request' => $request_data,
                 'response' => $response,
             ]);
             $error = ifempty($response, 'response', 'error_description', ifset($response, 'response', 'error', null));
-            $error = ifempty($error, _ws('Ошибка при попытке выполнить возврат через API Webasyst Pay'));
+            $error = ifempty($error, 'Ошибка при попытке выполнить возврат через API Webasyst Pay.');
             return [
                 'result'      => -1,
                 'data'        => $response,
@@ -594,6 +627,15 @@ EOF;
             'currency_id' => $order_data['currency'],
             'description' => $order_data['description'],
         ];
+
+        $sales_channel = ifset($order_data, 'params', 'sales_channel', null);
+        if ($this->app_id === 'shop' && $sales_channel) {
+            [$channel_type, $channel_id] = explode(':', $sales_channel, 2) + ['', null];
+            $request_data['app_platform'] = $channel_type;
+            if ($channel_id && wa_is_int($channel_id)) {
+                $request_data['app_channel_id'] = 'shop-'.$channel_id;
+            }
+        }
 
         try {
             if (!empty($order_data['customer_contact_id'])) {

@@ -325,6 +325,7 @@ class waHtmlControl
      * @uses waHtmlControl::getHelpControl()
      * @uses waHtmlControl::getContactControl()
      * @uses waHtmlControl::getContactfieldControl()
+     * @uses waHtmlControl::getColorpickerControl()
      * @uses waHtmlControl::getCustomControl()
      * @param string $function_name
      * @param mixed $args
@@ -1524,7 +1525,7 @@ LI;
 
                 wrapper.find(".js-color-select").on('click', 'li', function() {
                     const li = $(this);
-                    const wrapper = li.closest('.value');
+                    const wrapper = li.closest('.wa-colorpicker').parent();
                     const value = li.data('value');
                     const colorpicker_input = wrapper.find('.wa-colorpicker-input');
 

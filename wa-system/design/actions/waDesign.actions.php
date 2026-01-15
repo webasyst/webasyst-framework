@@ -580,8 +580,13 @@ HTACCESS;
             $this->displayJson(array());
         } else {
             $theme_original = new waTheme($theme_id, true, 'original');
+            $theme_files = $theme->getFiles(true);
+            uasort($theme_files, static function ($a, $b) {
+                return (!empty($a['modified'])) <=> (!empty($b['modified']));
+            });
             $data = array(
                 'theme'                  => $theme,
+                'theme_files'            => $theme_files,
                 'theme_original_version' => $theme_original->version,
                 'theme_problem_files'    => $theme->problemFiles(),
             );

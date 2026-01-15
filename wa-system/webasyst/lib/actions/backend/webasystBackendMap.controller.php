@@ -1,5 +1,5 @@
 <?php
-
+/** @since 4.0.0 */
 class webasystBackendMapController extends waJsonController
 {
     private $adapter;
@@ -34,14 +34,14 @@ class webasystBackendMapController extends waJsonController
         switch ($method) {
             case 'address':
                 if (empty($address)) {
-                    $this->setError(_w('Empty address'));
+                    $this->setError(_w('Empty address.'));
                     return null;
                 }
                 $this->getMapByAddress($address);
                 break;
             case 'geocode':
                 if (empty($address)) {
-                    $this->setError(_w('Empty address'));
+                    $this->setError(_w('Empty address.'));
                     return null;
                 }
                 $this->getGeocodeByAddress($address);
@@ -56,7 +56,7 @@ class webasystBackendMapController extends waJsonController
         try {
             $this->response['geocode'] = wa()->getMap($this->adapter)->geocode($address);
         } catch (Exception $e) {
-            $this->setError(_w('Не удалось найти координаты'));
+            $this->setError(_ws('Failed to get the coordinates.'));
         }
     }
 
@@ -66,7 +66,7 @@ class webasystBackendMapController extends waJsonController
             $this->getGeocodeByAddress($address);
             $this->response['map_html'] = wa()->getMap($this->adapter)->getHTML($address, $this->map_options);
         } catch (Exception $e) {
-            $this->setError(_w('Не удалось найти адрес'));
+            $this->setError(_w('Failed to get the address.'));
         }
     }
 }

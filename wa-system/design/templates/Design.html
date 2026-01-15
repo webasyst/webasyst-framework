@@ -614,7 +614,7 @@
                 if (!searchQuery) {
                     // Если поиск пустой, показываем все элементы и сбрасываем раскрытие
                     $fileList.find('li').show();
-                    $fileList.find('.directory-toggle').each(function() {
+                    $fileList.find('.js-directory-toggle').each(function() {
                         const $toggle = $(this);
                         const $submenu = $toggle.siblings('ul.menu');
                         if ($toggle.data('expanded') === true) {
@@ -630,7 +630,7 @@
                 const expandParents = function($element) {
                     let $parent = $element.parent().closest('li');
                     while ($parent.length) {
-                        const $toggle = $parent.find('.directory-toggle').first();
+                        const $toggle = $parent.find('.js-directory-toggle').first();
                         if ($toggle.length) {
                             const $submenu = $toggle.siblings('ul.menu');
                             if ($toggle.data('expanded') !== true) {
@@ -651,7 +651,7 @@
 
                     $children.each(function() {
                         const $child = $(this);
-                        const $childToggle = $child.find('.directory-toggle');
+                        const $childToggle = $child.find('.js-directory-toggle');
 
                         if ($childToggle.length) {
                             // Это папка, проверяем рекурсивно
@@ -673,7 +673,7 @@
                 // Обрабатываем все элементы списка
                 $fileList.find('li').each(function() {
                     const $li = $(this);
-                    const $toggle = $li.find('.directory-toggle');
+                    const $toggle = $li.find('.js-directory-toggle');
 
                     if ($toggle.length) {
                         // Это папка

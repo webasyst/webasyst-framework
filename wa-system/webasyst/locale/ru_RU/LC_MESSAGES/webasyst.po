@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-12-17 17:14+0300\n"
+"PO-Revision-Date: 2026-01-13 09:49+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -7993,10 +7993,10 @@ msgstr "Глобальная"
 msgid "Auto-detection"
 msgstr "Автоопределение"
 
-msgid "Webasyst CRON service is not available on localhost"
-msgstr "Служба Webasyst CRON недоступна на локальном хосте"
+msgid "The Webasyst CRON service is not available on local hosts."
+msgstr "Служба Webasyst CRON недоступна на локальном хосте."
 
-msgid "The design theme %s does not offer turnkey settings."
+msgid "Design theme %s does not offer turnkey settings."
 msgstr "Тема дизайна «%s» не поддерживает настройки внешнего вида."
 
 msgid "Shopping platform by <a href=\"https://www.shop-script.com\">Shop-Script</a>"
@@ -8016,3 +8016,42 @@ msgstr "Неудачно"
 
 msgid "FINISHED"
 msgstr "Остановлено"
+
+msgid "Hello [name]! You have [count] messages."
+msgstr "Hello [name]! You have [count] messages."
+
+msgid "Hello %s! You have %d messages."
+msgstr "Hello %s! You have %d messages."
+
+msgid "Click [link_start]here[link_end] for details, [username]."
+msgstr "Click [link_start]here[link_end] for details, [username]."
+
+msgid "File moving error."
+msgstr "Ошибка при перемещении файла."
+
+msgid "The file does not exist."
+msgstr "Файл не существует."
+
+msgid "File upload error."
+msgstr "Ошибка при загрузке файла."
+
+msgid "Unknown extension *."
+msgstr "Неизвестное расширение *."
+
+msgid "File opening error."
+msgstr "Ошибка при открытии файла."
+
+msgid "Unknown method"
+msgstr "Неизвестный метод"
+
+msgid "Empty address."
+msgstr "Пустой адрес."
+
+msgid "Failed to get the coordinates."
+msgstr "Не удалось найти координаты."
+
+msgid "Failed to get the address."
+msgstr "Не удалось найти адрес."
+
+msgid "Find file"
+msgstr "Поиск файла"

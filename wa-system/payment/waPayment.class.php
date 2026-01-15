@@ -115,6 +115,7 @@ abstract class waPayment extends waSystemPlugin
      *
      * Cancellation of just initiated and not paid transaction
      * @var string
+     * @since 4.0.0
      */
     const OPERATION_CANCEL_PENDING = 'CANCEL_PENDING';
     /**

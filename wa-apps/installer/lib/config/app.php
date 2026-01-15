@@ -4,7 +4,7 @@ return array(
     'description' => 'Install new apps from the Webasyst Store',
     'icon'        => 'img/installer.svg',
     'mobile'      => false,
-    'version'     => '4.0.0', // developer preview
+    'version'     => '4.0.0',
     'critical'    => '4.0.0',
     'system'      => true,
     'vendor'      => 'webasyst',

@@ -127,7 +127,7 @@ class waContactAddressField extends waContactCompositeField
             return $value;
         }
 
-        $nonempty_subfields = array_filter($value['data']);
+        $nonempty_subfields = array_filter((array)$value['data']);
         if (empty(array_diff(array_keys($nonempty_subfields), ['country', 'lng', 'lat']))) {
             return [];
         }

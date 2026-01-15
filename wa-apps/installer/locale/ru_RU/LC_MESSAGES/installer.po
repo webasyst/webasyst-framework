@@ -609,3 +609,9 @@ msgstr "Доступно запросов к Webasyst AI: %s."
 
 msgid "Webasyst CRON API error."
 msgstr "Ошибка Webasyst CRON API."
+
+msgid "Failed to get information about the process progress. Please restart the installation."
+msgstr "Не удалось получить информацию о ходе процесса. Пожалуйста, перезапустите процесс установки."
+
+msgid "Update error. Please restart the installation."
+msgstr "Ошибка обновления. Пожалуйста, перезапустите, процесс установки."
