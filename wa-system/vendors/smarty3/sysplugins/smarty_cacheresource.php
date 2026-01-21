@@ -49,10 +49,10 @@ abstract class Smarty_CacheResource {
     * Read the cached template and process header
     *
     * @param Smarty_Internal_Template $_template template object
-    * @param Smarty_Template_Cached $cached cached object
+    * @param Smarty_Template_Cached|null $cached cached object
     * @return booelan true or false if the cached content does not exist
     */
-    public abstract function process(Smarty_Internal_Template $_template, Smarty_Template_Cached $cached=null);
+    public abstract function process(Smarty_Internal_Template $_template, ?Smarty_Template_Cached $cached=null);
 
     /**
     * Write the rendered template output to cache
