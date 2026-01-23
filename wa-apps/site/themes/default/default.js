@@ -196,7 +196,7 @@ $(document).ready(function() {
         }
 
         $(this).toggleClass('opened');
-        
+
         $("html, body").animate({ scrollTop: 0 }, 200);
         return false;
     });
@@ -218,11 +218,14 @@ $(document).ready(function() {
     };
 
     const initAppsOverflowMenu = () => {
-        const navList = document.querySelector('#globalnav .globalnav-bar nav .apps');
+        const nav = document.querySelector('#globalnav .globalnav-bar nav');
+        const navList = nav.querySelector('.apps');
 
         if (!navList || navList.querySelector('.apps-overflow')) {
             return;
         }
+
+        nav.classList.remove('overflow-hidden');
 
         const overflowItem = document.createElement('li');
         overflowItem.className = 'apps-overflow';

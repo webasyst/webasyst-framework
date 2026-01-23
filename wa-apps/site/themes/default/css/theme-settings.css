@@ -1,5 +1,100 @@
 /* Визуальный редактор темы - Основные стили */
 
+/* CSS variables with light-dark support */
+:root {
+    --theme-editor-modal-content-bg: light-dark(#ffffff, #1a1a1a);
+    --theme-editor-header-bg: light-dark(#f8f9fa, #252525);
+    --theme-editor-header-border: light-dark(#e9ecef, #333333);
+    --theme-editor-title-color: light-dark(#212529, #ffffff);
+    --theme-editor-header-action-color: light-dark(#6c757d, #adb5bd);
+    --theme-editor-header-action-hover-bg: light-dark(#e9ecef, #333333);
+    --theme-editor-header-action-hover-color: light-dark(#212529, #ffffff);
+    --theme-editor-tabs-bg: light-dark(#ffffff, #1a1a1a);
+    --theme-editor-tabs-border: light-dark(#e9ecef, #333333);
+    --theme-editor-tab-color: light-dark(#6c757d, #adb5bd);
+    --theme-editor-tab-hover-bg: light-dark(#f8f9fa, #252525);
+    --theme-editor-tab-hover-color: light-dark(#495057, #dee2e6);
+    --theme-editor-tab-active-bg: light-dark(#ffffff, #1a1a1a);
+    --theme-editor-scrollbar-track-bg: light-dark(#f8f9fa, #252525);
+    --theme-editor-scrollbar-thumb-bg: light-dark(#dee2e6, #495057);
+    --theme-editor-scrollbar-thumb-hover-bg: light-dark(#adb5bd, #6c757d);
+    --theme-editor-label-color: light-dark(#212529, #ffffff);
+    --theme-editor-hint-color: light-dark(#6c757d, #adb5bd);
+    --theme-editor-slider-bg: light-dark(#e9ecef, #333333);
+    --theme-editor-value-input-bg: light-dark(#f8f9fa, #252525);
+    --theme-editor-value-input-border: light-dark(#dee2e6, #333333);
+    --theme-editor-value-input-color: light-dark(#212529, #ffffff);
+    --theme-editor-unit-color: light-dark(#6c757d, #adb5bd);
+    --theme-editor-radio-border: light-dark(#e9ecef, #333333);
+    --theme-editor-radio-bg: light-dark(#ffffff, #1a1a1a);
+    --theme-editor-radio-color: light-dark(#495057, #dee2e6);
+    --theme-editor-radio-checked-bg: light-dark(rgba(165, 56, 220, 0.05), rgba(165, 56, 220, 0.1));
+    --theme-editor-radio-checked-color: light-dark(#212529, #ffffff);
+    --theme-editor-radio-hover-border: light-dark(#adb5bd, #495057);
+    --theme-editor-color-option-active-border: light-dark(#212529, #ffffff);
+    --theme-editor-color-option-active-outline: light-dark(#ffffff, #1a1a1a);
+    --theme-editor-color-option-check-color: light-dark(#ffffff, #000000);
+    --theme-editor-select-border: light-dark(#e9ecef, #333333);
+    --theme-editor-select-bg: light-dark(#ffffff, #1a1a1a);
+    --theme-editor-select-color: light-dark(#212529, #ffffff);
+    --theme-editor-select-hover-border: light-dark(#adb5bd, #495057);
+    --theme-editor-select-focus-shadow: light-dark(rgba(165, 56, 220, 0.1), rgba(165, 56, 220, 0.2));
+    --theme-editor-footer-bg: light-dark(#f8f9fa, #252525);
+    --theme-editor-footer-border: light-dark(#e9ecef, #333333);
+    --theme-editor-btn-secondary-bg: light-dark(#e9ecef, #333333);
+    --theme-editor-btn-secondary-color: light-dark(#495057, #dee2e6);
+    --theme-editor-btn-secondary-hover-bg: light-dark(#dee2e6, #404040);
+    --theme-editor-color-grid-bg-light: #fff;
+    --theme-editor-color-grid-bg-dark: #1a1a1a;
+}
+
+@supports not (color: light-dark(white, black)) {
+    :root {
+        --theme-editor-modal-content-bg: #ffffff;
+        --theme-editor-header-bg: #f8f9fa;
+        --theme-editor-header-border: #e9ecef;
+        --theme-editor-title-color: #212529;
+        --theme-editor-header-action-color: #6c757d;
+        --theme-editor-header-action-hover-bg: #e9ecef;
+        --theme-editor-header-action-hover-color: #212529;
+        --theme-editor-tabs-bg: #ffffff;
+        --theme-editor-tabs-border: #e9ecef;
+        --theme-editor-tab-color: #6c757d;
+        --theme-editor-tab-hover-bg: #f8f9fa;
+        --theme-editor-tab-hover-color: #495057;
+        --theme-editor-tab-active-bg: #ffffff;
+        --theme-editor-scrollbar-track-bg: #f8f9fa;
+        --theme-editor-scrollbar-thumb-bg: #dee2e6;
+        --theme-editor-scrollbar-thumb-hover-bg: #adb5bd;
+        --theme-editor-label-color: #212529;
+        --theme-editor-hint-color: #6c757d;
+        --theme-editor-slider-bg: #e9ecef;
+        --theme-editor-value-input-bg: #f8f9fa;
+        --theme-editor-value-input-border: #dee2e6;
+        --theme-editor-value-input-color: #212529;
+        --theme-editor-unit-color: #6c757d;
+        --theme-editor-radio-border: #e9ecef;
+        --theme-editor-radio-bg: #ffffff;
+        --theme-editor-radio-color: #495057;
+        --theme-editor-radio-checked-bg: rgba(165, 56, 220, 0.05);
+        --theme-editor-radio-checked-color: #212529;
+        --theme-editor-radio-hover-border: #adb5bd;
+        --theme-editor-color-option-active-border: #212529;
+        --theme-editor-color-option-active-outline: #ffffff;
+        --theme-editor-color-option-check-color: #ffffff;
+        --theme-editor-select-border: #e9ecef;
+        --theme-editor-select-bg: #ffffff;
+        --theme-editor-select-color: #212529;
+        --theme-editor-select-hover-border: #adb5bd;
+        --theme-editor-select-focus-shadow: rgba(165, 56, 220, 0.1);
+        --theme-editor-footer-bg: #f8f9fa;
+        --theme-editor-footer-border: #e9ecef;
+        --theme-editor-btn-secondary-bg: #e9ecef;
+        --theme-editor-btn-secondary-color: #495057;
+        --theme-editor-btn-secondary-hover-bg: #dee2e6;
+    }
+}
+
 /* Кнопка открытия редактора */
 .theme-editor-trigger-wrapper {
     position: fixed;
@@ -150,11 +245,10 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 90%;
-    max-width: 400px;
+    width: min(92vw, 420px);
     max-height: 85vh;
 
-    background: light-dark(#ffffff, #1a1a1a);
+    background: var(--theme-editor-modal-content-bg);
     border-radius: 16px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
                 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -189,8 +283,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px;
-    background: light-dark(#f8f9fa, #252525);
-    border-bottom: 1px solid light-dark(#e9ecef, #333333);
+    background: var(--theme-editor-header-bg);
+    border-bottom: 1px solid var(--theme-editor-header-border);
     cursor: move;
     user-select: none;
 }
@@ -201,7 +295,7 @@
     gap: 12px;
     font-size: 16px;
     font-weight: 600;
-    color: light-dark(#212529, #ffffff);
+    color: var(--theme-editor-title-color);
 }
 
 .theme-editor-header-actions {
@@ -215,7 +309,7 @@
     border: none;
     padding: 4px;
     cursor: pointer;
-    color: light-dark(#6c757d, #adb5bd);
+    color: var(--theme-editor-header-action-color);
     border-radius: 8px;
     transition: all 0.2s ease;
     display: flex;
@@ -225,8 +319,8 @@
 
 .theme-editor-minimize:hover,
 .theme-editor-close:hover {
-    background: light-dark(#e9ecef, #333333);
-    color: light-dark(#212529, #ffffff);
+    background: var(--theme-editor-header-action-hover-bg);
+    color: var(--theme-editor-header-action-hover-color);
 }
 
 /* Вкладки */
@@ -234,8 +328,8 @@
     display: flex;
     gap: 4px;
     padding: 16px 24px 0;
-    background: light-dark(#ffffff, #1a1a1a);
-    border-bottom: 1px solid light-dark(#e9ecef, #333333);
+    background: var(--theme-editor-tabs-bg);
+    border-bottom: 1px solid var(--theme-editor-tabs-border);
 }
 
 .theme-editor-tab {
@@ -253,19 +347,19 @@
     font-size: 14px;
     font-weight: 500;
     font-family: inherit;
-    color: light-dark(#6c757d, #adb5bd);
+    color: var(--theme-editor-tab-color);
 
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .theme-editor-tab:hover {
-    background: light-dark(#f8f9fa, #252525);
-    color: light-dark(#495057, #dee2e6);
+    background: var(--theme-editor-tab-hover-bg);
+    color: var(--theme-editor-tab-hover-color);
 }
 
 .theme-editor-tab.active {
-    background: light-dark(#ffffff, #1a1a1a);
+    background: var(--theme-editor-tab-active-bg);
     color: var(--accent-color, #A538DC);
     border-bottom: 2px solid var(--accent-color, #A538DC);
 }
@@ -286,16 +380,16 @@
 }
 
 .theme-editor-body::-webkit-scrollbar-track {
-    background: light-dark(#f8f9fa, #252525);
+    background: var(--theme-editor-scrollbar-track-bg);
 }
 
 .theme-editor-body::-webkit-scrollbar-thumb {
-    background: light-dark(#dee2e6, #495057);
+    background: var(--theme-editor-scrollbar-thumb-bg);
     border-radius: 4px;
 }
 
 .theme-editor-body::-webkit-scrollbar-thumb:hover {
-    background: light-dark(#adb5bd, #6c757d);
+    background: var(--theme-editor-scrollbar-thumb-hover-bg);
 }
 
 /* Панели вкладок */
@@ -325,14 +419,14 @@
     display: block;
     font-size: 14px;
     font-weight: 600;
-    color: light-dark(#212529, #ffffff);
+    color: var(--theme-editor-label-color);
     margin-bottom: 4px;
 }
 
 .theme-editor-hint {
     display: block;
     font-size: 12px;
-    color: light-dark(#6c757d, #adb5bd);
+    color: var(--theme-editor-hint-color);
 }
 
 /* Контролы */
@@ -345,9 +439,9 @@
 /* Слайдер */
 .theme-editor-slider {
     flex: 1;
-    height: 6px;
+    max-height: 6px;
     border-radius: 3px;
-    background: light-dark(#e9ecef, #333333);
+    background: var(--theme-editor-slider-bg);
     outline: none;
     -webkit-appearance: none;
     appearance: none;
@@ -393,8 +487,8 @@
     align-items: center;
     gap: 4px;
     padding: 8px 12px;
-    background: light-dark(#f8f9fa, #252525);
-    border: 1px solid light-dark(#dee2e6, #333333);
+    background: var(--theme-editor-value-input-bg);
+    border: 1px solid var(--theme-editor-value-input-border);
     border-radius: 8px;
     min-width: 80px;
 }
@@ -406,7 +500,7 @@
     border-radius: 0;
     font-size: 14px;
     font-weight: 600;
-    color: light-dark(#212529, #ffffff);
+    color: var(--theme-editor-value-input-color);
     text-align: right;
     font-family: inherit;
     padding: 0;
@@ -420,7 +514,7 @@
 
 .theme-editor-unit {
     font-size: 12px;
-    color: light-dark(#6c757d, #adb5bd);
+    color: var(--theme-editor-unit-color);
 }
 
 /* Радио кнопки */
@@ -444,30 +538,44 @@
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    border: 2px solid light-dark(#e9ecef, #333333);
+    border: 2px solid var(--theme-editor-radio-border);
     border-radius: 10px;
-    background: light-dark(#ffffff, #1a1a1a);
+    background: var(--theme-editor-radio-bg);
     width: 100%;
     transition: all 0.2s ease;
     font-size: 14px;
-    color: light-dark(#495057, #dee2e6);
+    color: var(--theme-editor-radio-color);
 }
 
 .theme-editor-radio input[type="radio"]:checked + .theme-editor-radio-label {
     border-color: var(--accent-color, #A538DC);
-    background: light-dark(rgba(165, 56, 220, 0.05), rgba(165, 56, 220, 0.1));
-    color: light-dark(#212529, #ffffff);
+    background: var(--theme-editor-radio-checked-bg);
+    color: var(--theme-editor-radio-checked-color);
 }
 
 .theme-editor-radio:hover .theme-editor-radio-label {
-    border-color: light-dark(#adb5bd, #495057);
+    border-color: var(--theme-editor-radio-hover-border);
 }
 
 /* Цветовая сетка */
 .theme-editor-color-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
     gap: 8px;
+}
+
+#bgColorLightGrid {
+    background-color: var(--theme-editor-color-grid-bg-light);
+    border-radius: 1.25rem;
+    padding: 0.75rem;
+    margin: 0 -0.75rem;
+}
+
+#bgColorDarkGrid {
+    background-color: var(--theme-editor-color-grid-bg-dark);
+    border-radius: 1.25rem;
+    padding: 0.75rem;
+    margin: 0 -0.75rem;
 }
 
 .theme-editor-color-option {
@@ -486,8 +594,8 @@
 }
 
 .theme-editor-color-option.active {
-    border-color: light-dark(#212529, #ffffff);
-    box-shadow: 0 0 0 2px light-dark(#ffffff, #1a1a1a),
+    border-color: var(--theme-editor-color-option-active-border);
+    box-shadow: 0 0 0 2px var(--theme-editor-color-option-active-outline),
                 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -498,7 +606,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: light-dark(#ffffff, #000000);
+    color: var(--theme-editor-color-option-check-color);
     font-size: 18px;
     font-weight: bold;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -508,24 +616,24 @@
 .theme-editor-select {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid light-dark(#e9ecef, #333333);
+    border: 2px solid var(--theme-editor-select-border);
     border-radius: 10px;
-    background: light-dark(#ffffff, #1a1a1a);
+    background: var(--theme-editor-select-bg);
     font-size: 14px;
     font-family: inherit;
-    color: light-dark(#212529, #ffffff);
+    color: var(--theme-editor-select-color);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .theme-editor-select:hover {
-    border-color: light-dark(#adb5bd, #495057);
+    border-color: var(--theme-editor-select-hover-border);
 }
 
 .theme-editor-select:focus {
     outline: none;
     border-color: var(--accent-color, #A538DC);
-    box-shadow: 0 0 0 3px light-dark(rgba(165, 56, 220, 0.1), rgba(165, 56, 220, 0.2));
+    box-shadow: 0 0 0 3px var(--theme-editor-select-focus-shadow);
 }
 
 /* Футер */
@@ -533,8 +641,8 @@
     display: flex;
     gap: 12px;
     padding: 16px 24px;
-    background: light-dark(#f8f9fa, #252525);
-    border-top: 1px solid light-dark(#e9ecef, #333333);
+    background: var(--theme-editor-footer-bg);
+    border-top: 1px solid var(--theme-editor-footer-border);
 }
 
 .theme-editor-btn-primary,
@@ -561,18 +669,18 @@
 }
 
 .theme-editor-btn-secondary {
-    background: light-dark(#e9ecef, #333333);
-    color: light-dark(#495057, #dee2e6);
+    background: var(--theme-editor-btn-secondary-bg);
+    color: var(--theme-editor-btn-secondary-color);
 }
 
 .theme-editor-btn-secondary:hover {
-    background: light-dark(#dee2e6, #404040);
+    background: var(--theme-editor-btn-secondary-hover-bg);
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
     .theme-editor-modal-content {
-        width: 95%;
+        width: min(96vw, 420px);
         max-height: 90vh;
     }
 
@@ -591,7 +699,7 @@
     }
 
     .theme-editor-color-grid {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
         gap: 6px;
     }
 
@@ -611,6 +719,49 @@
 
     .theme-editor-modal.minimized .theme-editor-modal-content {
         transform: translate(calc(-100% - 5px), calc(100% - 25px)) scale(0.05) !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .theme-editor-header {
+        padding: 16px 18px;
+    }
+
+    .theme-editor-tabs {
+        padding: 10px 16px 0;
+    }
+
+    .theme-editor-body {
+        padding: 16px;
+    }
+
+    .theme-editor-value-input {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .theme-editor-value-input input {
+        width: auto;
+        flex: 1;
+        text-align: right;
+    }
+
+    .theme-editor-radio-group {
+        flex-direction: column;
+    }
+
+    .theme-editor-footer {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 360px) {
+    .theme-editor-tabs {
+        flex-wrap: wrap;
+    }
+
+    .theme-editor-tab {
+        flex: 1 1 45%;
     }
 }
 

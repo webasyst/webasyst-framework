@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 3.8\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -2406,3 +2406,90 @@ msgstr "Расположение"
 
 msgid "Display in each variant"
 msgstr "Выводить в каждой модификации"
+
+msgid "Change design"
+msgstr "Изменить дизайн"
+
+msgid "Basic design settings"
+msgstr "Основные настройки дизайна"
+
+msgid "General"
+msgstr "Общие"
+
+msgid "Colors"
+msgstr "Цвета"
+
+msgid "Fonts"
+msgstr "Шрифты"
+
+msgid "Corner rounding"
+msgstr "Скругление углов"
+
+msgid "Border radius for various elements"
+msgstr "Радиус закругления элементов интерфейса"
+
+msgid "Color scheme"
+msgstr "Цветовая схема"
+
+msgid "Light or dark style (if supported by the browser)"
+msgstr "Светлая или темная (если поддерживается браузером)"
+
+msgid "Light"
+msgstr "Светлая"
+
+msgid "Dark"
+msgstr "Темная"
+
+msgid "Accent color"
+msgstr "Акцентный цвет"
+
+msgid "Main color for buttons &amp; links"
+msgstr "Основной цвет для кнопок и ссылок"
+
+msgid "Light theme’s background"
+msgstr "Фон светлой темы"
+
+msgid "Background color in the light mode"
+msgstr "Цвет фона в светлом режиме"
+
+msgid "Dark theme’s background"
+msgstr "Фон темной темы"
+
+msgid "Background color in the dark mode"
+msgstr "Цвет фона в темном режиме"
+
+msgid "Font family"
+msgstr "Семейство шрифтов"
+
+msgid "Main font for entire text"
+msgstr "Основной шрифт для всего текста"
+
+msgid "Font size"
+msgstr "Размер шрифта"
+
+msgid "Base font size on website"
+msgstr "Базовый размер текста на сайте"
+
+msgid "Reset"
+msgstr "Сбросить"
+
+msgid "Minimize"
+msgstr "Свернуть"
+
+msgid "Settings saving error"
+msgstr "Ошибка сохранения настроек"
+
+msgid "Settings saved"
+msgstr "Настройки сохранены"
+
+msgid "Rollback to the latest saved settings?"
+msgstr "Вернуть к последним сохраненным значениям?"
+
+msgid "Settings have been reset"
+msgstr "Настройки сброшены"
+
+msgid "Show settings dialog"
+msgstr "Показать окно настроек"
+
+msgid "Set up design"
+msgstr "Настроить дизайн"

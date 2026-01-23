@@ -27,7 +27,7 @@
                      {/if}
                      {$_hide_cart = $wa->globals("hideCart")}
 
-                     <nav class="wa-flex{if !empty($_hide_cart) && !$wa->isAuthEnabled()} wa-mr-0{/if} wa-hide-m">
+                     <nav class="wa-flex{if !empty($_hide_cart) && !$wa->isAuthEnabled()} wa-mr-0{/if} wa-hide-m overflow-hidden">
                          {strip}
                          <ul class="apps" data-more-text="[`More`]">
                                  {$_links = []}
@@ -125,7 +125,7 @@
                          {if $wa->isAuthEnabled()}
                              <!-- user auth -->
                              {strip}
-                                 <ul class="auth align-items-center space-05" id="js-header-auth-wrapper">
+                                 <ul class="auth align-items-center space-05 wa-flex" id="js-header-auth-wrapper">
                                      {if $wa->user()->isAuth()}
                                          {if $wa->myUrl()}
                                              <li>
@@ -136,7 +136,7 @@
                                          {else}
                                              <li>{$wa->user('firstname')|default:'[`My account`]'}</li>
                                          {/if}
-                                         <li><a href="?logout">[`Logout`]</a></li>
+                                         <li><a href="?logout" class="nowrap">[`Logout`]</a></li>
                                      {else}
                                          <li>
                                              <a href="{$wa->loginUrl()}" class="not-visited">
@@ -146,9 +146,9 @@
                                              </a>
                                          </li>
                                          <li class="wa-flex-fill">
-                                             <a href="{$wa->loginUrl()}" class="not-visited wa-pl-4 wa-flex-fill">[s`Log in`]</a>
+                                             <a href="{$wa->loginUrl()}" class="not-visited wa-flex-fill nowrap">[s`Log in`]</a>
                                          </li>
-                                         {*<li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>*}
+                                         {*<li><a href="{$wa->signupUrl()}" class="not-visited nowrap">[s`Sign up`]</a></li>*}
                                      {/if}
                                  </ul>
                              {/strip}

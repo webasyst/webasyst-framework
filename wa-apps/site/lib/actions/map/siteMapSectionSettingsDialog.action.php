@@ -107,7 +107,7 @@ class siteMapSectionSettingsDialogAction extends waViewAction
                     if ($has_route_id) {
                         $route_name = ifset($route['_name'], '');
                         if (!$route_name) {
-                            if ($app_id === 'site') {
+                            if ($app_id === 'site' || ifset($route, 'url', '') === '*') {
                                 $app_settings_model = new waAppSettingsModel();
                                 $route_name = $app_settings_model->get('webasyst', 'name', _ws('My company'));
                             } else {

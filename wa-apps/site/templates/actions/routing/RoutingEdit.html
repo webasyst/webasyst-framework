@@ -666,7 +666,7 @@
                 }
 
                 const theme_url = url + new_hash + '=';
-                $('.js-theme-settings').attr('href', theme_url + $('[name="params[theme]"]').val());
+                $('.js-theme-settings').attr('href', theme_url + $('[name="params[theme]"]').val() + '&domain={$domain_id}&route={$route_id}');
             }
 
             function initThemeSelect() {

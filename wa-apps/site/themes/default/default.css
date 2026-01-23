@@ -39,21 +39,21 @@
         --gray-subtle:                     #bbbbbb;
         /* Brand colors */
         --accent-color:                    #A538DC;
-        --accent-color-light:              color-mix(in hsl, var(--accent-color) 100%, white 30%);
-        --accent-color-lighter:            color-mix(in hsl, var(--accent-color) 75%, white 50%);
-        --accent-color-dark:               color-mix(in hsl, var(--accent-color) 75%, black 25%);
+        --accent-color-light:              color-mix(in srgb, var(--accent-color) 100%, white 30%);
+        --accent-color-lighter:            color-mix(in srgb, var(--accent-color) 75%, white 50%);
+        --accent-color-dark:               color-mix(in srgb, var(--accent-color) 75%, black 25%);
         --red:                             #f43434;
         --blue:                            #3080ed;
-        --blue-light:                      color-mix(in hsl, var(--blue) 100%, white 30%);
-        --blue-lighter:                    color-mix(in hsl, var(--blue) 75%, white 50%);
-        --blue-dark:                       color-mix(in hsl, var(--blue) 75%, black 25%);
+        --blue-light:                      color-mix(in srgb, var(--blue) 100%, white 30%);
+        --blue-lighter:                    color-mix(in srgb, var(--blue) 75%, white 50%);
+        --blue-dark:                       color-mix(in srgb, var(--blue) 75%, black 25%);
         --green:                           #14b00e;
         --orange:                          #f2994a;
         --yellow:                          #d8a900;
         --purple:                          #9b51e0;
-        --purple-light:                    color-mix(in hsl, var(--purple) 100%, white 30%);
-        --purple-lighter:                  color-mix(in hsl, var(--purple) 75%, white 50%);
-        --purple-dark:                     color-mix(in hsl, var(--purple) 75%, black 25%);
+        --purple-light:                    color-mix(in srgb, var(--purple) 100%, white 30%);
+        --purple-lighter:                  color-mix(in srgb, var(--purple) 75%, white 50%);
+        --purple-dark:                     color-mix(in srgb, var(--purple) 75%, black 25%);
         /* Layout */
         --gap:                             0;
         --element-border-radius:           .75rem;
@@ -70,7 +70,7 @@
         --h6-size:                         1em;
         /* Semantic colors with light-dark support */
         --bg-color:                        light-dark(var(--bg-color-light), var(--bg-color-dark));
-        --bg-color-accent:                 color-mix(in hsl, var(--bg-color) 100%, white 7%);
+        --bg-color-accent:                 color-mix(in srgb, var(--bg-color) 100%, white 7%);
         --text-color:                      light-dark(var(--black), var(--gray5));
         --text-color-secondary:            light-dark(var(--gray-strong), var(--gray-subtle));
         --text-color-additional:           light-dark(var(--gray-muted), var(--gray-main));
@@ -87,6 +87,22 @@
         --button-active-text-color:        light-dark(var(--white), var(--white));
         --button-disabled-bg-color:        light-dark(var(--accent-color-lighter), var(--accent-color-lighter));
         --button-disabled-text-color:      light-dark(var(--white), var(--white));
+        --button-gray-bg-color:            light-dark(var(--gray6), var(--gray6));
+        --button-gray-text-color:          light-dark(var(--gray3), var(--gray3));
+        --button-gray-hover-bg-color:      light-dark(var(--gray7), var(--gray7));
+        --button-gray-hover-text-color:    light-dark(var(--white), var(--white));
+        --button-gray-active-bg-color:     light-dark(var(--gray5), var(--gray5));
+        --button-gray-active-text-color:   light-dark(var(--gray3), var(--gray3));
+        --button-gray-disabled-bg-color:   light-dark(var(--gray3), var(--gray3));
+        --button-gray-disabled-text-color: light-dark(var(--white), var(--white));
+        --button-blue-bg-color:            light-dark(var(--blue), var(--blue));
+        --button-blue-text-color:          light-dark(var(--white), var(--white));
+        --button-blue-hover-bg-color:      light-dark(var(--blue-light), var(--blue-light));
+        --button-blue-hover-text-color:    light-dark(var(--white), var(--white));
+        --button-blue-active-bg-color:     light-dark(var(--blue-dark), var(--blue-dark));
+        --button-blue-active-text-color:   light-dark(var(--white), var(--white));
+        --button-blue-disabled-bg-color:   light-dark(var(--blue-lighter), var(--blue-lighter));
+        --button-blue-disabled-text-color: light-dark(var(--white), var(--white));
         /* Header colors */
         --header-link-color:               light-dark(var(--gray3), var(--gray3));
         --header-link-hover-color:         light-dark(var(--gray2), var(--gray2));
@@ -114,6 +130,73 @@
         /* Shadows */
         --shadow:                          0 .3125rem 1.875rem rgba(0, 0, 0, 0.06);
         --shadow1:                         0 .625rem 3.75rem rgba(0, 0, 0, 0.1);
+
+        --bg-gray-color:                   light-dark(var(--gray6), var(--white_tr_10));
+    }
+
+    @supports not (color: light-dark(white, black)) {
+        :root {
+            color-scheme:                      light;
+            --white-auto:                      var(--white);
+            --black-auto:                      var(--black);
+            --divider-color:                   var(--black_tr_10);
+            --bg-color:                        var(--bg-color-light);
+            --text-color:                      var(--black);
+            --text-color-secondary:            var(--gray-strong);
+            --text-color-additional:           var(--gray-muted);
+            --hint-color:                      var(--gray3);
+            --link-color:                      var(--accent-color);
+            --link-hover-color:                var(--accent-color-light);
+            --link-visited-color:              var(--accent-color-dark);
+            --button-bg-color:                 var(--accent-color);
+            --button-text-color:               var(--white);
+            --button-hover-bg-color:           var(--accent-color-light);
+            --button-hover-text-color:         var(--white);
+            --button-active-bg-color:          var(--accent-color-dark);
+            --button-active-text-color:        var(--white);
+            --button-disabled-bg-color:        var(--accent-color-lighter);
+            --button-disabled-text-color:      var(--white);
+            --button-gray-bg-color:            var(--gray6);
+            --button-gray-text-color:          var(--gray3);
+            --button-gray-hover-bg-color:      var(--gray7);
+            --button-gray-hover-text-color:    var(--white);
+            --button-gray-active-bg-color:     var(--gray5);
+            --button-gray-active-text-color:   var(--gray3);
+            --button-gray-disabled-bg-color:   var(--gray3);
+            --button-gray-disabled-text-color: var(--white);
+            --button-blue-bg-color:            var(--blue);
+            --button-blue-text-color:          var(--white);
+            --button-blue-hover-bg-color:      var(--blue-light);
+            --button-blue-hover-text-color:    var(--white);
+            --button-blue-active-bg-color:     var(--blue-dark);
+            --button-blue-active-text-color:   var(--white);
+            --button-blue-disabled-bg-color:   var(--blue-lighter);
+            --button-blue-disabled-text-color: var(--white);
+            --header-link-color:               var(--gray3);
+            --header-link-hover-color:         var(--gray2);
+            --header-apps-link-color:          var(--gray3);
+            --header-apps-link-selected-color: var(--gray2);
+            --header-cart-total-bg-color:      var(--red);
+            --header-search-input-bg-color:    var(--black_tr_8);
+            --header-search-input-color:       var(--gray);
+            --header-menu-pages-link-color:    var(--gray1);
+            --header-sitename-color:           var(--black);
+            --input-color:                     var(--gray1);
+            --input-placeholder-color:         var(--gray);
+            --input-bg-color:                  var(--black_tr_10);
+            --input-disabled-bg-color:         var(--gray6);
+            --input-disabled-color:            var(--gray4);
+            --input-border-color:              var(--gray5);
+            --footer-link-color:               var(--gray3);
+            --footer-link-hover-color:         var(--link-hover-color);
+            --footer-notice-color:             var(--gray4);
+            --footer-app-color:                var(--gray);
+            --footer-subscribe-link-color:     var(--link-color);
+            --bg-gray-color:                   var(--gray6);
+        }
+
+        .sub-links li a { color: var(--gray1); }
+        .bg-gray { background-color: var(--gray6); }
     }
 }
 
@@ -359,8 +442,9 @@
         display:          inline-flex;
         justify-content: center;
         outline:          0;
-        padding:          0.938em 0.75em;
+        padding:          0.938em 1.25em;
         font-size:        1em;
+        font-weight:      600;
         border:           0 none;
         border-radius:    var(--element-border-radius);
         background-color: var(--button-bg-color);
@@ -374,8 +458,8 @@
     .button:hover, button:hover, input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { cursor: pointer; background-color: var(--button-hover-bg-color); color: var(--button-hover-text-color); }
 
     .button.blink, button.blink, input[type=button].blink, input[type=submit].blink, input[type=reset].blink { transition: transform 200ms linear; }
-    .button.blink:hover, button.blink:hover, input[type=button].blink:hover, input[type=submit].blink:hover, input[type=reset].blink:hover { background-color: var(--button-bg-color); overflow: hidden; transform: scale(1.05);}
-    .button.blink:hover::after, button.blink:hover::after, input[type=button].blink:hover::after, input[type=submit].blink:hover::after, input[type=reset].blink:hover::after, .s-order-page .s-order-section > .s-section-body .wa-form-body .wa-submit-button:hover::after { content: ''; position: absolute; top: 0; left: -50%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4),rgba(255, 255, 255, 0.2), transparent ); transform: skewX(-20deg); animation: sweep 3s infinite; filter: blur(1px); }
+    .button.blink:not(:disabled,.disabled):hover, button.blink:not(:disabled,.disabled):hover, input[type=button].blink:not(:disabled,.disabled):hover, input[type=submit].blink:not(:disabled,.disabled):hover, input[type=reset].blink:not(:disabled,.disabled):hover { background-color: var(--button-bg-color); overflow: hidden; transform: scale(1.05);}
+    .button.blink:not(:disabled,.disabled):hover::after, button.blink:not(:disabled,.disabled):hover::after, input[type=button].blink:not(:disabled,.disabled):hover::after, input[type=submit].blink:not(:disabled,.disabled):hover::after, input[type=reset].blink:not(:disabled,.disabled):hover::after, .s-order-page .s-order-section > .s-section-body .wa-form-body .wa-submit-button:hover:not(:disabled,.disabled)::after { content: ''; position: absolute; top: 0; left: -50%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4),rgba(255, 255, 255, 0.2), transparent ); transform: skewX(-20deg); animation: sweep 3s infinite; filter: blur(1px); }
     @keyframes sweep {
         0% { left: -50%; opacity: 0; transform: skewX(-20deg) scaleY(0.5); }
         20% { opacity: 1; transform: skewX(-20deg) scaleY(1); }
@@ -390,9 +474,27 @@
 
     .button.large, button.large, input[type=button].large, input[type=submit].large, input[type=reset].large { font-size: 1.6em; font-weight: 500; }
 
-    .button.gray, button.gray, input[type=button].gray, input[type=submit].gray, input[type=reset].gray { --button-bg-color: light-dark(var(--gray6), var(--gray6)); --button-text-color: light-dark(var(--gray3), var(--gray3)); --button-hover-bg-color: light-dark(var(--gray7), var(--gray7)); --button-hover-text-color: light-dark(var(--white), var(--white)); --button-active-bg-color: light-dark(var(--gray5), var(--gray5)); --button-active-text-color: light-dark(var(--gray3), var(--gray3)); --button-disabled-bg-color: light-dark(var(--gray3), var(--gray3)); --button-disabled-text-color: light-dark(var(--white), var(--white)); }
+    .button.gray, button.gray, input[type=button].gray, input[type=submit].gray, input[type=reset].gray {
+        --button-bg-color:                 var(--button-gray-bg-color);
+        --button-text-color:               var(--button-gray-text-color);
+        --button-hover-bg-color:           var(--button-gray-hover-bg-color);
+        --button-hover-text-color:         var(--button-gray-hover-text-color);
+        --button-active-bg-color:          var(--button-gray-active-bg-color);
+        --button-active-text-color:        var(--button-gray-active-text-color);
+        --button-disabled-bg-color:        var(--button-gray-disabled-bg-color);
+        --button-disabled-text-color:      var(--button-gray-disabled-text-color);
+    }
 
-    .button.blue, button.blue, input[type=button].blue, input[type=submit].blue, input[type=reset].blue { --button-bg-color: light-dark(var(--blue), var(--blue)); --button-text-color: light-dark(var(--white), var(--white)); --button-hover-bg-color: light-dark(var(--blue-light), var(--blue-light)); --button-hover-text-color: light-dark(var(--white), var(--white)); --button-active-bg-color: light-dark(var(--blue-dark), var(--blue-dark)); --button-active-text-color: light-dark(var(--white), var(--white)); --button-disabled-bg-color: light-dark(var(--blue-lighter), var(--blue-lighter)); --button-disabled-text-color: light-dark(var(--white), var(--white)); }
+    .button.blue, button.blue, input[type=button].blue, input[type=submit].blue, input[type=reset].blue {
+        --button-bg-color:                 var(--button-blue-bg-color);
+        --button-text-color:               var(--button-blue-text-color);
+        --button-hover-bg-color:           var(--button-blue-hover-bg-color);
+        --button-hover-text-color:         var(--button-blue-hover-text-color);
+        --button-active-bg-color:          var(--button-blue-active-bg-color);
+        --button-active-text-color:        var(--button-blue-active-text-color);
+        --button-disabled-bg-color:        var(--button-blue-disabled-bg-color);
+        --button-disabled-text-color:      var(--button-blue-disabled-text-color);
+    }
     /* Form validation */
     input.error, textarea.error { border: .125em solid var(--red); }
 
@@ -685,7 +787,7 @@
 
     .sub-links { margin-bottom: 32px; padding-left: 0; gap: 16px; }
     .sub-links li { list-style: none; line-height: 1.5em; }
-    .sub-links li a { text-decoration: none; font-size: 90%; color: light-dark(var(--gray1), var(--text-color-additional)); }
+    .sub-links li a { text-decoration: none; font-size: 90%; color: var(--header-menu-pages-link-color); }
     .sub-links li a:hover { color: var(--link-color); }
 }
 
@@ -990,7 +1092,7 @@
     /* Typography utilities */
     .font-size-big { font-size: var(--h5-size); }
 
-    .bg-gray { background-color: light-dark(var(--gray6), var(--white_tr_10)); }
+    .bg-gray { background-color: var(--bg-gray-color); }
 
     .w-100 { width: 100%; }
 
@@ -1199,7 +1301,7 @@
 }
 
 @layer page_elements {
-    header.globalheader { --globalheader-mb: 3rem; position: relative; box-shadow: var(--shadow1); margin-bottom: var(--globalheader-mb); padding: .875rem 0 1rem 0; background-color: var(--bg-color); }
+    header.globalheader { --globalheader-mb: 2rem; position: relative; box-shadow: var(--shadow1); margin-bottom: var(--globalheader-mb); padding: .875rem 0 1rem 0; background-color: var(--bg-color); }
     header.globalheader:has(.mobile-nav.opened,.search-active) { z-index: 100; }
 
     @media (max-width: 768px) {
@@ -1223,7 +1325,7 @@
     header.globalheader .mobile-nav.opened { padding-bottom: 1rem; }
     header.globalheader .mobile-nav .nav-negative { padding-left: 0; margin: 0; line-height: 1; }
     header.globalheader .mobile-nav .nav-negative li { list-style: none; display: block; }
-    header.globalheader .mobile-nav .nav-negative li.selected a { color: var(--white); background: transparent; font-weight: bold; }
+    header.globalheader .mobile-nav .nav-negative li.selected a { color: var(--text-color); background: transparent; font-weight: bold; }
     header.globalheader .mobile-nav .nav-negative li a { text-decoration: none; color: var(--header-link-color); display: block; padding: 1rem; }
     header.globalheader .mobile-nav .nav-negative.auth li { display: flex; align-items: center; }
 
@@ -1391,7 +1493,7 @@
     }
     header .pages li a { display: block; color: var(--header-menu-pages-link-color); transition: opacity 200ms linear; padding-right: 0.4rem; }
     header .pages li a:hover { opacity: .6; }
-    header .pages li a.button { display: inline; color: var(--button-text-color); font-weight: normal; padding: 0.907em 1.35em 0.907em 1em; }
+    header .pages li a.button { display: inline; color: var(--button-text-color); font-weight: 600; padding: 0.907em 1.35em 0.907em 1em; }
     header .pages li a.button::after { top: -0.25em !important; left: 0.4em !important; }
 
     @media (max-width: 768px) {
@@ -1477,10 +1579,9 @@ main.maincontent .container { padding-bottom: 40px; }
 .right-sidebar > .sidebar { order: 1; }
 .right-sidebar > .content { order: 0; }
 
-.sidebar > *:not(:empty) { margin: 0 !important; background: var(--gray6); border-radius: 15px; padding: 20px; }
+.sidebar > *:not(:empty) { margin: 0 !important; background: var(--bg-gray-color); border-radius: 15px; padding: 20px; }
 .sidebar > *:not(:last-child) { margin-bottom: 20px !important; }
 .content { position: relative; }
-
 
 .likebox { margin-bottom: 25px; overflow: hidden; }
 

@@ -3,6 +3,73 @@
  * Позволяет настраивать параметры темы в реальном времени
  */
 
+const THEME_GOOGLE_FONTS = {
+    'Rubik': 'Rubik:ital,wght@0,300..900;1,300..900&display=swap',
+    'Mulish': 'Mulish:ital,wght@0,200..1000;1,200..1000&display=swap',
+    'Source Sans 3': 'Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap',
+    'Spectral': 'Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap',
+    'Source Serif 4': 'Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap',
+    'Nunito': 'Nunito:ital,wght@0,200..1000;1,200..1000&display=swap'
+};
+
+const SYSTEM_FONT_STACK = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
+
+function getFontFallback(fontFamily) {
+    if (fontFamily === 'Source Serif 4' || fontFamily === 'Spectral') {
+        return 'serif';
+    }
+    return 'sans-serif';
+}
+
+function applyThemeFontFamily(root, fontFamily) {
+    if (fontFamily === 'System') {
+        root.style.setProperty('--font-family', SYSTEM_FONT_STACK);
+        return;
+    }
+    root.style.setProperty('--font-family', '"' + fontFamily + '", ' + getFontFallback(fontFamily));
+}
+
+function applyThemeGoogleFont(fontFamily) {
+    const realFontName = THEME_GOOGLE_FONTS[fontFamily];
+    const head = document.head || document.getElementsByTagName('head')[0];
+    const linkId = 'theme-google-font';
+    const preconnectId = 'theme-google-font-preconnect';
+    const preconnectStaticId = 'theme-google-font-preconnect-static';
+
+    if (realFontName) {
+        if (!document.getElementById(preconnectId)) {
+            const preconnect = document.createElement('link');
+            preconnect.id = preconnectId;
+            preconnect.rel = 'preconnect';
+            preconnect.href = 'https://fonts.googleapis.com';
+            head.appendChild(preconnect);
+        }
+
+        if (!document.getElementById(preconnectStaticId)) {
+            const preconnectStatic = document.createElement('link');
+            preconnectStatic.id = preconnectStaticId;
+            preconnectStatic.rel = 'preconnect';
+            preconnectStatic.href = 'https://fonts.gstatic.com';
+            preconnectStatic.crossOrigin = '';
+            head.appendChild(preconnectStatic);
+        }
+
+        let link = document.getElementById(linkId);
+        if (!link) {
+            link = document.createElement('link');
+            link.id = linkId;
+            link.rel = 'stylesheet';
+            head.appendChild(link);
+        }
+        link.href = 'https://fonts.googleapis.com/css2?family=' + realFontName;
+    } else {
+        const link = document.getElementById(linkId);
+        if (link) {
+            link.remove();
+        }
+    }
+}
+
 // Применяем сохраненные настройки сразу при загрузке скрипта
 (function() {
     'use strict';
@@ -32,7 +99,8 @@
                 root.style.setProperty('--bg-color-dark', settings.bgColorDark);
             }
             if (settings.fontFamily) {
-                root.style.setProperty('--font-family', '"' + settings.fontFamily + '", sans-serif');
+                applyThemeFontFamily(root, settings.fontFamily);
+                applyThemeGoogleFont(settings.fontFamily);
             }
             if (settings.fontSize) {
                 root.style.setProperty('--font-size', settings.fontSize + 'px');
@@ -58,6 +126,9 @@
             this.resetBtn = document.getElementById('resetSettings');
             this.badge = document.getElementById('editorBadge');
             this.locale = options.locale || {};
+            this.saveUrl = options.saveUrl || '';
+            this.csrfToken = options.csrfToken || '';
+            this.settingsArrayName = options.settingsArrayName || 'settings';
 
             // Настройки по умолчанию
             this.defaultSettings = {
@@ -114,14 +185,51 @@
 
         // Сохранение настроек
         saveSettings() {
-            try {
-                sessionStorage.setItem('themeEditorSettings', JSON.stringify(this.currentSettings));
-                this.closeModal();
-                this.showNotification(this.locale.save_success || 'Настройки сохранены', 'success');
-            } catch (e) {
-                console.error(`${this.locale.save_settings_error}:`, e);
-                this.showNotification(this.locale.save_settings_error, 'error');
+            if (!this.saveUrl) {
+                this.showNotification(this.locale.save_settings_error || 'Ошибка сохранения настроек', 'error');
+                return;
             }
+
+            const payload = this.buildServerSettings();
+            const formData = new FormData();
+            Object.keys(payload).forEach((key) => {
+                formData.append(`${this.settingsArrayName}[${key}]`, payload[key]);
+            });
+            const csrfToken = this.getCsrfToken();
+            if (csrfToken) {
+                formData.append('_csrf', csrfToken);
+            }
+
+            if (this.saveBtn) {
+                this.saveBtn.disabled = true;
+            }
+
+            fetch(this.saveUrl, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data && data.status === 'ok') {
+                        this.closeModal();
+                        this.showNotification(this.locale.save_success || 'Настройки сохранены', 'success');
+                    } else {
+                        throw new Error(data?.errors || 'save_failed');
+                    }
+                })
+                .catch((e) => {
+                    console.error(`${this.locale.save_settings_error}:`, e);
+                    this.showNotification(this.locale.save_settings_error || 'Ошибка сохранения настроек', 'error');
+                })
+                .finally(() => {
+                    if (this.saveBtn) {
+                        this.saveBtn.disabled = false;
+                    }
+                });
         }
 
         // Сброс настроек к значениям по умолчанию
@@ -130,7 +238,7 @@
                 this.currentSettings = { ...this.defaultSettings };
                 this.applySettingsToUI();
                 this.applySettingsToPage();
-                sessionStorage.removeItem('themeEditorSettings');
+                this.persistSettingsToSession();
                 this.showNotification(this.locale.reset_success || 'Настройки сброшены', 'success');
             }
         }
@@ -198,7 +306,8 @@
 
             // Шрифт
             if (this.currentSettings.fontFamily) {
-                root.style.setProperty('--font-family', '"' + this.currentSettings.fontFamily + '", sans-serif');
+                applyThemeFontFamily(root, this.currentSettings.fontFamily);
+                applyThemeGoogleFont(this.currentSettings.fontFamily);
             }
 
             // Размер шрифта
@@ -260,50 +369,43 @@
 
             // Скругление углов
             this.setupSliderSync('borderRadiusSlider', 'borderRadiusInput', (value) => {
-                this.currentSettings.borderRadius = value;
-                this.applySettingsToPage();
+                this.updateSetting('borderRadius', value);
             });
 
             // Цветовая схема
             const colorSchemeRadios = document.querySelectorAll('input[name="colorScheme"]');
             colorSchemeRadios.forEach(radio => {
                 radio.addEventListener('change', (e) => {
-                    this.currentSettings.colorScheme = e.target.value;
-                    this.applySettingsToPage();
+                    this.updateSetting('colorScheme', e.target.value);
                 });
             });
 
             // Акцентный цвет
             this.setupColorGrid('accentColorGrid', (color) => {
-                this.currentSettings.accentColor = color;
-                this.applySettingsToPage();
+                this.updateSetting('accentColor', color);
             });
 
             // Фон светлой темы
             this.setupColorGrid('bgColorLightGrid', (color) => {
-                this.currentSettings.bgColorLight = color;
-                this.applySettingsToPage();
+                this.updateSetting('bgColorLight', color);
             });
 
             // Фон тёмной темы
             this.setupColorGrid('bgColorDarkGrid', (color) => {
-                this.currentSettings.bgColorDark = color;
-                this.applySettingsToPage();
+                this.updateSetting('bgColorDark', color);
             });
 
             // Семейство шрифтов
             const fontFamilySelect = document.getElementById('fontFamilySelect');
             if (fontFamilySelect) {
                 fontFamilySelect.addEventListener('change', (e) => {
-                    this.currentSettings.fontFamily = e.target.value;
-                    this.applySettingsToPage();
+                    this.updateSetting('fontFamily', e.target.value);
                 });
             }
 
             // Размер шрифта
             this.setupSliderSync('fontSizeSlider', 'fontSizeInput', (value) => {
-                this.currentSettings.fontSize = value;
-                this.applySettingsToPage();
+                this.updateSetting('fontSize', value);
             });
 
             // Сворачивание по Escape
@@ -356,6 +458,44 @@
                     callback(option.dataset.color);
                 });
             });
+        }
+
+        updateSetting(key, value) {
+            this.currentSettings[key] = value;
+            this.applySettingsToPage();
+            this.persistSettingsToSession();
+        }
+
+        persistSettingsToSession() {
+            try {
+                sessionStorage.setItem('themeEditorSettings', JSON.stringify(this.currentSettings));
+            } catch (e) {
+                console.error('Ошибка сохранения настроек в sessionStorage:', e);
+            }
+        }
+
+        getCsrfToken() {
+            if (this.csrfToken) {
+                return this.csrfToken;
+            }
+
+            const cookieValue = document.cookie
+                .split('; ')
+                .find((row) => row.startsWith('_csrf='));
+            return cookieValue ? decodeURIComponent(cookieValue.split('=')[1]) : '';
+        }
+
+        buildServerSettings() {
+            const fontFamily = this.currentSettings.fontFamily === 'Rubik' ? '' : this.currentSettings.fontFamily;
+            return {
+                border_radius: this.currentSettings.borderRadius ? `${this.currentSettings.borderRadius}px` : '',
+                color_scheme: this.currentSettings.colorScheme || 'auto',
+                color_accent: this.currentSettings.accentColor || '',
+                color_background_light: this.currentSettings.bgColorLight || '',
+                color_background_dark: this.currentSettings.bgColorDark || '',
+                font_family: fontFamily || '',
+                font_size: this.currentSettings.fontSize ? `${this.currentSettings.fontSize}px` : ''
+            };
         }
 
         // Инициализация вкладок

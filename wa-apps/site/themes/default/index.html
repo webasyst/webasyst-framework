@@ -43,16 +43,14 @@
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
     {$wa->css()} {* links active plugins CSS *}
     {if empty($theme_settings.font_family)}{$theme_settings.font_family = 'Rubik'}{/if}
-    {if !empty($theme_settings.font_family) && ($theme_settings.font_family != 'Trebuchet MS' || $theme_settings.font_family != 'Verdana' || $theme_settings.font_family != 'Georgia, Times')}
-        {if $theme_settings.font_family == 'Fira Sans'}{$_real_font_name = 'Fira+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap'}{/if}
-        {if $theme_settings.font_family == 'Open Sans'}{$_real_font_name = 'Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
-        {if $theme_settings.font_family == 'PT Sans'}{$_real_font_name = 'PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
-        {if $theme_settings.font_family == 'PT Serif'}{$_real_font_name = 'PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
-        {if $theme_settings.font_family == 'PT Sans Caption'}{$_real_font_name = 'PT+Sans+Caption:ital,wght@0,400;0,700;1,400;1,700&display=swap|PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
-        {if $theme_settings.font_family == 'Roboto'}{$_real_font_name = 'Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
-        {if $theme_settings.font_family == 'Lora'}{$_real_font_name = 'Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
-        {if $theme_settings.font_family == 'Ubuntu'}{$_real_font_name = 'Ubuntu:ital,wght@0,400;0,700;1,400;1,700&display=swap'}{/if}
-        {if $theme_settings.font_family == 'Rubik'}{$_real_font_name = 'Rubik:ital,wght@0,300..900;1,300..900&display=swap'}{/if}
+    {$_real_font_name = ''}
+    {if $theme_settings.font_family == 'Rubik'}{$_real_font_name = 'Rubik:ital,wght@0,300..900;1,300..900&display=swap'}{/if}
+    {if $theme_settings.font_family == 'Mulish'}{$_real_font_name = 'Mulish:ital,wght@0,200..1000;1,200..1000&display=swap'}{/if}
+    {if $theme_settings.font_family == 'Source Sans 3'}{$_real_font_name = 'Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap'}{/if}
+    {if $theme_settings.font_family == 'Spectral'}{$_real_font_name = 'Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap'}{/if}
+    {if $theme_settings.font_family == 'Source Serif 4'}{$_real_font_name = 'Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap'}{/if}
+    {if $theme_settings.font_family == 'Nunito'}{$_real_font_name = 'Nunito:ital,wght@0,200..1000;1,200..1000&display=swap'}{/if}
+    {if $_real_font_name}
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family={$_real_font_name}" rel="stylesheet">
@@ -86,7 +84,11 @@
                 --element-border-radius: {$theme_settings.border_radius};
             {/if}
             {if $theme_settings.font_family}
-                --font-family: "{$theme_settings.font_family}", sans-serif;
+                {if $theme_settings.font_family == 'System'}
+                    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+                {else}
+                    --font-family: "{$theme_settings.font_family}",{if $theme_settings.font_family == 'Source Serif 4' || $theme_settings.font_family == 'Spectral'} serif{else} sans-serif{/if};
+                {/if}
             {/if}
             {if $theme_settings.font_size}
                 --font-size: {$theme_settings.font_size};
@@ -202,15 +204,24 @@
         {include file="theme-settings.html" inline}
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                // Инициализация редактора темы с возможностью передачи параметров
                 new ThemeEditor({
+                    saveUrl: '{$wa_backend_url}{$wa_app}/?module=design&theme=default&action=themeSettings',
+                    csrfToken: "{waRequest::cookie('_csrf', '')}",
+                    settingsArrayName: "{if $wa->param('app') == 'site'}settings{else}parent_settings{/if}",
+                    {if $theme_settings.border_radius}borderRadius: '{$theme_settings.border_radius|replace:'px':''}',{/if}
+                    colorScheme: '{$theme_settings.color_scheme}',
+                    accentColor: '{$theme_settings.color_accent}',
+                    bgColorLight: '{$theme_settings.color_background_light}',
+                    bgColorDark: '{$theme_settings.color_background_dark}',
+                    {if $theme_settings.font_family}fontFamily: '{$theme_settings.font_family}',{/if}
+                    {if $theme_settings.font_size}fontSize: '{$theme_settings.font_size}',{/if}
                     locale: {
-                        'save_settings_error': '[`Ошибка сохранения настроек`]',
-                        'save_success': '[`Настройки сохранены`]',
-                        'reset_confirm': '[`Сбросить все настройки к значениям по умолчанию?`]',
-                        'reset_success': '[`Настройки сброшены`]',
-                        'maximize_title': '[`Развернуть окно настроек`]',
-                        'restore_title': '[`Настроить тему`]'
+                        'save_settings_error': '{_wd('site', 'Settings saving error')|escape}',
+                        'save_success': '{_wd('site', 'Settings saved')|escape}',
+                        'reset_confirm': '{_wd('site', 'Rollback to the latest saved settings?')|escape}',
+                        'reset_success': '{_wd('site', 'Settings have been reset')|escape}',
+                        'maximize_title': '{_wd('site', 'Show settings dialog')|escape}',
+                        'restore_title': '{_wd('site', 'Set up design')|escape}'
                     }
                 });
             });

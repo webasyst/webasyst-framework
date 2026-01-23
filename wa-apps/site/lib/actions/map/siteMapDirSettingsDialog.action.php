@@ -72,7 +72,7 @@ class siteMapDirSettingsDialogAction extends waViewAction
                     }
 
                     if (!isset($route['_name'])) {
-                        if ($app_id == 'site') {
+                        if ($app_id == 'site' || ifset($route, 'url', '') === '*') {
                             if ($title = siteHelper::getDomain('title')) {
                                 $route_name = $title;
                             } else {
