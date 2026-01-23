@@ -233,7 +233,7 @@ class waModel
      * Set cache
      * @param waiCache $cache
      */
-    public function setCache(waiCache $cache = null)
+    public function setCache(?waiCache $cache = null)
     {
         $this->cache = $cache;
     }

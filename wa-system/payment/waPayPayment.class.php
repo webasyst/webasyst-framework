@@ -493,7 +493,14 @@ HTML
         $error = ifset($response, 'response', 'error', null);
         if ($response['status'] == 409) {
             if ($error == 'already_paid') {
-                $this->handlePayment($order_data['id'], $order_data['total'], $order_data['currency'], !!$this->getSettings('do_fiscalization'));
+                $r = $this->apiQuery('PAY', 'check', ['order_id' => $order_data['id']], waNet::METHOD_GET);
+                $this->handlePayment(
+                    $order_data['id'], $order_data['total'], $order_data['currency'], 
+                    ifset($r, 'response', 'do_fiscalization', !!$this->getSettings('do_fiscalization')),
+                    ifset($r, 'response', 'payment_method', null) === 'sbp',
+                    ifset($r, 'response', 'service_fee_percent', null),
+                    ifset($r, 'response', 'service_fee_value', null)
+                );
             //} else if ($error == 'already_in_progress') {
             //} else if ($error == 'already_refunded') {
             }
@@ -700,7 +707,8 @@ EOF;
 
     protected function apiQuery($endpoint, $subpath, $content, $method)
     {
-        $response = (new waServicesApi())->serviceCall($endpoint, $content, $method, [], $this->app_id.'/'.$this->merchant_id.'/'.$subpath);
+        $use_system_token = $endpoint !== 'PAY_SETTINGS';
+        $response = (new waServicesApi())->serviceCall($endpoint, $content, $method, [], $this->app_id.'/'.$this->merchant_id.'/'.$subpath, $use_system_token);
         return $response;
     }
 
@@ -764,12 +772,41 @@ EOF;
      * Called after an API request when it turns out that order is already paid.
      * This happens during a callback or during attempt to initialize payment.
      */
-    protected function handlePayment($order_id, $api_order_paid_amount, $currency, $do_fiscalization)
+    protected function handlePayment($order_id, $api_order_paid_amount, $currency, $do_fiscalization, $is_sbp=null, $fee_percent=null, $fee_amount=null)
     {
         $transaction = $transaction_data = $this->makeWaTransactionRow($order_id, $api_order_paid_amount, $currency);
         $transaction['type'] = self::OPERATION_CAPTURE;
         $transaction['state'] = self::STATE_CAPTURED;
         unset($transaction['view_data']);
+
+        $save_params = [];
+        if ($fee_percent) {
+            $save_params['payment_fee_percent'] = $fee_percent;
+            if ($fee_amount === null) {
+                $fee_amount = round($api_order_paid_amount*$fee_percent/100, 2);
+            }
+        }
+        if ($fee_amount) {
+            $save_params['payment_fee'] = $fee_amount;
+        }
+        if ($is_sbp) {
+            $save_params['payment_is_sbp'] = 1;
+        }
+        if ($save_params) {
+            try {
+                $this->getAdapter()->setOrderParams($order_id, $save_params);
+            } catch (Throwable $e) {
+                self::log($this->id, [
+                    'Unable to save order params',
+                    $e->getMessage(),
+                    $e instanceof waException ? $e->getFullTraceAsString() : $e->getTraceAsString(),
+                    'method' => __METHOD__,
+                    'order_id' => $order_id,
+                    'save_params' => $save_params,
+                    'request_url' => wa()->getConfig()->getRequestUrl(),
+                ]);
+            }
+        }
 
         $transaction_data = $this->saveTransaction($transaction) + $transaction_data;
         $this->execAppCallback(self::CALLBACK_PAYMENT, $transaction_data);
@@ -858,7 +895,13 @@ EOF;
         if ($request['state'] == waPayment::STATE_REFUNDED || $request['state'] == waPayment::STATE_PARTIAL_REFUNDED) {
             $this->handleRefund($order_id, $request['amount'], $request['currency_id'], $request['state'] == waPayment::STATE_REFUNDED);
         } else if ($request['state'] == waPayment::STATE_AUTH || $request['state'] == waPayment::STATE_CAPTURED) {
-            $this->handlePayment($order_id, $request['amount'], $request['currency_id'], !empty($request['do_fiscalization']));
+            $this->handlePayment(
+                $order_id, $request['amount'], $request['currency_id'],
+                !empty($request['do_fiscalization']),
+                ifset($request, 'payment_method', null) === 'sbp',
+                ifset($request, 'service_fee_percent', null),
+                ifset($request, 'service_fee_value', null)
+            );
         }
 
         return $callback_response;

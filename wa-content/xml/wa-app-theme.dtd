@@ -57,8 +57,9 @@
 <!ELEMENT setting (value+,filename?,name+,tooltip*,description*,options?)>
 <!ATTLIST setting
     var CDATA #REQUIRED
-    control_type (text|select|checkbox|radio|color|image|image_select|paragraph|group_divider) "text"
+    control_type (text|select|checkbox|radio|color|color_select|image|image_select|paragraph|group_divider) "text"
     invisible (true|false) "false"
+    icon_class CDATA #IMPLIED
 >
 
 <!ELEMENT value (#PCDATA)>
