@@ -28,12 +28,10 @@
     --theme-editor-radio-border: light-dark(#e9ecef, #333333);
     --theme-editor-radio-bg: light-dark(#ffffff, #1a1a1a);
     --theme-editor-radio-color: light-dark(#495057, #dee2e6);
-    --theme-editor-radio-checked-bg: light-dark(rgba(165, 56, 220, 0.05), rgba(165, 56, 220, 0.1));
     --theme-editor-radio-checked-color: light-dark(#212529, #ffffff);
     --theme-editor-radio-hover-border: light-dark(#adb5bd, #495057);
     --theme-editor-color-option-active-border: light-dark(#212529, #ffffff);
-    --theme-editor-color-option-active-outline: light-dark(#ffffff, #1a1a1a);
-    --theme-editor-color-option-check-color: light-dark(#ffffff, #000000);
+    --theme-editor-color-option-check-color: light-dark(#000000, #ffffff);
     --theme-editor-select-border: light-dark(#e9ecef, #333333);
     --theme-editor-select-bg: light-dark(#ffffff, #1a1a1a);
     --theme-editor-select-color: light-dark(#212529, #ffffff);
@@ -46,6 +44,10 @@
     --theme-editor-btn-secondary-hover-bg: light-dark(#dee2e6, #404040);
     --theme-editor-color-grid-bg-light: #fff;
     --theme-editor-color-grid-bg-dark: #1a1a1a;
+    --theme-editor-font-size: 14px;
+    --theme-editor-font-size-sm: 12px;
+    --theme-editor-font-size-lg: 16px;
+    --theme-editor-radius: var(--element-border-radius, 12px);
 }
 
 @supports not (color: light-dark(white, black)) {
@@ -76,12 +78,10 @@
         --theme-editor-radio-border: #e9ecef;
         --theme-editor-radio-bg: #ffffff;
         --theme-editor-radio-color: #495057;
-        --theme-editor-radio-checked-bg: rgba(165, 56, 220, 0.05);
         --theme-editor-radio-checked-color: #212529;
         --theme-editor-radio-hover-border: #adb5bd;
         --theme-editor-color-option-active-border: #212529;
-        --theme-editor-color-option-active-outline: #ffffff;
-        --theme-editor-color-option-check-color: #ffffff;
+        --theme-editor-color-option-check-color: #000000;
         --theme-editor-select-border: #e9ecef;
         --theme-editor-select-bg: #ffffff;
         --theme-editor-select-color: #212529;
@@ -92,6 +92,10 @@
         --theme-editor-btn-secondary-bg: #e9ecef;
         --theme-editor-btn-secondary-color: #495057;
         --theme-editor-btn-secondary-hover-bg: #dee2e6;
+        --theme-editor-font-size: 14px;
+        --theme-editor-font-size-sm: 12px;
+        --theme-editor-font-size-lg: 16px;
+        --theme-editor-radius: var(--element-border-radius, 12px);
     }
 }
 
@@ -111,7 +115,7 @@
 
     padding: 12px 20px;
     border: none;
-    border-radius: 12px;
+    border-radius: var(--theme-editor-radius, 12px);
 
     background: var(--accent-color, #A538DC);
     color: #ffffff;
@@ -249,7 +253,7 @@
     max-height: 85vh;
 
     background: var(--theme-editor-modal-content-bg);
-    border-radius: 16px;
+    border-radius: calc(var(--theme-editor-radius, 12px) + 4px);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
                 0 10px 30px rgba(0, 0, 0, 0.2);
 
@@ -261,6 +265,8 @@
     pointer-events: auto;
 
     transform: translate(-50%, -50%);
+    font-family: var(--font-family, inherit);
+    font-size: var(--theme-editor-font-size, 14px);
 
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -289,11 +295,24 @@
     user-select: none;
 }
 
+.theme-editor-title-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: .5rem;
+    color: var(--theme-editor-title-color);
+}
+
+.theme-editor-title-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
 .theme-editor-title {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 16px;
+    font-size: var(--theme-editor-font-size-lg, 16px);
     font-weight: 600;
     color: var(--theme-editor-title-color);
 }
@@ -310,7 +329,7 @@
     padding: 4px;
     cursor: pointer;
     color: var(--theme-editor-header-action-color);
-    border-radius: 8px;
+    border-radius: calc(var(--theme-editor-radius, 12px) - 4px);
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
@@ -341,10 +360,10 @@
 
     padding: 12px 16px;
     border: none;
-    border-radius: 8px 8px 0 0;
+    border-radius: calc(var(--theme-editor-radius, 12px) - 4px) calc(var(--theme-editor-radius, 12px) - 4px) 0 0;
     background: none;
 
-    font-size: 14px;
+    font-size: var(--theme-editor-font-size, 14px);
     font-weight: 500;
     font-family: inherit;
     color: var(--theme-editor-tab-color);
@@ -366,6 +385,7 @@
 
 .theme-editor-tab svg {
     flex-shrink: 0;
+    width: 1em;
 }
 
 /* Тело редактора */
@@ -402,7 +422,7 @@
 }
 
 /* Настройка */
-.theme-editor-setting {
+.theme-editor-setting:not(.title) {
     margin-bottom: 28px;
 }
 
@@ -410,14 +430,18 @@
     margin-bottom: 0;
 }
 
+.theme-editor-setting.is-hidden {
+    display: none;
+}
+
 .theme-editor-label {
     display: block;
     margin-bottom: 12px;
 }
 
-.theme-editor-label > span:first-child {
+.theme-editor-label > span:first-child:not(.theme-editor-hint) {
     display: block;
-    font-size: 14px;
+    font-size: var(--theme-editor-font-size, 14px);
     font-weight: 600;
     color: var(--theme-editor-label-color);
     margin-bottom: 4px;
@@ -425,7 +449,7 @@
 
 .theme-editor-hint {
     display: block;
-    font-size: 12px;
+    font-size: var(--theme-editor-font-size-sm, 12px);
     color: var(--theme-editor-hint-color);
 }
 
@@ -440,8 +464,9 @@
 .theme-editor-slider {
     flex: 1;
     max-height: 6px;
-    border-radius: 3px;
+    border-radius: calc(var(--theme-editor-radius, 12px) - 9px);
     background: var(--theme-editor-slider-bg);
+    border: 0;
     outline: none;
     -webkit-appearance: none;
     appearance: none;
@@ -489,7 +514,7 @@
     padding: 8px 12px;
     background: var(--theme-editor-value-input-bg);
     border: 1px solid var(--theme-editor-value-input-border);
-    border-radius: 8px;
+    border-radius: calc(var(--theme-editor-radius, 12px) - 4px);
     min-width: 80px;
 }
 
@@ -498,7 +523,7 @@
     border: none;
     background: none;
     border-radius: 0;
-    font-size: 14px;
+    font-size: var(--theme-editor-font-size, 14px);
     font-weight: 600;
     color: var(--theme-editor-value-input-color);
     text-align: right;
@@ -513,14 +538,15 @@
 }
 
 .theme-editor-unit {
-    font-size: 12px;
+    font-size: var(--theme-editor-font-size-sm, 12px);
     color: var(--theme-editor-unit-color);
 }
 
 /* Радио кнопки */
 .theme-editor-radio-group {
     display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
 .theme-editor-radio {
@@ -539,17 +565,16 @@
     gap: 12px;
     padding: 12px 16px;
     border: 2px solid var(--theme-editor-radio-border);
-    border-radius: 10px;
+    border-radius: calc(var(--theme-editor-radius, 12px) - 2px);
     background: var(--theme-editor-radio-bg);
     width: 100%;
     transition: all 0.2s ease;
-    font-size: 14px;
+    font-size: var(--theme-editor-font-size, 14px);
     color: var(--theme-editor-radio-color);
 }
 
 .theme-editor-radio input[type="radio"]:checked + .theme-editor-radio-label {
     border-color: var(--accent-color, #A538DC);
-    background: var(--theme-editor-radio-checked-bg);
     color: var(--theme-editor-radio-checked-color);
 }
 
@@ -566,14 +591,14 @@
 
 #bgColorLightGrid {
     background-color: var(--theme-editor-color-grid-bg-light);
-    border-radius: 1.25rem;
+    border-radius: calc(var(--theme-editor-radius, 12px) + 8px);
     padding: 0.75rem;
     margin: 0 -0.75rem;
 }
 
 #bgColorDarkGrid {
     background-color: var(--theme-editor-color-grid-bg-dark);
-    border-radius: 1.25rem;
+    border-radius: calc(var(--theme-editor-radius, 12px) + 8px);
     padding: 0.75rem;
     margin: 0 -0.75rem;
 }
@@ -582,11 +607,15 @@
     width: 100%;
     aspect-ratio: 1;
     border: 3px solid transparent;
-    border-radius: 10px;
+    border-radius: calc(var(--theme-editor-radius, 12px) - 2px);
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 0;
     position: relative;
+}
+
+.theme-editor-color-option svg {
+    display: none;
 }
 
 .theme-editor-color-option:hover {
@@ -595,35 +624,34 @@
 
 .theme-editor-color-option.active {
     border-color: var(--theme-editor-color-option-active-border);
-    box-shadow: 0 0 0 2px var(--theme-editor-color-option-active-outline),
-                0 4px 8px rgba(0, 0, 0, 0.2);
+    color: var(--theme-editor-color-option-check-color);
 }
 
-.theme-editor-color-option.active::after {
-    content: '✓';
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--theme-editor-color-option-check-color);
-    font-size: 18px;
-    font-weight: bold;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+.theme-editor-color-option.active svg {
+    display: revert;
+    width: 1em;
 }
 
 /* Селект */
 .theme-editor-select {
     width: 100%;
-    padding: 12px 16px;
+    padding: 12px 40px 12px 16px;
     border: 2px solid var(--theme-editor-select-border);
-    border-radius: 10px;
+    border-radius: calc(var(--theme-editor-radius, 12px) - 2px);
     background: var(--theme-editor-select-bg);
-    font-size: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%236c757d' d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 22px 22px;
+    font-size: var(--theme-editor-font-size, 14px);
     font-family: inherit;
     color: var(--theme-editor-select-color);
     cursor: pointer;
     transition: all 0.2s ease;
+    padding-right: 40px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 .theme-editor-select:hover {
@@ -650,8 +678,8 @@
     flex: 1;
     padding: 12px 24px;
     border: none;
-    border-radius: 10px;
-    font-size: 14px;
+    border-radius: calc(var(--theme-editor-radius, 12px) - 2px);
+    font-size: var(--theme-editor-font-size, 14px);
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
@@ -710,7 +738,7 @@
 
     .theme-editor-tab {
         padding: 10px 8px;
-        font-size: 12px;
+        font-size: var(--theme-editor-font-size-sm, 12px);
     }
 
     .theme-editor-tab > span:not(:first-child) {

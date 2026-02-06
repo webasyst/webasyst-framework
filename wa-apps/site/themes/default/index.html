@@ -70,6 +70,13 @@
 
     <!-- custom colors -->
     <style>
+        {$_accent_color_css = $theme_settings.color_accent}
+        {if $theme_settings.color_accent == '#000000'}
+            {$_accent_color_css = 'light-dark(#000000, #888888)'}
+        {/if}
+        {if $theme_settings.color_accent == '#666666'}
+            {$_accent_color_css = 'light-dark(#666666, #555555)'}
+        {/if}
         :root {
             {if $theme_settings.color_scheme == 'light'}
                 color-scheme: light;
@@ -77,7 +84,7 @@
             {if $theme_settings.color_scheme == 'dark'}
                 color-scheme: dark;
             {/if}
-            --accent-color: {$theme_settings.color_accent};
+            --accent-color: {$_accent_color_css};
             --bg-color-light: {$theme_settings.color_background_light};
             --bg-color-dark: {$theme_settings.color_background_dark};
             {if $theme_settings.border_radius}
@@ -93,6 +100,11 @@
             {if $theme_settings.font_size}
                 --font-size: {$theme_settings.font_size};
             {/if}
+        }
+        @supports not (color: light-dark(white, black)) {
+            :root {
+                --accent-color: {$theme_settings.color_accent};
+            }
         }
         {if !empty($is_blockpage)}
             .maincontent > .container { margin: 0; max-width: unset; }
@@ -186,6 +198,29 @@
                 document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
             }
 
+            function adjustThemeEditorTriggerPosition() {
+                const trigger = document.querySelector('.theme-editor-trigger-wrapper');
+                if (!trigger) {
+                    return;
+                }
+
+                const cookie = document.getElementById('cookie-agreement');
+                if (cookie) {
+                    if (!trigger.dataset.baseBottom) {
+                        trigger.dataset.baseBottom = getComputedStyle(trigger).bottom;
+                    }
+                    const base = parseFloat(trigger.dataset.baseBottom) || 0;
+                    const gap = 12;
+                    const bottom = base + cookie.getBoundingClientRect().height + gap;
+                    trigger.style.bottom = `${bottom}px`;
+                } else if (trigger.dataset.baseBottom) {
+                    trigger.style.bottom = trigger.dataset.baseBottom;
+                    delete trigger.dataset.baseBottom;
+                } else {
+                    trigger.style.bottom = '';
+                }
+            }
+
             function acceptCookies() {
                 setCookie('cookie_allowed', '1');
                 const popup = document.getElementById('cookie-agreement');
@@ -193,7 +228,10 @@
                 popup.style.opacity = '0';
                 popup.style.transform = 'translateY(1rem)';
 
-                setTimeout(() => popup.remove(), 300);
+                setTimeout(() => {
+                    popup.remove();
+                    adjustThemeEditorTriggerPosition();
+                }, 300);
             }
             {/literal}
         </script>
@@ -224,6 +262,11 @@
                         'restore_title': '{_wd('site', 'Set up design')|escape}'
                     }
                 });
+
+                if (typeof window.adjustThemeEditorTriggerPosition === 'function') {
+                    window.adjustThemeEditorTriggerPosition();
+                    window.addEventListener('resize', window.adjustThemeEditorTriggerPosition);
+                }
             });
         </script>
     {/if}

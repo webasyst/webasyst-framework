@@ -181,7 +181,7 @@
       </options>
     </setting>
     <setting var="border_radius" control_type="text">
-      <value>12px</value>
+      <value>25px</value>
       <name locale="ru_RU">Скругление углов элементов</name>
       <name locale="en_US">Element border radius</name>
       <description locale="ru_RU">Введенное значение будет использовано для всех элементов сайта</description>
@@ -219,6 +219,14 @@
       <description locale="ru_RU"></description>
       <description locale="en_US"></description>
       <options>
+        <option value="#000000">
+          <name locale="ru_RU">Чёрный</name>
+          <name locale="en_US">Black</name>
+        </option>
+        <option value="#666666">
+          <name locale="ru_RU">Тёмно-серый</name>
+          <name locale="en_US">Dark gray</name>
+        </option>
         <option value="#A538DC">
           <name locale="ru_RU">Сиреневый</name>
           <name locale="en_US">Violet</name>
@@ -240,7 +248,7 @@
           <name locale="en_US">Olive</name>
         </option>
         <option value="#2E941A">
-          <name locale="ru_RU">Зеленый</name>
+          <name locale="ru_RU">Зелёный</name>
           <name locale="en_US">Green</name>
         </option>
         <option value="#178269">
@@ -297,7 +305,7 @@
           <name locale="en_US">Light olive</name>
         </option>
         <option value="#E8EFE7">
-          <name locale="ru_RU">Светло-зеленый</name>
+          <name locale="ru_RU">Светло-зелёный</name>
           <name locale="en_US">Light green</name>
         </option>
         <option value="#E4ECEA">
@@ -320,57 +328,57 @@
     </setting>
     <setting var="color_background_dark" control_type="color_select">
       <value>#000000</value>
-      <name locale="ru_RU">Фон темной темы</name>
+      <name locale="ru_RU">Фон тёмной темы</name>
       <name locale="en_US">Background color for dark theme</name>
       <description locale="ru_RU"></description>
       <description locale="en_US"></description>
       <options>
         <option value="#000000">
-          <name locale="ru_RU">Черный</name>
+          <name locale="ru_RU">Чёрный</name>
           <name locale="en_US">Black</name>
         </option>
         <option value="#262626">
-          <name locale="ru_RU">Темно-серый</name>
+          <name locale="ru_RU">Тёмно-серый</name>
           <name locale="en_US">Dark gray</name>
         </option>
         <option value="#28212C">
-          <name locale="ru_RU">Темно-сиреневый</name>
+          <name locale="ru_RU">Тёмно-сиреневый</name>
           <name locale="en_US">Dark purple</name>
         </option>
         <option value="#261C23">
-          <name locale="ru_RU">Темно-розовый</name>
+          <name locale="ru_RU">Тёмно-розовый</name>
           <name locale="en_US">Dark pink</name>
         </option>
         <option value="#261D1C">
-          <name locale="ru_RU">Темно-красный</name>
+          <name locale="ru_RU">Тёмно-красный</name>
           <name locale="en_US">Dark red</name>
         </option>
         <option value="#2B2621">
-          <name locale="ru_RU">Темно-оранжевый</name>
+          <name locale="ru_RU">Тёмно-оранжевый</name>
           <name locale="en_US">Dark orange</name>
         </option>
         <option value="#292B22">
-          <name locale="ru_RU">Темно-оливковый</name>
+          <name locale="ru_RU">Тёмно-оливковый</name>
           <name locale="en_US">Dark olive</name>
         </option>
         <option value="#272C26">
-          <name locale="ru_RU">Темно-зеленый</name>
+          <name locale="ru_RU">Тёмно-зеленый</name>
           <name locale="en_US">Dark green</name>
         </option>
         <option value="#252D2B">
-          <name locale="ru_RU">Темно-бирюзовый</name>
+          <name locale="ru_RU">Тёмно-бирюзовый</name>
           <name locale="en_US">Dark turquoise</name>
         </option>
         <option value="#252C2D">
-          <name locale="ru_RU">Темно-голубой</name>
+          <name locale="ru_RU">Тёмно-голубой</name>
           <name locale="en_US">Dark blue</name>
         </option>
         <option value="#23262E">
-          <name locale="ru_RU">Темно-синий</name>
+          <name locale="ru_RU">Тёмно-синий</name>
           <name locale="en_US">Dark blue</name>
         </option>
         <option value="#27242D">
-          <name locale="ru_RU">Темно-фиолетовый</name>
+          <name locale="ru_RU">Тёмно-фиолетовый</name>
           <name locale="en_US">Dark purple</name>
         </option>
       </options>
@@ -379,7 +387,7 @@
       <value></value>
       <name locale="ru_RU">Свой CSS</name>
       <name locale="en_US">Custom CSS</name>
-      <description locale="ru_RU">Введенный CSS-код будет помещен в &amp;lt;style&amp;gt;...&amp;lt;/style&amp;gt; внутри блока &amp;lt;head&amp;gt; на каждой странице сайта</description>
+      <description locale="ru_RU">Введённый CSS-код будет помещен в &amp;lt;style&amp;gt;...&amp;lt;/style&amp;gt; внутри блока &amp;lt;head&amp;gt; на каждой странице сайта</description>
       <description locale="en_US">This CSS code will be added within &amp;lt;style&amp;gt;...&amp;lt;/style&amp;gt; on every site page’s &amp;lt;head&amp;gt; block</description>
     </setting>
     <setting var="pagination" control_type="select">

@@ -133,12 +133,12 @@
                                                     <i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i>
                                                  </a>
                                              </li>
+                                             <li class="wa-hide-m"><a href="{$wa->myUrl()}">{$wa->user('firstname')|default:'[`My account`]'}</a></li>
                                          {else}
-                                             <li>{$wa->user('firstname')|default:'[`My account`]'}</li>
+                                             <li class="wa-hide-m">{$wa->user('firstname')|default:'[`My account`]'}</li>
                                          {/if}
-                                         <li><a href="?logout" class="nowrap">[`Logout`]</a></li>
                                      {else}
-                                         <li>
+                                         <li class="wa-hide-m">
                                              <a href="{$wa->loginUrl()}" class="not-visited">
                                                  <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
                                                      <use xlink:href="#img-person"></use>

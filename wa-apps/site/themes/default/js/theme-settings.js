@@ -70,6 +70,30 @@ function applyThemeGoogleFont(fontFamily) {
     }
 }
 
+function applyThemeEditorFontVars(root, fontSize) {
+    const baseSize = parseInt(fontSize, 10);
+    if (!Number.isFinite(baseSize) || baseSize <= 0) {
+        return;
+    }
+
+    const smSize = Math.max(10, baseSize - 2);
+    const lgSize = Math.max(12, baseSize + 2);
+
+    root.style.setProperty('--theme-editor-font-size', baseSize + 'px');
+    root.style.setProperty('--theme-editor-font-size-sm', smSize + 'px');
+    root.style.setProperty('--theme-editor-font-size-lg', lgSize + 'px');
+}
+
+function getAccentColorCssValue(accentColor) {
+    if (accentColor === '#000000') {
+        return 'light-dark(#000000, #888888)';
+    }
+    if (accentColor === '#666666') {
+        return 'light-dark(#666666, #555555)';
+    }
+    return accentColor;
+}
+
 // Применяем сохраненные настройки сразу при загрузке скрипта
 (function() {
     'use strict';
@@ -90,7 +114,7 @@ function applyThemeGoogleFont(fontFamily) {
                 root.style.setProperty('color-scheme', 'dark');
             }
             if (settings.accentColor) {
-                root.style.setProperty('--accent-color', settings.accentColor);
+                root.style.setProperty('--accent-color', getAccentColorCssValue(settings.accentColor));
             }
             if (settings.bgColorLight) {
                 root.style.setProperty('--bg-color-light', settings.bgColorLight);
@@ -104,6 +128,7 @@ function applyThemeGoogleFont(fontFamily) {
             }
             if (settings.fontSize) {
                 root.style.setProperty('--font-size', settings.fontSize + 'px');
+                applyThemeEditorFontVars(root, settings.fontSize);
             }
         }
     } catch (e) {
@@ -129,6 +154,9 @@ function applyThemeGoogleFont(fontFamily) {
             this.saveUrl = options.saveUrl || '';
             this.csrfToken = options.csrfToken || '';
             this.settingsArrayName = options.settingsArrayName || 'settings';
+            this.windowStateKey = 'themeEditorWindowState';
+            this.ui = {};
+            this.colorGridsById = {};
 
             // Настройки по умолчанию
             this.defaultSettings = {
@@ -148,6 +176,7 @@ function applyThemeGoogleFont(fontFamily) {
             // Состояние окна
             this.isMinimized = false;
             this.savedTransform = null;
+            this.windowState = null;
 
             // Параметры для перемещения окна
             this.isDragging = false;
@@ -164,11 +193,43 @@ function applyThemeGoogleFont(fontFamily) {
 
         init() {
             this.loadSettings();
+            this.loadWindowState();
+            this.cacheDom();
             this.applySettingsToPage();
             this.applySettingsToUI();
             this.setupEventListeners();
             this.initializeTabs();
-            this.centerModal();
+            this.restoreWindowState();
+        }
+
+        cacheDom() {
+            this.ui.borderRadiusSlider = document.getElementById('borderRadiusSlider');
+            this.ui.borderRadiusInput = document.getElementById('borderRadiusInput');
+            this.ui.fontSizeSlider = document.getElementById('fontSizeSlider');
+            this.ui.fontSizeInput = document.getElementById('fontSizeInput');
+            this.ui.fontFamilySelect = document.getElementById('fontFamilySelect');
+            this.ui.colorSchemeRadios = Array.from(document.querySelectorAll('input[name="colorScheme"]'));
+            this.ui.header = document.getElementById('themeEditorHeader');
+            this.ui.tabs = Array.from(document.querySelectorAll('.theme-editor-tab'));
+            this.ui.panels = Array.from(document.querySelectorAll('.theme-editor-panel'));
+            this.ui.colorBlocks = {
+                light: document.querySelector('[data-theme-color-block="light"]'),
+                dark: document.querySelector('[data-theme-color-block="dark"]')
+            };
+
+            this.colorGridsById = {
+                accentColorGrid: this.buildColorGrid('accentColorGrid'),
+                bgColorLightGrid: this.buildColorGrid('bgColorLightGrid'),
+                bgColorDarkGrid: this.buildColorGrid('bgColorDarkGrid')
+            };
+        }
+
+        buildColorGrid(gridId) {
+            const grid = document.getElementById(gridId);
+            return {
+                grid,
+                options: grid ? Array.from(grid.querySelectorAll('.theme-editor-color-option')) : []
+            };
         }
 
         // Загрузка сохраненных настроек
@@ -180,6 +241,18 @@ function applyThemeGoogleFont(fontFamily) {
                 }
             } catch (e) {
                 console.error('Ошибка загрузки настроек:', e);
+            }
+        }
+
+        // Загрузка состояния окна
+        loadWindowState() {
+            try {
+                const saved = sessionStorage.getItem(this.windowStateKey);
+                if (saved) {
+                    this.windowState = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Ошибка загрузки состояния окна:', e);
             }
         }
 
@@ -246,18 +319,16 @@ function applyThemeGoogleFont(fontFamily) {
         // Применение настроек к UI редактора
         applySettingsToUI() {
             // Скругление углов
-            const borderRadiusSlider = document.getElementById('borderRadiusSlider');
-            const borderRadiusInput = document.getElementById('borderRadiusInput');
-            if (borderRadiusSlider && borderRadiusInput) {
-                borderRadiusSlider.value = this.currentSettings.borderRadius;
-                borderRadiusInput.value = this.currentSettings.borderRadius;
+            if (this.ui.borderRadiusSlider && this.ui.borderRadiusInput) {
+                this.ui.borderRadiusSlider.value = this.currentSettings.borderRadius;
+                this.ui.borderRadiusInput.value = this.currentSettings.borderRadius;
             }
 
             // Цветовая схема
-            const colorSchemeRadios = document.querySelectorAll('input[name="colorScheme"]');
-            colorSchemeRadios.forEach(radio => {
+            this.ui.colorSchemeRadios.forEach(radio => {
                 radio.checked = radio.value === this.currentSettings.colorScheme;
             });
+            this.updateColorBlocksVisibility(this.currentSettings.colorScheme);
 
             // Акцентный цвет
             this.setActiveColor('accentColorGrid', this.currentSettings.accentColor);
@@ -269,17 +340,14 @@ function applyThemeGoogleFont(fontFamily) {
             this.setActiveColor('bgColorDarkGrid', this.currentSettings.bgColorDark);
 
             // Семейство шрифтов
-            const fontFamilySelect = document.getElementById('fontFamilySelect');
-            if (fontFamilySelect) {
-                fontFamilySelect.value = this.currentSettings.fontFamily;
+            if (this.ui.fontFamilySelect) {
+                this.ui.fontFamilySelect.value = this.currentSettings.fontFamily;
             }
 
             // Размер шрифта
-            const fontSizeSlider = document.getElementById('fontSizeSlider');
-            const fontSizeInput = document.getElementById('fontSizeInput');
-            if (fontSizeSlider && fontSizeInput) {
-                fontSizeSlider.value = this.currentSettings.fontSize;
-                fontSizeInput.value = this.currentSettings.fontSize;
+            if (this.ui.fontSizeSlider && this.ui.fontSizeInput) {
+                this.ui.fontSizeSlider.value = this.currentSettings.fontSize;
+                this.ui.fontSizeInput.value = this.currentSettings.fontSize;
             }
         }
 
@@ -300,7 +368,7 @@ function applyThemeGoogleFont(fontFamily) {
             }
 
             // Цвета
-            root.style.setProperty('--accent-color', this.currentSettings.accentColor);
+            root.style.setProperty('--accent-color', getAccentColorCssValue(this.currentSettings.accentColor));
             root.style.setProperty('--bg-color-light', this.currentSettings.bgColorLight);
             root.style.setProperty('--bg-color-dark', this.currentSettings.bgColorDark);
 
@@ -312,16 +380,17 @@ function applyThemeGoogleFont(fontFamily) {
 
             // Размер шрифта
             root.style.setProperty('--font-size', this.currentSettings.fontSize + 'px');
+            applyThemeEditorFontVars(root, this.currentSettings.fontSize);
         }
 
         // Установка активного цвета в сетке
         setActiveColor(gridId, color) {
-            const grid = document.getElementById(gridId);
-            if (!grid) return;
+            const data = this.colorGridsById[gridId];
+            if (!data || !data.grid) return;
 
-            const options = grid.querySelectorAll('.theme-editor-color-option');
-            options.forEach(option => {
-                if (option.dataset.color.toLowerCase() === color.toLowerCase()) {
+            const compareColor = (color || '').toLowerCase();
+            data.options.forEach(option => {
+                if ((option.dataset.color || '').toLowerCase() === compareColor) {
                     option.classList.add('active');
                 } else {
                     option.classList.remove('active');
@@ -360,9 +429,8 @@ function applyThemeGoogleFont(fontFamily) {
             }
 
             // Перемещение окна
-            const header = document.getElementById('themeEditorHeader');
-            if (header) {
-                header.addEventListener('mousedown', (e) => this.dragStart(e));
+            if (this.ui.header) {
+                this.ui.header.addEventListener('mousedown', (e) => this.dragStart(e));
                 document.addEventListener('mousemove', (e) => this.drag(e));
                 document.addEventListener('mouseup', () => this.dragEnd());
             }
@@ -373,10 +441,10 @@ function applyThemeGoogleFont(fontFamily) {
             });
 
             // Цветовая схема
-            const colorSchemeRadios = document.querySelectorAll('input[name="colorScheme"]');
-            colorSchemeRadios.forEach(radio => {
+            this.ui.colorSchemeRadios.forEach(radio => {
                 radio.addEventListener('change', (e) => {
                     this.updateSetting('colorScheme', e.target.value);
+                    this.updateColorBlocksVisibility(e.target.value);
                 });
             });
 
@@ -396,9 +464,8 @@ function applyThemeGoogleFont(fontFamily) {
             });
 
             // Семейство шрифтов
-            const fontFamilySelect = document.getElementById('fontFamilySelect');
-            if (fontFamilySelect) {
-                fontFamilySelect.addEventListener('change', (e) => {
+            if (this.ui.fontFamilySelect) {
+                this.ui.fontFamilySelect.addEventListener('change', (e) => {
                     this.updateSetting('fontFamily', e.target.value);
                 });
             }
@@ -418,8 +485,8 @@ function applyThemeGoogleFont(fontFamily) {
 
         // Синхронизация слайдера и инпута
         setupSliderSync(sliderId, inputId, callback) {
-            const slider = document.getElementById(sliderId);
-            const input = document.getElementById(inputId);
+            const slider = sliderId === 'borderRadiusSlider' ? this.ui.borderRadiusSlider : this.ui.fontSizeSlider;
+            const input = inputId === 'borderRadiusInput' ? this.ui.borderRadiusInput : this.ui.fontSizeInput;
 
             if (!slider || !input) return;
 
@@ -444,14 +511,13 @@ function applyThemeGoogleFont(fontFamily) {
 
         // Настройка цветовой сетки
         setupColorGrid(gridId, callback) {
-            const grid = document.getElementById(gridId);
-            if (!grid) return;
+            const data = this.colorGridsById[gridId];
+            if (!data || !data.grid) return;
 
-            const options = grid.querySelectorAll('.theme-editor-color-option');
-            options.forEach(option => {
+            data.options.forEach(option => {
                 option.addEventListener('click', () => {
                     // Убираем active со всех опций в этой сетке
-                    options.forEach(opt => opt.classList.remove('active'));
+                    data.options.forEach(opt => opt.classList.remove('active'));
                     // Добавляем active к выбранной
                     option.classList.add('active');
                     // Вызываем callback
@@ -471,6 +537,21 @@ function applyThemeGoogleFont(fontFamily) {
                 sessionStorage.setItem('themeEditorSettings', JSON.stringify(this.currentSettings));
             } catch (e) {
                 console.error('Ошибка сохранения настроек в sessionStorage:', e);
+            }
+        }
+
+        persistWindowState() {
+            try {
+                const payload = {
+                    isOpen: !!(this.modal && this.modal.classList.contains('active')),
+                    isMinimized: !!this.isMinimized,
+                    xOffset: Number.isFinite(this.xOffset) ? this.xOffset : 0,
+                    yOffset: Number.isFinite(this.yOffset) ? this.yOffset : 0,
+                    savedTransform: this.savedTransform || ''
+                };
+                sessionStorage.setItem(this.windowStateKey, JSON.stringify(payload));
+            } catch (e) {
+                console.error('Ошибка сохранения состояния окна:', e);
             }
         }
 
@@ -500,8 +581,8 @@ function applyThemeGoogleFont(fontFamily) {
 
         // Инициализация вкладок
         initializeTabs() {
-            const tabs = document.querySelectorAll('.theme-editor-tab');
-            const panels = document.querySelectorAll('.theme-editor-panel');
+            const tabs = this.ui.tabs;
+            const panels = this.ui.panels;
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
@@ -530,7 +611,13 @@ function applyThemeGoogleFont(fontFamily) {
                 this.modal.classList.remove('minimized');
                 this.isMinimized = false;
                 this.openBtn.classList.remove('minimized');
-                this.centerModal();
+                if (this.savedTransform) {
+                    this.modalContent.style.transform = this.savedTransform;
+                } else {
+                    this.centerModal();
+                }
+                this.snapToPixel();
+                this.persistWindowState();
             }
         }
 
@@ -540,6 +627,7 @@ function applyThemeGoogleFont(fontFamily) {
                 this.modal.classList.remove('active', 'minimized');
                 this.isMinimized = false;
                 this.openBtn.classList.remove('minimized');
+                this.persistWindowState();
             }
         }
 
@@ -550,23 +638,7 @@ function applyThemeGoogleFont(fontFamily) {
                 const currentTransform = this.modalContent.style.transform;
                 this.savedTransform = currentTransform; // || 'translate(-50%, -50%)';
 
-                // Вычисляем позицию кнопки для анимации "в кнопку"
-                const btnRect = this.openBtn.getBoundingClientRect();
-                const btnCenter = {
-                    x: btnRect.left + btnRect.width / 2,
-                    y: btnRect.top + btnRect.height / 2
-                };
-                const windowCenter = {
-                    x: window.innerWidth / 2,
-                    y: window.innerHeight / 2
-                };
-
-                // Смещение от центра экрана до центра кнопки
-                const targetX = btnCenter.x - windowCenter.x;
-                const targetY = btnCenter.y - windowCenter.y;
-
-                this.modalContent.style.setProperty('--minimize-x', targetX + 'px');
-                this.modalContent.style.setProperty('--minimize-y', targetY + 'px');
+                this.setMinimizeTarget();
 
                 // Очищаем inline transform, чтобы сработал стиль класса .minimized
                 this.modalContent.style.transform = '';
@@ -575,6 +647,7 @@ function applyThemeGoogleFont(fontFamily) {
                 this.isMinimized = true;
                 this.openBtn.classList.add('minimized');
                 this.openBtn.setAttribute('title', this.locale.maximize_title || 'Развернуть окно настроек');
+                this.persistWindowState();
             }
         }
 
@@ -593,6 +666,7 @@ function applyThemeGoogleFont(fontFamily) {
                 this.isMinimized = false;
                 this.openBtn.classList.remove('minimized');
                 this.openBtn.setAttribute('title', this.locale.restore_title || 'Настроить тему');
+                this.persistWindowState();
             }
         }
 
@@ -604,6 +678,77 @@ function applyThemeGoogleFont(fontFamily) {
             this.yOffset = 0;
             this.modalContent.style.transform = 'translate(-50%, -50%)';
             this.savedTransform = 'translate(-50%, -50%)';
+            this.persistWindowState();
+        }
+
+        setMinimizeTarget() {
+            if (!this.openBtn || !this.modalContent) return;
+
+            // Вычисляем позицию кнопки для анимации "в кнопку"
+            const btnRect = this.openBtn.getBoundingClientRect();
+            const btnCenter = {
+                x: btnRect.left + btnRect.width / 2,
+                y: btnRect.top + btnRect.height / 2
+            };
+            const windowCenter = {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2
+            };
+
+            // Смещение от центра экрана до центра кнопки
+            const targetX = btnCenter.x - windowCenter.x;
+            const targetY = btnCenter.y - windowCenter.y;
+
+            this.modalContent.style.setProperty('--minimize-x', targetX + 'px');
+            this.modalContent.style.setProperty('--minimize-y', targetY + 'px');
+        }
+
+        restoreWindowState() {
+            if (!this.modal || !this.modalContent || !this.openBtn) return;
+
+            if (!this.windowState) {
+                this.centerModal();
+                return;
+            }
+
+            if (this.windowState.savedTransform) {
+                this.savedTransform = this.windowState.savedTransform;
+            }
+
+            const hasOffsets = Number.isFinite(this.windowState.xOffset) && Number.isFinite(this.windowState.yOffset);
+            if (hasOffsets) {
+                this.xOffset = this.windowState.xOffset;
+                this.yOffset = this.windowState.yOffset;
+                this.currentX = this.xOffset;
+                this.currentY = this.yOffset;
+                this.setTranslate(this.xOffset, this.yOffset);
+            } else if (this.savedTransform) {
+                this.modalContent.style.transform = this.savedTransform;
+            } else {
+                this.centerModal();
+            }
+
+            if (this.windowState.isOpen) {
+                this.modal.classList.add('active');
+                if (this.windowState.isMinimized) {
+                    this.setMinimizeTarget();
+                    this.modalContent.style.transform = '';
+                    this.modal.classList.add('minimized');
+                    this.isMinimized = true;
+                    this.openBtn.classList.add('minimized');
+                    this.openBtn.setAttribute('title', this.locale.maximize_title || 'Развернуть окно настроек');
+                } else {
+                    this.modal.classList.remove('minimized');
+                    this.isMinimized = false;
+                    this.openBtn.classList.remove('minimized');
+                    this.openBtn.setAttribute('title', this.locale.restore_title || 'Настроить тему');
+                    this.snapToPixel();
+                }
+            } else {
+                this.modal.classList.remove('active', 'minimized');
+                this.isMinimized = false;
+                this.openBtn.classList.remove('minimized');
+            }
         }
 
         // Начало перемещения
@@ -616,6 +761,7 @@ function applyThemeGoogleFont(fontFamily) {
             this.isDragging = true;
             if (this.modalContent) {
                 this.modalContent.classList.add('dragging');
+                this.modalContent.style.willChange = 'transform';
             }
         }
 
@@ -645,6 +791,8 @@ function applyThemeGoogleFont(fontFamily) {
                 cancelAnimationFrame(this.rafId);
                 this.rafId = null;
             }
+            this.snapToPixel();
+            this.persistWindowState();
         }
 
         // Планирование перерисовки через requestAnimationFrame
@@ -658,21 +806,44 @@ function applyThemeGoogleFont(fontFamily) {
         }
 
         // Применение трансформации
-        // Применение трансформации
         setTranslate(xPos, yPos) {
             if (this.modalContent) {
-                // Подсказываем браузеру готовиться к трансформации для лучшей отзывчивости
-                if (this.modalContent.style.willChange !== 'transform') {
-                    this.modalContent.style.willChange = 'transform';
-                }
-
                 // Округляем значения, чтобы избежать субпиксельного рендеринга и размытия текста
                 const x = Math.round(xPos);
                 const y = Math.round(yPos);
 
-                const transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+                const transform = (x === 0 && y === 0)
+                    ? 'translate(-50%, -50%)'
+                    : `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
                 this.modalContent.style.transform = transform;
                 this.savedTransform = transform;
+            }
+        }
+
+        updateColorBlocksVisibility(mode) {
+            if (!this.ui.colorBlocks.light || !this.ui.colorBlocks.dark) return;
+
+            const isAuto = mode === 'auto';
+            const isLight = mode === 'light';
+            const isDark = mode === 'dark';
+
+            this.ui.colorBlocks.light.classList.toggle('is-hidden', !(isAuto || isLight));
+            this.ui.colorBlocks.dark.classList.toggle('is-hidden', !(isAuto || isDark));
+        }
+
+        snapToPixel() {
+            if (!this.modalContent) return;
+
+            const rect = this.modalContent.getBoundingClientRect();
+            const dx = rect.left - Math.round(rect.left);
+            const dy = rect.top - Math.round(rect.top);
+
+            if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
+                this.xOffset -= dx;
+                this.yOffset -= dy;
+                this.currentX = this.xOffset;
+                this.currentY = this.yOffset;
+                this.setTranslate(this.xOffset, this.yOffset);
             }
         }
 
