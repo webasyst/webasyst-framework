@@ -82,6 +82,7 @@
                         const id = $.photos.photo_stream_cache.getCurrent().id;
 
                         $.post('?module=stack&action=unmake&id=' + id, {}, function(response) {
+                            $.photos.is_from_list = false;
                             $.photos.goToHash($.photos.hash);
                         }, 'json');
 

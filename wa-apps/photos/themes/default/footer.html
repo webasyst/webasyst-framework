@@ -1,3 +1,4 @@
-{* HINT: for the rest of footer links, please see index.html <!-- FOOTER --> section *}
-
-{include file="`$wa_parent_theme_path`/footer.html" inline}
+<div class="copyright small">
+    &copy; {time()|wa_datetime:"Y"}
+    <a href="{$wa_url}">{$wa->accountName()}</a>
+</div>

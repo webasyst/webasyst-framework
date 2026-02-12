@@ -2,6 +2,7 @@
 
 class photosPhotoLoadListController extends waJsonController
 {
+    private $collection = null;
     public function execute()
     {
         $count = $this->getConfig()->getOption('photos_per_page');

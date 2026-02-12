@@ -1,3 +1,14 @@
+<style>
+    #render-photo-place {
+        position: fixed;
+        right:0;
+        left: var(--left-padding, 16rem);
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+</style>
+
+<div id="render-photo-place"></div>
 <script type="text/javascript" src="{$wa_app_static_url}js/lazy.load.js?v={$wa->version()}"></script>
 <div class="box contentbox flexbox content">
 <section class="content" id="p-content">
@@ -124,7 +135,7 @@
                                                 var blog_smarty_enabled = {json_encode($wa->blog->option('can_use_smarty'))};
                                                 var obligatory_size = {json_encode($big_size)};
                                             </script>
-                                            <a href="#"><span class="icon"><i class="size-20" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png');"></i></span><span>[`Blog post`]</span></a>
+                                            <a href="#"><span class="icon"><i class="size-20" style="background-image: url('{$wa_url}wa-apps/blog/img/blog.svg');"></i></span><span>[`Blog post`]</span></a>
                                             <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
                                         </li>
                                     {/if}
@@ -179,7 +190,7 @@
                                     <span>[`Descriptions`]</span>
                                 </h5>
                                 <ul class="menu descriptions-view-menu break-words custom-my-0" id="save-menu">
-                                    <li data-action="save-description" class="box">
+                                    <li data-action="save-description" class="box" style="display: none;">
                                         <input type="button" value="[`Save`]" class="button">
                                     </li>
                                     <li data-action="hide-name" class="box">
@@ -331,8 +342,8 @@
             <ul class="thumbs li300px ui-sortable" data-view="flex-thumbs" id="photo-list"></ul>
             <div class="lazyloading-wrapper small"></div>
 
-            {if method_exists($wa->installer, 'reviewWidget')}
-            {$wa->installer->reviewWidget('app/photos')}
+            {if $wa->installer && method_exists($wa->installer, 'reviewWidget')}
+                {$wa->installer->reviewWidget('app/photos')}
             {/if}
         </div>
     {/if}
@@ -345,6 +356,7 @@
     {literal}
     {% var last_login_time = o.last_login_time; %}
     {% for (var i=0, p=o.photos[0], n=o.photos.length; i<n; p=o.photos[++i]) { %}
+    {% p.thumb = p.thumb || p.thumb_mobile; %}
     <li class="{% if (p.stack_count > 0) { %} stacked{% } %}
                 {% if (i == n - 1) { %} last{% } %}
                 {% if (last_login_time < p.upload_timestamp) { %}highlighted{% } %}
@@ -352,7 +364,7 @@
                 {% if (o.selected) { %}selected{% } %}"
                 data-photo-id="{%#p.id%}"
     >
-        <div class="p-image cursor-pointer" onclick="location.href = this.getAttribute('data-href')" data-href="#{%#o.hash%}/photo/{%#p.id%}/">
+        <div class="p-image cursor-pointer" onclick="$.photos.onClickListPhoto(event, this);" data-href="#{%#o.hash%}/photo/{%#p.id%}/">
                 <span class="p-image-corner top left">
                     {% if ($.photos.album) { %}<span class="button white key-photo-icon small"><i class="fas fa-bookmark" title="[`This is a key photo for this album`]"></i></span>{% } %}
                     {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
@@ -443,15 +455,16 @@
 {capture name="template-photo-descriptions"}{literal}
     {% var height; %}
     {% for (var i=0, p=o.photos[0], n=o.photos.length; i<n; p=o.photos[++i]) { %}
+    {% p.thumb = p.thumb || p.thumb_mobile; %}
     <li class="flexbox space-16 {% if (p.stack_count > 0) { %} stacked{% } %}
                 {% if (i == n - 1) { %} last{% } %}"
                 data-photo-id="{%#p.id%}"
     >
-        <div class="p-image">{% if (p.stack_count > 0) { %}
+        <div class="p-image cursor-pointer" onclick="$.photos.onClickListPhoto(event, this);" data-href="#{%#o.hash%}/photo/{%#p.id%}/">
+        {% if (p.stack_count > 0) { %}
             <div class="p-stack layer1"></div>
             <div class="p-stack layer2"></div>
             <div class="p-stack layer3"></div>{% } %}
-            <a href="#{%#o.hash%}/photo/{%#p.id%}/">
                 <div class="p-image-corner top left">
                     {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
                     {% for (var plugin in p.hooks.top_left) { %}
@@ -471,7 +484,6 @@
                     {% } %}
                 </div>
                 <img srcset="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb.url2x%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x" src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" />
-            </a>
         </div>
 
         <div class="p-photo-details wide">

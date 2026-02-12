@@ -662,7 +662,7 @@ class photosAlbumModel extends waModel
                 $a['key_photo'] = $photos[$a['key_photo_id']];
                 $a['key_photo']['thumb'] = $a['key_photo']['thumb_192x192'];
             } else {
-                if ($a['key_photo_id']) {
+                if ($a['key_photo_id'] && wa()->getEnv() === 'backend') {
                     $this->updateById($a['id'], array(
                         'key_photo_id' => null,
                     ));

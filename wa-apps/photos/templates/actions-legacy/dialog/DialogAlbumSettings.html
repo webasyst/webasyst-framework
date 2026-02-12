@@ -72,7 +72,7 @@
                                                     <label for="album-group-{$group_id}"><input id="album-group-{$group_id}" name="groups[]" value="{$group_id}" type="checkbox" {if isset($rights[0]) || isset($rights[$group_id])}checked{/if} {if isset($rights[0])}disabled{/if}> <span>{$group.name|escape}</span></label><br>
                                                 {/foreach}
                                             </div>
-                                            <em>[`Uncheck all groups to make this album visible to you only.`]</em>
+                                            <em>[`Uncheck all groups to set personal access only.`]</em>
                                         {else}
                                             <input type="hidden" name="groups[]" value="0" {if isset($rights[0])}disabled{/if} >
                                             <em>[`There are no user groups set up in your Webasyst account. Add groups in the Team app to be able to manage access to photos.`]</em>

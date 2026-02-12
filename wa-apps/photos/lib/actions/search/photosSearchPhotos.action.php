@@ -5,7 +5,7 @@ class photosSearchPhotosAction extends waViewAction
     public function execute()
     {
 
-        $query = trim(waRequest::post('q'), ' /');
+        $query = trim(urldecode(waRequest::post('q')), ' /');
 
         $hash = '/search/'.$query;
 
@@ -19,7 +19,7 @@ class photosSearchPhotosAction extends waViewAction
         $count = $this->getConfig()->getOption('photos_per_page');
         $photos = $collection->getPhotos("*,thumb,thumb_crop,thumb_middle,thumb_big,tags,edit_rights", 0, $count);
         $photos = photosCollection::extendPhotos($photos);
-        
+
         $frontend_link = $query == 'rate>0' ? photosCollection::getFrontendLink('favorites', false) : photosCollection::getFrontendLink($hash, false);
         /**
          * @event search_frontend_link
@@ -49,7 +49,7 @@ class photosSearchPhotosAction extends waViewAction
          */
         $params = array('action' => 'search');
         $this->view->assign('backend_photos_toolbar', wa()->event('backend_photos_toolbar'), $params);
-        
+
         $config = $this->getConfig();
         $this->view->assign('sidebar_width', $config->getSidebarWidth());
         $this->view->assign('big_size', $config->getSize('big'));

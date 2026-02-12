@@ -338,7 +338,7 @@
                             var obligatory_size = {json_encode($big_size)};
                         </script>
                         <a href="#">
-                            <span class="icon"><i class="size-20" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png');"></i></span>
+                            <span class="icon"><i class="size-20" style="background-image: url('{$wa_url}wa-apps/blog/img/blog.svg');"></i></span>
                             <span>[`Blog post`]</span>
                         </a>
                         <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
@@ -448,6 +448,8 @@
 {% } %}
 {% for (var i = 0, n = photos.length, photo = photos[i]; i < n; photo = photos[++i]) { %}
     {% if (photo && photo.id) { %}
+    {% photo.thumb = photo.thumb || photo.thumb_mobile; %}
+    {% photo.thumb_crop = photo.thumb_crop || photo.thumb_mobile; %}
         <li class="{% if (photo.visible) { delete photo.visible; %}visible{% } %} {% if (current_photo_id == photo.id) { %}selected{% } %}" data-photo-id="{%#photo.id%}">
             <a href="{% if (hash) { %}#{%#hash%}{% }else{ %}#{% } %}/photo/{%#photo.id%}/"><img src="{%#photo.thumb_crop.url%}{% if (photo.edit_datetime) { %}?{%#Date.parseISO(photo.edit_datetime)%}{% } %}"><img src="{%#photo.thumb.url%}{% if (photo.edit_datetime) { %}?{%#Date.parseISO(photo.edit_datetime)%}{% } %}" style="display:none;" class="thumb"></a>
         </li>

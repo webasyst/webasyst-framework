@@ -31,8 +31,8 @@ $(function() {
             //handler.wookmark(options);
         }
 
-        list.bind('append_photo_list', function() {
-            $('li:not(.wookmark)', list).hide();
+        list.on('append_photo_list', function() {
+            //$('li:not(.wookmark)', list).hide();
             list.waitForImages(applyLayout);
         });
 
@@ -78,9 +78,6 @@ $(function() {
         paging.hide();
         var win = $(window);
 
-        var times = parseInt(paging.data('times'), 10);
-        var link_text = paging.data('linkText') || 'Load more';
-
         // prevent previous launched lazy-loading
         win.lazyLoad('stop');
 
@@ -122,27 +119,11 @@ $(function() {
                         paging.replaceWith(tmp_paging);
                         paging = tmp_paging;
 
-                        times -= 1;
-
                         // check need to stop lazy-loading
                         var current = paging.find('li.selected');
                         var next = current.next();
                         if (next.length && next.find('a').attr('href')) {
-                            if (!isNaN(times) && times <= 0) {
-                                win.lazyLoad('sleep');
-                                if (!$('.lazyloading-load-more').length) {
-                                    $('<a href="#" class="lazyloading-load-more">' + link_text + '</a>').insertAfter(paging)
-                                        .click(function() {
-                                            loading.show();
-                                            times = 1;      // one more time
-                                            win.lazyLoad('wake');
-                                            win.lazyLoad('force');
-                                            return false;
-                                        });
-                                }
-                            } else {
-                                win.lazyLoad('wake');
-                            }
+                            win.lazyLoad('wake');
                         } else {
                             $('.lazyloading-load-more').hide();
                             win.lazyLoad('stop');
