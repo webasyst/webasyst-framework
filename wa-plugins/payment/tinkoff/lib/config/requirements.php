@@ -1,8 +1,8 @@
 <?php
 return array(
     'app.installer' => array(
-        'version' => '>=3.2.0',
         'strict'  => true,
+        'version' => '>=4.0.1',
     ),
     'php.hash'      => array(
         'value'  => 1,
