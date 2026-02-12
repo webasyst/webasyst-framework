@@ -5,7 +5,7 @@ return array(
     'icon'       => 'img/site.svg',
     'sash_color' => '#49a2e0',
     'frontend'   => true,
-    'version'    => '3.3.0', // developer preview, beta 3
+    'version'    => '3.3.0',
     'critical'   => '3.3.0',
     'vendor'     => 'webasyst',
     'system'     => true,

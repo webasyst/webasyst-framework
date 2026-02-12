@@ -13,6 +13,9 @@ const THEME_GOOGLE_FONTS = {
 };
 
 const SYSTEM_FONT_STACK = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
+const CHEVRON_SVG_LIGHT = "url(\"data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23000000' stroke-opacity='0.5' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")";
+const CHEVRON_SVG_DARK = "url(\"data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")";
+const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';
 
 function getFontFallback(fontFamily) {
     if (fontFamily === 'Source Serif 4' || fontFamily === 'Spectral') {
@@ -94,6 +97,22 @@ function getAccentColorCssValue(accentColor) {
     return accentColor;
 }
 
+function resolveChevronSvg(colorScheme) {
+    if (colorScheme === 'dark') {
+        return CHEVRON_SVG_DARK;
+    }
+
+    if (colorScheme === 'auto' && window.matchMedia && window.matchMedia(PREFERS_DARK_QUERY).matches) {
+        return CHEVRON_SVG_DARK;
+    }
+
+    return CHEVRON_SVG_LIGHT;
+}
+
+function applyThemeChevronSvg(root, colorScheme) {
+    root.style.setProperty('--chevron-svg', resolveChevronSvg(colorScheme));
+}
+
 // Применяем сохраненные настройки сразу при загрузке скрипта
 (function() {
     'use strict';
@@ -112,7 +131,10 @@ function getAccentColorCssValue(accentColor) {
                 root.style.setProperty('color-scheme', 'light');
             } else if (settings.colorScheme === 'dark') {
                 root.style.setProperty('color-scheme', 'dark');
+            } else {
+                root.style.removeProperty('color-scheme');
             }
+            applyThemeChevronSvg(root, settings.colorScheme || 'auto');
             if (settings.accentColor) {
                 root.style.setProperty('--accent-color', getAccentColorCssValue(settings.accentColor));
             }
@@ -157,6 +179,8 @@ function getAccentColorCssValue(accentColor) {
             this.windowStateKey = 'themeEditorWindowState';
             this.ui = {};
             this.colorGridsById = {};
+            this.prefersDarkMediaQuery = window.matchMedia ? window.matchMedia(PREFERS_DARK_QUERY) : null;
+            this.handleSystemColorSchemeChange = null;
 
             // Настройки по умолчанию
             this.defaultSettings = {
@@ -366,6 +390,7 @@ function getAccentColorCssValue(accentColor) {
             } else {
                 root.style.removeProperty('color-scheme');
             }
+            applyThemeChevronSvg(root, this.currentSettings.colorScheme);
 
             // Цвета
             root.style.setProperty('--accent-color', getAccentColorCssValue(this.currentSettings.accentColor));
@@ -481,6 +506,20 @@ function getAccentColorCssValue(accentColor) {
                     this.minimizeModal();
                 }
             });
+
+            if (this.prefersDarkMediaQuery) {
+                this.handleSystemColorSchemeChange = () => {
+                    if (this.currentSettings.colorScheme === 'auto') {
+                        applyThemeChevronSvg(document.documentElement, 'auto');
+                    }
+                };
+
+                if (typeof this.prefersDarkMediaQuery.addEventListener === 'function') {
+                    this.prefersDarkMediaQuery.addEventListener('change', this.handleSystemColorSchemeChange);
+                } else if (typeof this.prefersDarkMediaQuery.addListener === 'function') {
+                    this.prefersDarkMediaQuery.addListener(this.handleSystemColorSchemeChange);
+                }
+            }
         }
 
         // Синхронизация слайдера и инпута
