@@ -27,9 +27,9 @@
                 }
             });
 
-            if (registered) {
-                this.form.find('.js-yandexkassa-registration-link').hide();
-            }
+            // if (registered) {
+            //     this.form.find('.js-yandexkassa-registration-link').hide();
+            // }
         },
 
         /**

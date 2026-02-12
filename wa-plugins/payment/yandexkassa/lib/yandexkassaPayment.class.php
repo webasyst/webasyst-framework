@@ -1108,6 +1108,15 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                             $id = 9;
                         }
                         break;
+                    case 22:
+                        if ($tax_included) {
+                            # 11 — 22% VAT rate
+                            $id = 11;
+                        } else {
+                            # 12 — 22/122 estimate VAT rate
+                            $id = 12;
+                        }
+                        break;
                     case 0:
                         # 2 — НДС по ставке 0%;
                         $id = 2;
