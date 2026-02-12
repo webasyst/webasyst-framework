@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2026-01-13 09:49+0300\n"
+"PO-Revision-Date: 2026-02-10 17:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -7456,6 +7456,9 @@ msgstr "Отключить все службы Webasyst"
 msgid "All Webasyst services including Webasyst Email, SMS, and Webasyst ID authentication will be permanently disabled."
 msgstr "Все службы Webasyst, включая Email, SMS и авторизацию с Webasyst ID, будут полностью отключены для всех пользователей аккаунта."
 
+msgid "Webasyst Pay will be disabled. This may make your site not being able to process any online payments."
+msgstr "Webasyst Pay будет отключен. Это может привести к полной остановке приема онлайн-платежей на сайте."
+
 msgid "Pre-paid account credit may be permanently lost!"
 msgstr "Предоплаченный баланс аккаунта может быть безвозвратно потерян!"
 
@@ -8055,3 +8058,12 @@ msgstr "Не удалось найти адрес."
 
 msgid "Find file"
 msgstr "Поиск файла"
+
+msgid "Pay now"
+msgstr "Оплатить сейчас"
+
+msgid "Select and set up the parameters of your account in the payment system which will handle payments and be used to generate payment QR codes and bank card payment links."
+msgstr "Выберите и настройте параметры аккаунта в платежной системе, которая будет обрабатывать платеж и отвечать за генерацию QR-кода для оплаты и формирование ссылки на оплату банковской картой."
+
+msgid "<b>Webasyst Pay is disabled, payments by this method are currently cannot be accepted.</b> Enable Webasyst services in the <em>Settings</em> app."
+msgstr "<b>Webasyst Pay отключен, платежи этим способом не принимаются.</b> Необходимо включить службы Webasyst в приложении «Настройки»."

@@ -74,6 +74,9 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
 
     public function getWaSenderHtml($only_check_auth, $main_configs = [])
     {
+        if (!wa()->appExists('installer')) {
+            return null;
+        }
         try {
             $wa_service_api = new waServicesApi();
         } catch (Throwable $e) {

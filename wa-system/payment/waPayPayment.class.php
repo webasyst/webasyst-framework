@@ -3,7 +3,7 @@
  * This implements a special built-in payment plugin id=pay.
  * @since 4.0.0
  */
-class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOptions, waIPaymentImage, waIPaymentRefund
+class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOptions, waIPaymentImage, waIPaymentRefund, waIPaymentStatePolling, waIPaymentCapture, waIPaymentCancel
 {
     /** Called by waPayment  */
     protected static function waPayPluginInfo()
@@ -35,6 +35,7 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
             'fractional_quantity' => true,
             'stock_units'         => true,
             'partial_refund'      => true,
+            //'partial_capture'     => false,
         ];
     }
 
@@ -70,14 +71,14 @@ class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOp
                 'shop_password' => [
                     'value'        => '',
                     'title'        => 'Секретный ключ',
-                    'control_type' => waHtmlControl::INPUT,
+                    'control_type' => waHtmlControl::PASSWORD,
                     'class'        => ['field-provider-specific', 'provider-yookassa', 'required'],
                     'description'  => <<<HTML
 <span class="js-yandexkassa-registration-link" style="background-color: #e3ffc8; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
-Подключаясь к ЮКассе <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8%</b> на 3&nbsp;месяца.
+Подключаясь к ЮКассе <a href="https://www.webasyst.ru/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8%</b> на 3&nbsp;месяца.
 </span>
 <span class="js-yandexkassa-registration-link" style="font-weight: normal; font-size: 14px;color: black;">
-Чтобы получить shopID и ключ, <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">отправьте заявку на подключение</a>.
+Чтобы получить shopID и ключ, <a href="https://www.webasyst.ru/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">отправьте заявку на подключение</a>.
 </span>
 <br><br>
 HTML
@@ -178,8 +179,28 @@ HTML
                 'manual_capture' => [
                     'value'        => '',
                     'title'        => 'Использовать двухстадийную оплату',
-                    'description'  => '',
+                    'description'  => 'Применяется только к оплате по картам. К оплате по СБП не применимо.',
                     'control_type' => waHtmlControl::CHECKBOX,
+                    'class'        => ['field-provider-specific', 'provider-yookassa'],
+                ],
+                'wa_callback_url' => [
+                    'value'       => '',
+                    'title'       => 'HTTP-уведомления',
+                    'description' => 'URL для уведомлений.<br><strong>Скопируйте и сохраните этот адрес в личном кабинете на сайте «ЮKassa».</strong>',
+                    'class'        => ['long', 'field-provider-specific', 'provider-yookassa'],
+                    'control_type' => waHtmlControl::INPUT,
+                ],
+                'wa_callback_url_help' => [
+                    'value'        => '',
+                    'title'        => 'Входящие уведомления',
+                    'description'  => '<p>Отметьте эти события в личном кабинете на сайте «ЮKassa», чтобы автоматически получать актуальную информацию о состоянии платежей:<p>
+                        <ul>
+                            <li><code>payment.succeeded</code> — платёж перешёл в статус <i>succeeded</i>
+                            <li><code>payment.waiting_for_capture</code> — платёж перешёл в статус <i>waiting_for_capture</i>
+                            <li><code>payment.canceled</code> — платёж перешёл в статус <i>canceled</i>
+                            <li><code>refund.succeeded</code> — возврат перешёл в статус <i>succeeded</i>
+                        </ul>',
+                    'control_type' => waHtmlControl::HELP,
                     'class'        => ['field-provider-specific', 'provider-yookassa'],
                 ],
 
@@ -197,7 +218,7 @@ HTML
                 'terminal_password' => [
                     'value'        => '',
                     'title'        => 'Пароль',
-                    'control_type' => waHtmlControl::INPUT,
+                    'control_type' => waHtmlControl::PASSWORD,
                     'class'        => ['field-provider-specific', 'provider-tbank', 'required'],
                     'description'  => <<<HTML
 <span class="js-tkassa-registration-link" style="background-color: #e3ffc8; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
@@ -310,13 +331,13 @@ HTML
                     ],
                     'class'        => ['field-provider-specific', 'provider-tbank'],
                 ],
-                'testmode' => [
+                /*'testmode' => [
                     'value'        => '',
                     'title'        => 'Тестовый режим',
                     'description'  => 'Только для тестирования по старой схеме через платежный шлюз <em>https://rest-api-test.tinkoff.ru/rest/</em>.',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-tbank'],
-                ],
+                ],*/
 
                 //
                 // Fields for provider='empty'
@@ -348,11 +369,21 @@ HTML
 
         $last_save_response = $this->getSettings('last_save_response');
 
+        $wa_callback_url = $this->getSettings('wa_callback_url');
+        if ($wa_callback_url) {
+            $this->config['wa_callback_url']['value'] = $wa_callback_url;
+        } else {
+            unset(
+                $this->config['wa_callback_url'],
+                $this->config['wa_callback_url_help']
+            );
+        }
         $fields_html = parent::getSettingsHTML($params);
 
         $view = wa('webasyst')->getView();
         $view->assign([
             //'last_save_response' => $last_save_response,
+            'wa_pay_support' => (new waWebasystIDClientManager)->isConnected() && wa()->getUser()->getWebasystContactId() > 0,
             'installer_zone' => $installer_zone,
             'fields_html' => $fields_html,
             'is_new' => !is_numeric($this->getPluginKey()),
@@ -444,6 +475,12 @@ HTML
         $settings['allowed_currency'] = ifset($response, 'response', 'allowed_currency', true);
         $settings['do_fiscalization'] = ifset($response, 'response', 'do_fiscalization', null);
 
+        $wa_callback_url = ifset($response, 'response', 'wa_callback_url', null);
+        if ($wa_callback_url) {
+            $settings['wa_callback_url'] = $wa_callback_url;
+        } else {
+            unset($settings['wa_callback_url']);
+        }
         $new_callback_secret = ifset($response, 'response', 'callback_secret', null);
         if ($new_callback_secret) {
             $settings['callback_secret'] = $new_callback_secret;
@@ -487,7 +524,18 @@ HTML
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $request_data = $this->getRequestDataPaymentInit($order_data, $payment_form_data);
-        $response = $this->apiQuery('PAY', 'payment-url', $request_data, waNet::METHOD_POST);
+        try {
+            $response = $this->apiQuery('PAY', 'payment-url', $request_data, waNet::METHOD_POST);
+        } catch (Throwable $e) {
+            self::log($this->id, [
+                'Ошибка запроса к API Webasyst Pay',
+                'method' => __METHOD__,
+                'merchant' => $this->app_id.'/'.$this->merchant_id,
+                'request' => $request_data,
+                'exception' => (string) $e,
+            ]);
+            return _ws('Ошибка инициализации платежа:').' '.$e->getMessage();
+        }
 
         // already paid?..
         $error = ifset($response, 'response', 'error', null);
@@ -495,16 +543,26 @@ HTML
             if ($error == 'already_paid') {
                 $r = $this->apiQuery('PAY', 'check', ['order_id' => $order_data['id']], waNet::METHOD_GET);
                 $this->handlePayment(
-                    $order_data['id'], $order_data['total'], $order_data['currency'], 
+                    $order_data['id'], $order_data['total'], $order_data['currency'],
                     ifset($r, 'response', 'do_fiscalization', !!$this->getSettings('do_fiscalization')),
+                    ifset($r, 'response', 'payment_state', null) === waPayment::STATE_CAPTURED,
                     ifset($r, 'response', 'payment_method', null) === 'sbp',
                     ifset($r, 'response', 'service_fee_percent', null),
                     ifset($r, 'response', 'service_fee_value', null)
                 );
             //} else if ($error == 'already_in_progress') {
             //} else if ($error == 'already_refunded') {
+            } else {
+                self::log($this->id, [
+                    'Ошибка инициализации платежа через API Webasyst Pay.',
+                    'method' => __METHOD__,
+                    'merchant' => $this->app_id.'/'.$this->merchant_id,
+                    'request' => $request_data,
+                    'response' => $response,
+                ]);
+                return sprintf('%s (%s)', ifset($response, 'response', 'error_description', 'API Error'), ifset($response, 'response', 'error', 'unknown'));
             }
-            return 'Состояние платежа изменилось — обновите страницу.';
+            return _ws('Состояние платежа изменилось — обновите страницу.');
         }
 
         $provider = $this->getSettings('provider');
@@ -524,16 +582,28 @@ HTML
             if ($auto_submit) {
                 return '<script>window.location = '.json_encode($payment_url).';</script>';
             } else {
-                $button_text = 'Оплатить заказ';
+                $button_text = _ws('Pay now');
+
+                $hidden_fields = '';
+                $query_string = parse_url($payment_url, PHP_URL_QUERY);
+                if ($query_string) {
+                    parse_str($query_string, $query_params);
+                    $hidden_fields = join("\n", array_map(function($v, $k) {
+                        return sprintf('<input type="hidden" name="%s" value="%s">', $k, $v);
+                    }, $query_params, array_keys($query_params)));
+                    $payment_url = explode('?', $payment_url, 2)[0];
+                }
+
                 return <<<EOF
                     <form action="{$payment_url}" method="get" target="_top">
+                        {$hidden_fields}
                         <input type="submit" value="{$button_text}" />
                     </form>
 EOF;
             }
         }
 
-        return ifset($response, 'response', 'text', 'Способ оплаты Webasyst Pay не настроен.');
+        return ifset($response, 'response', 'text', _ws('Способ оплаты Webasyst Pay не настроен.'));
     }
 
     public function image($order_data)
@@ -548,6 +618,10 @@ EOF;
                 'description' => 'Отсканируйте QR-код в приложении своего банка для быстрой оплаты.',
                 'image_data_url' => $payment_url,
             ];
+            $image_file_url = $this->saveQrImage($payment_url);
+            if ($image_file_url) {
+                $result['image_url'] = $image_file_url;
+            }
             $payload = ifset($response, 'response', 'qr_payload', null);
             if ($payload) {
                 // for SBP this is URL like https://qr.nspk.ru/Axxxxx
@@ -607,6 +681,111 @@ EOF;
         ];
     }
 
+    public function capture($transaction_raw_data)
+    {
+        $order_data = $transaction_raw_data['order_data'];
+        $transaction = $transaction_raw_data['transaction'];
+        $response = $this->apiQuery('PAY', 'capture', [
+            'order_id' => $transaction['order_id'],
+        ], waNet::METHOD_POST);
+
+        $success = $response['status'] == 204;
+
+        if ($success) {
+            $datetime = date('Y-m-d H:i:s');
+            $this->saveTransaction([
+                'native_id'       => $transaction['native_id'],
+                'type'            => self::OPERATION_CAPTURE,
+                'state'           => self::STATE_CAPTURED,
+                'result'          => '1',
+                'order_id'        => $transaction['order_id'],
+                'customer_id'     => $transaction['customer_id'],
+                'amount'          => $transaction['amount'],
+                'currency_id'     => $transaction['currency_id'],
+                'parent_id'       => $transaction['id'],
+                'create_datetime' => $datetime,
+                'update_datetime' => $datetime,
+            ]);
+            return [
+                'result'      => 0,
+                'description' => '',
+            ];
+        }
+
+        // check if payment is already captured previously
+        $r = $this->apiQuery('PAY', 'check', ['order_id' => $transaction['order_id']], waNet::METHOD_GET);
+        if (ifset($r, 'response', 'payment_state', null) === waPayment::STATE_CAPTURED) {
+            return [
+                'result'      => 0,
+                'description' => '',
+            ];
+        }
+
+        self::log($this->id, [
+            'Unable to capture transaction',
+            'capture_response' => $response,
+            'check_response' => $r,
+            $transaction_raw_data,
+        ]);
+
+        return [
+            'result'      => -1,
+            'description' => ifset($response, 'response', 'error_description', ifset($response, 'response', 'error', '')),
+        ];
+    }
+
+    public function cancel($transaction_raw_data)
+    {
+        $transaction = $transaction_raw_data['transaction'];
+        $response = $this->apiQuery('PAY', 'cancel', [
+            'order_id' => $transaction['order_id'],
+        ], waNet::METHOD_POST);
+        
+        $success = $response['status'] == 204;
+        if ($success) {
+            $datetime = date('Y-m-d H:i:s');
+            $transaction = $this->saveTransaction([
+                'native_id'       => $transaction['native_id'],
+                'type'            => self::OPERATION_CANCEL,
+                'state'           => self::STATE_CANCELED,
+                'result'          => '1',
+                'order_id'        => $transaction['order_id'],
+                'customer_id'     => $transaction['customer_id'],
+                'amount'          => $transaction['amount'],
+                'currency_id'     => $transaction['currency_id'],
+                'parent_id'       => $transaction['id'],
+                'create_datetime' => $datetime,
+                'update_datetime' => $datetime,
+            ]);
+            return [
+                'result'      => 0,
+                'description' => '',
+                'data' => $transaction,
+            ];
+        }
+
+        // check if payment is already canceled previously
+        $r = $this->apiQuery('PAY', 'check', ['order_id' => $transaction['order_id']], waNet::METHOD_GET);
+        if (ifset($r, 'response', 'payment_state', null) === waPayment::STATE_CANCELED) {
+            return [
+                'result'      => 0,
+                'description' => '',
+            ];
+        }
+
+        self::log($this->id, [
+            'Unable to cancel transaction',
+            'cancel_response' => $response,
+            'check_response' => $r,
+            $transaction_raw_data,
+        ]);
+
+        return [
+            'result'      => -1,
+            'description' => ifset($response, 'response', 'error', ''),
+        ];
+    }
+
     protected function getRequestDataRefund($refund_amount, $transaction, ?array $items=null)
     {
         $request_data = [
@@ -641,6 +820,10 @@ EOF;
             $request_data['app_platform'] = $channel_type;
             if ($channel_id && wa_is_int($channel_id)) {
                 $request_data['app_channel_id'] = 'shop-'.$channel_id;
+            }
+            $channel_signature = ifset($order_data, 'params', 'channel_signature', null);
+            if ($channel_signature) {
+                $request_data['channel_signature'] = $channel_signature;
             }
         }
 
@@ -767,16 +950,54 @@ EOF;
         return $result;
     }
 
+    public function statePolling($order_data)
+    {
+        if ($this->getSettings('provider') === 'empty') {
+            return;
+        }
+        $r = $this->apiQuery('PAY', 'check', ['order_id' => $order_data['id']], waNet::METHOD_GET);
+        $amount = ifset($r, 'response', 'amount', null);
+        $currency = ifset($r, 'response', 'currency_id', null);
+        $payment_state = ifset($r, 'response', 'payment_state', null);
+        if ($amount && $currency && $payment_state) {
+            if ($payment_state === waPayment::STATE_CAPTURED || $payment_state === waPayment::STATE_AUTH) {
+                $this->handlePayment(
+                    $order_data['id'], $amount, $currency,
+                    ifset($r, 'response', 'do_fiscalization', !!$this->getSettings('do_fiscalization')),
+                    $payment_state === waPayment::STATE_CAPTURED,
+                    ifset($r, 'response', 'payment_method', null) === 'sbp',
+                    ifset($r, 'response', 'service_fee_percent', null),
+                    ifset($r, 'response', 'service_fee_value', null)
+                );
+            } else if ($payment_state == waPayment::STATE_REFUNDED || $payment_state == waPayment::STATE_PARTIAL_REFUNDED) {
+                // state polling for refunds not supported yet
+            }
+        }
+    }
+
     /**
      * Notifies application about a successfull payment.
      * Called after an API request when it turns out that order is already paid.
      * This happens during a callback or during attempt to initialize payment.
      */
-    protected function handlePayment($order_id, $api_order_paid_amount, $currency, $do_fiscalization, $is_sbp=null, $fee_percent=null, $fee_amount=null)
+    protected function handlePayment($order_id, $api_order_paid_amount, $currency, $do_fiscalization, $is_captured, $is_sbp=null, $fee_percent=null, $fee_amount=null)
     {
-        $transaction = $transaction_data = $this->makeWaTransactionRow($order_id, $api_order_paid_amount, $currency);
-        $transaction['type'] = self::OPERATION_CAPTURE;
-        $transaction['state'] = self::STATE_CAPTURED;
+        $transaction = $this->makeWaTransactionRow($order_id, $api_order_paid_amount, $currency);
+        if ($is_captured) {
+            $transaction['state'] = self::STATE_CAPTURED;
+            if ($this->isManualCaptureEnabled()) {
+                $transaction['type'] = self::OPERATION_CAPTURE;
+                $app_payment_method = self::CALLBACK_CAPTURE;
+            } else {
+                $transaction['type'] = self::OPERATION_AUTH_CAPTURE;
+                $app_payment_method = self::CALLBACK_PAYMENT;
+            }
+        } else {
+            $transaction['state'] = self::STATE_AUTH;
+            $transaction['type'] = self::OPERATION_AUTH_ONLY;
+            $app_payment_method = self::CALLBACK_AUTH;
+        }
+        $transaction_data = $transaction;
         unset($transaction['view_data']);
 
         $save_params = [];
@@ -792,24 +1013,40 @@ EOF;
         if ($is_sbp) {
             $save_params['payment_is_sbp'] = 1;
         }
-        if ($save_params) {
-            try {
-                $this->getAdapter()->setOrderParams($order_id, $save_params);
-            } catch (Throwable $e) {
+
+        // Only call app in case this is not a repeated callback (which may happen a lot during order state polling)
+        $method = $this->isRepeatedCallback($app_payment_method, $transaction_data);
+        if ($method == $app_payment_method) {
+            if ($save_params) {
+                try {
+                    $this->getAdapter()->setOrderParams($order_id, $save_params);
+                } catch (Throwable $e) {
+                    self::log($this->id, [
+                        'Unable to save order params',
+                        $e->getMessage(),
+                        $e instanceof waException ? $e->getFullTraceAsString() : $e->getTraceAsString(),
+                        'method' => __METHOD__,
+                        'order_id' => $order_id,
+                        'save_params' => $save_params,
+                        'request_url' => wa()->getConfig()->getRequestUrl(),
+                    ]);
+                }
+            }
+
+            $transaction_data = $this->saveTransaction($transaction) + $transaction_data;
+            $this->execAppCallback($app_payment_method, $transaction_data);
+        } else {
+            if (SystemConfig::isDebug()) {
                 self::log($this->id, [
-                    'Unable to save order params',
-                    $e->getMessage(),
-                    $e instanceof waException ? $e->getFullTraceAsString() : $e->getTraceAsString(),
-                    'method' => __METHOD__,
-                    'order_id' => $order_id,
-                    'save_params' => $save_params,
-                    'request_url' => wa()->getConfig()->getRequestUrl(),
+                    'Ignore repeated callback or sate polling run',
+                    'method'                   => __METHOD__,
+                    'app_id'                   => $this->app_id,
+                    'callback_method'          => $method,
+                    'original_callback_method' => $app_payment_method,
+                    'transaction_data'         => $transaction_data,
                 ]);
             }
         }
-
-        $transaction_data = $this->saveTransaction($transaction) + $transaction_data;
-        $this->execAppCallback(self::CALLBACK_PAYMENT, $transaction_data);
 
         if ($do_fiscalization) {
             $this->getAdapter()->declareFiscalization($order_id, $this);
@@ -888,6 +1125,16 @@ EOF;
             return $callback_response;
         }
 
+        // Customer browser came back after a payment?
+        if (empty($request['signature']) && !empty($request['type']) && waRequest::method() === waRequest::METHOD_GET) {
+            // $request['type'] is waAppPayment::URL_SUCCESS or ::URL_FAIL
+            $is_success = $request['type'] === 'success';
+            $type = $is_success ? waAppPayment::URL_SUCCESS : waAppPayment::URL_DECLINE;
+            $url = $this->getAdapter()->getBackUrl($type, [
+                'order_id' => $order_id,
+            ]);
+            return wa()->getResponse()->redirect($url);
+        }
         if (!$this->isCallbackSignatureCorrect($request)) {
             return $callback_response;
         }
@@ -898,6 +1145,7 @@ EOF;
             $this->handlePayment(
                 $order_id, $request['amount'], $request['currency_id'],
                 !empty($request['do_fiscalization']),
+                $request['state'] == waPayment::STATE_CAPTURED,
                 ifset($request, 'payment_method', null) === 'sbp',
                 ifset($request, 'service_fee_percent', null),
                 ifset($request, 'service_fee_value', null)
@@ -942,6 +1190,17 @@ EOF;
         return true;
     }
 
+    protected function isManualCaptureEnabled()
+    {
+        switch ($this->getSettings('provider')) {
+            case 'yookassa':
+                return !!$this->getSettings('manual_capture');
+            case 'tbank':
+                return !!$this->getSettings('two_steps');
+        }
+        return false;
+    }
+
     protected function makeWaTransactionRow($order_id, $amount, $currency)
     {
         $transaction_data = [
@@ -951,5 +1210,36 @@ EOF;
             'currency_id' => $currency,
         ] + parent::formalizeData([]);
         return $transaction_data;
+    }
+
+    protected function saveQrImage($image_data_url)
+    {
+        $data = substr($image_data_url, 5);
+        [$meta, $data] = explode(',', $data, 2);
+        [$mime_type, $encoding] = explode(';', $meta, 2) + ['', ''];
+        switch ($encoding) {
+            case '':
+            case 'base64':
+                $data = base64_decode(str_replace(' ', '+', $data));
+                break;
+            default:
+                return null;
+        }
+
+        $basename = md5($data).ifset(ref([
+            'image/jpeg' => '.jpg',
+            'image/jpg' => '.jpg',
+            'image/gif' => '.gif',
+            'image/webp' => '.webp',
+        ]), strtolower($mime_type), '.png');
+        $path = sprintf('pay/qr/%s/%s/%s', substr($basename, 0, 2), substr($basename, 2, 2), $basename);
+
+        $file_path = wa()->getDataPath($path, true, 'webasyst');
+        $file_url = wa()->getDataUrl($path, true, 'webasyst', true);
+
+        if (!file_exists($file_path)) {
+            file_put_contents($file_path, $data);
+        }
+        return $file_url;
     }
 }

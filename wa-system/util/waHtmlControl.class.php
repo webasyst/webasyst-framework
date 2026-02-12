@@ -737,7 +737,7 @@ HTML;
 
         $default_wrapper = array(
             'title_wrapper'       => '&nbsp;%s',
-            'description_wrapper' => '<p class="hint">%s</p>',
+            'description_wrapper' => '<span class="hint">%s</span>',
             'control_wrapper'     => '%2$s'."\n".'%1$s'."\n".'%3$s'."\n",
             'control_separator'   => "<br>",
         );

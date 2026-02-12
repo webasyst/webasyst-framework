@@ -61,10 +61,15 @@
         <h2>Мгновенная оплата по QR-коду СБП</h2>
     </div>
     <p class="small">
-        QR-код на оплату показывается покупателю сразу же после оформления заказа.
+        QR-код на оплату показывается покупателю сразу же после оформления заказа без перехода на сайт платежной системы.
     </p>
     <p class="small">
-        Обработка платежа происходит через платежную систему на ваш выбор: ЮКасса или Т-Касса. Комиссия и условия работы в обеих системах идентичные. Зачисление на счет — мгновенное.
+        Обработка платежа происходит через платежную систему на ваш выбор: ЮКасса или Т-Касса. Комиссия СБП 0,4—0,7% и условия работы в обеих системах идентичные. Зачисление на счет — мгновенное.
+    </p>
+    <p class="small">
+      <b>Первые 30 дней Webasyst Pay — бесплатно!</b> Далее стоимость работы сервиса Webasyst Pay — 0,15% за успешные платежи по СБП для премиум-версии Shop-Script, 0,25% для базовой. Или фикс 1900 рублей в месяц для любого оборота.
+      Учитываются только успешные платежи и только по СБП. Если платеж по карте, то комиссии Webasyst Pay нет.
+      <a href="https://www.shop-script.ru/pricing/" target="_blank">Подробнее о Webasyst Pay &rsaquo;</a>
     </p>
 
 {if $wa->whichUI() === '1.3'}
@@ -74,6 +79,14 @@
     </div>
 </div>
 {else}
+
+  {if !$wa_pay_support}
+    <h6 class="text-orange custom-mt-0"><i class="fas fa-exclamation-triangle text-red"></i> Для работы Webasyst Pay необходимо включить в приложении «<a href="{$wa_backend_url}webasyst/settings/" class="underline">Настройки</a>» службы Webasyst (в том числе приложение Инсталлер) и подключить для входа свой Webasyst ID.</h6>
+  {else}
+    <p class="small">
+        <i class="fas fa-thumbs-up text-green"></i>
+        Шаг выбора способа оплаты в чекауте будет автоматически отключен и перенесен на последний экран об успешном сохранения заказа. Меньше вопросов при оформлении — выше конверсия.
+    </p>
     {* STEP 1 *}
     <h5>Через кого подключить СБП?</h5>
     <div class="bricks">
@@ -95,12 +108,13 @@
 
     {* STEP 2 *}
         {* Юкassa *}
-    <div class="js-wizard-step" data-step="1" data-provider="yookassa" style="display: none;">
+    <div data-step="1" data-provider="yookassa" style="display: none;">
         <h5 class="custom-mt-24">
             Есть ли у вас аккаунт ЮKassa?
         </h5>
         <p class="small">
-            ЮКасса — отличный выбор! Расчетный счет у вас может быть в любом банке.
+            ЮКасса — отличный выбор! Расчетный счет у вас может быть в любом банке.<br>
+            Важно: убедитесь, что в вашем аккаунте продавца в ЮКассе подключен способ прием платежей СБП.
         </p>
         <ul class="chips rounded custom-my-0">
             <li class="small" data-account-exists="0">
@@ -112,11 +126,11 @@
         </ul>
     </div>
         {* Т-Банк *}
-    <div class="js-wizard-step" data-step="1" data-provider="tbank" style="display: none;">
+    <div data-step="1" data-provider="tbank" style="display: none;">
         <h5 class="custom-mt-24">
             Есть ли у вас счет в Т-Банке?
         </h5>
-        <span class="small custom-px-4 custom-py-2 highlighted">
+        <span class="small custom-px-4 custom-py-2">
             Нужно иметь расчетный счет в Т-Банк и подключить интернет-эквайринг. Это требование банка.
         </span>
         <ul class="chips rounded custom-mb-0">
@@ -129,9 +143,9 @@
         </ul>
     </div>
         {* Пропуск настройки *}
-    <div class="js-wizard-step" data-step="1" data-provider="empty" data-account-exists="1" style="display: none;">
+    <div data-step="1" data-provider="empty" data-account-exists="1" style="display: none;">
         <p class="small custom-mt-16 custom-mb-8">
-            Вместо QR-кода будет выведен полезный текст (инструкция).
+            Вместо QR-кода будет выведен полезный текст — напишите его сами ниже.
             Позже сможете в любой момент переключить на Т-Кассу или ЮКассу.
         </p>
         <div class="fields-group">
@@ -142,11 +156,11 @@
 
     {* STEP 3 *}
         {* Юкassa *}
-    <div class="js-wizard-step" data-step="2" data-provider="yookassa" data-account-exists="0" style="display: none;">
+    <div data-step="2" data-provider="yookassa" data-account-exists="0" style="display: none;">
         <h5 class="custom-mt-24">Подключиться к ЮKassa</h5>
         <div class="js-form"></div>
     </div>
-    <div class="js-wizard-step" data-step="2" data-provider="yookassa" data-account-exists="1" style="display: none;">
+    <div data-step="2" data-provider="yookassa" data-account-exists="1" style="display: none;">
         <h5 class="custom-mt-24">
             Заполните данные своего аккаунта в ЮКассе
         </h5>
@@ -156,13 +170,13 @@
         </div>
     </div>
         {* Т-Банк *}
-    <div class="js-wizard-step" data-step="2" data-provider="tbank" data-account-exists="0" style="display: none;">
+    <div data-step="2" data-provider="tbank" data-account-exists="0" style="display: none;">
         <h5 class="custom-mt-24">
             Подключиться к Т-Банк
         </h5>
         <div class="js-form"></div>
     </div>
-    <div class="js-wizard-step" data-step="2" data-provider="tbank" data-account-exists="1" style="display: none;">
+    <div data-step="2" data-provider="tbank" data-account-exists="1" style="display: none;">
         <h5 class="custom-mt-24">
             Заполните данные своего аккаунта в Т-Кассе
         </h5>
@@ -176,8 +190,9 @@
 <script>
     $(function() {
         const providers = {$providers|json_encode};
+        {literal}
         const $wrapper = $('#pay-wizard');
-        const $steps = $('.js-wizard-step', $wrapper);
+        const $steps = $('[data-step]', $wrapper);
         const $provider = $('.brick[data-provider]', $wrapper);
         const $chips = $('li[data-account-exists]', $wrapper);
         const $save = $('.js-save', $wrapper);
@@ -186,11 +201,8 @@
         const $payment_submit = $('[type="submit"]', $payment_form);
 
         let current_step = 0;
-        let account_exists = null;
-        {literal}
 
         const getProviderForm = (provider) => $steps.filter(`[data-provider="${provider}"]`).find('.js-form');
-
         $.pluginPayWizard = {
             setForm: (provider, formHTML) => getProviderForm(provider).append(formHTML)
         };
@@ -203,25 +215,20 @@
             const $this = $(this);
             if ($this.hasClass('selected')) return;
 
-            account_exists = null;
-            current_provider = $this.data('provider');
             $steps.hide();
-            $provider.removeClass('selected');
             $chips.removeClass('selected');
 
-            let step = 1;
-            if (current_provider !== 'empty') {
-                const is_empty_form = getProviderForm(current_provider).is(':empty');
+            const provider = $this.data('provider');
+            let account_exists = null;
+            if (provider !== 'empty') {
+                const is_empty_form = getProviderForm(provider).is(':empty');
                 if (is_empty_form) {
                     // skip step if no plugin
                     account_exists = 1;
-                    step = 2;
                 }
             }
 
-            if (goToStep(step)) {
-                $this.addClass('selected');
-            }
+            showStep(provider, account_exists);
         });
 
         // step 2: with an existing account or not
@@ -229,13 +236,13 @@
             const $this = $(this);
             if ($this.hasClass('selected')) return;
 
-            account_exists = $this.data('account-exists');
             $chips.removeClass('selected');
+            $this.addClass('selected');
             $steps.filter('[data-step="2"]').hide();
 
-            if (goToStep(2)) {
-                $this.addClass('selected');
-            }
+            const provider = $this.closest('[data-step]').data('provider');
+            const account_exists = $this.data('account-exists');
+            showStep(provider, account_exists);
         });
 
         // save if there is no account
@@ -268,11 +275,19 @@
             $payment_submit.click();
         }
 
-        function goToStep (step) {
-            let selector_str = `[data-step="${step}"][data-provider="${current_provider}"]`;
+        function showStep(current_provider = null, account_exists = null) {
+            let step = 0;
+            let selector_str = '';
+            if (current_provider !== null) {
+                step = 1;
+                selector_str += `[data-provider="${current_provider}"]`;
+                $provider.removeClass('selected').filter(selector_str).addClass('selected');
+            }
             if (account_exists !== null) {
+                step = 2;
                 selector_str += `[data-account-exists="${account_exists}"]`;
             }
+            selector_str += `[data-step="${step}"]`;
 
             const $curr_step = $steps.filter(selector_str);
             if (step > current_step) {
@@ -286,6 +301,7 @@
         }
 
         function initRequiredFieldsForProvider() {
+            const filled_providers = [];
             providers.forEach(provider => {
                 let $required_inputs = $(`#js-form-wrapper .provider-${provider}.required`);
                 if (provider === 'empty') {
@@ -295,16 +311,30 @@
                     const $provider_fields = $required_inputs.closest('.field').clone().show();
                     const $wizard_form = $(`[data-provider="${provider}"][data-account-exists="1"]`);
 
+                    const are_values_filled = [];
                     $provider_fields.find(':input[name]').map(function() {
-                        $(this).removeAttr('id');
+                        const $field = $(this);
+                        if ($field.hasClass('required')) {
+                            are_values_filled.push(!!$field.val());
+                        }
+                        $field.removeAttr('id');
                         return this
                     });
+
+                    if (provider !== 'empty' && Math.min(...are_values_filled)) {
+                        filled_providers.push(provider);
+                    }
 
                     $wizard_form.find('.fields-group').prepend($provider_fields);
                 }
             });
+
+            if (filled_providers.length) {
+                showStep(filled_providers[0], 1);
+            }
         }
         {/literal}
     });
 </script>
+  {/if}
 {/if}

@@ -29,8 +29,10 @@ class waWebasystIDEndpointsConfig
     {
         if (!$this->installer_apps) {
             if (!class_exists('waInstallerApps')) {
-                $autoload = waAutoload::getInstance();
-                $autoload->add('waInstallerApps', 'wa-installer/lib/classes/wainstallerapps.class.php');
+                $file_path = 'wa-installer/lib/classes/wainstallerapps.class.php';
+                if (file_exists($file_path)) {
+                    waAutoload::getInstance()->add('waInstallerApps', $file_path);
+                }
             }
             if (!class_exists('waInstallerApps')) {
                 return null;

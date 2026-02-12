@@ -82,6 +82,10 @@ class webasystHelper
             ),
         );
 
+        if (!wa()->appExists('installer')) {
+            unset($items['waid']);
+        }
+
         /**
          * @event settings_sidebar
          * @param array

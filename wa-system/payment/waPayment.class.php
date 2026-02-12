@@ -1182,8 +1182,9 @@ abstract class waPayment extends waSystemPlugin
                 waPayment::TRANSACTION_AUTH,
             );
         }
-
-        $expected_transaction_types = array_intersect($this->getSupportedTransactions(), (array)$expected_transaction_types);
+        $supported_transaction_types = $this->getSupportedTransactions();
+        $supported_transaction_types[] = waPayment::TRANSACTION_AUTH;
+        $expected_transaction_types = array_intersect($supported_transaction_types, (array)$expected_transaction_types);
 
         $map = array(
             waPayment::STATE_VERIFIED => waPayment::TRANSACTION_CONFIRM,

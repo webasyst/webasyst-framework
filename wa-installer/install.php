@@ -169,9 +169,9 @@ switch ($step) {
         $extra = '';
         if (file_exists(dirname(__FILE__).'/../wa-sources/')) {
             $extra = <<<HTML
-<input type="checkbox" value="1" name="check_latest" id="check_latest">
+<!--input type="checkbox" value="1" name="check_latest" id="check_latest">
 <label for="check_latest">{$wa_locale->_('Check available updates')}</label>
-<br><br>
+<br><br-->
 <input type="hidden" value="0" name="check_latest">
 HTML;
         } else {

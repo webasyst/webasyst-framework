@@ -330,6 +330,18 @@ and (orientation : portrait) {
 .is-wa2 #wa-design-container .value:has(.light-mark) .wa-theme-color-select li:last-child {
     background-color: rgba(0, 20, 80, 0.1);
 }
+.is-wa2 #wa-design-container .value:has(.light-mark) > .color-picker,
+.is-wa2 #wa-design-container .value:has(.dark-mark) > .color-picker {
+    padding: 0 1rem 1rem;
+}
+.is-wa2 #wa-design-container .value:has(.light-mark) .color-picker input {
+    background-color: rgba(0, 20, 80, 0.05);
+    color: #1f2d3d;
+}
+.is-wa2 #wa-design-container .value:has(.dark-mark) .color-picker input {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #cde;
+}
 .is-wa2 #wa-design-container .bottombar {
     background-color: var(--background-color);
 }

@@ -1159,7 +1159,7 @@ class waModel
     /**
      * Verifies whether specified field exists in model's table.
      *
-     * @param string $field Field name
+     * @param string|array{string, string} $field Field name or [table name, field name]
      * @return bool
      */
     public function fieldExists($field)

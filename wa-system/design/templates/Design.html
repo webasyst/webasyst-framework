@@ -388,7 +388,9 @@
                if (current_theme_url.length) {
                    current_theme_url.trigger('click', [true]);
                } else {
-                   self.$theme_list.find('[href^="{$design_url}theme=' + hash_params['theme'] + '"]:first').trigger('click', [true]);
+                   if(!self.$theme_list.find('.selected[data-id="' + hash_params['theme'] + '"]').length) {
+                       self.$theme_list.find('[href^="{$design_url}theme=' + hash_params['theme'] + '"]:first').trigger('click', [true]);
+                   }
                }
             }
 
@@ -759,26 +761,13 @@
         switchThemeMenu(){
             const self = this;
 
-            self.$theme_settings_section.on('click', '.js-theme-settings-list a', function (e, id) {
-                let $self = $(this),
-                    $li = $self.parent(),
-                    $theme_info_section = $('.js-theme-info-section'),
-                    menu_id = $self.data('divider-id'),
-                    $settings_section = $('.js-settings-list'),
-                    $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`),
-                    href = $self.attr('href');
-
-                // Если это ссылка "Информация о теме" обрабатываем её как элемент с menu_id = -1
-                if ($self.hasClass('js-theme-info-link')) {
+            self.$theme_settings_section.on('click', '.js-theme-settings-list a.js-theme-info-link', function (e) {
                     e.stopPropagation();
-
-                    menu_id = -1;
-
-                    self.$theme_settings_section.data('menu-id', menu_id);
+                    self.$theme_settings_section.data('menu-id', -1);
 
                     // Переключаем секции
-                    $theme_info_section.show();
-                    $settings_section.hide();
+                    $('.js-theme-info-section').show();
+                    $('.js-settings-list').hide();
 
                     $(document).on('wa_design_loaded', function () {
                         if (!self.$bottombar.length) {
@@ -799,9 +788,15 @@
                     self.$theme_settings_section.find('li:has(.js-theme-info-link)').addClass('selected');
 
                     sessionStorage.removeItem('wa_design_menu_id');
+            })
 
-                    return;
-                }
+            self.$theme_settings_section.on('click', '.js-theme-settings-list a:not(.js-theme-info-link)', function () {
+                let $self = $(this),
+                    $li = $self.parent(),
+                    $theme_info_section = $('.js-theme-info-section'),
+                    menu_id = $self.data('divider-id'),
+                    $settings_section = $('.js-settings-list'),
+                    $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`);
 
                 let hash = self.waDesignHash(location.hash)
                 if (hash.length) {
