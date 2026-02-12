@@ -95,31 +95,15 @@
             {/foreach}
 
 
-            <!-- FOLLOW -->
-            {if empty($realtime_preview)}
+            {*
+                <!-- FOLLOW -->
                 <aside class="connect">
-                    {if !empty($theme_settings.facebook_likebox_code)}
-                        <div class="likebox">
-                            {$theme_settings.facebook_likebox_code}
-                        </div>
-                    {/if}
-                    {if !empty($theme_settings.twitter_timeline_code)}
-                        <div class="likebox">
-                            {$theme_settings.twitter_timeline_code}
-                        </div>
-                    {/if}
-                    {if !empty($theme_settings.vk_widget_code)}
-                        <div class="likebox">
-                            {$theme_settings.vk_widget_code}
-                        </div>
-                    {/if}
-                    {*
                     <div class="likebox">
-                         your custom social widget
+                         your custom social code widgets
                     </div>
-                    *}
                 </aside>
-            {/if}
+            *}
+
         </nav>
     </div>
 </div>

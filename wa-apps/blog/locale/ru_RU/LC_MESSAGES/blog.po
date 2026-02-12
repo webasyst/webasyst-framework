@@ -1127,7 +1127,7 @@ msgid "WYSIWYG editor may change your HTML code. It is necessary for correct tex
 msgstr "Редактор WYSIWYG может изменить ваш HTML-код. Это необходимо для правильного форматирования текста. Код Smarty может быть сломан, и устаревшие HTML-теги могут быть заменены на современные. Вы действительно хотите переключиться на WYSIWYG-редактор?"
 
 msgid "Write a post"
-msgstr "Написать пост"
+msgstr "Написать текст"
 
 msgid "E.g., “%s”."
 msgstr "Например, «%s»."
