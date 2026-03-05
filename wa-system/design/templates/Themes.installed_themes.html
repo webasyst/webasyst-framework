@@ -1,4 +1,5 @@
 {if !empty($app_themes)}
+    {$_used_app_themes = []}
     <div class="s-installed-themes-section" id="js-installed-themes-section">
         <div class="s-themes-list">
             {foreach $routes as $r}
@@ -20,6 +21,7 @@
                     {/if}
 
                     {$_theme_id = $_theme->id}
+                    {$_used_app_themes[] = $_theme_id}
                     {$_theme_url = "#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings"}
 
                     <div class="s-theme-wrapper">
@@ -51,6 +53,7 @@
                     {/if}
 
                     {$_theme_id = $_theme->id}
+                    {$_used_app_themes[] = $_theme_id}
                     {$_theme_url = "#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings"}
 
                     <div class="s-theme-wrapper">
@@ -76,7 +79,7 @@
 
             {foreach $app_themes as $_theme}
                 {$_theme_id = $_theme->id}
-                {if in_array($_theme_id, $used_app_themes)}{continue}{/if}
+                {if in_array($_theme_id, $_used_app_themes)}{continue}{/if}
 
                 {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
                 {$_name = $_theme->getName()}

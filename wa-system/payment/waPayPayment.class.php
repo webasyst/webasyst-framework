@@ -262,7 +262,7 @@ HTML
                     'options'      => [
                         ['value' => 'osn', 'title' => 'Общая СН'],
                         ['value' => 'usn_income', 'title' => 'Упрощенная СН (доходы)'],
-                        ['value' => 'usn_income_outside', 'title' => 'Упрощенная СН (доходы минус расходы)'],
+                        ['value' => 'usn_income_outcome', 'title' => 'Упрощенная СН (доходы минус расходы)'],
                         ['value' => 'envd', 'title' => 'Единый налог на вмененный доход'],
                         ['value' => 'esn', 'title' => 'Единый сельскохозяйственный налог'],
                         ['value' => 'patent', 'title' => 'Патентная СН'],
