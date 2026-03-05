@@ -2,10 +2,18 @@
 
 class webasystsmsSMS extends waSMSAdapter
 {
+    public function isConfigured()
+    {
+        try {
+            return (new waServicesApi)->isConnected();
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
 
     public function send($to, $text, $from = null)
     {
-        $res = (new waServicesApi())->sendSms($to, $text, $from);
+        $res = $this->sendSms($to, $text, $from);
         if ($res['status'] == 200) {
             return true;
         }
@@ -21,6 +29,14 @@ class webasystsmsSMS extends waSMSAdapter
         try {
             $wa_service_api = new waServicesApi();
             $waid_is_connected = $wa_service_api->isConnected();
+            if ($wa_service_api->isBrokenConnection()) {
+                return '<p class="state-caution-hint"><i class="fas fa-exclamation-circle"></i> '.
+                    _ws('Connection to Webasyst ID server is broken. Please re-connect your account to continue using Webasyst SMS service.') . ' ' .
+                    sprintf_wp(
+                        'To do so, open the <a href="%s">Webasyst ID settings</a>, disable sign-in with Webasyst ID and enable it again.',
+                        wa()->getConfig()->getBackendUrl(true) . 'webasyst/settings/waid/'
+                    ) . '</p>';
+            }
         } catch (Throwable $e) {
             $waid_is_connected = false;
         }
@@ -33,7 +49,12 @@ class webasystsmsSMS extends waSMSAdapter
         }
         $res = $wa_service_api->getBalance(waServicesApi::SMS_SERVICE);
         if ($res['status'] != 200) {
-            return null;
+            return '<p class="state-caution-hint"><i class="fas fa-exclamation-circle"></i> '.
+            _ws('Something went wrong... Connection to Webasyst ID server may be broken. Perhaps you need to re-connect your account to use the Webasyst SMS service.') . ' ' .
+            sprintf_wp(
+                'To do so, open the <a href="%s">Webasyst ID settings</a>, disable sign-in with Webasyst ID and enable it again.',
+                wa()->getConfig()->getBackendUrl(true) . 'webasyst/settings/waid/'
+            ) . '</p>';
         }
 
         $balance_amount = ifset($res, 'response', 'amount', 0);
@@ -41,7 +62,7 @@ class webasystsmsSMS extends waSMSAdapter
         $currency_id = ifset($res, 'response', 'currency_id', wa()->getLocale() === 'ru_RU' ? 'RUB' : 'USD');
         $balance = wa_currency_html($balance_amount, $currency_id);
         $price = wa_currency_html($price_value, $currency_id);
-        $free_limits = ifset($res, 'response', 'free_limits', '');
+        $free_limits = ifset($res, 'response', 'free_limits', []);
         $remaining_free_calls = ifempty($res, 'response', 'remaining_free_calls', []);
         $remaining_pack = ifset($remaining_free_calls, 'pack', 0);
         unset($remaining_free_calls['pack']);
@@ -73,4 +94,15 @@ class webasystsmsSMS extends waSMSAdapter
         return $view->fetch($template_path);
     }
 
+    protected function sendSms($to, $text, $from = null)
+    {
+        $app_id = wa()->getApp();
+        return (new waServicesApi())->serviceCall(waServicesApi::SMS_SERVICE, [
+            'to' => $to,
+            'text' => $text,
+            'from' => $from,
+            'app_id' => $app_id,
+            'domain' => wa()->getRouting()->getDomain(),
+        ], waNet::METHOD_POST, ['request_format' => waNet::FORMAT_JSON]);
+    }
 }

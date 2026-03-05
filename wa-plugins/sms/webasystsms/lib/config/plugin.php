@@ -5,7 +5,7 @@ return array(
     'description' => /*_wp*/('SMS sending via Webasyst SMS'),
     'icon'        => 'img/webasystsms.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.0.3',
+    'version'     => '1.0.4',
     'no_settings' => true,
     'no_settings_controls_mode' => 'controls',
 );
