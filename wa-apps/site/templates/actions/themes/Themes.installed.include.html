@@ -7,20 +7,22 @@
     </style>
     {$count_app_themes = $app_themes|count}
     {$_themes_url = []}
-    {foreach $routes as $r}
-        {$r.theme = $r.theme|default:'default'}
-        {$r.theme_mobile = $r.theme_mobile|default:'default'}
-        {* because rtrim removes repetitions *}
-        {if $r.url && $r.url|substr:-1 == "*"}
-            {$r.url = $r.url|substr:0:-1}
-        {/if}
-        {if isset($app_themes[$r.theme])}
-            {$_themes_url[$r.theme] = '//'|cat:waIdna::dec($r._domain)|cat:'/'|cat:$r.url}
-        {/if}
-        {if isset($app_themes[$r.theme_mobile]) && $r.theme != $r.theme_mobile}
-            {$_themes_url[$r.theme_mobile] = '//'|cat:waIdna::dec($r._domain)|cat:'/'|cat:$r.url}
-        {/if}
-    {/foreach}
+    {if !empty($routes)}
+        {foreach $routes as $r}
+            {$r.theme = $r.theme|default:'default'}
+            {$r.theme_mobile = $r.theme_mobile|default:'default'}
+            {* because rtrim removes repetitions *}
+            {if $r.url && $r.url|substr:-1 == "*"}
+                {$r.url = $r.url|substr:0:-1}
+            {/if}
+            {if isset($app_themes[$r.theme])}
+                {$_themes_url[$r.theme] = '//'|cat:waIdna::dec($r._domain)|cat:'/'|cat:$r.url}
+            {/if}
+            {if isset($app_themes[$r.theme_mobile]) && $r.theme != $r.theme_mobile}
+                {$_themes_url[$r.theme_mobile] = '//'|cat:waIdna::dec($r._domain)|cat:'/'|cat:$r.url}
+            {/if}
+        {/foreach}
+    {/if}
 
     <div class="s-installed-themes-section">
         <div class="s-section-header">

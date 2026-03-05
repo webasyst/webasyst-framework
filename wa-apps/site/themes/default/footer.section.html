@@ -95,8 +95,8 @@
                     </div>
 
                     {if $wa->shop}
-                        {if $wa->shop->settings('phone')}<p class="wa-flex align-items-center wa-mb-8">[`Phone`]: <a class="wa-ml-4 wa-mb-0" href="tel:{$wa->shop->settings('phone')|replace:[' ', '(', ')', '-']:''}">{$wa->shop->settings('phone')}</a></p>{/if}
-                        {if $wa->shop->settings('email')}<p class="wa-flex align-items-center wa-mb-16">Email: <a class="wa-ml-4 wa-mb-0" href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a></p>{/if}
+                        {if $wa->shop->settings('phone')}<p class="wa-flex align-items-center wa-mb-8">[s`Phone`]: <a class="wa-ml-4 wa-mb-0" href="tel:{$wa->shop->settings('phone')|replace:[' ', '(', ')', '-']:''}">{$wa->shop->settings('phone')}</a></p>{/if}
+                        {if $wa->shop->settings('email')}<p class="wa-flex align-items-center wa-mb-16">[s`Email`]: <a class="wa-ml-4 wa-mb-0" href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a></p>{/if}
                     {/if}
                 </div>
 
