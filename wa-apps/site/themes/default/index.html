@@ -70,31 +70,51 @@
 
     <!-- custom colors -->
     <style>
-        {$_accent_color_css = $theme_settings.color_accent}
-        {if $theme_settings.color_accent == '#000000'}
-            {$_accent_color_css = 'light-dark(#000000, #888888)'}
-        {/if}
-        {if $theme_settings.color_accent == '#666666'}
-            {$_accent_color_css = 'light-dark(#666666, #555555)'}
-        {/if}
         :root {
             {if $theme_settings.color_scheme == 'light'}
                 color-scheme: light;
                 --chevron-svg: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23000000' stroke-opacity='0.5' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+                {if $theme_settings.color_accent == '#000000'}
+                    --accent-color: #000000;
+                {/if}
+                {if $theme_settings.color_accent == '#666666'}
+                    --accent-color: #666666;
+                {/if}
             {/if}
             {if $theme_settings.color_scheme == 'dark'}
                 color-scheme: dark;
                 --chevron-svg: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+                {if $theme_settings.color_accent == '#000000'}
+                    --accent-color: #888888;
+                {/if}
+                {if $theme_settings.color_accent == '#666666'}
+                    --accent-color: #555555;
+                {/if}
             {/if}
             {if $theme_settings.color_scheme == 'auto'}
                 @media (prefers-color-scheme: light) {
                     --chevron-svg: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23000000' stroke-opacity='0.5' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+                    {if $theme_settings.color_accent == '#000000'}
+                        --accent-color: #000000;
+                    {/if}
+                    {if $theme_settings.color_accent == '#666666'}
+                        --accent-color: #666666;
+                    {/if}
                 }
                 @media (prefers-color-scheme: dark) {
                     --chevron-svg: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+                    {if $theme_settings.color_accent == '#000000'}
+                        --accent-color: #888888;
+                    {/if}
+                    {if $theme_settings.color_accent == '#666666'}
+                        --accent-color: #555555;
+                    {/if}
                 }
             {/if}
-            --accent-color: {$_accent_color_css};
+
+            {if $theme_settings.color_accent != '#000000' && $theme_settings.color_accent != '#666666'}
+                --accent-color: {$theme_settings.color_accent};
+            {/if}
             --bg-color-light: {$theme_settings.color_background_light};
             --bg-color-dark: {$theme_settings.color_background_dark};
             {if $theme_settings.border_radius}

@@ -54,7 +54,12 @@
                      </nav>
 
                      <div class="wa-flex wa-flex-fill justify-content-center space-1 wa-ml-auto wa-mr-auto wa-hide-m">
-                         <a href="tel:+12345678900" class="nowrap">+1 (234) 567-89-00</a>
+                         {if $wa->shop}
+                             {$_phone = $wa->shop->settings('phone')|default:''}
+                             {if !empty($_phone)}
+                                <a href="tel:{$_phone|regex_replace:"/[^0-9+]/":""|escape}" class="nowrap">{$_phone|escape}</a>
+                             {/if}
+                         {/if}
 
                          {if $wa->shop && !empty($theme_settings.use_shop_schedule) && method_exists($wa->shop, 'schedule')}
                              {$_schedule = $wa->shop->schedule()}

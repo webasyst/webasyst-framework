@@ -1047,7 +1047,7 @@
     .icon16.star,
     .icon16.star-full { background-position: -16px -16px; }
     .icon16.star-half { background-position: -32px -16px; }
-    .icon16.star-empty { background-position: -48px -16px; }
+    .icon16.star-empty { background-position: -48px -16px; filter: contrast(0.85) }
     .icon16.star-hover { background-position: -64px -16px; }
     .icon16.remove { background-position: -96px -16px; }
     .icon16.saved { background-position: -112px -16px; }

@@ -87,13 +87,28 @@ function applyThemeEditorFontVars(root, fontSize) {
     root.style.setProperty('--theme-editor-font-size-lg', lgSize + 'px');
 }
 
-function getAccentColorCssValue(accentColor) {
-    if (accentColor === '#000000') {
-        return 'light-dark(#000000, #888888)';
+function getAccentColorCssValue(accentColor, colorScheme) {
+    if (accentColor !== '#000000' && accentColor !== '#666666') {
+        return accentColor;
     }
-    if (accentColor === '#666666') {
-        return 'light-dark(#666666, #555555)';
+
+    const darkAccentMap = {
+        '#000000': '#888888',
+        '#666666': '#555555'
+    };
+
+    if (colorScheme === 'dark') {
+        return darkAccentMap[accentColor];
     }
+
+    if (colorScheme === 'light') {
+        return accentColor;
+    }
+
+    if (window.matchMedia && window.matchMedia(PREFERS_DARK_QUERY).matches) {
+        return darkAccentMap[accentColor];
+    }
+
     return accentColor;
 }
 
@@ -136,7 +151,7 @@ function applyThemeChevronSvg(root, colorScheme) {
             }
             applyThemeChevronSvg(root, settings.colorScheme || 'auto');
             if (settings.accentColor) {
-                root.style.setProperty('--accent-color', getAccentColorCssValue(settings.accentColor));
+                root.style.setProperty('--accent-color', getAccentColorCssValue(settings.accentColor, settings.colorScheme || 'auto'));
             }
             if (settings.bgColorLight) {
                 root.style.setProperty('--bg-color-light', settings.bgColorLight);
@@ -393,7 +408,7 @@ function applyThemeChevronSvg(root, colorScheme) {
             applyThemeChevronSvg(root, this.currentSettings.colorScheme);
 
             // Цвета
-            root.style.setProperty('--accent-color', getAccentColorCssValue(this.currentSettings.accentColor));
+            root.style.setProperty('--accent-color', getAccentColorCssValue(this.currentSettings.accentColor, this.currentSettings.colorScheme));
             root.style.setProperty('--bg-color-light', this.currentSettings.bgColorLight);
             root.style.setProperty('--bg-color-dark', this.currentSettings.bgColorDark);
 
@@ -510,7 +525,9 @@ function applyThemeChevronSvg(root, colorScheme) {
             if (this.prefersDarkMediaQuery) {
                 this.handleSystemColorSchemeChange = () => {
                     if (this.currentSettings.colorScheme === 'auto') {
-                        applyThemeChevronSvg(document.documentElement, 'auto');
+                        const root = document.documentElement;
+                        applyThemeChevronSvg(root, 'auto');
+                        root.style.setProperty('--accent-color', getAccentColorCssValue(this.currentSettings.accentColor, 'auto'));
                     }
                 };
 
