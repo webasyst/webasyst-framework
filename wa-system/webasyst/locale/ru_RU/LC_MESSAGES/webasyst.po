@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2026-02-10 17:12+0300\n"
+"PO-Revision-Date: 2026-03-03 13:14+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.8\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -374,7 +374,7 @@ msgid "Login name"
 msgstr "Логин"
 
 msgid "Email or login name"
-msgstr "Email или логин"
+msgstr "Почта или логин"
 
 msgid "Password"
 msgstr "Пароль"
@@ -1304,7 +1304,7 @@ msgid "Chicago"
 msgstr "Чикаго"
 
 msgid "Abkhazia"
-msgstr "Республика Абхазия"
+msgstr "Абхазия"
 
 msgid "Bonaire, Sint Eustatius and Saba"
 msgstr "Бонайре, Саба и Синт-Эстатиус"
@@ -1319,7 +1319,7 @@ msgid "Sint Maarten"
 msgstr "Синт-Мартен"
 
 msgid "South Ossetia"
-msgstr "Республика Южная Осетия"
+msgstr "Южная Осетия"
 
 msgid "South Sudan"
 msgstr "Южный Судан"
@@ -1370,7 +1370,7 @@ msgid "Company"
 msgstr "Компания"
 
 msgid "Email"
-msgstr "Email"
+msgstr "Электронная почта"
 
 msgid "Description"
 msgstr "Описание"
@@ -1382,7 +1382,7 @@ msgid "Address"
 msgstr "Адрес"
 
 msgid "Website"
-msgstr "Веб-сайт"
+msgstr "Сайт"
 
 msgid "Birthday"
 msgstr "День рождения"
@@ -1424,7 +1424,7 @@ msgid "Invalid login name or password."
 msgstr "Неправильное имя пользователя или пароль."
 
 msgid "Invalid email or password"
-msgstr "Неправильный email или пароль"
+msgstr "Неправильный адрес почты или пароль"
 
 msgid "Login is required"
 msgstr "Логин обязателен"
@@ -1463,10 +1463,10 @@ msgid "Send"
 msgstr "Отправить"
 
 msgid "Please enter your login name or email:"
-msgstr "Пожалуйста, введите ваш логин или email:"
+msgstr "Пожалуйста, введите ваш логин или электронную почту:"
 
 msgid "Please enter your email:"
-msgstr "Пожалуйста, введите ваш email:"
+msgstr "Пожалуйста, введите вашу почту:"
 
 msgid "or"
 msgstr "или"
@@ -1487,7 +1487,7 @@ msgid "To recover your password please follow this link:"
 msgstr "Для восстановления пароля перейдите по ссылке:"
 
 msgid "IMPORTANT NOTE: If you did not request your password recovery, someone else might be trying to log in using your email address. For security purposes we recommend you to log in to your account and to change your password."
-msgstr "ВАЖНО: Если вы не просили восстановить пароль, то значит кто-то другой пытался подключиться используя ваш логин или email. В целях безопасности мы рекомендуем вам зайти сейчас в ваш аккаунт и изменить пароль."
+msgstr "ВАЖНО: если вы не просили восстановить пароль, значит, кто-то другой пытался подключиться, используя ваш логин или почту. Из соображений безопасности рекомендуем вам войти в свой аккаунт и изменить пароль."
 
 msgid "Enter a new password"
 msgstr "Новый пароль"
@@ -1532,10 +1532,10 @@ msgid "Password recovery instructions have been sent to your email address."
 msgstr "Инструкции по восстановлению пароля были отправлены на ваш электронный адрес."
 
 msgid "No user with this login name or email has been found."
-msgstr "Пользователь с таким логином или email-адресом не найден."
+msgstr "Пользователь с таким логином или почтой не найден."
 
 msgid "No user with this email has been found."
-msgstr "Пользователь с таким email адресом не найден."
+msgstr "Пользователь с такой почтой не найден."
 
 msgid "Effective<br/>rights"
 msgstr "Результирующие<br/>права"
@@ -1883,7 +1883,7 @@ msgid "or <a href=\"%s\">login</a> if you already have an account"
 msgstr "или <a href=\"%s\">войдите</a>, если у вас уже есть аккаунт"
 
 msgid "Invalid Email"
-msgstr "Email-адрес введен неправильно"
+msgstr "Почта введена неправильно"
 
 msgid "Invalid captcha"
 msgstr "Капча введена неверно"
@@ -3317,7 +3317,7 @@ msgid "Deny"
 msgstr "Запретить"
 
 msgid "Recipient (administrator) email is not valid"
-msgstr "Указан неправильный email получателя (администратора)"
+msgstr "Указана неправильная почта получателя (администратора)"
 
 msgid "Please define your request"
 msgstr "Укажите текст сообщения"
@@ -3332,7 +3332,7 @@ msgid "personal data protection policy"
 msgstr "политики обработки персональных данных"
 
 msgid "Enter an email address"
-msgstr "Укажите email-адрес"
+msgstr "Укажите электронную почту"
 
 msgid "An error occurred while attempting to send your request. Please try again in a minute."
 msgstr "Во время отправки произошла ошибка. Попробуйте позже."
@@ -3776,7 +3776,7 @@ msgid "Design theme %s"
 msgstr "Тема дизайна «%s»"
 
 msgid "A confirmation link has been sent to your email address provided during the signup. Please click this link to confirm your email and to sign in. <a class=\"send-email-confirmation\" href=\"%s\">Resend the link</a>"
-msgstr "Вам была отправлена ссылка на подтверждение email-адреса. Пожалуйста, щелкните по этой ссылке, чтобы подтвердить ваш email и авторизоваться на сайте. <a class=\"send-email-confirmation\" href=\"%s\">Отправить ссылку еще раз</a>"
+msgstr "Вам была отправлена ссылка для подтверждения почты. Пожалуйста, перейдите по этой ссылке, чтобы подтвердить ваш адрес и авторизоваться на сайте. <a class=\"send-email-confirmation\" href=\"%s\">Отправить ссылку еще раз</a>"
 
 msgid "Confirmation link has been resent."
 msgstr "Ссылка для подтверждения отправлена повторно."
@@ -3791,7 +3791,7 @@ msgid "The requested resource is not available."
 msgstr "Запрашиваемый ресурс недоступен."
 
 msgid "You have successfully confirmed your email."
-msgstr "Вы успешно подтвердили ваш email-адрес."
+msgstr "Вы успешно подтвердили свою почту."
 
 msgid "You have successfully signed up."
 msgstr "Вы зарегистрировались."
@@ -4325,13 +4325,13 @@ msgid "Reply-To address for system email notifications sent by Webasyst."
 msgstr "Этот электронный адрес будет указан в качестве обратного адреса в системных email-уведомлениях, отправляемых Вебасистом."
 
 msgid "Email settings"
-msgstr "Настройки email"
+msgstr "Настройки почты"
 
 msgid "Enter an <strong>email address</strong> to set up a transport <em>for one sender email</em>.<br>Enter a <strong>domain name</strong> to set up a transport <em>for all sender emails on that domain</em>."
 msgstr "Введите <strong>email-адрес</strong>, чтобы настроить транспорт отдельно <em>для одного адреса отправителя</em>.<br>Введите <strong>доменное имя</strong>, чтобы настроить транспорт <em>для всех адресов отправителя на этом домене</em>."
 
 msgid "Select how email messages must be sent by default from your Webasyst."
-msgstr "Выберите, каким способом должны по умолчанию отправляться email-сообщения из вашего Вебасиста."
+msgstr "Выберите, каким способом должна по умолчанию отправляться почта из вашего Вебасиста."
 
 msgid "Default"
 msgstr "По умолчанию"
@@ -4340,7 +4340,7 @@ msgid "The email sending parameters specified below are used by default for all 
 msgstr "Указанные ниже параметры отправки используются по умолчанию для всех исходящих email-сообщений. Если вам нужно использовать другие параметры отправки для всех или выбранных адресов или отдельных доменов, добавьте дополнительные правила с помощью кнопки «<strong>%s</strong>»."
 
 msgid "Email transport"
-msgstr "Email транспорт"
+msgstr "Транспорт отправки почты"
 
 msgid "Transport"
 msgstr "Транспорт"
@@ -4463,7 +4463,7 @@ msgid "Login only"
 msgstr "Только логин"
 
 msgid "Login or email"
-msgstr "Логин или email"
+msgstr "Логин или почта"
 
 msgid "Login form background"
 msgstr "Фон формы входа"
@@ -4586,7 +4586,7 @@ msgid "No templates"
 msgstr "Нет шаблонов"
 
 msgid "Email templates"
-msgstr "Email-шаблоны"
+msgstr "Шаблоны почты"
 
 msgid "SMS templates"
 msgstr "SMS-шаблоны"
@@ -4622,13 +4622,13 @@ msgid "Checking the sending of SMS messages"
 msgstr "Проверка отправки SMS-сообщений"
 
 msgid "Checking the sending of email messages"
-msgstr "Проверка отправки email-сообщений"
+msgstr "Проверка отправки почты"
 
 msgid "Recipient's phone number"
 msgstr "Телефон получателя"
 
 msgid "Recipient's email"
-msgstr "Email получателя"
+msgstr "Почта получателя"
 
 msgid "Send %s SMS"
 msgstr "Отправить %s SMS"
@@ -4655,7 +4655,7 @@ msgid "To check the sending of SMS messages, you must save the changes you made.
 msgstr "Чтобы проверить отправку SMS-сообщений — необходимо сохранить внесенные вами изменения."
 
 msgid "To check whether you send email message, you must save the changes you made."
-msgstr "Чтобы проверить отправку Email сообщение — необходимо сохранить внесенные вами изменения."
+msgstr "Чтобы проверить отправку почты, нужно сохранить внесенные вами изменения."
 
 msgid "Found the password?"
 msgstr "Вспомнили пароль?"
@@ -4691,7 +4691,7 @@ msgid "Enter sender IDs, each on a separate line, to use with this SMS gateway. 
 msgstr "Введите идентификаторы отправителей для этого SMS-провайдера — каждый идентификатор с новой строки. Идентификатор отправителя представляет собой либо номер телефона, либо строку длиной до 11 символов. Введите звездочку *, чтобы использовать идентификатор, автоматически назначенный SMS-провайдером."
 
 msgid "Email notification templates"
-msgstr "Шаблоны email-уведомлений"
+msgstr "Шаблоны почтовых уведомлений"
 
 msgid "Edit the list in “<a href=\"%s\">Email&nbsp;templates</a>” section."
 msgstr "Настройте список в разделе «<a href=\"%s\">Email-шаблоны</a>»."
@@ -4733,7 +4733,7 @@ msgid "Password recovery page URL"
 msgstr "URL страницы восстановления пароля"
 
 msgid "User email address"
-msgstr "Email-адрес пользователя"
+msgstr "Почта пользователя"
 
 msgid "Generated password"
 msgstr "Сгенерированный пароль"
@@ -5048,10 +5048,10 @@ msgid "One-time password was not sent."
 msgstr "Одноразовый пароль не отправлен."
 
 msgid "One-time password has been sent to your email address."
-msgstr "Одноразовый пароль отправлен на ваш email-адрес."
+msgstr "Одноразовый пароль отправлен вам на почту."
 
 msgid "One-time password has been sent to you as an SMS."
-msgstr "Одноразовый пароль отправлен вам в SMS-сообщении."
+msgstr "Одноразовый пароль отправлен вам в СМС-сообщении."
 
 msgid "One-time password has been sent."
 msgstr "Одноразовый пароль отправлен."
@@ -5120,10 +5120,10 @@ msgid "Contact doesn't exist."
 msgstr "Контакт не существует."
 
 msgid "Done! A message with a new password has been sent to email address <strong>%s</strong>."
-msgstr "Готово! На email-адрес <strong>%s</strong> отправлено письмо с новым паролем для входа."
+msgstr "Готово! На почту <strong>%s</strong> отправлено письмо с новым паролем для входа."
 
 msgid "Done! An SMS message with a new password has been sent to phone number <strong>%s</strong>."
-msgstr "Готово! На номер телефона <strong>%s</strong> отправлено SMS-сообщение с новым паролем для входа."
+msgstr "Готово! На номер телефона <strong>%s</strong> отправлено СМС-сообщение с новым паролем для входа."
 
 msgid "Incorrect confirmation code. Try again or request a new code."
 msgstr "Введен неверный код подтверждения. Попробуйте еще раз или запросите новый код."
@@ -5162,7 +5162,7 @@ msgid "<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary f
 msgstr "<b>Визуальный редактор может изменить ваш HTML-код.</b><br><br>Это нужно для правильного форматирования текста. Код Smarty может быть испорчен, а устаревшие HTML-теги — заменены на современные.<br><br>Переключиться на визуальный редактор?"
 
 msgid "Confirm email exception"
-msgstr "Ошибка подтверждения email-адреса"
+msgstr "Ошибка подтверждения почты"
 
 msgid "Auth exception"
 msgstr "Ошибка авторизации"
@@ -5279,10 +5279,10 @@ msgid "At least one of these fields is required"
 msgstr "Как минимум, одно из этих полей является обязательным"
 
 msgid "Email confirmation failed"
-msgstr "Подтвердить email-адрес не удалось"
+msgstr "Подтвердить почту не удалось"
 
 msgid "You have successfully signed up. An SMS message with your password has been sent to phone number <strong>%s</strong>."
-msgstr "Вы успешно зарегистрировались. На номер телефона <strong>%s</strong> отправлено SMS-сообщение с паролем для входа."
+msgstr "Вы успешно зарегистрировались. На номер телефона <strong>%s</strong> отправлено СМС-сообщение с паролем для входа."
 
 msgid "Signup failed."
 msgstr "Регистрация не удалась."
@@ -5291,7 +5291,7 @@ msgid "Please check new mail at <strong>%s</strong>, we have sent a message for 
 msgstr "Проверьте почту для адреса <strong>%s</strong> — мы отправили вам сообщение для подтверждения регистрации."
 
 msgid "An SMS message has been sent to phone number <strong>%s</strong> for you to confirm signup."
-msgstr "На номер телефона <strong>%s</strong> отправлено SMS-сообщение для подтверждения регистрации."
+msgstr "На номер телефона <strong>%s</strong> отправлено СМС-сообщение для подтверждения регистрации."
 
 msgid "Incorrect phone number value"
 msgstr "Неправильное значение номера телефона"
@@ -5426,10 +5426,10 @@ msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>
 msgstr "Не заполнен email-адрес отправителя в разделе «<a href=\"%s\">Настройки email</a>»."
 
 msgid "(sent by email)"
-msgstr "(отправлен по email)"
+msgstr "(отправлен на почту)"
 
 msgid "(sent in SMS)"
-msgstr "(отправлен в SMS)"
+msgstr "(отправлен в СМС)"
 
 msgid "API key"
 msgstr "Ключ API"
@@ -5501,7 +5501,7 @@ msgid "SMS notifications must be enabled."
 msgstr "SMS-уведомления должны быть включены."
 
 msgid "Email address is not valid."
-msgstr "Email-адрес введен неверно."
+msgstr "Почта введена неверно."
 
 msgid "Sender address %s is not configured."
 msgstr "Адрес отправителя %s не настроен."
@@ -6011,7 +6011,7 @@ msgid "Webasyst ID account %s is not connected to any backend user."
 msgstr "Аккаунт Webasyst ID %s не связан ни с одним пользователем бекенда."
 
 msgid "Sign in with a login name or email address to connect the account:"
-msgstr "Чтобы подключить аккаунт, войдите с логином или email-адресом:"
+msgstr "Чтобы подключить аккаунт, войдите с логином или почтой:"
 
 msgid "Failed to get Webasyst ID account data from the Webasyst resource server."
 msgstr "Не удалось получить данные аккаунта Webasyst ID с сервера ресурсов Webasyst."
@@ -6641,7 +6641,7 @@ msgid "Auth log"
 msgstr "Журнал авторизации"
 
 msgid "No user found with this email address."
-msgstr "Пользователь с этим email-адресом не найден."
+msgstr "Пользователь с этой почтой не найден."
 
 msgid "No user found with this phone number."
 msgstr "Пользователь с этим номером телефона не найден."
@@ -6659,10 +6659,10 @@ msgid "“%s” theme for the “%s” app"
 msgstr "Тема «%s» для приложения «%s»"
 
 msgid "Enter your email address or phone number."
-msgstr "Введите свой email-адрес или номер телефона."
+msgstr "Введите свою почту или номер телефона."
 
 msgid "Enter your email address."
-msgstr "Введите свой email-адрес."
+msgstr "Введите свою почту."
 
 msgid "Enter your phone number."
 msgstr "Введите свой номер телефона."
@@ -7127,7 +7127,7 @@ msgid "API error"
 msgstr "Ошибка API"
 
 msgid "Failed to send email: %s"
-msgstr "Не удалось отправить email: %s"
+msgstr "Не удалось отправить сообщение на почту: %s"
 
 msgid "T client ID"
 msgstr "ID Т-клиента"
@@ -7634,7 +7634,7 @@ msgid "Enable for free"
 msgstr "Подключить бесплатно"
 
 msgid "Transactional bulk email service with pay-as-you-go pricing."
-msgstr "Сервис массовых email-рассылок с оплатой за отправленные письма."
+msgstr "Сервис массовых почтовых рассылок с оплатой за отправленные письма."
 
 msgid "How it works"
 msgstr "Как это работает"

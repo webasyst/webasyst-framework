@@ -112,8 +112,8 @@ INSERT IGNORE INTO wa_region (country_iso3, code, name, fav_sort, region_center)
 ('rus', '94', 'Луганская Народная Республика', null, null),
 ('rus', '49', 'Магаданская область', null, null),
 ('rus', '12', 'Марий Эл республика', null, null),
-('rus', '50', 'Московская область', null, null),
-('rus', '77', 'Москва', null, 'Москва'),
+('rus', '77', 'Москва', 1, 'Москва'),
+('rus', '50', 'Московская область', 1, null),
 ('rus', '13', 'Мордовия республика', null, null),
 ('rus', '51', 'Мурманская область', null, null),
 ('rus', '83', 'Ненецкий автономный округ', null, null),
@@ -130,7 +130,7 @@ INSERT IGNORE INTO wa_region (country_iso3, code, name, fav_sort, region_center)
 ('rus', '61', 'Ростовская область', null, null),
 ('rus', '62', 'Рязанская область', null, null),
 ('rus', '63', 'Самарская область', null, null),
-('rus', '78', 'Санкт-Петербург', null, 'Санкт-Петербург'),
+('rus', '78', 'Санкт-Петербург', 1, 'Санкт-Петербург'),
 ('rus', '64', 'Саратовская область', null, null),
 ('rus', '14', 'Саха (Якутия) республика', null, null),
 ('rus', '65', 'Сахалинская область', null, null),
@@ -160,7 +160,6 @@ INSERT IGNORE INTO wa_region (country_iso3, code, name, fav_sort, region_center)
 ('rus', '76', 'Ярославская область', null, null),
 
 -- UKRAINE
-('ukr', '01', 'Автономна Республіка Крим', null, null),
 ('ukr', '02', 'Вінницька область', null, null),
 ('ukr', '03', 'Волинська область', null, null),
 ('ukr', '04', 'Дніпропетровська область', null, null),
@@ -232,7 +231,6 @@ INSERT IGNORE INTO wa_region (country_iso3, code, name, fav_sort, region_center)
 ('arm', '11', 'Ереван', null, 'Ереван'),
 
 -- GEORGIA
-('geo', 'GE-AB', 'Абхазская Автономная Республика', null, 'Сухуми'),
 ('geo', 'GE-SZ', 'Самегрело-Верхняя Сванетия', null, 'Зугдиди'),
 ('geo', 'GE-GU', 'Гурия', null, 'Озургети'),
 ('geo', 'GE-AJ', 'Аджарская Автономная Республика', null, 'Батуми'),
