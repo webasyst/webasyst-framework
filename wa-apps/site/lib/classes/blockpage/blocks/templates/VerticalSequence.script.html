@@ -384,6 +384,7 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
                 node.attr('class', elem_static_classes + ' ' + elem_classes);
             };
             if (data.inline_props?.[elem]){
+                removeBackgroundVideo(node);
                 let keys = Object.keys(data.inline_props[elem]);
                 let elem_styles = '';
                 $.each(keys, function(i, k) {
@@ -394,12 +395,7 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
                         const video_layer = Object.values(data.inline_props[elem][k]['layers']).filter(l => l.type === 'video');
                         if (video_layer.length) {
                             setBackgroundVideo(video_layer[0], node)
-                            elem_styles += 'z-index: 2;'
-                        } else {
-                            removeBackgroundVideo(node)
                         }
-                    }else {
-                        removeBackgroundVideo(node)
                     }
                 })
                 const is_hidden = node.css('display') === 'none';
@@ -440,6 +436,7 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
     }
 
     if (data.inline_props){
+        removeBackgroundVideo($block_wrapper);
         let keys = Object.keys(data.inline_props);
         let elem_styles = '';
         $.each(keys, function(i, k) {
@@ -450,12 +447,7 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
                 const video_layer = Object.values(data.inline_props[k]['layers']).filter(l => l.type === 'video');
                 if (video_layer.length) {
                     setBackgroundVideo(video_layer[0], $block_wrapper)
-                    elem_styles += 'z-index: 2;'
-                } else {
-                    removeBackgroundVideo($block_wrapper)
                 }
-            } else {
-                removeBackgroundVideo($block_wrapper)
             }
         })
         $block_wrapper.attr('style', elem_styles);
@@ -479,15 +471,14 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
 }
 
 function setBackgroundVideo(layer, node) {
-    let video = '<div class="video-background-wrapper"><video autoplay muted loop class="video-background"><source src="' + layer.file_url + '" type="video/mp4"></video></div>';
-    if (node.parent().find('>.video-background-wrapper').length) node.parent().find('>.video-background-wrapper source').attr('src', layer.file_url)
-    else {
-        node.after($(video))
-        node.css('z-index', 2)
-    }
+    const $video = $('<div class="video-background-wrapper"><video autoplay muted loop class="video-background"><source src="' + layer.file_url + '" type="video/mp4"></video></div>');
+    node.append($video);
+
+    const $sibling = $video.prevAll(':not(script):not(style):first');
+    $sibling.css('z-index', '2');
 }
 function removeBackgroundVideo(node) {
-    if (node.parent().find('>.video-background-wrapper').length) node.parent().find('>.video-background-wrapper').remove();
+    node.children('.video-background-wrapper').remove();
 }
 
 function checkElementsSize($block_wrapper) {

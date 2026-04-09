@@ -130,7 +130,7 @@ class siteCustomVideoBlockType extends siteBlockType {
 
     public function getVideoColumn(): siteBlockData {
         $vseq = $this->createSequence();
-    
+
         $video = (new siteVideoBlockType())->getEmptyBlockData();
         $video->data['html'] = '';
         $video->data['video'] = [
@@ -139,12 +139,12 @@ class siteCustomVideoBlockType extends siteBlockType {
             'auto_play' => false,
             'muted' => true,
             'name' => 'woman-in-white.mp4',
+            'url' => wa()->getAppStaticUrl('site').'img/blocks/video/woman-in-white.mp4',
         ];
         $video->data['block_props'] = [
             'border-radius' => 'b-r-l',
         ];
         $vseq->addChild($video);
-
 
         $block_props = [
             $this->column_elements['main']    => [
@@ -403,7 +403,7 @@ class siteCustomVideoBlockType extends siteBlockType {
                 'margin-bottom' => 'm-b-4',
                 'margin-top' => 'm-t-0',
             ], 'p');
-    
+
             $text2 = $this->createHeading($item['text2'], [
                 'align' => 't-l',
                 'font-header' => 't-hdn',

@@ -788,6 +788,15 @@ var FormComponents = ( function($) {
                     }
                 },
             },
+            "component-hidden-block-alert": {
+                template:
+                    `<div class="alert info small">
+                        <div class="flexbox space-8">
+                            <div><i class="fas fa-info-circle fa-sm"></i></div>
+                            <div>{{ $t('custom.Block is hidden') }}</div>
+                        </div>
+                    </div>`,
+            },
             "component-premium-required-alert": {
                 template:
                     `<div class="js-form-alert alert info small">
@@ -984,7 +993,7 @@ var FormComponents = ( function($) {
                             //let file_url = '';
                             self.active_options.file_name = option.target.files[0].name;
                             $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                const file_promise = bs.uploadFile(option.target.files[0], '');
+                                const file_promise = bs.uploadFile(option.target.files[0], 'bg_image');
                                 file_promise.then(function(url) {
                                     self.active_options.file_url = url;
                                     self.active_options.value = self.changeValue();
@@ -1043,11 +1052,14 @@ var FormComponents = ( function($) {
                     let self = this;
                     let active_options = Object.assign({}, self.option);
                     if (active_options?.type !== 'video') active_options = {};
-                    const is_premium = $.site.is_premium;
-                    const showPremium = () => $.site.helper.showPremiumDialog();
+                    self.previous_options = { ...active_options };
+                    self.allowedMimeTypes = ['video/mp4', 'video/webm'];
                     //console.log('component-manual-video', active_options)
 
-                    return { active_options, is_premium , showPremium }
+                    const is_premium = $.site.is_premium;
+                    const showPremium = () => $.site.helper.showPremiumDialog();
+
+                    return { active_options, is_premium , showPremium, uploading: false, input_key: 0, format_not_supported: false }
                 },
 
                 template:
@@ -1057,55 +1069,69 @@ var FormComponents = ( function($) {
                         <div id="drop-area" @drop.stop.prevent="dropVideo($event)">
                             <div class="upload s-small" >
                                 <label class="link" @click="is_premium ? true : showPremium()">
-                                    <span class="button width-100 light-gray custom-mr-0 custom-mb-4" :class="{ 'disabled': !is_premium }">
-                                        <i class="fas fa-upload"></i> { { active_options.file_name ? $t('custom.Edit') : $t('custom.Upload') } }
+                                    <span class="button width-100 light-gray custom-mr-0 custom-mb-4" :class="{ 'disabled': !is_premium }" @click="cancelUpload">
+                                        <span v-if="uploading"><i class="fas fa-spinner fa-spin"></i></span>
+                                        <span v-else><i class="fas fa-upload"></i></span>
+                                        { { uploading ? $t('custom.Cancel') : active_options.file_name ? $t('custom.Edit') : $t('custom.Upload') } }
                                         <span v-if="!is_premium"><i class="fas fa-crown"></i></span>
                                     </span>
-                                    <input v-if="is_premium" name="namespace" type="file" autocomplete="off" @change="changeVideo($event)" accept="video/*">
+                                    <input v-if="is_premium" :key="input_key" name="namespace" type="file" autocomplete="off" @change="changeVideo($event)" :accept="allowedMimeTypes.join(',')">
                                 </label>
-                                <span v-if="active_options.file_name" class="filename bold custom-mt-8">{ { active_options.file_name } }</span>
+                                <div v-if="format_not_supported" class="state-caution">{ { $t('custom.Format not supported') } }</div>
+                                <div v-if="active_options.file_name" class="filename bold custom-mt-8">{ { active_options.file_name } }</div>
+                                <div class="s-semi-header hint custom-mt-8">{ { $t('custom.mp4 format is recommended') } }</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 `,
                 delimiters: ['{ { ', ' } }'],
-                components: {
-                    //'OptionToggle': this.base_components['component-toggle'],
-                },
                 methods: {
                     changeVideo: function(option) {
                         const self = this;
+                        if (self.uploading || !self.validFormat(option.target.files)) return;
                         if (!self.active_options.file_url) {
                             self.active_options.type = 'video';
                             self.active_options.name = 'Video';
                             self.active_options.css = '';
                         }
                         if (option.target.files?.length) {
-                            //let file_url = '';
                             self.active_options.file_name = option.target.files[0].name;
+                            self.uploading = true;
                             $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                const file_promise = bs.uploadFile(option.target.files[0], '');
+                                const file_promise = bs.uploadFile(option.target.files[0], 'bg_video');
                                 file_promise.then(function(url) {
                                     self.active_options.file_url = url;
                                     self.active_options.value = 'url(' + url + ')';
                                     self.$emit("changeVideo", self.active_options);
+                                    self.previous_options = { ...self.active_options };
+                                    self.uploading = false;
                                     return
                                 });
                             });
                          }
                     },
-                    dropImage: function(option) {
+                    cancelUpload(e) {
                         const self = this;
-                        const files = $(self.$el).find("#drop-area").data('upload')?.files;
-                        /*
-                        if (option.disabled || !files?.length) { return false; }
+                        if (!self.uploading) return true;
 
+                        e.preventDefault();
                         $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                            self.block_data.image = files[0].name;
-                            bs.saveBlockData(self.block_data, false);
-                            bs.uploadFile(files[0], '');
-                        });*/
+                            bs.cancelUploadFile();
+                            self.uploading = false;
+                            self.active_options = { ...self.previous_options };
+                            self.input_key++;
+                        });
+                    },
+                    validFormat(files) {
+                        const self = this;
+                        self.format_not_supported = false;
+                        const type = files[0].type;
+                        if (!self.allowedMimeTypes.includes(type)) {
+                            self.format_not_supported = true;
+                            return false;
+                        }
+                        return true;
                     }
                 },
 
@@ -1115,7 +1141,7 @@ var FormComponents = ( function($) {
 
                     self.$wrapper.find("#drop-area").waUpload({
                         is_uploadbox: true,
-                        show_file_name: true
+                        show_file_name: false
                     })
                 }
             },

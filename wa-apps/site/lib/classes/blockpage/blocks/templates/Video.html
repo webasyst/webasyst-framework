@@ -4,10 +4,14 @@
 {$is_upload_type = ifset($data->data['video'], 'type', false) === 'upload'}
 {if $is_upload_type}
     {$video_src = $data->getFileUrl('')}
+    {if !$video_src}
+        {$video_src = ifset($data->data['video'], 'url', '')}
+    {/if}
     {$auto_play = ifset($data->data['video'], 'auto_play', false)}
     {$auto_loop = ifset($data->data['video'], 'auto_loop', false)}
     {$muted = ifset($data->data['video'], 'muted', false)}
 {/if}
+
 
 {$anchor_id = $data->data['id']|default:0}
 {if $is_backend}

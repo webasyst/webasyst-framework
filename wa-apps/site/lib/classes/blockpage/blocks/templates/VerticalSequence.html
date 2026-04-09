@@ -15,6 +15,7 @@
 <div class="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" data-static="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" {if $block_id}data-block-id="{$block_id|escape}"{else}id="js-global-seq"{/if} data-page-id="{$data->getPageId()}">
     {foreach $children as $c}
         {$disabled = $c['data']->data['disabled']|default:false}
+        {$hidden = $c['data']->data['hidden']|default:false}
         {function _add_button value='1'}
             {if !$disabled}
                 {if !$is_indestructible}
@@ -66,6 +67,14 @@
                 </div>
                 <div class="seq-block-delimeter vseq-block-delimeter-bottom seq-block-delimeter-after {$add_button_class}">
                     {_add_button value="2"}
+                </div>
+            {/if}
+            {if !$is_element}
+                <div class="seq-block-overlay{if !$hidden} hidden{/if}">
+                    <div class="content">
+                        <div><i class="fas fa-eye-slash"></i></div>
+                        <div class="text">[`This block is hidden`]</div>
+                    </div>
                 </div>
             {/if}
         </div>

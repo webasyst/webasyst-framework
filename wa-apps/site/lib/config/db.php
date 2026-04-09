@@ -9,7 +9,7 @@ return [
         ':keys'           => [
             'PRIMARY' => 'id',
         ],
-        ':options'        => ['engine' => 'MyISAM'],
+        ':options'        => ['engine' => 'MyISAM', 'charset' => 'utf8mb4'],
     ],
     'site_blockpage' => [
         'id'              => ['int', 11, 'null' => 0, 'autoincrement' => 1],
@@ -27,10 +27,11 @@ return [
         'update_datetime' => ['datetime', 'null' => 0],
         ':keys'           => [
             'PRIMARY'       => 'id',
-            'domain_id'     => ['domain_id', 'full_url'],
+            'domain_id'     => ['domain_id', ['full_url', 190]],
             'parent_id'     => ['parent_id', 'sort'],
             'final_page_id' => 'final_page_id',
         ],
+        ':options' => ['charset' => 'utf8mb4'],
     ],
     'site_blockpage_block_files' => [
         'file_id'  => ['int', 11, 'null' => 0],
@@ -40,6 +41,7 @@ return [
             'file_id'  => 'file_id',
             'block_id' => 'block_id',
         ],
+        ':options' => ['charset' => 'utf8mb4'],
     ],
     'site_blockpage_blocks' => [
         'id'        => ['int', 11, 'null' => 0, 'autoincrement' => 1],
@@ -55,6 +57,7 @@ return [
             'PRIMARY' => 'id',
             'page_id' => ['page_id', 'sort'],
         ],
+        ':options' => ['charset' => 'utf8mb4'],
     ],
     'site_blockpage_file' => [
         'id'              => ['int', 11, 'null' => 0, 'autoincrement' => 1],
@@ -71,11 +74,12 @@ return [
             'PRIMARY'         => 'id',
             'delete_datetime' => 'delete_datetime',
         ],
+        ':options' => ['charset' => 'utf8mb4'],
     ],
     'site_blockpage_params' => [
         'page_id' => ['int', 11, 'null' => 0],
         'name'    => ['varchar', 255, 'null' => 0],
-        'value'   => ['text', 'null' => 0],
+        'value'   => ['text', 'null' => 0, 'charset' => 'utf8mb4'],
         ':keys'   => [
             'page_id' => ['page_id', 'name', 'unique' => 1],
         ],
@@ -83,8 +87,8 @@ return [
     'site_domain' => [
         'id'    => ['int', 11, 'null' => 0, 'autoincrement' => 1],
         'name'  => ['varchar', 255, 'null' => 0],
-        'title' => ['varchar', 128, 'null' => 0, 'default' => ''],
-        'style' => ['varchar', 255, 'null' => 0, 'default' => ''],
+        'title' => ['varchar', 128, 'null' => 0, 'default' => '', 'charset' => 'utf8mb4'],
+        'style' => ['varchar', 255, 'null' => 0, 'default' => '', 'charset' => 'utf8mb4'],
         ':keys' => [
             'PRIMARY' => 'id',
             'name'    => ['name', 'unique' => 1],
@@ -97,6 +101,7 @@ return [
         ':keys' => [
             'PRIMARY' => 'id',
         ],
+        ':options' => ['charset' => 'utf8mb4'],
     ],
     'site_page' => [
         'id'                => ['int', 11, 'null' => 0, 'autoincrement' => 1],
@@ -115,17 +120,19 @@ return [
         'parent_id'         => ['int', 11],
         ':keys'             => [
             'PRIMARY'   => 'id',
-            'url'       => ['domain_id', 'route', 'full_url'],
+            'url'       => ['domain_id', 'route', ['full_url', 120]],
             'parent_id' => 'parent_id',
         ],
+        ':options' => ['charset' => 'utf8mb4'],
     ],
     'site_page_params' => [
         'page_id' => ['int', 11, 'null' => 0],
         'name'    => ['varchar', 255, 'null' => 0],
         'value'   => ['text', 'null' => 0],
         ':keys'   => [
-            'PRIMARY' => ['page_id', 'name'],
+            'PRIMARY' => ['page_id', ['name', 190]],
         ],
+        ':options' => ['charset' => 'utf8mb4'],
     ],
     'site_variable' => [
         'id'              => ['varchar', 64, 'null' => 0],
@@ -136,6 +143,6 @@ return [
         ':keys'           => [
             'PRIMARY' => 'id',
         ],
-        ':options'        => ['engine' => 'MyISAM'],
+        ':options'        => ['engine' => 'MyISAM','charset' => 'utf8mb4'],
     ],
 ];

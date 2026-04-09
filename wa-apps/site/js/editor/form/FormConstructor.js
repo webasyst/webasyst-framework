@@ -2294,9 +2294,9 @@ var FormConstructor = ( function($) {
                             },
                             removeLayer(index) {
                                 const self = this;
+                                self.removeVideo(self.layers[index]);
                                 self.layers.splice(index, 1);
                                 self.changeCss();
-                                //self.change();
                             },
                             addLayer(index) {
                                 const self = this;
@@ -2311,7 +2311,6 @@ var FormConstructor = ( function($) {
                                     self.layers.push(new_layer)
                                 }
                                 self.changeCss();
-                                //self.change();
                             },
                             changeCss(layer, index) {
                                 let self = this;
@@ -2401,6 +2400,11 @@ var FormConstructor = ( function($) {
 
                                 self.active_options = null;
                             },
+                            removeVideo(layer) {
+                                if (layer.type === 'video') {
+                                    that.$target_wrapper.parent().find('>.video-background-wrapper').remove();
+                                }
+                            },
                             changePalette(option) {
                                 let self = this;
                                 if (self.active_options?.type === 'self_color') {
@@ -2430,39 +2434,6 @@ var FormConstructor = ( function($) {
                                 });
                                 console.log('saveBlockData', self.block_data)
                             },
-
-                            /*changeImage(option) {
-                                const self = this;
-                                const $dropdown = $(self.$el);
-                                const $dropdown_toggle = $dropdown.find('.dropdown-toggle');
-
-                                if (self.active_option.type === 'palette') {
-                                    self.$editable.removeClass(self.active_option.value);
-                                    if (!self.element) {
-                                        if (self.block_data.block_props) delete self.block_data.block_props[self.form_type];
-                                    } else {
-                                        if (self.block_data.block_props && self.block_data.block_props[self.element]) delete self.block_data.block_props[self.element][self.form_type];
-                                    }
-                                }
-                                const temp_active_option = option;
-                                self.$editable.css(self.form_type, temp_active_option.value);
-                                $dropdown_toggle.find('.s-icon svg').css('color', temp_active_option.css);
-                                $dropdown_toggle.find('.s-name').html(temp_active_option.file_name);
-                                self.active_option = temp_active_option;
-                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    if (!self.element) {
-                                        if (!self.block_data.inline_props) self.block_data.inline_props = {};
-                                        self.block_data.inline_props[self.form_type] = temp_active_option;
-                                    } else {
-                                        if (!self.block_data.inline_props) self.block_data.inline_props = {};
-                                        if (!self.block_data.inline_props[self.element]) self.block_data.inline_props[self.element] = {};
-                                        self.block_data.inline_props[self.element][self.form_type] = temp_active_option;
-                                    }
-                                    bs.saveBlockData(self.block_data);
-                                });
-                                console.log('saveBlockData', self.block_data)
-
-                            },*/
                         },
                         mounted: function() {
                             let self = this;
@@ -3952,7 +3923,9 @@ var FormConstructor = ( function($) {
                                     let switch_disabled = video_data.name ? false : true;
                                     const is_premium = $.site.is_premium;
                                     const showPremium = () => $.site.helper.showPremiumDialog();
-                                    return { muted, autoPlay, autoLoop, form_type, video_data, switch_disabled, is_premium, showPremium }
+                                    this.allowedMimeTypes = ['video/mp4', 'video/webm'];
+                                    const format_not_supported = false;
+                                    return { muted, autoPlay, autoLoop, form_type, video_data, switch_disabled, is_premium, showPremium, format_not_supported }
                                 },
                                 template: that.templates["component_video_upload_group"],
                                 delimiters: ['{ { ', ' } }'],
@@ -3963,7 +3936,7 @@ var FormConstructor = ( function($) {
                                     change: function(option) {
                                         const self = this;
                                         that.is_new_block = false;
-                                        if (!option.target.files?.length) return false;
+                                        if (!option.target.files?.length || !self.validFormat(option.target.files)) return false;
                                         self.video_data = {'type': 'upload', 'name': option.target.files[0].name, 'auto_loop': self.autoLoop, 'auto_play': self.autoPlay, 'muted': self.muted} ;
                                         $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                             self.block_data.video = self.video_data;
@@ -4000,6 +3973,7 @@ var FormConstructor = ( function($) {
                                     drop: function(option) {
                                         const self = this;
                                         const files = $(self.$el).find("#drop-area").data('upload')?.files;
+                                        if (!files?.length || !self.validFormat(files)) return false;
                                         that.is_new_block = false;
                                         //console.log('drop', option.disabled, !files?.length)
                                         if (option.disabled || !files?.length) { return false; }
@@ -4022,13 +3996,21 @@ var FormConstructor = ( function($) {
                                             });
                                         }
                                     },
-
+                                    validFormat: function(files) {
+                                        const self = this;
+                                        self.format_not_supported = false;
+                                        if (!self.allowedMimeTypes.includes(files[0].type)) {
+                                            self.format_not_supported = true;
+                                            return false;
+                                        }
+                                        return true;
+                                    },
                                 },
                                 mounted: function() {
                                     const self = this;
                                     $(self.$el).find("#drop-area").waUpload({
                                         is_uploadbox: true,
-                                        show_file_name: true
+                                        show_file_name: false
                                     })
                                 }
                             },
@@ -5079,7 +5061,9 @@ var FormConstructor = ( function($) {
                             const is_hseq = self.block_wrapper.hasClass('hseq-wrapper');
                             const prev_move_icon = is_hseq ? 'fa-arrow-left' : 'fa-arrow-up';
                             const next_move_icon = is_hseq ? 'fa-arrow-right' : 'fa-arrow-down';
-                            return { is_broken_block, prev_move_icon, next_move_icon }
+                            const is_element = this.form_config.tags === 'element';
+                            const is_hidden = !!that.states.block_data.hidden;
+                            return { is_broken_block, prev_move_icon, next_move_icon, is_hidden, is_element }
                         },
                         template: `
                         <div class="main-button-group custom-mb-32 custom-mt-8">
@@ -5087,12 +5071,14 @@ var FormConstructor = ( function($) {
                             <custom-button buttonClass="light-gray" :iconClass="prev_move_icon" @click="reorderBlocks('up')" v-if="!is_broken_block" :title="$t('custom.Move')"></custom-button>
                             <custom-button buttonClass="light-gray" :iconClass="next_move_icon" @click="reorderBlocks('down')" v-if="!is_broken_block" :title="$t('custom.Move')"></custom-button>
                             <custom-button buttonClass="light-gray" iconClass="fa-copy" @click="copyBlock" v-if="!is_broken_block" :title="$t('custom.Copy')"></custom-button>
+                            <custom-button v-if="!is_broken_block && !is_element" :button-class="is_hidden ? 'blue' : 'light-gray'" iconClass="fa-eye-slash" @click="hideBlock" :title="$t('custom.Hide')"></custom-button>
                         </div>
+                        <HiddenBlockAlert v-if="is_hidden"/>
                         `,
-                        //delimiters: ['{ { ', ' } }'],
                         components: {
                             'CustomButton': that.vue_components['custom-button'],
-                          },
+                            'HiddenBlockAlert': that.vue_components['component-hidden-block-alert'],
+                        },
                         methods: {
                             removeBlock(){
                                 const self = this;
@@ -5145,18 +5131,23 @@ var FormConstructor = ( function($) {
                                     self.block_wrapper.replaceWith(new_parent_block_html);
                                 });
                             },
+                            hideBlock(event) {
+                                this.is_hidden = !that.states.block_data.hidden;
+                                that.states.block_data.hidden = this.is_hidden;
+
+                                const $button = $(event.target).closest('button');
+                                $button.toggleClass('blue', this.is_hidden)
+                                $button.toggleClass('light-gray', !this.is_hidden);
+
+                                that.$target_wrapper.siblings('.seq-block-overlay').toggleClass('hidden', !this.is_hidden);
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    bs.saveBlockData(that.states.block_data);
+                                });
+                            }
                         },
                     },
                     "PremiumRequiredAlert": that.vue_components['component-premium-required-alert'],
                 },
-                /*computed: {
-                    customKey: function() {
-                        const { ref } = Vue;
-                        const self = this;
-                        const result = ref(self.block_id+self.media_prop+self.selected_element);
-                        return result
-                    }
-                },*/
                 template: `
                     <form-header :header="header" :parents="parents" @closeDrawer="close_drawer" @updateDrawer="update_drawer" @updateDrawerHor="update_drawer_hor" @updateDrawerWidth="update_drawer_width" @goToParent="goToParent"></form-header>
                     <main-controls-group :key="block_id+media_prop" :block_id="block_id" :form_config="form_config" v-if="!(block_data?.indestructible || false)"></main-controls-group>

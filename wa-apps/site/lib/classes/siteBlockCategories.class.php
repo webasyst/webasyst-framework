@@ -110,6 +110,9 @@ class siteBlockCategories {
                 'title' => _wd('site', 'About us'),
                 'tag'   => 'category_about',
             ], [
+                'title' => _wd('site', 'Collections and lookbooks'),
+                'tag'   => 'category_collections',
+            ], [
                 'title' => _wd('site', 'Articles & reviews'),
                 'tag'   => 'category_articles',
             ], [
@@ -127,6 +130,9 @@ class siteBlockCategories {
             ], [
                 'title' => _wd('site', 'Contacts'),
                 'tag'   => 'category_contacts',
+            ], [
+                'title' => _wd('site', 'Website under maintenance'),
+                'tag'   => 'category_repair',
             ],
         ];
 

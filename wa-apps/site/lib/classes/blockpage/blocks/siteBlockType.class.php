@@ -220,6 +220,21 @@ abstract class siteBlockType
         return false; // overriden in subclasses
     }
 
+    /** 
+     * Validate uploaded file into given slot of given block.
+     * @return ?array ['code' => string, 'message' => string]; null means upload is allowed.
+     */
+    public function validateUpload(waRequestFile $f, string $file_key, array $target_block): ?array
+    {
+        if ($file_key == 'bg_video' && !waLicensing::check('site')->isPremium()) {
+            return [
+                'code' => 'premium_required',
+                'message' => _ws('Premium license is required to use this feature.'),
+            ];
+        }
+        return null;
+    }
+
     /** @return waView */
     protected function getView()
     {

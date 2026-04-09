@@ -101,13 +101,14 @@ class siteBlockPage
             $blocks = [$only_block_id => $only_block];
             $block_types = $this->getAllBlockTypesFromData($only_block);
         } else {
-            $blocks = array_filter($blocks, function($b) {
-                return empty($b->db_row['parent_id']);
+            $blocks = array_filter($blocks, function($b) use ($is_backend) {
+                $is_visible = $is_backend || empty($b->data['hidden']);
+                return $is_visible && empty($b->db_row['parent_id']);
             });
         }
 
         $is_premium = waLicensing::check('site')->isPremium();
-        if (!$is_premium && $blocks) {
+        if (!$is_premium && (!$is_backend || $blocks)) {
             $blocks['footer'] = (new siteFooterBottomPoweredByBlockType())->getExampleBlockData();
         }
 

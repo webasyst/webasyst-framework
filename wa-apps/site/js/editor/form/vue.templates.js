@@ -836,11 +836,11 @@
                             <i class="fas fa-video"></i> { { video_data.name ? $t('custom.Change video') : $t('custom.Add video') } }
                             <span v-if="!is_premium"><i class="fas fa-crown"></i></span>
                         </span>
-                        <input v-if="is_premium" name="namespace" type="file" autocomplete="off" @change="change($event)" @cancel="cancelFile($event)" accept="video/*">
+                        <input v-if="is_premium" name="namespace" type="file" autocomplete="off" @change="change($event)" @cancel="cancelFile($event)" :accept="allowedMimeTypes.join(',')">
                     </label>
-
                 </div>
             </div>
+            <div v-if="format_not_supported" class="state-caution">{ { $t('custom.Format not supported') } }</div>
             <div class="s-semi-header hint custom-pb-0" v-html="
                 $t('custom.mp4 format is recommended')
             "></div>

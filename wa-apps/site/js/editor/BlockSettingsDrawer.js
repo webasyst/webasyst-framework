@@ -157,6 +157,10 @@ class BlockSettingsDrawer
         return $.wa.editor.uploadFile(this.current_block_id, key, file);
     }
 
+    cancelUploadFile() {
+        $.wa.editor.cancelUploadFile(this.current_block_id);
+    }
+
     /** Called by VueJS code when user changes something in the form.
      * Propagates changes into WYSIWYG and saves to the server. */
     saveBlockData(block_data, update = true) {

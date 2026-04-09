@@ -44,10 +44,20 @@ class siteEditorUploadController extends waJsonController
             return;
         }
 
+        $blockpage_blocks_model = new siteBlockpageBlocksModel();
+        $target_block = $blockpage_blocks_model->getById($block_id);
+        if (!$target_block || !empty($target_block['deleted'])) {
+            $this->errors = [
+                'error_code' => 'block_not_found',
+                'error_message' => 'block_id does not exist',
+            ];
+            return;
+        }
+
         $must_undelete_file = true;
         if ($file->uploaded()) {
             // This is a DO operation: upload a file and attach it to a block into a given $file_key slot
-            $file_id = $this->processFile($file, $file_key);
+            $file_id = $this->processFile($file, $file_key, $target_block);
             $must_undelete_file = false;
             if (!$file_id) {
                 return; // unable to save uploaded file; $this->errors is set by ->processFile()
@@ -110,8 +120,6 @@ class siteEditorUploadController extends waJsonController
 
         $has_unsaved_changes = true;
         $new_datetime = $old_datetime = '';
-        $blockpage_blocks_model = new siteBlockpageBlocksModel();
-        $target_block = $blockpage_blocks_model->getById($block_id);
         if ($target_block) {
             $setdt = waRequest::post('setdt', null, 'string');
             $ifdt = waRequest::post('ifdt', null, 'string');
@@ -142,7 +150,7 @@ class siteEditorUploadController extends waJsonController
         ];
     }
 
-    protected function isValid($f)
+    protected function isValid(waRequestFile $f, string $file_key, array $target_block): bool
     {
         $ext = $f->extension;
         if (strpos(strtolower($f->name), '.php') !== false) {
@@ -157,6 +165,34 @@ class siteEditorUploadController extends waJsonController
             ];
             return false;
         }
+
+        try {
+            $block_type = siteBlockType::factory($target_block['type']);
+            $upload_error = $block_type->validateUpload($f, $file_key, $target_block);
+            if ($upload_error) {
+                $this->errors = [
+                    'error_code' => ifset($upload_error, 'code', 'upload_not_allowed'),
+                    'error_message' => ifset($upload_error, 'message', sprintf(_ws('Failed to upload file %s.'), $f->name)),
+                ];
+                return false;
+            }
+        } catch (Throwable $e) {
+            $this->errors = [
+                'error_code' => 'upload_failed',
+                'error_message' => sprintf(_ws('Failed to upload file %s.'), $f->name),
+            ];
+            if (SystemConfig::isDebug()) {
+                waLog::log([
+                    'Unable to validate uploaded file',
+                    'file_key' => $file_key,
+                    'block' => $target_block,
+                    'exception' => (string) $e,
+                ]);
+                $this->errors['error_message'] .= ' '.$e->getMessage();
+            }
+            return false;
+        }
+
         return true;
     }
 
@@ -164,19 +200,32 @@ class siteEditorUploadController extends waJsonController
      * @param waRequestFile $f
      * @return bool
      */
-    protected function processFile(waRequestFile $f, $file_key)
+    protected function processFile(waRequestFile $f, $file_key, array $target_block)
     {
-        if (!$this->isValid($f)) {
+        if (!$this->isValid($f, $file_key, $target_block)) {
             return false;
         }
 
         $is_image = in_array(strtolower($f->extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
         if ($is_image) {
             try {
+                // TODO: move constants elsewhere or read them from settings
+                $save_quality = 90;
+                $max_size = 2560;
+                $sharp_amount = 6;
+
                 $image = $f->waImage();
+                if ($image->width > $max_size || $image->height > $max_size) {
+                    $image->resize($max_size, $max_size);
+                    $image->sharpen($sharp_amount);
+                    $save_from_wa_image_quality = $save_quality;
+                }
+
                 $image_width = $image->width;
                 $image_height = $image->height;
-                unset($image);
+                if (empty($save_from_wa_image_quality)) {
+                    unset($image);
+                }
             } catch (waException $e) {
                 $is_image = false;
             }
@@ -211,7 +260,15 @@ class siteEditorUploadController extends waJsonController
             return;
         }
 
-        if (!$f->moveTo($path)) {
+        $save_successfull = false;
+        if (!empty($save_from_wa_image_quality)) {
+            $save_successfull = $image->save($path, $save_from_wa_image_quality);
+            unset($image);
+        } else {
+            $save_successfull = $f->moveTo($path);
+        }
+
+        if (!$save_successfull) {
             $blockpage_file_model->deleteById($file_id);
             $this->errors = [
                 'error_code' => 'upload_failed',

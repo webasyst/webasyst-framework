@@ -262,7 +262,7 @@
                     'Add video': 'Add video',
                     'Change video': 'Change video',
                     'Code': 'Code',
-                    'mp4 format is recommended': '.mp4 format (H.264 codec). It is recommended to optimize the weight and resolution before uploading.',
+                    'mp4 format is recommended': 'Format MP4 is supported (codec H.264). We recommend optimizing the file size and video resolution before upload.',
                     'Product from **Shop-Script catalog**': 'Product from **Shop-Script catalog**',
                     'Start typing name': 'Start typing name',
                     'Storefronts': 'Storefronts',
@@ -292,6 +292,9 @@
                     'On click': 'On click',
                     'My account': 'My account',
                     'About us': 'About us',
+                    'Hide': 'Hide',
+                    'Block is hidden': 'This block is hidden from website visitors.',
+                    'Format not supported': 'Format not supported.',
                 },
                 'border_group': {
                     'Remove border': 'Remove border',
@@ -324,6 +327,16 @@
                     'Align-center': 'Center',
                     'Align-justify': 'Justify',
                     'Align-right': 'Right',
+                },
+                'padding-left': {
+                    'Default for columns': 'Default for columns',
+                    'Default for blocks': 'Default for blocks',
+                    'Default for blocks + columns': 'Default for blocks + columns',
+                },
+                'padding-right': {
+                    'Default for columns': 'Default for columns',
+                    'Default for blocks': 'Default for blocks',
+                    'Default for blocks + columns': 'Default for blocks + columns',
                 },
         },
         ru: {
@@ -592,7 +605,7 @@
                     'Upload': 'Загрузить',
                     'Edit': 'Изменить',
                     'Code': 'Код',
-                    'mp4 format is recommended': 'Формат .mp4 (кодек H.264). Перед загрузкой рекомендуется оптимизировать вес и разрешение.',
+                    'mp4 format is recommended': 'Поддерживается формат MP4 (кодек H.264). Рекомендуем оптимизировать размер файла и разрешение перед загрузкой.',
                     'Product from **Shop-Script catalog**': 'Товар из каталога **Shop-Script**',
                     'Start typing name': 'Начните вводить название',
                     'Storefronts': 'Витрины',
@@ -619,6 +632,9 @@
                     'On click': 'При нажатии',
                     'My account': 'Личный кабинет',
                     'About us': 'О нас',
+                    'Hide': 'Скрыть',
+                    'Block is hidden': 'Этот блок скрыт от посетителей сайта.',
+                    'Format not supported': 'Формат не поддерживается.',
                 },
                 'border_group': {
                     'Remove border': 'Удалить обводку',
@@ -651,6 +667,16 @@
                     'Align-center': 'По центру',
                     'Align-justify': 'По ширине',
                     'Align-right': 'Справа',
+                },
+                'padding-left': {
+                    'Default for columns': 'Стандартный для колонок',
+                    'Default for blocks': 'Стандартный для блоков',
+                    'Default for blocks + columns': 'Стандартный для блоков + колонок',
+                },
+                'padding-right': {
+                    'Default for columns': 'Стандартный для колонок',
+                    'Default for blocks': 'Стандартный для блоков',
+                    'Default for blocks + columns': 'Стандартный для блоков + колонок',
                 },
         }
     }

@@ -174,7 +174,7 @@
                                     {if $f.type == 'dir'}
                                         {$current_dir_path = "`$parent_path``$f_id`/"}
                                         {$is_expanded = (!empty($edit_data.file.id) && strpos($edit_data.file.id, $current_dir_path) === 0)}
-                                        
+
                                         <li>
                                             <span class="item js-directory-toggle"{if $level > 0} style="padding-left:{$_level_padding};"{/if}>
                                                 <i class="fas fa-folder"></i>
@@ -285,64 +285,6 @@
                 $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
 
             var $bottombar = $('.bottombar');
-            var theme_settings_sidebar_xhr = null;
-            var theme_settings_sidebar_request_id = 0;
-
-            function invalidateThemeSettingsSidebar(theme_id) {
-                const current_theme_id = $theme_settings_section.data('theme-id');
-
-                $theme_settings_section.html(skeleton_sidebar);
-
-                if (theme_id && current_theme_id !== undefined && current_theme_id !== theme_id) {
-                    $theme_settings_section.removeData('menu-id');
-                    sessionStorage.removeItem('wa_design_menu_id');
-                }
-            }
-
-            function syncThemeSettingsSidebar(theme_id, route_id, callback) {
-                if (!theme_id) {
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
-                    return;
-                }
-
-                let url = "?module={$module_name}&action=theme&theme=" + encodeURIComponent(theme_id);
-                if (route_id) {
-                    url += "&route=" + encodeURIComponent(route_id);
-                }
-
-                if (theme_settings_sidebar_xhr) {
-                    theme_settings_sidebar_xhr.abort();
-                }
-
-                theme_settings_sidebar_request_id += 1;
-                const request_id = theme_settings_sidebar_request_id;
-
-                theme_settings_sidebar_xhr = $.get(url, function (html) {
-                    if (request_id !== theme_settings_sidebar_request_id) {
-                        return;
-                    }
-
-                    const $html = $('<div>').html(html),
-                        $theme_settings_list = $html.find('.js-theme-settings-hidden-list');
-
-                    if ($theme_settings_list.length) {
-                        $theme_settings_section.html($theme_settings_list.html());
-                    }
-
-                    $theme_settings_section.data('theme-id', theme_id);
-                    theme_settings_sidebar_xhr = null;
-
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
-                }).fail(function (_, text_status) {
-                    if (text_status !== 'abort' && request_id === theme_settings_sidebar_request_id) {
-                        theme_settings_sidebar_xhr = null;
-                    }
-                });
-            }
 
             async function postData(url, data) {
                 const response = await fetch(url, {
@@ -452,12 +394,17 @@
                 }
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            })
+            });
 
             $(document).on('wa_design_loaded', function () {
                 const current_menu_id = sessionStorage.getItem('wa_design_menu_id');
                 if (current_menu_id) {
                     $theme_settings_section.find('a[data-divider-id='+current_menu_id+']').trigger('click');
+                }
+                // TODO: temporary workaround
+                const $settings_link = $('.js-theme-settings-link');
+                if ($settings_link.length) {
+                    $settings_link.attr('href', $settings_link.attr('href').replace('#/design/', '#/themes/'));
                 }
             });
 
@@ -532,8 +479,6 @@
                 const params = waDesignParams(href);
 
                 if (params['theme']) {
-                    invalidateThemeSettingsSidebar(params['theme']);
-
                     const $theme_active = $("#wa-theme-active"),
                         $theme_active_url = $theme_active.find('.js-url'),
                         $theme_active_hint = $theme_active.find('.js-hint');
@@ -593,18 +538,9 @@
                         localStorage.setItem(ls_id, location.hash);
                     } else {
                         const theme_hash = localStorage.getItem(ls_id);
-                        if (theme_hash) {
-                            const theme_hash_params = waDesignParams(theme_hash);
-                            const is_same_theme = theme_hash_params['theme'] === params['theme'];
-                            const is_same_domain = (theme_hash_params['domain'] || '') === (params['domain'] || '');
-                            const is_same_route = (theme_hash_params['route'] || '') === (params['route'] || '');
-
-                            if (is_same_theme && is_same_domain && is_same_route) {
-                                location.href = theme_hash;
-                            } else {
-                                location.href = href;
-                            }
-                        } else {
+                        if (theme_hash){
+                            location.href = theme_hash;
+                        }else{
                             location.href = href;
                         }
                     }
@@ -678,6 +614,10 @@
             var wa_design_not_load = false;
 
             function waDesignLoad(hash) {
+                if(hash) {
+                    hash = hash.replace('design/theme', 'design&theme');
+                }
+
                 {if $design_url && is_string($design_url) && $design_url != '#/'}
                 var design_url = {$design_url|json_encode}.replace(/.*?#\//, '');
                 if (design_url && design_url.length && hash && hash.length) {
@@ -770,9 +710,6 @@
                                     $tmp_li.find('a').click();
                                 }
                             } else {
-                                const current_theme_id = $theme_settings_section.data('theme-id'),
-                                    new_theme_id = hash_params['theme'];
-
                                 $design_container.load($li.data('routing') + '&reload_on_change=1&ui=2.0', function () {
                                     reStyleSettingsPage('settings');
                                     $design_container.find(".back").remove(); // deprecated?
@@ -786,14 +723,20 @@
                                     $design_container.find(".s-route-delete").closest('div').remove();
                                 });
 
-                                invalidateThemeSettingsSidebar(new_theme_id);
+                                const newThemeId = hash_params['theme'];
+                                // Загружаем содержимое темы через GET запрос, чтобы извлечь меню
+                                $.get("?module=design&action=theme&theme="+newThemeId+"&route="+li_route, function(html) {
+                                    // Парсим HTML и извлекаем только меню
+                                    const $theme_settings_list = $('<div>').html(html).find('.js-theme-settings-hidden-list');
+                                    if ($theme_settings_list.length) {
+                                        self.$theme_settings_section.html($theme_settings_list.html());
+                                    }
+                                    // Отмечаем, что содержимое загружено для текущей темы
+                                    self.$theme_settings_section.data('loaded', true);
+                                    self.$theme_settings_section.data('theme-id', newThemeId);
 
-                                if (current_theme_id !== undefined && current_theme_id !== new_theme_id) {
-                                    $theme_settings_section.removeData('menu-id');
-                                    sessionStorage.removeItem('wa_design_menu_id');
-                                }
-
-                                syncThemeSettingsSidebar(new_theme_id, li_route);
+                                    $('.js-theme-settings-link').closest('li').addClass('selected');
+                                });
                             }
                         } else {
                             if (hash_params['route']) {
@@ -1000,7 +943,7 @@
                     const $searchInput = $(this);
                     const searchQuery = $searchInput.val().toLowerCase().trim();
                     const $fileList = $searchInput.closest('#wa-design-sidebar').find('.wa-theme-templates');
-                    
+
                     if (!searchQuery) {
                         // Если поиск пустой, показываем все элементы и сбрасываем раскрытие
                         $fileList.find('li').show();
@@ -1036,11 +979,11 @@
                         let hasMatch = false;
                         const $submenu = $folder.siblings('ul.menu');
                         const $children = $submenu.find('li');
-                        
+
                         $children.each(function() {
                             const $child = $(this);
                             const $childToggle = $child.find('.js-directory-toggle');
-                            
+
                             if ($childToggle.length) {
                                 // Это папка, проверяем рекурсивно
                                 if (folderContainsMatch($childToggle)) {
@@ -1054,7 +997,7 @@
                                 }
                             }
                         });
-                        
+
                         return hasMatch;
                     };
 
@@ -1062,13 +1005,13 @@
                     $fileList.find('li').each(function() {
                         const $li = $(this);
                         const $toggle = $li.find('.js-directory-toggle');
-                        
+
                         if ($toggle.length) {
                             // Это папка
                             const folderName = $toggle.find('span').not('.toggle-icon').text().toLowerCase();
                             const folderMatches = folderName.indexOf(searchQuery) !== -1;
                             const containsMatch = folderContainsMatch($toggle);
-                            
+
                             if (folderMatches || containsMatch) {
                                 $li.show();
                                 // Раскрываем папку, если она содержит совпадения
@@ -1101,7 +1044,7 @@
                 e.preventDefault();
                 const $menu = $(this).next('.menu');
                 const is_visible = $menu.is(':visible');
-                
+
                 if(is_visible) {
                     $menu.slideUp();
                 } else {

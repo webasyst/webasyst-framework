@@ -158,6 +158,14 @@ class siteBlockpageLibrary
                     'tags'  => ['template', 'category_about'],
                 ],
                 [
+                    'image'    => $img_url . 'page_templates/collections/1/collection.jpg',
+                    'image_2x' => $img_url . 'page_templates/collections/1/collection@2x.jpg',
+                    'title' => _w('Collections and lookbooks'),
+                    'data'  => siteBlockPageTemplates::getCollectionsPageTemplate(),
+                    'tags'  => ['template', 'category_collections'],
+                    'premium' => true,
+                ],
+                [
                     'image'    => $img_url . 'page_templates/articles/coffee_machine/article.jpg',
                     'image_2x' => $img_url . 'page_templates/articles/coffee_machine/article@2x.jpg',
                     'title' => _w('Articles & reviews'),
@@ -201,6 +209,14 @@ class siteBlockpageLibrary
                     'title' => _w('Contacts'),
                     'data'  => siteBlockPageTemplates::getContactsPageTemplate(),
                     'tags'  => ['template', 'category_contacts'],
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/repair/under-repair.jpg',
+                    'image_2x' => $img_url . 'page_templates/repair/under-repair@2x.jpg',
+                    'title' => _w('Website under maintenance'),
+                    'data'  => siteBlockPageTemplates::getUnderRepairPageTemplate(),
+                    'tags'  => ['template', 'category_repair'],
+                    'premium' => true,
                 ],
             ];
         }
@@ -520,6 +536,22 @@ class siteBlockpageLibrary
                 'title'    => _w('Text 2'),
                 'data'     => (new siteCustomText2BlockType())->getExampleBlockData(),
                 'tags'     => ['category_text'],
+            ],
+            [
+                'image'    => $img_url . 'text/quote.jpg',
+                'image_2x' => $img_url . 'text/quote@2x.jpg',
+                'title'    => _w('Text 3'),
+                'data'     => (new siteCustomText3BlockType())->getExampleBlockData(),
+                'tags'     => ['category_text'],
+                'premium'  => true,
+            ],
+            [
+                'image'    => $img_url . 'text/characteristics.jpg',
+                'image_2x' => $img_url . 'text/characteristics@2x.jpg',
+                'title'    => _w('Text 4'),
+                'data'     => (new siteCustomText4BlockType())->getExampleBlockData(),
+                'tags'     => ['category_text'],
+                'premium'  => true,
             ],
             [
                 'image'    => $img_url . 'images_wd/guide.jpg',

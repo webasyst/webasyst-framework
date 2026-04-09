@@ -54,6 +54,16 @@ class siteBlockPageTemplates
         return self::readFromFile('blackFridayPromo.php');
     }
 
+    public static function getUnderRepairPageTemplate()
+    {
+        return self::readFromFile('underRepair.php');
+    }
+
+    public static function getCollectionsPageTemplate()
+    {
+        return self::readFromFile('collections.php');
+    }
+
     protected static function readFromFile(string $file)
     {
         $blocks = include(__DIR__.'/'.$file);

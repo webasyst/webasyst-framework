@@ -43,6 +43,7 @@ class SiteEditor {
 
     _save_block_data_promise;
     _save_block_data_resolve = () => null;
+    _upload_file_ajax = {};
 
     constructor(options) {
         SiteEditor.instance = this;
@@ -210,13 +211,15 @@ class SiteEditor {
                 fd.append('block_id', block_id);
                 fd.append('key', key);
                 fd.append('file', file);
-                return $.ajax({
+                site_editor._upload_file_ajax[block_id] = $.ajax({
                     method: 'POST',
                     url: '?module=editor&action=upload',
                     processData: false,
                     contentType: false,
                     data: fd
-                }).then(function(r) {
+                });
+
+                return site_editor._upload_file_ajax[block_id].then(function(r) {
                     try {
                         op.undo_url = r.data.undo.url;
                         op.undo_post_params = r.data.undo.post;
@@ -282,6 +285,12 @@ class SiteEditor {
         }));
 
         return file_promise.promise();
+    }
+
+    cancelUploadFile(block_id) {
+        if (!this._upload_file_ajax[block_id]) return;
+        this._upload_file_ajax[block_id].abort();
+        delete this._upload_file_ajax[block_id];
     }
 
     /**

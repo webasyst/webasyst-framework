@@ -2562,3 +2562,18 @@ msgstr "Настроить тему"
 
 msgid "50% off"
 msgstr "Скидка 50%"
+
+msgid "Text 3"
+msgstr "Текст 3"
+
+msgid "Text 4"
+msgstr "Текст 4"
+
+msgid "This block is hidden"
+msgstr "Этот блок скрыт"
+
+msgid "Website under maintenance"
+msgstr "Сайт на ремонте"
+
+msgid "Collections and lookbooks"
+msgstr "Коллекции и лукбуки"

@@ -2,7 +2,7 @@
     document.title = {if $app}{json_encode($app.name)} + ' [`settings`]'{elseif $app_id eq ':text'}'[`Custom text`]'{else}'[`Redirect`]'{/if} + ' — ' + {json_encode($domain)};
 </script>
 {if !$wa->get('details')}
-<div class="s-editor s-white s-app-settings article box contentbox">
+<div class="s-editor s-white s-app-settings{if $app.id !== 'site'} article{/if} box contentbox">
     <form id="s-settings-form" method="post" action="{$wa_backend_url}site/?module=routing&action=save&domain_id={$domain_id}&route={$route_id}">
         {if $wa->get('reload_on_change')}<input type="hidden" name="correct_url" value="1">{/if}
         <div class="float-left s-route">

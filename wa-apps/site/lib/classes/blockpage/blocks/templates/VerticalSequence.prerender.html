@@ -12,6 +12,11 @@
     .empty-seq > .seq-block-delimeter-empty { position: absolute; cursor: pointer; width: 100%; z-index: 9; border: 1px dashed var(--delimeter-color); border-width: 1px 0}
     .empty-seq > .empty-seq-add, .empty-seq > .js-add-block { position: relative; z-index: 9; cursor: pointer; }
     .seq-block-controls { position: absolute; top: 3px; right: 3px; display: none; }
+    .seq-child > .seq-block-overlay.hidden { display: none; }
+    .seq-child > .seq-block-overlay::before { content: ''; position: absolute; inset: 0; z-index: 9; background: rgba(250, 250, 250, .8); }
+    .seq-child > .seq-block-overlay > .content { color: #777; font-weight: 700; position: absolute; inset: 0; z-index: 10; display: flex; gap: 0.75rem; justify-content: center; align-items: center; }
+    .seq-child > .seq-block-overlay > .content svg { width: 2rem; height: 2rem; }
+    .seq-child > .seq-block-overlay > .content .text { font-size: 1.125rem; }
     .seq-child > .seq-block-delimeter { display: none; position: absolute; cursor: pointer; width: 100%; z-index: 10; border: 1px dashed var(--delimeter-color); border-width: 1px 0}
     .seq-child > .seq-block-delimeter.vseq-block-delimeter-left { width: 0; height: 100%; left: 0; top: 0; border-width: 0 0px 0 2px;}
     .seq-child > .seq-block-delimeter.vseq-block-delimeter-right { width: 0; height: 100%; right: 0; border-width: 0 2px 0 0px; bottom: 0;}
@@ -36,8 +41,7 @@
     .js-add-block .button.smaller, .js-add-element .button.smaller { font-size: 14px; }
     .js-add-block .button .flexbox, .js-add-column .button .flexbox, .js-add-element .button .flexbox { display: flex; }
 
-    .js-add-block .button, .js-add-element .button, .js-add-column .button { color: #fff; user-select: none; background-color: var(--delimeter-color); outline: 0 none; box-shadow: 0 0.25em 0.75em -0.25em rgba(0, 0, 0, 0.2); transition: color .1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out; border-radius: .5em; padding: .4375em .75em; border-width: 0;}
-    #js-global-seq > .seq-child:has(.seq-child.selected-block) .js-add-block .button { opacity: 0; }
+    .js-add-block .button, .js-add-element .button, .js-add-column .button { color: #fff; user-select: none; background-color: var(--delimeter-color); outline: 0 none; box-shadow: 0 0.25em 0.75em -0.25em rgba(0, 0, 0, 0.2); transition: color .1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out; border-radius: .5em; padding: .4375em .75em; border-width: 0; }
 
     .vseq-wrapper > .seq-child > .seq-block-delimeter > .dropdown > .dropdown-toggle.without-arrow { padding-right: 0; }
     .vseq-wrapper > .empty-seq > .empty-seq-add > .dropdown > .dropdown-toggle.without-arrow { padding-right: 0; padding-left: 0;}
