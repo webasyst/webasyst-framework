@@ -107,7 +107,7 @@ class siteMenuLogoT2BlockType extends siteBlockType
             ],
             'inline_props' => [
                 $this->elements['main'] => [
-                    'croll-margin-top' => [
+                    'scroll-margin-top' => [
                         'value' => '',
                         'unit' => 'px',
                         'id' => 'logo',

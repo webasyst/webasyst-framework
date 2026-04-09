@@ -6,9 +6,6 @@ class siteEditorDeleteBlockController extends waController
 {
     public function execute()
     {
-        if (!waLicensing::check('site')->isPremium()) {
-            return;
-        }
         $block_id = waRequest::request('block_id', null, 'int');
         $blockpage_blocks_model = new siteBlockpageBlocksModel();
         $target_block = $blockpage_blocks_model->getById($block_id);

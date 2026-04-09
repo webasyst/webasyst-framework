@@ -142,7 +142,7 @@ class siteConfig extends waAppConfig
      */
     public function onCount()
     {
-
+        $this->checkLicensing();
     }
 
     public function dispatchPrioritySettlement($route, $url)
@@ -471,5 +471,15 @@ class siteConfig extends waAppConfig
             waRequest::setParam('skip_update_last_page', true);
         }
         parent::configure();
+    }
+
+    protected function checkLicensing()
+    {
+        $license = waLicensing::check('site');
+        $had_premium = $license->getSetting('had_premium_license');
+        $cur_date = date('Y-m-d');
+        if ($cur_date != $had_premium) {
+            $license->hasPremiumLicense();
+        }
     }
 }

@@ -4,6 +4,14 @@
  */
 class siteEditorAddBlockDialogAction extends waViewAction
 {
+    protected $library;
+
+    public function __construct($params = null)
+    {
+        parent::__construct($params);
+        $this->library = siteBlockpageLibrary::getInstance();
+    }
+
     public function execute()
     {
         $parent_block_id = waRequest::request('parent_block_id', null, 'int');
@@ -38,7 +46,10 @@ class siteEditorAddBlockDialogAction extends waViewAction
 
         $this->view->assign([
             'library' => $this->getLibraryContents($parent_block),
+            'templates' => $this->getPageTemplates($parent_block),
             'insert_place_params' => $insert_place_params,
+            'is_premium' => waLicensing::check('site')->isPremium(),
+            'domain_id' => siteHelper::getDomainId(),
         ]);
     }
 
@@ -68,12 +79,11 @@ class siteEditorAddBlockDialogAction extends waViewAction
     protected function getLibraryContents($parent_block)
     {
         $sorter = new siteBlockCategories();
-        $categories = $sorter->getAll();
+        $categories = $sorter->getBlockCategories();
 
-        $library = new siteBlockpageLibrary();
-        $blocks = $library->getAllBlocks();
+        $blocks = $this->library->getAllBlocks();
         $blocks = array_filter($blocks, function($b) {
-            return !in_array('element', $b['tags']);
+            return !in_array('element', $b['tags']) && !in_array('template', $b['tags']);
         });
 
         $uncategorized_blocks = null;
@@ -83,6 +93,30 @@ class siteEditorAddBlockDialogAction extends waViewAction
             'blocks' => $uncategorized_blocks,
         ];
 
+        $categories = array_filter($categories, function($c) {
+            return !empty($c['blocks']);
+        });
+
+        return $categories;
+    }
+
+    /** overriden in siteEditorAddElementsListAction */
+    protected function getPageTemplates($parent_block): array
+    {
+        // Page templates are only shown when page is empty
+        if (!empty($parent_block)) {
+            return [];
+        }
+
+        $sorter = new siteBlockCategories();
+        $categories = $sorter->getPageTemplatesCategories();
+
+        $blocks = $this->library->getAllBlocks();
+        $blocks = array_filter($blocks, function($b) {
+            return in_array('template', $b['tags']);
+        });
+
+        $categories = $sorter->categorizeBlocks($categories, $blocks, $uncategorized_blocks);
         $categories = array_filter($categories, function($c) {
             return !empty($c['blocks']);
         });

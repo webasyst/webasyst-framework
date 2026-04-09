@@ -287,7 +287,7 @@ abstract class siteBlockType
         }
 
         // event hook to pick up block types from plugins and apps
-        $library = new siteBlockpageLibrary();
+        $library = siteBlockpageLibrary::getInstance();
         $all_blocks = $library->getAllBlocks();
         foreach($all_blocks as $b) {
             if ($b['data']->block_type->getTypeId() === $type) {

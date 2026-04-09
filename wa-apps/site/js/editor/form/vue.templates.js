@@ -119,7 +119,7 @@
         </div>
         `,
         component_columns_align_vertical_group: `
-        <div v-if="is_visible" class="s-editor-option-wrapper">
+        <div class="s-editor-option-wrapper">
             <div class="s-semi-header text-gray small">{ { header_name } }</div>
             <div class="s-editor-option-body custom-mt-8">
                 <columns-align-dropdown @customChange="change" :options="arr_options" :activeOption="active_option" :form_type="form_type_custom" :block_data="block_data" :block_id="block_id"></columns-align-dropdown>
@@ -831,9 +831,12 @@
             <div id="drop-area" @drop.stop.prevent="drop($event)">
                 <div class="upload s-small" >
                     <div v-if="video_data.name" class="filename bold custom-mb-8">{ { video_data.name } }</div>
-                    <label class="link">
-                        <span class="button width-100 light-gray custom-mr-0 custom-mb-4" ><i class="fas fa-video"></i> { { video_data.name ? $t('custom.Change video') : $t('custom.Add video') } }</span>
-                        <input name="namespace" type="file" autocomplete="off" @change="change($event)" @cancel="cancelFile($event)" accept="video/*">
+                    <label class="link" @click="is_premium ? true : showPremium()">
+                        <span class="button width-100 light-gray custom-mr-0 custom-mb-4" :class="{ 'disabled': !is_premium }">
+                            <i class="fas fa-video"></i> { { video_data.name ? $t('custom.Change video') : $t('custom.Add video') } }
+                            <span v-if="!is_premium"><i class="fas fa-crown"></i></span>
+                        </span>
+                        <input v-if="is_premium" name="namespace" type="file" autocomplete="off" @change="change($event)" @cancel="cancelFile($event)" accept="video/*">
                     </label>
 
                 </div>

@@ -4,7 +4,7 @@
  */
 class siteMenuLogoT1BlockType extends siteBlockType
 {
-    public $elements = [   
+    public $elements = [
         'main' => 'site-block-column',
         'wrapper' => 'site-block-column-wrapper',
         ];
@@ -32,25 +32,25 @@ class siteMenuLogoT1BlockType extends siteBlockType
             "tag" => "h3",
             "block_props" => [
                 'font-size' => [
-                    "name" => "Size #7", 
-                    "value" => "t-7", 
+                    "name" => "Size #7",
+                    "value" => "t-7",
                     "type" => "library",
                     'unit' => 'px',
-                ], 
+                ],
                 "font-header" => "t-hdn",
                 "margin-top" => "m-t-0",
                 "margin-bottom" => "m-b-2",
                 "align" => "t-l",
             ],
         ];
-        
+
         $paragraph = (new siteHeadingBlockType())->getExampleBlockData();
         $paragraph->data = [
-            "html" => '<font color="" class="tx-bw-3">Motto succinctum</font>', 
+            "html" => '<font color="" class="tx-bw-3">Motto succinctum</font>',
             "block_props" => [
                 'font-size' => [
-                    "name" => "Size #8", 
-                    "value" => "t-8", 
+                    "name" => "Size #8",
+                    "value" => "t-8",
                     "type" => "library",
                     'unit' => 'px',
                 ],
@@ -61,7 +61,7 @@ class siteMenuLogoT1BlockType extends siteBlockType
             ],
             "tag" => "p",
         ];
-        
+
         $sub_column = (new siteMenuT1BlockType())->createSubColumn([
             'block_props' => [
                 'padding-top' => 'p-t-8',
@@ -107,7 +107,7 @@ class siteMenuLogoT1BlockType extends siteBlockType
             ],
             'inline_props' => [
                 $this->elements['main'] => [
-                    'croll-margin-top' => [
+                    'scroll-margin-top' => [
                         'value' => '',
                         'unit' => 'px',
                         'id' => 'logo',

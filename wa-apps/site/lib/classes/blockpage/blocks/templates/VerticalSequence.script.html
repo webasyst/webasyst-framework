@@ -12,6 +12,7 @@ window.siteVseqController = (function() { "use strict";
         var block_id = $wrapper.data('block-id');
         var page_id = $wrapper.data('page-id');
         var xhr = null;
+        let open_dropdown_index = null;
 
         const $dropdown_collection = $wrapper.children().find('> .js-add-element > .dropdown');
 
@@ -24,11 +25,20 @@ window.siteVseqController = (function() { "use strict";
                     hover: false,
                     update_title : false,
                     items: ".menu > li > a",
-                    change: function(dropdown_instance) {
+                    change: function(dropdown_instance, target) {
                         if (!$dropdown_body.hasClass('js-loaded')) {
                             return;
                         }
-                        const type_id = $(dropdown_instance.currentTarget).data('type-id');
+                        const $this = $(target);
+                        if ($this.data('premium-required')) {
+                            $.wa.editor.api.showPremiumDialog();
+                            return false;
+                        }
+                        if ($this.prop('href').startsWith('http')) {
+                            parent.window.open($this.prop('href'), '_blank');
+                            return false;
+                        }
+                        const type_id = $this.data('type-id');
                         const insert_place_params = $dropdown_body.data('place-params');
                         $wrapper.css('opacity', 0.5);
                         $.post('?module=editor&action=addBlock', Object.assign({
@@ -45,9 +55,11 @@ window.siteVseqController = (function() { "use strict";
                         $dropdown_wrapper.closest('.js-add-element').css('z-index', '11');
                         alignmentDropdown($dropdown_body);
 
+                        open_dropdown_index = null;
                         if (!$dropdown_body.hasClass('js-loaded') && xhr && xhr.pumpPriority) {
                             // User clicked on a (+) button while list is not loaded yet.
                             // Move this particular XHR to the start of the list.
+                            open_dropdown_index = i;
                             xhr.pumpPriority();
                         }
                     },
@@ -69,6 +81,7 @@ window.siteVseqController = (function() { "use strict";
                     // replace spinner inside dropdown with actual list
                     $.each($dropdown_collection, function(i, d) {
                         const $dropdown_wrapper = $(d);
+                        const dropdown_instance = open_dropdown_index === i ? $dropdown_wrapper.data('dropdown') : null;
                         let place = {};
                         if ($dropdown_wrapper.parent().is('.seq-block-delimeter')) {
                             const $child = $dropdown_wrapper.closest('.seq-child');
@@ -86,7 +99,9 @@ window.siteVseqController = (function() { "use strict";
 
                         const $dropdown_body = $dropdown_wrapper.find('.dropdown-body');
                         $dropdown_body.data('place-params', place);
+                        dropdown_instance && dropdown_instance.hide();
                         $dropdown_body.addClass('js-loaded').html(dropdown_html);
+                        dropdown_instance && dropdown_instance.toggleMenu(true);
 
                         $dropdown_body.find('.dropdown').each(function() {
                             $(this).waDropdown();
@@ -95,7 +110,7 @@ window.siteVseqController = (function() { "use strict";
                 }
             });
         }
-        
+
         // When user clicks on "Add block" button, open dialog in topmost frame
         $wrapper.on('click', '.js-add-block', function(e) {
             var $self = $(this), place;
@@ -218,7 +233,7 @@ window.siteVseqController = (function() { "use strict";
             let has_alt_down = $(document.body).hasClass('alt-down');
             let has_shift_down = $(document.body).hasClass('shift-down');
             let no_child_seq = !$child.find('.js-seq-wrapper').length;
-            
+
             if (has_shift_down) {
                if ($child.parent().closest('.seq-child').length) return;
             }
@@ -228,17 +243,18 @@ window.siteVseqController = (function() { "use strict";
                     $.wa.editor.setSelectedBlock($selected_wrapper.data('block-id'), $selected_wrapper, e.target);
                     return*/
             }
-          
+
             if (($child.closest('.js-seq-wrapper')[0] !== $wrapper[0] ) || $(e.target.closest('.js-add-element')).length) return; // Ignore events from child vseq instances
-            
+
             //if ($(e.target).closest('.js-seq-wrapper')[0] !== $wrapper[0]) return; // Ignore events from child vseq instances
 
             const selection = window.getSelection()?.anchorNode?.parentElement;
             const selection_id = selection?.dataset.blockId;
             if (selection_id && window.getSelection().type === 'Range' && +selection_id !== $child.data('block-id') && !has_shift_down && !has_alt_down) return;
             e.stopPropagation();
+            if ($child.data('disabled')) return true;
             e.preventDefault();
-            
+
             $.wa.editor.setSelectedBlock($child.data('block-id'), $child, e.target);
         });
 
@@ -332,7 +348,7 @@ window.siteVseqController = (function() { "use strict";
      * It is called during the initial rendering, when changing form of the settings, as well as when undo redo
      */
 window.updateBlockStyles = function($block_wrapper, data, block_id) {
-  
+
     if (data.wrapper_props){ //set class props for vseq/hseq wrapper
        let elem_classes = Object.values(data.wrapper_props).map((e) => (typeof e === 'object') ? e.value : e).join(' ');
        let node = $block_wrapper.find('.js-seq-wrapper').eq(0);
@@ -386,7 +402,11 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
                         removeBackgroundVideo(node)
                     }
                 })
+                const is_hidden = node.css('display') === 'none';
+
                 node.attr('style', elem_styles);
+
+                is_hidden && node.css('display', 'none');
             }
             else {
                 node.css('visibility', '');
@@ -398,6 +418,7 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
             let column_node = $block_wrapper.closest('.seq-child');
             let selected_block = column_node.hasClass('selected-block') ? 'selected-block ' : '';
             let column_static_classes = column_node.data('static') || '';
+
             column_node.attr('class', selected_block + column_static_classes + ' ' + column_class);
             column_node.attr('data-column-class', column_class);
         }
@@ -444,7 +465,7 @@ window.updateBlockStyles = function($block_wrapper, data, block_id) {
     }
 
     checkElementsSize($block_wrapper);
-    
+
     if (data.tag){
         if ($block_wrapper.prop("tagName").toLowerCase() === data.tag) return;
         let new_element = document.createElement(data.tag);
@@ -479,7 +500,7 @@ function checkElementsSize($block_wrapper) {
             if (is_vertical_block) {
                     if ($(this).height() < 40 && !$(this).hasClass('small-height')) $(this).addClass('small-height');
             } else if(is_horiz_block) {
-                    if ($(this).width() < 40 && !$(this).hasClass('small-width')) $(this).addClass('small-width'); 
+                    if ($(this).width() < 40 && !$(this).hasClass('small-width')) $(this).addClass('small-width');
             }
         })
     }

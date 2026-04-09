@@ -4,7 +4,7 @@
  */
 class siteMenuLogoT3BlockType extends siteBlockType
 {
-    public $elements = [   
+    public $elements = [
         'main' => 'site-block-column',
         'wrapper' => 'site-block-column-wrapper',
         ];
@@ -32,18 +32,18 @@ class siteMenuLogoT3BlockType extends siteBlockType
             "tag" => "h3",
             "block_props" => [
                 'font-size' => [
-                    "name" => "Size #7", 
-                    "value" => "t-7", 
+                    "name" => "Size #7",
+                    "value" => "t-7",
                     "type" => "library",
                     'unit' => 'px',
-                ], 
+                ],
                 "font-header" => "t-hdn",
                 "margin-top" => "m-t-6",
                 "margin-bottom" => "m-b-2",
                 "align" => "t-l",
             ],
         ];
-        
+
         $sub_column = (new siteMenuT3BlockType())->createSubColumn([
             'block_props' => [
                 'padding-top' => 'p-t-4',
@@ -89,7 +89,7 @@ class siteMenuLogoT3BlockType extends siteBlockType
             ],
             'inline_props' => [
                 $this->elements['main'] => [
-                    'croll-margin-top' => [
+                    'scroll-margin-top' => [
                         'value' => '',
                         'unit' => 'px',
                         'id' => 'logo',

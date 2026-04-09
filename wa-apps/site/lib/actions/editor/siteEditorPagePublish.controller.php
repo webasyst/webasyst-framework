@@ -18,10 +18,6 @@ class siteEditorPagePublishController extends waJsonController
             return;
         }
 
-        if ($operation !== 'unpublish' && !waLicensing::check('site')->hasPremiumLicense()) {
-            throw new waException(_w('Only available with the premium license.'));
-        }
-
         $blockpage_model = new siteBlockpageModel();
         $page = $blockpage_model->getById($page_id);
         if (!$page) {

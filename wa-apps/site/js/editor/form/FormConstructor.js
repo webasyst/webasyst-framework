@@ -58,29 +58,27 @@ var FormConstructor = ( function($) {
         };
 
         FormConstructor.prototype.initialState = function(state) {
-            var that = this;
-            let {block_id, form_config, block_data, media_prop, is_new_block} = state;
-            let comp_data = [];
-            for (let key in form_config.sections) {
-                comp_data.push(Object.assign(form_config.sections[key], {'block_type': form_config.type}));
-            }
+            const that = this;
+            const { block_id, form_config, block_data, media_prop, is_new_block, parents, settings_array, premium_required } = handleBlockState.call(that, state);
+
             that.media_prop = media_prop;
             that.$target_wrapper = that.$iframe_wrapper.find('.seq-child [data-block-id=' + block_id + ']');
+            that.$target_wrapper.find('[contenteditable]').prop('contenteditable', !premium_required);
+
             that.is_new_block = is_new_block;
             //let is_element = form_config.tags && form_config.tags === 'element';
             that.states = {
                 block_id: block_id,
                 form_config: form_config,
-                settings_array: comp_data,
+                settings_array: settings_array,
                 block_data: block_data,
                 media_prop: media_prop,
                 elements: form_config.elements || null,
                 semi_headers: form_config.semi_headers || null,
                 header: form_config.type_name,
                 selected_element: form_config.elements?.main || null, //that.selected_element,
+                parents,
             }
-            that.states.parents = $.wa.editor.block_storage.getParents(block_id).slice(0).reverse();
-            //that.states.parents = {};
 
             return that.states
         };
@@ -653,7 +651,7 @@ var FormConstructor = ( function($) {
                             const active_option = this.block_data?.wrapper_props?.[form_type];
                             const header_name = this.group_config.name;
                             const form_type_custom = 'custom';
-                            return { form_type_custom, arr_options, header_name, active_option, form_type}
+                            return { form_type_custom, arr_options, header_name, active_option, form_type }
                         },
                         template: that.templates["component_columns_align_vertical_group"],
                         delimiters: ['{ { ', ' } }'],
@@ -2339,11 +2337,7 @@ var FormConstructor = ( function($) {
                                  else { //set manually settings
                                     const manual_layers = self.layers.filter(function(option) { return option.type !== 'palette' && option.type !== 'video'})
                                     $.each(manual_layers, function(i, l) {
-                                        //if (l.type !== 'video') { //
-                                            self.backgroundCss = self.backgroundCss + l.value + (manual_layers.length-1 > i ? ', ' : '');
-                                        //} else {
-                                            //self.changeVideo(l);
-                                        //}
+                                        self.backgroundCss = self.backgroundCss + l.value + (manual_layers.length-1 > i ? ', ' : '');
                                     });
                                     $.each(self.layers, function(i, l) { //update disable styles
                                         if (l.type === 'palette') l.disabled = 1
@@ -2381,16 +2375,6 @@ var FormConstructor = ( function($) {
                                 });
                                 console.log('saveBlockData', self.block_data)
 
-                            },
-                            changeVideo(layer){
-                                if (!self.element) {
-                                    if (!self.block_data.inline_props) self.block_data.inline_props = {};
-                                    self.block_data.inline_props['background-video'] = layer.value;
-                                } else {
-                                    if (!self.block_data.inline_props) self.block_data.inline_props = {};
-                                    if (!self.block_data.inline_props[self.element]) self.block_data.inline_props[self.element] = {};
-                                    self.block_data.inline_props[self.element]['background-video'] = layer.value;
-                                }
                             },
                             removeColor() {
                                 let self = this;
@@ -3558,10 +3542,6 @@ var FormConstructor = ( function($) {
                                         is_uploadbox: true,
                                         show_file_name: true
                                     })
-
-                                    /*if (that.is_new_block) { //Need for open the file menu when adding a block
-                                        $(self.$el).find('label').trigger('click')
-                                    }*/
                                 }
                             },
                             "SvgColorGroup": {
@@ -3711,9 +3691,217 @@ var FormConstructor = ( function($) {
                                 return serializer.serializeToString(xmlDoc);
                                 //return svgString.replace(/\s*fill="[^"]*"/g, '').replace(/\s*fill:*"/g, '');
                               }
+                        }
+                    },
+                    "MenuButtonGroup": {
+                        props: {
+                            group_config: { type: Object },
+                            block_data: { type: Object, default: {} },
+                            block_id: { type: Number},
                         },
-                        mounted: function() {
+                        data() {
                             const self = this;
+
+                            if (!that.storage_data.MenuButtonGroup[self.block_id]) {
+                                that.storage_data.MenuButtonGroup[self.block_id] = { state: 'open' };
+                            }
+                            const block_temp_data = that.storage_data.MenuButtonGroup[self.block_id];
+                            const toggle_options = that.storage_data.menu_button_data;
+                            const svg_placeholder = '<svg fill="currentColor"></svg>';
+                            const wa_url = $.site.backend_url;
+                            let image_data = this.block_data?.image ? this.block_data.image : '';
+                            let active_toggle_option = block_temp_data.state || 'open';
+                            self.colors_variables_data = that.storage_data['colors_variables_data'];
+                            let open_menu_svg_html = image_data['open_menu_svg_html'] || '';
+                            let close_menu_svg_html = image_data['close_menu_svg_html'] || '';
+
+                            self.$editable = that.$target_wrapper.eq(0).find('.style-wrapper picture');
+
+                            return { wa_url, block_temp_data, open_menu_svg_html, close_menu_svg_html, active_toggle_option, toggle_options, svg_placeholder }
+                        },
+                        template: `
+                        <div class="s-editor-option-wrapper image-group-wrapper">
+                            <div class="s-editor-option-body custom-mt-8">
+                                <image-data-toggle @changeToggle="changeToggle" :options="toggle_options" :activeOption="active_toggle_option" :with_text="true" form_type="custom" />
+                            </div>
+
+                            <div class="s-editor-option-body custom-mt-8">
+                                <div class="s-semi-header small custom-pb-10 custom-pt-20" v-html="
+                                    $t('custom.Paste the code of your vector image or copy one from **Google Icons**, **FontAwesome**, or another similar library')
+                                        .replace('**', '<a href=&quot;https://fonts.google.com/icons&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                        .replace('**', '<a href=&quot;https://fontawesome.com/&quot; target=&quot;_blank&quot;>')
+                                        .replace('**', '</a>')
+                                "></div>
+                                <div class="s-semi-header text-gray small">{{$t('custom.Image SVG code')}}</div>
+
+                                <div v-if="active_toggle_option === 'close'" class="width-100 svg-image-wrapper">
+                                    <textarea @input="changeSvg" v-model="close_menu_svg_html" class="width-100" id="js-svg-image" :placeholder="svg_placeholder"></textarea>
+                                    <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                </div>
+                                <div v-else class="width-100 svg-image-wrapper">
+                                    <textarea @input="changeSvg" v-model="open_menu_svg_html" class="width-100" id="js-svg-image" :placeholder="svg_placeholder"></textarea>
+                                    <div style="display: none;" class="state-error-hint" :data-error-tags="$t('custom.Available only iframe tags')" :data-error-open-tag="$t('custom.Need to add the closing tag iframe')"></div>
+                                </div>
+
+                                <div class="width-100">
+                                    <svg-color-group @changeSvgColor="changeColor" @changeSvgColorPalette="changeColor" class="width-100 custom-mb-8" :block_data="block_data" :block_id="block_id"></svg-color-group>
+                                     <div class="text-gray smaller">{{$t('custom.The specified color will update fill attribute')}}</div>
+                                </div>
+                            </div>
+
+                            <div class="s-editor-option-body custom-mt-8">
+                                <picture-size-group class="width-100" :block_data="block_data" :block_id="block_id"></picture-size-group>
+                            </div>
+                        </div>`,
+                        components: {
+                            'ImageDataToggle': that.vue_components['component-toggle'],
+                            "SvgColorGroup": {
+                                props: {
+                                    block_data: { type: Object, default: {} },
+                                    block_id: { type: Number},
+                                },
+                                emits: ["changeSvgColor", 'changeSvgColorPalette'],
+                                data() {
+                                    const form_type = that.storage_data['SvgColorGroup'].type;
+                                    const arr_options = that.storage_data['SvgColorGroup'];
+                                    let active_option = (this.block_data?.image?.color && typeof this.block_data?.image?.color === 'string') ? { type: 'self_color', value: '#' + this.block_data?.image?.color, name: 'Self color'} : (this.block_data?.image?.color ? this.block_data?.image?.color : {});
+                                    //let active_option = this.block_data?.image?.color ? { type: 'self_color', value: '#' + this.block_data?.image?.color, name: 'Self color'} : {};
+                                    const semi_header = 'Color';
+                                    const active_icon = that.storage_data['SvgColorGroup'].icon;
+                                    return { arr_options, semi_header, active_option, form_type, active_icon}
+                                  },
+                                template: that.templates["component_text_color_group"],
+                                delimiters: ['{ { ', ' } }'],
+                                components: {
+                                    'TextColorDropdown': that.vue_custom_components['component-text-color-dropdown']
+                                },
+                                methods: {
+                                    change: function(option) {
+                                        let self = this;
+                                        let temp_active_option = { type: 'self_color', value: '#' + option, name: 'Self color'};
+                                        self.$emit('changeSvgColor', temp_active_option);
+                                        //self.active_option = temp_active_option;
+                                    },
+                                    changePalette: function(option) {
+                                        let self = this;
+                                        self.$emit('changeSvgColorPalette', option);
+                                        //self.active_option = option;
+                                    }
+                                },
+                                mounted: function() {
+                                    let self = this;
+                                },
+                            },
+                            "PictureSizeGroup": {
+                                props: {
+                                    group_config: { type: Object },
+                                    block_data: { type: Object, default: {} },
+                                    block_id: { type: Number},
+                                },
+                                data() {
+                                    const form_type = that.storage_data['PictureSizeGroup'].type;
+                                    const arr_options = that.storage_data['PictureSizeGroup'].values;
+                                    const active_option = (this.block_data?.block_props||{})[form_type];
+                                    const semi_header = 'Size';
+                                    const active_icon = that.storage_data['PictureSizeGroup'].icon;
+                                    return { arr_options, semi_header, active_option, form_type, active_icon }
+                                  },
+                                template: that.templates["component_line_height_group"],
+                                delimiters: ['{ { ', ' } }'],
+                                components: {
+                                    'LineHeightDropdown': that.vue_components['component-dropdown'],
+                                  },
+                                methods: {
+                                },
+                            },
+                          },
+                        methods: {
+                            change: function() {
+                                const self = this;
+                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
+                                    self.block_data.image = self.temp_image_data;
+                                    bs.saveBlockData(self.block_data);
+                                });
+                                self.changeToggle();
+                            },
+                            changeSvg: function() {
+                                const self = this;
+
+                                const svg_name = self.active_toggle_option+'_menu_svg_html';
+                                self.temp_image_data = { ...self.block_data.image, [svg_name]: self[svg_name] };
+                                self.change();
+                            },
+                            changeToggle: function(option) {
+                                const self = this;
+                                if (option) self.active_toggle_option = option.value;
+                                self.block_temp_data.state = self.active_toggle_option;
+                                self.$editable.html($.wa.editor.sanitizeHTML(self.active_toggle_option === 'close' ? self.close_menu_svg_html : self.open_menu_svg_html));
+                            },
+                            changeColor: function(color) {
+                                const self = this;
+                                if (!self.open_menu_svg_html?.length && !self.close_menu_svg_html?.length) return;
+
+                                if (!self.temp_image_data?.fill) {
+                                    self.open_menu_svg_html = self.removeFillAttributes(self.open_menu_svg_html);
+                                    self.close_menu_svg_html = self.removeFillAttributes(self.close_menu_svg_html);
+                                }
+                                const open_menu_svg_node = $(self.open_menu_svg_html).filter('svg');
+                                const close_menu_svg_node = $(self.close_menu_svg_html).filter('svg');
+                                if (!open_menu_svg_node.length && !close_menu_svg_node.length) return;
+
+                                if (color?.type === 'palette') {
+                                    const color_var = self.colors_variables_data[color.value];
+                                    open_menu_svg_node.attr({'fill': 'var('+ color_var+')'});
+                                    close_menu_svg_node.attr({'fill': 'var('+color_var+')'});
+                                } else {
+                                    open_menu_svg_node.attr({'fill': color.value})
+                                    close_menu_svg_node.attr({'fill': color.value})
+                                }
+
+                                self.open_menu_svg_html = open_menu_svg_node[0].outerHTML;
+                                self.close_menu_svg_html = close_menu_svg_node[0].outerHTML;
+                                self.temp_image_data = { ...self.block_data.image, open_menu_svg_html: self.open_menu_svg_html, close_menu_svg_html: self.close_menu_svg_html, color: color, fill: 'removed'};
+                                self.change();
+                            },
+                            removeFillAttributes: function (svgString) {
+                                const parser = new DOMParser();
+                                const xmlDoc = parser.parseFromString(svgString, 'image/svg+xml');
+
+                                // Рекурсивное удаление fill и очистка style
+                                function removeFill(node) {
+                                  if (node.nodeType === 1) { // Проверка, что это элемент
+                                    // Удаление атрибута fill
+                                    if (node.hasAttribute('fill')) {
+                                      node.removeAttribute('fill');
+                                    }
+
+                                    // Очистка fill из style
+                                    if (node.hasAttribute('style')) {
+                                      const style = node.getAttribute('style');
+                                      const cleanedStyle = style
+                                        .split(';')
+                                        .map(s => s.trim())
+                                        .filter(s => !s.startsWith('fill:'))
+                                        .join('; ');
+
+                                      if (cleanedStyle) {
+                                        node.setAttribute('style', cleanedStyle);
+                                      } else {
+                                        node.removeAttribute('style');
+                                      }
+                                    }
+                                  }
+
+                                  // Рекурсивно обрабатываем дочерние узлы
+                                  node.childNodes.forEach(removeFill);
+                                }
+
+                                removeFill(xmlDoc.documentElement);
+
+                                const serializer = new XMLSerializer();
+                                return serializer.serializeToString(xmlDoc);
+                              }
                         }
                     },
                     "VideoUploadGroup": {
@@ -3737,13 +3925,13 @@ var FormConstructor = ( function($) {
                             <div class="s-editor-option-body custom-mt-8">
                                 <video-data-toggle @changeToggle="changeToggle" :options="toggle_options" :activeOption="active_toggle_option" :with_text="true" form_type="custom"></video-data-toggle>
                             </div>
-                            <div class="s-editor-option-body custom-mt-20" v-if="active_toggle_option === 'upload'">
-                                <video-upload :block_data="block_data" :block_id="block_id"></video-upload>
-                            </div>
+
                             <div class="s-editor-option-body custom-mt-8" v-if="active_toggle_option === 'code'">
                                 <custom-video :block_data="block_data" :block_id="block_id"></custom-video>
                             </div>
-
+                            <div class="s-editor-option-body custom-mt-20" v-if="active_toggle_option === 'upload'">
+                                <video-upload :block_data="block_data" :block_id="block_id"></video-upload>
+                            </div>
                         </div>`,
                         computed: {
                         },
@@ -3762,7 +3950,9 @@ var FormConstructor = ( function($) {
                                     let autoLoop = video_data?.auto_loop || false;
                                     let muted = video_data?.muted || true;
                                     let switch_disabled = video_data.name ? false : true;
-                                    return { muted, autoPlay, autoLoop, form_type, video_data, switch_disabled }
+                                    const is_premium = $.site.is_premium;
+                                    const showPremium = () => $.site.helper.showPremiumDialog();
+                                    return { muted, autoPlay, autoLoop, form_type, video_data, switch_disabled, is_premium, showPremium }
                                 },
                                 template: that.templates["component_video_upload_group"],
                                 delimiters: ['{ { ', ' } }'],
@@ -4457,6 +4647,8 @@ var FormConstructor = ( function($) {
                         data() {
                             //const elements = that.states.elements;
                             const header_name = this.group_config.name;
+                            const app_disabled = this.group_config.app_disabled;
+                            const app_url = this.group_config.app_url;
                             let placeholder = `{$wa->crm->form(1)}
 
                             или {$wa->mailer->form(1)}
@@ -4467,10 +4659,11 @@ var FormConstructor = ( function($) {
                                 placeholder = `{$wa->${form_type}->form(1)}`;
                             }
                             const wa_url = $.site.backend_url;
-                            return { header_name, placeholder, form_type, wa_url }
+                            return { app_disabled, app_url, header_name, placeholder, form_type, wa_url }
                           },
                         template: `
-                        <div class="s-editor-option-wrapper ">
+                        <AppDisabledAlert v-if="app_disabled" :form_type="form_type" :app_url="app_url"/>
+                        <div v-else class="s-editor-option-wrapper ">
                             <div class="form-group-wrapper custom-mb-12 custom-mt-12">
                                 <div class="s-semi-header small custom-pb-20">{{$t('custom.Get the embed code in webasyst')}} <a :href="wa_url + form_type + '/'" class="nowrap" target="_blank">{{$t('custom.form_' + form_type, form_type)}} <i class="fas fa-external-link-alt small"></i></a></div>
                                 <div class="s-semi-header text-gray small">{{header_name}}</div>
@@ -4489,6 +4682,7 @@ var FormConstructor = ( function($) {
                         //delimiters: ['{ { ', ' } }'],
                         components: {
                             'CustomButton': that.vue_components['custom-button'],
+                            'AppDisabledAlert': that.vue_components['component-app-disabled-alert'],
                           },
                         methods: {},
                         mounted: function() {
@@ -4557,14 +4751,7 @@ var FormConstructor = ( function($) {
                           },
                         template: `
                         <div class="s-editor-option-wrapper">
-                            <div v-if="app_disabled" class="alert small info">
-                                <i class="fas fa-info-circle fa-sm"></i>
-                                <span v-html="
-                                    $t('custom.To customize the form, install or enable the <a href={url}>{appName} app</a>',
-                                        { url: app_url, appName: $t('custom.form_'+form_type) }
-                                    )"
-                                /> <i class="fas fa-external-link-alt fa-sm"></i>
-                            </div>
+                            <AppDisabledAlert v-if="app_disabled" :form_type="form_type" :app_url="app_url"/>
                             <div v-else class="form-group-wrapper custom-mb-12 custom-mt-12">
                                 <div class="form-group custom-mb-8">
                                     <div class="s-editor-option-body value js-redactor-wrapper">
@@ -4587,6 +4774,7 @@ var FormConstructor = ( function($) {
                         `,
                         components: {
                             'ComponentDropdown': that.vue_components['component-dropdown'],
+                            'AppDisabledAlert': that.vue_components['component-app-disabled-alert']
                         },
                         methods: {
                             updateSelectedBlock: function(option) {
@@ -4819,7 +5007,7 @@ var FormConstructor = ( function($) {
 
                             return { form_type_custom, arr_options, header_name, active_option, form_type, is_visible }
                         },
-                        template: that.templates["component_columns_align_vertical_group"],
+                        template: `<template v-if="is_visible">${that.templates["component_columns_align_vertical_group"]}</template>`,
                         delimiters: ['{ { ', ' } }'],
                         components: {
                             'ColumnsAlignDropdown': that.vue_components['component-dropdown'],
@@ -4959,6 +5147,7 @@ var FormConstructor = ( function($) {
                             },
                         },
                     },
+                    "PremiumRequiredAlert": that.vue_components['component-premium-required-alert'],
                 },
                 /*computed: {
                     customKey: function() {
@@ -5107,6 +5296,41 @@ var FormConstructor = ( function($) {
             }
 
         };
+
+        function handleBlockState(state) {
+            const that = this;
+            const bs = $.wa.editor.block_storage;
+            const parents = $.wa.editor.block_storage.getParents(state.block_id).slice(0).reverse();
+
+            let is_parent = false;
+            let premium_required = !!bs.getFormConfig(state.form_config.type).premium_required;
+            if (!premium_required && parents.length) {
+                const parent_type = bs.getFormConfig(parents[0].id).type;
+                premium_required = !!bs.getFormConfig(parent_type).premium_required;
+                is_parent = true;
+            }
+
+            that.$wrapper.toggleClass('disabled', premium_required);
+            if (premium_required && is_parent) {
+                state.block_id = Number(parents[0].id);
+                state.form_config = bs.getFormConfig(state.block_id);
+                state.block_data = bs.getData(state.block_id);
+                parents.length = 0;
+            }
+
+            const comp_data = [
+                ...(premium_required ? [{ type: 'PremiumRequiredAlert' }] : [])
+            ];
+            for (let key in state.form_config.sections) {
+                comp_data.push(Object.assign(state.form_config.sections[key], {'block_type': state.form_config.type}));
+            }
+
+            state.settings_array = comp_data;
+            state.parents = parents;
+            state.premium_required = premium_required;
+
+            return state;
+        }
 
         function appendIframeWrapperStyles(iframe_document) {
             //console.log(Array.from(iframe_document[0].styleSheets));

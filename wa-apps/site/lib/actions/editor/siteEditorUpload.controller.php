@@ -20,9 +20,6 @@ class siteEditorUploadController extends waJsonController
 {
     public function execute()
     {
-        if (!waLicensing::check('site')->isPremium()) {
-            return;
-        }
         $this->errors = [];
 
         // Block we're about to attach a file to. Always required.

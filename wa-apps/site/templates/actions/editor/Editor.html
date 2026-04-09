@@ -274,4 +274,9 @@
         $hamburger_label.text(page_data.name).attr('title', page_data.name);
     }
 
+    {if empty($block_data)}
+        $.wa.editor.openAddBlockDialog({ page_id: {$page.id}, show_templates: 1 }, (html) => {
+            $.wa.editor.iframe_api.$wrapper.find('#js-global-seq').parent().html(html);
+        });
+    {/if}
 })();</script>

@@ -28,12 +28,12 @@ class siteFooterTop2BlockType extends siteBlockType
         $column_right = (new siteFooterColumnBlockType())->getExampleBlockData();
         $column_logo = (new siteFooterColumnBlockType())->getExampleBlockData();
         $column_logo->data['inline_props'] = ['site-block-column-wrapper' => ['min-height' => ['name' => 'Fill parent', 'value' => '100%', 'type' => 'parent']]];
-        
+
         /* First column */
         $paragraph = (new siteParagraphBlockType())->getExampleBlockData();
         $paragraph->data['html'] = '<font color="" class="tx-bw-4">© 2025 Emporium Modernum</font>';
         $paragraph->data['block_props'] = ['font-header' => "t-rgl", 'font-size' => ["name" => "Size #7", "value" => "t-7", "unit" => "px", "type" => "library"], 'margin-top' => "m-t-a", 'margin-bottom' => "m-b-0"];
-    
+
         $images_data = [
             [
                 'block_props' => ['margin-bottom' => "m-b-12", 'margin-right' => "m-r-12", 'picture-size' => "i-l"],
@@ -91,7 +91,7 @@ class siteFooterTop2BlockType extends siteBlockType
         $menu_item2->data = ['html' => 'Historia nostra', 'tag' => 'a', 'block_props' => ['width' => 'cnt-w', 'border-radius' => "b-r-r", 'button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-12 p-r-12', 'margin-top' => 'm-t-4', 'margin-bottom' => 'm-b-4', 'font-header' => 't-hdn', 'nobutton' => 'nobutton']];
         $menu_item3 = (new siteMenuItemBlockType())->getExampleBlockData();
         $menu_item3->data = ['html' => 'Cursus honorum', 'tag' => 'a', 'block_props' => ['width' => 'cnt-w', 'border-radius' => "b-r-r", 'button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-12 p-r-12', 'margin-top' => 'm-t-4', 'margin-bottom' => 'm-b-4', 'font-header' => 't-hdn', 'nobutton' => 'nobutton']];
-        
+
         $hseq_column = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq_column->addChild($menu_item_bold);
         $hseq_column->addChild($menu_item);
@@ -108,7 +108,7 @@ class siteFooterTop2BlockType extends siteBlockType
         $menu_item2->data = ['html' => 'Restitutio bonorum', 'tag' => 'a', 'block_props' => ['width' => 'cnt-w', 'button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-12 p-r-12', 'margin-top' => 'm-t-4', 'margin-bottom' => 'm-b-4', 'font-header' => 't-hdn', 'nobutton' => 'nobutton']];
         $menu_item3 = (new siteMenuItemBlockType())->getExampleBlockData();
         $menu_item3->data = ['html' => 'Modi solutionis', 'tag' => 'a', 'block_props' => ['width' => 'cnt-w', 'button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-12 p-r-12', 'margin-top' => 'm-t-4', 'margin-bottom' => 'm-b-4', 'font-header' => 't-hdn', 'nobutton' => 'nobutton']];
-        
+
         $hseq_column = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq_column->data['is_complex'] = 'no_complex';
         $hseq_column->addChild($menu_item_bold);
@@ -125,7 +125,7 @@ class siteFooterTop2BlockType extends siteBlockType
         $menu_item2->data = ['html' => 'Auxilium technicum', 'tag' => 'a', 'block_props' => ['width' => 'cnt-w', 'border-radius' => "b-r-r", 'button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-12 p-r-12', 'margin-top' => 'm-t-4', 'margin-bottom' => 'm-b-4', 'font-header' => 't-hdn', 'nobutton' => 'nobutton']];
         $menu_item3 = (new siteMenuItemBlockType())->getExampleBlockData();
         $menu_item3->data = ['html' => 'Sociis nostris', 'tag' => 'a', 'block_props' => ['width' => 'cnt-w', 'border-radius' => "b-r-r", 'button-style' => ["name" => "Palette", "value" => "btn-blc-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-12 p-r-12', 'margin-top' => 'm-t-4', 'margin-bottom' => 'm-b-4', 'font-header' => 't-hdn', 'nobutton' => 'nobutton']];
-   
+
         $hseq_column = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq_column->data['is_complex'] = 'no_complex';
         $hseq_column->addChild($menu_item_bold);

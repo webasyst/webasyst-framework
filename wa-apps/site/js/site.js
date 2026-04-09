@@ -21,6 +21,14 @@ var that = $.site = {
         that.backend_url = opts.backend_url;
         that.app_url = opts.app_url;
         that.wa_url = opts.wa_url;
+
+        Object.defineProperty($.site, 'is_premium', {
+            value: opts.is_premium,
+            writable: false,
+            configurable: false,
+            enumerable: true
+        });
+
         //that.shop_url = opts.shop_url;
     },
 

@@ -17,7 +17,6 @@
  * - (либо ни того, ни другого)
  *}
 
-{$has_premium = waLicensing::check('site')->hasPremiumLicense()}
 <style>
 #js-wa-header-publish .dropdown-body { width: auto; }
 #js-wa-header-publish:not(.is-draft) .draft-only { display: none !important; }
@@ -85,7 +84,7 @@
                     [`Open preview`]
                 </a>
             </li>
-            <li class="published-unsaved-only not-draft-only{if !$has_premium} disabled{/if}">
+            <li class="published-unsaved-only not-draft-only">
                 <a href="javascript:void(0)" class="js-discard-draft">
                     <span class="icon"><i class="fas fa-history text-gray"></i></span>
                     [`Undo all changes`]
@@ -93,14 +92,14 @@
             </li>
             <li class="draft-only blank">
                 <a href="javascript:void(0)">
-                    <button class="js-publish button width-100 blue"{if !$has_premium} disabled{/if}>
+                    <button class="js-publish button width-100 blue">
                         [`Publish draft`]
                     </button>
                 </a>
             </li>
             <li class="published-unsaved-only blank">
                 <a href="javascript:void(0)">
-                    <button class="js-publish button width-100 yellow"{if !$has_premium} disabled{/if}>
+                    <button class="js-publish button width-100 yellow">
                         [`Publish changes`]
                     </button>
                 </a>
@@ -131,7 +130,6 @@
         return that;
 
         function init() {
-            {if $has_premium}
             // Пользователь нажал кнопку Опубликовать изменения
             $wrapper.on('click', '.js-publish', function() {
                 $wrapper.addClass('is-publishing');
@@ -166,12 +164,6 @@
                     }
                 });
             });
-            {else}
-            $.waDialog({
-                html: {json_encode({include file="templates/actions/backend/BackendPremiumDialog.html" hide_close=true dont_blur_nav=true}|strip)},
-                onClose() { return false; }
-            });
-            {/if}
 
             // Пользователь нажал кнопку Отменить публикацию
             $wrapper.on('click', '.js-withdraw-publication', function() {

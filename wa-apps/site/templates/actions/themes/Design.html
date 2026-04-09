@@ -285,6 +285,64 @@
                 $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
 
             var $bottombar = $('.bottombar');
+            var theme_settings_sidebar_xhr = null;
+            var theme_settings_sidebar_request_id = 0;
+
+            function invalidateThemeSettingsSidebar(theme_id) {
+                const current_theme_id = $theme_settings_section.data('theme-id');
+
+                $theme_settings_section.html(skeleton_sidebar);
+
+                if (theme_id && current_theme_id !== undefined && current_theme_id !== theme_id) {
+                    $theme_settings_section.removeData('menu-id');
+                    sessionStorage.removeItem('wa_design_menu_id');
+                }
+            }
+
+            function syncThemeSettingsSidebar(theme_id, route_id, callback) {
+                if (!theme_id) {
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                    return;
+                }
+
+                let url = "?module={$module_name}&action=theme&theme=" + encodeURIComponent(theme_id);
+                if (route_id) {
+                    url += "&route=" + encodeURIComponent(route_id);
+                }
+
+                if (theme_settings_sidebar_xhr) {
+                    theme_settings_sidebar_xhr.abort();
+                }
+
+                theme_settings_sidebar_request_id += 1;
+                const request_id = theme_settings_sidebar_request_id;
+
+                theme_settings_sidebar_xhr = $.get(url, function (html) {
+                    if (request_id !== theme_settings_sidebar_request_id) {
+                        return;
+                    }
+
+                    const $html = $('<div>').html(html),
+                        $theme_settings_list = $html.find('.js-theme-settings-hidden-list');
+
+                    if ($theme_settings_list.length) {
+                        $theme_settings_section.html($theme_settings_list.html());
+                    }
+
+                    $theme_settings_section.data('theme-id', theme_id);
+                    theme_settings_sidebar_xhr = null;
+
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                }).fail(function (_, text_status) {
+                    if (text_status !== 'abort' && request_id === theme_settings_sidebar_request_id) {
+                        theme_settings_sidebar_xhr = null;
+                    }
+                });
+            }
 
             async function postData(url, data) {
                 const response = await fetch(url, {
@@ -474,6 +532,8 @@
                 const params = waDesignParams(href);
 
                 if (params['theme']) {
+                    invalidateThemeSettingsSidebar(params['theme']);
+
                     const $theme_active = $("#wa-theme-active"),
                         $theme_active_url = $theme_active.find('.js-url'),
                         $theme_active_hint = $theme_active.find('.js-hint');
@@ -533,9 +593,18 @@
                         localStorage.setItem(ls_id, location.hash);
                     } else {
                         const theme_hash = localStorage.getItem(ls_id);
-                        if (theme_hash){
-                            location.href = theme_hash;
-                        }else{
+                        if (theme_hash) {
+                            const theme_hash_params = waDesignParams(theme_hash);
+                            const is_same_theme = theme_hash_params['theme'] === params['theme'];
+                            const is_same_domain = (theme_hash_params['domain'] || '') === (params['domain'] || '');
+                            const is_same_route = (theme_hash_params['route'] || '') === (params['route'] || '');
+
+                            if (is_same_theme && is_same_domain && is_same_route) {
+                                location.href = theme_hash;
+                            } else {
+                                location.href = href;
+                            }
+                        } else {
                             location.href = href;
                         }
                     }
@@ -695,12 +764,15 @@
 
                         if ($li.data('routing')) {
                             let li_route = $li.data('routing').replace(/.*route=([^&]+).*?/i, '$1');
-                            if (hash_params['route'] && (hash_params['route'] != li_route)) {
+                        if (hash_params['route'] && (hash_params['route'] != li_route)) {
                                 let $tmp_li = $theme_list.find('[data-routing$="route=' + hash_params['route'] + '"]:first');
                                 if ($tmp_li.length) {
                                     $tmp_li.find('a').click();
                                 }
                             } else {
+                                const current_theme_id = $theme_settings_section.data('theme-id'),
+                                    new_theme_id = hash_params['theme'];
+
                                 $design_container.load($li.data('routing') + '&reload_on_change=1&ui=2.0', function () {
                                     reStyleSettingsPage('settings');
                                     $design_container.find(".back").remove(); // deprecated?
@@ -714,7 +786,14 @@
                                     $design_container.find(".s-route-delete").closest('div').remove();
                                 });
 
-                                $theme_settings_section.load("?module={$module_name}&action=theme&theme="+hash_params['theme']+"&onlySettings=1");
+                                invalidateThemeSettingsSidebar(new_theme_id);
+
+                                if (current_theme_id !== undefined && current_theme_id !== new_theme_id) {
+                                    $theme_settings_section.removeData('menu-id');
+                                    sessionStorage.removeItem('wa_design_menu_id');
+                                }
+
+                                syncThemeSettingsSidebar(new_theme_id, li_route);
                             }
                         } else {
                             if (hash_params['route']) {

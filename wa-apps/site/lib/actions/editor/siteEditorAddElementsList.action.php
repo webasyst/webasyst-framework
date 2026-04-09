@@ -7,7 +7,6 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
     protected function getLibraryContents($parent_block)
     {
         $complex_param = ''; //type String = '' | 'only_columns' | 'with_row' | 'no_complex'
-        $library = new siteBlockpageLibrary();
 
         if (!empty($parent_block)) {
             //need for show special elements in dropdown
@@ -16,7 +15,7 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
             }
         }
 
-        $blocks = $library->getAllElements($complex_param);
+        $blocks = $this->library->getAllElements($complex_param);
         $categories = $this->getCategories($parent_block);
 
         $result = [];
@@ -39,6 +38,10 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
                 $result[] = $c;
             }
         }
+
+        usort($result, function ($a, $b) {
+            return (int)ifset($a, 'sort', 0) - (int)ifset($b, 'sort', 0);
+        });
 
         return $result;
     }
@@ -65,7 +68,7 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
         $result = [
             [
                 'title' => _w('Web form'),
-                'icon' => 'clipboard-list',
+                'icon' => 'clipboard-list orange',
                 'tags' => ['form'],
                 'blocks' => [],
             ],
@@ -91,5 +94,10 @@ class siteEditorAddElementsListAction extends siteEditorAddBlockDialogAction
         }
 
         return $result;
+    }
+
+    protected function getPageTemplates($parent_block): array
+    {
+        return []; // no page templates for elements list
     }
 }

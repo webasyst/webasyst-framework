@@ -554,6 +554,11 @@ class SiteEditor {
     }
 
     updateEmptyClass($wrapper) {
+        const $seq_child = $wrapper.find('.seq-child');
+        if ($seq_child.length === $seq_child.find('> .js-remove-with-last').length) {
+            $seq_child.remove();
+        }
+
         if ($wrapper.find('.seq-child').length) {
             $wrapper.removeClass('no-children');
         }
@@ -579,7 +584,6 @@ class SiteEditor {
         }
     }*/
 
-    // @see copy SiteEditor.js
     sanitizeHTML(str) {
         if (!str) {
             return str;
@@ -600,5 +604,9 @@ class SiteEditor {
         }
 
         return sanitizeIframeSrc(html);
+    }
+
+    showPremiumDialog() {
+        $.site.helper.showPremiumDialog();
     }
 }

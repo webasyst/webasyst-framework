@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1954,23 +1954,8 @@ msgstr "Кнопка"
 msgid "Upgrade › <strong>Premium</strong>"
 msgstr "Обновитесь › <strong>Премиум</strong>"
 
-msgid "Discover advanced features for your projects with the premium version."
-msgstr "Откройте продвинутые возможности для своих проектов с премиум-версией."
-
 msgid "Block page builder"
 msgstr "Конструктор блочных страниц"
-
-msgid "Professional creation of web pages with functional blocks and elements"
-msgstr "Создание профессиональных страниц из готовых блоков и элементов"
-
-msgid "Flexible design and blocks settings without programming"
-msgstr "Гибкие настройки дизайна элементов и блоков без программиста"
-
-msgid "Integration with Shop-Script products"
-msgstr "Интеграция с товарами Shop-Script"
-
-msgid "Ready-made page templates, global design settings, simple & advanced web forms (quizzes), integration with Webasyst apps, animations, etc."
-msgstr "Готовые шаблоны страниц, глобальные настройки дизайна, простые и интерактивные веб-формы (квизы), интеграция с приложениями Webasyst, анимации и многое другое"
 
 msgid "Soon"
 msgstr "Скоро"
@@ -2046,9 +2031,6 @@ msgstr "Не сбрасывать"
 
 msgid "Non-published changes exist"
 msgstr "Есть неопубликованные изменения"
-
-msgid "Adding block"
-msgstr "Добавление блока"
 
 msgid "The page is available instead of a section with the same address. Its subpages become unavailable."
 msgstr "Страница отображается вместо раздела с таким же адресом. Ее вложенные страницы становятся недоступными."
@@ -2356,6 +2338,12 @@ msgstr "Фавиконка формата PNG будет дополнитель�
 msgid "Width 1"
 msgstr "Толщина 1"
 
+msgid "Width 2"
+msgstr "Толщина 2"
+
+msgid "Width 3"
+msgstr "Толщина 3"
+
 msgid "Call to action 2"
 msgstr "Призыв к действию 2"
 
@@ -2493,3 +2481,84 @@ msgstr "Показать окно настроек"
 
 msgid "Set up design"
 msgstr "Настроить дизайн"
+
+msgid "Built with Webasyst"
+msgstr "Сделано на Webasyst"
+
+msgid "About us"
+msgstr "О нас"
+
+msgid "Mini-pages"
+msgstr "Мини-страницы"
+
+msgid "Discover advanced functionality for your projects and receive all updates free of charge with the premium Site license."
+msgstr "Откройте продвинутые возможности для своих проектов и получайте все обновления бесплатно с премиум-лицензией приложения Сайт."
+
+msgid "Extended template library of ready-to-use pages, blocks & elements"
+msgstr "Расширенная библиотека шаблонов готовых страниц, блоков и элементов"
+
+msgid "Blocks & elements with custom code"
+msgstr "Блоки и элементы со своим кодом"
+
+msgid "Upload of videos with a built-in player and video backgrounds for blocks & columns"
+msgstr "Загрузка видео со встроенным проигрывателем и видеофоны для блоков и колонок"
+
+msgid "Without the “%s” link at the bottom of block pages"
+msgstr "Без ссылки «%s» внизу блочных страниц"
+
+msgid "Global design settings, animations, and much more"
+msgstr "Глобальные настройки дизайна, анимации и многое другое"
+
+msgid "More elements in plugins for Site"
+msgstr "Больше элементов в плагинах для «Сайта»"
+
+msgid "More blocks in plugins for Site"
+msgstr "Больше блоков в плагинах для «Сайта»"
+
+msgid "Pages"
+msgstr "Страницы"
+
+msgid "Mini-page with links"
+msgstr "Мини-страница со ссылками"
+
+msgid "Promo campaign"
+msgstr "Акция"
+
+msgid "About company"
+msgstr "О компании"
+
+msgid "Articles & reviews"
+msgstr "Статьи и обзоры"
+
+msgid "Delivery"
+msgstr "Доставка"
+
+msgid "Bonus program"
+msgstr "Бонусная программа"
+
+msgid "Refund policy"
+msgstr "Условия возврата"
+
+msgid "For partners"
+msgstr "Партнерам"
+
+msgid "Subscription for newsletters"
+msgstr "Подписка на рассылку"
+
+msgid "Requests in CRM"
+msgstr "Заявки в CRM"
+
+msgid "Menu button design"
+msgstr "Вид кнопки меню"
+
+msgid "Menu button"
+msgstr "Кнопка меню"
+
+msgid "Page background"
+msgstr "Фон страницы"
+
+msgid "Set up theme"
+msgstr "Настроить тему"
+
+msgid "50% off"
+msgstr "Скидка 50%"

@@ -42,15 +42,22 @@ class siteEditorAddBlockController extends waController
         if (empty($parent_block) && empty($parent_page)) {
             throw new waException('bad parameters', 400);
         }
-        $library = new siteBlockpageLibrary();
+
+        $library = siteBlockpageLibrary::getInstance();
+        $is_premium = waLicensing::check('site')->isPremium();
+
+        if (!$is_premium) {
+            $block_ids = $library->getPremiumBlockIds();
+            if (isset($block_ids[$type_id])) {
+                throw new waException('The premium license is required.');
+            }
+        }
+
         if ($duplicate_block_id) {
             $block_type = siteBlockType::factory($original_block['type']);
             $block_data = $block_type->getEmptyBlockData()->setDbRow(['id' => null] + $original_block);
-            //if ((strpos($original_block['type'], 'site.Columns.') !== false)) {
             $this->copyChildrenBlocks($blockpage_blocks_model, $block_data, $original_block['id']);
-            //}
         } else {
-            //$library = new siteBlockpageLibrary();
             if ($type_id) {
                 $block_type_info = $library->getById($type_id);
             }
@@ -64,12 +71,28 @@ class siteEditorAddBlockController extends waController
             $block_data = $block_type_info['data'];
         }
 
-        $new_block_id = $blockpage_blocks_model->addToParent($block_data, $parent_page['id'], $parent_block_id, $child_key, $before_block_id, $after_block_id);
+        $block_data_list = [];
+        if ($block_data->block_type->getTypeId() === 'site.VerticalSequence' && $parent_block_id === null) {
+            $block_data_list = array_values($block_data->children['']);
+        } else {
+            $block_data_list = [$block_data];
+        }
+
+        $block_ids_added = [];
+        foreach ($block_data_list as $child_block_data) {
+            $new_block_id = $blockpage_blocks_model->addToParent($child_block_data, $parent_page['id'], $parent_block_id, $child_key, $before_block_id, $after_block_id);
+            $block_ids_added[] = $new_block_id;
+            $after_block_id = $new_block_id;
+            $before_block_id = null;
+        }
+        unset($block_data_list, $new_block_id);
 
         $page = new siteBlockPage($parent_page);
         $page->updateDateTime();
         echo $page->renderBackend($parent_block_id);
-        echo $this->getUndoScript($parent_block_id, $new_block_id);
+        foreach ($block_ids_added as $new_block_id) {
+            echo $this->getUndoScript($parent_block_id, $new_block_id);
+        }
     }
 
     protected function getUndoScript($parent_block_id, $new_block_id)

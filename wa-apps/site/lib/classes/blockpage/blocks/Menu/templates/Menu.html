@@ -14,7 +14,7 @@
 
 {$render_only_app_template = $is_backend || (!$is_backend && $enable_app_template)}
 {$render_only_block_template = $is_backend || (!$is_backend && !$enable_app_template)}
-{$anchor_id = $data->data['id']|default:0}
+{$anchor_id = $data->data['id'][$elements['main']]['id']|default:''}
 
 {$href = ''}
 {$target = ''}
@@ -93,7 +93,7 @@
     })();
     </script>
 {/if}
-{$_blc_id = $anchor_id[$elements['main']]['id']|default:''}
+{$_blc_id = $anchor_id}
 <style>
     @media (max-width: 991px) {
         .site-block-menu[data-block-id="{$data->getId()}"]:has(#{$_blc_id}bg) .seq-child {
@@ -136,15 +136,15 @@
 
         if (gmb_svg) {
             gmb_svg.forEach(function(item){
-                item.addEventListener('click', function(){ 
+                item.addEventListener('click', function(){
                     const is_bg_column_hidden = bg_column?.style.display === 'inherit';
 
                     if (bg_column) {
-                        bg_column.style.display = (is_bg_column_hidden ? '' : 'inherit'); 
+                        bg_column.style.display = (is_bg_column_hidden ? '' : 'inherit');
                     }
 
                     if (menu_items) {
-                        menu_items.style.display = (is_bg_column_hidden ? '' : 'inherit'); 
+                        menu_items.style.display = (is_bg_column_hidden ? '' : 'inherit');
                     }
 
                     gmb_svg.forEach(function(item){

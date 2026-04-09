@@ -25,6 +25,7 @@
             backend_url: {$wa_backend_url|json_encode},
             //shop_url: {$wa->getUrl('shop/frontend', [], true)|json_encode},
             is_debug: {$wa->debug()|json_encode},
+            is_premium: {waLicensing::check('site')->isPremium()|json_encode},
             title_pattern: '%s — ' + {$wa->accountName(false)|json_encode},
             content_router_mode: {if empty($hide_wa_app_icons)}'xhr'{else}'reload'{/if},
             rights: {json_encode($rights)},

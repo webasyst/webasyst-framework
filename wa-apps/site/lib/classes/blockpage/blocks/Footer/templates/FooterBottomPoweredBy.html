@@ -1,0 +1,24 @@
+{$block_id = $data->getId()}
+{$wrapper_selector = "[data-block-id=\"`$block_id`\"]"}
+<style>
+    {$wrapper_selector} { background: var(--black, #000); padding: 1.25rem; display: flex; justify-content: center; align-items: center; }
+    {$wrapper_selector} .site-block-footer { display: flex; align-items: center; }
+    {$wrapper_selector} .site-block-footer a { position: relative; text-decoration: none; width: 100%; min-height: auto; color: var(--white, #fff); }
+    {$wrapper_selector} .site-block-footer a:hover { -webkit-filter: brightness(.9); filter: brightness(.9); }
+    {$wrapper_selector} .site-block-footer svg { width: 100%; }
+</style>
+<div class="site-block-footer{if $is_backend} js-remove-with-last{/if}">
+    <picture class="img p-r-8">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.1837 3.62578C4.6425 3.03307 3.71655 3.01209 3.14907 3.57953C2.58096 4.1476 2.60209 5.0753 3.19532 5.61691L7.21319 9.28515C7.6713 9.70339 8.37704 9.6874 8.81575 9.24872C9.25497 8.80953 9.27108 8.10213 8.85219 7.64338L5.1837 3.62578Z" fill="#0088EE"/>
+            <path d="M11.7879 0C10.9862 0 10.3448 0.669471 10.3814 1.4729L10.6284 6.90761C10.6567 7.52887 11.1683 8.01642 11.7879 8.01642C12.4075 8.01642 12.9191 7.52887 12.9473 6.90761L13.1944 1.4729C13.2309 0.66947 12.5895 0 11.7879 0Z" fill="#22CC22"/>
+            <path d="M20.4181 3.57953C19.8507 3.01209 18.9247 3.03307 18.3835 3.62578L14.715 7.64338C14.2961 8.10213 14.3122 8.80953 14.7514 9.24872C15.1902 9.6874 15.8959 9.70339 16.354 9.28515L20.3719 5.61691C20.9651 5.0753 20.9862 4.1476 20.4181 3.57953Z" fill="#EE6622"/>
+            <path d="M24.0022 12.2155C24.0022 11.4113 23.3312 10.7717 22.5304 10.8081L17.0953 11.0552C16.4763 11.0833 15.9873 11.5936 15.9873 12.2155C15.9873 12.8375 16.4763 13.3478 17.0953 13.3759L22.5304 13.623C23.3312 13.6594 24.0022 13.0198 24.0022 12.2155Z" fill="#FFCC00"/>
+            <path d="M16.354 15.1491C15.8959 14.7309 15.1902 14.7469 14.7514 15.1856C14.3122 15.6248 14.2961 16.3322 14.715 16.7909L18.3835 20.8085C18.9247 21.4012 19.8507 21.4222 20.4181 20.8548C20.9862 20.2867 20.9651 19.359 20.3719 18.8174L16.354 15.1491Z" fill="#55DDDD"/>
+            <path d="M12.8213 11.1767C12.3835 10.739 11.6772 10.7294 11.2277 11.1552L0.482196 21.3345C-0.148784 21.9322 -0.162339 22.9332 0.45231 23.5478C1.06635 24.1618 2.0656 24.1483 2.66288 23.5179L12.8429 12.7731C13.2692 12.3231 13.2596 11.615 12.8213 11.1767Z" fill="white"/>
+        </svg>
+    </picture>
+    <a class="style-wrapper m-b-0 inp-m p-l-0 p-r-0" href="[s`https://www.webasyst.com`]" target="_blank">
+        [`Built with Webasyst`]
+    </a>
+</div>

@@ -82,6 +82,12 @@ class siteEditorAction extends waViewAction
         $blockpage_file_model = new siteBlockpageFileModel();
         $files = $blockpage_file_model->getByBlocks(array_keys($blocks));
 
+        $is_premium = waLicensing::check('site')->isPremium();
+        $premium_blocks_map = [];
+        if (!$is_premium) {
+            $premium_blocks_map = siteBlockpageLibrary::getInstance()->getPremiumBlockTypes('element');
+        }
+
         foreach($blocks as &$b) {
             try {
                 $b['data'] = json_decode($b['data'], true, 512, JSON_THROW_ON_ERROR);
@@ -92,6 +98,9 @@ class siteEditorAction extends waViewAction
             if (!isset($block_form_config[$b['type']])) {
                 try {
                     $block_form_config[$b['type']] = siteBlockType::factory($b['type'])->getBlockSettingsFormConfig();
+                    if (isset($premium_blocks_map[$b['type']])) {
+                        $block_form_config[$b['type']]['premium_required'] = true;
+                    }
                 } catch (Throwable $e) {
                     // will cause a warning in JS console and refuse to show settings for this block
                     $block_form_config[$b['type']] = false;

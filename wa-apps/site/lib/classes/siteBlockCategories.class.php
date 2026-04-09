@@ -8,17 +8,22 @@
 class siteBlockCategories {
     const BLOCK_CATEGORIES_LIMIT = 5;
 
+    /** @deprecated */
     public function getAll() {
+        return $this->getBlockCategories();
+    }
+
+    public function getBlockCategories() {
         $result = [
             [
+                'title' => _wd('site', 'Menu'),
+                'tag'   => 'category_menu',
+            ], [
                 'title' => _wd('site', 'Main screen'),
                 'tag'   => 'category_main_page',
             ], [
                 'title' => _wd('site', 'Video'),
                 'tag'   => 'category_video',
-            ], [
-                'title' => _wd('site', 'Menu'),
-                'tag'   => 'category_menu',
             ], [
                 'title' => _wd('site', 'Banners'),
                 'tag'   => 'category_banners',
@@ -61,9 +66,67 @@ class siteBlockCategories {
             ], [
                 'title' => _wd('site', 'Dividers'),
                 'tag'   => 'category_dividers',
-            ], [
+            ],
+            // Apps
+            [
+                'title' => _wd('site', 'Online store'),
+                'tag'   => 'app_shop',
+                'icon_url'  => wa()->getAppStaticUrl('shop').'img/shop.svg',
+            ],
+            [
+                'title' => _wd('site', 'Subscription for newsletters'),
+                'tag'   => 'app_mailer',
+                'icon_url'  => wa()->getAppStaticUrl('mailer').'img/mailer.svg',
+            ],
+            [
+                'title' => _wd('site', 'Requests in CRM'),
+                'tag'   => 'app_crm',
+                'icon_url'  => wa()->getAppStaticUrl('crm').'img/crm.svg',
+            ],
+            [
                 'title' => _wd('site', 'Custom code'),
                 'tag'   => 'category_custom_code',
+                'icon_class' => 'fas fa-code text-dark-gray',
+            ],
+        ];
+
+        foreach ($result as &$category) {
+            $category['blocks'] = [];
+        }
+        unset($category);
+
+        return $result;
+    }
+
+    public function getPageTemplatesCategories() {
+        $result = [
+            [
+                'title' => _wd('site', 'Mini-pages'),
+                'tag'   => 'category_mini',
+            ], [
+                'title' => _wd('site', 'Promo campaign'),
+                'tag'   => 'category_promo',
+            ], [
+                'title' => _wd('site', 'About us'),
+                'tag'   => 'category_about',
+            ], [
+                'title' => _wd('site', 'Articles & reviews'),
+                'tag'   => 'category_articles',
+            ], [
+                'title' => _wd('site', 'Delivery'),
+                'tag'   => 'category_delivery',
+            ], [
+                'title' => _wd('site', 'Bonus program'),
+                'tag'   => 'category_bonuses',
+            ], [
+                'title' => _wd('site', 'Refund policy'),
+                'tag'   => 'category_refund_policy',
+            ], [
+                'title' => _wd('site', 'For partners'),
+                'tag'   => 'category_partners',
+            ], [
+                'title' => _wd('site', 'Contacts'),
+                'tag'   => 'category_contacts',
             ],
         ];
 

@@ -7,3 +7,8 @@
     .site-block-form iframe { width: 100%; }
     .seq-child:has(.site-block-form .iframe-picture-cover) { width: 100%; }
 </style>
+{if $is_backend}
+<style>
+    .site-block-form .crm-form-block .crm-form-field[data-uid^="!f"] { display: none !important; };
+</style>
+{/if}

@@ -22,7 +22,7 @@
         event.stopPropagation();
         if (+updated_block_id === +block_id) {
             updateBlockStyles($(this), data, block_id);
-            $(this).find('.iframe-wrapper').html(SiteEditorInsideIframe.sanitizeHTML(data.html));
+            $(this).find('.iframe-wrapper').html($.wa.editor.api.sanitizeHTML(data.html));
         }
     });
 });

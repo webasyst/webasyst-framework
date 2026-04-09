@@ -15,6 +15,8 @@ const THEME_GOOGLE_FONTS = {
 const SYSTEM_FONT_STACK = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
 const CHEVRON_SVG_LIGHT = "url(\"data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23000000' stroke-opacity='0.5' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")";
 const CHEVRON_SVG_DARK = "url(\"data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 9L12 15L6 9' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")";
+const CHECK_SVG_LIGHT = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none'%3E%3Cpath d='M5.81 11.333c-.276.44-.682.667-1.154.667-.486 0-.866-.2-1.22-.654L.341 7.488C.118 7.208 0 6.914 0 6.594c0-.654.498-1.188 1.141-1.188.393 0 .708.147 1.023.56l2.44 3.164L9.783.667c.275-.44.63-.667 1.023-.667C11.423 0 12 .44 12 1.108c0 .294-.157.614-.328.894l-5.862 9.33Z' fill='%23000000'/%3E%3C/svg%3E\")";
+const CHECK_SVG_DARK = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none'%3E%3Cpath d='M5.81 11.333c-.276.44-.682.667-1.154.667-.486 0-.866-.2-1.22-.654L.341 7.488C.118 7.208 0 6.914 0 6.594c0-.654.498-1.188 1.141-1.188.393 0 .708.147 1.023.56l2.44 3.164L9.783.667c.275-.44.63-.667 1.023-.667C11.423 0 12 .44 12 1.108c0 .294-.157.614-.328.894l-5.862 9.33Z' fill='%23ffffff'/%3E%3C/svg%3E\")";
 const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';
 
 function getFontFallback(fontFamily) {
@@ -124,8 +126,24 @@ function resolveChevronSvg(colorScheme) {
     return CHEVRON_SVG_LIGHT;
 }
 
+function resolveCheckSvg(colorScheme) {
+    if (colorScheme === 'dark') {
+        return CHECK_SVG_DARK;
+    }
+
+    if (colorScheme === 'auto' && window.matchMedia && window.matchMedia(PREFERS_DARK_QUERY).matches) {
+        return CHECK_SVG_DARK;
+    }
+
+    return CHECK_SVG_LIGHT;
+}
+
 function applyThemeChevronSvg(root, colorScheme) {
     root.style.setProperty('--chevron-svg', resolveChevronSvg(colorScheme));
+}
+
+function applyThemeCheckSvg(root, colorScheme) {
+    root.style.setProperty('--check-svg', resolveCheckSvg(colorScheme));
 }
 
 // Применяем сохраненные настройки сразу при загрузке скрипта
@@ -150,6 +168,7 @@ function applyThemeChevronSvg(root, colorScheme) {
                 root.style.removeProperty('color-scheme');
             }
             applyThemeChevronSvg(root, settings.colorScheme || 'auto');
+            applyThemeCheckSvg(root, settings.colorScheme || 'auto');
             if (settings.accentColor) {
                 root.style.setProperty('--accent-color', getAccentColorCssValue(settings.accentColor, settings.colorScheme || 'auto'));
             }
@@ -406,6 +425,7 @@ function applyThemeChevronSvg(root, colorScheme) {
                 root.style.removeProperty('color-scheme');
             }
             applyThemeChevronSvg(root, this.currentSettings.colorScheme);
+            applyThemeCheckSvg(root, this.currentSettings.colorScheme);
 
             // Цвета
             root.style.setProperty('--accent-color', getAccentColorCssValue(this.currentSettings.accentColor, this.currentSettings.colorScheme));
@@ -527,6 +547,7 @@ function applyThemeChevronSvg(root, colorScheme) {
                     if (this.currentSettings.colorScheme === 'auto') {
                         const root = document.documentElement;
                         applyThemeChevronSvg(root, 'auto');
+                        applyThemeCheckSvg(root, 'auto');
                         root.style.setProperty('--accent-color', getAccentColorCssValue(this.currentSettings.accentColor, 'auto'));
                     }
                 };

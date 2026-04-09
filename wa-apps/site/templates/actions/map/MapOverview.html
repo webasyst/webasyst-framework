@@ -35,16 +35,12 @@
             </button>
             <div class="dropdown-body custom-mt-2">
                 <ul class="menu">
-                    <li{if !$is_premium} class="opacity-60"{/if}>
+                    <li>
                         <a href="javascript:void(0);" id="js-add-blockpage">
                             <i class="fas fa-layer-group"></i>
                             <span class="nowrap">
                                 <span class="custom-mr-4">[`Block page`]</span>
-                                {if $is_premium}
                                 <span class="badge green smaller">[`New`]</span>
-                                {else}
-                                <i class="fas fa-crown text-purple"></i>
-                                {/if}
                             </span>
                         </a>
                     </li>
@@ -569,11 +565,7 @@
                     return false;
                 })
                 $menu.on('click', '#js-add-blockpage', function(e){
-                    {if $is_premium}
                     openBlockpageSettings({ is_new: 1 });
-                    {else}
-                    $.site.helper.showPremiumDialog();
-                    {/if}
                 })
             }
     });
@@ -1702,22 +1694,19 @@
 {if waRequest::get('is_new_blockpage')}
 <script>
     (function() {
-        {if $is_premium}
-            const defaults = "{waRequest::get('defaults')|default:''|urlencode}";
-            const params = new URLSearchParams({
-                is_new: 1,
-                domain_id: "{$domain_id}",
-                ...(defaults ? { defaults } : {})
+        const defaults = "{waRequest::get('defaults')|default:''|urlencode}";
+        const params = new URLSearchParams({
+            is_new: 1,
+            domain_id: "{$domain_id}",
+            ...(defaults ? { defaults } : {})
+        });
+        $.get('?module=map&action=pageSettingsDialog&' + params, (html) => {
+            if (!html) return;
+            const dialog = $.waDialog({
+                html
             });
-            $.get('?module=map&action=pageSettingsDialog&' + params, (html) => {
-                if (!html) return;
-                const dialog = $.waDialog({
-                    html
-                });
-            });
-        {else}
-            $.site.helper.showPremiumDialog();
-        {/if}
+        });
+
         if (window.history) {
             history.replaceState(null, '', "{$wa_app_url}map/overview/?domain_id={$domain_id}");
         }

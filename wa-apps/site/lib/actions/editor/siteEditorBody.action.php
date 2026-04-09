@@ -25,6 +25,9 @@ class siteEditorBodyAction extends waViewAction
             'page' => $page,
             'rendered_page_html' => $page->renderBackend(),
         ]);
+
+        // Rendering page may have set template dir to theme path, need to reset back to app templates
+        $this->view->setTemplateDir(wa('site')->getAppPath());
     }
 
     /** Prepare routing to pretend it's a frontend page view. */

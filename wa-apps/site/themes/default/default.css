@@ -1508,11 +1508,8 @@
             font-size: .875rem
         }
     }
-    header .pages li.category-btn-item > a:hover::after { transform: rotate(226deg) !important; top: 0 !important; }
 
-    @media (max-width: 768px) {
-        header .pages li.category-btn-item.submenu-is-shown > a::after { transform: rotate(226deg) !important; top: 0 !important; }
-    }
+    header .pages li.category-btn-item.submenu-is-shown > a::after { transform: rotate(226deg) !important; top: 0 !important; }
     header .pages li a { display: block; color: var(--header-menu-pages-link-color); transition: opacity 200ms linear; padding-right: 0.4rem; }
     header .pages li a:hover { opacity: .6; }
     header .pages li a.button { display: inline; color: var(--button-text-color); font-weight: 600; padding: 0.907em 1.35em 0.907em 1em; }
@@ -1535,7 +1532,6 @@
         padding:    15px 30px;
         text-align: left;
         z-index:    101;
-        transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
         background-color: var(--bg-color);
         max-height: 150px;
         overflow: hidden;
@@ -1549,6 +1545,7 @@
     header ul.flyout-nav li .flyout ul.menu-v li ul.menu-v li ul { display: none; }
     header ul.flyout-nav li .flyout ul.menu-v.brands { text-align: center; }
     header ul.flyout-nav li .flyout ul.menu-v.brands a { font-size: 1.2em; font-weight: normal; }
+    header ul.flyout-nav li .flyout .departments { padding-inline: var(--container-padding); }
     header ul.flyout-nav li .flyout .departments ul.menu-v li { width: 173px; }
     header ul.flyout-nav li .flyout .tags { font-size: 120%; }
     header ul.flyout-nav li.submenu-is-shown .flyout { visibility: visible; opacity: 1; max-height: none; overflow: auto; }

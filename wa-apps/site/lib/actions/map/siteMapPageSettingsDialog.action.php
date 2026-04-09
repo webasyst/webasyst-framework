@@ -85,10 +85,6 @@ class siteMapPageSettingsDialogAction extends waViewAction
             }
         }
 
-        if ($is_new && !waLicensing::check('site')->hasPremiumLicense()) {
-            throw new waException(_w('The premium license is required to create block pages.'), 403);
-        }
-
         if (!$this->page_id) {
             $new_url = ifset($defaults, 'url', siteHelper::getIncrementUrl());
             $page['full_url'] = (!empty($page['full_url']) ? $page['full_url'].'/' : ''). $new_url;

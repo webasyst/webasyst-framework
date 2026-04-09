@@ -10,37 +10,41 @@
 {if $is_columns}
     {$add_button_class = 'js-add-column'}
 {/if}
+{$is_element = !!$block_id}
 
 <div class="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" data-static="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" {if $block_id}data-block-id="{$block_id|escape}"{else}id="js-global-seq"{/if} data-page-id="{$data->getPageId()}">
     {foreach $children as $c}
+        {$disabled = $c['data']->data['disabled']|default:false}
         {function _add_button value='1'}
-            {if !$is_indestructible}
-                {if $is_columns}
-                    <div class="dropdown">
+            {if !$disabled}
+                {if !$is_indestructible}
+                    {if $is_columns}
+                        <div class="dropdown">
+                            <a class="btn button smaller">
+                                <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
+                            </a>
+                        </div>
+                    {elseif $block_id}
+                        <div class="dropdown" id="dropdown-{$value}-{$c.id|escape}">
+                            <a class="btn button smaller circle dropdown-toggle without-arrow">
+                                <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
+                            </a>
+                            <div class="dropdown-body">
+                                <div class="animation-box box">
+                                    <i class="fas fa-spinner wa-animation-spin speed-1000"></i>
+                                </div>
+                            </div>
+                        </div>
+                    {else}
                         <a class="btn button smaller">
                             <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
                         </a>
-                    </div>
-                {elseif $block_id}
-                    <div class="dropdown" id="dropdown-{$value}-{$c.id|escape}">
-                        <a class="btn button smaller circle dropdown-toggle without-arrow">
-                            <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
-                        </a>
-                        <div class="dropdown-body">
-                            <div class="animation-box box">
-                                <i class="fas fa-spinner wa-animation-spin speed-1000"></i>
-                            </div>
-                        </div>
-                    </div>
-                {else}
-                    <a class="btn button smaller">
-                        <span class="flexbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="6" width="3" height="15" rx="1"/><rect y="6" width="15" height="3" rx="1"/></svg></span>
-                    </a>
+                    {/if}
                 {/if}
             {/if}
         {/function}
 
-        <div class="seq-child" data-block-id="{$c.id|escape}" data-static="seq-child">
+        <div class="seq-child{if $is_element} is-element{/if}" data-block-id="{$c.id|escape}" data-static="seq-child"{if $disabled} data-disabled="1"{/if}>
             {if $is_horizontal}
                 <div class="seq-block-delimeter hseq-block-delimeter-top"></div>
                 <div class="seq-block-delimeter hseq-block-delimeter-left seq-block-delimeter-before {$add_button_class}">

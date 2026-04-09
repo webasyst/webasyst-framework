@@ -31,7 +31,7 @@
     const block_id = {$data->getId()|json_encode};
     const wrapper_class = '.site-block-form[data-block-id="'+block_id+'"]';
     const $wrapper_parent = $(wrapper_class).parent();
-    const renderHTML = (html) => { $wrapper_parent.find('.iframe-wrapper').html(SiteEditorInsideIframe.sanitizeHTML(html)); };
+    const renderHTML = (html) => { $wrapper_parent.find('.iframe-wrapper').html($.wa.editor.api.sanitizeHTML(html)); };
     {literal}
     $wrapper_parent.on('block_data_updated', wrapper_class, function(event, updated_block_id, data) {
         event.stopPropagation();

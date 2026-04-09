@@ -106,6 +106,11 @@ class siteBlockPage
             });
         }
 
+        $is_premium = waLicensing::check('site')->isPremium();
+        if (!$is_premium && $blocks) {
+            $blocks['footer'] = (new siteFooterBottomPoweredByBlockType())->getExampleBlockData();
+        }
+
         return [$blocks, $block_types];
     }
 

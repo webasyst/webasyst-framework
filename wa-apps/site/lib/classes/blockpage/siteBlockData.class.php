@@ -130,6 +130,47 @@ class siteBlockData
         return $result;
     }
 
+    public function toArray()
+    {
+        $children = [];
+        foreach($this->children as $child_key => $arr) {
+            foreach($arr as $child) {
+                $children[$child_key][] = $child->toArray();
+            }
+        }
+
+        $data = $this->data;
+        unset($data['additional']);
+
+        return [
+            'type' => ifset($this->db_row, 'type', $this->block_type->getTypeId()),
+            'data' => $data,
+            'children' => $children,
+        ];
+    }
+
+    public static function fromArray(array $a)
+    {
+        $block_type = siteBlockType::factory($a['type']);
+
+        if (!isset($a['data'])) {
+            $data = $block_type->getExampleBlockData();
+            if (isset($a['replace_data'])) {
+                $data->data = array_replace($data->data, ifempty($a['replace_data'], []));
+            }
+            return $data;
+        }
+
+        $result = $block_type->getEmptyBlockData();
+        $result->data = $a['data'];
+        foreach (ifset($a, 'children', []) as $child_key => $arr) {
+            foreach($arr as $child) {
+                $result->addChild(self::fromArray($child), $child_key);
+            }
+        }
+        return $result;
+    }
+
     public function ensureAdditionalData($force=false)
     {
         if ($force) {

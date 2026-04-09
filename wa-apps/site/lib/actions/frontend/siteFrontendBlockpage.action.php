@@ -36,16 +36,20 @@ class siteFrontendBlockpageAction extends waViewAction
         // Use theme defined by the blockpage
         if ($page['theme']) {
             waRequest::setParam('theme', $page['theme']);
-            $theme_template_path = $this->getTheme()->path.'/'.self::THEME_FILE;
-            if (file_exists($theme_template_path)) {
-                $this->setThemeTemplate(self::THEME_FILE);
-            }
         }
 
         $this->view->assign([
             'page' => $page,
             'rendered_page_html' => (new siteBlockPage($page))->renderFrontend(),
         ]);
+
+        $this->view->setTemplateDir(wa('site')->getAppPath());
+        if ($page['theme']) {
+            $theme_template_path = $this->getTheme()->path.'/'.self::THEME_FILE;
+            if (file_exists($theme_template_path)) {
+                $this->setThemeTemplate(self::THEME_FILE);
+            }
+        }
     }
 
     protected function setLastModified($page)

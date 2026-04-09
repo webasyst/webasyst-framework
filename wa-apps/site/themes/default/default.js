@@ -14,15 +14,34 @@ $.ajaxSetup({ cache: false });
         $departments: null,
     };
 
+    var closeMobileNavMenu = function() {
+        var $mobileToggle = $("#mobile-nav-toggle"),
+            $mobileNav = $(".mobile-nav");
+
+        if ($mobileToggle.hasClass("opened")) {
+            $mobileToggle.removeClass("opened");
+        }
+
+        if ($mobileNav.hasClass("opened") || $mobileNav.is(":visible")) {
+            $mobileNav.stop(true, true).removeClass("opened").slideUp(200);
+        }
+    };
+
     var bindEvents = function() {
         var $selector = $(".flyout-nav > li"),
             links = $selector.find("> a");
 
         $selector.on("mouseenter", function() {
+            if ($(this).hasClass("category-btn-item")) {
+                return;
+            }
             showSubMenu( $(this) );
         });
 
         $selector.on("mouseleave", function() {
+            if ($(this).hasClass("category-btn-item")) {
+                return;
+            }
             hideSubMenu( $(this) );
         });
 
@@ -65,8 +84,9 @@ $.ajaxSetup({ cache: false });
         var is_active = $li.hasClass(storage.activeClass);
 
         if (is_active) {
+            var is_category_button = $li.hasClass("category-btn-item");
             var href = $li.find("> a").attr("href");
-            if ( href && (href !== "javascript:void(0);") ) {
+            if (is_category_button || (href && (href !== "javascript:void(0);"))) {
                 hideSubMenu( $li );
             }
 
@@ -115,6 +135,7 @@ $.ajaxSetup({ cache: false });
             if (has_sub_menu) {
 
                 enter = setTimeout( function() {
+                    closeMobileNavMenu();
 
                     if (storage.$last_li && storage.$last_li.length) {
                         clearTimeout( leave );
@@ -181,14 +202,28 @@ $(document).ready(function() {
     // MOBILE nav slide-out menu
     const $mobileToggle = $('#mobile-nav-toggle');
     const $headerContainer = $('#header-container');
+
+    const closeFlyoutMenu = () => {
+        const activeClass = 'submenu-is-shown';
+        const $activeItems = $('.flyout-nav > li.' + activeClass);
+
+        if ($activeItems.length) {
+            $activeItems.removeClass(activeClass);
+        }
+
+        $body.removeClass('is-shadow-shown');
+    };
+
     $mobileToggle.click( function(){
+        closeFlyoutMenu();
+
         if (!$('.nav-negative').length) {
             $('.mobile-nav').prepend($('header .apps').clone().removeClass('apps').addClass('nav-negative'));
             $('.mobile-nav').prepend($('header .auth').clone().addClass('nav-negative'));
             $('.mobile-nav').prepend($('header .offline').clone().addClass('nav-negative'));
-            $('.mobile-nav').toggleClass('opened').hide().slideToggle(200);
+            $('.mobile-nav').stop(true, true).toggleClass('opened').hide().slideToggle(200);
         } else {
-            $('.mobile-nav').toggleClass('opened').slideToggle(200);
+            $('.mobile-nav').stop(true, true).toggleClass('opened').slideToggle(200);
         }
 
         if ($headerContainer.hasClass('search-active')) {
@@ -204,7 +239,7 @@ $(document).ready(function() {
     $(document).on('click', function(e) {
         if (!$mobileToggle.is(e.target) && $mobileToggle.hasClass('opened')) {
             $mobileToggle.removeClass('opened');
-            $('.mobile-nav').removeClass('opened').slideUp(200);
+            $('.mobile-nav').stop(true, true).removeClass('opened').slideUp(200);
         }
     });
 
@@ -311,6 +346,7 @@ $(document).ready(function() {
 
             const isMobile = window.matchMedia('(max-width: 768px)').matches;
             const availableWidth = navList.parentElement ? navList.parentElement.clientWidth : navList.clientWidth;
+            const navItems = Array.from(navList.children).filter((li) => li !== overflowItem);
 
             overflowItem.style.display = 'none';
 
@@ -318,9 +354,17 @@ $(document).ready(function() {
                 return;
             }
 
+            // Сначала проверяем, влезают ли пункты без "Еще"
+            if (navList.scrollWidth <= availableWidth + 1) {
+                return;
+            }
+
             overflowItem.style.display = '';
 
-            const navItems = Array.from(navList.children).filter((li) => li !== overflowItem);
+            if (navItems.length <= 1) {
+                overflowItem.style.display = 'none';
+                return;
+            }
 
             // пока список шире контейнера — переносим крайний пункт в выпадающее меню
             while (navList.scrollWidth > availableWidth && navItems.length) {

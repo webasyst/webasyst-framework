@@ -35,8 +35,8 @@ class siteFooterBottom2BlockType extends siteBlockType
         /* First column */
         $paragraph = (new siteParagraphBlockType())->getExampleBlockData();
         $paragraph->data['html'] = '<font color="" class="tx-bw-5">© 2025 Vestibulum accumsan</font>';
-        $paragraph->data['block_props'] = ['font-header' => "t-rgl", 'font-size' => ["name" => "Size #7", "value" => "t-7", "unit" => "px", "type" => "library"], 'margin-top' => "m-t-15", 'margin-bottom' => "m-b-0",  'margin-left' => "m-l-11-mb", 'align' => "t-r"];
-        
+        $paragraph->data['block_props'] = ['font-header' => "t-rgl", 'font-size' => ["name" => "Size #7", "value" => "t-7", "unit" => "px", "type" => "library"], 'margin-top' => "m-t-12", 'margin-bottom' => "m-b-0",  'margin-left' => "m-l-11-mb", 'align' => "t-r"];
+
         $hseq_column = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq_column->data['is_horizontal'] = true;
         $hseq_column->data['is_complex'] = 'no_complex';
@@ -45,7 +45,7 @@ class siteFooterBottom2BlockType extends siteBlockType
 
         /* Second column */
         $logo = (new siteImageBlockType())->getExampleBlockData();
-        $logo->data['block_props'] = ["picture-size" => "i-l", "margin-left" => "m-l-11-mb", "margin-bottom" => "m-b-0", "margin-right" => "m-r-10", 'border-radius' => "b-r-l",'width' => 'i-xxl'];
+        $logo->data['block_props'] = ["picture-size" => "i-l", "margin-left" => "m-l-11-mb", "margin-bottom" => "m-b-0", "margin-right" => "m-r-10", "margin-top" => "m-t-6", 'border-radius' => "b-r-l",'width' => 'i-xxl'];
         $logo->data['indestructible'] = false;
         $logo->data['default_image_url'] = wa()->getAppStaticUrl('site').'img/image.svg';
         $svg_html = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64" fill-rule="evenodd" fill="#ffffff">
@@ -62,7 +62,7 @@ class siteFooterBottom2BlockType extends siteBlockType
         $menu_item2->data = ['html' => 'Curabitur', 'tag' => 'a', 'block_props' => ["margin-top" => "m-t-8", "margin-bottom" => "m-b-8", 'width' => 'cnt-w', 'button-style' => ["name" => "Palette", "value" => "btn-wht-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-12 p-r-12']];
         $menu_item3 = (new siteMenuItemBlockType())->getExampleBlockData();
         $menu_item3->data = ['html' => 'Commodo', 'tag' => 'a', 'block_props' => ["margin-top" => "m-t-8", "margin-bottom" => "m-b-8", 'width' => 'cnt-w', 'button-style' => ["name" => "Palette", "value" => "btn-wht-lnk", "type" => "palette"], 'button-size' => 'inp-s p-l-12 p-r-12']];
-        
+
         $hseq_column = (new siteVerticalSequenceBlockType())->getEmptyBlockData();
         $hseq_column->data['is_horizontal'] = true;
         $hseq_column->data['is_complex'] = 'no_complex';

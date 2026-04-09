@@ -168,27 +168,4 @@ class SiteEditorInsideIframe {
         }
         return false;
     }
-
-    // @see copy SiteEditorInsideIframe.js
-    static sanitizeHTML(str) {
-        if (!str) {
-            return str;
-        }
-
-        // clean up JS
-        const pattern = /<script[^>]*>.*?<\/script>/igs;
-        const html = str.replace(pattern, '');
-
-        // keep http(s)
-        const sanitizeIframeSrc = (str) => {
-            return str.replace(/<iframe[^>]*src\s*=\s*"(.*?)"[^>]*>/g, (start, src) => {
-                if (src.match(/^https?:/)) {
-                    return start + src;
-                }
-                return start.replace(src, '');
-            });
-        }
-
-        return sanitizeIframeSrc(html);
-    }
 }

@@ -183,12 +183,12 @@
             'default_data_type': 'block_props',
             'icon': 'fa-circle',
             'values': [
-                {name: "Толщина 3", value: 'b-w-l ', unit: 'px', type: 'library'}
+                {name: "Width 3", value: 'b-w-l ', unit: 'px', type: 'library'}
             ],
             'library': [
-                {name: "Толщина 3", value: 'b-w-l', unit: 'px', type: 'library'},
-                {name: "Толщина 2", value: 'b-w-m', unit: 'px', type: 'library'},
-                {name: "Толщина 1", value: 'b-w-s', unit: 'px', type: 'library'},
+                {name: "Width 3", value: 'b-w-l', unit: 'px', type: 'library'},
+                {name: "Width 2", value: 'b-w-m', unit: 'px', type: 'library'},
+                {name: "Width 1", value: 'b-w-s', unit: 'px', type: 'library'},
             ]
         },
         BorderStyleGroup: {
@@ -445,6 +445,9 @@
         },
         ImageUploadGroup: {
             'type': 'image-upload',
+        },
+        MenuButtonGroup: {
+            'type': 'menu-button',
         },
         PaddingGroup: [
             {
@@ -755,9 +758,9 @@
         ],
         link_page_data: [
                 {name: 'Manually', value: null, url: ''},
-                {name: 'Главная', value: '1', url: '/'},
-                {name: 'ЛК', value: '2', url: '/lk'},
-                {name: 'About-us', value: '3', url: '/about-us'},
+                {name: 'Home page', value: '1', url: '/'},
+                {name: 'My account', value: '2', url: '/lk'},
+                {name: 'About us', value: '3', url: '/about-us'},
         ],
         color_toggle_data: [
             {name: 'Palette', value: 'palette', icon: 'fa-palette'},
@@ -789,6 +792,10 @@
             {name: 'Upload', value: 'upload'},
             {name: 'SVG', value: 'svg'},
             {name: 'Address', value: 'address'},
+        ],
+        menu_button_data: [
+            {name: 'Default', value: 'open'},
+            {name: 'On click', value: 'close'},
         ],
         video_upload_toggle_data: [
             {name: 'Code', value: 'code'},

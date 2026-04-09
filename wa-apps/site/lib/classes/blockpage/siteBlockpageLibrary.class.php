@@ -3,9 +3,18 @@
 /**
  * Access to all blocks available for blockpages to use.
  */
-class siteBlockpageLibrary {
+class siteBlockpageLibrary
+{
     public $all_blocks = null;
-    public $all_elements = null;
+    public static $instance = null;
+
+    public static function getInstance(): self
+    {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     public function getById($id) {
         $blocks = array_merge($this->getAllBlocks(), $this->getAllElements());
@@ -27,6 +36,10 @@ class siteBlockpageLibrary {
             return $this->all_blocks;
         }
 
+        // Attempt to call unknown block type inside the library will call the library again.
+        // To avoid infinite recursion, we return empty block list during the inner recursion calls.
+        $this->all_blocks = [];
+
         $blocks = $this->getSiteBlocks();
 
         $blocks = array_merge(array_values($blocks), $this->getThirdPartyBlocks());
@@ -47,14 +60,7 @@ class siteBlockpageLibrary {
         return $result;
     }
 
-    /**
-     * @deprecated !!! TODO remove
-     */
     public function getAllElements(string $is_complex = '') {
-        if ($this->all_elements !== null) {
-            return $this->all_elements;
-        }
-
         $blocks = $this->getAllBlocks();
         $blocks = array_filter($blocks, function ($b) {
             return in_array('element', $b['tags']);
@@ -84,30 +90,122 @@ class siteBlockpageLibrary {
             }
             $result[$b['id']] = $b;
         }
-        $this->all_elements = $result;
 
         return $result;
     }
 
-    protected function getSiteBlocks() {
+    /**
+     * @return array<string, 1>
+     */
+    public function getPremiumBlockTypes($tag = null) {
+        $result = [];
+
+        foreach ($this->getSiteBlocks(true) as $block) {
+            if (empty($block['data']) || empty($block['premium']) || ($tag && !in_array($tag, $block['tags']))) continue;
+            $result[$block['data']->block_type->getTypeId()] = 1;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array<string, 1>
+     */
+    public function getPremiumBlockIds() {
+        $result = [];
+
+        foreach ($this->getSiteBlocks() as $block) {
+            if (empty($block['data']) || empty($block['premium'])) continue;
+            $result[$this->hashBlockId($block['data'])] = 1;
+        }
+
+        return $result;
+    }
+
+    protected function getSiteBlocks($skip_templates = false) {
         $img_url = wa()->getAppStaticUrl('site') . 'img/blocks/';
-        return [
-            [
-                'image'    => $img_url . 'footer/footer-8-dark.png',
-                'image_2x' => $img_url . 'footer/footer-8-dark@2x.png',
-                'title'    => _w('Site footer top block'),
-                'data'     => (new siteFooterTopBlockType(['columns' => 4]))->getExampleBlockData(),
-                'tags'     => ['category_footer'],
-                'disabled' => false,
-            ],
-            [
-                'image'    => $img_url . 'footer/footer-8-light.png',
-                'image_2x' => $img_url . 'footer/footer-8-light@2x.png',
-                'title'    => _w('Site footer top block'),
-                'data'     => (new siteFooterTop2BlockType(['columns' => 4]))->getExampleBlockData(),
-                'tags'     => ['category_footer'],
-                'disabled' => false,
-            ],
+
+        $templates = [];
+        if (!$skip_templates) {
+            $templates = [
+                [
+                    'image'    => $img_url . 'page_templates/mini/sweets/mini-page-sweets.jpg',
+                    'image_2x' => $img_url . 'page_templates/mini/sweets/mini-page-sweets@2x.jpg',
+                    'title' => _w('Mini-page with links'),
+                    'data'  => siteBlockPageTemplates::getSweetsPageTemplate(),
+                    'tags'  => ['template', 'category_mini'],
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/mini/microlanding-furniture.jpg',
+                    'image_2x' => $img_url . 'page_templates/mini/microlanding-furniture@2x.jpg',
+                    'title' => _w('Mini-page with links'),
+                    'data'  => siteBlockPageTemplates::getMicrolandingPageTemplate(),
+                    'tags'  => ['template', 'category_mini'],
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/promo/black_friday/black-friday.jpg',
+                    'image_2x' => $img_url . 'page_templates/promo/black_friday/black-friday@2x.jpg',
+                    'title' => _w('Promo campaign'),
+                    'data'  => siteBlockPageTemplates::getBlackFridayPromoPageTemplate(),
+                    'tags'  => ['template', 'category_promo'],
+                    'premium' => true,
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/about/flowers/about-us-flowers.jpg',
+                    'image_2x' => $img_url . 'page_templates/about/flowers/about-us-flowers@2x.jpg',
+                    'title' => _w('About company'),
+                    'data'  => siteBlockPageTemplates::getFlowersPageTemplate(),
+                    'tags'  => ['template', 'category_about'],
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/articles/coffee_machine/article.jpg',
+                    'image_2x' => $img_url . 'page_templates/articles/coffee_machine/article@2x.jpg',
+                    'title' => _w('Articles & reviews'),
+                    'data'  => siteBlockPageTemplates::getCoffeeMachineArticlePageTemplate(),
+                    'tags'  => ['template', 'category_articles'],
+                    'premium' => true,
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/delivery/delivery.jpg',
+                    'image_2x' => $img_url . 'page_templates/delivery/delivery@2x.jpg',
+                    'title' => _w('Delivery'),
+                    'data'  => siteBlockPageTemplates::getDeliveryPageTemplate(),
+                    'tags'  => ['template', 'category_delivery'],
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/bonuses/bonuses.jpg',
+                    'image_2x' => $img_url . 'page_templates/bonuses/bonuses@2x.jpg',
+                    'title' => _w('Bonus program'),
+                    'data'  => siteBlockPageTemplates::getBonusesPageTemplate(),
+                    'tags'  => ['template', 'category_bonuses'],
+                    'premium' => true,
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/refund/refund.jpg',
+                    'image_2x' => $img_url . 'page_templates/refund/refund@2x.jpg',
+                    'title' => _w('Refund policy'),
+                    'data'  => siteBlockPageTemplates::getRefundPolicyPageTemplates(),
+                    'tags'  => ['template', 'category_refund_policy'],
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/partners/partners.jpg',
+                    'image_2x' => $img_url . 'page_templates/partners/partners@2x.jpg',
+                    'title' => _w('For partners'),
+                    'data'  => siteBlockPageTemplates::getPartnersPageTemplate(),
+                    'tags'  => ['template', 'category_partners'],
+                    'premium' => true,
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/contacts/contacts.jpg',
+                    'image_2x' => $img_url . 'page_templates/contacts/contacts@2x.jpg',
+                    'title' => _w('Contacts'),
+                    'data'  => siteBlockPageTemplates::getContactsPageTemplate(),
+                    'tags'  => ['template', 'category_contacts'],
+                ],
+            ];
+        }
+
+        return array_merge([
             [
                 'image'    => $img_url . 'footer/footer-4.jpg',
                 'image_2x' => $img_url . 'footer/footer-4@2x.jpg',
@@ -157,6 +255,24 @@ class siteBlockpageLibrary {
                 'disabled' => false,
             ],
             [
+                'image'    => $img_url . 'footer/footer-8-dark.png',
+                'image_2x' => $img_url . 'footer/footer-8-dark@2x.png',
+                'title'    => _w('Site footer top block'),
+                'data'     => (new siteFooterTopBlockType(['columns' => 4]))->getExampleBlockData(),
+                'tags'     => ['category_footer'],
+                'disabled' => false,
+                'premium'  => true,
+            ],
+            [
+                'image'    => $img_url . 'footer/footer-8-light.png',
+                'image_2x' => $img_url . 'footer/footer-8-light@2x.png',
+                'title'    => _w('Site footer top block'),
+                'data'     => (new siteFooterTop2BlockType(['columns' => 4]))->getExampleBlockData(),
+                'tags'     => ['category_footer'],
+                'disabled' => false,
+                'premium'  => true,
+            ],
+            [
                 'image'    => $img_url . 'hero/block-1-cover.jpg',
                 'image_2x' => $img_url . 'hero/block-1-cover@2x.jpg',
                 'title'    => _w('Hero'),
@@ -171,17 +287,18 @@ class siteBlockpageLibrary {
                 'tags'     => ['category_main_page'],
             ],
             [
-                'image'    => $img_url . 'hero/main-screen-2.jpg',
-                'image_2x' => $img_url . 'hero/main-screen-2@2x.jpg',
-                'title'    => _w('Hero 3'),
-                'data'     => (new siteCustomHero3BlockType())->getExampleBlockData(),
-                'tags'     => ['category_banners'],
-            ],
-            [
                 'image'    => $img_url . 'hero/sandals.jpg',
                 'image_2x' => $img_url . 'hero/sandals@2x.jpg',
                 'title'    => _w('Hero 4'),
                 'data'     => (new siteCustomHero4BlockType())->getExampleBlockData(),
+                'tags'     => ['category_main_page'],
+                'premium'  => true,
+            ],
+            [
+                'image'    => $img_url . 'hero/centred-photo-in-circle.jpg',
+                'image_2x' => $img_url . 'hero/centred-photo-in-circle@2x.jpg',
+                'title'    => '',
+                'data'     => (new siteCustomHero5BlockType())->getExampleBlockData(),
                 'tags'     => ['category_main_page'],
             ],
             [
@@ -201,43 +318,43 @@ class siteBlockpageLibrary {
             /*[
                 'image' => '',
                 'title' => _w('Two columns'),
-                'data'  => (new siteColumnsBlockType(['columns' => 2]))->getExampleBlockData(),
+                'data' => (new siteColumnsBlockType(['columns' => 2]))->getExampleBlockData(),
                 'tags'  => ['category_main_page'],
             ],
             [
                 'image' => '',
                 'title' => _w('One column'),
-                'data'  => (new siteColumnsBlockType(['columns' => 1]))->getExampleBlockData(),
+                'data' => (new siteColumnsBlockType(['columns' => 1]))->getExampleBlockData(),
                 'tags'  => ['category_main_page'],
             ],
             [
                 'image' => '',
                 'title' => _w('Two columns'),
-                'data'  => (new siteColumnsBlockType(['columns' => 2]))->getExampleBlockData(),
+                'data' => (new siteColumnsBlockType(['columns' => 2]))->getExampleBlockData(),
                 'tags'  => ['category_main_page'],
             ],
             [
                 'image' => '',
                 'title' => _w('Three columns'),
-                'data'  => (new siteColumnsBlockType(['columns' => 3]))->getExampleBlockData(),
+                'data' => (new siteColumnsBlockType(['columns' => 3]))->getExampleBlockData(),
                 'tags'  => ['category_main_page'],
             ],
             [
                 'image' => '',
                 'title' => _w('Four columns'),
-                'data'  => (new siteColumnsBlockType(['columns' => 4]))->getExampleBlockData(),
+                'data' => (new siteColumnsBlockType(['columns' => 4]))->getExampleBlockData(),
                 'tags'  => ['category_main_page'],
             ],
             [
                 'image' => '',
                 'title' => _w('Cards'),
-                'data'  => (new siteCardsBlockType(['cards' => 7]))->getExampleBlockData(),
+                'data' => (new siteCardsBlockType(['cards' => 7]))->getExampleBlockData(),
                 'tags'  => ['category_main_page'],
             ],
             [
                 'image' => '',
                 'title' => _w('Menu'),
-                'data'  => (new siteMenuBlockType(['columns' => 4]))->getExampleBlockData(),
+                'data' => (new siteMenuBlockType(['columns' => 4]))->getExampleBlockData(),
                 'tags'  => ['category_menu'],
             ],*/
             [
@@ -274,6 +391,7 @@ class siteBlockpageLibrary {
                 'title' => _w('Custom code'),
                 'data'  => (new siteCustomCodeBlockType(['is_block' => true]))->getExampleBlockData(),
                 'tags'  => ['category_custom_code'],
+                'premium' => true,
             ],
             [
                 'image'    => $img_url . 'categories/categories.jpg',
@@ -302,6 +420,7 @@ class siteBlockpageLibrary {
                 'title'    => _w('Categories 4'),
                 'data'     => (new siteCustomCategories4BlockType())->getExampleBlockData(),
                 'tags'     => ['category_sections_and_categories'],
+                'premium'  => true,
             ],
             [
                 'image'    => $img_url . 'products/products.jpg',
@@ -381,6 +500,14 @@ class siteBlockpageLibrary {
                 'tags'     => ['category_banners'],
             ],
             [
+                'image'    => $img_url . 'hero/main-screen-2.jpg',
+                'image_2x' => $img_url . 'hero/main-screen-2@2x.jpg',
+                'title'    => _w('Hero 3'),
+                'data'     => (new siteCustomHero3BlockType())->getExampleBlockData(),
+                'tags'     => ['category_banners'],
+                'premium'  => true,
+            ],
+            [
                 'image'    => $img_url . 'text/1-column-text.jpg',
                 'image_2x' => $img_url . 'text/1-column-text@2x.jpg',
                 'title'    => _w('Text'),
@@ -400,6 +527,7 @@ class siteBlockpageLibrary {
                 'title'    => _w('Images with description'),
                 'data'     => (new siteCustomImagesWithDescriptionBlockType())->getExampleBlockData(),
                 'tags'     => ['category_images_with_description'],
+                'premium' => true,
             ],
             [
                 'image'    => $img_url . 'images_wd/package.jpg',
@@ -421,26 +549,73 @@ class siteBlockpageLibrary {
                 'title'    => _w('Images with description 4'),
                 'data'     => (new siteCustomImagesWithDescription4BlockType())->getExampleBlockData(),
                 'tags'     => ['category_images_with_description'],
+                'premium'  => true,
             ],
             [
-                'image'    => $img_url . 'contacts.jpg',
-                'image_2x' => $img_url . 'contacts@2x.jpg',
+                'image'    => $img_url . 'contacts/contacts.jpg',
+                'image_2x' => $img_url . 'contacts/contacts@2x.jpg',
                 'title'    => _w('Contacts'),
                 'data'     => (new siteCustomContactsBlockType())->getExampleBlockData(),
                 'tags'     => ['category_contacts'],
             ],
             [
-                'image'    => $img_url . 'facts.jpg',
-                'image_2x' => $img_url . 'facts@2x.jpg',
+                'image'    => $img_url . 'contacts/contacts-reverse.jpg',
+                'image_2x' => $img_url . 'contacts/contacts-reverse@2x.jpg',
+                'title'    => _w('Contacts'),
+                'data'     => (new siteCustomContactsReverseBlockType())->getExampleBlockData(),
+                'tags'     => ['category_contacts'],
+            ],
+            [
+                'image'    => $img_url . 'contacts/contacts-map-3cols.jpg',
+                'image_2x' => $img_url . 'contacts/contacts-map-3cols@2x.jpg',
+                'title'    => _w('Contacts'),
+                'data'     => (new siteCustomContactsMapBlockType())->getExampleBlockData(),
+                'tags'     => ['category_contacts'],
+                'premium'  => true,
+            ],
+            [
+                'image'    => $img_url . 'contacts/contacts-map-4cols.jpg',
+                'image_2x' => $img_url . 'contacts/contacts-map-4cols@2x.jpg',
+                'title'    => _w('Contacts'),
+                'data'     => (new siteCustomContactsMap2BlockType())->getExampleBlockData(),
+                'tags'     => ['category_contacts'],
+                'premium'  => true,
+            ],
+            [
+                'image'    => $img_url . 'advantages/facts.jpg',
+                'image_2x' => $img_url . 'advantages/facts@2x.jpg',
                 'title'    => _w('Facts'),
                 'data'     => (new siteCustomFactsBlockType())->getExampleBlockData(),
                 'tags'     => ['category_advantages'],
             ],
             [
-                'image'    => $img_url . 'advantages.jpg',
-                'image_2x' => $img_url . 'advantages@2x.jpg',
+                'image'    => $img_url . 'advantages/advantages.jpg',
+                'image_2x' => $img_url . 'advantages/advantages@2x.jpg',
                 'title'    => _w('Advantages'),
                 'data'     => (new siteCustomAdvantagesBlockType())->getExampleBlockData(),
+                'tags'     => ['category_advantages'],
+            ],
+            [
+                'image'    => $img_url . 'advantages/3c-advantages.jpg',
+                'image_2x' => $img_url . 'advantages/3c-advantages@2x.jpg',
+                'title'    => _w('Advantages'),
+                'data'     => (new siteCustomAdvantages3ColsBlockType())->getExampleBlockData(),
+                'tags'     => ['category_advantages'],
+                'premium'  => true,
+            ],
+            [
+                'image'    => $img_url . 'advantages/3c-2-advantages.jpg',
+                'image_2x' => $img_url . 'advantages/3c-2-advantages@2x.jpg',
+                'title'    => _w('Advantages'),
+                'data'     => (new siteCustomAdvantages3Cols2BlockType())->getExampleBlockData(),
+                'tags'     => ['category_advantages'],
+                'premium'  => true,
+            ],
+            [
+                'image'    => $img_url . 'advantages/2-col-adv.jpg',
+                'image_2x' => $img_url . 'advantages/2-col-adv@2x.jpg',
+                'title'    => _w('Advantages'),
+                'data'     => (new siteCustomAdvantages2ColsBlockType())->getExampleBlockData(),
                 'tags'     => ['category_advantages'],
             ],
             [
@@ -451,6 +626,20 @@ class siteBlockpageLibrary {
                 'tags'     => ['category_partner_logos'],
             ],
             [
+                'image'    => $img_url . 'gallery/gallery-4.jpg',
+                'image_2x' => $img_url . 'gallery/gallery-4@2x.jpg',
+                'title'    => _w('Gallery'),
+                'data'     => (new siteCustomGallery4BlockType())->getExampleBlockData(),
+                'tags'     => ['category_gallery'],
+            ],
+            [
+                'image'    => $img_url . 'gallery/gallery-3.jpg',
+                'image_2x' => $img_url . 'gallery/gallery-3@2x.jpg',
+                'title'    => _w('Gallery'),
+                'data'     => (new siteCustomGallery3BlockType())->getExampleBlockData(),
+                'tags'     => ['category_gallery'],
+            ],
+            [
                 'image'    => $img_url . 'gallery/gallery.jpg',
                 'image_2x' => $img_url . 'gallery/gallery@2x.jpg',
                 'title'    => _w('Gallery'),
@@ -458,11 +647,20 @@ class siteBlockpageLibrary {
                 'tags'     => ['category_gallery'],
             ],
             [
+                'image'    => $img_url . 'gallery/gallery-2.jpg',
+                'image_2x' => $img_url . 'gallery/gallery-2@2x.jpg',
+                'title'    => _w('Gallery'),
+                'data'     => (new siteCustomGallery2BlockType())->getExampleBlockData(),
+                'tags'     => ['category_gallery'],
+                'premium'  => true,
+            ],
+            [
                 'image'    => $img_url . 'dividers/divider-dark.png',
                 'image_2x' => $img_url . 'dividers/divider-dark@2x.png',
                 'title'    => _w('Divider (dark)'),
                 'data'     => (new siteCustomDividerBlockType())->getExampleBlockData(),
                 'tags'     => ['category_dividers'],
+                'premium' => true,
             ],
             [
                 'image'    => $img_url . 'dividers/divider-light.png',
@@ -470,6 +668,7 @@ class siteBlockpageLibrary {
                 'title'    => _w('Divider light'),
                 'data'     => (new siteCustomDivider2BlockType())->getExampleBlockData(),
                 'tags'     => ['category_dividers'],
+                'premium' => true,
             ],
             [
                 'image'    => $img_url . 'dividers/pattern-top.png',
@@ -491,6 +690,7 @@ class siteBlockpageLibrary {
                 'title'    => _w('Angle divider (top)'),
                 'data'     => (new siteCustomDivider5BlockType())->getExampleBlockData(),
                 'tags'     => ['category_dividers'],
+                'premium'  => true,
             ],
             [
                 'image'    => $img_url . 'dividers/angle-bg-border--bottom.png',
@@ -498,13 +698,7 @@ class siteBlockpageLibrary {
                 'title'    => _w('Angle divider (bottom)'),
                 'data'     => (new siteCustomDivider6BlockType())->getExampleBlockData(),
                 'tags'     => ['category_dividers'],
-            ],
-            [
-                'image'    => $img_url . 'video/video.jpg',
-                'image_2x' => $img_url . 'video/video@2x.jpg',
-                'title'    => _w('Video'),
-                'data'     => (new siteCustomVideoBlockType())->getExampleBlockData(),
-                'tags'     => ['category_video'],
+                'premium'  => true,
             ],
             [
                 'image'    => $img_url . 'video/bg-video-sale.jpg',
@@ -512,6 +706,7 @@ class siteBlockpageLibrary {
                 'title'    => _w('Video 2'),
                 'data'     => (new siteCustomVideo2BlockType())->getExampleBlockData(),
                 'tags'     => ['category_video'],
+                'premium'  => true,
             ],
             [
                 'image'    => $img_url . 'video/video-bg-collection.jpg',
@@ -519,6 +714,15 @@ class siteBlockpageLibrary {
                 'title'    => _w('Video 3'),
                 'data'     => (new siteCustomVideo3BlockType())->getExampleBlockData(),
                 'tags'     => ['category_video'],
+                'premium'  => true,
+            ],
+            [
+                'image'    => $img_url . 'video/video.jpg',
+                'image_2x' => $img_url . 'video/video@2x.jpg',
+                'title'    => _w('Video'),
+                'data'     => (new siteCustomVideoBlockType())->getExampleBlockData(),
+                'tags'     => ['category_video'],
+                'premium'  => true,
             ],
             [
                 'image' => '',
@@ -540,6 +744,7 @@ class siteBlockpageLibrary {
                 'title' => _w('List'),
                 'data'  => (new siteListBlockType())->getExampleBlockData(),
                 'tags'  => ['element'],
+                'premium' => true,
             ],
             [
                 'image' => '',
@@ -575,6 +780,7 @@ class siteBlockpageLibrary {
                 'title' => _w('Horizontal ruler'),
                 'data'  => (new siteHrBlockType())->getExampleBlockData(),
                 'tags'  => ['element'],
+                'premium' => true,
             ],
             [
                 'image' => '',
@@ -620,13 +826,66 @@ class siteBlockpageLibrary {
             ],
             [
                 'image' => '',
-                'icon'  => 'code',
+                'icon'  => 'code black',
                 'title' => _w('Custom code'),
                 'data'  => (new siteCustomCodeBlockType(['is_block' => false]))->getExampleBlockData(),
                 'tags'  => ['element'],
+                'premium' => true,
+                'sort' => 99,
             ],
 
-        ];
+            //
+            // Apps
+            //
+            ...(wa()->appExists('shop') ? [
+                    [
+                        'image'    => $img_url . 'apps/shop-product.jpg',
+                        'image_2x' => $img_url . 'apps/shop-product@2x.jpg',
+                        'title' => _w('Online store'),
+                        'data'  => (new siteCustomShopProductBlockType())->getExampleBlockData(),
+                        'tags'  => ['app_shop'],
+                    ],
+                    [
+                        'image'    => $img_url . 'apps/shop-products.jpg',
+                        'image_2x' => $img_url . 'apps/shop-products@2x.jpg',
+                        'title' => _w('Online store'),
+                        'data'  => (new siteCustomShopProductsBlockType())->getExampleBlockData(),
+                        'tags'  => ['app_shop'],
+                    ],
+                ] : []),
+            ...(wa()->appExists('mailer') ? [
+                    [
+                        'image'    => $img_url . 'apps/subscribe.jpg',
+                        'image_2x' => $img_url . 'apps/subscribe@2x.jpg',
+                        'title' => _w('Subscription for newsletters'),
+                        'data'  => (new siteCustomMailerSubscribeBlockType())->getExampleBlockData(),
+                        'tags'  => ['app_mailer'],
+                    ],
+                    [
+                        'image'    => $img_url . 'apps/subscribe-2.jpg',
+                        'image_2x' => $img_url . 'apps/subscribe-2@2x.jpg',
+                        'title' => _w('Subscription for newsletters'),
+                        'data'  => (new siteCustomMailerSubscribe2BlockType())->getExampleBlockData(),
+                        'tags'  => ['app_mailer'],
+                    ],
+                ] : []),
+            ...(wa()->appExists('crm') ? [
+                    [
+                        'image'    => $img_url . 'apps/crm-form-with-bg.jpg',
+                        'image_2x' => $img_url . 'apps/crm-form-with-bg@2x.jpg',
+                        'title' => _w('Requests in CRM'),
+                        'data'  => (new siteCustomCrmFormBlockType())->getExampleBlockData(),
+                        'tags'  => ['app_crm'],
+                    ],
+                    [
+                        'image'    => $img_url . 'apps/crm-form-2.jpg',
+                        'image_2x' => $img_url . 'apps/crm-form-2@2x.jpg',
+                        'title' => _w('Requests in CRM'),
+                        'data'  => (new siteCustomCrmForm2BlockType())->getExampleBlockData(),
+                        'tags'  => ['app_crm'],
+                    ],
+                ] : []),
+        ], $templates);
     }
 
     protected function getThirdPartyBlocks() {

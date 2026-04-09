@@ -287,6 +287,11 @@
                     'product_status_not_published': 'The product is in status “Unpublished, not for sale” – it is not visible on this page.',
                     'product_widget_element_layout_line': 'In one line',
                     'product_widget_element_layout_sku_above': 'Price and buy button below',
+                    'premium_required_alert': 'This block is available only in the premium version.',
+                    'about_premium': 'About Premium',
+                    'On click': 'On click',
+                    'My account': 'My account',
+                    'About us': 'About us',
                 },
                 'border_group': {
                     'Remove border': 'Remove border',
@@ -609,6 +614,11 @@
                     'product_status_not_published': 'Товар находится в статусе «не опубликован, не продается» – он не виден на этой странице.',
                     'product_widget_element_layout_line': 'В одну строку',
                     'product_widget_element_layout_sku_above': 'Цена и кнопка покупки снизу',
+                    'premium_required_alert': 'Этот блок доступен только в премиум-версии приложения.',
+                    'about_premium': 'Подробнее о Премиум',
+                    'On click': 'При нажатии',
+                    'My account': 'Личный кабинет',
+                    'About us': 'О нас',
                 },
                 'border_group': {
                     'Remove border': 'Удалить обводку',

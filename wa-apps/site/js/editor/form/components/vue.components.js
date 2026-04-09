@@ -788,6 +788,28 @@ var FormComponents = ( function($) {
                     }
                 },
             },
+            "component-premium-required-alert": {
+                template:
+                    `<div class="js-form-alert alert info small">
+                        <div class="custom-mb-8">{{ $t('custom.premium_required_alert') }}</div>
+                        <button class="button" type="button" @click="show"><i class="fas fa-crown"></i> {{ $t('custom.about_premium') }}</button>
+                    </div>`,
+                methods: {
+                    show() { $.site.helper.showPremiumDialog(); }
+                }
+            },
+            "component-app-disabled-alert": {
+                props: ['form_type', 'app_url'],
+                template:
+                    `<div class="alert small info">
+                        <i class="fas fa-info-circle fa-sm"></i>
+                        <span v-html="
+                            $t('custom.To customize the form, install or enable the <a href={url}>{appName} app</a>',
+                                { url: app_url, appName: $t('custom.form_'+form_type) }
+                            )"
+                        /> <i class="fas fa-external-link-alt fa-sm"></i>
+                    </div>`,
+            },
         };
         that.manual_components = {
 
@@ -1021,9 +1043,11 @@ var FormComponents = ( function($) {
                     let self = this;
                     let active_options = Object.assign({}, self.option);
                     if (active_options?.type !== 'video') active_options = {};
+                    const is_premium = $.site.is_premium;
+                    const showPremium = () => $.site.helper.showPremiumDialog();
                     //console.log('component-manual-video', active_options)
 
-                    return { active_options }
+                    return { active_options, is_premium , showPremium }
                 },
 
                 template:
@@ -1032,9 +1056,12 @@ var FormComponents = ( function($) {
                         <div class="text-gray">{ { $t('custom.Background video') } }</div>
                         <div id="drop-area" @drop.stop.prevent="dropVideo($event)">
                             <div class="upload s-small" >
-                                <label class="link">
-                                    <span class="button width-100 light-gray custom-mr-0 custom-mb-4" ><i class="fas fa-upload"></i> { { active_options.file_name ? $t('custom.Edit') : $t('custom.Upload') } }</span>
-                                    <input name="namespace" type="file" autocomplete="off" @change="changeVideo($event)" accept="video/*">
+                                <label class="link" @click="is_premium ? true : showPremium()">
+                                    <span class="button width-100 light-gray custom-mr-0 custom-mb-4" :class="{ 'disabled': !is_premium }">
+                                        <i class="fas fa-upload"></i> { { active_options.file_name ? $t('custom.Edit') : $t('custom.Upload') } }
+                                        <span v-if="!is_premium"><i class="fas fa-crown"></i></span>
+                                    </span>
+                                    <input v-if="is_premium" name="namespace" type="file" autocomplete="off" @change="changeVideo($event)" accept="video/*">
                                 </label>
                                 <span v-if="active_options.file_name" class="filename bold custom-mt-8">{ { active_options.file_name } }</span>
                             </div>

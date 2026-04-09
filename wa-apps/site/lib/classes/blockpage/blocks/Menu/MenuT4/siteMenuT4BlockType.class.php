@@ -5,7 +5,7 @@
  */
 class siteMenuT4BlockType extends siteBlockType
 {
-    public $elements = [   
+    public $elements = [
         'main' => 'site-block-menu',
         'wrapper' => 'site-block-menu-wrapper',
         ];
@@ -27,10 +27,10 @@ class siteMenuT4BlockType extends siteBlockType
         $hseq->data['is_horizontal'] = true;
         $hseq->data['is_complex'] = 'only_columns';
         $hseq->data['indestructible'] = true;
-        
+
         $logo_column = (new siteMenuLogoT4BlockType())->getExampleBlockData();
         $logo_column->data['column'] = "st-3 st-3-lp st-4-tb st-10-mb";
-        
+
         $contacts_column = (new siteMenuContactsT4BlockType())->getExampleBlockData();
         $contacts_column->data['column'] = "st-0-tb st-0-mb st-9 st-9-lp";
 
@@ -44,9 +44,9 @@ class siteMenuT4BlockType extends siteBlockType
 
         $column_props = array();
         $column_props[$this->elements['main']] = [
-            'padding-top' => "p-t-6", 
-            'padding-bottom' => "p-b-6", 
-            'padding-left' => "p-l-blc", 
+            'padding-top' => "p-t-6",
+            'padding-bottom' => "p-b-6",
+            'padding-left' => "p-l-blc",
             'padding-right' => "p-r-blc",
             'background' => [
                 'layers' => [
@@ -62,7 +62,7 @@ class siteMenuT4BlockType extends siteBlockType
             ],
         ];
         $column_props[$this->elements['wrapper']] = [
-            'flex-align-vertical' => "x-c", 
+            'flex-align-vertical' => "x-c",
             'max-width' => "cnt"
         ];
 
@@ -70,7 +70,7 @@ class siteMenuT4BlockType extends siteBlockType
             'block_props' => $column_props,
             'inline_props' => [
                 $this->elements['main'] => [
-                    'croll-margin-top' => [
+                    'scroll-margin-top' => [
                         'value' => '',
                         'unit' => 'px',
                         'id' => 'menut4',
@@ -78,7 +78,7 @@ class siteMenuT4BlockType extends siteBlockType
                 ],
             ],
             'wrapper_props' => [
-                'justify-align' => "y-j-cnt", 
+                'justify-align' => "y-j-cnt",
                 'flex-align-vertical' => "x-c"
                 ]
             ];
@@ -88,7 +88,7 @@ class siteMenuT4BlockType extends siteBlockType
         $result->data['id'][$this->elements['main']] = [
             'id' => 'menut4'
         ];
-       
+
         $app_template_prop = array();
         $app_template_prop['disabled'] = false;
         $app_template_prop['active'] = false;
@@ -198,54 +198,8 @@ class siteMenuT4BlockType extends siteBlockType
     public function getBurgerColumn(): siteBlockData {
         $hseq = $this->createSequence(true, 'no_complex', true);
 
-        $item1 = (new siteImageBlockType())->getExampleBlockData();
-        $item1->data = [
-            'image' => [
-                'color' => [
-                    'name' => 'Palette',
-                    'value' => 'tx-blc',
-                    'type' => 'palette'
-                ],
-                'fill' => 'removed',
-                'type' => 'svg',
-                'svg_html' => '<!-- Open icon (top), close icon (below, hidden on site) -->
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="white">
-                  <path d="M15.2914 1.56903L0.70099 1.56903C0.313844 1.56903 -3.61259e-08 1.88288 0 2.27002C3.61259e-08 2.65717 0.313844 2.97101 0.70099 2.97101L15.2914 2.97101C15.6786 2.97101 16 2.65717 16 2.27002C16 1.88287 15.6786 1.56903 15.2914 1.56903Z"></path>
-                  <path d="M15.2914 7.29901L0.70099 7.29902C0.313844 7.29902 -3.61259e-08 7.61286 0 8.00001C3.61259e-08 8.38715 0.313844 8.70099 0.70099 8.70099L15.2914 8.70099C15.6786 8.70099 16 8.38715 16 8C16 7.61285 15.6786 7.29901 15.2914 7.29901Z"></path>
-                  <path d="M15.2914 13.0286L0.70099 13.0286C0.313844 13.0286 -3.61259e-08 13.3424 0 13.7296C3.61259e-08 14.1167 0.313844 14.4305 0.70099 14.4305L15.2914 14.4305C15.6786 14.4305 16 14.1167 16 13.7296C16 13.3424 15.6786 13.0286 15.2914 13.0286Z"></path>
-                </svg>
-                <!-- Close icon (below, hidden on site, shown in editor) -->
-                <svg viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2.33952 1.3482L8 7.00848L13.6605 1.3482C13.9342 1.07444 14.3781 1.07444 14.6518 1.3482C14.9256 1.62195 14.9256 2.06579 14.6518 2.33955L8.99154 8.00003L14.6518 13.6605C14.9256 13.9343 14.9256 14.3781 14.6518 14.6519C14.3781 14.9256 13.9342 14.9256 13.6605 14.6519L8 8.99157L2.33952 14.6519C2.06576 14.9256 1.62192 14.9256 1.34817 14.6519C1.07441 14.3781 1.07441 13.9343 1.34817 13.6605L7.00845 8.00003L1.34817 2.33955C1.07441 2.06579 1.07441 1.62195 1.34817 1.3482C1.62192 1.07444 2.06576 1.07444 2.33952 1.3482Z"></path>
-                  </svg>',
-            ],
-            'block_props' => [
-                'visibility' => 'd-n-ds d-n-lp',
-                'margin-bottom' => "m-b-8-mb",
-                'picture-size' => "i-s",
-            ],
-        ];
+        $item1 = (new siteMenuButtonBlockType(['color' => 'white']))->getExampleBlockData();
 
-        /*$item2 = (new siteImageBlockType())->getExampleBlockData();
-        $item2->data = [
-            'image' => [
-                'color' => [
-                    'name' => 'Palette',
-                    'value' => 'tx-blc',
-                    'type' => 'palette'
-                ],
-                'fill' => 'removed',
-                'type' => 'svg',
-                'svg_html' => '<svg id="icn-cls" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2.33952 1.3482L8 7.00848L13.6605 1.3482C13.9342 1.07444 14.3781 1.07444 14.6518 1.3482C14.9256 1.62195 14.9256 2.06579 14.6518 2.33955L8.99154 8.00003L14.6518 13.6605C14.9256 13.9343 14.9256 14.3781 14.6518 14.6519C14.3781 14.9256 13.9342 14.9256 13.6605 14.6519L8 8.99157L2.33952 14.6519C2.06576 14.9256 1.62192 14.9256 1.34817 14.6519C1.07441 14.3781 1.07441 13.9343 1.34817 13.6605L7.00845 8.00003L1.34817 2.33955C1.07441 2.06579 1.07441 1.62195 1.34817 1.3482C1.62192 1.07444 2.06576 1.07444 2.33952 1.3482Z"></path>
-                  </svg>',
-            ],
-            'block_props' => [
-                'visibility' => 'd-n-ds d-n-lp',
-                'margin-bottom' => "m-b-8-mb",
-                'picture-size' => "i-s",
-            ],
-        ];*/
         $hseq->addChild($this->createRow([
             'block_props' => [
                 'padding-bottom' => "p-b-10",
@@ -324,7 +278,7 @@ class siteMenuT4BlockType extends siteBlockType
         $sub_column->data['id'] = $params['id'] ?? '';
 
         $vseq = reset($sub_column->children['']);
- 
+
          foreach ($content as $item) {
             $vseq->addChild($item);
         }

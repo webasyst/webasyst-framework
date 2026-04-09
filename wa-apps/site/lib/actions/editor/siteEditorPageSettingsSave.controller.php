@@ -38,14 +38,6 @@ class siteEditorPageSettingsSaveController extends waJsonController
             }
             $is_new = false;
         }
-        if ($is_new && !waLicensing::check('site')->hasPremiumLicense()) {
-            $this->errors[] = [
-                'field' => 'info[name]',
-                'description' => _w('The premium license is required to create block pages.'),
-                'code' => 'required',
-            ];
-            return;
-        }
 
         $old_url = ifset($page_data, 'url', '');
         $old_full_url = ifset($page_data, 'full_url', '');

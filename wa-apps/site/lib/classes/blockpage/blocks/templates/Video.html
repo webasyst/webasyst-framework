@@ -47,7 +47,7 @@
             updateBlockStyles($(this), data, block_id);
             base_data = data;
             if (data.video?.type === "code") {
-                $iframe_wrapper.html(SiteEditorInsideIframe.sanitizeHTML(data.html));
+                $iframe_wrapper.html($.wa.editor.api.sanitizeHTML(data.html));
             }
         }
     });
