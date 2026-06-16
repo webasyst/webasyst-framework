@@ -14,12 +14,48 @@ abstract class waAuthAdapter
         }
     }
 
-    public function getControls()
+    /** @since 4.1.0 */
+    protected function getControlsConfig()
     {
         return array(
             'app_id'     => 'App ID',
             'app_secret' => 'App Secret'
         );
+    }
+
+    /**
+     * @param array $values
+     * 
+     * Changed in 4.1.0: new field types are supported; $values param added.
+     */
+    public function getControls()
+    {
+        $config = $this->getControlsConfig();
+        $site_is_updated = false;
+        if (version_compare(wa()->getversion('site'), '3.5.2') >= 0) {
+            $site_is_updated = true;
+        }
+
+        if (!$site_is_updated) {
+            // Site below certain version does not support arbutrary field types
+            $config = array_filter($config, function($field) {
+                return is_string($field);
+            });
+        } else {
+            // render waHtmlControl
+            $values = ifempty(ref(func_get_arg(0)), []);
+            foreach ($config as $control_id => &$control) {
+                if (ifset($control, 'type', null) === 'waHtmlControl') {
+                    $adapter_id = $this->getId();
+                    $control['value'] = ifset($values, $control_id, '');
+                    $control['html'] = waHtmlControl::getControl($control['control_type'], "adapters[{$adapter_id}][{$control_id}]", $control);
+                    $control['type'] = 'html';
+                }
+            }
+            unset($field);
+        }
+
+        return $config;
     }
 
     public function getOption($name, $default = null)

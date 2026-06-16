@@ -5,7 +5,20 @@
  */
 class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOptions, waIPaymentImage, waIPaymentRefund, waIPaymentStatePolling, waIPaymentCapture, waIPaymentCancel
 {
-    /** Called by waPayment  */
+    public function supportedOperations()
+    {
+        return [
+            self::OPERATION_AUTH_CAPTURE,
+            self::OPERATION_AUTH_ONLY,
+            self::OPERATION_CHECK,
+            self::OPERATION_CAPTURE,
+            self::OPERATION_REFUND,
+            self::OPERATION_CANCEL,
+            self::OPERATION_CANCEL_PENDING,
+        ];
+    }
+
+    /** Called by waSystemPlugin */
     protected static function waPayPluginInfo()
     {
         $result = [];
@@ -813,6 +826,9 @@ EOF;
             'currency_id' => $order_data['currency'],
             'description' => $order_data['description'],
         ];
+        if (!empty($order_data['id_str'])) {
+            $request_data['number'] = $order_data['id_str'];
+        }
 
         $sales_channel = ifset($order_data, 'params', 'sales_channel', null);
         if ($this->app_id === 'shop' && $sales_channel) {

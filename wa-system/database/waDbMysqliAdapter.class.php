@@ -295,7 +295,11 @@ class waDbMysqliAdapter extends waDbAdapter
         }
 
         if (!$this->query($sql)) {
-            $this->exception();
+            try {
+                $this->exception();
+            } catch (Throwable $e) {
+                throw new waDbException('Unable to create table '.$table.': '.$e->getMessage(), $e->getCode(), $e);
+            }
         }
     }
 

@@ -370,6 +370,21 @@ class installerConfig extends waAppConfig
 
     public function loadLicenses()
     {
+        static $res = false;
+        if ($res !== false) {
+            return $res; // do not ever try to load licenses more than once per request
+        }
+
+        $res = null;
+        $licenses_data = json_decode(self::getAppSettingsModel()->get('installer', 'licenses_data', '{}'), true);
+        if (!empty($licenses_data['failed_timestamp'])) {
+            // Last attempt to fetch licenses failed. Wait before making a new atempt.
+            $delay_sec = 30 + 60 * (-1 + ifset($licenses_data, 'failed_attempt_count', 0));
+            if (time() < $licenses_data['failed_timestamp'] + $delay_sec) {
+                return $res;
+            }
+        }
+
         $cache = new waVarExportCache('licenses', self::LICENSE_CACHE_TTL, $this->getApplication());
         $cache_data = $cache->get();
         if (!$cache->isCached() || time() - ifempty($cache_data, 'timestamp', 0) >= self::LICENSE_CACHE_TTL) {
@@ -382,10 +397,13 @@ class installerConfig extends waAppConfig
                 ];
                 $cache->set($data);
                 self::getAppSettingsModel()->set('installer', 'licenses_data', json_encode($data));
+            } else {
+                $licenses_data['failed_timestamp'] = time();
+                $licenses_data['failed_attempt_count'] = 1 + ifset($licenses_data, 'failed_attempt_count', 0);
+                self::getAppSettingsModel()->set('installer', 'licenses_data', json_encode($licenses_data));
             }
-
-            return $res;
         }
+        return $res;
     }
 
     public function getLicensesUrl()

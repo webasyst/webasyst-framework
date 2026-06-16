@@ -13,7 +13,7 @@ class facebookAuth extends waOAuth2Adapter
         parent::__construct($options);
     }
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
             'app_id'     => _ws('Facebook app ID'),

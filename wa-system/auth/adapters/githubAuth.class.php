@@ -67,7 +67,7 @@ class githubAuth extends waOAuth2Adapter
         return [];
     }
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
             'app_id'     => _ws('Client ID'),

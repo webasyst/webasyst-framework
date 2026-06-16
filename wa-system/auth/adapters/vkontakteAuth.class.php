@@ -21,13 +21,13 @@ class vkontakteAuth extends waOAuth2Adapter
             'redirect_uri' => $this->getCallbackUrl(),
             'code_challenge' => $this->generateCodeChallenge(),
             'code_challenge_method' => 'S256',
-            'scope' => 'email',
+            'scope' => 'email,phone',
             'lang_id' => (wa()->getLocale() == 'ru_RU' ? '0' : '3'),
         ];
         return self::OAUTH_URL.'authorize?'.http_build_query($url_params);
     }
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return [
             'app_id' => _ws('VK app ID'),
@@ -86,7 +86,7 @@ class vkontakteAuth extends waOAuth2Adapter
                     $data['email'] = $response['email'];
                 }
                 if (!empty($response['phone'])) {
-                    $data['phone.home'] = $response['phone'];
+                    $data['phone'] = $response['phone'];
                 }
                 if (!empty($response['sex'])) {
                     $data['sex'] = $response['sex'] == 2 ? 'm' : 'f';

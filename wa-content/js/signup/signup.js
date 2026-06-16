@@ -589,11 +589,22 @@ var WaSignup = ( function($) {
         var that = this,
             $form = that.$form,
             data = $form.serializeArray(),
-            errors = {};
+            errors = {},
+            checked_checkboxes = {};
+
+        $form.find(':checkbox:checked').each(function() {
+            checked_checkboxes[$(this).attr('name')] = true;
+        });
+
         $.each(data, function (index, item) {
             var name = item.name,
                 value = $.trim(item.value || ''),
                 $field = that.getFormField(name);
+
+            if (checked_checkboxes[name]) {
+                return;
+            }
+
             if ($field.data('isRequired') && value.length <= 0) {
                 var msg = that.locale.required;
                 if (that.normalizeFieldId(name) === 'onetime_password') {

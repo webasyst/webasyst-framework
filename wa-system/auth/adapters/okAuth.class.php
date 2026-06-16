@@ -102,7 +102,7 @@ class okAuth extends waOAuth2Adapter
         return $sig;
     }
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
             'app_id' => _ws('Application ID'),

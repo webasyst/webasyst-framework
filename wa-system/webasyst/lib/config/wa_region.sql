@@ -34,7 +34,7 @@ INSERT IGNORE INTO wa_region (country_iso3, code, name, fav_sort, region_center)
 ('usa', 'NJ', 'New Jersey', null, 'Trenton'),
 ('usa', 'NM', 'New Mexico', null, 'Santa Fe'),
 ('usa', 'NY', 'New York', null, 'Albany'),
-('usa', 'NC', 'North Carolina', null, 'Rayleigh'),
+('usa', 'NC', 'North Carolina', null, 'Raleigh'),
 ('usa', 'ND', 'North Dakota', null, 'Bismarck'),
 ('usa', 'OH', 'Ohio', null, 'Columbus'),
 ('usa', 'OK', 'Oklahoma', null, 'Oklahoma City'),

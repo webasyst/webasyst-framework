@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2026-03-03 13:14+0300\n"
+"PO-Revision-Date: 2026-05-28 13:00+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -6358,7 +6358,7 @@ msgstr "Вы используете новую версию интерфейса
 msgid "https://support.webasyst.com"
 msgstr "https://support.webasyst.ru"
 
-msgid "Back to the classic UI"
+msgid "Back to the legacy UI"
 msgstr "Вернуться в старый интерфейс"
 
 msgid "Try it in both light and dark modes:"
@@ -6368,7 +6368,7 @@ msgid "You’ve enabled the new Webasyst 2 UI, but this app does not currently s
 msgstr "Вы включили режим нового интерфейса Webasyst 2, но это приложение его пока не поддерживает. Пожалуйста, свяжитесь с разработчиком приложения и узнайте, когда новый интерфейс станет доступен."
 
 msgid "New UI is not yet supported"
-msgstr "Новый интерфейс пока не поддерживается."
+msgstr "Новый интерфейс пока не поддерживается"
 
 msgid "Edit widgets"
 msgstr "Виджеты"
@@ -7462,7 +7462,7 @@ msgstr "Webasyst Pay будет отключен. Это может привес
 msgid "Pre-paid account credit may be permanently lost!"
 msgstr "Предоплаченный баланс аккаунта может быть безвозвратно потерян!"
 
-msgid "Did not connect Webasyst ID yet"
+msgid "Have not connected Webasyst ID yet"
 msgstr "Еще не подключили Webasyst ID"
 
 msgid "Connected to Webasyst ID"
@@ -8065,5 +8065,26 @@ msgstr "Оплатить сейчас"
 msgid "Select and set up the parameters of your account in the payment system which will handle payments and be used to generate payment QR codes and bank card payment links."
 msgstr "Выберите и настройте параметры аккаунта в платежной системе, которая будет обрабатывать платеж и отвечать за генерацию QR-кода для оплаты и формирование ссылки на оплату банковской картой."
 
-msgid "<b>Webasyst Pay is disabled, payments by this method are currently cannot be accepted.</b> Enable Webasyst services in the <em>Settings</em> app."
-msgstr "<b>Webasyst Pay отключен, платежи этим способом не принимаются.</b> Необходимо включить службы Webasyst в приложении «Настройки»."
+msgid "<b>Webasyst Pay is disabled, payments by this method are currently cannot be accepted.</b> Enable Webasyst services in the <a href=\"%s\" class=\"underline\">Settings</a> app and connect your Webasyst ID to sign in."
+msgstr "<b>Webasyst Pay отключен, платежи этим способом не принимаются.</b> Необходимо включить службы Webasyst в приложении «<a href=\"%s\" class=\"underline\">Настройки</a>» и подключить для входа свой Webasyst ID."
+
+msgid "You are in the newest UI mode with all the latest features and the top performance. Great to see you here!"
+msgstr "Отлично, вы в новом режиме интерфейса! Все новые возможности и развитие платформы — только здесь."
+
+msgid "not supported"
+msgstr "не поддерживается"
+
+msgid "This legacy UI is not supported since 2022"
+msgstr "Старый интерфейс не поддерживается с 2022 года"
+
+msgid "You are in the legacy UI mode, which has been deprecated. Switch to the newest UI mode to get the latest features and the top performance."
+msgstr "Вы находитесь в старом режиме интерфейса, который не поддерживается и не развивается. Все новые возможности появляются только в новом интерфейсе."
+
+msgid "Switch to the new UI"
+msgstr "Перейти на новый интерфейс"
+
+msgid "Customize"
+msgstr "Настроить"
+
+msgid "Usage settings"
+msgstr "Где используется"

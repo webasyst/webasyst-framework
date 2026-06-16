@@ -11,7 +11,7 @@ class linkedinAuth extends waOAuth2Adapter
     const API_URL = 'https://api.linkedin.com/v2/';
     const OAUTH_URL = 'https://www.linkedin.com/oauth/v2/';
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
             'app_id'     => _ws('Client ID'),

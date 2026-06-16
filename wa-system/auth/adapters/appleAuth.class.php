@@ -32,7 +32,7 @@ class appleAuth extends waOAuth2Adapter
     /**
      * @return array
      */
-    public function getControls()
+    public function getControlsConfig()
     {
         return [
             'client_id' => _ws('Client ID')

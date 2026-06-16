@@ -503,7 +503,7 @@ class waSystem
         }
     }
 
-    public function getAuthAdapters($domain = null)
+    public function getAuthAdapters($domain = null, $omnipresent_only = false)
     {
         $result = array();
         $config = $this->getAuthConfig($domain);
@@ -513,8 +513,15 @@ class waSystem
         if (!empty($config['adapters'])) {
             foreach ($config['adapters'] as $provider => $params) {
                 if ($params) {
+                    if ($omnipresent_only && empty($params['is_omnipresent'])) {
+                        continue;
+                    }
                     try {
                         $result[$provider] = $this->getAuth($provider, $params);
+                        if ($omnipresent_only && !$result[$provider] instanceof waiAuthAdapterOmnipresent) {
+                            unset($result[$provider]);
+                            continue;
+                        }
                     } catch (waException $e) {
                         // adapter does not work, skip it
                     }

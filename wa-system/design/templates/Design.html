@@ -868,7 +868,7 @@
         themeSelect(){
             const self = this;
 
-            self.$theme_list.on('click', "li:not([data-is-nav]) a", function (e, set_active_only) {
+            self.$theme_list.off('click.wa_theme_select', "li:not([data-is-nav]) a").on('click.wa_theme_select', "li:not([data-is-nav]) a", function (e, set_active_only) {
                 let $self = $(this),
                     href = $self.attr('href');
 

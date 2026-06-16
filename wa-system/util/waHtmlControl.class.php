@@ -1557,22 +1557,8 @@ HTML;
          * @var $callback callback|string
          */
         $callback = isset($params['callback']) ? $params['callback'] : null;
-        if ($callback) {
+        if ($callback && is_callable($callback)) {
             unset($params['callback']);
-            if (is_array($callback)) {
-                if (is_object($callback[0])) {
-                    if (!method_exists($callback[0], $callback[1])) {
-                        throw new waException("Method {$callback[1]} not exists at class ".get_class($callback[0]));
-                    }
-                } elseif (!class_exists($callback[0])) {
-                    throw new waException("Class {$callback[0]} not found");
-                }
-                //TODO check method exists
-            } else {
-                if (!function_exists($callback)) {
-                    throw new waException("Function {$callback} not found");
-                }
-            }
             return call_user_func_array($callback, array($name, $params));
         }
         return null;

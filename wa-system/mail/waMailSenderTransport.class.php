@@ -72,6 +72,7 @@ class waMailSenderTransport implements Swift_Transport
 
             'attachments' => [],
             'inline_attachments' => [],
+            'headers' => [],
         ];
 
         // Message attachments
@@ -111,6 +112,10 @@ class waMailSenderTransport implements Swift_Transport
                         $message_data['message_log_id'] = $value;
                     }
                     break;
+                case 'In-Reply-To':
+                case 'References':
+                    $message_data['headers'][$header->getFieldName()] = $header->getFieldBody();
+                    break;
             }
         }
 
@@ -145,7 +150,26 @@ class waMailSenderTransport implements Swift_Transport
             }
         }
 
-        $evt->setResult($successfully_sent_count);
+        // Real Message-ID from Mailer API (Swift's local id may differ); listeners read it in sendPerformed.
+        if ($successfully_sent_count > 0) {
+            $api_message_id = ifset($res, 'response', 'message_id', '');
+            if ($api_message_id !== '' && $api_message_id !== null) {
+                $api_message_id = trim((string)$api_message_id);
+                if ($api_message_id !== '') {
+                    try {
+                        $message->setId($api_message_id);
+                    } catch (Exception $e) {
+                        // Keep send result even if Message-ID cannot be applied to the MIME object
+                    }
+                }
+            }
+        }
+
+        if ($successfully_sent_count > 0) {
+            $evt->setResult(Swift_Events_SendEvent::RESULT_SUCCESS);
+        } else {
+            $evt->setResult(Swift_Events_SendEvent::RESULT_FAILED);
+        }
         $this->_eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         return $successfully_sent_count;
     }

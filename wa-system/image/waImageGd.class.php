@@ -322,7 +322,7 @@ class waImageGd extends waImage
                 $gd_watermark = $watermark_resized;
             }
 
-            imagecopymerge_alpha($this->image, $gd_watermark, $offset[0], $offset[1], 0, 0, $width, $height, $opacity * 100);
+            imagecopymerge_alpha($this->image, $gd_watermark, (int)$offset[0], (int)$offset[1], 0, 0, $width, $height, $opacity * 100);
             imagedestroy($gd_watermark);
 
         } else {
@@ -383,9 +383,9 @@ class waImageGd extends waImage
 
                     $color = imagecolorallocatealpha($this->image, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
                     if ($free_type) {
-                        imagefttext($this->image, $font_size, $rotation, $offset[0], $offset[1], $color, $font_file, $text);
+                        imagefttext($this->image, $font_size, $rotation, (int)$offset[0], (int)$offset[1], $color, $font_file, $text);
                     } else {
-                        imagettftext($this->image, $font_size, $rotation, $offset[0], $offset[1], $color, $font_file, $text);
+                        imagettftext($this->image, $font_size, $rotation, (int)$offset[0], (int)$offset[1], $color, $font_file, $text);
                     }
                 } else {
                     throw new waException(_ws("Can't read font file $font_file"));
@@ -404,10 +404,10 @@ class waImageGd extends waImage
                 }
                 $offset = $this->calcWatermarkOffset($width, $height, $align, $margin);
                 if ($rotation != 0) {
-                    imagestring_rotate($this->image, $font, $rotation, $offset[0], $offset[1], $text, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
+                    imagestring_rotate($this->image, $font, $rotation, (int)$offset[0], (int)$offset[1], $text, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
                 } else {
                     $color = imagecolorallocatealpha($this->image, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
-                    imagestring($this->image, $font, $offset[0], $offset[1], $text, $color);
+                    imagestring($this->image, $font, (int)$offset[0], (int)$offset[1], $text, $color);
                 }
             }
         }

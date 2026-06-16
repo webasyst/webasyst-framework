@@ -2378,7 +2378,9 @@ class waInstallerApps
         } catch (waNetTimeoutException $e) {
             // current endpoints zone is not valid or not accessable
             // try other endpoints zones
-            $zone_detect_result = installerHelper::getInstaller()->detectBestZone();
+            if (class_exists('installerHelper')) {
+                $zone_detect_result = installerHelper::getInstaller()->detectBestZone();
+            }
             if (!empty($zone_detect_result['is_zone_changed'])) {
                 $url = $get_url(...$params);
                 try {

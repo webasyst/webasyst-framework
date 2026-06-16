@@ -284,6 +284,22 @@ class waDomainAuthConfig extends waAuthConfig
 
     public function setAdapters($adapters)
     {
+        if (is_array($adapters)) {
+            foreach ($adapters as $adapter => &$params) {
+                try {
+                    if (is_array($params)) {
+                        if (wa()->getAuth($adapter, $params) instanceof waiAuthAdapterOmnipresent) {
+                            $params['is_omnipresent'] = true;
+                        } else {
+                            unset($params['is_omnipresent']);
+                        }
+                    }
+                } catch (Throwable $e) {
+                    unset($adapters[$adapter]);
+                }
+            }
+            unset($params);
+        }
         $this->setArrayValue('adapters', $adapters);
     }
 

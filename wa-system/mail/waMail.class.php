@@ -7,7 +7,7 @@ class waMail extends Swift_Mailer
     protected static $wa_config = array();
     private $wa_set_transport = false;
 
-    public function __construct(Swift_Transport $transport = null)
+    public function __construct(?Swift_Transport $transport = null)
     {
         if (!$transport) {
             $transport = Swift_MailTransport::newInstance();

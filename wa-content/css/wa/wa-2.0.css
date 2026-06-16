@@ -183,6 +183,7 @@ html {
     --timing-slowest:                        1.5s;
 
     --webasyst-ai-icon:                       url('../../img/wa-ai/webasyst-wand-ai-light.svg');
+    --webasyst-wand-icon:                     url('../../img/webasyst-wand-bold-black.svg');
 
 }
 
@@ -244,7 +245,7 @@ html[data-theme='dark'] {
     --text-color-strong:                      #bbc;
     --text-color-stronger:                    #dde;
     --text-color-strongest:                   #fff;
-    --text-color-hint:                        #445;
+    --text-color-hint:                        #667;
     --text-color-hint-strong:                 #667;
     --text-color-link:                        #fea;
     --text-color-link-hover:                  #f20;
@@ -325,6 +326,7 @@ html[data-theme='dark'] {
     --notification-background-blurred-color:  rgba(0, 0, 0, 0.85);
 
     --webasyst-ai-icon:                       url('../../img/wa-ai/webasyst-wand-ai-dark.svg');
+    --webasyst-wand-icon:                     url('../../img/webasyst-wand-bold-white.svg');
 
 }
 html[data-theme='dark'] img.dark-mode-inverted { filter: invert(100%) hue-rotate(180deg); mix-blend-mode: screen;}
@@ -1421,7 +1423,7 @@ input[type="button"]:not(.blue, .green, .yellow, .orange, .red, .purple, .pink, 
 .icon.bordered,
 .icon > .bordered { border: 1px solid var(--border-color-hard); }
 .icon.userpic { font-size: 1.25rem; vertical-align: -0.125em; }
-.icon.webasyst-magic-wand { width: 1.25em; height: 1.25em; background-image: url('../../img/webasyst-wand-bold.svg') !important; background-size: 100%; vertical-align: -0.25em; margin-right: 0.25em; }
+.icon.webasyst-magic-wand { width: 1.25em; height: 1.25em; background-image: var(--webasyst-wand-icon) !important; background-size: 100%; vertical-align: -0.25em; margin-right: 0.25em; }
 
 
 .icon.webasyst-magic-wand-ai-black { --webasyst-ai-icon-black-mask: url('../../img/wa-ai/webasyst-wand-ai-black.svg') no-repeat center / contain; background-color: currentColor; -webkit-mask: var(--webasyst-ai-icon-black-mask); mask: var(--webasyst-ai-icon-black-mask); }

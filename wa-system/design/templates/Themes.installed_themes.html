@@ -1,7 +1,48 @@
 {if !empty($app_themes)}
     {$_used_app_themes = []}
     <div class="s-installed-themes-section" id="js-installed-themes-section">
-        <div class="s-themes-list">
+        <table class="s-themes-list-table list bigdata" data-view="list" style="display: none;">
+            {foreach $sorted_routes as $r}
+                {$r.theme = $r.theme|default:'default'}
+                {$r.theme_mobile = $r.theme_mobile|default:'default'}
+
+                {* because rtrim removes repetitions *}
+                {if $r.url && $r.url|substr:-1 == "*"}
+                    {$r.url = $r.url|substr:0:-1}
+                {/if}
+
+                {if isset($app_themes[$r.theme])}
+                    {$_theme = $app_themes[$r.theme]}
+
+                    {$_name = $_theme->getName()}
+                    {$_cover_image = $_theme->getCover()}
+                    {if empty($_cover_image)}
+                        {$_cover_image = "`$wa_url`wa-content/img/design/themes/no-image.png"}
+                    {/if}
+
+                    {$_theme_id = $_theme->id}
+                    {$_used_app_themes[] = $_theme_id}
+                    {$_theme_url = "#/design/theme={$r.theme}&domain={$r._domain}&route={$r._id}&action=settings"}
+
+                    <tr class="s-theme-wrapper">
+                        <td class="custom-pl-2-mobile custom-pr-0-mobile valign-top" style="min-width: 32px;">
+                            <img src="{$_cover_image|escape}" alt="{$_name|escape}" style="width: 32px;height: 32px; border-radius: 2px;">
+                        </td>
+                        <td>
+                            <div class="s-name semibold break-all" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}">
+                                {waIdna::dec($r._domain)}{if !empty($r.url)}/{$r.url|escape}{/if}
+                            </div>
+                            <div class="s-status hint">{$_name|escape}</div>
+                        </td>
+                        <td class="custom-pr-2-mobile">
+                            <a class="button light-gray rounded nowrap smaller" href="{$_theme_url|escape}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}"><i class="fas fa-cog text-blue"></i> <span class="desktop-and-tablet-only">[s`Customize`]</span></a>
+                        </td>
+                    </tr>
+                {/if}
+            {/foreach}
+        </table>
+
+        <div class="s-themes-list"  data-view="grid" style="display: none;">
             {foreach $routes as $r}
                 {$r.theme = $r.theme|default:'default'}
                 {$r.theme_mobile = $r.theme_mobile|default:'default'}
@@ -40,6 +81,9 @@
                         <div class="s-statuses">
                             <span class="s-status gray">{$_name|escape}</span>
                         </div>
+                        <div class="custom-mt-8">
+                            <a class="button light-gray rounded smaller" href="{$_theme_url|escape}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}"><i class="fas fa-cog text-blue"></i> [s`Customize`]</a>
+                        </div>
                     </div>
                 {/if}
 
@@ -71,6 +115,9 @@
                         </div>
                         <div class="s-statuses">
                             <span class="s-status gray">{$_name|escape}</span>
+                        </div>
+                        <div class="custom-mt-8">
+                            <a class="button light-gray rounded smaller" href="{$_theme_url|escape}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}"><i class="fas fa-cog text-blue"></i> [s`Customize`]</a>
                         </div>
                     </div>
                 {/if}
@@ -108,13 +155,36 @@
                             <span class="s-status gray">[`Not in use`]</span>
                         {/if}
                     </div>
+                    <div class="custom-mt-8">
+                        <a class="button light-gray rounded smaller" href="{$_theme_url|escape}" title="{sprintf('[s`Configure %s`]', waIdna::dec($r._domain)|cat:'/'|cat:$r.url)}"><i class="fas fa-cog text-light-gray"></i> [s`Settings`]</a>
+                    </div>
                 </div>
             {/foreach}
         </div>
 
+        {capture assign="_toggle_list_view"}
+        <div class="toggle rounded" id="toggle-list-view">
+            <span data-id="grid" class="selected">
+                <svg width="14" height="14" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.99998 2.3999H13.8C14.1313 2.3999 14.4 2.66853 14.4 2.9999V6.9999C14.4 7.33128 14.1313 7.5999 13.8 7.5999H8.99998C8.6686 7.5999 8.39998 7.33128 8.39998 6.9999V2.9999C8.39998 2.66853 8.6686 2.3999 8.99998 2.3999ZM6.99998 2.3999H2.19998C1.8686 2.3999 1.59998 2.66853 1.59998 2.9999V6.9999C1.59998 7.33128 1.8686 7.5999 2.19998 7.5999H6.99998C7.33135 7.5999 7.59998 7.33128 7.59998 6.9999V2.9999C7.59998 2.66853 7.33135 2.3999 6.99998 2.3999ZM1.59998 8.9999V12.9999C1.59998 13.3313 1.8686 13.5999 2.19998 13.5999H6.99998C7.33135 13.5999 7.59998 13.3313 7.59998 12.9999V8.9999C7.59998 8.66853 7.33135 8.3999 6.99998 8.3999H2.19998C1.8686 8.3999 1.59998 8.66853 1.59998 8.9999ZM8.99998 13.5999H13.8C14.1313 13.5999 14.4 13.3313 14.4 12.9999V8.9999C14.4 8.66853 14.1313 8.3999 13.8 8.3999H8.99998C8.6686 8.3999 8.39998 8.66853 8.39998 8.9999V12.9999C8.39998 13.3313 8.6686 13.5999 8.99998 13.5999Z" fill="currentColor" />
+                </svg>
+            </span>
+            <span data-id="list">
+                <svg width="14" height="14" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 2.5C2.44772 2.5 2 2.94772 2 3.5C2 4.05228 2.44772 4.5 3 4.5H13C13.5523 4.5 14 4.05228 14 3.5C14 2.94772 13.5523 2.5 13 2.5H3Z" fill="currentColor" />
+                    <path d="M3 8.5C2.44772 8.5 2 8.94772 2 9.5C2 10.0523 2.44772 10.5 3 10.5H13C13.5523 10.5 14 10.0523 14 9.5C14 8.94772 13.5523 8.5 13 8.5H3Z" fill="currentColor" />
+                    <path d="M2 6.5C2 5.94772 2.44772 5.5 3 5.5H13C13.5523 5.5 14 5.94772 14 6.5C14 7.05228 13.5523 7.5 13 7.5H3C2.44772 7.5 2 7.05228 2 6.5Z" fill="currentColor" />
+                    <path d="M3 11.5C2.44772 11.5 2 11.9477 2 12.5C2 13.0523 2.44772 13.5 3 13.5H13C13.5523 13.5 14 13.0523 14 12.5C14 11.9477 13.5523 11.5 13 11.5H3Z" fill="currentColor" />
+                </svg>
+            </span>
+        </div>
+        {/capture}
+
         <script>
             ( function($) {
-                $("#js-installed-themes-section").on("click", "a", function(event) {
+                const $wrapper = $("#js-installed-themes-section");
+
+                $wrapper.on("click", "a", function(event) {
                     event.stopPropagation();
                     let $theme = $(this).closest(".s-theme-wrapper");
 
@@ -199,6 +269,32 @@
                             })
                         }
                     });
+                });
+
+                $('#wa-design-container .js-theme-upload-link').before({$_toggle_list_view|json_encode});
+
+                const view_storage_key = 'wa_design_storefronts_view';
+                const setView = (view) => {
+                    if (!view || !['grid', 'list'].includes(view)) {
+                        view = 'grid';
+                    }
+                    const $container = $wrapper.find('[data-view]');
+                    $container.hide();
+                    $container.filter('[data-view="'+view+'"]').show();
+                    localStorage.setItem(view_storage_key, view);
+                };
+
+                const initial_view = localStorage.getItem(view_storage_key);
+                setView(initial_view);
+
+                $('#toggle-list-view').waToggle({
+                    ready(instance) {
+                        instance.$wrapper.find('[data-id="'+initial_view+'"]').trigger('click');
+                    },
+                    change(event, target, instance) {
+                        const view = instance.$active.data('id');
+                        setView(view);
+                    }
                 });
 
                 async function postData(url, data) {

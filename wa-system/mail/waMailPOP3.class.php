@@ -97,8 +97,12 @@ class waMailPOP3
         }
 
         if ($this->handler) {
+            $this->setStreamReadTimeout();
             // read welcome
-            $this->read();
+            $welcome = $this->read();
+            if ($welcome === false || $welcome === '') {
+                throw new waException('POP3 read failed from '.$this->server.' (welcome): '.$this->explainReadFailure());
+            }
             // auth
             $this->auth();
         } else {
@@ -124,6 +128,41 @@ class waMailPOP3
         }
     }
 
+    /**
+     * Applies stream read timeout (separate from connect timeout). Large RETR bodies need a generous limit.
+     * Option read_timeout: seconds, or 0 to skip (PHP default_socket_timeout). Default: max(120, timeout).
+     */
+    protected function setStreamReadTimeout()
+    {
+        $read_timeout = $this->getOption('read_timeout');
+        if ($read_timeout === null) {
+            $read_timeout = max(120, (int) $this->getOption('timeout', 10));
+        } else {
+            $read_timeout = (int) $read_timeout;
+        }
+        if ($read_timeout > 0) {
+            stream_set_timeout($this->handler, $read_timeout, 0);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function explainReadFailure()
+    {
+        if (!$this->handler) {
+            return 'no connection';
+        }
+        $meta = @stream_get_meta_data($this->handler);
+        if (!empty($meta['timed_out'])) {
+            return 'read timed out';
+        }
+        if (@feof($this->handler)) {
+            return 'connection closed';
+        }
+        return 'no data received';
+    }
+
     protected function auth()
     {
         $this->exec("USER ".$this->user);
@@ -141,6 +180,9 @@ class waMailPOP3
             return "";
         }
         $data = $this->read();
+        if ($data === false || $data === '') {
+            throw new waException('POP3 read failed from '.$this->server.' ('.$command.'): '.$this->explainReadFailure());
+        }
         if (stripos($data, '+OK') === 0) {
             return trim(substr($data, 3));
         } elseif (stripos($data, '-ERR') === 0){
@@ -179,7 +221,14 @@ class waMailPOP3
     {
         $this->exec("UIDL");
         $result = array();
-        while(rtrim($data = $this->read()) != '.') {
+        while (true) {
+            $data = $this->read();
+            if ($data === false || $data === '') {
+                throw new waException('POP3 read failed from '.$this->server.' (UIDL body): '.$this->explainReadFailure());
+            }
+            if (rtrim($data) == '.') {
+                break;
+            }
             if (stripos($data, '+OK') === 0) {
                 continue;
             }
@@ -199,7 +248,14 @@ class waMailPOP3
         } else {
             $result = '';
         }
-        while(rtrim($data = $this->read()) != '.') {
+        while (true) {
+            $data = $this->read();
+            if ($data === false || $data === '') {
+                throw new waException('POP3 read failed from '.$this->server.' (RETR body): '.$this->explainReadFailure());
+            }
+            if (rtrim($data) == '.') {
+                break;
+            }
             if ($file) {
                 fwrite($fh, $data);
             } else {

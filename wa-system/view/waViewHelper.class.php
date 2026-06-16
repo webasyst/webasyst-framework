@@ -326,7 +326,14 @@ HTML;
             foreach ($event_result as $_result) {
                 $html .= $_result;
             }
-            unset($_result);           
+            unset($_result);
+
+            if (!wa()->getUser()->isAuth()) {
+                $adapters = wa()->getAuthAdapters(null, true);
+                foreach ($adapters as $adapter) {
+                    $html .= $adapter->renderOmnipresentWidget();
+                }
+            }
         }
 
         return $html;
@@ -545,7 +552,7 @@ HTML;
             $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-2.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css">
             <script src="'.wa()->getRootUrl().'wa-content/js/jquery-wa/wa.switch-mode.js?v'.$this->version(true).'"></script>
     <script defer src="'.wa()->getRootUrl().'wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0">';
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0, viewport-fit=cover">';
 
             // no referrer for backend urls
             $css .= '<meta name="referrer" content="origin-when-cross-origin">';
@@ -1285,7 +1292,7 @@ HTML;
             }
 
             $html = $form->render($data, $errors);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             waLog::log($e->getMessage().PHP_EOL.$e->getTraceAsString());
             $html = '';
         }

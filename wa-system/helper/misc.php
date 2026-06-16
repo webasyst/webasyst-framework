@@ -439,10 +439,11 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     foreach($keys as $key) {
         if (is_array($value)) {
             $escaped_key = wa_dump_helper($key, ref([]), $cli);
-        } else if (!$cli) {
-            $escaped_key = htmlspecialchars($key, $htmlspecialchars_mode, 'utf-8');
         } else {
-            $escaped_key = $key;
+            $escaped_key = str_replace("\0", '\\0', $key);
+            if (!$cli) {
+                $escaped_key = htmlspecialchars($escaped_key, $htmlspecialchars_mode, 'utf-8');
+            }
         }
         $str .= $br."  ";
         if (empty($dont_show_keys)) {

@@ -26,6 +26,11 @@ class waContact implements ArrayAccess
 
     protected $settings = null;
 
+    /**
+     * @param int|string|array{id: int} $id
+     * @param array $options
+     * @throws waException
+     */
     public function __construct($id = null, $options = array())
     {
         foreach ($options as $name => $value) {

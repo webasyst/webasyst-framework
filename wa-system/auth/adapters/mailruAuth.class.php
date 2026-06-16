@@ -11,7 +11,7 @@ class mailruAuth extends waOAuth2Adapter
 {
     protected $check_state = true;
     
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
             'app_id' => 'ID',

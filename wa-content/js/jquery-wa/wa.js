@@ -3325,7 +3325,7 @@
             }
 
             // Ignore 502 error in background process
-            if (xhr.status === 502 && exception === 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && settings.data.indexOf('background_process') >= 0)) {
+            if (xhr.status === 502 && exception === 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data?.indexOf && settings.data.indexOf('background_process') >= 0)) {
                 console && console.log && console.log('Notice: XHR failed on load: '+ settings.url);
                 return true;
             }
@@ -3366,7 +3366,7 @@
 
     if (!window.wa_skip_csrf_prefilter) {
         $.ajaxPrefilter(function (settings, originalSettings, xhr) {
-            if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST' || (settings.contentType && settings.contentType.substr(0, 33) !== 'application/x-www-form-urlencoded')) {
+            if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST') {
                 return;
             }
 
@@ -3378,11 +3378,17 @@
             var csrf = decodeURIComponent(matches[1]);
             if (!settings.data && settings.data !== 0) settings.data = '';
 
+            xhr.setRequestHeader('X-CSRF-TOKEN', csrf);
+
+            if (settings.contentType && settings.contentType.substr(0, 33) !== 'application/x-www-form-urlencoded') {
+                return;
+            }
+
             if (typeof(settings.data) === 'string') {
-                if (settings.data.indexOf('_csrf=') === -1) {
-                    settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
-                    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                }
+                //if (settings.data.indexOf('_csrf=') === -1) {
+                //    settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
+                //    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                //}
             } else if (typeof(settings.data) === 'object') {
                 if (window.FormData && settings.data instanceof window.FormData) {
                     if (typeof settings.data.set === "function") {

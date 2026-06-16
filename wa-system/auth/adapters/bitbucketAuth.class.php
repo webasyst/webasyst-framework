@@ -68,7 +68,7 @@ class bitbucketAuth extends waOAuth2Adapter
         return 'Bitbucket';
     }
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
             'app_id'     => _ws('Key'),

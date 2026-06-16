@@ -158,10 +158,11 @@ class waDispatch
 
         // Check CSRF protection token if current active app enabled it
         if ($wa_app->getConfig()->getInfo('csrf') && waRequest::method() == 'post') {
-            if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
+            if (waRequest::post('_csrf') != waRequest::cookie('_csrf') && waRequest::server('HTTP_X_CSRF_TOKEN') != waRequest::cookie('_csrf')) {
+                header('wa-csrf-protection: 1');
                 $csrf_exception_message = _ws('Anti-CSRF protection.');
 
-                if (!strlen((string)waRequest::post('_csrf'))) {
+                if (!strlen((string)waRequest::post('_csrf')) && !waRequest::server('HTTP_X_CSRF_TOKEN')) {
                     $csrf_exception_message .= "\n" . _ws('This may be caused by a server error, or by a limitation on the allowed number of POST variables or their values size. Try to increase the values of “max_input_vars” and “post_max_size” parameters in PHP configuration or other similar parameters in you web server configuration.');
                 }
 

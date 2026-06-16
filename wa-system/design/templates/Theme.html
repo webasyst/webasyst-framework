@@ -221,12 +221,12 @@
         <div class="wa-theme-name-section custom-mb-24">
 
             {if $has_theme_usage}
-                <a id="theme-start-using" href="#" class="js-theme-start-using button green small">[s`Usage`]</a>
+                <a id="theme-start-using" href="#" class="js-theme-start-using button green">[s`Usage settings`]</a>
             {elseif !empty($show_theme_start_using) && !$_is_trial}
-                <a id="theme-start-using" href="#" class="js-theme-start-using button green small">[s`Start using`]</a>
+                <a id="theme-start-using" href="#" class="js-theme-start-using button green">[s`Start using`]</a>
             {/if}
             {if !empty($preview_url)}
-                <a class="wa-theme-preview button dark-gray nowrap small" style="display:none;" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">
+                <a class="wa-theme-preview button dark-gray nowrap" style="display:none;" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">
                     {if $has_theme_usage}[s`View your site`]{else}[s`Preview`]{/if}
                     <i class="fas fa-external-link-alt fa-xs custom-ml-4"></i>
                 </a>
@@ -234,7 +234,7 @@
 
             {* Theme actions *}
             <div class="dropdown js-theme-actions-dropdown custom-mr-8">
-                <button class="dropdown-toggle button small outlined light-1 {if $wa->isMobile()} full-width{/if}" type="button">[s`Actions`]</button>
+                <button class="dropdown-toggle button outlined light-1 {if $wa->isMobile()} full-width{/if}" type="button">[s`Actions`]</button>
                 <div class="dropdown-body dd-long dd-wide">
                     <ul class="menu">
                         {if !$_is_trial}
@@ -315,15 +315,26 @@
                             {/if}
 
                         {/if}
-                        <li>
-                            <a class="js-theme-delete{if $theme.system} disabled{/if}" href="#" data-confirm="[s`This will permanently delete theme without the ability to recover.`]">
-                                <i class="fas fa-trash-alt text-red"></i>
-                                <span>
+                        {if $theme.system}
+                            <li class="disabled">
+                                <div class="item">
+                                    <i class="fas fa-trash-alt text-red"></i>
+                                    <span>
                                     [s`Delete theme`]
-                                    {if $theme.system}<span class="hint flexbox">[s`Default theme cannot be deleted`]</span>{/if}
+                                    <span class="hint flexbox">[s`Default theme cannot be deleted`]</span>
                                 </span>
-                            </a>
-                        </li>
+                                </div>
+                            </li>
+                        {else}
+                            <li>
+                                <a class="js-theme-delete" href="#" data-confirm="[s`This will permanently delete theme without the ability to recover.`]">
+                                    <i class="fas fa-trash-alt text-red"></i>
+                                    <span>
+                                        [s`Delete theme`]
+                                    </span>
+                                </a>
+                            </li>
+                        {/if}
                     </ul>
                 </div>
             </div>
@@ -333,7 +344,7 @@
                 <div class="search-setting-wrapper">
                     <div class="state-with-inner-icon left width-100">
                         <span class="icon"><i class="fas fa-search"></i></span>
-                        <input type="search" class="js-search-setting width-100 small" autocomplete="off" placeholder="[s`Find setting`]" />
+                        <input type="search" class="js-search-setting width-100" autocomplete="off" placeholder="[s`Find setting`]" />
                     </div>
                 </div>
             {/if}
@@ -666,7 +677,7 @@
                     {if !empty($theme_route)}
                         <ul class="menu custom-mb-0">
                             <li>
-                                <a href="#/design/theme={$theme.id|escape}&domain={$theme_route._domain}&route={$theme_route._id}&action=settings" class="js-theme-settings-link">
+                                <a href="{$design_url}theme={$theme.id|escape}&domain={$theme_route._domain}&route={$theme_route._id}&action=settings" class="js-theme-settings-link">
                                     <i class="fas fa-cog"></i>
                                     <span>{waIdna::dec($theme_route._url_title)|default:'[`Settings`]'|escape}</span>
                                 </a>
@@ -824,7 +835,7 @@
         if(!$theme_settings_section.data('loaded')) {
             $theme_settings_section.data('loaded', true).html($theme_settings_list.html());
         }else{
-           $theme_settings_list.remove();
+            $theme_settings_list.remove();
         }
         $theme_settings_section.data('loaded', true).html($theme_settings_list.html());
 

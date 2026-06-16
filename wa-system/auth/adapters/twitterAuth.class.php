@@ -8,7 +8,7 @@ class twitterAuth extends waAuthAdapter
     protected $oauth_token;
     protected $oauth_token_secret;
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
             'app_id'     => 'API Key',

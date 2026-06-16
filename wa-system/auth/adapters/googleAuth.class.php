@@ -8,7 +8,7 @@ class googleAuth extends waOAuth2Adapter
 
     protected $check_state = true;
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
             'app_id'     => _ws('Google app ID'),

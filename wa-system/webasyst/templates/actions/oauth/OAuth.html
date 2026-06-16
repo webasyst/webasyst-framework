@@ -1,7 +1,12 @@
 <script type="text/javascript">
     //document.domain = document.domain;
     if (window.opener) {
-        window.opener.location.reload();
-        self.close();
-    };
+        try {
+            window.opener.location.reload();
+            self.close();
+        } catch (e) {
+            window.opener.parent.location.reload();
+            self.close();
+        }
+    }
 </script>

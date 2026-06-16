@@ -9,7 +9,7 @@
         </div>
     {/if}
 
-    <iframe class="i-store-frame js-store-frame" frameborder="0" width="100%" height="0" marginheight="0" marginwidth="0" scrolling="no"></iframe>
+    <iframe class="i-store-frame js-store-frame" frameborder="0" width="100%" height="0" marginheight="0" marginwidth="0" scrolling="no" onload="document.querySelector('.js-loading-wrapper-dbl')?.remove();"></iframe>
 
     {include file="./LaunchStore.inc.html" inline}
 

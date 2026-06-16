@@ -419,7 +419,13 @@ class installerHelper
                 $config->loadLicenses();
                 $cache = new waVarExportCache('licenses', installerConfig::LICENSE_CACHE_TTL, 'installer');
                 $cache_data = $cache->get();
+                $is_cached = $cache->isCached();
             } catch (Exception $e) {
+                $cache_data = null;
+            }
+
+            // Failed to fetch data from WA API?
+            if (empty($is_cached)) {
                 // Get the last successfully saved licenses data
                 $app_settings_model = new waAppSettingsModel();
                 $cache_data = json_decode($app_settings_model->get('installer', 'licenses_data', '{}'), true);
@@ -436,7 +442,7 @@ class installerHelper
                         $fall_counter = [];
                     }
                     if (ifset($fall_counter, 'count', 0) < installerConfig::LICENSE_FALL_LIMIT 
-                        || $now_ts - $cache_data['timestamp'] <  installerConfig::LICENSE_LONG_CACHE_TTL
+                        || $now_ts - $cache_data['timestamp'] < installerConfig::LICENSE_LONG_CACHE_TTL
                     ) {
                         // Count the fall
                         $app_settings_model->set('installer', 'licenses_fall_counter', json_encode([

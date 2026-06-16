@@ -236,6 +236,17 @@ class waOrder implements ArrayAccess
         return $this->offsetSet($name, $value);
     }
 
+    public function __isset(string $name): bool
+    {
+        if (isset($this->alias[$name])) {
+            $name = $this->alias[$name];
+        }
+        if (isset($this->data[$name])) {
+            return true;
+        }
+        return $this->offsetExists($name);
+    }
+
     /**
      * var_dump handler
      * @return array
@@ -286,8 +297,10 @@ class waOrder implements ArrayAccess
         if (isset($this->alias[$offset])) {
             $offset = $this->alias[$offset];
         }
-        return isset($this->data[$offset]);
-
+        if (array_key_exists($offset, $this->data)) {
+            return true;
+        }
+        return !!$this->methodName($offset) || substr($offset, 0, 8) === 'contact_';
     }
 
     /**

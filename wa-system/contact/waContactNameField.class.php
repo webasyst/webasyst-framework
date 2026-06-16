@@ -50,7 +50,7 @@ class waContactNameField extends waContactStringField
         return $this->format($name, $format);
     }
 
-    public function prepareSave($value, waContact $contact = null) {
+    public function prepareSave($value, ?waContact $contact = null) {
 
         if (!$contact) {
             return $value;
@@ -102,6 +102,7 @@ class waContactNameField extends waContactStringField
 
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
+        $value = (string)$value;
         $value = preg_replace('~\s+~u', ' ', trim($value));
 
         if ($contact['name'] == $value) {

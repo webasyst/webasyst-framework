@@ -664,7 +664,7 @@ class waRequest
         }
         $last = strtolower($str[strlen($str) - 1]);
         if (wa_is_int($last)) {
-            return $val;
+            return (int) $val;
         }
         $val = @ (float) substr($val, 0, -1);
         switch ($last) {

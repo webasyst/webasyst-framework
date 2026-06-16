@@ -1321,7 +1321,7 @@ HTACCESS;
                 'value'        => '',
                 'group'        => '',
                 'level'        => 1,
-                'name'         => _ws('General settings'),
+                'name'         => _ws('Theme settings'),
                 'icon'         => 'fas fa-sliders-h',
             ));
         }
@@ -1459,8 +1459,20 @@ HTACCESS;
 
         $this->setTemplate('Themes.html', true);
 
+        $routes = $this->getRoutes();
+
+        $sorted_routes = array_map(function ($route) {
+            $route['_url_title'] = waIdna::dec($route['_url_title']);
+            return $route;
+        }, $routes);
+
+        uasort($sorted_routes, function ($a, $b) {
+            return $a['_url_title'] <=> $b['_url_title'];
+        });
+
         $this->display(array(
-            'routes'          => $this->getRoutes(),
+            'routes'          => $routes,
+            'sorted_routes'   => $sorted_routes,
             'domains'         => $all_domains,
             'design_url'      => $this->design_url,
             'themes_url'      => $this->themes_url,
