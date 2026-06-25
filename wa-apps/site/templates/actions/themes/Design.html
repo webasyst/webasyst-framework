@@ -401,11 +401,6 @@
                 if (current_menu_id) {
                     $theme_settings_section.find('a[data-divider-id='+current_menu_id+']').trigger('click');
                 }
-                // TODO: temporary workaround
-                const $settings_link = $('.js-theme-settings-link');
-                if ($settings_link.length) {
-                    $settings_link.attr('href', $settings_link.attr('href').replace('#/design/', '#/themes/'));
-                }
             });
 
             /**

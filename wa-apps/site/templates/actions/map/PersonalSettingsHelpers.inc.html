@@ -215,7 +215,18 @@
         </div>
     </div>
     <div class="s-settings-wrapper js-settings-wrapper custom-mt-16" style="display: none;">
-        <div class="s-small">[`Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href="https://support.webasyst.com/5556/third-party-auth-setup/" target="_blank">Setup instructions <i class="icon size-10 fas fa-external-link-alt new-window"></i></a>`]</div>
+        <div class="s-small">{sprintf_wp(
+            'Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Google or Facebook. %s',
+            sprintf(
+                '<a %s>%s %s</a>',
+                sprintf(
+                    'href="%s" target="_blank"',
+                    _w('https://support.webasyst.com/5556/third-party-auth-setup/')
+                ),
+                _w('Setup instructions'),
+                '<i class="icon size-10 fas fa-external-link-alt new-window"></i>'
+            )
+        )}</div>
         <div class="">
             <ul class="chips flexbox vertical space-12">
                 {foreach $auth_adapters as $adapter_id => $adapter}
@@ -233,15 +244,27 @@
                             {$adapter->getName()}
                         </label>
                         <div class="s-adapter-controls js-adapter-controls"{if empty($auth_config['adapters'][$adapter_id])} style="display:none"{/if}>
-                            {foreach $adapter->getControls() as $control_id => $control_name}
-                                <div class="field custom-ml-24 custom-mt-8">
-                                    <div class="name social-name">
-                                        <span class="">{$control_name}</span>
+                            {foreach $adapter->getControls(ifset($auth_config, 'adapters', $adapter_id, [])) as $control_id => $control}
+                                {if ifset($control, 'type', '') === 'html'}
+                                    <div class="field custom-ml-24 custom-mt-8">
+                                        <div class="name social-name">
+                                            <span class="">{$control.name}</span>
+                                        </div>
+                                        <div class="value">
+                                            {$control.html}
+                                        </div>
                                     </div>
-                                    <div class="value">
-                                        <input class="long small" type="text" name="adapters[{$adapter_id}][{$control_id}]" value="{if !empty($auth_config['adapters'][$adapter_id][$control_id])}{$auth_config['adapters'][$adapter_id][$control_id]}{/if}">
+                                {else}
+                                    {* Legacy <input type="text"> *}
+                                    <div class="field custom-ml-24 custom-mt-8">
+                                        <div class="name social-name">
+                                            <span class="">{$control}</span>
+                                        </div>
+                                        <div class="value">
+                                            <input class="long small" type="text" name="adapters[{$adapter_id}][{$control_id}]" value="{if !empty($auth_config['adapters'][$adapter_id][$control_id])}{$auth_config['adapters'][$adapter_id][$control_id]}{/if}">
+                                        </div>
                                     </div>
-                                </div>
+                                {/if}
                             {/foreach}
                         </div>
                     </li>

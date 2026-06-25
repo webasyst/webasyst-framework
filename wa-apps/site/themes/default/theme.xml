@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="26.0.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="26.1.0">
   <name locale="en_US">Webasyst 2026</name>
   <name locale="ru_RU">Webasyst 2026</name>
   <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -99,7 +99,7 @@
       <name locale="ru_RU">Семейство шрифтов</name>
       <name locale="en_US">Font family</name>
       <options>
-        <option value="">
+        <option value="Rubik">
           <name locale="ru_RU">Rubik (Google Fonts)</name>
           <name locale="en_US">Rubik (Google Fonts)</name>
         </option>
@@ -139,7 +139,7 @@
           <name locale="ru_RU">Nunito (Google Fonts)</name>
           <name locale="en_US">Nunito (Google Fonts)</name>
         </option>
-        <option value="System">
+        <option value="">
           <name locale="ru_RU">Системный шрифт</name>
           <name locale="en_US">System font</name>
         </option>
@@ -181,7 +181,7 @@
       </options>
     </setting>
     <setting var="border_radius" control_type="text">
-      <value>25px</value>
+      <value>8px</value>
       <name locale="ru_RU">Скругление углов элементов</name>
       <name locale="en_US">Element border radius</name>
       <description locale="ru_RU">Введенное значение будет использовано для всех элементов сайта</description>
@@ -213,7 +213,7 @@
       </options>
     </setting>
     <setting var="color_accent" control_type="color_select">
-      <value>#A538DC</value>
+      <value>#000000</value>
       <name locale="ru_RU">Акцентный цвет</name>
       <name locale="en_US">Accent color</name>
       <description locale="ru_RU"></description>
@@ -469,7 +469,7 @@
       <name locale="en_US">Subheader custom image</name>
     </setting>
     <setting var="use_shop_schedule" control_type="checkbox">
-      <value>1</value>
+      <value>0</value>
       <name locale="ru_RU">Показывать в верхнем меню график работы магазина из настроек Shop-Script</name>
       <name locale="en_US">Show online store’s working schedule from Shop-Script settings in the top menu</name>
       <description locale="ru_RU">При включении игнорируется настройка «Сокращенный график работы».</description>
@@ -494,35 +494,29 @@
       <name locale="en_US">Footer</name>
       <name locale="ru_RU">«Подвал» сайта</name>
     </setting>
-    <setting var="footer_links" control_type="checkbox">
-      <value>1</value>
-      <name locale="ru_RU">Ссылки в «подвале» сайта</name>
-      <name locale="en_US">Footer links</name>
-      <description locale="ru_RU">В подвале будут показаны ссылки на ваши страницы в соцсетях, а также ссылки на основные разделы вашего сайта (разделы автоматически определяются набором установленных приложений Webasyst). При необходимости отредактировать ссылки в подвале сайта вы можете в шаблоне дизайна index.html в блоке &amp;lt;!-- FOOTER --&amp;gt;.</description>
-      <description locale="en_US">Enable this option to display links to your company’s social network resources and links to core site sections (according to Webasyst apps installed in your account). When needed, edit footer links in the index.html template file under the &amp;lt;!-- FOOTER --&amp;gt; section.</description>
-    </setting>
     <setting var="footer_note" control_type="text">
-      <value locale="en_US">Delivering awesomeness since 2015. All rights reserved.</value>
+      <value locale="en_US">Help us by linking back to the source whenever you share something from here.</value>
       <value locale="ru_RU">При использовании материалов с сайта обязательно указание прямой ссылки на источник.</value>
-      <name locale="en_US">Footer custom text note</name>
-      <name locale="ru_RU">Дополнительный текст в «подвале» сайта</name>
-      <description locale="ru_RU">Дополнительная подсказка посетителям вашего сайта (и поисковым системам).</description>
-      <description locale="en_US">Add a disclaimer or a hint to your site visitors (and search engines too).</description>
+      <name locale="en_US">Footer custom text</name>
+      <name locale="ru_RU">Текст в подвале сайта</name>
+      <description locale="ru_RU">Текст будет добавлен на каждую страницу сайта и может быть полезен для поискового продвижения.</description>
+      <description locale="en_US">This custom text will be embedded into the footer of every page on your site. May be useful for search engine optimization.</description>
     </setting>
     <setting var="footer_notice" control_type="text">
-      <value/>
-      <name locale="en_US">Footer notice</name>
-      <name locale="ru_RU">Уведомление в подвале сайта</name>
+      <description locale="ru_RU">Например, физический адрес, ИНН, ОГРН, реквизиты.</description>
+      <description locale="en_US">E.g. company name, address, any other information required for legal compliance.</description>
+      <name locale="en_US">Additional footer custom text</name>
+      <name locale="ru_RU">Дополнительный текст в подвале сайта</name>
     </setting>
     <setting var="divider_footer_subscription" control_type="group_divider" icon_class="fas fa-envelope">
       <value>divider_footer/divider_footer_subscription</value>
-      <name locale="en_US">Subscription form</name>
-      <name locale="ru_RU">Форма подписки</name>
+      <name locale="en_US">Newsletter subscription form</name>
+      <name locale="ru_RU">Форма подписки на рассылку</name>
       <tooltip locale="en_US">Works with installed Mailer app</tooltip>
       <tooltip locale="ru_RU">Работает, если установлено приложение «Рассылки»</tooltip>
     </setting>
     <setting var="footer_subscribe_form_use" control_type="checkbox">
-      <value>1</value>
+      <value>0</value>
       <name locale="en_US">Display form</name>
       <name locale="ru_RU">Показывать форму</name>
       <description locale="en_US">A subscription form is displayed only if Mailer app is installed. Subscribers are added to its common subsciber list.</description>
@@ -536,40 +530,69 @@
     </setting>
     <setting var="footer_subscribe_personal_data" control_type="text">
       <value/>
-      <name locale="en_US">Personal data protection message</name>
-      <name locale="ru_RU">Информация об обработке персональных данных</name>
+      <name locale="en_US">Privacy message</name>
+      <name locale="ru_RU">Обработка персональных данных</name>
       <description locale="en_US">By submitting this form I agree to &amp;lt;a href=&amp;quot;---INSERT A LINK HERE!---&amp;quot; target=&amp;quot;_blank&amp;quot;&amp;gt;personal data protection policy&amp;lt;/a&amp;gt;</description>
       <description locale="ru_RU">Нажимая на кнопку подтверждения, я принимаю условия &amp;lt;a href=&amp;quot;---ВСТАВЬТЕ СЮДА ССЫЛКУ НА ДОКУМЕНТ!---&amp;quot; target=&amp;quot;_blank&amp;quot;&amp;gt;политики обработки персональных данных&amp;lt;/a&amp;gt;</description>
     </setting>
     <setting var="divider_social_links" control_type="group_divider" icon_class="fas fa-share-alt">
       <value>divider_footer/divider_social_links</value>
-      <name locale="en_US">Follow us links</name>
-      <name locale="ru_RU">Ссылки на соцсети</name>
+      <name locale="en_US">Sitemap, social links, contacts</name>
+      <name locale="ru_RU">Карта сайта, ссылки, контакты</name>
+    </setting>
+    <setting var="footer_links" control_type="checkbox">
+      <value>0</value>
+      <name locale="ru_RU">Показывать ссылки</name>
+      <name locale="en_US">Display links</name>
+      <description locale="ru_RU">В подвале будут показаны ссылки на ваши страницы в соцсетях, а также ссылки на основные разделы вашего сайта (разделы автоматически определяются набором установленных приложений Webasyst).</description>
+      <description locale="en_US">Enable this option to display links to your company’s social network resources and links to core site sections (according to Webasyst apps installed in your account).</description>
+    </setting>
+    <setting var="instagram" control_type="text">
+      <value>https://instagram.com/username</value>
+      <name locale="en_US">Instagram</name>
+      <name locale="ru_RU">Instagram</name>
+    </setting>
+    <setting var="telegram" control_type="text">
+      <value>https://t.me/username</value>
+      <name locale="en_US">Telegram</name>
+      <name locale="ru_RU">Telegram</name>
+    </setting>
+    <setting var="whatsapp" control_type="text">
+      <value></value>
+      <name locale="en_US">WhatsApp</name>
+      <name locale="ru_RU">WhatsApp</name>
+    </setting>
+    <setting var="max" control_type="text">
+      <value></value>
+      <name locale="en_US">MAX</name>
+      <name locale="ru_RU">MAX</name>
+    </setting>
+    <setting var="vk" control_type="text">
+      <value></value>
+      <name locale="en_US">VK</name>
+      <name locale="ru_RU">VK</name>
     </setting>
     <setting var="facebook" control_type="text">
-      <value>#</value>
+      <value></value>
       <name locale="en_US">Facebook</name>
       <name locale="ru_RU">Facebook</name>
     </setting>
     <setting var="twitter" control_type="text">
-      <value>#</value>
+      <value></value>
       <name locale="en_US">X</name>
       <name locale="ru_RU">X</name>
     </setting>
-    <setting var="vk" control_type="text">
-      <value>#</value>
-      <name locale="en_US">VK</name>
-      <name locale="ru_RU">VK</name>
-    </setting>
-    <setting var="instagram" control_type="text">
-      <value>#</value>
-      <name locale="en_US">Instagram</name>
-      <name locale="ru_RU">Instagram</name>
-    </setting>
     <setting var="youtube" control_type="text">
-      <value>#</value>
+      <value></value>
       <name locale="en_US">YouTube</name>
       <name locale="ru_RU">YouTube</name>
+    </setting>
+    <setting var="footer_shop_contacts" control_type="checkbox">
+      <value>0</value>
+      <name locale="ru_RU">Телефон и почта</name>
+      <name locale="en_US">Phone &amp; email</name>
+      <description locale="ru_RU">Показывать номер телефона и электронную почту из контактной информации в основных настройках Shop-Script.</description>
+      <description locale="en_US">Enable to display phone number and email from the Shop-Script app general settings.</description>
     </setting>
     <setting var="divider_cookies" control_type="group_divider" icon_class="fas fa-cookie-bite">
       <value>divider_footer/divider_cookies</value>
@@ -578,7 +601,7 @@
     </setting>
     <setting var="cookie_show" control_type="checkbox">
       <value>1</value>
-      <name locale="en_US">Show</name>
+      <name locale="en_US">Display</name>
       <name locale="ru_RU">Показывать</name>
       <description locale="en_US">Enable to show cookies alert on the site.</description>
       <description locale="ru_RU">Включите, чтобы показывать уведомление о куках на сайте.</description>

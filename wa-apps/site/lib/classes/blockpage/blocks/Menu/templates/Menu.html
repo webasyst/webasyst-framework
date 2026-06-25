@@ -113,6 +113,8 @@
             order: 1;
             max-width: 100%;
             display: none;
+            overflow-y: auto;
+            max-height: calc(100vh - var(--menu-items-top, 5rem));
         }
         .site-block-menu[data-block-id="{$data->getId()}"] #{$_blc_id}itms .seq-child .js-seq-wrapper {
             flex-direction: column;
@@ -144,13 +146,28 @@
                     }
 
                     if (menu_items) {
+                        const child = menu_items.querySelector('.site-block-column');
+                        if (child) {
+                            child.style.display = 'block';
+                        }
                         menu_items.style.display = (is_bg_column_hidden ? '' : 'inherit');
                     }
+
+                    document.body.classList.toggle('ovr-hdn', !is_bg_column_hidden);
 
                     gmb_svg.forEach(function(item){
                         item.style.display = 'inherit'
                     });
                     item.style.display = 'none'
+
+                    if (!is_bg_column_hidden) {
+                        setTimeout(() => {
+                            if (!menu_items) return;
+                            const menuStyleMap = block_menu.computedStyleMap();
+                            const topWithPaddingBlock = menu_items.getBoundingClientRect().top + menuStyleMap.get('padding-bottom')?.value || 0;
+                            document.documentElement.style.setProperty('--menu-items-top', Math.round(topWithPaddingBlock) + 'px');
+                        });
+                    }
                 });
             });
         }

@@ -62,6 +62,23 @@ class siteEditorUploadController extends waJsonController
             if (!$file_id) {
                 return; // unable to save uploaded file; $this->errors is set by ->processFile()
             }
+        } else if (waRequest::request('have_file')) {
+
+            $max_file_size = (int)ini_get('post_max_size') * 1024 * 1024;
+            if (waRequest::server('CONTENT_LENGTH') > $max_file_size) {
+                // missing the file because it is too large
+                $this->errors = [
+                    'error_code' => 'file_too_large',
+                    'error_message' => sprintf_wp("Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file.", $max_file_size),
+                ];
+            } else {
+                $error_message = $file->error;
+                $this->errors = [
+                    'error_code' => 'upload_failed',
+                    'error_message' => ifempty($error_message, sprintf(_ws('Failed to upload file %s.'), $f->name)),
+                ];
+            }
+            return;
         }
 
         //

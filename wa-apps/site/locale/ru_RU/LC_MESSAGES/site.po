@@ -451,14 +451,17 @@ msgstr "Например, <strong>%s</strong><br />Если вы использ�
 msgid "Additional JavaScript code to be added before the closing &lt;/head&gt; tag:"
 msgstr "Дополнительный JavaScript-код для вставки перед закрывающим тегом &lt;/head&gt;:"
 
-msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"https://support.webasyst.com/5556/third-party-auth-setup/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
-msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Фейсбук» или «Твиттер». <a href=\"https://support.webasyst.ru/5554/third-party-auth-setup/\" target=\"_blank\">Документация по настройке</a> <i class=\"icon10 new-window\"></i>"
+msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Google or Facebook. %s"
+msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Яндекс» или VK. %s"
 
-msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"https://support.webasyst.com/5556/third-party-auth-setup/\" target=\"_blank\">Setup instructions <i class=\"icon size-10 fas fa-external-link-alt new-window\"></i></a>"
-msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Фейсбук» или «Твиттер». <a href=\"https://support.webasyst.ru/5554/third-party-auth-setup/\" target=\"_blank\">Документация по настройке <i class=\"icon size-10 fas fa-external-link-alt new-window\"></i></a>"
+msgid "Setup instructions"
+msgstr "Документация по настройке"
+
+msgid "https://support.webasyst.com/5556/third-party-auth-setup/"
+msgstr "https://support.webasyst.ru/5554/third-party-auth-setup/"
 
 msgid "To enable authorization on this website, install and settle at least one app that supports authorization forms."
-msgstr "Чтобы сделать доступной авторизацию на этом сайте, установите хотя бы одно приложение, которое поддерживает формы авторизации,  и настройте для него маршрутизацию."
+msgstr "Чтобы сделать доступной авторизацию на этом сайте, установите хотя бы одно приложение, которое поддерживает формы авторизации, и настройте для него маршрутизацию."
 
 msgid "To enable authorization on this site, add at least one section of an app that supports authorization forms."
 msgstr "Чтобы сделать доступной авторизацию на этом сайте, добавьте хотя бы один раздел с приложением, которое поддерживает формы авторизации."

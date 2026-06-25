@@ -206,7 +206,18 @@
         </div>
         <h3 class="name">[`Social networks (additional authorization option)`]</h3>
         <div class="s-settings-wrapper js-settings-wrapper" style="display: none;">
-            <p class="hint">[`Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href="https://support.webasyst.com/5556/third-party-auth-setup/" target="_blank">Setup instructions</a> <i class="icon10 new-window"></i>`]</p>
+            <p class="hint">{sprintf_wp(
+                'Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Google or Facebook. %s',
+                sprintf(
+                    '<a %s>%s</a>',
+                    sprintf(
+                        'href="%s" target="_blank"',
+                        _w('https://support.webasyst.com/5556/third-party-auth-setup/')
+                    ),
+                    _w('Setup instructions')
+                )
+            )} <i class="icon10 new-window"></i></p>
+
             <div class="field">
                 <div class="name">[`Services`]</div>
                 <div class="value">

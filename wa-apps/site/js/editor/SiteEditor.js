@@ -210,6 +210,7 @@ class SiteEditor {
                 let fd = new FormData();
                 fd.append('block_id', block_id);
                 fd.append('key', key);
+                fd.append('have_file', 1);
                 fd.append('file', file);
                 site_editor._upload_file_ajax[block_id] = $.ajax({
                     method: 'POST',
@@ -227,6 +228,11 @@ class SiteEditor {
                     } catch (e) {
                         // something went wrong, no undo
                         console.log('Unable to upload block file to server', e, r);
+                        if (r?.errors?.error_message) {
+                            alert(r.errors.error_message);
+                        }
+                        file_promise.reject();
+                        return;
                     }
 
                     // Apply new state to WYSIWYG iframe
@@ -236,6 +242,9 @@ class SiteEditor {
                     if (r && r.data && r.data.page_has_unsaved_changes !== undefined) {
                         $("#js-wa-header-publish").data('controller').updateHasUnsavedChanges(r.data.page_has_unsaved_changes);
                     }
+                }, function() {
+                    console.log('Unable to upload block file to server', arguments);
+                    file_promise.reject();
                 });
 
             },

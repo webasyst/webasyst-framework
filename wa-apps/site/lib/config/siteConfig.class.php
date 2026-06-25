@@ -458,7 +458,10 @@ class siteConfig extends waAppConfig
             if ($old_active != $this->application) {
                 waSystem::setActive($this->application);
             }
+            $is_from_template = waConfig::get('is_template');
+            waConfig::set('is_template', null);
             include($this->getAppPath('lib/config/install.after.php'));
+            waConfig::set('is_template', $is_from_template);
             $model->del($this->application, 'install_after_trigger');
             waSystem::setActive($old_active);
         }

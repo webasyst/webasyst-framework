@@ -232,7 +232,6 @@ $(document).ready(function() {
 
         $(this).toggleClass('opened');
 
-        $("html, body").animate({ scrollTop: 0 }, 200);
         return false;
     });
 
@@ -404,6 +403,8 @@ $(document).ready(function() {
             if (!cartElement || !headerElement) return;
 
             if (document.querySelector('.cart-summary-page')) return;
+
+            headerElement.style.setProperty('--globalheader-height', `${headerElement.offsetHeight}px`);
 
             const mediaQuery = window.matchMedia("only screen and (max-width: 768px)");
 
