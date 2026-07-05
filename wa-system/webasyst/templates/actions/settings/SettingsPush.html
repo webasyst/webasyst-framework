@@ -2,7 +2,118 @@
 <div class="article s-push-settings-page" id="s-push-settings-page">
   <div class="article-body">
     <h1 class="s-page-title">[s`Web push notifications`]</h1>
-    <p class="s-description">[s`Select and configure a service for sending web push notifications.`]</p>
+
+{if $is_push_enabled}
+
+<div class="fields hidden js-browser-push-block">
+    <div class="fields-group blank">
+        <div class="js-push-loading spinner"></div>
+        <div class="js-push-false hidden">
+            <p>[`Web push notifications are currently disabled in your browser.`]</p>
+            <button class="button small outlined js-push-request">[`Enable`]</button>
+        </div>
+        <div class="js-push-ok hidden">
+            <p>[`Web push notifications are enabled in your browser.`]</p>
+            <a class="button small outlined js-push-test">[`Send test notification`]</a>
+        </div>
+        <p class="js-push-error state-error hidden"></p>
+    </div>
+</div>
+<script>
+    (function ($) {
+        if ($.wa_push) {
+            $('.js-browser-push-block').removeClass('hidden');
+            $.wa_push.init({
+                force_no_mute: true,
+                func: initControlsAsync
+            });
+
+            $(window).on('wa_push_status_changed', function(e, is_ok) {
+                togglePushStatus(is_ok);
+            });
+
+            $(window).on('wa_push_error', function(e, error) {
+                $('.js-push-error').html(error).removeClass('hidden');
+                $('.js-push-loading').addClass('hidden');
+            });
+
+            function initControlsAsync() {
+                if (window.location.protocol === 'http:') {
+                    $.wa_push.showHttpPermissionAlert();
+                    return;
+                }
+                const timeout_id = setTimeout(initControls, 5000);
+                $(window).on('wa_push_loaded', () => {
+                    clearTimeout(timeout_id);
+                    initControls();
+                });
+            }
+
+            function initControls() {
+                if (typeof $.wa_push.check === 'function') {
+                    $.wa_push.check(togglePushStatus);
+
+                    $('.js-push-request').off('click').on('click', () => {
+                        $('.js-push-error').html('').addClass('hidden');
+                        if (window.Notification.permission === "denied") {
+                            $.wa_push.showDeniedPermissionAlert();
+                            return;
+                        }
+                        $.wa_push.check(togglePushStatus);
+                        $.wa_push.requestAllow();
+                        WaBellAnnouncement.adhocHide($.wa_push.bell_ids.request_permissions);
+                        if (!["default", "prompt"].includes(window.Notification.permission)) {
+                            $.wa_push.timeout_id = setTimeout(() => {
+                                WaBellAnnouncement.adhocHide($.wa_push.bell_ids.timeout); // prevent multiple notifications
+                                WaBellAnnouncement.adhocShow($("<p />").html($.wa_push.loc.requestTimeoutMessage), $.wa_push.bell_ids.timeout);
+                                $.wa_push.timeout_id = undefined;
+                            }, 1000);
+                        }
+                    });
+
+                    $('.js-push-test').off('click').on('click', () => {
+                        $('.js-push-test').addClass('disabled');
+                        $('.js-push-error').html('').addClass('hidden');
+                        $.wa_push.sendTest(() => {
+                            $('.js-push-test').removeClass('disabled');
+                        });
+                    });
+                } else {
+                    $('.js-push-loading').addClass('hidden');
+                }
+            }
+
+            function togglePushStatus(is_ok) {
+                $('.js-push-loading').addClass('hidden');
+                $('.js-push-error').html('').addClass('hidden');
+                if (is_ok) {
+                    $('.js-push-ok').removeClass('hidden');
+                    $('.js-push-false').addClass('hidden');
+                } else {
+                    $('.js-push-false').removeClass('hidden');
+                    $('.js-push-ok').addClass('hidden');
+                }
+            }
+        }
+    })(jQuery);
+</script>
+{else}
+<script>
+    (function ($) {
+        if ($.wa_push) {
+            $.wa_push.force_no_mute = true;
+            $.wa_push.loc = {
+                httpNotSupported: "[s`Please open this page via HTTPS to set up web push notifications. The HTTP connection is not supported.`]"
+            };
+            if (window.location.protocol === 'http:') {
+                $.wa_push.showHttpPermissionAlert();
+            }
+        }
+    })(jQuery);
+</script>
+{/if}
+
+    <p class="s-description small">[s`The selected service provider will be used as the default one across all Webasyst apps.`]</p>
     <form action="?module=settingsPushSave" class="fields">
         <div class="fields-group blank">
             <div class="field">
@@ -19,30 +130,29 @@
                             </label>
                         </li>
 
-                            {if !empty($push_adapters)}
+                        {if !empty($push_adapters)}
                             {foreach $push_adapters as $_adapter}
-                            {$_adapter_id = $_adapter->getId()}
-                            {$_adapter_name = $_adapter->getName()}
-                            {$_adapter_settings = $_adapter->getSettingsHtml(['namespace'=>'push_settings'])}
-                        <li>
-                            <label>
-                                <span class="wa-radio">
-                                    <input type="radio" name="push_adapter" {if $_adapter_id == $selected_push_adapter}checked{/if} value="{$_adapter_id}">
-                                    <span></span>
-                                </span>
-                                {$_adapter_name|escape}
-                            </label>
-                            {if !empty($_adapter_settings)}
-                            <div class="js-push-adapter-settings small box" data-adapter-id="{$_adapter_id}" style="display: none;">
-                                {$_adapter_settings}
-                            </div>
-                        </li>
-                            {/if}
+                                {$_adapter_id = $_adapter->getId()}
+                                {$_adapter_name = $_adapter->getName()}
+                                {$_adapter_settings = $_adapter->getSettingsHtml(['namespace'=>'push_settings'])}
+                                <li>
+                                    <label>
+                                        <span class="wa-radio">
+                                            <input type="radio" name="push_adapter" {if $_adapter_id == $selected_push_adapter}checked{/if} value="{$_adapter_id}">
+                                            <span></span>
+                                        </span>
+                                        {$_adapter_name|escape}
+                                    </label>
+                                    {if !empty($_adapter_settings)}
+                                        <div class="js-push-adapter-settings custom-m-20" data-adapter-id="{$_adapter_id}" style="display: none;">
+                                            {$_adapter_settings}
+                                        </div>
+                                    {/if}
+                                </li>
                             {/foreach}
-                            {else}
+                        {else}
                             [s`No web push notifications services available`]
-                            {/if}
-
+                        {/if}
                     </ul>
                 </div>
             </div>
@@ -53,7 +163,7 @@
 </div>
 <script type="text/javascript">
     (function($) {
-        new WASettingsPush({
+        window.waSettingsPush = new WASettingsPush({
             $wrapper: $("#s-push-settings-page"),
             wa2: true
         });

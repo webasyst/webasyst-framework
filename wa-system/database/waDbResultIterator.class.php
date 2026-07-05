@@ -153,7 +153,7 @@ class waDbResultIterator implements Iterator
     public function count()
     {
         if ($this->count === null) {
-            $this->count = $this->adapter->num_rows($this->result);
+            $this->count = (int) $this->adapter->num_rows($this->result);
         }
         return $this->count;
     }

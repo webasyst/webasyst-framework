@@ -22,44 +22,90 @@ class siteConfig extends waAppConfig
 
     public function getRouting($route = array(), $dispatch = true)
     {
-        if ($this->_routes === null || $dispatch) {
+        if (empty($route['is_backend_route'])) {
+            $url_type = isset($route['url_type']) ? $route['url_type'] : 0;
+        } else {
+            $url_type = 'backend';
+        }
+
+        if (!isset($this->_routes[$url_type]) || $dispatch) {
             $routes = parent::getRouting($route);
-            /**
-             * Extend routing via plugin routes
-             * @event routing
-             * @param array $routes
-             * @return array routes collected for every plugin
-             */
-            $result = wa()->event(array('site', 'routing'), $routes);
-            $all_plugins_routes = array();
-            foreach ($result as $plugin_id => $routing_rules) {
-                if ($routing_rules) {
-                    $plugin = str_replace('-plugin', '', $plugin_id);
-                    if ($plugin == $plugin_id) {
-                        // apps can not add routes to other apps
-                        continue;
-                    }
-                    foreach ($routing_rules as $url => &$route) {
-                        if (!is_array($route)) {
-                            list($route_ar['module'], $route_ar['action']) = explode('/', $route);
-                            $route = $route_ar;
+            $routes = ifset($routes, $url_type, $routes[0]);
+
+            if ($routes) {
+                /**
+                 * Extend routing via plugin routes
+                 * @event routing
+                 * @param array $routes
+                 * @return array routes collected for every plugin
+                 */
+                $result = wa()->event(array('site', 'routing'), $routes);
+                $all_plugins_routes = array();
+                foreach ($result as $plugin_id => $routing_rules) {
+                    if ($routing_rules) {
+                        $plugin = str_replace('-plugin', '', $plugin_id);
+                        if ($plugin == $plugin_id) {
+                            // apps can not add routes to other apps
+                            continue;
                         }
-                        $route['plugin'] = $plugin;
-                        $route['app'] = $this->application;
-                        $all_plugins_routes[$url] = $route;
+                        foreach ($routing_rules as $url => &$route) {
+                            if (!is_array($route)) {
+                                list($route_ar['module'], $route_ar['action']) = explode('/', $route);
+                                $route = $route_ar;
+                            }
+                            $route['plugin'] = $plugin;
+                            $route['app'] = $this->application;
+                            $all_plugins_routes[$url] = $route;
+                        }
+                        unset($route);
                     }
-                    unset($route);
                 }
+                $routes = array_merge($all_plugins_routes, $routes);
             }
-            $routes = array_merge($all_plugins_routes, $routes);
             if ($dispatch) {
                 return $routes;
             }
-            $this->_routes = $routes;
+            $this->_routes[$url_type] = $routes;
         }
-        return $this->_routes;
+        return $this->_routes[$url_type];
     }
 
+    protected function getRoutingRules($route = array())
+    {
+        $routes = [];
+        $path = $this->getRoutingPath('frontend');
+        if (file_exists($path)) {
+            $routes[0] = include($path);
+        }
+
+        if ($this->getEnvironment() === 'backend') {
+            $path = $this->getRoutingPath('backend');
+            if ($path && file_exists($path)) {
+                $routes['backend'] = include($path);
+            } else {
+                // UI 1.3 does not use backend routing
+                $routes['backend'] = ['' => 'backend/'];
+            }
+        }
+
+        return $routes;
+    }
+
+    protected function getRoutingPath($type)
+    {
+        if ($type === null) {
+            $type = $this->getEnvironment();
+        }
+        if ($type === 'backend' && wa($this->application)->whichUI() == '1.3') {
+            return null;
+        }
+        $filename = ($type === 'backend') ? 'routing.backend.php' : 'routing.php';
+        $path = $this->getConfigPath($filename, true, $this->application);
+        if (!file_exists($path)) {
+            $path = $this->getConfigPath($filename, false, $this->application);
+        }
+        return $path;
+    }
 
     public function explainLogs($logs)
     {
@@ -96,7 +142,63 @@ class siteConfig extends waAppConfig
      */
     public function onCount()
     {
+        $this->checkLicensing();
+    }
 
+    public function dispatchPrioritySettlement($route, $url)
+    {
+        try {
+            $domain_id = siteHelper::getDomainId();
+            if (!$domain_id) {
+                return;
+            }
+        } catch (waException $e) {
+            return;
+        }
+
+        // Preview?
+        $preview_hash = waRequest::request('preview_hash');
+        if ($preview_hash) {
+            if ($preview_hash !== $this->getPreviewHash()) {
+                return null;
+            }
+            $status = ['draft', 'final_unpublished'];
+        } else {
+            $status = ['final_published'];
+        }
+
+        $blockpage_model = new siteBlockpageModel();
+        $page = $blockpage_model->getByUrl($domain_id, $url, $status);
+        if (!$page) {
+            return null;
+        }
+        $blockpage_params_model = new siteBlockpageParamsModel();
+        $page_params = $blockpage_params_model->getById($page['id']);
+        return [
+            'url' => $url,
+            'page' => $page,
+            'page_params' => $page_params,
+            'module' => 'frontend',
+            'action' => 'blockpage',
+            'locale' => ifset($page_params, 'locale', ifset($route, 'locale', null)),
+        ] + $route;
+    }
+
+    public function getPreviewHash($app_id = 'site')
+    {
+        $app_settings_model = new waAppSettingsModel();
+        $hash = $app_settings_model->get($app_id, 'preview_hash');
+        if ($hash) {
+            $hash_parts = explode('.', $hash);
+            if (time() - $hash_parts[1] > 14400) {
+                $hash = '';
+            }
+        }
+        if (!$hash) {
+            $hash = str_replace('.', '', uniqid('sitepreviewhash', true)).'.'.time();
+            $app_settings_model->set($app_id, 'preview_hash', $hash);
+        }
+        return md5($hash);
     }
 
     /**
@@ -210,5 +312,177 @@ class siteConfig extends waAppConfig
         $cache_domain->set($error_domains_data);
 
         return $error_domains_data;
+    }
+
+    public function getHiddenTechSettlement()
+    {
+        return [
+            'app' => 'site',
+            'url' => 'tech-route-do-not-delete',
+            'priority_settlement' => true,
+            'site_tech_route' => true,
+            'private' => true,
+        ];
+    }
+
+    /**
+     * Will ensure serviceability of block pages on given domain by making sure at least one settlement
+     * has the priority_settlement flag. In case it does not, will add flag to existing settlement
+     * or (when none exist) create a new settlement marked as site_tech_route. This latter flag
+     * makes settlement invisible in site overview page as well as in theme usage dialog selector.
+     * @param mixed $domain id or domain name
+     * @param ?bool $has_block_pages whether there's at least one blockpage on domain. Will fetch count in DB if null.
+     * @param ?array $use_routes modify given routing array in place; if null then will include wa-config/routing.php and save modified values there.
+     */
+    public function ensureSettlementForDomain($domain, $has_block_pages=null, &$use_routes=null)
+    {
+        $domains = array_map(function($d) {
+            return $d['name'];
+        }, siteHelper::getDomains(true));
+        if (isset($domain['id'])) {
+            $domain_id = $domain['id'];
+        } else if (wa_is_int($domain)) {
+            $domain_id = $domain;
+        } else if (is_string($domain)) {
+            $domain_id = ifset(ref(array_flip($domains)), $domain, null);
+            if (empty($domain_id)) {
+                $domain_id = ifset(ref(array_flip(siteHelper::getDomains())), $domain, null);
+            }
+        }
+        if (empty($domain_id) || empty($domains[$domain_id])) {
+            throw new waException('Unknown domain');
+        }
+        $domain = $domains[$domain_id];
+        if ($has_block_pages === null) {
+            $has_block_pages = 0 < (new siteBlockpageModel())->countByField('domain_id', $domain_id);
+        }
+
+        if ($use_routes !== null) {
+            if (isset($use_routes[$domain]) && !is_array($use_routes[$domain])) {
+                throw new waException('domain is an alias');
+            }
+            $routes = array_filter(ifset($use_routes, $domain, []), function($r) {
+                return ifset($r, 'app', '') === 'site';
+            });
+        } else {
+            $routes = wa()->getRouting()->getByApp('site', $domain);
+        }
+
+        $update_settlements = [];
+        $create_settlements = [];
+        $delete_settlement_ids = [];
+        if (!$has_block_pages) {
+            // No block pages on domain: remove hidden settlement and we're done
+            foreach ($routes as $r_id => $r) {
+                if (!empty($r['site_tech_route'])) {
+                    $delete_settlement_ids[] = $r_id;
+                }
+            }
+        } else if (!$routes) {
+            // There are block pages but no settlements: create a hidden settlement
+            $create_settlements[] = $this->getHiddenTechSettlement();
+        } else {
+            // There are block pages and settlements already: make sure at least one settlement has priority_settlement flag
+            // and remove hidden settlement if another exists
+            if (count($routes) > 1) {
+                foreach ($routes as $r_id => $r) {
+                    if (!empty($r['site_tech_route'])) {
+                        $delete_settlement_ids[] = $r_id;
+                        unset($routes[$r_id]);
+                        break;
+                    }
+                }
+            }
+            foreach ($routes as $r_id => $r) {
+                if (!empty($r['priority_settlement'])) {
+                    $update_settlements = [];
+                    break;
+                }
+                $r['priority_settlement'] = true;
+                $update_settlements[$r_id] = $r;
+            }
+        }
+
+        if ($update_settlements || $create_settlements || $delete_settlement_ids) {
+            if ($use_routes !== null) {
+                $routes =& $use_routes;
+            } else {
+                $path = $this->getPath('config', 'routing');
+                if (file_exists($path)) {
+                    $routes = include($path);
+                } else {
+                    $routes = [
+                        $domain => [],
+                    ];
+                }
+            }
+
+            foreach ($delete_settlement_ids as $r_id) {
+                unset($routes[$domain][$r_id]);
+            }
+
+            foreach ($update_settlements as $r_id => $r) {
+                $routes[$domain][$r_id] = $r;
+            }
+
+            foreach ($create_settlements as $r) {
+                $routes[$domain][] = $r;
+            }
+
+            if (!empty($path)) {
+                waUtils::varExportToFile($routes, $path);
+            }
+        }
+    }
+
+    public function throwFrontControllerDispatchException()
+    {
+        if (wa()->getEnv() == 'backend' && wa()->whichUI() == '1.3') {
+            wa()->getResponse()->redirect(wa()->getAppUrl('site'));
+        }
+        parent::throwFrontControllerDispatchException();
+    }
+
+    public function checkUpdates()
+    {
+        parent::checkUpdates();
+        $this->installAfter();
+    }
+
+    protected function installAfter()
+    {
+        $model = new waAppSettingsModel();
+        $install_after_trigger = $model->get($this->application, 'install_after_trigger', 0);
+        if ($install_after_trigger && wa()->getUser()->isAuth() && wa()->getEnv() == 'backend') {
+            $old_active = waSystem::getApp();
+            if ($old_active != $this->application) {
+                waSystem::setActive($this->application);
+            }
+            $is_from_template = waConfig::get('is_template');
+            waConfig::set('is_template', null);
+            include($this->getAppPath('lib/config/install.after.php'));
+            waConfig::set('is_template', $is_from_template);
+            $model->del($this->application, 'install_after_trigger');
+            waSystem::setActive($old_active);
+        }
+    }
+
+    protected function configure()
+    {
+        if (waRequest::get('module') === 'editor' && waRequest::get('action') === 'body') {
+            // Do not remember page inside iframe as last page to return to after backend login
+            waRequest::setParam('skip_update_last_page', true);
+        }
+        parent::configure();
+    }
+
+    protected function checkLicensing()
+    {
+        $license = waLicensing::check('site');
+        $had_premium = $license->getSetting('had_premium_license');
+        $cur_date = date('Y-m-d');
+        if ($cur_date != $had_premium) {
+            $license->hasPremiumLicense();
+        }
     }
 }

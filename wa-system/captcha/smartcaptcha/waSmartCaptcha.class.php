@@ -66,6 +66,11 @@ class waSmartCaptcha extends waAbstractCaptcha
         return $view->fetch($template);
     }
 
+    public function isInvisible()
+    {
+        return boolval(ifset($this->options['smart_invisible'], false));
+    }
+
     public function display()
     {
     }

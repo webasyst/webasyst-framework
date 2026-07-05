@@ -334,6 +334,10 @@
                             }
                         }
                     }
+
+                    const $stream_count = $('#photos-count');
+                    const stream_count_number = parseInt($stream_count.text() ?? '0', 10);
+                    $stream_count.text(stream_count_number + files_count);
                 }
                 self.data('is_error', false);
                 self.data('is_aborted', false);

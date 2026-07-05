@@ -4,10 +4,10 @@ return array(
     'description' => 'Install new apps from the Webasyst Store',
     'icon'        => 'img/installer.svg',
     'mobile'      => false,
-    'version'     => '3.2.0',
-    'critical'    => '3.2.0',
+    'version'     => '4.1.0',
+    'critical'    => '4.1.0',
     'system'      => true,
     'vendor'      => 'webasyst',
     'csrf'        => true,
-    'ui'          => '1.3,2.0'
+    'ui'          => '2.0',
 );

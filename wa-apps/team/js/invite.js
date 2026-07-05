@@ -27,11 +27,7 @@ var InvitePage = ( function($) {
         //
         that.bindEvents();
         //
-        that.autoCenter();
-
         that.initSubmit();
-
-        that.initProfileWebasystIDHelpLink();
     };
 
     InvitePage.prototype.bindEvents = function() {
@@ -42,11 +38,7 @@ var InvitePage = ( function($) {
             $(this)
                 .removeClass(that.error_class)
                 .parent()
-                    .find(".errormsg").remove();
-        });
-
-        $(window).on("resize", function() {
-            that.autoCenter();
+                    .find(".state-error-hint").remove();
         });
     };
 
@@ -63,43 +55,13 @@ var InvitePage = ( function($) {
             } else {
                 $field.addClass(that.error_class);
             }
-            $field.parent().append($('<em class="errormsg"></em>').text(error_text));
+            $field.parent().append($('<div class="state-error-hint custom-mt-4 custom-ml-2"></div>').text(error_text));
         });
     };
 
-    InvitePage.prototype.autoCenter = function() {
-        var that = this,
-            $block = that.$block,
-            block_h = $block.outerHeight(),
-            window_h = $(window).height(),
-            top,
-            min = 10;
-
-        top = parseInt( (window_h - block_h)/2 );
-
-        if (top < min) {
-            top = min;
-        }
-
-        $block.css({
-            top: top
-        });
-    };
-
-    InvitePage.prototype.initProfileWebasystIDHelpLink = function() {
-        var that = this;
-
-        var onHelp = function() {
-            var url = that.backend_url + "?module=backend&action=webasystIDHelp";
-            $.get(url, function (html) {
-                $('body').append(html);
-            });
-        };
-
-        // click on link in current document
-        $('.js-waid-hint').on('click', function (e) {
-            e.preventDefault();
-            onHelp();
+    InvitePage.prototype.initSubmit = function() {
+        this.$form.find('[type="submit"]').on('click', function () {
+            setTimeout(() => $(this).attr('disabled', true));
         });
     };
 

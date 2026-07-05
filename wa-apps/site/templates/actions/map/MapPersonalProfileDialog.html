@@ -1,0 +1,72 @@
+<div class="dialog s-section-settings-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+    <header class="dialog-header flexbox middle full-width">
+        <h1>[`My profile`]</h1>
+    </header>
+    {if !empty($profile_disabled)}
+    <div class="dialog-content">
+        <div id="s-app-disabled">
+            <p class="red"><i class="icon fas fa-ban no top-padded"></i> {sprintf('[`My profile page is not available on this site, because user authorization on this site is hosted by <strong>%s</strong> app, while it’s personal account functionality is disabled. Either enable <a href="#/personal/app/%s/">%s app’s personal account</a> on this site, or change the app that hosts user authorization in <a href="%s">Auth &amp; Sign Up</a> settings.`]', $auth_app.name, $auth_app.id, $auth_app.name, '#/personal/settings/configure-app')}</p>
+        </div>
+    </div>
+    <footer class="js-form-buttons dialog-footer flexbox space-24">
+        <a href="javascript:void(0);" class="js-close-dialog button light-gray">[`Close`]</a>
+    </footer>
+    {else}
+    <form id="s-personal-profile-save" method="post" action="?module=map&action=personalProfileSave">
+    <div class="dialog-content custom-pt-0">
+    <h5 class="">[`My profile form fields`]</h5>
+
+        <div class="s-personal-field-list flexbox vertical space-12">
+            {foreach $fields as $field}
+                <label for="id-{$field.id}" class="s-flex-checkbox">
+                    <span class="wa-checkbox">
+                        <input type="checkbox" id="id-{$field.id}" name="personal_fields[]" value="{$field.id|escape}"{if $field.checked} checked{/if}>
+                        <span>
+                            <span class="icon">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </span>
+                    </span>
+                    <span class="break-word">{$field.name|escape}</span>
+                </label>
+            {/foreach}
+        </div>
+        <input type="hidden" name="domain" value="{$domain|default:''}">
+
+    </div>
+    <footer class="js-form-buttons dialog-footer flexbox space-24">
+        <div class="js-footer-actions">
+            <input class="button js-submit-button" type="submit" name="" value="[s`Save`]">
+            <a href="javascript:void(0);" class="js-close-dialog button light-gray">[`Cancel`]</a>
+            <span class="icon js-loading" style="display: none;"><i class=" fas fa-spinner fa-spin"></i></span>
+        </div>
+    </footer>
+    </form>
+    <script>
+
+        $('.js-submit-button').on('click', function() {
+            saveHandler();
+            return false;
+        });
+        $('#s-personal-profile-save').submit(function () {
+                saveHandler();
+            return false;
+        });
+        function saveHandler() {
+            var f = $('#s-personal-profile-save'),
+                    $footer = $('.js-form-buttons'),
+                    $loading = $footer.find('.js-loading');
+            $loading.show();
+            $.post(f.attr('action'), f.serialize(), function () {
+                $loading.hide();
+                $('.s-section-settings-dialog').data('dialog').close();
+            }, 'json');
+            return false;
+        }
+    </script>
+    {/if}
+    </div>
+
+</div>

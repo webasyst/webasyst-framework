@@ -14,6 +14,8 @@
 
         plugin_options = ( typeof plugin_options === "object" ? plugin_options : {});
 
+        initLoadingIcon();
+
         if (return_instance) { result = getInstance(); } else { init(); }
 
         return result;
@@ -52,6 +54,24 @@
             }
 
             return deferred.promise();
+        }
+
+        function initLoadingIcon() {
+            const $spinner = $('<span style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);"><i class="fas fa-spinner wa-animation-spin"></i></span>');
+
+            const _search = plugin_options.search;
+            plugin_options.search = function () {
+                if ($(this).parent().hasClass('state-with-inner-icon')) {
+                    $(this).after($spinner);
+                }
+                if (typeof _search === 'function') _search.call(this, ...arguments);
+            };
+
+            const _response = plugin_options.response;
+            plugin_options.response = function () {
+                $spinner.remove();
+                if (typeof _response === 'function') _response.call(this, ...arguments);
+            };
         }
     };
 
@@ -598,6 +618,7 @@
                 that.animation_time = 333;
                 that.hide_class = "is-hide";
                 that.width = options["width"] || false;
+                that.staticPosition = options["staticPosition"] || false;
                 const append_to = that.$body.find(options["append_to"]);
                 that.append_to = append_to.length ? append_to : that.$body;
 
@@ -686,6 +707,10 @@
             that.$wrapper.addClass(direction_class).addClass(that.hide_class).show();
             that.$wrapper[0].style.display = 'block';
 
+            if (that.staticPosition) {
+                that.$wrapper.addClass('static');
+            }
+
             if (that.width) {
                 that.$block.css('width', that.width);
             }
@@ -723,7 +748,7 @@
                             if (that.lock_body_scroll) {
                                 Drawer.lockBodyScroll(false);
                             }
-                        }, that.animation_time);
+                        }, that.staticPosition ? 0 : that.animation_time);
                     }
                 }
             }
@@ -759,7 +784,7 @@
             }
 
             if (!that.is_locked) {
-                if (that.lock_body_scroll) {
+                if (that.lock_body_scroll && !that.staticPosition) {
                     Drawer.lockBodyScroll(true);
                 }
 
@@ -767,7 +792,7 @@
                 setTimeout( function() {
                     that.$wrapper.removeClass(that.hide_class);
                     that.is_locked = false;
-                }, 100);
+                }, that.staticPosition ? 0 : 100);
             }
 
             that.is_visible = true;
@@ -2386,7 +2411,7 @@
             that.is_click = that.options.trigger === 'click' || that.$wrapper.getAttribute('data-wa-tooltip-trigger') === 'click' || false;
             that.icon = that.options.icon || that.$wrapper.getAttribute('data-wa-tooltip-icon') || false;
             that.template = that.options.template || that.$wrapper.getAttribute('data-wa-tooltip-template') || false
-
+            that.tippy = {};
             that.wa_url =  window.wa_url || '/';
 
             //
@@ -2395,15 +2420,24 @@
                 that.options.allowHTML = true;
             }
 
+            that._promise = new Promise((resolve, reject) => {
+                that._resolve = resolve;
+                that._reject = reject;
+            });
+
             // INIT
             if (window.Popper && window.tippy) {
                 that.init()
             } else {
                 // DYNAMIC LOAD SOURCE
                 (async () => {
-                    await import(`${that.wa_url}wa-content/js/tippy/popper.min.js`).then((async () => {
-                        await import(`${that.wa_url}wa-content/js/tippy/wa.tooltip.js`).then(() => that.init())
-                    }))
+                    try {
+                        await import(`${that.wa_url}wa-content/js/tippy/popper.min.js`)
+                        await import(`${that.wa_url}wa-content/js/tippy/wa.tooltip.js`)
+                        that.init()
+                    } catch (error) {
+                        that._reject(error);
+                    }
                 })()
             }
         }
@@ -2414,6 +2448,8 @@
             that.options.onCreate = function (tooltip) {
                 that.setIcon(tooltip);
                 that.setClass(tooltip);
+
+                that.tippy = tooltip;
             }
 
             that.setContent();
@@ -2423,10 +2459,13 @@
 
             /* remove tooltip without text*/
             if (!tooltip.popper.innerText) {
-                tooltip.destroy()
+                tooltip.destroy();
+                return;
             }
 
-            that.$wrapper.dataset.tooltip = tooltip;
+            that.tippy = tooltip;
+
+            that._resolve(that.tippy);
         };
 
         Tooltip.prototype.setContent = function () {
@@ -2537,7 +2576,7 @@
         Upload.prototype.initClass = function (options) {
             let that = this;
 
-            that.options = $.extend(true, $.fn['waUpload'].defaults, options);
+            that.options = $.extend({}, $.fn['waUpload'].defaults, options);
 
             if (that.options.is_uploadbox) {
                 that.$wrapper.addClass('box uploadbox');
@@ -2766,7 +2805,7 @@
                             </div>
                         </li>`;
             this.$wrapper.append(dropdown)
-            this.$wrapper.find('.dropdown').waDropdown();
+            this.$wrapper.find('.dropdown').waDropdown({ hover_out_delay: 100 });
         };
 
         Tabs.prototype.initArrows = function() {
@@ -3286,7 +3325,7 @@
             }
 
             // Ignore 502 error in background process
-            if (xhr.status === 502 && exception === 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && settings.data.indexOf('background_process') >= 0)) {
+            if (xhr.status === 502 && exception === 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data?.indexOf && settings.data.indexOf('background_process') >= 0)) {
                 console && console.log && console.log('Notice: XHR failed on load: '+ settings.url);
                 return true;
             }
@@ -3327,7 +3366,7 @@
 
     if (!window.wa_skip_csrf_prefilter) {
         $.ajaxPrefilter(function (settings, originalSettings, xhr) {
-            if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST' || (settings.contentType && settings.contentType.substr(0, 33) !== 'application/x-www-form-urlencoded')) {
+            if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST') {
                 return;
             }
 
@@ -3339,11 +3378,17 @@
             var csrf = decodeURIComponent(matches[1]);
             if (!settings.data && settings.data !== 0) settings.data = '';
 
+            xhr.setRequestHeader('X-CSRF-TOKEN', csrf);
+
+            if (settings.contentType && settings.contentType.substr(0, 33) !== 'application/x-www-form-urlencoded') {
+                return;
+            }
+
             if (typeof(settings.data) === 'string') {
-                if (settings.data.indexOf('_csrf=') === -1) {
-                    settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
-                    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                }
+                //if (settings.data.indexOf('_csrf=') === -1) {
+                //    settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
+                //    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                //}
             } else if (typeof(settings.data) === 'object') {
                 if (window.FormData && settings.data instanceof window.FormData) {
                     if (typeof settings.data.set === "function") {
@@ -3896,22 +3941,29 @@
                 return Math.max(bytes, 0.01).toFixed(2) + ((i >=0)? (' ' + $_(['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i])):'');
             }
         },
+        async copyToClipboard(plain, rich) {
+            if (typeof window.ClipboardItem !== 'undefined') {
+                const clipboard_item = new ClipboardItem({
+                    'text/plain': new Blob([plain], {
+                        type: 'text/plain'
+                    }),
+                    'text/html': new Blob([rich ?? plain], {
+                        type: 'text/html'
+                    }),
+                });
 
-        copyToClipboard(text) {
-            if (navigator.clipboard && window.isSecureContext) {
-                return navigator.clipboard.writeText(text);
+                await navigator.clipboard.write([clipboard_item]);
             } else {
-                const textArea = document.createElement("textarea");
+                const callback = event => {
+                    event.clipboardData.setData('text/plain', plain);
+                    event.clipboardData.setData('text/html', rich ?? plain);
+                    event.preventDefault();
+                };
 
-                textArea.value = text;
-                textArea.style.position = "absolute";
-                textArea.style.opacity = '0';
-
-                document.body.appendChild(textArea);
-                textArea.select();
-                return new Promise((res, rej) => {
+                await new Promise((res, rej) => {
+                    document.addEventListener('copy', callback);
                     document.execCommand('copy') ? res() : rej();
-                    textArea.remove();
+                    document.removeEventListener('copy', callback);
                 });
             }
         },

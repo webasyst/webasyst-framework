@@ -1,0 +1,14 @@
+<style>
+    .site-block-form { text-align: center; min-height: 36px; position: relative; box-sizing: border-box; }
+    .site-block-form:has(>.iframe-picture-cover) { min-height: 150px; }
+    .site-block-form .iframe-wrapper { display: flex; }
+    .child-iframe-cover { position: absolute; height: 100%; width: 100%; z-index: 1; }
+    .iframe-picture-cover { position: absolute; height: 100%; width: 100%; background-size: cover; background-repeat: no-repeat; background-position: center; }
+    .site-block-form iframe { width: 100%; }
+    .seq-child:has(.site-block-form .iframe-picture-cover) { width: 100%; }
+</style>
+{if $is_backend}
+<style>
+    .site-block-form .crm-form-block .crm-form-field[data-uid^="!f"] { display: none !important; };
+</style>
+{/if}

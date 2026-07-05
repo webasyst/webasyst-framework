@@ -2,26 +2,37 @@
 
 class waWebasystIDEndpointsConfig
 {
+    const REQUEST_TIMEOUT = 10;
+
     /**
      * @var waInstallerApps
      */
     protected $installer_apps;
 
+    /*
     public function getUrl()
     {
         $installer_apps = $this->getInstallerApps();
         if (!$installer_apps) {
             return '';
         }
-        return $installer_apps->getEndpointsUrl() . '?app=waid';
+        return $installer_apps->getEndpointsUrl() . '?app=waid&zoned=1';
+    } */
+
+    protected function getApp()
+    {
+        return 'waid';
     }
+
 
     protected function getInstallerApps()
     {
         if (!$this->installer_apps) {
             if (!class_exists('waInstallerApps')) {
-                $autoload = waAutoload::getInstance();
-                $autoload->add('waInstallerApps', 'wa-installer/lib/classes/wainstallerapps.class.php');
+                $file_path = 'wa-installer/lib/classes/wainstallerapps.class.php';
+                if (file_exists($file_path)) {
+                    waAutoload::getInstance()->add('waInstallerApps', $file_path);
+                }
             }
             if (!class_exists('waInstallerApps')) {
                 return null;
@@ -45,29 +56,11 @@ class waWebasystIDEndpointsConfig
 
     protected function requestEndpoints()
     {
-        $url = $this->getUrl();
-        if (!$url) {
+        $installer_apps = $this->getInstallerApps();
+        if (!$installer_apps) {
             return $this->packFailResult("invalid_url", "Invalid url");
         }
-
-        $options = [
-            'timeout' => 30,
-            'format' => waNet::FORMAT_JSON
-        ];
-
-        $net = new waNet($options);
-        $response = null;
-        try {
-            $response = $net->query($url);
-        } catch (Exception $e) {
-            $this->logException($e);
-            $this->logError([
-                'url' => $url,
-                'method' => __METHOD__,
-                'debug' => $net->getResponseDebugInfo()
-            ]);
-            return $this->packFailResult("fail_" . $e->getCode(), $e->getMessage());
-        }
+        $response = $installer_apps->getEndpoints($this->getApp());
 
         // No response from API
         if (!$response) {
@@ -94,9 +87,8 @@ class waWebasystIDEndpointsConfig
         if (!$correct_response) {
             // Unexpected response
             $this->logError([
-                'url' => $url,
+                'response' => $response,
                 'method' => __METHOD__,
-                'debug' => $net->getResponseDebugInfo()
             ]);
         }
 
@@ -108,7 +100,13 @@ class waWebasystIDEndpointsConfig
     protected function typecastEndpoints(array $endpoints)
     {
         $default_endpoints = null;
+        if (!empty($endpoints['zones'])) {
+            $endpoints['zones'] = array_map([$this, 'typecastEndpoints'], $endpoints['zones']);
+        }
         foreach ($endpoints as $idx => $endpoint_set) {
+            if ($idx === 'zones') {
+                continue;
+            }
             if (empty($endpoint_set['oauth2']) && empty($endpoint_set['api'])) {
                 unset($endpoints[$idx]);
                 continue;

@@ -1,0 +1,931 @@
+<script src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.iframe-transport.js"></script>
+<script src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.fileupload.js"></script>
+
+<div class="article site-base">
+    <div class="article-body">
+        {include file="templates/actions/backend/includes/domain_tabs.html" selected='files' inline}
+
+        <div class="flexbox s-files-page" id="s-files-page">
+            <div class="sidebar s-internal-sidebar hidden">
+                <div class="block not-padded">
+                    <div class="s-files-baseurl">
+                        <a href="#" class="s-baseurl router-link"><i class="icon fas fa-folder"></i>wa-data/public/site</a>
+                    </div>
+
+                    <div class="hierarchical" id="s-files-tree">
+
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="s-breadcrumbs custom-pb-12">
+                    <ul class="breadcrumbs">
+                        <li class="active"><a href="#" class="s-baseurl router-link">wa-data/public/site</a></li>
+                    </ul>
+                </div>
+                <div class="s-folder-actions-li flexbox middle" id="s-folder-actions-li">
+                    <span class="icon cursor-pointer size-20 js-folder-action-back custom-pt-4"><i class="fas fa-arrow-circle-left text-light-gray"></i></span>
+                    <div class="s-folder-action-name bold custom-pl-12" id="s-current-path"></div>
+                    <div class="dropdown" id="dropdown-actions-li">
+                        <a href="javascript:void(0)" class="dropdown-toggle without-arrow text-gray"><i class="icon fas fa-ellipsis-h"></i></a>
+                        <div class="dropdown-body">
+                            <ul class="menu">
+                                <li><a id="s-folder-rename" href="javascript:void(0)"><i class="icon fas fa-pen edit"></i>[`Rename`]</a></li>
+                                <li><a id="s-folder-move" href="javascript:void(0)"><i class="icon fas fa-share move"></i>[`Move to folder`]</a></li>
+                                <li><a id="s-folder-delete" href="javascript:void(0)"><i class="icon fas fa-times-circle delete"></i>[`Delete`]</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="s-editor custom-pt-20">
+                    <div class="block s-grey-toolbar">
+
+                        <!--<h4><span class="s-files-path-to-folder">wa-data/public/site</span><span id="s-current-path"></span></h4>-->
+                        <div class="s-filelist-actions-menu flexbox wrap space-16 custom-mb-24">
+                            <div>
+                                <a href="javascript:void(0)" class="button small" id="s-upload-link" >
+                                    <span class="icon custom-mr-8"><i class="fas fa-cloud-upload-alt upload small "></i></span>[`Upload files`]
+                                </a>
+                            </div>
+                            <div>
+                                <a  href="javascript:void(0)" class="button gray small" title="[`New folder`]" id="s-add-folder">
+                                    <span class="icon custom-mr-8"><i class="icon fas fa-folder-plus add"></i></span>[`New folder`]
+                                </a>
+                            </div>
+
+                            <div>
+                                <a href="javascript:void(0)" class="button light-gray small js-action-select">
+                                    <span class="icon custom-mr-8"><i class="icon fas fa-check-square"></i></span>[`Select`]
+                                </a>
+                                <div class="dropdown js-action-selected hidden" id="dropdown-selected-files">
+                                    <a href="javascript:void(0)" class="dropdown-toggle button light-gray small ">[`Selected`]
+                                        <span class="badge smaller gray js-operation-badge" id="s-files-count">0</span>
+                                    </a>
+                                    <div class="dropdown-body">
+                                        <ul class="menu">
+                                            <li><a id="s-files-move" class="disabled" href="javascript:void(0)"><i class="icon fas fa-share move"></i>[`Move to folder`]</a></li>
+                                            <li><a id="s-files-delete" class="disabled" href="javascript:void(0)"><i class="icon fas fa-times-circle delete"></i>[`Delete`]</a></li>
+                                        </ul>
+                                    </div>
+                                    <a href="javascript:void(0)" class="button light-gray small js-action-remove-selected">
+                                        <span class="icon"><i class="fas fa-times"></i></span>
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        {if !$wa->user()->getSettings($wa_app, 'hide_alert_files')}
+                        <div class="s-alert-text alert custom-mb-8">
+                            <div class="flexbox space-12 small">
+                                <span> <i class="fas fa-info-circle"></i></span>
+                                [`Files uploaded here are accessible to all website visitors without authorization. Do not upload private files.`]
+                                <a href="javascript:void(0)" class="alert-close custom-ml-auto"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="s-alert-text alert custom-mb-8">
+                            <div class="flexbox space-12 small">
+                                <span> <i class="fas fa-info-circle"></i></span>
+                                <span>{sprintf_wp(
+                                    'To upload a file to the site root; e.g., to confirm the site ownership for third-party services, add a “<em>%s</em>” rule in the <a href="%s" class="text-dark-gray underline">Settings</a>.',
+                                    _w('Custom files in site root'),
+                                    "{$wa_app_url}settings/?domain_id={$domain_id}&scroll_to=custom-texts"
+                                )}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <table id="s-files-grid" class="s-filelist borderless single-lined blank">
+                        <tr>
+                            <th class="min-width">
+                                <label>
+                                    <span class="wa-checkbox">
+                                        <input type="checkbox" class="all">
+                                        <span>
+                                            <span class="icon">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </th>
+                            <th>[`File`]</th>
+                            <th>[`Modified`]</th>
+                            <th><span class="float-right">[`Size`]</span></th>
+                            <th></th>
+                        </tr>
+                    </table>
+                    <div class="s-pagination"></div>
+                </div>
+            </div>
+            <div id="s-add-folder-dialog-wrapper">
+                <div class="dialog" id="s-add-folder-dialog">
+                    <div class="dialog-background"> </div>
+                    <div class="dialog-body">
+                        <form>
+                            <header class="dialog-header"><h1>[`New folder`]</h1></header>
+                            <div class="dialog-content">
+                                <div class="hint custom-pb-8">[`Folder name`]</div>
+                                <input type="text" id="s-folder-name" name="name" class="bold small long custom-mb-16" value="" placeholder="[`New folder`]">
+                                <div class="hint custom-pb-8">[`Folder path`]</div>
+                                <span></span>
+                            </div>
+                            <footer class="dialog-footer">
+                                <input type="submit" class="button" value="[`Create`]">
+                                <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+                            </footer>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id="s-rename-dialog-wrapper">
+                <div class="dialog" id="s-rename-dialog">
+                    <div class="dialog-background"> </div>
+                    <div class="dialog-body">
+                        <form>
+                            <header class="dialog-header"><h1>[`Rename`]</h1></header>
+                            <div class="dialog-content">
+                                <div class="hint custom-pb-8">[`Folder name`]</div>
+                                <input type="text" id="s-name" name="name" class="bold small long custom-mb-16" value="" placeholder="">
+                                <div class="hint custom-pb-8">[`Folder path`]</div>
+                                <span></span>
+                            </div>
+                            <footer class="dialog-footer">
+                                <input type="submit" class="button" value="[`Save`]">
+                                <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+                            </footer>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id="s-upload-dialog-wrapper">
+                <div class="dialog" id="s-upload-dialog">
+                    <div class="dialog-background"> </div>
+                    <div class="dialog-body">
+                        <form id="s-upload-form" method="post" action="?module=files&action=upload" enctype="multipart/form-data">
+                            {$wa->csrf()}
+                            <header class="dialog-header"><h1>[`Upload files`]</h1></header>
+                            <div class="dialog-content">
+                                <div style="display: none">
+                                    <input id="s-input-file" type="file" name="files[]" multiple>
+                                </div>
+
+                                <input type="hidden" name="path" id="s-upload-path" value="" />
+                                <div class="loading" style="display:none; margin-top: 10px">
+                                    <i class="icon fas fa-spinner fa-spin loading"></i> [`Uploading...`]
+                                </div>
+                            </div>
+                            <footer class="dialog-footer">
+                                <input type="submit" class="button hidden" value="[`Upload`]">
+                                <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+                            </footer>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id="s-move-dialog-wrapper">
+                <div class="dialog" id="s-move-dialog">
+                    <div class="dialog-background"> </div>
+                    <div class="dialog-body">
+                        <form>
+                            <header class="dialog-header"><h1>[`Move to folder`] <span style="color: #aaa;"></span></h1></header>
+                            <div class="dialog-content">
+                                <div class="wa-select">
+                                    <select name="new_path" class="text-ellipsis width-100"></select>
+                                </div>
+                                <input type="hidden" name="path" />
+                                <div id="s-move-dialog-files" style="display:none"></div>
+                            </div>
+                            <footer class="dialog-footer">
+                                    <input type="submit" class="button" value="[`Move`]">
+                                    <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+                            </footer>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id="s-delete-dialog-wrapper">
+                <div class="dialog" id="s-delete-dialog">
+                    <div class="dialog-background"></div>
+                    <div class="dialog-body">
+                        <form>
+                            <header class="dialog-header"><h1>[`Delete files`] <span style="color: #aaa;"></span></h1></header>
+                            <div class="dialog-content">
+                                [`Files will be deleted without the ability to recover.`]
+                            </div>
+                            <footer class="dialog-footer">
+                                <input type="submit" class="button orange" value="[`Delete`]">
+                                <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+                            </footer>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    SiteFilemanager = (function ($) {
+        return class {
+            constructor(options) {
+                const that = this;
+            // DOM
+                that.$wrapper = options["$wrapper"];
+                that.$files_tree = that.$wrapper.find('#s-files-tree');
+                that.$internal_sidebar = that.$wrapper.find('.s-internal-sidebar');
+                that.$content = that.$wrapper.find('.content');
+                that.$toolbar = that.$content.find('.s-grey-toolbar');
+                that.$breadcrumbs = that.$content.find('.s-breadcrumbs');
+                that.$files_grid = that.$content.find('#s-files-grid');
+                that.$content_wrapper = $('#wa-app');
+
+            // VARS
+
+                that.locales = options["locales"];
+                that.page = options["$page"];
+                that.domain_url = options["domain_url"];
+                that.domain_protocol = options["domain_protocol"];
+                that.$wa_app_url = options["$wa_app_url"];
+                that.$domain_id = options["$domain_id"];
+                that.$sub_dirs_decoded = options["$sub_dirs_decoded"];
+                that.$dirs = options["$dirs"];
+                that.$files_path = options["$files_path"];
+                that.domains_decode = options["domains_decode"];
+            // INIT
+                that.initClass();
+
+            /*TODO
+            - не открываются файлы
+            - проработать history.onPop (нужно ли?)
+            - зачем нужны sub_dirs_decoded ?
+            */
+            };
+
+            initClass() {
+                const that = this;
+
+                that.initDispatch(false, true);
+                that.initFolderActions();
+                that.initToolbar();
+                that.initFilesGrid();
+
+                that.$wrapper.on("click", "a.router-link", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var $link = $(this),
+                        uri = $link.attr("href");
+                        that.initDispatch(uri);
+                });
+            }
+
+            initDispatch(hash, unset_state = false, loaded = true) {
+                const that = this;
+                let page = 1;
+                let params = hash;
+
+                if (hash === false) {
+                    hash = that.$files_path;
+                    page = that.page;
+                }
+
+                hash = hash.replace(/^[^#]*#\/*/, ''); /* fix sintax highlight*/
+
+                if (params && (params.indexOf('?') != -1) && params.substr(-1) != '/') {
+                    let tmp = params.substr(params.indexOf('?') + 1);
+                    hash = hash.substr(0, hash.indexOf('?'));
+                    tmp = tmp.split('=');
+                    if (tmp[0] == 'page') {
+                        page = tmp[1];
+                    }
+                }
+
+                that.$files_path = hash;
+                const page_url = page != 1 ? '&page=' + page : '';
+
+                if (loaded && !unset_state) {
+                    let url = that.$wa_app_url + 'files/' + hash + (hash ? '/' : '') +  '?domain_id=' + that.$domain_id + page_url;
+                    history.pushState({
+                        content_url: url
+                    }, "", url);
+                }
+                if (loaded) {
+                    that.initBreadcrumbsHtml();
+                    that.filesAction(hash, page);
+                }
+                else {
+                    const url = that.$wa_app_url + 'files/' + hash + '/' + '?domain_id=' + that.$domain_id + page_url;
+                    $.site.loadContent(url);
+                }
+            }
+
+            initFolderActions() {
+                const that = this;
+                const $actions_li = that.$content.find("#s-folder-actions-li");
+
+                $actions_li.on('click', '.js-folder-action-back', function() { //add folder
+                        that.initGoBack();
+                })
+
+                $actions_li.find("#dropdown-actions-li").waDropdown({
+                    hover: false,
+                    ready: function(dropdown){
+                        const $menu = dropdown.$wrapper.find('.menu');
+                        $menu.on('click', '#s-folder-rename', function(e){
+                            that.renameDialog(that.$content.find("#s-current-path").text(), false, true)
+                        })
+                        $menu.on('click', '#s-folder-delete', function(e){
+                            that.deleteDialog(that.$content.find("#s-current-path").text(), false, true)
+                        })
+                        $menu.on('click', '#s-folder-move', function(e){
+                            that.moveDialog(that.$content.find("#s-current-path").text(), false, true)
+                        })
+                    },
+                });
+            }
+
+            initToolbar() {
+                const that = this,
+                $toolbar = that.$toolbar;
+                let checkbox_hidden = true;
+
+                $toolbar.find('.alert-close').on('click', function() {
+                    const $alert = $(this).closest('.s-alert-text');
+                    $.post('?module=filemanager&action=hideAlertFiles', null, function (r) {
+                        if (r?.status === 'ok') {
+                            $alert.remove();
+                        }
+                    });
+                })
+
+                $toolbar.on('click', '.js-action-select', function() {
+                    if (checkbox_hidden) {
+                        that.$files_grid.addClass('checkbox-show');
+                        $(this).addClass('hidden');
+                        $toolbar.find('.js-action-selected').removeClass('hidden');
+                        checkbox_hidden = false;
+                    }
+
+                })
+
+                $toolbar.on('click', '.js-action-remove-selected', function() {
+                    if (!checkbox_hidden) {
+                        that.$files_grid.removeClass('checkbox-show')
+                        $toolbar.find('.js-action-selected').addClass('hidden');
+                        $toolbar.find('.js-action-select').removeClass('hidden');
+                        checkbox_hidden = true;
+                        that.$files_grid.find("input").prop('checked', false);
+                        that.$toolbar.find("#s-files-count").text(0);
+                        that.$toolbar.find("#dropdown-selected-files .dropdown-body a").addClass('disabled');
+                    }
+                })
+
+                $toolbar.on('click', '#s-add-folder', function() { //add folder
+                    const dialog_html = that.$wrapper.find("#s-add-folder-dialog-wrapper").html();
+                    $.waDialog({
+                        html: dialog_html,
+                        onOpen: function ($dialog, dialog_instance) {
+                            $dialog.find('span').html(that.filesPath(true));
+                            $dialog.find('#s-folder-name').focus();
+
+                            $dialog.find('form').on('submit', function(){
+                                let folder = $dialog.find("#s-folder-name").val();
+                                $dialog.find("input[type=submit]").prop('disabled', true);
+                                $.post('?module=files&action=addFolder', { path: that.filesPath(), name: folder}, function (response) {
+                                    if (response.status == 'ok') {
+                                        that.initDispatch(that.filesPath(), false, false)
+                                        dialog_instance.close();
+
+                                    } else if (response.status == 'fail') {
+                                        alert(response.errors);
+                                        $dialog.find("input[type=submit]").prop('disabled', false);
+                                    }
+                                }, "json");
+                                return false;
+                            })
+                        },
+                    });
+                    return false;
+                });
+
+                $toolbar.find("#dropdown-selected-files").waDropdown({
+                    hover: false,
+                    ready: function(dropdown){
+                        const $menu = dropdown.$wrapper.find('.menu');
+                        $menu.on('click', '#s-files-delete', function(e){
+                            let files = [];
+                            that.$files_grid.find("input:checked").each(function () {
+                                if (!$(this).hasClass('all')) {
+                                    files.push($(this).val());
+                                }
+                            });
+                            if (!files.length) {
+                                return false;
+                            }
+                            that.deleteDialog(files, true, false, true)
+                        })
+
+                        $menu.on('click', '#s-files-move', function(e){
+                            that.moveDialog(false, true, false, true)
+                        })
+                    },
+                });
+
+                var jqXHR = null;
+
+                $('#s-input-file').fileupload({
+                    add: function(e, data) {
+                        if (data.files[0]['size'] > {waRequest::getUploadMaxFilesize()}) {
+                            alert('{sprintf('[`Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file.`]', {waRequest::getUploadMaxFilesize()})}')
+
+                        } else {
+                            jqXHR = data.submit();
+                        }
+                    },
+                    dataType: 'json',
+                    start: function (e, data) {
+                        const dialog_html = that.$wrapper.find("#s-upload-dialog-wrapper").html();
+                        that.$dialog_upload = $.waDialog({
+                            html: dialog_html,
+                            onOpen: function ($dialog, dialog_instance) {
+                                $dialog.find("div.loading").show();
+                                $dialog.find("input[type=submit]").attr('disabled', 'disabled');
+                                $dialog.on('click', '.js-close-dialog', function(){
+                                    jqXHR.abort();
+                                })
+                            }
+                        });
+                    },
+                    done: function (e, data) {
+                        if (data.result.status == 'fail') {
+                            alert(data.result.errors);
+                        }
+                        that.filesAction(that.filesPath());
+                    },
+                    stop: function () {
+                        that.$dialog_upload.close();
+                    }
+                });
+
+                $toolbar.on('click', '#s-upload-link', function() {
+                    $('#s-input-file').click();
+                });
+
+            }
+
+            initFilesGrid() {
+                const that = this;
+                that.$files_grid.on('change', "input", function () {
+                    if ($(this).hasClass('all')) {
+                        if ($(this).is(':checked')) {
+                            that.$files_grid.find("input").prop('checked', true);
+                        } else {
+                            that.$files_grid.find("input").prop('checked', false);
+                        }
+                    } else {
+                        if (!$(this).is(':checked')) {
+                            that.$files_grid.find("input.all").prop('checked', false);
+                        } else if (that.$files_grid.find("input:not(:checked)").length == 1) {
+                            that.$files_grid.find("input.all").prop('checked', true);
+                        }
+                    }
+                    var n = that.$files_grid.find("input:checked").length - (that.$files_grid.find("input.all").is(":checked") ? 1 : 0);
+                    if (n > 0) {
+                        that.$toolbar.find("#dropdown-selected-files .dropdown-body a").removeClass('disabled');
+                    } else {
+                        that.$toolbar.find("#dropdown-selected-files .dropdown-body a").addClass('disabled');
+                    }
+
+                    that.$toolbar.find("#s-files-count").text(n);
+                });
+            }
+
+            filesAction(path, page) {
+                const that = this,
+                $files_tree = that.$files_tree;
+                //let page = 1;
+                let params = path;
+
+                if ($files_tree.length) {
+                    loadFiles();
+                }
+
+                function loadFiles () {
+                    const $actions_li = that.$content.find("#s-folder-actions-li");
+                    if (!params) {
+                        $actions_li.hide();
+                    } else {
+                        $actions_li.show();
+                    }
+
+                    that.filesList(params, page);
+
+                    $("#s-upload-path").val(params || '');
+                    that.current_folder = params.substr(params.lastIndexOf('/') + 1) || '';
+                    const path = that.domains_decode[that.current_folder] || that.current_folder;
+                    that.$content.find("#s-current-path").html(path);
+                    that.$toolbar.find("#s-files-count").html('0');
+                    that.$files_grid.find("input.all").removeAttr('checked');
+                    that.$toolbar.find("#dropdown-selected-files .dropdown-body a").addClass('disabled');
+                };
+            }
+
+            filesList(path, page) {
+                const that = this;
+                if (!path) {
+                    path = that.filesPath();
+                }
+                if (!page) {
+                    page = filesPage();
+                }
+                let url;
+                let url_class;
+                let data = {
+                    path: path
+                };
+
+                $.post("?module=filemanager&action=list&page=" + page, data, "json").then(function (response) {
+                    that.$files_grid.find("tr.s-file").remove();
+                    $("div.s-pagination").empty();
+                    for (let i = 0; i < response.data.files.length; i++) {
+                        let r = response.data.files[i];
+                        if (r.is_file) {
+                            url = 'http://' + that.domain_url + '/wa-data/public/site/' + path + '/' + r.file;
+                            url_class = 's-file-name';
+                        } else {
+                            url = '#/' + path + (path ? '/' : '') + r.file;
+                            url_class = 's-file-name router-link';
+                        }
+
+                        let checkbox = '<label><span class="wa-checkbox"><input type="checkbox" value="'+r.file+'"><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>';
+                        const file_name = that.domains_decode[r.file] || r.file;
+                        let html = '<tr class="s-file small"><td class="min-width">'+ checkbox +'</td>' +
+                            '<td class="file-name-td"><div class="file-name flexbox middle space-8"><i class="icon text-gray fas fa-' + r.type + '"></i> <div><a class="'+ url_class +'" href="'+url+'">' + file_name + '</a><i class="shortener"></i></div></div></td>' +
+                            '<td><div>' + r.datetime + '<i class="shortener"></i></div></td>' +
+                            '<td><div><span class="float-right">' + getFileSize(r.size) + '</span><i class="shortener"></i></div></td>' +
+                            '<td><div class="dropdown clickable" id="' + i + '-' + r.timestamp + '"><a href="javascript:void(0)" class="dropdown-toggle without-arrow text-gray"><i class="icon fas fa-ellipsis-h"></i></a>' +
+                            '<div class="dropdown-body right"><ul class="menu">' +
+                            '</ul></div></div></td></tr>';
+                            that.$files_grid.append(html);
+                            that.$files_grid.find('.dropdown.clickable').each(function(ind, el){
+                                $(el).waDropdown({
+                                    hover: false,
+                                    ready: function(dropdown){
+                                        const $menu = dropdown.$wrapper.find('.menu');
+                                        $menu.on('click', '.file-rename', function(e){
+                                            that.renameDialog(r.file, r.is_file, false)
+                                        })
+                                        $menu.on('click', '.file-delete', function(e){
+                                            that.deleteDialog(r.file, r.is_file, false)
+                                        })
+
+                                        $menu.on('click', '.file-move', function(e){
+                                            that.moveDialog(r.file, r.is_file, false)
+                                        })
+                                    },
+                                    open: function(dropdown){
+                                        const $menu = dropdown.$wrapper.find('.menu');
+                                        if (!$menu.children().length) {
+                                            const file = dropdown.$wrapper.closest('tr').find('input[type=checkbox]').val();
+                                            const menu_list = that.getFileMenu(r.file, r.is_file);
+                                            $menu.append(menu_list);
+                                        }
+                                    },
+                                });
+                            })
+                    }
+                    if (response.data.pages > 1) { //TO-DO test
+                        let html = '<ul class="paging">';
+                        for (let i = 1; i <= response.data.pages; i++) {
+                            html += '<li class="' + (i == page ? 'selected' : '') + '"><a class="router-link" href="#/' + path + '?page=' + i + '">' + i + '</a></li>';
+                        }
+                        html += '</ul>';
+                        $("div.s-pagination").html(html).show();
+                    }
+                }, function() {
+                });
+
+                function filesPage(hash) { //TO-DO Change
+                    if (!hash) {
+                        hash = location.hash;
+                    }
+                    hash = hash.split('/');
+                    hash = hash[hash.length - 1];
+                    if (hash && hash.substr(0, 1) == '?') {
+                        hash = hash.substr(1).split('=');
+                        if (hash[0] == 'page') {
+                            return hash[1];
+                        }
+                    }
+                    return 1;
+                }
+
+                function getFileSize(size) {
+                    if (size < 1024) {
+                            return size + ' ' + that.locales['b'];
+                        } else if (size < 1024 * 1024) {
+                            return Math.round(size/1024) + ' ' + that.locales['kb'];
+                        } else if (size < 1024 * 1024 * 1024) {
+                            return Math.round(size/(1024 * 1024)) + ' ' + that.locales['mb'];
+                        } else {
+                            return Math.round(size/(1024 * 1024 * 1024)) + ' ' + that.locales['gb'];
+                        }
+                    }
+            }
+
+            getFileMenu(file, is_file) {
+                const that = this;
+                const open_link_class = (is_file ? '' : 'router-link');
+                const url = that.domain_url + '/wa-data/public/site/' + that.filesPath() + '/' + file;
+                const open_link_url = (is_file ? that.domain_protocol + url : '#/' + that.filesPath() + '/' + file);
+
+                const menu = $('<ul class="menu"></ul>');
+                if (is_file) {
+                    if (file.substr(-4) != '.php' && file.substr(-6) != '.phtml' && file.substr(0,1) != '.') {
+                        menu.append('<li>' +
+                            '<a href="'+ open_link_url + '" target="_blank" class="' + open_link_class + '">' +
+                            '<i class="icon fas fa-link globe smaller"></i>' + that.locales['open'] + '<i class="icon fas fa-external-link-alt new-window"></i>' +
+                            '</a>' +
+                            '</li>');
+                    }
+                    if (file.substr(-4) != '.php' && file.substr(-6) != '.phtml') {
+                        menu.append('<li>' +
+                            '<a href="'+that.$wa_app_url+'?module=files&action=download&path=' +
+                                that.filesPath() + '&file=' + file + '" download><i class="icon fas fa-download"></i>' + that.locales['download'] +
+                            '</a></li>');
+                    }
+                }
+                menu.append($('<li></li>').append('<a href="javascript:void(0);" class="file-rename"><i class="icon fas fa-edit edit"></i>' + that.locales['rename'] + '</a>'));
+                menu.append($('<li></li>').append('<a href="javascript:void(0);" class="file-move"><i class="icon fas fa-share move"></i>' + that.locales['move'] + '</a>'));
+                menu.append($('<li></li>').append('<a href="javascript:void(0);" class="file-delete"><i class="icon fas fa-trash-alt delete"></i>' + that.locales['delete'] + '</a>'));
+
+                return menu.html();
+            }
+
+            //Used for all rename variations on page
+            renameDialog(file, is_file = false, is_action = false) {
+                const that = this;
+                const dialog_html = that.$wrapper.find("#s-rename-dialog-wrapper").html();
+                    $.waDialog({
+                        html: dialog_html,
+                        onOpen: function ($dialog, dialog_instance) {
+                            $dialog.find('span').html(that.filesPath(true));
+                            $dialog.find('#s-name').val(file).focus().select();
+
+                            $dialog.find('form').on('submit', function(){
+                                const name = $dialog.find('#s-name').val();
+                                const additional_path = is_action ? '' : '/' + file;
+                                let data = {
+                                    path: that.filesPath(),
+                                    name: name,
+                                    file: file
+                                };
+                                if (!is_file) {
+                                    data = {
+                                    path: that.filesPath() + additional_path,
+                                    name: name,
+                                    };
+                                }
+                                $dialog.find("input[type=submit]").prop('disabled', true);
+                                $.post('?module=files&action=rename', data, function (response) {
+                                    if (response.status == 'ok') {
+                                        dialog_instance.close();
+                                        if (is_action) {
+                                            //location.reload()
+                                            that.initDispatch(response.data.hash.slice(8, -1), false, false)
+                                        }
+                                        else {
+                                            that.filesAction(that.filesPath())
+                                        }
+
+                                    } else if (response.status == 'fail') {
+                                        alert(response.errors);
+                                        $dialog.find("input[type=submit]").prop('disabled', false);
+                                    }
+                                }, "json");
+                                return false;
+                            })
+                        },
+                    });
+                    return false;
+            }
+
+            //Used for all delete variations on page
+            deleteDialog(file, is_file = false, is_action = false, multiple = false) {
+                const that = this;
+                const dialog_html = that.$wrapper.find("#s-delete-dialog-wrapper").html();
+                $.waDialog({
+                    html: dialog_html,
+                    onOpen: function ($dialog, dialog_instance) {
+                        if (!is_file) {
+                            $dialog.find('h1').html(that.locales['delete_folder_title'])
+                            $dialog.find('.dialog-content').html(that.locales['delete_content'])
+                        }
+                        if (multiple) {
+                            $dialog.find('h1 span').text('(' + file.length + ')')
+                        }
+                        $dialog.find('form').on('submit', function(){
+                            const name = $dialog.find('#s-name').val();
+                            const additional_path = is_action ? '' : '/' + file;
+                            let data = {
+                                path: that.filesPath(),
+                                file: file
+                            }
+                            if (multiple) {
+                                data = {
+                                path: that.filesPath(),
+                                "file[]": file
+                                };
+                            }
+                            if (!is_file) {
+                                data = {
+                                path: that.filesPath() + additional_path,
+                                };
+                            }
+                            $dialog.find("input[type=submit]").prop('disabled', true);
+                            $.post('?module=files&action=delete', data, function (response) {
+                                if (response.status == 'ok') {
+                                    dialog_instance.close();
+                                    if (is_action) {
+                                       that.initGoBack(false);
+                                    }
+                                    else {
+                                        that.initDispatch(that.filesPath(), false, false)
+                                    }
+                                } else if (response.status == 'fail') {
+                                    alert(response.errors);
+                                    $dialog.find("input[type=submit]").prop('disabled', false);
+                                }
+                            }, "json");
+                            return false;
+                        })
+                    }
+                });
+                return false;
+            }
+
+            //Used for all move variations on page
+            moveDialog(file, is_file = false, is_action = false, multiple = false) {
+                const that = this;
+                const dialog_html = that.$wrapper.find("#s-move-dialog-wrapper").html();
+                $.waDialog({
+                    html: dialog_html,
+                    onOpen: function ($dialog, dialog_instance) {
+                        const $form = $dialog.find('form');
+                        $dialog.find("select").html(that.filesPathOptions(that.$dirs));
+                        $dialog.find("input[name=path]").val(that.filesPath() + '/');
+                        if (multiple) {
+                            var n = 0;
+                            that.$files_grid.find("input:checked").each(function () {
+                                if (!$(this).hasClass('all')) {
+                                    n++;
+                                    $dialog.find("#s-move-dialog-files").append('<input type="hidden" name="file[]" value="' + $(this).val() + '" />');
+                                }
+                            });
+                            if (!n) {
+                                return false;
+                            }
+                            $dialog.find("h1 span").html('(' + n + ')');
+                        } else {
+                            $dialog.find("h1 span").empty();
+                            if (!is_action) {
+                            $dialog.find("#s-move-dialog-files").html('<input type="hidden" name="file" value="' + file + '" />');
+                            }
+
+                        }
+                        $form.on('submit', function(){
+                            $.post('?module=files&action=move', $form.serialize() , function (response) {
+                                if (response.status == 'ok') {
+                                    if (is_action) {
+                                       that.initDispatch(response.data.hash.slice(0,-1), false, false);
+                                    }
+                                    else {
+                                        that.initDispatch(that.filesPath())
+                                    }
+                                    dialog_instance.close();
+                                } else if (response.status == 'fail') {
+                                    alert(response.errors);
+                                    $dialog.find("input[type=submit]").prop('disabled', false);
+                                }
+                            }, "json");
+                            return false;
+                        })
+                    }
+                })
+            }
+
+            initGoBack(load = true) {
+                const that = this;
+                let current_path = that.filesPath();
+                const temp = current_path.lastIndexOf('/');
+                const previous_path = temp > 0 ? current_path.slice(0, temp) : '';
+                that.initDispatch(previous_path, false, load);
+            }
+
+            filesPath(full) {
+                const that = this;
+                const prefix = full ? 'wa-data/public/site/' : '';
+                return prefix + that.$files_path;
+            }
+
+            filesPathOptions(data, prefix = '', prev_full_path = '') {
+                const that = this;
+                const max_length = 64;
+                let id = '';
+                let result = '';
+
+                let current_folder = that.current_folder;
+
+                if (prefix == '') {
+                    result = '<option value="">wa-data/public/site</a>';
+                    prefix = '&nbsp;&nbsp;&nbsp;'
+                };
+
+                for (var i = 0; i < data.length; i++) {
+                    id = typeof(data[i]) == 'string' ? data[i] : data[i]['id'];
+                    let selected = false;
+                    let full_path = prev_full_path + id + '/';
+                    if (current_folder === id) {
+                        selected = true;
+                    }
+
+                    const full_name = that.domains_decode[id] || id;
+                    const is_max_length = full_name.length > max_length;
+                    const name = prefix + (is_max_length ? full_name.substring(0, max_length) + "..." : full_name);
+                    result += `<option ${ selected ? 'selected="selected"' : '' } value="${ full_path }" ${ is_max_length ? `title=${ full_name }` : '' }>${ name }</option>`;
+
+                    if (typeof(data[i]) != 'string') {
+                        result +=  that.filesPathOptions(data[i]['childs'], prefix + '&nbsp;&nbsp;&nbsp;', full_path);
+                    }
+                }
+                return result;
+            }
+
+            initBreadcrumbsHtml() {
+                const that = this,
+                $wrapper = that.$wrapper;
+
+                that.$breadcrumbs.find('.breadcrumbs').html(getTreeHTML());
+
+                function getTreeHTML() {
+                    const breadcrumb_ar = that.$files_path.split('/');
+                    let html = '<li><a href="#" class="s-baseurl router-link">wa-data/public/site</a></li>';
+                    let li_class = '';
+                    let link_class = 'router-link';
+                    let link_href = '#';
+
+                    if (breadcrumb_ar.length === 1 && breadcrumb_ar[0] === '') {
+                        html = '<li class="active"><a href="javascript:void(0);" class="s-baseurl">wa-data/public/site</a></li>';
+
+                    } else {
+                        for (let i = 0; i < breadcrumb_ar.length; i++) {
+                        link_href += '/' + breadcrumb_ar[i];
+                        if (i === breadcrumb_ar.length - 1) {
+                            li_class = 'active';
+                            link_href = 'javascript:void(0);'
+                            link_class = ''
+                        }
+                        const path = that.domains_decode[breadcrumb_ar[i]] || breadcrumb_ar[i];
+                        html += '<li class="'+ li_class +'"><a href="'+ link_href +'" class="'+ link_class +'">'+ path +'</a></li>'
+                        }
+                    }
+                    return html;
+                }
+            }
+        }
+
+    })(jQuery);
+
+    (function ($) {
+        document.title = '[`Files`] — ' + {json_encode($domain_idn)};
+        new SiteFilemanager({
+            $wrapper: $("#s-files-page"),
+            $domain_id: '{$domain_id}',
+            domain_url: '{$domain.name}',
+            $wa_app_url: '{$wa_app_url}',
+            $dirs: {json_encode($dirs)},
+            $sub_dirs_decoded: {json_encode($sub_dirs_decoded)},
+            $files_path: '{$files_path}',
+            $page: '{$page|default: 1}',
+            domain_protocol: {json_encode($domain_protocol)},
+            domains_decode: {json_encode($domains_decode)},
+            locales: {
+                open: '[`Open`]',
+                download: '[`Download`]',
+                rename: '[`Rename`]',
+                move: '[`Move to folder`]',
+                delete: '[`Delete`]',
+                delete_folder_title: '[`Delete folder`]',
+                delete_content: "[`Folder will be deleted without the ability to recover.`]",
+                b: "[s`B`]",
+                kb: "[s`kB`]",
+                mb: "[s`MB`]",
+                gb: "[s`GB`]",
+            }
+        });
+        })(jQuery);
+
+</script>

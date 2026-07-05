@@ -1,0 +1,293 @@
+
+<div class="dialog s-settings-redirect-dialog" id="js-settings-redirect-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body" style="">
+
+        <header class="dialog-header">
+            <h4>[`Redirect rule`]</h4>
+        </header>
+        <div class="dialog-content">
+            <form>
+            <div class="fields">
+                <input type="hidden" name="id" value="{if strlen($route_id)}{$route_id|escape}{/if}">
+                <div class="field-group field vertical old-address">
+                    <div class="name">[`Old address`]</div>
+                    <div class="value">
+                        <span class="s-domain-url bold break-word s-small">{waIdna::dec($domain_name|default:'')}/</span>
+                        <input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{else}*{/if}" class="js-old-url bold long s-small" />
+                    </div>
+                </div>
+                <div class="field field-glymph align-center">
+                    <div class="value">
+                        <span class="icon custom-px-4 text-dark-gray"><i class="fas fa-long-arrow-alt-down"></i></span>
+                    </div>
+                </div>
+                <div class="field-group field vertical new-address">
+                    <div class="name">[`New address`]</div>
+                    <div class="value">
+                        <input type="text" name="params[redirect]" value="{if !empty($route.redirect)}{$route.redirect|escape}{/if}" class="js-new-url bold longer s-small" />
+                        <p class="hint">[`If the new address has the same domain name then you may enter only the part after the domain; e.g., <em>/about/</em>.`]</p>
+                    </div>
+                </div>
+                <div class="field field-redirect-disabled">
+                    <div class="value">
+                        {if empty($route.disabled) && ifempty($route.disabled) <= 0}
+                            {$route_disabled = null}
+                        {else}
+                            {$route_disabled = 1}
+                        {/if}
+
+                        <div class="switch-with-text">
+                            <span class="switch smaller" id="switch-redirect-dialog-{$route_id|default:'new'}">
+                                <input type="checkbox" id="switch-redirect" name="params[disabled]" value="{if $route_disabled}1{else}0{/if}" {if !$route_disabled}checked{/if}>
+                                <input type="hidden" id="switch-redirect-hidden" name="params[disabled]" value="{if $route_disabled}1{else}0{/if}">
+                            </span>
+                            <label class="bold s-small" for="switch-redirect" data-active-text="[`Redirect enabled`]" data-inactive-text="[`Redirect disabled`]">{if !$route_disabled}[`Redirect enabled`]{else}[`Redirect disabled`]{/if}</label>
+                        </div>
+                        <script>
+                            ( function($) {
+                                $switch = $("#switch-redirect-dialog-{$route_id|default:'new'}");
+                                $switch.waSwitch({
+                                    ready: function (wa_switch) {
+                                        let $label = wa_switch.$wrapper.siblings('label');
+                                        let $input = wa_switch.$wrapper.find('input');
+                                        wa_switch.$label = $label;
+                                        wa_switch.$input = $input;
+                                        wa_switch.active_text = $label.data('active-text');
+                                        wa_switch.inactive_text = $label.data('inactive-text');
+                                    },
+                                    change: function(active, wa_switch) {
+                                        if (active) {
+                                            wa_switch.$input.each(function(){
+                                                $(this).val('0')
+                                            });
+                                            wa_switch.$label.text(wa_switch.active_text);
+                                        }
+                                        else {
+                                            wa_switch.$input.each(function(){
+                                                $(this).val('1')
+                                            });
+                                            wa_switch.$label.text(wa_switch.inactive_text);
+                                        }
+                                    }
+                                });
+                            })(jQuery);
+                        </script>
+                    </div>
+                </div>
+                <div class="field field-response-code">
+                    <div class="value">
+                        {if empty($route.code) || $route.code == 301}
+                            {$route_code = 301}
+                            {$is_301 = 1}
+                        {else}
+                            {$route_code = 302}
+                            {$is_301 = null}
+                        {/if}
+                        <div class="toggle small" id="toggle-response-code">
+                            <span class="{if $is_301}selected{/if}" data-id="301">[`Permanent (301)`]</span>
+                            <span class="{if !$is_301}selected{/if}" data-id="302">[`Temporary (302)`]</span>
+                            <input type="hidden" name="params[code]" value="{$route_code}" {if !$is_301} checked{/if}>
+                        </div>
+                        <div class="hint">[`Permanent redirect with response code 301 is the sign for search engines that the new URL should be indexed instead of the old one. Use a temporary redirect with the server response code 302 if you are planning to cancel it later.`]</div>
+                    </div>
+
+                </div>
+
+                <div id="s-route-comment" class="field vertical">
+                    <div class="name">[`Comment`]</div>
+                    <div class="value">
+                        <textarea name="params[comment]" class="s-comment">{$route.comment|default:null|escape}</textarea>
+                    </div>
+                </div>
+            </div>
+        </form></div>
+        <footer class="dialog-footer">
+            <div class="flexbox middle space-8 wrap">
+                <div class="">
+                    <button class="js-save button">[`Save`]</button>
+                    <button class="js-close-dialog button light-gray">[`Cancel`]</button>
+                </div>
+                {if strlen($route_id)}
+                    <div class="wide align-right">
+                        <button class="js-delete red nobutton"><i class="fas fa-trash-alt"></i> <span class="desktop-only">[`Delete`]</span></button>
+                    </div>
+                {/if}
+                <div class="js-place-for-errors state-error-hint{if strlen($route_id)} width-100{/if}"></div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script>(function() { "use strict";
+
+    const site_app_url = {$wa_app_url|json_encode};
+    const domain_id = {$domain_id};
+    const $route_id = {if strlen($route_id)}{$route_id}{else}''{/if};
+    const save_url = site_app_url + '?module=configure&action=redirectSave' + '&domain_id=' + domain_id + '&route=' + $route_id;
+    const delete_url = site_app_url + '?module=configure&action=redirectDelete' + '&domain_id=' + domain_id;
+
+    const $wrapper = $('#js-settings-redirect-dialog');
+    const $form = $wrapper.find('form');
+    const $save_button = $wrapper.find('.js-save');
+    const $place_for_errors = $wrapper.find('.js-place-for-errors');
+    var dialog;
+    initToggle()
+
+    function initToggle() {
+        setTimeout(() => {
+            $form.find("#toggle-response-code").waToggle({
+                change: function(event, target, toggle) {
+                    const input = toggle.$wrapper.find('input');
+                    input.attr('checked') ? input.attr('checked', false) : input.attr('checked', true);
+                    input.val($(target).data('id'));
+                }
+            });
+        }, 1);
+    }
+
+    // Save to server when user clicks Save button
+    $save_button.on('click', function() {
+        saveHandler();
+        return false;
+    });
+    $form.submit(function() {
+        saveHandler();
+        return false;
+    });
+
+    // Delete page when user clicks on Delete button
+    $wrapper.on('click', '.js-delete', function() {
+        $.waDialog.confirm({
+                title: '[`Redirect deletion`]',
+                text: '[`The redirect will removed from the site. Continue?`]',
+                success_button_title: "[`Delete`]",
+                success_button_class: 'danger',
+                cancel_button_title: "[`Cancel`]",
+                cancel_button_class: 'light-gray',
+                onSuccess: deleteHandler
+            });
+        });
+
+    function deleteHandler() {
+        if ($route_id) {
+            $.post(delete_url, { 'route': $route_id }).then(function(r) {
+                if (r.status == 'ok') {
+                    $wrapper.data('dialog').close();
+                    $.site.reloadWithScrollTo();
+                    return
+                }
+                updateRoutingErrors(r.data.routing_errors);
+            }, function(r) {
+            console.log('Error saving page settings', arguments);
+            updateRoutingErrors(r.errors);
+            });
+        }
+    }
+
+
+    let errors = [];
+
+    function updateRoutingErrors(errors) {
+
+        if ($.isArray(errors)) {
+            errors.forEach(function(e) {
+                var $field = null;
+                if (e.field) {
+                    $field = $form.find('[name="'+e.field+'"]');
+                }
+                const $msg = $('<div class="state-error-hint custom-mt-4"></div>').html(e.description);
+
+                if($field && $field.length) {
+                    $field.addClass('state-error').after($msg);
+                }
+            });
+            return
+        }
+            $place_for_errors.append(errors);
+
+    }
+
+    function validateUrls() {
+        // Rule address contains unsupported character, regexp for define it
+        const invalid_url_regexp = /(\&|\$|\+|\,|\;|\=|\?|\@|\#|\[|\]|\}|\||\^|\%)/;
+        const $old_url = $form.find('.js-old-url'),
+              old_url = $old_url.val(),
+              res = old_url.match(invalid_url_regexp);
+        if (res) {
+            //$settings_form_status.html('');
+            let title = '[`Rule cannot be saved`]',
+                content = '[`Rule address contains unsupported character <strong class="highlighted">%s</strong>.`]';
+            content = content.replace(/\%s/, res[0]);
+            errors.push({
+                field: $old_url.attr("name"),
+                description: content
+            });
+        }
+
+        const $new_url = $form.find('.js-new-url'),
+              new_url = $new_url.val();
+        if (!isValidURL(new_url)) {
+            let content = '[`Please enter a valid URL starting with <mark>/</mark>, <mark>http://</mark>, or <mark>https://</mark>.`]';
+            errors.push({
+                field: $new_url.attr("name"),
+                description: content
+            });
+        }
+
+        if (errors.length) {
+            console.log(errors)
+            updateRoutingErrors(errors);
+            return false
+        }
+
+        return true;
+    }
+
+    function saveHandler() {
+        //clear errors
+        errors = [];
+        $form.find('.state-error').removeClass('state-error');
+        $form.find('.state-error-hint').remove();
+        $place_for_errors.empty();
+
+        // Validating unsupported characters in url
+        if (!validateUrls()) return
+
+        $.post(save_url, $form.serialize(), 'json').then(function(r) {
+            handleResponse(r, () => {
+                $wrapper.data('dialog').close();
+                $.site.reloadWithScrollTo();
+            });
+        }, function() {
+            console.log('Error saving page settings', arguments);
+            updateRoutingErrors(r.errors);
+        });
+    }
+
+    {literal}
+    function isValidURL(url) {
+        return url.match(/^(https?:\/\/|\/)([a-zA-Z0-9а-яА-ЯёЁ\-]+)/i);
+    }
+    {/literal}
+
+    function handleResponse(res, cbSuccess) {
+        if (!res) return;
+
+        $place_for_errors.empty();
+
+        if (res.errors) {
+            $place_for_errors.append(res.errors);
+
+        } else if (res.data && res.data.confirm) {
+            $place_for_errors.append(res.data.confirm);
+
+        } else if (res.data && res.data?.routing_errors.incorrect) {
+            updateRoutingErrors(res.data.routing_errors);
+
+        } else if (res.status === 'ok' && typeof cbSuccess === 'function') {
+            cbSuccess(res);
+        }
+    }
+
+})();</script>

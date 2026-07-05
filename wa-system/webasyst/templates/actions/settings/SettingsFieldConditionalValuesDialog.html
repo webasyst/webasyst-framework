@@ -13,12 +13,12 @@
             </header>
 
             <div class="dialog-content">
-                <p>
+                <p class="small">
                     {sprintf('[s`Enter available options for “%s” depending on its parent field’s value.`]', $title)}
                 </p>
 
                 <div class="fields form">
-                    <div class="fields-group blank">
+                    <div>
                         {* push dummy item for prepare adding-interface *}
                         {$fields[] = ['value' => '', 'children' => [] ]}
                         {foreach $fields as $parent}
@@ -48,30 +48,30 @@
                                     <input type="hidden" name="parent[]" value="{$parent@index}" autocomplete="off"{if $parent@last} disabled="disabled"{/if}>
                                 </div>
 
-                                <p>{sprintf('[s`Prompt to select %s from the following list:`]', $title)}</p>
+                                <p class="small">{sprintf('[s`Prompt to select %s from the following list:`]', $title)}</p>
 
-                                <table class="s-values">
+                                <table class="s-values small">
                                     <tbody>
                                     {if !empty($parent.children)}
                                     {foreach $parent.children as $child}
                                     <tr class="sortable">
-                                        <td class="min-width custom-pt-12"><i class="fas fa-bars" style="cursor: move;"></i></td>
+                                        <td class="min-width custom-pt-12"><i class="fas fa-bars gray" style="cursor: move;"></i></td>
                                         <td><input type="text" class="small full-width" name="value[{$parent@index}][{$child.id}]" value="{$child.value|escape}"></td>
-                                        <td class="min-width custom-pt-12"><a href="#" data-id="{$child.id}" class="s-delete-value"><i class="fas fa-trash-alt"></i></a></td>
+                                        <td class="min-width custom-pt-12"><a href="#" data-id="{$child.id}" class="s-delete-value"><i class="fas fa-trash-alt text-light-gray"></i></a></td>
                                     </tr>
                                     {/foreach}
                                     {/if}
                                     <tr class="s-new-value" style="display: none !important;">
-                                        <td class="min-width custom-pt-12"><i class="fas fa-bars" style="cursor: move;"></i></td>
+                                        <td class="min-width custom-pt-12"><i class="fas fa-bars gray" style="cursor: move;"></i></td>
                                         <td><input type="text" class="small full-width" name="value[{$parent@index}][0]" value="" autocomplete="off" disabled="disabled"></td>
-                                        <td class="min-width custom-pt-12"><a href="#" class="s-delete-value"><i class="fas fa-trash-alt"></i></a></td>
+                                        <td class="min-width custom-pt-12"><a href="#" class="s-delete-value"><i class="fas fa-trash-alt text-light-gray"></i></a></td>
                                     </tr>
                                     </tbody>
                                 </table>
 
-                                <a href="#" class="button outlined custom-ml-auto inline-link small s-add-value flexbox middle">
-                                    <span class="icon"><i class="fas fa-plus-circle"></i></span>&nbsp;
-                                    <b><i>[s`Add option`]</i></b>
+                                <a href="#" class="button light-gray outlined custom-ml-auto smaller s-add-value flexbox middle">
+                                    <span class="icon"><i class="fas fa-plus-circle text-green custom-mr-4"></i></span>
+                                    [s`Add option`]
                                 </a>
                             </div>
                         </div>
@@ -79,8 +79,9 @@
 
                         <div class="field">
                             <div class="name">
-                                <a href="#" class="inline-link s-add-rule flexbox middle">
-                                    <span class="icon"><i class="fas fa-plus-circle"></i></span>&nbsp;<b><i>[s`Add rule`]</i></b>
+                                <a href="#" class="button light-gray small s-add-rule flexbox middle">
+                                  <span class="icon"><i class="fas fa-plus-circle text-green custom-mr-4"></i></span>
+                                  [s`Add rule`]
                                 </a>
                             </div>
                         </div>
@@ -103,8 +104,7 @@
             <footer class="dialog-footer">
                 <div class="s-actions">
                     <input class="button js-save-values" type="submit" value="[s`Save`]">
-                    <span>[s`or`]</span>
-                    <a class="js-close-dialog" href="javascript:void(0);">[s`cancel`]</a>
+                    <a class="button light-gray js-close-dialog" href="javascript:void(0);">[s`Cancel`]</a>
                 </div>
             </footer>
 

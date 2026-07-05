@@ -595,11 +595,11 @@ abstract class waContactField
                         $data = $data['value'];
                         sort($k);
                         if ($k == array('ext', 'value')) {
-                            $data = htmlspecialchars($data);
+                            $data = htmlspecialchars((string)$data);
                         }
                     } else {
-                        if (!is_array($data)) {
-                            $data = htmlspecialchars($data);
+                        if (!empty($data) && !is_array($data)) {
+                            $data = htmlspecialchars((string)$data);
                         } else {
                             $data = '';
                         }
@@ -608,19 +608,19 @@ abstract class waContactField
                 case 'html':
                     if ($this->isMulti()) {
                         if (is_array($data)) {
-                            $result = htmlspecialchars($data['value']);
+                            $result = htmlspecialchars((string)$data['value']);
                             if (isset($data['ext']) && $data['ext']) {
                                 $ext = $data['ext'];
                                 if (isset($this->options['ext'][$ext])) {
                                     $ext = _ws($this->options['ext'][$ext]);
                                 }
-                                $result .= ' <em class="hint">'.htmlspecialchars($ext).'</em>';
+                                $result .= ' <em class="hint">'.htmlspecialchars((string)$ext).'</em>';
                             }
                             $data = $result;
                         }
                     } else {
                         if (!is_array($data) || isset($data['value'])) {
-                            $data = htmlspecialchars(is_array($data) ? $data['value'] : $data);
+                            $data = htmlspecialchars(is_array($data) ? (string)$data['value'] : (string)$data);
                         }
                     }
                     break;
@@ -883,7 +883,7 @@ abstract class waContactField
         return new $state['_type']($state['id'], $state['name'], $state['options']);
     }
 
-    public function prepareSave($value, waContact $contact = null)
+    public function prepareSave($value, ?waContact $contact = null)
     {
         return $value;
     }

@@ -23,6 +23,7 @@ class waHtmlControl
     const CUSTOM = 'custom';
     const HIDDEN = 'hidden';
     const DATETIME = 'datetime';
+    const COLORPICKER = 'colorpicker';
 
     static private $predefined_controls = array();
     static private $custom_controls = array();
@@ -324,6 +325,7 @@ class waHtmlControl
      * @uses waHtmlControl::getHelpControl()
      * @uses waHtmlControl::getContactControl()
      * @uses waHtmlControl::getContactfieldControl()
+     * @uses waHtmlControl::getColorpickerControl()
      * @uses waHtmlControl::getCustomControl()
      * @param string $function_name
      * @param mixed $args
@@ -1186,6 +1188,51 @@ HTML;
         };
 
         var initDatePicker = function () {
+
+            var updateTimeSelectorAvailableOptions = function(date) {
+                if (!date || !interval || !interval.length) {
+                    return;
+                }
+
+                /** @var int day week day (starts from 0) */
+                var day = (date.getDay() + 6) % 7;
+                var timestamp = date.getTime();
+                var day_type = dayType(date);
+                /** filter select by days */
+                var value = typeof(interval.val()) !== 'undefined';
+                var matched = null;
+                interval.find('option').each(function () {
+                    /** @this HTMLOptionElement */
+                    var option = $(this);
+
+                    var disabled = !this.value || intervalAllowed(option, timestamp, day, day_type) ? null: 'disabled';
+                    option.attr('disabled', disabled);
+                    if (disabled) {
+                        if (this.selected) {
+                            value = false;
+                        }
+                    } else {
+                        matched = this;
+                        if (!value) {
+                            this.selected = true;
+                            value = !!this.value;
+                            if (typeof(interval.highlight) === 'function') {
+                                interval.highlight();
+                            }
+                        }
+                    }
+                });
+
+                if (value) {
+                    interval.removeClass('error');
+                } else if (matched) {
+                    matched.selected = true;
+                    interval.removeClass('error');
+                } else {
+                    interval.addClass('error');
+                }
+            };
+
             var container = $('#{$calendar_id}');
             container.datepicker({
                 "altField": (multiple_dates === false?('#{$date_formatted_params['id']}'):null),
@@ -1216,43 +1263,7 @@ HTML;
                     } else {
                         input_date.val(dateText);
                         if (date && interval && interval.length) {
-                            /** @var int day week day (starts from 0) */
-                            var day = (date.getDay() + 6) % 7;
-                            var timestamp = date.getTime();
-                            var day_type = dayType(date);
-                            /** filter select by days */
-                            var value = typeof(interval.val()) !== 'undefined';
-                            var matched = null;
-                            interval.find('option').each(function () {
-                                /** @this HTMLOptionElement */
-                                var option = $(this);
-
-                                var disabled = !this.value || intervalAllowed(option, timestamp, day, day_type) ? null: 'disabled';
-                                option.attr('disabled', disabled);
-                                if (disabled) {
-                                    if (this.selected) {
-                                        value = false;
-                                    }
-                                } else {
-                                    matched = this;
-                                    if (!value) {
-                                        this.selected = true;
-                                        value = !!this.value;
-                                        if (typeof(interval.highlight) === 'function') {
-                                            interval.highlight();
-                                        }
-                                    }
-                                }
-                            });
-
-                            if (value) {
-                                interval.removeClass('error');
-                            } else if (matched) {
-                                matched.selected = true;
-                                interval.removeClass('error');
-                            } else {
-                                interval.addClass('error');
-                            }
+                            updateTimeSelectorAvailableOptions(date);
                         }
                     }
                 },
@@ -1287,6 +1298,10 @@ HTML;
                     return [available, css_class.length?css_class.join(' '):'', tooltip.length?tooltip.join('\\n'):null]
                 }
             });
+
+            setTimeout(function() {
+                updateTimeSelectorAvailableOptions(container.datepicker('getDate'));
+            }, 0);
 
             container.find(".ui-datepicker").each( function() {
                 $(this).css({ zIndex: 1000 });
@@ -1430,6 +1445,105 @@ HTML;
         return $html;
     }
 
+    private function getColorpickerControl($name, $params = array())
+    {
+        if (wa()->whichUI() == '1.3') return 'Color selection is only available in the new UI.';
+
+        $value = self::escape($params['value']);
+        $options = ifset($params['options'], []);
+        $id = $params['id'];
+        $locale = wa()->getLocale();
+        $root_url = wa()->getRootUrl();
+
+        $selected_default_option = false;
+        $li = '';
+        foreach ($options as $opt => $titles) {
+            $title = ifset($titles[$locale], ifset($titles['en_US'], ''));
+            $selected = $value === $opt ? ' selected' : '';
+            if ($selected && !$selected_default_option) $selected_default_option = true;
+
+            $li .= <<<LI
+                <li class="custom-m-0{$selected}" data-value="{$opt}" title="{$title}" style="--color:{$opt};"></li>
+LI;
+        }
+
+        $selected_custom_value = !$selected_default_option ? ' selected' : '';
+        $color_picker_style = $selected_default_option ? 'display: none;' : '';
+        $control = <<<HTML
+            <script src="{$root_url}wa-content/js/farbtastic/farbtastic.js"></script>
+            <link href="{$root_url}wa-content/js/farbtastic/farbtastic.css" rel="stylesheet" type="text/css" />
+
+            <div class="wa-colorpicker custom-p-8">
+                <ul class="wa-colorpicker-select js-color-select custom-p-0 flexbox wrap space-16 middle">
+                    {$li}
+                    <li class="custom-m-0{$selected_custom_value}" data-value="{$value}" data-picker>
+                        <i class="fas fa-eye-dropper"></i>
+                    </li>
+                </ul>
+                <div class="wa-colorpicker-input flexbox wrap middle space-4" style="{$color_picker_style}">
+                    <input id="{$id}" class="color small shorter" type="text" name="{$name}" value="{$value}">
+                </div>
+            </div>
+
+            <script>
+            (function($) {
+                'use strict';
+                const wrapper = $('#{$id}').closest('.wa-colorpicker');
+
+                wrapper.find('.color').each(function() {
+                    const input = $(this);
+                    let timer_id;
+                    const replacer = $('<span class="color-replacer icon rounded bordered" style="background: '+input.val().substr(1)+';"></span>').insertAfter(input),
+                        picker = $('<div style="display:none;" class="color-picker wide"></div>').insertAfter(replacer),
+                        farbtastic = $.farbtastic(picker, function(color) {
+                            replacer.css('background', color);
+                            input.val(color);
+                            if (timer_id) {
+                                clearTimeout(timer_id);
+                            }
+                            timer_id = setTimeout(function() {
+                                input.change();
+                            }, 90);
+                        });
+
+                    farbtastic.setColor(input.val());
+
+                    replacer.click(function() {
+                        picker.slideToggle(200);
+                        return false;
+                    });
+                    let keydown_timer_id;
+                    input.unbind('keydown').bind('keydown change', function(e) {
+                        if (keydown_timer_id) {
+                            clearTimeout(keydown_timer_id);
+                        }
+                        keydown_timer_id = setTimeout(function() {
+                            farbtastic.setColor(input.val());
+                        }, 90);
+                    });
+                });
+
+                wrapper.find(".js-color-select").on('click', 'li', function() {
+                    const li = $(this);
+                    const wrapper = li.closest('.wa-colorpicker').parent();
+                    const value = li.data('value');
+                    const colorpicker_input = wrapper.find('.wa-colorpicker-input');
+
+                    if (li.attr('data-picker') === '') {
+                        colorpicker_input.slideToggle(200);
+                    } else {
+                        colorpicker_input.slideUp(200);
+                    }
+                    li.addClass('selected').siblings().removeClass('selected');
+                    wrapper.find('input.color').val(value).change();
+                });
+            })(jQuery);
+            </script>
+HTML;
+
+        return $control;
+    }
+
     /**
      * @todo complete params check
      * @param $name
@@ -1443,22 +1557,8 @@ HTML;
          * @var $callback callback|string
          */
         $callback = isset($params['callback']) ? $params['callback'] : null;
-        if ($callback) {
+        if ($callback && is_callable($callback)) {
             unset($params['callback']);
-            if (is_array($callback)) {
-                if (is_object($callback[0])) {
-                    if (!method_exists($callback[0], $callback[1])) {
-                        throw new waException("Method {$callback[1]} not exists at class ".get_class($callback[0]));
-                    }
-                } elseif (!class_exists($callback[0])) {
-                    throw new waException("Class {$callback[0]} not found");
-                }
-                //TODO check method exists
-            } else {
-                if (!function_exists($callback)) {
-                    throw new waException("Function {$callback} not found");
-                }
-            }
             return call_user_func_array($callback, array($name, $params));
         }
         return null;

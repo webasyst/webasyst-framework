@@ -153,7 +153,7 @@
                 </li>
             {/if}
             {if teamHelper::hasRights() && !empty($noaccess_count)}
-                <li data-inactive-item>
+                <li data-no-access-item>
                     <a href="{$wa_app_url}no-access/">
                         <span class="count js-count">{$noaccess_count}</span>
                         <i class="fas fa-eye-slash"></i>

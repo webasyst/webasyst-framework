@@ -1,0 +1,7 @@
+{*
+ * атрибуты data-block-id и data-page-id обязательны на внешнем wrapper'е блока
+ * редактор использует их для удаления, перемещения блока, дублирования, вызова событий для блока и т.п.
+ *}
+<h1 data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    Hello, World!
+</h1>

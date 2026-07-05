@@ -1,0 +1,282 @@
+<div class="flexbox editor-page" id="editor-page">
+    <div class="sidebar right width-17rem hidden block-settings-sidebar custom-p-16 custom-pt-0">
+        {include file="templates/actions/editor/includes/block_settings_drawer.html"}
+    </div>
+    <!--<div class="sidebar-button button blue hidden">
+        <span class="icon size-18"><i class="fas fa-sliders-h"></i></span>
+    </div>-->
+    <div class="content flexbox not-blank">
+        <div class="flexbox mq-wrapper blank">
+            <iframe src="{$wa_app_url}?module=editor&action=body&page_id={$page.id|escape}" class="main-editor-body" id="js-main-editor-body" frameborder="0"></iframe>
+        </div>
+
+    </div>
+</div>
+
+{include file="templates/actions/editor/includes/add_block_dialog.html"}
+
+{*
+ * see templates/actions/map/MapPageSettingsDialog.html
+ *}
+{*$page_settings_dialog_html*}
+
+<script>(function() { "use strict";
+
+    const domain_root_url = {$domain_root_url|json_encode};
+    const block_storage_data = {$block_data|json_encode};
+    const block_form_config_by_type = {$block_form_config|json_encode};
+    var page_data = {$page|json_encode};
+    var published_page_data = {$published_page|json_encode};
+    var preview_hash = {$preview_hash|json_encode};
+
+    const block_form_config_by_block_id = {};
+    for (var block_id in block_form_config_by_type) {
+        try {
+            block_form_config_by_block_id[block_id] = block_form_config_by_type[block_form_config_by_type[block_id].type];
+        } catch (e) {
+            console.log('Warning: unable to load block config for block', block_form_config_by_type[block_id]);
+        }
+    }
+
+    // This must happen before everything else on this page, this creates global SiteEditor.instance
+    var site_editor = $.wa.editor = new SiteEditor({
+        block_form_config: block_form_config_by_block_id,
+        block_storage_data: block_storage_data
+    });
+
+    updatePreviewLink(page_data);
+    page_data.preview_hash = preview_hash;
+    $("#js-wa-header-publish").data('controller').initPageData(domain_root_url, page_data, published_page_data);
+
+    {if $is_published}
+        (function() {
+            const url = location.href.replace(/\/editor\/page\/\d+\//, '/editor/page/{$page.id}/');
+            window.history.replaceState(null, "", url);
+        }());
+    {/if}
+
+    // Undo and redo
+    (function() {
+
+        $('#js-wa-header-undo').click(function() {
+            site_editor.undoredo.undo();
+        });
+
+        $('#js-wa-header-redo').click(function() {
+            site_editor.undoredo.redo();
+        });
+
+    }());
+
+        // sidebar-mini-button
+        /*
+        (function() {
+
+            $('.sidebar-button').click(function() {
+                $('.sidebar.block-settings-sidebar').removeClass('hidden').show();
+                $(this).addClass('hidden');
+            });
+
+        }());
+        */
+
+        // check window width, and add absoulute class to sidebar
+        (function() {
+
+            const $html_wrapper = $('html');
+            const temp_class = 'overflow-mode';
+            const sidebar = $('.sidebar.block-settings-sidebar');
+            const styles = getComputedStyle(document.documentElement);
+            const bgColor = styles.getPropertyValue('--color-background');
+            const sidebar_width = sidebar.outerWidth();
+            let sidebar_max = sidebar_width + +$html_wrapper.css('--cnt').split('px')[0] + +$html_wrapper.css('--pd-cnt').split('px')[0] + +$html_wrapper.css('--pd-cnt').split('px')[0];
+
+            setEditorSettingsPosition();
+            $(window).on('resize', setEditorSettingsPosition);
+
+            function setEditorSettingsPosition() {
+                const screen_toggle = $('#js-wa-header-screen-toggle').find('.selected').attr('id') || 'desktop';
+                const media_prop = '--' + screen_toggle;
+                const window_w = $(window).width();
+                let sidebar_max_2 = sidebar_width + +$html_wrapper.css(media_prop).split('px')[0];
+                if (window_w < sidebar_max && window_w < sidebar_max_2 ) {
+                    sidebar.addClass(temp_class);
+                } else {
+                    sidebar.removeClass(temp_class);
+                }
+            }
+        }());
+
+    // media query buttons
+    (function() {
+
+        var $mq_wrapper = $('.mq-wrapper');
+        var temp_param = 'desktop';
+
+        $('#js-wa-header-screen-toggle').waToggle({
+            use_animation: false,
+            change: function(event, target, toggle) {
+                const media_param = $(target).attr('id') || '';
+                //const editor_wrapper = $iframe.contents().find('.mq-wrapper');
+                $mq_wrapper.removeClass(temp_param);
+                $mq_wrapper.addClass(media_param);
+                temp_param = media_param;
+                $.wa.editor.resetMediaProp(media_param);
+                $(window).trigger('resize')
+            }
+        });
+
+    }());
+
+    //
+    // Left drawer
+    //
+    (function() {
+        const left_drawer_html = `<div class="drawer site-editor-left-drawer" id="js-left-drawer" data-load-url="{$wa_app_url}?module=map&action=overview&domain_id={$domain_id|escape}&sidebar_mode=1&page_id={$page.id}{if !empty($page.final_page_id)}&final_page_id={$page.final_page_id}{/if}">
+            <div class="drawer-background"></div>
+            <div class="drawer-body">
+                <a href="javascript:void(0)" class="drawer-close z-20 custom-mr-8 js-close-drawer"><i class="fas fa-times"></i></a>
+                <div class="drawer-block custom-p-0">
+                    <div class="drawer-content">
+                        <div class="box">
+                            <div class="skeleton width-80">
+                                <span class="skeleton-header"></span>
+                                <span class="skeleton-line"></span>
+                                <span class="skeleton-list"></span>
+                                <span class="skeleton-list"></span>
+                                <span class="skeleton-list"></span>
+
+                                <span class="skeleton-header"></span>
+                                <span class="skeleton-line"></span>
+                                <span class="skeleton-list"></span>
+                                <span class="skeleton-list"></span>
+                                <span class="skeleton-list"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        let $left_drawer_wrapper = $();
+        let drawer;
+
+        $('#js-wa-header-hamburger').on('click', function() {
+            $left_drawer_wrapper = $(left_drawer_html).clone().appendTo('body');
+            drawer = $.waDrawer({
+                $wrapper: $left_drawer_wrapper,
+                direction: 'left',
+                lock_body_scroll: true,
+                onOpen() {
+                    $.site.loadMap(true);
+                },
+                onClose() {
+                    return !$('.s-section-settings-dialog.dialog-opened').length;
+                }
+            });
+        });
+
+        $.site.loadMap = function (scroll_to = false) {
+            const $drawer_content = $left_drawer_wrapper.find('.drawer-content');
+            $drawer_content.css('pointer-events', 'none');
+            $.get($left_drawer_wrapper.data('load-url') + (scroll_to ? '&scroll_to=1' : '')).then((html) => {
+                $drawer_content.html(html);
+                $drawer_content.css('pointer-events', 'auto');
+
+                $(document).trigger("wa_loaded");
+            }, () => {
+                alert($.site.opts.locale.unable_to_load);
+                drawer.hide();
+            });
+        };
+    }());
+
+    //
+    // Resize iframe to always fit content
+    //
+    var resizeMainEditorBody = (function() {
+        var $iframe = $('#js-main-editor-body');
+        $iframe.on('load', resize);
+        $iframe.on('load', $.wa.editor.updateEmptyClassEditor);
+        $(document).on('resize', resize);
+        var interval = setInterval(function() {
+            resize();
+        }, 500);
+        return resize;
+
+        function resize() {
+            var iframe = $iframe[0];
+            if (!iframe?.contentWindow?.document?.body) {
+                // in case iframe is no longer part of the DOM
+                clearInterval(interval);
+                return;
+            }
+            iframe.width  = iframe.contentWindow.document.body.scrollWidth;
+            //iframe.height = iframe.contentWindow.document.body.scrollHeight;
+            //console.log('resize');
+        }
+    }());
+
+    //
+    // Page settings dialog
+    //
+    (function() {
+        const site_app_url = {$wa_app_url|json_encode};
+        const domain_url = site_app_url + "?module=map&action=overview&domain_id=" + page_data.domain_id;
+
+        // Open dialog when user clicks on settings button in wa-header
+        $('#js-wa-header-settings').on('click', function() {
+            openDialog();
+        });
+
+        // Immediately open settings dialog in case page was just created with an empty name
+        if (!page_data.name) {
+            openDialog();
+        }
+
+        $(document).on('page_saved', function(e, data) {
+            page_data = data;
+            if (data.theme_changed) {
+                window.location.reload();
+                return
+            }
+            updatePreviewLink(page_data);
+            page_data.preview_hash = preview_hash;
+            $("#js-wa-header-publish").data('controller').updatePageData(page_data);
+        });
+
+        function openDialog() {
+            const url = site_app_url+'?module=map&action=pageSettingsDialog&page_id=' + page_data.id;
+            $.site.helper.preventDupeRequest(() => {
+                return $.get(url, function(html) {
+                    const dialog = $.waDialog({
+                        html: html
+                    });
+                });
+            }, url);
+        }
+    }());
+
+    function updatePreviewLink(page_data) {
+        const $hamburger_draft = $('.js-hamburger-draft-icon');
+        const $hamburger_draft_changed = $('.js-hamburger-draft-changed-icon');
+        const $hamburger_label = $('.js-hamburger-label');
+
+        const is_draft = page_data.status === 'draft';
+        $hamburger_draft.toggleClass('hidden', is_draft);
+
+        if (is_draft) {
+            $hamburger_draft_changed.toggleClass('hidden', page_data.create_datetime === page_data.update_datetime);
+            $(document).on('page_has_unsaved_changes', (_, is_changed) => {
+                $hamburger_draft_changed.toggleClass('hidden', !is_changed);
+            });
+        }
+
+        $hamburger_label.text(page_data.name).attr('title', page_data.name);
+    }
+
+    {if empty($block_data)}
+        $.wa.editor.openAddBlockDialog({ page_id: {$page.id}, show_templates: 1 }, (html) => {
+            $.wa.editor.iframe_api.$wrapper.find('#js-global-seq').parent().html(html);
+        });
+    {/if}
+})();</script>

@@ -1,0 +1,318 @@
+<script>
+    document.title = "{$wa->appName()} — " + {$wa->accountName(false)|json_encode};
+</script>
+<div class="article site-base">
+  <div class="article-body">
+    <div class="s-domains-page" id="s-domains-page" data-view="grid">
+        <div class="s-domains-header flexbox wrap full-width custom-my-20 space-12">
+            <h1 class="wide">[`My sites`]</h1>
+            <button class="s-domains-add js-domains-add custom-mr-0">
+                <i class="fas fa-plus"></i>
+                <span class="desktop-and-tablet-only">[`New site`]</span>
+            </button>
+
+            <div id="dropdown-sort" class="dropdown">
+                <button type="button" class="dropdown-toggle button light-gray">
+                    <span class="icon">{$sort_types[$sort].icon}</span>
+                    <span class="name desktop-and-tablet-only">{$sort_types[$sort].title}</span>
+                </button>
+                <div class="dropdown-body right custom-mt-8">
+                    <ul class="menu">
+                        {foreach $sort_types as $_id => $_type}
+                        <li{if $sort === $_id} class="selected"{/if}>
+                            <a href="javascript:void(0)" data-id="{$_id}">
+                                <span class="icon">{$_type.icon}</span>
+                                <span class="name">{$_type.title}</span>
+                            </a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="toggle" id="toggle-list-view">
+                <span data-toggle-id="grid">
+                    <svg width="18" height="18" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.99998 2.3999H13.8C14.1313 2.3999 14.4 2.66853 14.4 2.9999V6.9999C14.4 7.33128 14.1313 7.5999 13.8 7.5999H8.99998C8.6686 7.5999 8.39998 7.33128 8.39998 6.9999V2.9999C8.39998 2.66853 8.6686 2.3999 8.99998 2.3999ZM6.99998 2.3999H2.19998C1.8686 2.3999 1.59998 2.66853 1.59998 2.9999V6.9999C1.59998 7.33128 1.8686 7.5999 2.19998 7.5999H6.99998C7.33135 7.5999 7.59998 7.33128 7.59998 6.9999V2.9999C7.59998 2.66853 7.33135 2.3999 6.99998 2.3999ZM1.59998 8.9999V12.9999C1.59998 13.3313 1.8686 13.5999 2.19998 13.5999H6.99998C7.33135 13.5999 7.59998 13.3313 7.59998 12.9999V8.9999C7.59998 8.66853 7.33135 8.3999 6.99998 8.3999H2.19998C1.8686 8.3999 1.59998 8.66853 1.59998 8.9999ZM8.99998 13.5999H13.8C14.1313 13.5999 14.4 13.3313 14.4 12.9999V8.9999C14.4 8.66853 14.1313 8.3999 13.8 8.3999H8.99998C8.6686 8.3999 8.39998 8.66853 8.39998 8.9999V12.9999C8.39998 13.3313 8.6686 13.5999 8.99998 13.5999Z" fill="currentColor" />
+                    </svg>
+                </span>
+                <span data-toggle-id="list">
+                    <svg width="18" height="18" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 2.5C2.44772 2.5 2 2.94772 2 3.5C2 4.05228 2.44772 4.5 3 4.5H13C13.5523 4.5 14 4.05228 14 3.5C14 2.94772 13.5523 2.5 13 2.5H3Z" fill="currentColor" />
+                        <path d="M3 8.5C2.44772 8.5 2 8.94772 2 9.5C2 10.0523 2.44772 10.5 3 10.5H13C13.5523 10.5 14 10.0523 14 9.5C14 8.94772 13.5523 8.5 13 8.5H3Z" fill="currentColor" />
+                        <path d="M2 6.5C2 5.94772 2.44772 5.5 3 5.5H13C13.5523 5.5 14 5.94772 14 6.5C14 7.05228 13.5523 7.5 13 7.5H3C2.44772 7.5 2 7.05228 2 6.5Z" fill="currentColor" />
+                        <path d="M3 11.5C2.44772 11.5 2 11.9477 2 12.5C2 13.0523 2.44772 13.5 3 13.5H13C13.5523 13.5 14 13.0523 14 12.5C14 11.9477 13.5523 11.5 13 11.5H3Z" fill="currentColor" />
+                    </svg>
+                </span>
+            </div>
+            <script>
+                (function($) {
+                    const $toggle_list_view = $('#toggle-list-view');
+                    let skip_update = true;
+
+                    $toggle_list_view.waToggle({
+                        change(event, target, toggle) {
+                            const toggle_id = toggle.$active.data('toggle-id');
+                            $('#s-domains-page').attr('data-view', toggle_id);
+
+                            if (!skip_update) {
+                                const action = toggle_id === 'list' ? 'set' : 'delete';
+                                $.post('?module=domains&action=listView', { action });
+                            }
+                            skip_update = false;
+                        }
+                    });
+
+                    $toggle_list_view.find(`[data-toggle-id="{if !empty($is_list_view)}list{else}grid{/if}"]`).trigger('click');
+                })(jQuery);
+            </script>
+        </div>
+
+        <div class="s-domains-list" id="js-domains-list">
+        {if waRequest::isHttps()}
+            {$protocol = 'https://'}
+        {else}
+            {$protocol = 'http://'}
+        {/if}
+        {foreach $domains as $domain_id => $d}
+            {$is_alias = $d.is_alias}
+            {$redirect = (empty($d.redirect)) ? null : $d.redirect}
+            {if !empty($d.frontend_link) }
+                {$frontend_link = $d.frontend_link}
+            {elseif !empty($d)}
+                {$full_url = ''}
+                {if isset($d.full_url)}
+                    {$full_url = "/`$d.full_url`"}
+                    {if isset($d.route) }
+                        {$full_url = "/`$d.route|rtrim:'*'``$d.full_url`"}
+                    {/if}
+                {elseif isset($d.url_formatted)}
+                    {$full_url = $d.url_formatted}
+                {/if}
+                {$frontend_link = "`$protocol``$d.name``$full_url`"}
+            {/if}
+
+            <div data-domain-id="{$domain_id|escape}" class="flexbox">
+                {if $is_alias}
+                    {$main_link = "`$wa_app_url`?module=configure&domain_id=`$domain_id|escape`"}
+                {else}
+                    {$main_link = "`$wa_app_url`?module=map&action=overview&domain_id=`$domain_id|escape`"}
+                {/if}
+                <div class="card cursor-pointer">
+                    <div class="s-domain-view flex">
+                        {if $is_alias}
+                            <span class="icon size-48">
+                                <i class="fas fa-clone text-light-gray"></i>
+                            </span>
+                        {elseif !empty($d.is_pending)}
+                            <span class="icon size-48">
+                                <i class="fas fa-clock text-light-gray"></i>
+                            </span>
+                        {elseif !empty($d.redirect)}
+                            <span class="icon size-48">
+                                <i class="fas fa-sign-in-alt text-light-gray"></i>
+                            </span>
+                        {else}
+                            <div class="image s-frame-wrapper" id="s-frame-wrapper-{$domain_id|escape}" style="visibility: hidden;position: absolute;">
+                                <div class="blank-cover"></div>
+                                <iframe sandbox="allow-scripts" scrolling="no" loading="lazy" onload="onIframeDomainLoaded(this)" src="{$frontend_link|escape}"></iframe>
+                            </div>
+                            <span class="icon size-48">
+                                <i class="fas fa-globe text-light-gray"></i>
+                            </span>
+                        {/if}
+                    </div>
+                    <div class="s-domain-title flexbox full-width space-8 custom-pt-12">
+                        <div class="box-icon icon">
+                            {if $is_alias}
+                            <i class="fas fa-copy"></i>
+                            {elseif $redirect}
+                            <i class="fas fa-sign-in-alt"></i>
+                            {elseif !empty($d.favicon)}
+                            <i style="background-image: url('{$d.favicon}');"></i>
+                            {else}
+                            <i class="fas fa-globe"></i>
+                            {/if}
+                        </div>
+                        <div class="title-wrapper wide">
+                            <h4 class="title custom-m-0">
+                                <a href="{$main_link}">
+                                    <span class="title-full">{$d.title|escape}</span>
+                                    <span class="title-truncated">{$d.title|truncate:40:'...'|escape}</span>
+                                </a>
+                            </h4>
+                        </div>
+
+                        <div>
+                            <a href="{$main_link}" class="js-main-link"></a>
+                        </div>
+                        <div class="favicon-icon flexbox custom-mt-4">
+                            <i class="icon custom-mt-2" style="background-image: url('{if !empty($d.favicon)}{$d.favicon}{/if}');"></i>
+                        </div>
+                        <div class="box hidden"><a class="dropdown-toggle">
+                            <i class="fas fa-ellipsis-h gray"></i>
+                        </a></div>
+                    </div>
+
+                    <div class="s-domain-hint s-grid">
+                        {if $is_alias}
+                            <div class="hint text-ellipsis">{sprintf_wp('Mirror site (alias) for <strong>%s</strong>', waIdna::dec($d.is_alias|escape)|replace:'www.':'')}</div>
+                        {elseif $redirect}
+                            <div class="hint text-ellipsis">{sprintf_wp('Redirected to <strong>%s</strong>', waIdna::dec($redirect|replace:['http://','https://','www.']:''|escape))}</div>
+                        {/if}
+                    </div>
+
+                </div>
+            </div>
+
+        {/foreach}
+        </div>
+    </div>
+
+    {* Template for dialogue adding a new site *}
+    <div id="s-addsite-dialog-wrapper">
+        <div class="dialog" id="s-addsite-dialog">
+            <div class="dialog-background"> </div>
+            <div class="dialog-body">
+                <form>
+                    <header class="dialog-header"><h1>[`New site`]</h1></header>
+                    <div class="dialog-content">
+                        <div class="custom-pb-20">
+                            <span class="bold custom-pr-4">http://</span><input type="text" id="domain-name" name="name" class="bold long" value="" placeholder="[`mydomain.com`]">
+                            <div class="hint custom-pt-4">[`E.g., mydomain.com, www.mydomain.com, subdomain.mydomain.com`]</div>
+                        </div>
+                        <div class="custom-pb-20 s-small">[`The domain name must be registered and set up to point to this Webasyst account.`]
+                            <a href="[`https://support.webasyst.com/47317/get-domain-name/`]" target="_blank" class="nowrap">
+                                [`Help`] <i class="icon fas fa-external-link-alt smaller"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <div class="s-add-menu">
+                                <div class="custom-pb-12">
+                                    <label>
+                                        <span class="wa-radio">
+                                            <input type="radio" name="alias" value="0" checked>
+                                            <span></span>
+                                        </span>
+                                        [`New site`]
+                                    </label>
+                                </div>
+                                <div class="custom-pb-8">
+                                    <label>
+                                        <span class="wa-radio">
+                                            <input type="radio" name="alias" value="1">
+                                            <span></span>
+                                        </span>
+                                        [`Alias (mirror site) for`]
+                                        <span class="wa-select custom-ml-8">
+                                            <select id="alias-domain" name="domain">
+                                                {foreach $domains as $d_id => $d}
+                                                    {if empty($d.is_alias)}
+                                                        <option value="{$d.name|escape}">{waIdna::dec($d.name|escape)|replace:'www.':''}</option>
+                                                    {/if}
+                                                {/foreach}
+                                            </select>
+                                        </span>
+                                        <script type="text/javascript">
+                                            $('#alias-domain').on('change', function () {
+                                                $('#alias-domain').parent().find('input').attr('checked', 'checked');
+                                            });
+                                        </script>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="dialog-footer">
+                        <div class="flexbox middle wrap space-8">
+                            <input type="submit" class="button" value="[`Create site`]">
+                            <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
+                            <span class="state-error-hint"></span>
+                        </div>
+                    </footer>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    function onIframeDomainLoaded(iframe) {
+        const $parent = iframe.closest('.s-domain-view');
+        const $frame_wrapper = iframe.closest('.s-frame-wrapper');
+        $parent.classList.remove('flex');
+        $frame_wrapper.style.visibility = null;
+        $frame_wrapper.style.position = null;
+        $parent.querySelector('span').remove();
+    }
+
+    (function() { "use strict";
+    const $wrapper = $('#s-domains-page');
+    const $domains_wrapper = $wrapper.find('#js-domains-list');
+
+    $wrapper.on('click', '.js-domains-add', function(e) {
+        const dialog_html = $wrapper.siblings("#s-addsite-dialog-wrapper").html();
+        const add_url = '?module=domains&action=save';
+        $.waDialog({
+            html: dialog_html,
+            onOpen: function ($dialog, dialog_instance) {
+                const $form = $dialog.find("form");
+                $form.on('submit', function () {
+                        $dialog.find(".state-error-hint").empty().hide();
+                        const $is_alias_selected = !!+$form.find('.s-add-menu input[type=radio]:checked').val();
+                        $.post(add_url, $form.serialize(), function (response) {
+                            if (response.status === 'ok') {
+                                if ($is_alias_selected) {
+                                    $.site.navigate('{$wa_app_url}?module=configure&domain_id=' + response.data.id);
+                                } else {
+                                    $.site.navigate('{$wa_app_url}?module=map&action=overview&domain_id=' + response.data.id);
+                                }
+                                dialog_instance.close();
+                            } else if (response.status === 'fail') {
+                                $dialog.find(".state-error-hint").html(response.errors).show();
+                            }
+
+                        }, "json");
+                        return false;
+                    })
+            }
+        });
+    })
+
+    $domains_wrapper.on('click', '[data-domain-id]', function(e) {
+        e.preventDefault();
+        var $a = $(e.target).closest('a[href]');
+        if ($a.length) {
+            return true;
+        }
+        var $el = $(this);
+        var domain_id = $el.data('domain-id');
+        var href = $el.find('a[href].js-main-link').prop('href');
+        $.site.helper.preventDupeRequest(() => {
+            return $.site.navigate(href);
+        }, href);
+        return false;
+    });
+
+    $('#dropdown-sort').waDropdown({
+        hover: false,
+        items: '.menu > li > a',
+        update_title: false,
+        change: function (e, target, dropdown) {
+            dropdown.$button.find('.name').text(dropdown.$active.find('.name').text());
+            dropdown.$button.find('.icon').html(dropdown.$active.find('.icon').html());
+
+            const sort = dropdown.$active.data('id');
+            $.site.loadContent('{$wa_app_url}?list&sort=' + sort, null, true);
+        }
+    });
+
+    {if waRequest::get('show_add_dialog')}
+        $wrapper.find('.js-domains-add').click();
+        if (history.state?.content_url) {
+            const content_url = history.state.content_url.replace('&show_add_dialog=1', '');
+            history.replaceState({ content_url }, null, content_url);
+        }
+    {/if}
+})();</script>

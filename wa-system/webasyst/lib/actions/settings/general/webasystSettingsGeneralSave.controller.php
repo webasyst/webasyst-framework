@@ -49,6 +49,7 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
             'debug' => 'boolean',
             'image_adapter' => 'string',
             'ui' => 'string',
+            'zone_jail' => 'string',
         );
         $flush_settings = array('debug');
 
@@ -94,6 +95,7 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
         }
 
         if ($flush) {
+            wa()->getStorage()->del('apps-count');
             wa()->getConfig()->clearCache();
         }
 

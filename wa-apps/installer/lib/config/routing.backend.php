@@ -9,5 +9,6 @@ return array(
     'requirements/?'       => 'requirements',
     'store/<store_path:*>' => 'store',
     ''                     => 'store',
-    'reviews/?'             => 'reviews',
+    'reviews/?'            => 'reviews',
+    'services/?'           => 'services',
 );

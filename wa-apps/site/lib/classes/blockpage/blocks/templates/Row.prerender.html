@@ -1,0 +1,15 @@
+<style>
+    .site-block-row { display: flex; }
+    .site-block-row .hseq-wrapper { flex-wrap: wrap; align-items: start;}
+    .seq-child:has(>.site-block-row) { width: 100%; }
+    .site-block-row > a:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+</style>

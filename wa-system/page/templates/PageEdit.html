@@ -78,7 +78,7 @@
                         {if !empty($warnings)}
                             <p class="state-caution-hint">
                                 {if isset($warnings.no_site_storefront)}
-                                    [s`This page will not be published because there is no settlement, or routing rule, for this app in the site structure settings. Set up a settlement in Site app’s “Structure” section to publish this page.`]
+                                    [s`This page will not be published because there is no section of this app in the site map. Add at least one section to publish the page.`]
                                 {elseif isset($warnings.deleted_site_storefront)}
                                     [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Set up a settlement in Site app’s “Structure” section to publish this page.`]
                                 {elseif isset($warnings.several_site_storefront)}
@@ -151,7 +151,7 @@
                         <div class="name for-input">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
                         <div class="value">
                             <input type="text" name="og[image]" class="long" value="{ifset($og_params.image, '')|escape}" {if empty($og_params)}disabled{/if}>
-                            <p class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</p>
+                            <p class="hint">[s`If not set, a social network will attempt to automatically determine a preview image.`]</p>
                         </div>
                     </div>
                     <div class="field">
@@ -201,7 +201,7 @@
             </li>
             <li><a class="html" href="javascript:void(0);">HTML</a></li>
         </ul>
-        <div style="clear:both">
+        <div class="custom-mb-32">
             <div class="wa-editor-upload-img hidden" title="[s`Upload image`]">
                 <i class="fas fa-image"></i>
             </div>
@@ -336,7 +336,8 @@
             },
             locales: {
                 'close': "[`Close`]"
-            }
+            },
+            scroll_parent_wrapper_at_edge: true
         });
     });
 

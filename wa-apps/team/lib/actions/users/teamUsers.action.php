@@ -18,7 +18,7 @@ class teamUsersAction extends teamContentViewAction
         ));
 
         // Redirect on first login
-        if (wa()->getUser()->isAdmin('webasyst') && count($contacts) < 2) {
+        if (wa()->whichUI() == '1.3' && wa()->getUser()->isAdmin('webasyst') && count($contacts) < 2) {
             $asm = new waAppSettingsModel();
             if (!$asm->getByField(array('app_id' => wa()->getApp(), 'name' => 'first_login'))) {
                 $asm = new waAppSettingsModel();

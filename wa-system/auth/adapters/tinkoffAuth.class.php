@@ -31,7 +31,7 @@ class tinkoffAuth extends waOAuth2Adapter
         return 'T-ID';
     }
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return [
             'client_id' => _ws('T client ID'),

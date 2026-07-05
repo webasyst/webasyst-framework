@@ -157,6 +157,7 @@ class installerHelper
             );
             $app_settings_model = new waAppSettingsModel();
             $errors = (array)json_decode($app_settings_model->get('installer', 'errors', '[]'));
+            self::getInstaller()->syncSourcesEndpoints();
             $items = self::getInstaller()->getUpdates($vendor);
             $changed = false;
             $actions = array(
@@ -416,14 +417,48 @@ class installerHelper
 
             try {
                 $config->loadLicenses();
+                $cache = new waVarExportCache('licenses', installerConfig::LICENSE_CACHE_TTL, 'installer');
+                $cache_data = $cache->get();
+                $is_cached = $cache->isCached();
             } catch (Exception $e) {
+                $cache_data = null;
             }
-            $cache = new waVarExportCache('licenses', installerConfig::LICENSE_CACHE_TTL, 'installer');
 
-            $cache_data = $cache->get();
+            // Failed to fetch data from WA API?
+            if (empty($is_cached)) {
+                // Get the last successfully saved licenses data
+                $app_settings_model = new waAppSettingsModel();
+                $cache_data = json_decode($app_settings_model->get('installer', 'licenses_data', '{}'), true);
+                $now_ts = time();
+                if (!empty($cache_data['timestamp']) && $cache_data['timestamp'] > $now_ts) {
+                    // License data is in the future, so it can't be valid
+                    $cache_data = null;
+                }
+                if (!empty($cache_data['timestamp'])) {
+                    // Check the fall counter
+                    $fall_counter = json_decode($app_settings_model->get('installer', 'licenses_fall_counter', '{}'), true);
+                    if (ifset($fall_counter, 'timestamp', 0) < $cache_data['timestamp']) {
+                        // Reset old fall counter
+                        $fall_counter = [];
+                    }
+                    if (ifset($fall_counter, 'count', 0) < installerConfig::LICENSE_FALL_LIMIT 
+                        || $now_ts - $cache_data['timestamp'] < installerConfig::LICENSE_LONG_CACHE_TTL
+                    ) {
+                        // Count the fall
+                        $app_settings_model->set('installer', 'licenses_fall_counter', json_encode([
+                            'count' => ifset($fall_counter, 'count', 0) + 1,
+                            'timestamp' => $now_ts,
+                        ]));
+                    } else {
+                        // Exceeded the falls limit
+                        $cache_data = null;
+                    }
+                }
+            }
         }
+
         $license = [
-            'status' => false,
+            'status' => empty($cache_data['data']),
             'ts' => isset($cache_data['timestamp']) ? $cache_data['timestamp'] : time()
         ];
         if (isset($cache_data['data']['baza'][$slug])) {
@@ -431,12 +466,29 @@ class installerHelper
             $license['status'] = !empty($product['license']);
             if (isset($product['license_expire'])) {
                 $license['expire_date'] = $product['license_expire'];
+                if ($license['expire_date'] < date('Y-m-d')) {
+                    $license['status'] = false;
+                }
             }
             if (isset($product['options'])) {
                 $license['options'] = $product['options'];
             }
         }
         return $license;
+    }
+
+    /** @since 4.0.0 */
+    public static function getGeoZone()
+    {
+        $installer_zone = SystemConfig::systemOption('zone_jail') ?? 'auto';
+        if (empty($installer_zone) || $installer_zone === 'auto') {
+            wa('installer');
+            $installer_zone = (new waAppSettingsModel())->get('webasyst', waInstallerApps::ENDPOINTS_ZONE_KEY);
+        }
+        if (empty($installer_zone) || $installer_zone === 'auto') {
+            $installer_zone = substr(wa()->getLocale(), 0, 2);
+        }
+        return $installer_zone;
     }
 
     /**

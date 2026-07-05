@@ -5,6 +5,7 @@ const WASettingsGeneral = ( function($) {
 
             // DOM
             that.$wrapper = options['$wrapper'];
+            that.$sidebar = options['$sidebar'];
             that.$form = that.$wrapper.find('form');
             that.$footer_actions = that.$form.find('.js-footer-actions');
             that.$button = that.$footer_actions.find('.js-submit-button');
@@ -66,11 +67,8 @@ const WASettingsGeneral = ( function($) {
         initClass() {
             let that = this;
 
-            //
-            let $sidebar = $('#js-sidebar-wrapper');
-
-            $sidebar.find('ul li').removeClass('selected');
-            $sidebar.find('[data-id="general"]').addClass('selected');
+            that.$sidebar.find('ul li').removeClass('selected');
+            that.$sidebar.find('[data-id="general"]').addClass('selected');
 
             //
             that.initClearCache();
@@ -388,6 +386,12 @@ const WASettingsGeneral = ( function($) {
                         setTimeout(function(){
                             that.$button.empty().html($button_text);
                         },2000);
+
+                        that.$sidebar.find('[data-id="general"] .js-debug-icon').toggleClass('hidden', !that.$form.find('[name="config[debug]"]').is(':checked'));
+
+                        if (!that.$form.find('#debug :checkbox').is(':checked')) {
+                            $('#wa-app-webasyst-settings .badge').remove();
+                        }
                     } else if (res.errors) {
                         $.each(res.errors, function (i, error) {
                             if (error.field) {

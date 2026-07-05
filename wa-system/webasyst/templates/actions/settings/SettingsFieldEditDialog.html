@@ -11,21 +11,21 @@
                value="{$localized_name_value|default:''|trim|escape}"
                {if $is_main_locale}data-main-locale="1"{/if}
                 {if !$editable}disabled="disabled"{/if}>
+        <p class="hint ellipsis small s-name-region width-100 custom-my-4">{$locale.name_region}</p>
         <span class="state-error-hint"></span>
-        <p class="hint ellipsis small s-name-region width-100">{$locale.name_region}</p>
     </li>
 {/function}
 <div class="dialog {$_class}" id="{$_id}">
     <div class="dialog-background"></div>
     <div class="dialog-body">
-        <header class="dialog-header">
+        <header class="dialog-header custom-pb-0">
             <h3>{if $field}[s`Edit field`]{else}[s`New field`]{/if}</h3>
         </header>
         <form method="post" class="js-field-form-edit fields" action="?module=settingsFieldSave{if $field}&id={$field.id}{/if}">
             <div class="dialog-content fields-group blank">
                     {* Field name *}
                     <div class="field">
-                        <div class="name">[s`Field name`]</div>
+                        <div class="name for-input">[s`Field name`]</div>
                         <div class="value">
                         <ul>
                                 {localized_name_input_block
@@ -52,7 +52,7 @@
                             <li class="hint">
                                 <div class="wa-select">
                                     <select class="js-name-another-language-wrapper">
-                                        <option>[s`Add name in another language`]</option>
+                                        <option>[s`Add name in another language`]...</option>
                                         {foreach $rest_locales as $loc}
                                         <option class="js-name-another-language" data-name-region="{$loc.name_region}" data-id="{$loc.id}">{$loc.name_region}</option>
                                         {/foreach}
@@ -66,12 +66,12 @@
 
                 {* Field id *}
                 <div class="field">
-                    <div class="name">[s`Field ID`]</div>
+                    <div class="name{if !$field} for-input{/if}">[s`Field ID`]</div>
                     <div class="value">
                         {if !$field}
-                            <input type="text" class="wide" name="id_val" data-error-id="id_val" value="">
+                            <input type="text" name="id_val" data-error-id="id_val" value="">
                         {else}
-                            <span>{$field.id|escape}</span>
+                            <code>{$field.id|escape}</code>
                         {/if}
                         <span class="state-error-hint"></span>
                     </div>
@@ -79,11 +79,11 @@
 
                 {* Field type *}
                 <div class="field">
-                    <div class="name">[s`Type of field`]</div>
+                    <div class="name{if !$field} for-input{/if}">[s`Type of field`]</div>
                     <div class="value">
                         {if !$field}
-                        <div class="wa-select">
-                            <select name="ftype" class="s-field-type-select wide">
+                        <div class="wa-select small">
+                            <select name="ftype" class="s-field-type-select">
                                 {foreach $field_types as $ftype => $ftype_str}
                                     <option value="{$ftype}">{$ftype_str}</option>
                                 {/foreach}
@@ -99,14 +99,14 @@
                 <div class="field s-values-textarea-wrapper" {if !$field || empty($field.options)}style="display: none;"{/if}>
                     <div class="name">[s`List items`]</div>
                     <div class="value" data-field-value="Menu">
-                        <textarea name="select_field_value" class="wide" placeholder="[s`Enter each new item on new line`]"
+                        <textarea name="select_field_value" placeholder="[s`Enter each new item on new line`]"
                             {if $field && !$field.editable}disabled="disabled"{/if}>{$field.options|default:[]|join:"\n"}</textarea>
                     </div>
                 </div>
 
                 {* Applied to *}
                 <div class="field">
-                    <div class="name">[s`Applied to`]</div>
+                    <div class="name for-checkbox">[s`Applied to`]</div>
                     <div class="value">
                         <ul>
                             <li>
@@ -159,7 +159,7 @@
                         <div class="name">[s`Address fields`]</div>
                     </div>
                     <div class="field">
-                        <table class="subfields-list zebra" id="subfileds-list">
+                        <table class="subfields-list table small" id="subfileds-list">
                             <tbody class="ui-sortable">
                                 {foreach $cf->getParameter('fields') as $_sf}
                                     {wa_action app="webasyst" module="settings" action="FieldFormRow" fid=$_sf->getId() f=$_sf parent='address' css_class='field-row editor-off'}
@@ -168,8 +168,10 @@
                                 <tr class="white add-field">
                                     <td class="min-width">&nbsp;</td>
                                     <td colspan="2">
-                                        <a class="js-add-subfield" href="#"><i class="fas fa-plus-circle"></i></a>
-                                        <a href="#" class="inline-link js-add-subfield"><b><i>[s`Add field`]</i></b></a>
+                                        <a href="#" class="button light-gray js-add-subfield">
+                                            <i class="fas fa-plus-circle fa-xs custom-mr-4 text-green"></i>
+                                            [s`Add field`]
+                                        </a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -184,8 +186,7 @@
                     <div class="flexbox middle full-width">
                         <div class="s-column">
                             <input class="button s-button js-save" type="submit" value="[s`Save`]">
-                            <span>[s`or`]</span>
-                            <a class="js-close-dialog" href="javascript:void(0);">[s`cancel`]</a>
+                            <a class="button light-gray js-close-dialog" href="javascript:void(0);">[s`Cancel`]</a>
                         </div>
                         {if $field}
                             <div class="c-column middle right">

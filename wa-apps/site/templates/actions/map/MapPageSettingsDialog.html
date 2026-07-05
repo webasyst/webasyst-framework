@@ -1,0 +1,637 @@
+{*
+ * This template is used as a separate dialog loaded via XHR
+ * on Site Map screen, but also is included in parent screen HTML
+ * on Editor page.
+ *}
+
+{$is_broken_route_url = !empty($page.is_broken_route_url) && $page.is_broken_route_url}
+{$preview_hash_param = (ifset($page, 'status', '') === 'final_unpublished') ? "?preview_hash={$preview_hash}" : ""}
+{$is_exists = !empty($page.id)}
+
+{capture assign="_field_url"}
+<div class="field field-url">
+    <div class="name bold for-input">URL</div>
+    <div class="value">
+        <!-- existing route -->
+        <div class="s-route-block flexbox wrap middle space-4" id="s-route-where">
+            {$full_url = $page.full_url|default:''|rtrim:$page.url|rtrim:'/'}
+            <span class="break-word custom-py-6">http://{$domain_decoded}/{if $full_url}{$full_url}/{/if}</span>
+
+            {if empty($is_main_page)}
+                <input type="text" name="info[url]" value="{$page.url|escape}" class="js-url small full-width" {if $is_broken_route_url}disabled{/if}>
+                <span class="custom-mr-4">/</span>
+            {else}
+                <input type="hidden" name="info[url]" value="{$page.url|escape}" class="js-url small full-width">
+            {/if}
+            {if $is_exists}
+                <a href="//{$domain_decoded}/{if $page.full_url}{$page.full_url|rtrim:'/'|escape}/{/if}{$preview_hash_param}" data-domain="{$domain_decoded}" target="_blank" class="button nobutton small circle">
+                    <i class="fas fa-external-link-alt"></i><i class="fas fa-spinner fa-spin text-gray" style="display: none;"></i>
+                </a>
+            {/if}
+        </div>
+
+        {if empty($is_main_page) || !empty($has_url_overlap)}
+        <div class="custom-my-8">
+            <div class="switch-with-text">
+                <span class="switch smallest" id="switch-url-overlap-section">
+                    <input type="checkbox"
+                        id="switch-url-overlap-input"
+                        name="url_overlap"
+                        value="1"
+                        {if !empty($has_url_overlap)} checked{/if}
+                    >
+                </span>
+                <label class="small" for="switch-url-overlap-input">
+                    <span class="normal">[`Main section page`]</span>
+                    <span data-wa-tooltip-content="[`When enabled, this page becomes the main page of a section with the same URL, and its subpages become unavailable. All other section pages remain available at their addresses.`]">
+                        <i class="fas fa-question-circle text-light-gray"></i>
+                    </span>
+                </label>
+            </div>
+        </div>
+        {/if}
+
+        <div class="custom-mt-8">
+            {if $is_exists && empty($is_main_page) && !$page.parent_id}
+            <button type="button" class="js-set-main-page button nowrap rounded smaller outlined gray"{if $page.status == 'final_unpublished'} disabled{/if}>
+                <i class="fas fa-home custom-mr-4"></i>[`Make the site’s homepage`]
+            </button>
+            {/if}
+            <button type="button" class="js-active-main-page button nowrap rounded smaller green{if empty($is_main_page)} hidden{/if}" disabled><i class="fas fa-home custom-mr-4"></i>[`Homepage`]<i class="fas fa-check custom-ml-4"></i></button>
+        </div>
+
+    </div>
+</div>
+{/capture}
+
+<div class="dialog s-section-settings-dialog" id="js-page-settings-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header">
+            <div class="flexbox middle full-width">
+                <h1 class="custom-mb-0">[`Page settings`]</h1>
+                {if !empty($page.update_datetime)}
+                    <span class="hint bold">[`Modified`] {$page.update_datetime|wa_datetime:"humandatetime"|lower}</span>
+                {/if}
+            </div>
+        </header>
+        <div class="dialog-content">
+            {*var_dump($og_params)*}
+            <form>
+            <div class="fields">
+                {if $is_exists}
+                    <input type="hidden" name="id" value="{$page.id|escape}">
+                {/if}
+                {if !empty($page.is_new)}
+                    <input type="hidden" name="is_new" value="1">
+                {/if}
+                {if isset($page.parent_id)}
+                    <input type="hidden" name="info[parent_id]" value="{$page.parent_id|escape}">
+                {/if}
+                <div class="field">
+                    <div class="name for-input">[`Page name`]</div>
+                    <div class="value">
+                        <div class="flexbox middle">
+                            <input type="text" class="wide bold large" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
+                            {if !empty($page.id)}
+                                <span class="nowrap">
+                                    id: <strong>{$page.id}</strong>
+                                </span>
+                            {/if}
+                        </div>
+                        <p class="hint">[`Used as the page title. Can be displayed on the site if allowed by design settings.`]</p>
+                    </div>
+
+                </div>
+                {if $is_exists}
+                <div class="field">
+                    <div class="name">[`Publication`]</div>
+                    <div class="field">
+                        <div class="value">
+                            <div class="toggle rounded" id="draft-toggle">
+                                <span data-status="unpublish"{if $page.status == 'final_unpublished'} class="selected"{/if}><i class="fas fa-eye-slash text-gray custom-mr-4"></i>[s`Draft`]</span>
+                                <span data-status="publish"{if $page.status != 'final_unpublished'} class="selected"{/if}><i class="fas fa-check-circle text-green custom-mr-4"></i>[s`Published`]</span>
+                            </div>
+                            <input type="hidden" name="init_status" value="{if $page.status == 'final_unpublished'}unpublish{else}publish{/if}">
+                            <script>
+                                ( function($) {
+                                    const $draft_toggle = $("#draft-toggle"),
+                                        init_status = $('input[name="init_status"]');
+
+                                    setTimeout(() => {
+                                        $draft_toggle.waToggle({
+                                            change(event, target, toggle) {
+                                                const status = toggle.$active.data('status');
+                                                if (status !== init_status) {
+                                                    if (status === 'unpublish') {
+                                                        $.waDialog.confirm({
+                                                            title: '[`Page unpublishing`]',
+                                                            text: '[`After the unpublishing, only the draft will remain.`]'
+                                                                + '<br><br>'
+                                                                + '[`The published version will be lost forever after saving the page settings.`]',
+                                                            success_button_title: '[`Delete published version`]',
+                                                            success_button_class: 'danger',
+                                                            cancel_button_title: '[`Do not unpublish`]',
+                                                            cancel_button_class: 'light-gray',
+                                                            onCancel() {
+                                                                toggle.$before.click();
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    })
+                                })(jQuery);
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                {/if}
+
+                {$_field_url}
+
+                {$themes = siteHelper::getThemes('site', true)}
+                {if $themes}
+                    <div class="field">
+                        <div class="name">[`Design theme`]</div>
+                        <div class="value">
+                            <div class="dropdown small js-theme-select">
+                                {$used_theme = (!empty($themes[ifset($page['theme'])])) ? $page['theme'] : 'default'}
+                                <button class="dropdown-toggle button light-gray" type="button">{$themes[$used_theme]}</button>
+                                <div class="dropdown-body dd-wide">
+                                    <div class="box">
+                                        <h5 class="custom-mb-0 heading">[`Installed themes`]</h5>
+                                    </div>
+                                    <ul class="menu custom-my-0">
+                                        {foreach $themes as $theme_id => $theme}
+                                            <li class="{($page['theme']|default:'default' == $theme_id ) ? 'selected' : ''}" data-id="{$theme_id}">
+                                                <div class="item">
+                                                    <span>{$theme|escape}</span>
+                                                    {if $page['theme']|default:'default' == $theme_id}
+                                                        <span class="count"><i class="fas fa-check text-light-gray"></i></span>
+                                                    {/if}
+                                                </div>
+                                            </li>
+                                        {/foreach}
+                                    </ul>
+                                    <div class="box custom-my-4">
+                                        <a class="wa-themes-link button webasyst-magic-wand full-width" target="_blank" href="{$wa_app_url}themes/?domain_id={$domain_id}#/themes/">
+                                            <i class="icon"></i>
+                                            <span>[`Browse all themes`]</span>
+                                            <i class="fas fa-external-link-alt small custom-ml-4"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <input name="info[theme]" type="hidden" value="{$used_theme}">
+                            </div>
+                            <a class="js-theme-settings text-plum small semibold custom-ml-16" href="{$wa_app_url}themes/?domain_id={$domain_id}#/themes/theme={$used_theme}&domain={$domain_decoded|urlencode}" target="_blank">
+                                <i class="fas fa-palette custom-mr-4"></i>[`Theme settings`] <i class="fas fa-external-link-alt smaller custom-ml-4"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Language`]</div>
+                        <div class="value">
+                            {if empty($page_params['locale'])}{$_l=$wa->locale()}{else}{$_l=$page_params['locale']}{/if}
+                            <div class="wa-select small">
+                                {html_options name="info[params][locale]" options=$locales selected=$_l}</div><br>
+                            <span class="hint">[`Select a language to translate text strings in website frontend.`]<br>
+                                [`If “Auto” option is selected, website language will be determined by user browser settings.`]</span>
+                        </div>
+                    </div>
+                {/if}
+                <div class="field">
+                    <div class="name custom-pt-6">
+                        [s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span>
+                    </div>
+                    <div class="value">
+                        <input type="text" name="info[title]" value="{if !empty($page)}{$page.title|default:''|escape}{/if}" class="bold width-100" />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name custom-pt-6">[`META Keywords`]</div>
+                    <div class="value">
+                        <input type="text" name="info[params][meta_keywords]" value="{$page_params.meta_keywords|default:''|escape}" class="small width-100">
+
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name custom-pt-6">[`META Description`]</div>
+                    <div class="value">
+                        <textarea class="small width-100" name="info[params][meta_description]">{$page_params.meta_description|default:''|escape}</textarea>
+
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name for-switch">[s`Social sharing`]
+                        <br>
+                        <span class="hint">[`Open Graph meta tags`]</span></div>
+                    <div class="value">
+                        <div class="switch-with-text ">
+                        <span class="switch smaller" id="og-switch">
+                            <input id="og-checkbox" type="checkbox"{if !empty($og_params) && $og_params.active|default:0|escape} checked{/if}>
+                        </span>
+                        <label for="og-checkbox" class="small">
+                            [`Customize the appearance of the link to the page in social networks`]
+                        </label>
+                        <input id="og-checkbox-hidden" type="hidden" name="info[params][og_active]" value="{$og_params.active|default:0|escape}">
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-mt-24 og-group" {if empty($og_params) || !$og_params.active|default:0|escape}style="display: none;"{/if}>
+                    <div class="field">
+                        <div class="name custom-pt-6">[s`Social sharing title`] <span class="hint">og:title</span></div>
+                        <div class="value">
+                            <input type="text" name="info[params][og_title]" class="width-100 bold" value="{ifset($og_params.title, '')|escape}" {if empty($og_params)}disabled{/if}>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name custom-pt-6">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
+                        <div class="value">
+                            <input type="text" name="info[params][og_image]" class="width-100" value="{ifset($og_params.image, '')|escape}" {if empty($og_params)}disabled{/if}>
+                            <p class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</p>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name custom-pt-6">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
+                        <div class="value">
+                            <input type="text" name="info[params][og_video]" class="width-100" value="{ifset($og_params.video, '')|escape}" {if empty($og_params)}disabled{/if}>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name custom-pt-6">[s`Social sharing description`] <span class="hint">og:description</span></div>
+                        <div class="value">
+                            <textarea class="width-100" name="info[params][og_description]"{if empty($og_params)} disabled{/if}>{ifset($og_params.description, '')|escape}</textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name custom-pt-6">[s`Social sharing type`] <span class="hint">og:type</span></div>
+                        <div class="value">
+                            <input type="text" name="info[params][og_type]" class="width-100" placeholder="" value="{ifset($og_params.type, '')}" {if empty($og_params)}disabled{/if}>
+                            <p class="hint">[s`Please refer to <a href="http://ogp.me" rel="noopener" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</p>
+                        </div>
+                    </div>
+                </div>
+                {if !empty($page_edit)}
+                    <div class="custom-mt-24">
+                        {foreach $page_edit as $_}{$_}{/foreach}
+                    </div>
+                {/if}
+                <div class="field">
+                    <div class="name custom-pt-6">[`Custom parameters`]</div>
+                    <div class="value">
+                        <textarea name="info[params][other_params]" class="small full-width">{strip}
+                            {if $page && !empty($page.params)}
+                            {foreach from=$page.params item=v key=k}{$k}={$v|escape}{"\n"}{/foreach}
+                            {/if}
+                        {/strip}</textarea>
+                        <p class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a>&nbsp;<i class="fas fa-external-link-alt"></i></p>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        </div>
+        <footer class="dialog-footer flexbox space-8">
+            <div class="wide flexbox middle space-8 wrap">
+                {if $is_exists}
+                    <button class="js-save button" type="button">[`Save`]</button>
+                {else}
+                    <button class="js-save button" type="button">[`Add`]</button>
+                    <button class="js-save-and-edit button dark-gray" type="button">[`Add & edit`]</button>
+                {/if}
+                <button class="js-close-dialog button light-gray" type="button">[`Cancel`]</button>
+                <div class="js-place-for-errors state-caution-hint"></div>
+            </div>
+            {if $is_exists}
+                <a href="javascript:void(0);" class="js-delete text-red nowrap custom-mt-4"><i class="fas fa-trash-alt custom-mr-4"></i>[`Delete page`]</a>
+            {/if}
+        </footer>
+    </div>
+</div>
+<script>(function() { "use strict";
+
+    const site_app_url = {$wa_app_url|json_encode};
+    const domain_id = '{if !empty($page.domain_id)}{$page.domain_id}{else}{$domain_id}{/if}';
+    const save_url = site_app_url + '?module=editor&action=pageSettingsSave&domain_id='+domain_id;
+    const delete_url = site_app_url + '?module=editor&action=pageDelete';
+    const initial_page_data = {$page|json_encode};
+    const editor_page_url = {$wa_app_url|json_encode} + 'editor/page/%s/?domain_id='+domain_id;
+    const preview_hash_param = {$preview_hash_param|json_encode};
+    const page_id = {$page.id|default:0|json_encode};
+
+    const $wrapper = $('#js-page-settings-dialog');
+    const $form = $wrapper.find('form');
+    const theme_val = $form.find('[name="info[theme]"]').val();
+    const $save_button = $wrapper.find('.js-save');
+    const $save_and_edit_button = $wrapper.find('.js-save-and-edit');
+    const wa_loading = $.waLoading();
+    const $place_for_errors = $wrapper.find('.js-place-for-errors');
+    var dialog;
+
+    const $og_switch = $("#og-switch");
+    const $og_group = $(".og-group");
+    const $og_input = $("#og-checkbox-hidden");
+
+    $og_switch.waSwitch({
+        change(active) {
+            $og_group.toggle(active);
+            $og_input.val(+active);
+        }
+    });
+
+    initThemeSelect();
+    initSwitchUrlOverlap();
+
+    // Save to server when user clicks Save button
+    $save_button.on('click', function() {
+        saveHandler();
+        return false;
+    });
+    $save_and_edit_button.on('click', function() {
+        saveHandler(false, true);
+        return false;
+    });
+    $form.submit(function() {
+        saveHandler();
+        return false;
+    });
+
+    $('.js-set-main-page', $form).on('click', function () {
+        $form.append('<input type="hidden" name="set_main_page" value="1">');
+        $('input.js-url', $form).val('').hide().next().hide().next().hide();
+        $('.js-active-main-page', $form).removeClass('hidden');
+        $(this).remove();
+    });
+
+    // Delete page when user clicks on Delete button
+    {if $is_exists}
+    $wrapper.on('click', '.js-delete', function(e) {
+        e.preventDefault();
+        const deleteHandler = (d, is_multiple_delete) => {
+            const $loading = $('<span><i class="fas fa-spinner fa-spin"></i></span>');
+            d.$block.find('.dialog-footer').append($loading);
+            $.post(delete_url, { id: {$page.id}, ...(is_multiple_delete ? { confirm_multiple_delete: 1 } : {}) }, function (r) {
+                if (r?.data?.multiple_delete) {
+                    $.waDialog.confirm({
+                        title: $_('delete_nested_pages'),
+                        text: $_('delete_route_with_nested_pages_msg'),
+                        success_button_title: $_('Delete'),
+                        success_button_class: 'danger',
+                        cancel_button_title: $_('Cancel'),
+                        cancel_button_class: 'light-gray',
+                        onSuccess: (d) => deleteHandler(d, true)
+                    });
+                } else if ($('.site-map').length) {
+                    $wrapper.trigger('page_deleted');
+                } else {
+                    location.href = '{$wa_app_url}map/overview/?domain_id=' + domain_id;
+                }
+            }, "json").always(function() {
+                $loading.remove();
+            });
+        };
+        $.waDialog.confirm({
+            title: $_('delete_page'),
+            text: $_('delete_page_msg'),
+            success_button_title: $_('Delete'),
+            success_button_class: 'danger',
+            cancel_button_title: $_('Cancel'),
+            cancel_button_class: 'light-gray',
+            onSuccess: deleteHandler
+        });
+    });
+    {/if}
+
+    function saveHandler(is_oninput = false, is_add_and_open = false) {
+        wa_loading.show();
+        wa_loading.animate(4000, 99, false);
+        clearErrors();
+
+        const theme_changed = $form.find('[name="info[theme]"]').val() !== theme_val;
+
+        $.post(save_url, $form.serialize(), 'json').then(function(r) {
+            if (r.status === 'ok') {
+                r.data.theme_changed = theme_changed;
+                wa_loading.done();
+
+                if (r.data.url) {
+                    $form.find('[name="url"]').val(r.data.url);
+                }
+
+                if (is_add_and_open) {
+                    window.location.href = editor_page_url.replace('%s', r.data.id);
+                    setTimeout(() => $.site.loadMap(), 100);
+                    $wrapper.data('dialog').close();
+                    return;
+                }
+
+                if (!is_oninput) {
+                    shouldSaveStatusPublication().then(() => {
+                        $wrapper.trigger('page_saved', [r.data]);
+                        $wrapper.data('dialog').close();
+                    }).fail(r => {
+                        if (Array.isArray(r.errors) && r.errors[0].description) {
+                            $place_for_errors.text(r.errors[0].description);
+                        }
+                    });
+                }
+                if (is_oninput) {
+                    $(document).trigger('after_save_page_settings', [r.data]);
+                }
+                return;
+            }
+            wa_loading.abort();
+
+            if (is_oninput) {
+                $(document).trigger('after_save_page_settings', [r.data]);
+            }
+
+            if (Array.isArray(r.errors)) {
+                r.errors.forEach(function(err) {
+                    let $field = null;
+                    if (err.field) {
+                        $field = $form.find('[name="'+err.field+'"]');
+                    }
+
+                    const msg = err.description || (typeof err === 'string' ? err : '');
+                    if($field && $field.length) {
+                        $field.addClass('state-caution');
+                        if (err.bottom) {
+                            $place_for_errors.text(msg);
+                        } else {
+                            const $msg = $('<div class="state-caution-hint"></div>').text(msg);
+                            $field.after($msg);
+                        }
+                    } else {
+                        $place_for_errors.text(msg);
+                    }
+                });
+            }
+
+        }, function() {
+            console.log('Error saving page settings', arguments);
+            wa_loading.abort();
+        });
+    }
+
+    function shouldSaveStatusPublication() {
+        const dfd = $.Deferred();
+        const init_status = $('input[name="init_status"]').val();
+        const new_status = $('#draft-toggle [data-status].selected').data('status');
+        if (!page_id || init_status === new_status) {
+            return dfd.resolve();
+        }
+
+        const payload = { id: page_id, operation: new_status };
+        const $editor_wrapper = $("#js-wa-header-publish");
+        $editor_wrapper.addClass('is-publishing');
+        $.post('?module=editor&action=pagePublish', payload, function(r) {
+            if (r.status === 'ok' && r.data.page_id) {
+                const $left_drawer = $('#js-left-drawer:visible');
+                if (($editor_wrapper.length && !$left_drawer.length) || $left_drawer.find('.js-current[data-page-id="'+page_id+'"]').length) {
+                    if (new_status === 'unpublish') {
+                        const url = location.href.replace(/\/editor\/page\/\d+\//, '/editor/page/'+r.data.page_id+'/');
+                        window.location.href = url;
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    dfd.resolve();
+                }
+            } else {
+                dfd.reject(r)
+                console.error('Unable to cancel publication', r);
+            }
+        }).always(function() {
+            $editor_wrapper.removeClass('is-publishing');
+        });
+
+        return dfd.promise();
+    }
+
+    function initThemeSelect() {
+        $(".js-theme-select").waDropdown({
+            hover: false,
+            items: ".menu > li",
+            open: function(dropdown_instance) {
+                const $dropdown_body = dropdown_instance.$wrapper.find('.dropdown-body');
+                const height = $dropdown_body.height();
+                const scrollHeight = $dropdown_body.prop('scrollHeight');
+                if (scrollHeight > 500 || scrollHeight > height + 1) $dropdown_body.css('max-height', ($dropdown_body.height() - 93.1) + 'px');
+            },
+            change: function(event, target) {
+                const $li = $(target);
+                const theme_id = $li.data("id");
+                $li.children().append($li.siblings().find('.count'));
+                $('[name="info[theme]"]').val(theme_id);
+                $('.js-theme-settings').attr('href', "{$wa_app_url}themes/?domain_id=" + domain_id + "#/themes/theme=" + theme_id + "&domain={$domain_decoded|urlencode}");
+            }
+        });
+    }
+
+    function initSwitchUrlOverlap() {
+        const $switch = $("#switch-url-overlap-section");
+        $switch.parent().find("[data-wa-tooltip-content]").waTooltip();
+        $switch.waSwitch({
+            change(is_active) {
+                is_active && clearErrors();
+            }
+        });
+    }
+
+    const $external_domain_link = $('#s-route-where a');
+    const $url_input = $('#s-route-where .js-url');
+    if (page_id && $external_domain_link.length) {
+        const $original_value = $url_input.val();
+
+        let timerId = null;
+        $url_input.on('input', function() {
+            $external_domain_link.addClass('disabled');
+            $external_domain_link.find('.fa-external-link-alt').hide();
+            $external_domain_link.find('.fa-spinner').show();
+
+            clearTimeout(timerId);
+            timerId = setTimeout(() => saveHandler(true), 1500);
+        });
+
+        $(document).on('after_save_page_settings', function(_, data) {
+            if (data?.full_url !== undefined) {
+                const domain = '//' + $external_domain_link.data('domain');
+                $external_domain_link.attr('href', domain + '/' + data.full_url + preview_hash_param);
+            }
+            $external_domain_link.removeClass('disabled');
+            $external_domain_link.find('.fa-external-link-alt').show();
+            $external_domain_link.find('.fa-spinner').hide();
+        });
+
+        $wrapper.find('.js-close-dialog').on('click', () => restoreValue());
+        $(document).on('keydown', event => {
+            if ((event.key === "Escape" || event.keyCode === 27) && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+                restoreValue()
+            }
+        });
+        function restoreValue() {
+            if ($original_value !== $url_input.val()) {
+                $form.find('input[name="set_main_page"]').remove();
+                $url_input.val($original_value);
+                saveHandler(true);
+            }
+        }
+    }
+    $url_input.on('keydown', () => {
+        clearErrors();
+    });
+
+    function clearErrors() {
+        $form.find('.state-caution').removeClass('state-caution');
+        $form.find('.state-caution-hint').remove();
+        $place_for_errors.empty();
+    }
+
+    {*if (!$page || !$page.id) && empty($options.disable_auto_url) }
+        // Transliterate page title into URL while user types
+        (function() {
+        $.fn.onKeyFinish = function (defer, callback) {
+            return this.each(function () {
+                var that = $(this);
+                that.currentValue = that.val();
+                that.interval = null;
+                $(this).off('keyup.wapages');
+                $(this).on('keyup.wapages', function (e) {
+                    clearInterval(that.interval);
+                    if (that.currentValue != that.val()) {
+                        that.interval = setInterval(function () {
+                            clearInterval(that.interval);
+                            callback.call(that);
+                            that.currentValue = that.val();
+                        }, defer);
+                    }
+                });
+            });
+        };
+        $("#wa-page-settings input:first").focus();
+        $('#wa-page-settings input[name="info[name]"]').onKeyFinish(300, function () {
+            if (!$("#wa-page-form-translit").length) {
+                $page_form.append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+            }
+            var url = $('#wa-page-settings input[name="info[url]"]');
+            if ($(this).val() && (!url.val() || !url.data('changed'))) {
+                $.post("?module=htmlPages&action=translit", { str: $(this).val()}, function (response) {
+                    $("#wa-page-form-translit").remove();
+                    if (response.status == 'ok') {
+                        if (!url.val() || !url.data('changed')) {
+                            url.val(response.data.str);
+                        }
+                    }
+                }, "json");
+            }
+        });
+        $('#wa-page-settings input[name="info[url]"]').on('keyup', function () {
+                   $(this).data('changed', 1);
+                });
+        }());
+    {/if*}
+
+})();</script>

@@ -1,0 +1,190 @@
+{*
+ * This goes inside #js-add-block-dialog .dialog-content
+ * see JS: SiteEditor.openAddBlockDialog()
+ *}
+{$show_templates = waRequest::request('show_templates')}
+{function listOfBlocks id='' items=[] hide=false}
+    <div data-toggle-id="{$id}" class="hide-scrollbar"{if $hide} style="display: none;"{/if}>
+        <ul class="js-list-of-blocks-sidebar menu">
+            {$is_first_app = null}
+            {foreach $items as $n => $item}
+                {if $is_first_app === null && strpos($item.tag, 'app_') !== false}
+                    {$is_first_app = true}
+                {elseif $is_first_app === true}
+                    {$is_first_app = false}
+                {/if}
+                <li class="rounded{if $item@first} selected{/if}{if $is_first_app} custom-mt-16{/if}" data-category="{$n}">
+                    <a href="javascript:void(0);">
+                        {if isset($item.icon_url)}
+                            <span class="icon" style="background-image: url({$item.icon_url});"></span>
+                        {elseif isset($item.icon_class)}
+                            <span class="icon"><i class="{$item.icon_class}"></i></span>
+                        {/if}
+                        <span>{$item.title|escape}</span>
+                    </a>
+                </li>
+            {/foreach}
+        </ul>
+        {if $id === 'blocks'}
+            <a class="button small purple gradient custom-mb-16" href="{$wa_app_url}plugins/?domain_id={$domain_id}#/plugins/" target="_blank">
+                [`More blocks in plugins for Site`]
+            </a>
+        {/if}
+    </div>
+{/function}
+{function contentOfBlocks id='' items=[] hide=false}
+    <div data-content="{$id}" class="content js-add-block-dialog-content flexbox vertical custom-pr-48 custom-pl-16"{if $hide} style="display: none;"{/if}>
+        {foreach $items as $n => $item}
+            <ul class="js-list-of-blocks-{$n} list-of-blocks separated menu{if !$item@last} custom-mt-24 custom-mb-0{else} custom-my-24{/if}" data-category="{$n}">
+                <li><h6 style="custom-mt-12 custom-mb-24">{$item.title|escape}</h6></li>
+                {foreach $item.blocks as $b}
+                    <li{if empty($b.disabled)} data-type-id="{$b.id|escape}"{/if}{if !$is_premium && !empty($b.premium)} data-premium-required="1"{/if}>
+                        {if !empty($b.icon)}
+                            <a href="javascript:void(0);" class="custom-p-0" style="max-width: 400px;width: 100%;display: flex;justify-content: center;align-items: center;aspect-ratio: 16 / 9;background-color: var(--background-color-skeleton);font-size: 1.5rem;">
+                                <i class="fas fa-{$b.icon|escape}" style="font-size: 2.5rem; max-width: 100%; color: var(--menu-link-color);"></i>
+                            </a>
+                        {elseif empty($b.image)}
+                            <a href="javascript:void(0);" class="custom-p-0" style="max-width: 400px;width: 100%;display: flex;justify-content: center;align-items: center;aspect-ratio: 16 / 9;background-color: var(--background-color-skeleton);font-size: 1.5rem;">
+                                {$b.title|escape}
+                            </a>
+                        {else}
+                            <img srcset="{$b.image} 1x, {(!empty($b.image_2x)) ? $b.image_2x : $b.image} 2x" src="{$b.image}" class="cursor-pointer" alt="">
+                        {/if}
+                    </li>
+                {/foreach}
+            </ul>
+        {/foreach}
+    </div>
+{/function}
+<div class="flexbox space-16">
+    <div class="sidebar js-add-block-dialog-sidebar blank custom-mt-24 width-14rem">
+        <div class="js-toggle toggle">
+            <span data-id="blocks"{if !$show_templates} class="selected"{/if}>[`Blocks`]</span>
+            <span data-id="templates"{if $show_templates} class="selected"{/if}>[`Pages`]</span>
+        </div>
+        {listOfBlocks id="blocks" items=$library hide=$show_templates}
+        {listOfBlocks id="templates" items=$templates hide=!$show_templates}
+    </div>
+    {contentOfBlocks id="blocks" items=$library hide=$show_templates}
+    {contentOfBlocks id="templates" items=$templates hide=!$show_templates}
+</div>
+<script>(function() { "use strict";
+    const insert_place_params = {json_encode($insert_place_params)};
+    var $list_of_blocks = $('.list-of-blocks');
+    var $list_of_blocks_sidebar = $('.js-list-of-blocks-sidebar');
+    var $dialog_content = $list_of_blocks_sidebar.closest('.dialog-content');
+    var $toggle = $dialog_content.find('.js-toggle');
+    var dialog = $list_of_blocks_sidebar.closest('.dialog').data('dialog');
+    const $content = dialog.$block.find('.js-add-block-dialog-content');
+
+    let is_loading = false;
+    $list_of_blocks.on('click', '[data-type-id]', function() {
+        if (is_loading) return false;
+
+        const $this = $(this);
+        if ($this.data('premium-required')) {
+            $.site.helper.showPremiumDialog();
+            return false;
+        }
+
+        $list_of_blocks.find('[data-type-id]').addClass('disabled');
+        $this.addClass('loading')
+        is_loading = true;
+
+        const type_id = $this.data('type-id');
+        $.post('?module=editor&action=addBlock', Object.assign({
+            type_id: type_id
+        }, insert_place_params))
+            .done((html) => {
+                $dialog_content.trigger('site_block_added', [html]);
+                dialog.close();
+            })
+            .always(() => {
+                $list_of_blocks.find('[data-type-id]').removeClass('disabled');
+                $this.removeClass('loading');
+                is_loading = false;
+            });
+    });
+
+    let isScrollingIntoView = false;
+    $list_of_blocks_sidebar.on('click', '[data-category]', function() {
+        isScrollingIntoView = true;
+        const $this = $(this);
+        const category_id = $this.data('category');
+        $this.addClass('selected').siblings().removeClass('selected');
+        const toggle_id = $this.closest('[data-toggle-id]').data('toggle-id');
+        $('[data-content="'+toggle_id+'"] .js-list-of-blocks-' + category_id)[0].scrollIntoView();
+    });
+
+    setTimeout(() => { $content.each(initMenuSelectionByScroll); }, 100);
+    initToggle();
+
+    function initMenuSelectionByScroll() {
+        const content = this;
+        const $content = $(this);
+        const $list_of_blocks = $content.find('.list-of-blocks');
+        const $list_of_blocks_sidebar = $('[data-toggle-id="'+$content.data('content')+'"] .js-list-of-blocks-sidebar');
+        const len = $list_of_blocks.length;
+
+        let timer_finish_scroll = null;
+        const debounceIsScrollFinished = () => {
+            if (timer_finish_scroll) {
+                clearTimeout(timer_finish_scroll);
+            }
+            timer_finish_scroll = setTimeout(() => {
+                isScrollingIntoView = false;
+            }, 50);
+        };
+
+        const dialog_top = dialog.$block.offset().top;
+        const dialog_height = dialog.$block.height() + dialog_top;
+        const dialog_height_half = dialog.$block.height() / 2 - dialog_top;
+
+        const selectMenuViaScrolling = () => {
+            if (isScrollingIntoView) {
+                debounceIsScrollFinished();
+                return;
+            }
+
+            const scroll_pos = content.offsetHeight + content.scrollTop;
+            const scroll_height = content.scrollHeight - dialog_top / 2;
+            if (scroll_pos >= scroll_height) {
+                $list_of_blocks_sidebar.children().removeClass('selected');
+                $list_of_blocks_sidebar.children(':last').addClass('selected');
+                return;
+            }
+
+            for (let i = 0; i < len; i++) {
+                const { top, bottom, height } = $list_of_blocks[i].getBoundingClientRect();
+                if ((top > dialog_top && top <= dialog_height_half && bottom >= dialog_height_half) || (bottom >= dialog_height && top < dialog_top)) {
+                    $list_of_blocks_sidebar.children().removeClass('selected');
+                    $list_of_blocks_sidebar.children(':eq('+i+')').addClass('selected');
+                    break;
+                }
+            }
+        };
+
+        let timer_scroll = null;
+        $content.on('scroll', () => {
+            if (timer_scroll) return;
+
+            selectMenuViaScrolling();
+            timer_scroll = setTimeout(() => {
+                timer_scroll = null;
+            }, 10);
+        });
+    }
+
+    function initToggle() {
+        $toggle.waToggle({
+            change: (e, target) => {
+                const toggleId = target.dataset.id;
+
+                const $sidebar_blocks = $dialog_content.find('[data-toggle-id]');
+                $sidebar_blocks.hide().filter('[data-toggle-id="'+toggleId+'"]').show();
+
+                $content.hide().filter('[data-content="'+toggleId+'"]').show();
+            }
+        });
+    }
+})();</script>

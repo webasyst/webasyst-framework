@@ -16,7 +16,7 @@
         *}
 
         {if !empty($contacts)}
-            {include file="./Users.inc.html" contacts=$contacts list_context="inactive"}
+            {include file="./Users.inc.html" contacts=$contacts list_context="no-access"}
         {else}
             <p class="t-description">[`No inactive users.`]</p>
         {/if}
@@ -28,7 +28,7 @@
 <script>(function($) { "use strict";
 
     $.team.setTitle({_w('Users with no access to Webasyst backend')|json_encode});
-    $.team.sidebar.updateCount('{$wa_app_url}inactive/', {count($contacts)});
+    $.team.sidebar.updateCount('{$wa_app_url}no-access/', {count($contacts)});
 
     new UserList({
         $wrapper: $(".js-users-list")

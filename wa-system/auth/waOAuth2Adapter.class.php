@@ -20,6 +20,11 @@ abstract class waOAuth2Adapter extends waAuthAdapter
         // check code
         $code = $this->getCode();
         if (!$code) {
+            $goal_url_encoded = waRequest::get('goal_url', null, waRequest::TYPE_STRING_TRIM);
+            if (!empty($goal_url_encoded)) {
+                wa()->getStorage()->set('auth_goal_url', $goal_url_encoded);
+            }
+    
             $url = $this->getRedirectUri();
             if ($this->check_state) {
                 $state = md5(uniqid(rand(), true));
@@ -28,6 +33,11 @@ abstract class waOAuth2Adapter extends waAuthAdapter
             }
             // redirect to provider auth page
             wa()->getResponse()->redirect($url);
+        }
+
+        $goal_url_encoded = wa()->getStorage()->get('auth_goal_url');
+        if (!empty($goal_url_encoded)) {
+            waRequest::setParam('goal_url', $goal_url_encoded);
         }
 
         if ($this->check_state) {

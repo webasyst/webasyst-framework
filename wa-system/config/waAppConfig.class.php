@@ -26,6 +26,7 @@ class waAppConfig extends SystemConfig
     protected $options = array();
     protected $routes = null;
     protected $loaded_locale = null;
+    protected $cron = null;
 
     public function __construct($environment, $root_path, $application = null, $locale = null)
     {
@@ -746,6 +747,50 @@ class waAppConfig extends SystemConfig
         return $all_plugins_routes;
     }
 
+    public function getCron()
+    {
+        if ($this->cron === null) {
+            $this->cron = $this->getCronRules();
+        }
+        return $this->cron;
+    }
+
+    protected function getCronRules()
+    {
+        $cron_config = [];
+        $cron_config_path = $this->getAppConfigPath('cron');
+        if (file_exists($cron_config_path)) {
+            $cron_config = include($cron_config_path);
+        }
+        $cron_config = array_merge($cron_config, $this->getPluginsCronRules());
+        return array_filter($cron_config, function($job) {
+            return !empty($job['expression']);
+        });
+    }
+
+    protected function getPluginsCronRules()
+    {
+        /**
+         * Extend cron config via plugin cron jobs
+         * @event cron
+         */
+        $params = [];
+        $result = wa()->event(array($this->application, 'cron'), $params);
+        $all_plugins_cron = [];
+        foreach ($result as $plugin_id => $cron_config) {
+            if (empty($cron_config)) {
+                continue;
+            }
+            $plugin = str_replace('-plugin', '', $plugin_id);
+            foreach ($cron_config as $alias => $job) {
+                $job['plugin'] = $plugin;
+                $all_plugins_cron[$plugin_id.'-'.$alias] = $job;
+            }
+            unset($job);
+        }
+        return $all_plugins_cron;
+    }
+
     public function getPrefix()
     {
         if (!$this->prefix) {
@@ -1051,6 +1096,20 @@ class waAppConfig extends SystemConfig
         $m->deleteById($data['token']);
     }
 
+    /**
+     * Called during frontend dispatch before attempting to route request according to settlement rules.
+     * App has a chance to handle any request no matter the 'url' parameter in its settlement,
+     * if the settlement contains parameter 'priority_settlement' => true.
+     *
+     * @param array $route settlement that triggered the call
+     * @param string $url request URL relative to framework root
+     * @since 3.4.0
+     */
+    public function dispatchPrioritySettlement($route, $url)
+    {
+        return null;
+    }
+
     public function throwFrontControllerDispatchException()
     {
         // Called when route is not found in backend routing, see waFrontController.
@@ -1063,6 +1122,11 @@ class waAppConfig extends SystemConfig
      * @see waLicensing
      */
     public function isAnyPremiumFeatureEnabled()
+    {
+        return false;
+    }
+
+    public function isFrontendAnnouncementsEnabled()
     {
         return false;
     }

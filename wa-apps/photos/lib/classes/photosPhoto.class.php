@@ -508,7 +508,7 @@ class photosPhoto
         foreach ($photos as $photo) {
             $urls .= $photo[$thumb_key]['url'].PHP_EOL;
             $img_html = photosPhoto::getEmbedImgHtml($photo, $size);
-            $html_with_descriptions .= '<p>' . ($photo['description'] ? $photo['description'].'<br>' : '') . $img_html.'</p>'.PHP_EOL;
+            $html_with_descriptions .= ($photo['description'] ? '<p>'.$photo['description'].'</p>' : '') . PHP_EOL . '<figure>'.$img_html.'</figure>'.PHP_EOL;
             $html .= $img_html.'<br>'.PHP_EOL;
         }
 

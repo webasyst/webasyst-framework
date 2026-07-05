@@ -21,7 +21,7 @@
               var blog_smarty_enabled = {json_encode($wa->blog->option('can_use_smarty'))};
               var obligatory_size = {json_encode($big_size)};
               </script>
-              <a href="#"><i class="icon16" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png'); background-size: 16px 16px;"></i>[`Blog post`]</a>
+              <a href="#"><i class="icon16" style="background-image: url('{$wa_url}wa-apps/blog/img/blog.svg'); background-size: 16px 16px;"></i>[`Blog post`]</a>
               <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
             </li>
             {/if}
@@ -261,8 +261,8 @@
             <ul class="thumbs li250px" id="photo-list"></ul>
             <div class="lazyloading-wrapper"></div>
 
-            {if method_exists($wa->installer, 'reviewWidget')}
-            {$wa->installer->reviewWidget('app/photos')}
+            {if $wa->installer && method_exists($wa->installer, 'reviewWidget')}
+                {$wa->installer->reviewWidget('app/photos')}
             {/if}
         </div>
     {/if}

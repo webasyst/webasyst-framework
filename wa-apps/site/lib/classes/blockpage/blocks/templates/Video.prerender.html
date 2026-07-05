@@ -1,0 +1,25 @@
+<style>
+    .site-block-video { text-align: center; min-height: 150px; position: relative; box-sizing: border-box; }
+    .site-block-video .iframe-wrapper { display: flex; }
+    .child-iframe-cover { position: absolute; height: 100%; width: 100%; z-index: 1; }
+    .iframe-picture-cover { position: absolute; height: 100%; width: 100%; background-size: cover; background-repeat: no-repeat; background-position: center; }
+    .site-block-video iframe { width: 100%; }
+    .site-block-video.vid-ifr:has(iframe) { padding-bottom: 56.25%; height: 0; }
+    .site-block-video.vid-ifr iframe {  position: absolute;  top: 0;  left: 0;  width: 100%;  height: 100%;  border: 0; }
+    .seq-child:has(>.site-block-video) { width: 100%; }
+    .site-block-video #customVideo { display: block; width: 100%; }
+    .site-block-video #playPauseOverlayBtn { position: absolute; cursor: pointer; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.2); border-radius: 50%; transition: background-color 0.3s ease, opacity 0.3s ease; z-index: 10; opacity: 1; visibility: visible; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .site-block-video #playPauseOverlayBtn:hover { 
+      background-color: rgba(0,0,0,0.5) !important; 
+    }
+    .site-block-video #playPauseOverlayBtn.fade-out { 
+      opacity: 0 !important; 
+      visibility: hidden !important; 
+      transition: background-color 0.3s ease, opacity 0.3s ease, visibility 0s 0.3s !important; 
+    }
+    .site-block-video #playPauseOverlayBtn svg { 
+      width: 60%; 
+      height: 60%; 
+      fill: white; 
+    }
+</style>

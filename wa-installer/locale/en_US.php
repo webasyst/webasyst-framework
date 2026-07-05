@@ -66,7 +66,7 @@ return array(
     'Installation Guide'
     => 'Installation guide',
     'install_guide_url'
-    => 'https://www.webasyst.com/developers/docs/installation/',
+    => 'https://developers.webasyst.com/docs/installation/',
     'Extracting Webasyst archive...'
     => 'Extracting Webasyst archive...',
     'Check available updates'
@@ -156,8 +156,8 @@ return array(
     => 'Web server',
 
 
-    'Use friendly URLs'
-    => 'User-friendly URLs will be supported',
+        'Use friendly URLs'
+    => 'SEO-friendly URLs are supported; e.g., /page/1/',
     'Check archives and files checksum'
     => 'Validation of Webasyst system file and app archive checksum',
     'Check folder rights for installation &amp; updates'

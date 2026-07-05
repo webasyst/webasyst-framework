@@ -6,13 +6,13 @@
         <h3 class="dialog-header js-title">[s`Enable sign-in with Webasyst ID`]</h3>
         <div class="dialog-content">
             <div class="js-process-block">
-                <p>[s`Connecting to the Webasyst ID authentication server...`] <i class="fas fa-spinner fa-spin js-loading"></i></p>
+                <p>[s`Connecting to the Webasyst ID authentication server...`] <i class="fas fa-spinner fa-spin js-loading text-light-gray"></i></p>
             </div>
             <div class="js-success-block" style="display: none">
-                <p>[s`Sign-in with Webasyst ID has been enabled.`] <i class="fas fa-check-circle"></i></p>
+                <p><i class="fas fa-check-circle text-green custom-mr-4"></i> [s`Sign-in with Webasyst ID has been enabled.`]</p>
             </div>
-            <div class="js-fail-block" style="display: none">
-                <p>[s`Failed to connect to Webasyst ID authentication server.`]</p>
+            <div class="js-fail-block state-error" style="display: none">
+                <p><i class="fas fa-times-circle custom-mr-4"></i> [s`Failed to connect to Webasyst ID authentication server.`]</p>
             </div>
 
         </div>

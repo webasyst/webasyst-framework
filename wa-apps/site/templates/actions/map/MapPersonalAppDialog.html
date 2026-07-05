@@ -1,0 +1,210 @@
+<div class="dialog s-section-settings-dialog" >
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header flexbox middle full-width">
+            <h1>
+                {implode(', ', $items)}
+                <span class="hint">{$app.name|escape}</span>
+            </h1>
+        </header>
+{if !$settled}
+<div class="dialog-content">
+    <p>
+        <i class="icon fas fa-ban custom-mr-2"></i>
+        {if $app.id === 'mailer'}
+            {_w('This subsection is not available in the client account because Mailer app is not added to the site settings.')}
+        {else}
+            {sprintf_wp('This subsection is not available in the client account because %s app is not added to the site map.', {$app.name|escape})}
+        {/if}
+    </p>
+
+    {if $app.id === 'mailer'}
+        {$_href_add_app = "{$wa_app_url}settings/?domain_id={waRequest::request('domain_id')}&dialog_add_app={$app.id}"}
+    {else}
+        {$_href_add_app = 'javascript:void(0)'}
+    {/if}
+    <a class="js-start-adding-app button" href="{$_href_add_app}" data-app-id="{$app.id}">[`Add app`] {$app.name|escape}</a>
+</div>
+<footer class="js-form-buttons dialog-footer flexbox space-24">
+    <a href="javascript:void(0);" class="js-close-dialog button light-gray">[`Close`]</a>
+</footer>
+<script>
+    $(function () {
+        $('.js-start-adding-app').on('click', function () {
+            const app_id = $(this).data('app-id');
+            $('.js-add-app[data-app-id="' + app_id + '"]').trigger('click');
+            $('.s-section-settings-dialog').data('dialog').close();
+        });
+    });
+</script>
+{else}
+<div class="dialog-content">
+
+    <div class="switch-with-text custom-mb-16">
+        <span class="switch small" id="switch-personal-app-status">
+            <input type="checkbox" id="s-personal-app-status" class="ibutton" {if $enabled}checked{/if}>
+        </span>
+        <label for="s-personal-app-status" data-active-text="[`Subsection is enabled`]" data-inactive-text="[`Subsection is disabled`]">{if $enabled}[`Subsection is enabled`]{else}[`Subsection is disabled`]{/if}</label>
+    </div>
+
+    <div id="s-app-enabled" {if !$enabled}style="display:none"{/if}>
+        <p><i class="icon rounded bg-green shift-2"></i> {sprintf_wp('%s personal account URL: <a id="s-app-frontend-link" href="%s" target="_blank"><span class="break-all">%s</span> <i class="fas fa-external-link-alt fa-xs"></i></a>', $app.name, '', '')}</p>
+        {if $app.id === 'mailer'}
+            <p class="gray small">{sprintf_wp(
+                'Design theme for this subsection is set up in Mailer app’s settings via the <%s>site settings %s<%s>.',
+                sprintf(
+                    'a class="text-dark-gray js-close-dialog" href="%s"',
+                    "{$wa_app_url}settings/?domain_id={waRequest::request('domain_id')}"
+                ),
+                '<i class="fas fa-external-link-alt fa-sm"></i>',
+                '/a'
+            )}</p>
+        {/if}
+        {$personal_settings|default:''}
+    </div>
+
+    <div id="s-app-disabled" {if $enabled}style="display:none"{/if}>
+        <p class="text-orange"><i class="icon fas fa-ban no"></i> {sprintf_wp('%s personal account is disabled on this site.', $app.name)}</p>
+    </div>
+</div>
+<footer class="js-form-buttons dialog-footer">
+    <div class="js-footer-actions">
+        <div class="flexbox middle full-width">
+            <div class="js-footer-actions-left">
+                <button type="button" id="js-submit-personal-app" class="button">[s`Save`]</button>
+                <a href="javascript:void(0);" class="js-close-dialog button light-gray">[`Cancel`]</a>
+                <span class="js-loading" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
+            </div>
+            <div class="js-footer-actions-right"></div>
+        </div>
+    </div>
+    <div class="js-place-for-errors state-caution-hint custom-mt-12"></div>
+</footer>
+    <script type="text/javascript">
+        $(function () {
+            const app_id = "{$app.id}";
+            const $d = $('.s-section-settings-dialog');
+            const $app_status = $('#s-personal-app-status');
+            const $place_for_error = $('.js-place-for-errors');
+
+            const toggleStateSettings = (is_active) => {
+                const $app_buttons = $('.js-app-settings-buttons').hide();
+                const $app_buttons_right = $app_buttons.find('.js-app-settings-buttons-right');
+                const $dialog_actions_right = $('.js-footer-actions-right');
+
+                if (is_active === undefined) {
+                    is_active = $app_status.is(':checked');
+                }
+
+                if (is_active) {
+                    if ($app_buttons_right.length) {
+                        $dialog_actions_right.show().append($app_buttons_right.contents());
+                    }
+                    if (typeof window.editor === 'object') {
+                        editor.refresh();
+                    }
+                } else {
+                    $dialog_actions_right.hide()
+                }
+
+                $d.trigger('resize');
+            };
+            toggleStateSettings();
+
+            const appEnable = (callback) => {
+                const active = $app_status.is(':checked');
+                return $.post('?module=personal&action=appEnable&domain_id={waRequest::request("domain_id")}', { app_id: app_id, enable: active ? 1 : 0 }, function (r) {
+                    if (typeof callback === 'function') {
+                        callback(r, active);
+                    }
+                    if (!r || r.status !== 'ok') {
+                        const switch_app_status = $("#switch-personal-app-status").data('switch');
+                        switch_app_status.set(!switch_app_status.is_active);
+                        return;
+                    }
+                    $(document).trigger('personal_app_state_changed', { app_id, active });
+                }, "json");
+            };
+
+            $("#switch-personal-app-status").waSwitch({
+                ready: function (wa_switch) {
+                    let $label = wa_switch.$wrapper.siblings('label');
+                    wa_switch.$label = $label;
+                    wa_switch.active_text = $label.data('active-text');
+                    wa_switch.inactive_text = $label.data('inactive-text');
+                },
+                change: function(active, wa_switch) {
+                    wa_switch.$label.text(active ? wa_switch.active_text : wa_switch.inactive_text);
+                    if (active) {
+                        $('#s-app-disabled').hide();
+                        $('#s-app-enabled').show();
+                    } else {
+                        $('#s-app-enabled').hide();
+                        $('#s-app-disabled').show();
+                    }
+                    toggleStateSettings(active);
+                }
+            });
+
+            const personal_app_link = $('[data-personal][data-app-id="{$app.id}"]').data('link');
+            if (personal_app_link) {
+                $('#s-app-frontend-link')
+                    .attr('href', personal_app_link)
+                    .find('span').html(personal_app_link);
+            }
+
+            $('#js-submit-personal-app').on('click', function (e) {
+                e.preventDefault();
+
+                const $submit = $(this);
+                const $loading = $('.js-form-buttons .js-loading').show();
+                $place_for_error.empty();
+                $submit.prop('disabled', true);
+
+                appEnable(function (r, active) {
+                    if (r.status !== 'ok') {
+                        $loading.hide();
+                        $submit.prop('disabled', false);
+                        handleErrors(r);
+                        return;
+                    }
+
+                    const $form_submit = $('.s-section-settings-dialog .js-app-settings-buttons [type="submit"]');
+                    if (active && $form_submit.length) {
+                        $form_submit.trigger('click');
+                        $(document).one('after_save_personal_app', function (_, r) {
+                            $loading.hide();
+                            if (r.status === 'ok') {
+                                closeDialog();
+                            }  else {
+                                handleErrors(r);
+                            }
+                            $submit.prop('disabled', false);
+                        });
+                    } else {
+                        $submit.prop('disabled', false);
+                        closeDialog();
+                    }
+
+                });
+            });
+
+            function closeDialog () {
+                $d.data('dialog').close();
+            }
+            function handleErrors (r) {
+                $place_for_error.empty();
+                if (r && r.errors) {
+                    if (Array.isArray(r.errors)) {
+                        $place_for_error.text(r.errors.join(', '));
+                    } else {
+                        $place_for_error.text(r.errors);
+                    }
+                }
+            }
+        });
+    </script>
+
+{/if}
+</div>
+</div>

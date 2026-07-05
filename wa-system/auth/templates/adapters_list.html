@@ -2,19 +2,11 @@
 {*
  * Template for $wa->authAdapters()
  *}
-{$_w = 600}
-{$_h = 500}
-{if isset($options.width)}
-    {$_w = $options.width|escape}
-{/if}
-{if isset($options.height)}
-    {$_h = $options.height|escape}
-{/if}
 <div class="wa-auth-adapters">
     <ul>
         {foreach $adapters as $_adapter}
             <li class="wa-auth-adapter-{$_adapter->getId()}">
-                <a href="{$_adapter->getUrl()|escape}" data-id="{$_adapter->getId()}">
+                <a href="{$_adapter->url()|escape}" data-id="{$_adapter->getId()}">
                     <img alt="{$_adapter->getName()}" title="{$_adapter->getName()}" src="{$_adapter->getIcon()}"/>
                     {if !empty($options.names)}
                         {$_adapter->getName()}
@@ -26,26 +18,5 @@
     <br>
     <p>[s`Authorize either by entering your contact information, or through one of the websites listed above.`]</p>
 </div>
-<script type="text/javascript">
-    $(function () {
-        var window_sizes = {$window_sizes|json_encode};
 
-        $("div.wa-auth-adapters a").click(function () {
-            var $link = $(this),
-                href = $link.attr('href'),
-                id = $link.data('id'),
-                width = window_sizes[id].width || 600,
-                height = window_sizes[id].height || 500,
-                left = (screen.width - width) / 2,
-                top = (screen.height - height) / 2;
-
-            window.open(href, 'oauth',
-                "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top +
-                    ",status=no,toolbar=no,menubar=no");
-
-            return false;
-        });
-    });
-
-</script>
 {/strip}

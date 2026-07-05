@@ -1,0 +1,37 @@
+{$block_id = $data->getId()}
+{$elements = ifset($data->data, 'elements', [
+    'wrapper' => '',
+    'main' => ''
+])}
+{$static_main = "`$elements.main` f-w"}
+{$static_wrapper = "`$elements.wrapper` style-wrapper rw"}
+{$anchor_id = $data->data['id']|default:0}
+<section {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_main}" {if $is_backend}style="visibility: hidden;"{/if} data-block-id="{$block_id|escape}" data-page-id="{$data->getPageId()|escape}" data-static="{$static_main}" >
+    <div class="{$static_wrapper}" data-static="{$static_wrapper}">
+        {foreach $children as $n => $c}
+            {$c.html}
+        {/foreach}
+    </div>
+</section>
+{if $is_backend}
+<script>
+    $(function() { "use strict";
+        const block_id = {$data->getId()|json_encode};
+        const $block_wrapper = $('.site-block-cards[data-block-id="'+block_id+'"]');
+        $block_wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (updated_block_id == block_id) {
+            updateBlockStyles($block_wrapper, data, block_id);
+        }
+        });
+    })
+</script>
+
+{else}
+<script>(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.site-block-cards[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+})();</script>
+{/if}

@@ -7,7 +7,7 @@ RedactorPlugins.cut = function() {
                 wa_post_cut_text_default: $.wa_blog.editor.options.cut_link_label_default || $.wa.translate('Continue reading →'),
                 element_class: 'elrte-wa_post_cut'
             };
-            var button = this.button.add('wa-post-cut', $.wa.translate('Post cut'));
+            var button = this.button.add('wa-post-cut', $_('Post cut'));
             this.button.addCallback(button, cutButton);
             this.button.setIcon(button, '<i class="re-wa-post-cut"></i>');
         }

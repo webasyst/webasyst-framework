@@ -1,11 +1,12 @@
 {$page_is = $settings_page|default:''}
 <div class="bottombar sticky custom-mt-20">
   <div class="custom-px-20 custom-py-16 not-blank">
-    <div class="value submit js-footer-actions">
+    <div class="value submit js-footer-actions flexbox space-8 middle">
         <button type="submit" class="button green js-submit-button">[s`Save`]</button>
         <span class="hidden">
             <a href="{$wa_app_url}webasyst/settings/{if $page_is}{$page_is}/{/if}" class="button light-gray js-cancel">[s`Cancel`]</a>
         </span>
+        <span class="js-errors state-error" style="display: none;"></span>
     </div>
   </div>
 </div>

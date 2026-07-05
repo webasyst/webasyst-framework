@@ -41,14 +41,24 @@ class waSMS
         }
     }
 
-    public static function adapterExists($from = null)
+    public static function adapterExists($from = null, $do_filter_not_installed = false)
     {
         try {
             $sms = new self();
-            return !!$sms->getAdapter($from);
+            $adapter = $sms->getAdapter($from, $do_filter_not_installed);
+            return !empty($adapter) && $adapter->isConfigured();
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    /** @since 3.8.2 */
+    public static function isConfigured()
+    {
+        if (self::$config) {
+            return true;
+        }
+        return !!self::getNoSettingsAdapter();
     }
 
     /**
@@ -56,12 +66,27 @@ class waSMS
      * @throws waException
      * @return waSMSAdapter
      */
-    protected function getAdapter($from = null)
+    protected function getAdapter($from = null, $do_filter_not_installed = false)
     {
-        if (empty(self::$config)) {
+        $config = self::$config;
+        if (!empty($config)) {
+            $installed_adapters = self::getInstalledAdapterIds();
+            if (empty($installed_adapters)) {
+                throw new waException('No SMS adapters installed');
+            }
+            $config = array_filter($config, function ($adapter_config) use ($installed_adapters) {
+                return in_array($adapter_config['adapter'], $installed_adapters);
+            });
+            if ($do_filter_not_installed) {
+                self::$config = $config;
+            }
+        }
+        
+        if (empty($config)) {
             $no_settings_adapter = self::getNoSettingsAdapter();
             if ($no_settings_adapter) {
-                self::$config = [ '*' => [ 'adapter' => $no_settings_adapter ] ];
+                self::$config = empty(self::$config) ? [] : self::$config;
+                self::$config['*'] = [ 'adapter' => $no_settings_adapter ];
                 $path = wa()->getConfig()->getPath('config', 'sms');
                 waUtils::varExportToFile(self::$config, $path);
             }

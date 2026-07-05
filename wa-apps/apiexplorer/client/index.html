@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta charset="x-ua-compatible" content="ie=edge">
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <link href="/wa-content/css/wa/wa-2.0.css" rel="stylesheet">
+    <link href="/wa-apps/apiexplorer/css/backend.css" rel="stylesheet">
+    <script defer="" src="/wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
+    <script src="/wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+    <script src="/wa-content/js/jquery-wa/wa.js"></script>
+    <script>
+      window.appState = {
+        "baseUrl": document.location.protocol + '//' + document.location.host + "<{ VITE_APP_BASE_URL }>",
+        "rootUrl": "<{ VITE_APP_ROOT_URL }>",
+        "user_id": "1",
+        "development_mode": "1",
+        "locale": "<{ VITE_APP_I18N_LOCALE }>",
+        "centralUrl": "<{ VITE_APP_WA_CENTRAL }>"
+      };
+    </script>
+  </head>
+  <body>
+    <div id="wa">
+      <div id="wa-nav">
+        <div id="wa-header"></div>
+      </div>
+      <div id="app"></div>
+      <script type="module" src="/src/main.js"></script>
+    </div>
+  </body>
+</html>

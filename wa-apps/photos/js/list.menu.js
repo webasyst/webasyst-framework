@@ -749,6 +749,13 @@
                     $('#save-menu-block input.button').removeClass('yellow');
                     $counter.hide();
                 }
+
+                $.wa.notify({
+                    class: 'success',
+                    content: `<i class="fas fa-check-circle text-green custom-mr-8"></i> ${$_("Saved")}`,
+                    isCloseable: false,
+                    timeout: 2000
+                });
             }
             return false;
         },
@@ -784,41 +791,89 @@
         },
         onInit: function(container) {
             container.find('[data-action="hide-name"] :checkbox').prop('checked', $.storage.get('photos/list/hide_name',false));
-            var handler = function(){
-                var changed = [],matches;
-                $('#photo-list.p-descriptions :text,#photo-list.p-descriptions textarea').each(function(){
-                    if ( (this.defaultValue != this.value) && (matches = $(this).attr('name').match(/^photo\[(\d+)\]\[(\w+)\]$/)) ){
+            var handler = (function() {
+                var changed = [];
+                var $counter = $('.js-toolbar-dropdown-button > .js-count');
+                var $saveButton = $('#save-menu-block input.button');
+                var timeoutId;
+                var serverTimeoutId;
+
+                function updateUI() {
+                    var count = changed.length;
+
+                    if ($counter.length) {
+                        $counter.text(count);
+                    }
+
+                    if (!count) {
+                        $saveButton.removeClass('yellow');
+                        $counter.hide();
+                    } else {
+                        $saveButton.addClass('yellow');
+                        $counter.show();
+                    }
+                }
+
+                function processField(index, element) {
+                    var $this = $(element);
+                    var matches;
+
+                    if ((element.defaultValue != element.value) &&
+                        (matches = $this.attr('name').match(/^photo\[(\d+)\]\[(\w+)\]$/))) {
+
                         var id = matches[1];
-                        if(changed.indexOf(id) < 0) {
+
+                        if (changed.indexOf(id) < 0) {
                             var cached = $.photos.photo_stream_cache.getById(id);
-                            if(!cached || (this.value != cached[matches[2]])) {
-                                $(this).addClass('highlighted');
+                            if (!cached || (element.value != cached[matches[2]])) {
+                                $this.addClass('highlighted');
                                 changed.push(id);
-                            } else if ($(this).hasClass('highlighted')) {
-                                $(this).removeClass('highlighted');
+                            } else if ($this.hasClass('highlighted')) {
+                                $this.removeClass('highlighted');
                             }
                         }
-
-                    } else if ($(this).hasClass('highlighted')) {
-                        $(this).removeClass('highlighted');
+                    } else if ($this.hasClass('highlighted')) {
+                        $this.removeClass('highlighted');
                     }
-                });
-                var $counter = $('.js-toolbar-dropdown-button > .js-count');
-                var count = changed.length;
-                if($counter.length) {
-                    $counter.text(count);
                 }
-                if(!count) {
-                    $('#save-menu-block input.button').removeClass('yellow');
-                    $counter.hide();
-                } else {
-                    $('#save-menu-block input.button').addClass('yellow');
-                    $counter.show();
+
+                function saveToServer() {
+                    if (changed.length > 0) {
+                        $saveButton.click();
+                    }
                 }
-            };
-            $('#p-content').on('change.photos-save-menu', '#photo-list.p-descriptions :text, #photo-list.p-descriptions textarea', handler);
-            $('#p-content').on('keyup.photos-save-menu', '#photo-list.p-descriptions :text, #photo-list.p-descriptions textarea', handler);
-            //change data handler
+
+                return function() {
+
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                    }
+
+
+                    if (serverTimeoutId) {
+                        clearTimeout(serverTimeoutId);
+                    }
+
+
+                    timeoutId = setTimeout(function() {
+                        changed = [];
+
+                        $('#photo-list.p-descriptions :text, #photo-list.p-descriptions textarea').each(processField);
+
+                        updateUI();
+                    }, 300);
+
+
+                    serverTimeoutId = setTimeout(function() {
+                        saveToServer();
+                    }, 1500);
+                };
+            })();
+
+            $('#p-content').off('.photos-save-menu')
+                           .on('change.photos-save-menu', '#photo-list.p-descriptions :text, #photo-list.p-descriptions textarea', handler)
+                           .on('keyup.photos-save-menu', '#photo-list.p-descriptions :text, #photo-list.p-descriptions textarea', handler);
+
         }
     });
 

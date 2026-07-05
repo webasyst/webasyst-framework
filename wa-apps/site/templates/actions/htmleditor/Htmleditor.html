@@ -1,0 +1,477 @@
+{*wa_tpl_vars*}
+<script>
+    $._waLoading = $.waLoading();
+    $._waLoading.show();
+    $._waLoading.animate(10000, 95, false);
+</script>
+<script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
+
+<link href="{$wa_url}wa-content/js/redactor/2/redactor.css?v{$wa->version(true)}" rel="stylesheet" type="text/css">
+<script src="{$wa_url}wa-content/js/redactor/2/redactor.min.js?v{$wa->version(true)}"></script>
+<script src="{$wa_url}wa-content/js/redactor/2/{$lang}.js?v{$wa->version(true)}"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/editor2.js?v{$wa->version(true)}"></script>
+<script async src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.fileupload.js?v{$wa->version(true)}"></script>
+
+<style type="text/css">
+    .wa-page-editor { display: flex; justify-content: center;}
+    .wa-page-editor #wa-page-form { width: 100%; }
+    .wa-page-editor #wa-page-form ul.tabs { padding: 0; }
+    .wa-page-editor #wa-page-form .contentbox { padding: 1.5em 0; }
+    .wa-editor-core-wrapper .redactor-box { background: var(--background-color-blank); /*overflow: hidden;*/ }
+    .wa-editor-core-wrapper .redactor-toolbar { box-shadow: none; border-bottom: 1px solid var(--border-color-soft); background: var(--background-color-blank); }
+    .wa-editor-core-wrapper .redactor-layer { border: 0 none; background: var(--background-color-blank); /*max-height: calc(100vh - 21rem);*/}
+    .wa-editor-core-wrapper .redactor-switch-box { position: sticky; top: 4rem; z-index: 20; background: var(--background-color-blank);}
+    .wa-editor-core-wrapper .redactor-toolbar-box { position: sticky; top: 7em; z-index: 20; }
+    .wa-editor-core-wrapper:has(.wa-editor-wysiwyg-html-toggle > .selected > :not(.html)) .wa-editor-upload-img { display: none; }
+    .article.htmleditor:has(.wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle > .selected > .html) { max-width: none; }
+</style>
+<div class="article htmleditor">
+    <div class="article-body">
+        <div class="wa-page-editor">
+            <form id="wa-page-form" method="post" action="?module=htmlPages&action=saveContent{if $page}&id={$page.id}{/if}">
+                {if !empty($options)}
+                    {foreach $options.data as $k => $v}
+                        <input type="hidden" name="{$k}" value="{$v|escape}">
+                    {/foreach}
+                {/if}
+                <div class="box contentbox wa-page-gray-toolbar flexbox vertical hidden">
+                    <div class="flexbox wrap full-width hidden" style="align-items: center;">
+                        <div class="">
+                            <h2 class="wa-page-name">{if $page}{$page.name|escape}{else}[s`New page`]{/if}</h2>
+                            {if !$page.status} <span class="wa-page-draft badge light-gray squared smaller">[s`draft`]</span>{/if}
+                        </div>
+                        {if $page}
+                            <ul class="unstyled flexbox space-32 custom-pt-4 custom-mr-16">
+
+                                <!-- plugin hook: 'backend_page_edit.action_button_li' -->
+                                {* @event backend_page_edit.%plugin_id%.action_button_li *}
+                                {*foreach $backend_page_edit as $_}{ifset($_.action_button_li)}{/foreach*}
+
+                                <!--{if !empty($page.update_datetime)}
+                                    <li>
+                                        <span class="hint bold">{$page.update_datetime|wa_datetime:"humandatetime"}</span>
+                                    </li>
+                                {/if}
+                                <li>
+                                    <a href="javascript:void(0);" class="small js-page-settings-toggle" id="wa-page-settings-toggle">
+                                        <i class="fas fa-edit"></i> [s`Page settings`]
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="small wa-page-delete js-page-delete" href="?module=pages&action=delete">
+                                        <i class="fas fa-trash-alt text-red"></i> [s`Delete`]
+                                    </a>
+                                </li>-->
+                            </ul>
+                        {/if}
+                        <div class="wa-page-urls small width-100">
+                            {if $page}
+                                {if !empty($url)}
+                                    <a href="{$url}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" rel="noopener" target="_blank">{$url_decoded|escape}{$page.url}</a>
+                                    <a href="{$url}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" target="_blank"><i class="fas fa-external-link-alt fa-sm"></i></a>
+                                {elseif !empty($page.domain) and $page.route !== null}
+                                    {$page_route=waRouting::clearUrl($page.route)}
+                                    <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" rel="noopener" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
+                                    <a href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}"><i class="fas fa-external-link-alt fa-sm"></i></a>
+                                {/if}
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+                <div class="wa-editor-core-wrapper">
+                    <div class="flexbox full-width middle redactor-switch-box">
+                        <ul class="tabs semibold overflow-dropdown wa-editor-wysiwyg-html-toggle">
+                            <li class="selected">
+                                <a class="wysiwyg js-is-wa2" href="javascript:void(0);">[s`WYSIWYG`]</a>
+                            </li>
+                            <li><a class="html" href="javascript:void(0);">HTML</a></li>
+                        </ul>
+                        <div class="wa-cheatsheet">
+                            {$wa->getCheatSheetButton(['page_id' => {$page.id|default:''}, 'hide_common_blocks' => true])}
+                        </div>
+                    </div>
+
+                    <div style="clear:both">
+                        <div class="wa-editor-upload-img hidden" title="[s`Upload image`]">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
+                    </div>
+                </div>
+                {$wa->csrf()}
+            </form>
+        </div>
+    </div>
+</div>
+<div class="dialog" id="s-upload-dialog">
+    <div class="dialog-background"></div>
+    <form id="s-upload-form" class="dialog-body" method="post" action="?module=pages&action=uploadimage&r=2" enctype="multipart/form-data">
+        {$wa->csrf()}
+        <h3 class="dialog-header">[s`Upload image`]</h3>
+        <div class="dialog-content">
+            <div id="redactor-droparea" style="text-align: center;">
+                <p class="hint">
+                    [s`Only image files can be uploaded`]
+                </p>
+                <input id="s-input-file" type="file" name="file" multiple>
+                <input type="hidden" name="path" id="s-upload-path" value="" />
+                <div class="loading" style="display:none; margin-top: 10px">
+                    <i class="fas fa-spinner fa-spin"></i> [s`Uploading...`]
+                </div>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <input type="submit" class="button" value="[s`Upload`]">
+            <a href="javascript:void(0);" class="js-close-dialog button light-gray">[s`Cancel`]</a>
+        </div>
+    </form>
+</div>
+
+<div class="dialog" id="s-switch-editor">
+    <div class="dialog-background"></div>
+    <form class="dialog-body">
+        <div class="dialog-content">
+            [s`<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?`]
+        </div>
+        <div class="dialog-footer">
+            <input type="submit" class="button orange" value="[`Switch`]" />
+            <a href="javascript:void(0);" class="js-close-dialog button light-gray">[`Cancel`]</a>
+        </div>
+    </form>
+</div>
+<div class="drawer site-editor-left-drawer" id="js-left-drawer" data-load-url="{$wa_app_url}?module=map&action=overview&domain_id={$page.domain_id|escape}&sidebar_mode=1&page_id={$page.id|escape}&htmleditor=1">
+    <div class="drawer-background"></div>
+    <div class="drawer-body">
+        <a href="javascript:void(0)" class="drawer-close z-20 custom-mr-8 js-close-drawer"><i class="fas fa-times"></i></a>
+        <div class="drawer-block custom-p-0">
+            <div class="drawer-content">
+
+                <div class="box">
+                    <div class="skeleton width-80">
+                        <span class="skeleton-header"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-list"></span>
+                        <span class="skeleton-list"></span>
+                        <span class="skeleton-list"></span>
+
+                        <span class="skeleton-header"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-list"></span>
+                        <span class="skeleton-list"></span>
+                        <span class="skeleton-list"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{include file="templates/actions/backend/includes/unsaved_dialog.html" inline}
+    <script type="text/javascript">
+        // init editor
+        (function ($) {
+            $('#wa-page-content').waEditor2({
+                lang: $.Redactor.opts.langs["{$lang}"] ? "{$lang}" : 'en',
+                toolbarFixed: false,
+                //toolbarFixedTarget: $('#wa-app'),
+                //toolbarFixedTopOffset: 0, // pixels
+                smarty_wysiwyg_msg: {_ws('WYSIWYG editor is disabled because page source contains Smarty code tags.')|json_encode},
+                modification_wysiwyg_msg: $('#s-switch-editor'),
+                saveButton: '#wa-page-button',
+                upload_img_dialog: '#s-upload-dialog',
+                uploadFields: {
+                    '_csrf': "{waRequest::cookie('_csrf', '')}"
+                },
+                locales: {
+                    'close': "[`Close`]"
+                }
+            });
+
+            const $upload_img_btn = $('.wa-editor-core-wrapper .wa-editor-upload-img').detach();
+            $upload_img_btn.addClass('button nobutton gray')
+            $('.wa-cheatsheet button:first').before($upload_img_btn);
+        })(jQuery);
+
+        $(function () {
+            "use strict";
+            var lang = {$lang|json_encode};
+            var wa_url = {$wa_url|json_encode};
+            var framework_version = {$wa->version(true)|json_encode};
+            const $page_form = $('#wa-page-form');
+            const $page_button_submit = $('.js-page-submit-button');
+            updatePreview({
+                name:  $(".wa-page-name").text(),
+                status: {$page.status|default:1},
+                _private: {if !empty($page.private) && $page.private}1{else}0{/if},
+                url: $(".wa-page-urls a").attr('href')
+             });
+
+            $('.js-show-cheatsheet').addClass('gray');
+
+            const { observeLinks } = initConfirmUnsaved({
+                hasUnsaved: () => $page_button_submit.hasClass('yellow'),
+                $submit: $page_button_submit
+            });
+            const observeLinksForConfirmUnsaved = () => observeLinks([
+                '.s-site-header a',
+                '.site-map-tree-table .page-name',
+                '.site-map-tree-table .page-route'
+            ]);
+
+            // Left drawer
+            (function() {
+                let $left_drawer_wrapper = $();
+                let drawer;
+
+                $('#js-wa-header-hamburger').on('click', function() {
+                    $left_drawer_wrapper = $('#js-left-drawer').clone().appendTo('body');
+
+                    drawer = $.waDrawer({
+                        $wrapper: $left_drawer_wrapper,
+                        direction: 'left',
+                        lock_body_scroll: true,
+                        onOpen() {
+                            $.site.loadMap(true);
+                        },
+                        onClose() {
+                            return !$('.s-section-settings-dialog.dialog-opened').length;
+                        }
+                    });
+                });
+
+                $.site.loadMap = function (scroll_to = false) {
+                    const $drawer_content = $left_drawer_wrapper.find('.drawer-content');
+                    $drawer_content.css('pointer-events', 'none');
+                    $.get($left_drawer_wrapper.data('load-url') + (scroll_to ? '&scroll_to=1' : '')).then((html) => {
+                        $drawer_content.html(html);
+                        $drawer_content.css('pointer-events', 'auto');
+                        observeLinksForConfirmUnsaved();
+
+                        $(document).trigger("wa_loaded");
+                    }, () => {
+                        alert($.site.opts.locale.unable_to_load);
+                        drawer.hide();
+                    });
+                };
+            }());
+
+            (function() {
+                $('#js-wa-header-settings').on('click',  function() {
+                    let params = '';
+                    {if empty($page.parent_id) && str_replace('/', '', $page.url) === ''}
+                        params = new URLSearchParams({
+                            action: 'sectionSettingsDialog',
+                            domain_id: {if !empty($page.domain_id)}{$page.domain_id}{else}''{/if},
+                            page: {if !empty($page.id)}{$page.id}{else}''{/if},
+                            route: {$route_id|json_encode},
+                            details: 1
+                        });
+                    {else}
+                        params = new URLSearchParams({
+                            action: 'htmlPageSettingsDialog',
+                            domain_id: {if !empty($page.domain_id)}{$page.domain_id}{else}''{/if},
+                            parent_id: {if !empty($page.parent_id)}{$page.parent_id}{else}''{/if},
+                            page_id: {if !empty($page.id)}{$page.id}{else}''{/if},
+                            details: 1
+                        });
+                    {/if}
+
+                    $.site.helper.preventDupeRequest(() => {
+                        return $.get('{$wa_app_url}?module=map&' + params, function(html) {
+                            $.waDialog({
+                                html: html
+                            });
+                        });
+                    });
+
+                    return false;
+                })
+            }());
+
+            initSubmitChanged($page_form);
+
+            {if !empty($options) && $options.is_ajax}
+                {if $page}
+                    document.title = {$page.name|json_encode} + " — " + {$wa->appName(false)|json_encode};
+                {else}
+                    document.title = "[s`New page`] — " + {$wa->appName(false)|json_encode};
+                {/if}
+            {/if}
+
+            $page_button_submit.on('click', function (e) {
+                e.preventDefault();
+                $page_form.submit();
+            })
+
+            $page_form.submit(function (e) {
+                e.preventDefault();
+                const $form = $(this),
+                    $page_settings = $('#wa-page-settings'),
+                    $page_content = $('#wa-page-content'),
+                    $editor_status = $('#wa-editor-status'),
+                    $page_button = $('#wa-page-button');
+
+                let page_url, page_attr_url, error;
+
+                $page_content.waEditor2('sync');
+
+                $editor_status.html("<i class='fas fa-spin fa-spinner'></i> [s`Saving...`]").fadeIn("slow");
+
+                $.post($form.attr('action'), $form.serialize(), function (response) {
+
+                    if (response.status === 'ok') {
+                        $(".state-error").removeClass('state-error');
+
+                        $editor_status.html('<i class="fas fa-check-circle"></i> [s`Saved`]').fadeOut('slow');
+
+                        const p = response.data;
+
+                    } else if (response.status === 'fail') {
+                        if ($.isArray(response.errors)) {
+                            error = response.errors[0];
+                            $(response.errors[1]).addClass('state-error');
+                        } else {
+                            error = response.errors;
+                        }
+                        $editor_status.html('<b style="color:red">' + (error ? error : $_('An error occurred while saving')) + '</b>');
+                        $page_button.removeClass('yellow').removeClass('green').addClass('red');
+                    }
+                }, "json");
+            });
+
+            function initSubmitChanged($form) {
+                const $submit = $('#wa-page-button');
+                let is_changed = false;
+
+                const submitChanged = () => {
+                    if (is_changed) return true;
+
+                    $submit.removeClass('green').addClass('yellow');
+                    is_changed = true;
+                };
+
+                $form.on('change', submitChanged);
+                $(':input:not(:submit)', $form).on('input', submitChanged);
+
+                $submit.on('click', function() {
+                    $submit.removeClass('yellow').removeClass('red').addClass('green');
+                    is_changed = false;
+                });
+            }
+
+            // update editor wa-header
+            $(document).on('page_saved', function (e, data) {
+                const { url, is_route } = data || {};
+                const $wrapper = $('.site-editor-wa-header-wrapper');
+
+                updatePreview({
+                    name: data.name,
+                    status: data.status,
+                    url,
+                    is_route
+                });
+            });
+
+            function updatePreview ({ name, status, url, is_route, _private }) {
+                const $hamburger_draft = $('.js-hamburger-draft-icon');
+                const $hamburger_label = $('.js-hamburger-label');
+
+                if (typeof name === 'string') {
+                    $hamburger_label.text(name).attr('title', name);
+                    document.title = name + " — " + '{$wa->appName(false)}';
+                }
+
+                if (typeof status !== 'undefined') {
+                    if (status == 1) {
+                        $hamburger_draft.addClass('hidden');
+                    } else if (status == 0) {
+                        $hamburger_draft.removeClass('hidden');
+                    }
+                }
+
+                if (typeof url === 'string') {
+                    let new_url = url;
+
+                    if (!new_url.startsWith('http')) {
+                        new_url = '{$url_decoded}';
+                        const removeAsteriskSign = (str) => str.replace(/\*$/, '');
+
+                        if (is_route) {
+                            new_url = new_url.replace(removeAsteriskSign('{if $page}{$page.route}{/if}'), '');
+                            new_url += removeAsteriskSign(url);
+                        } else {
+                            new_url += url;
+                        }
+
+                        if (status == 0) {
+                            new_url += '?preview={$preview_hash}';
+                        }
+                    }
+
+                    $('#js-wa-header-preview').attr('href', new_url);
+                }
+
+                if (typeof _private !== 'undefined') {
+                    $hamburger_label.toggleClass('gray', !!_private);
+                }
+            }
+
+            function initConfirmUnsaved (opts) {
+                opts = opts || {
+                    hasUnsaved: () => false,
+                    $submit: $()
+                };
+
+                const event_name = 'click.wa_unsaved';
+                let force_leave = false;
+
+                const handler = function (selector) {
+                    const unbindEvent = () => $(selector).off(event_name);
+
+                    return function (e) {
+                        const $a = $(this);
+
+                        if (
+                            force_leave ||
+                            !opts.hasUnsaved() ||
+                            $a.attr('target') === '_blank' ||
+                            $a.attr('href') === '#' ||
+                            String($a.attr('href')).startsWith('javascript:')
+                        ) {
+                            force_leave = false;
+                            return true;
+                        }
+
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+
+                        $.confirmUnsaved({
+                            onSave() {
+                                unbindEvent();
+                                opts.$submit.click();
+                                $a.click();
+                            },
+                            onLeave() {
+                                unbindEvent();
+                                force_leave = true;
+                                $a.click();
+                            }
+                        });
+
+                        return false;
+                    }
+                };
+
+                const static_link_selector = '#wa-account a, #wa-applist a, #wa-header-user-area a';
+                $('body').on(event_name, static_link_selector, handler(static_link_selector));
+
+                return {
+                    observeLinks: (selectors) => {
+                        selectors = Array.isArray(selectors) ? selectors.join(',') : selectors;
+                        $(selectors).on(event_name, handler(selectors));
+                    }
+                }
+            }
+
+            $._waLoading.done();
+        });</script>

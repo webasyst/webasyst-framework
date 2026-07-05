@@ -10,9 +10,9 @@ return array(
     'plugins' => true,
     'pages' => true,
     'mobile' => true,
-    'version' => '2.2.2',
+    'version' => '2.3.0',
     'vendor' => 'webasyst',
     'my_account' => true,
     'sash_color' => '#af71b3',
-    'ui' => '1.3,2.0'
+    'ui' => '2.0'
 );

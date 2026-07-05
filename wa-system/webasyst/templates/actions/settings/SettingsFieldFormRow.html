@@ -18,7 +18,7 @@
 
 {if $f->getType() != "Hidden"}
     <tr class="{$tr_classes}" data-field-id="{$fid}"{if !$new_field} data-field-type="{$f->getType()}"{/if}>
-        <td class="min-width"><i class="fas fa-bars js-subfield-sort" style="cursor: move"></i></td>
+        <td class="min-width"><i class="fas fa-bars gray js-subfield-sort" style="cursor: move"></i></td>
         <td class="hidden">
             {if $f->getParameter('always_required')}
                 <input type="hidden" name="{$prefix}[{$fid}][_disabled]" value="">

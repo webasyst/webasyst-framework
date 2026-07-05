@@ -14,7 +14,7 @@ function wa_header(array $options = [])
     try {
         wa('webasyst');
         // not inject all options, only that that supposed
-        $params = waUtils::extractValuesByKeys($options, ['custom']);
+        $params = waUtils::extractValuesByKeys($options, ['custom', 'keep_unpublished']);
         $header = new webasystBackendHeaderAction($params);
         return $header->display();
     } catch (waException $e) {

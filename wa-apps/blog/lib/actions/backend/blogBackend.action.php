@@ -115,20 +115,6 @@ class blogBackendAction extends waViewAction
             }
         }
 
-        $this->view->assign('blogs', $blogs);
-        $this->view->assign('blog_id', $blog_id);
-        $this->view->assign('text', $text);
-
-        $this->view->assign('stream', $stream);
-
-        $this->view->assign('page', $page);
-
-        $this->view->assign('pages', $post_model->pageCount());
-        $this->view->assign('posts_total_count', $post_model->searchCount());
-        $this->view->assign('posts_count', $posts_count);
-        $this->view->assign('import_link', $import_link);
-        $this->view->assign('posts_per_page', $posts_per_page);
-        $this->view->assign('contact_rights', $this->getUser()->getRights('contacts', 'backend'));
         if ($this->getConfig()->getOption('can_use_smarty')) {
             foreach ($posts as &$post) {
                 try {
@@ -139,7 +125,21 @@ class blogBackendAction extends waViewAction
             }
             unset($post);
         }
-        $this->view->assign('posts', $posts);
+        $this->view->assign([
+            'blogs'             => $blogs,
+            'blog_id'           => $blog_id,
+            'text'              => $text,
+            'stream'            => $stream,
+            'page'              => $page,
+            'pages'             => $post_model->pageCount(),
+            'posts_total_count' => $post_model->searchCount(),
+            'posts_count'       => $posts_count,
+            'import_link'       => $import_link,
+            'posts_per_page'    => $posts_per_page,
+            'contact_rights'    => $this->getUser()->getRights('contacts', 'backend'),
+            'posts'             => $posts,
+            'is_premium'        => blogLicensing::isPremium()
+        ]);
     }
 
     private function getUrl($blog = null)

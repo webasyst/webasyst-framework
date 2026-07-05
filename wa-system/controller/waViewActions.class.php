@@ -54,7 +54,7 @@ abstract class waViewActions extends waController
      */
     protected $system;
 
-    public function __construct(waSystem $system = null)
+    public function __construct(?waSystem $system = null)
     {
         if ($system) {
             $this->system = $system;

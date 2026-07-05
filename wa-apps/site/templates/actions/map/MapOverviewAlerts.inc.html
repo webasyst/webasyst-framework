@@ -1,0 +1,53 @@
+<div class="s-map-alerts">
+{if $show_alert_moving_to_settings}
+<div class="js-alert-moving-to-settings alert small">
+    <div class="flexbox space-8">
+        <div>
+            <span class="icon"><i class="fas fa-info-circle"></i></span>
+        </div>
+        <div class="wide">
+            [`Redirects and the settings of apps not affecting the site map have been moved to the “Settings” section.`]
+        </div>
+        <div>
+            <a href="javascript:void(0)" id="js-hide-alert-moving-to-settings" class="alert-close"><i class="fas fa-times"></i></a>
+        </div>
+    </div>
+    <script>
+        $('#js-hide-alert-moving-to-settings').on('click', function () {
+            $.post('?module=map&action=hideAlertMovingToSettings', null, function (r) {
+                if (r && r.status === 'ok') {
+                    $('.js-alert-moving-to-settings').remove();
+                }
+            });
+        });
+    </script>
+</div>
+{/if}
+{if $has_redirect}
+<div class="alert small">
+    <div class="flexbox space-8">
+        <div>
+            <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+        </div>
+        <div class="wide">
+            [`This site’s settings contain redirects. They may cause visitors open other addresses than those currently available on your site or that used to be available before.`]
+        </div>
+        <div>
+            <a href="{$wa_app_url}settings/?domain_id={$domain_id}&scroll_to=redirects" class="button gray nowrap">[`View settings`]</a>
+        </div>
+    </div>
+</div>
+{/if}
+{if !$root_page}
+<div class="js-alert-no-main-page alert danger small">
+    <div class="flexbox space-8">
+        <div>
+            <span><i class="fas fa-exclamation-triangle"></i></span>
+        </div>
+        <div class="wide">
+            [`The site is not operating properly because no homepage is selected.`]
+        </div>
+    </div>
+</div>
+{/if}
+</div>

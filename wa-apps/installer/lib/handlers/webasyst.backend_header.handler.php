@@ -25,17 +25,18 @@ class installerWebasystBackend_headerHandler extends waEventHandler
      */
     protected function getAnnouncements(array $params = [])
     {
-        if (!wa()->getUser()->getRights('installer')) {
-            return [
-                'header_top' => '',
-                'notification' => '',
-            ];
-        }
-
         $current_app_id = $params['current_app_id'];
 
         $top_header_list = $this->getTopHeaderList($current_app_id);
-        $notification_list = $this->getNotificationList($current_app_id);
+        $notification_list = [];
+
+        if (wa()->getUser()->getRights('installer')) {
+            $notification_list = $this->getNotificationList($current_app_id);
+        } else {
+            $top_header_list = array_filter($top_header_list, function ($a) {
+                return !empty($a['always_open']);
+            });
+        }
 
         // Disable certain plugins if told to
         $slugs = $this->getSlugsToSwitchOff($top_header_list, $notification_list);

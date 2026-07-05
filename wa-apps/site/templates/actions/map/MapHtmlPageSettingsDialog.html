@@ -1,0 +1,471 @@
+{*
+ * This template is used as a separate dialog loaded via XHR
+ * on Site Map screen, but also is included in parent screen HTML
+ * on Editor page.
+ *}
+<div class="dialog s-section-settings-dialog" id="js-htmlpage-settings-dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-body" style="width: 45rem;">
+        <header class="dialog-header">
+            <h1 class="custom-mb-0">
+                {if empty($page)}[`New page`]{else}[`Page settings`]{/if}
+            </h1>
+        </header>
+        <div class="dialog-content">
+            <form>
+                <input type="hidden" name="info[domain_id]" value="{$domain_id|default:''}">
+                {if empty($page)}<input type="hidden" name="info[content]" value="">{/if}
+                {if !empty($options)}
+                    {foreach $options.data as $k => $v}
+                        <input type="hidden" name="{$k}" value="{$v|escape}">
+                    {/foreach}
+                {/if}
+                <div id="wa-page-settings" class="fields">
+                    <div>
+                        <div class="field">
+                            <div class="name for-input bold">[s`Page name`]</div>
+                            <div class="value">
+                                <div class="flexbox middle">
+                                    <input type="text" class="bold width-100 large" name="info[name]" value="{if !empty($page)}{$page.name|escape}{/if}" />
+                                    <input type="hidden" name="page_id" value="{if $page}{$page.id}{/if}">
+                                    <input type="hidden" name="is_site_app" value="{($app_id == 'site') ? 1 : 0}">
+                                    {if !empty($page.id)}
+                                        <span class="nowrap">
+                                            id: <strong>{$page.id}</strong>
+                                        </span>
+                                    {/if}
+                                </div>
+                                <p class="hint">[`Used as the page title. Can be displayed on the site if allowed by design settings.`]</p>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="value submit">
+                                <div class="toggle rounded" id="draft-toggle">
+                                    <span data-status="0"{if $page && !$page.status} class="selected"{/if}><i class="fas fa-eye-slash text-gray custom-mr-4"></i>[s`Draft`]</span>
+                                    <input type="checkbox" name="info[status]"{if !$page || $page.status} checked="checked"{/if} style="display: none;" />
+                                    <span data-status="1"{if !$page || $page.status} class="selected"{/if}><i class="fas fa-check-circle text-green custom-mr-4"></i>[s`Published`]</span>
+                                </div>
+
+                                <script>
+                                    ( function($) {
+                                        $(".js-tooltip").waTooltip();
+
+                                        const $draft_toggle = $("#draft-toggle"),
+                                            $checkbox = $draft_toggle.find('input');
+
+                                        setTimeout(() => {
+                                            $draft_toggle.waToggle({
+                                                change(event, target, toggle) {
+                                                    $checkbox.prop('checked', !!toggle.$active.data('status')).attr('checked', !!toggle.$active.data('status'));
+                                                }
+                                            });
+                                        })
+                                    })(jQuery);
+                                </script>
+                            </div>
+                        </div>
+                        <div class="field wa-page-url">
+                            <div class="name for-input">[s`Page URL`]</div>
+                            <div class="value wa-page-app-url ">
+                                <div class="flexbox middle space-8 wrap">
+                                {if !empty($url)}<span class="custom-mr-4 break-word custom-py-6">{$url_decoded|escape}</span>{/if}<span><input type="text" class="short" name="info[url]" value="{if $page}{$page.url|escape|trim:'/'}{/if}" />
+                                <span class="custom-mr-4">/</span></span>
+                                </div>
+                                {if !empty($warnings)}
+                                    <p class="state-caution-hint small custom-mt-4">
+                                        {if isset($warnings.no_site_storefront)}
+                                            [s`This page will not be published because there is no section of this app in the site map. Add at least one section to publish the page.`]
+                                        {elseif isset($warnings.deleted_site_storefront)}
+                                            [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Set up a settlement in Site app’s “Structure” section to publish this page.`]
+                                        {elseif isset($warnings.several_site_storefront)}
+                                            [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
+                                        {/if}
+                                    </p>
+                                {/if}
+                            </div>
+                        </div>
+                        {if empty($url) && empty($warnings)}
+                        <div class="field">
+                            <div class="value submit">
+                                <p class="state-caution-hint">
+                                    [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
+                                </p>
+                            </div>
+                        </div>
+                        {/if}
+
+                    </div>
+                    {if !$page || !$page.id}
+                        <div class="custom-mt-16">
+                            <a id="wa-page-advanced-params-link" href="javascript:void(0);" class="semibold">
+                                [`Show more`]
+                                <i class="fas fa-caret-down"></i>
+                            </a>
+                        </div>
+                    {/if}
+                    <div id="wa-page-advanced-params" {if !$page || !$page.id} style="display:none"{/if} class="custom-mt-16">
+                        <div class="">
+                            <div class="field">
+                                <div class="name for-input">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
+                                <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold width-100" /></div>
+                            </div>
+                            {foreach $params as $n => $p}
+                            <div class="field">
+                                <div class="name custom-pt-6">{$vars[$n]}</div>
+                                {if $n == 'description'}
+                                <div class="value"><textarea name="params[{$n}]" class="width-100">{$p|escape}</textarea></div>
+                                {else}
+                                <div class="value"><input type="text" name="params[{$n}]" class="width-100" value="{$p|escape}" /></div>
+                                {/if}
+                            </div>
+                            {/foreach}
+                        </div>
+
+                        <div class="field">
+                            <div class="name for-checkbox">[s`Social sharing`]
+                                <br>
+                                <span class="hint">[`Open Graph meta tags`]</span>
+                            </div>
+                            <div class="value">
+                                <label>
+                                    <span class="wa-checkbox">
+                                        <input class="og-checkbox" type="checkbox"{if empty($og_params)} checked{/if}>
+                                        <span>
+                                            <span class="icon">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                        </span>
+                                    </span>
+                                    [s`Use these meta tags for social sharing too`]
+                                </label>
+                            </div>
+                        </div>
+                        <div class="custom-mt-24 og-group" {if empty($og_params)}style="display: none;"{/if}>
+                            <div class="field">
+                                <div class="name custom-pt-6">[s`Social sharing title`] <span class="hint">og:title</span></div>
+                                <div class="value">
+                                    <input type="text" name="og[title]" class="width-100 bold" value="{$og_params.title|default:''|escape}" {if empty($og_params)}disabled{/if}>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name custom-pt-6">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
+                                <div class="value">
+                                    <input type="text" name="og[image]" class="width-100" value="{$og_params.image|default:''|escape}" {if empty($og_params)}disabled{/if}>
+                                    <p class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</p>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name custom-pt-6">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
+                                <div class="value">
+                                    <input type="text" name="og[video]" class="width-100" value="{$og_params.video|default:''|escape}" {if empty($og_params)}disabled{/if}>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name custom-pt-6">[s`Social sharing description`] <span class="hint">og:description</span></div>
+                                <div class="value">
+                                    <textarea class="width-100" name="og[description]"{if empty($og_params)} disabled{/if}>{$og_params.description|default:''|escape}</textarea>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name">[s`Social sharing type`] <span class="hint">og:type</span></div>
+                                <div class="value">
+                                    <input type="text" class="width-100" name="og[type]" placeholder="" value="{$og_params.type|default:''}" {if empty($og_params)}disabled{/if}>
+                                    <p class="hint">[s`Please refer to <a href="http://ogp.me" rel="noopener" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {if !empty($page_edit)}
+                            <div class="custom-mt-24">
+                                {foreach $page_edit as $_}{$_}{/foreach}
+                            </div>
+                        {/if}
+
+                        <div class="custom-mt-24">
+                            <div class="field">
+                                <div class="name custom-pt-6">[s`Page custom parameters`]</div>
+                                <div class="value">
+                                    <textarea name="other_params" class="small width-100">{strip}{if $page}
+                                        {foreach from=$other_params item=v key=k}{$k}={$v|escape}{"\n"}
+                                        {/foreach}{/if}{/strip}</textarea>
+                                    <p class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a> <i class="fas fa-external-link-alt"></i></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <footer class="dialog-footer">
+            <div class="flexbox middle full-width">
+                <div class="wide">
+                    {if empty($page.id)}
+                        <button class="js-save button" type="button">[`Add`]</button>
+                        {if $app_id === 'site'}
+                            <button class="js-save-and-edit button dark-gray" type="button">[`Add & edit`]</button>
+                        {/if}
+                    {else}
+                        <button class="js-save button" type="button">[`Save`]</button>
+                    {/if}
+                    <button class="js-close-dialog button light-gray" type="button">[`Cancel`]</button>
+                </div>
+                <div>
+                    {if !empty($page.id)}
+                        <a href="javascript:void(0);" class="js-delete text-red"><i class="fas fa-trash-alt custom-mr-4"></i>[`Delete page`]</a>
+                    {/if}
+                </div>
+            </div>
+            <div class="js-place-for-errors state-error-hint custom-mt-16"></div>
+        </footer>
+    </div>
+</div>
+
+<script>(function() { "use strict";
+    const app_id = '{$app_id|default:""}';
+    const param_app_id = app_id ? '&app_id=' + app_id : '';
+    const site_app_url = {$wa_app_url|json_encode};
+    const save_url = site_app_url + '?module=htmlPages&action=save{if $page}&id={$page.id}{/if}' + param_app_id;
+    const delete_url = site_app_url + '?module=htmlPages&action=pageDelete&domain_id={$domain_id}' + param_app_id;
+    const initial_page_data = {$page|json_encode};
+
+    const $wrapper = $('#js-htmlpage-settings-dialog');
+    const $form = $wrapper.find('form');
+    const $save_button = $wrapper.find('.js-save');
+    const $save_and_edit_button = $wrapper.find('.js-save-and-edit');
+    const wa_loading = $.waLoading();
+    const $place_for_errors = $wrapper.find('.js-place-for-errors');
+    let $page_form = $('#wa-page-form');
+    var dialog;
+
+    // switch between draft and published state
+    const $draft_switch = $("#draft-switch"),
+        $label = $draft_switch.next('label'),
+        active_text = $label.attr('data-text-published'),
+        no_active_text = $label.attr('data-text-draft');
+    $draft_switch.waSwitch({
+       ready(wa_switch){
+           if (wa_switch.is_active) {
+               $label.toggleClass('gray', false).text(active_text)
+           }else{
+               $label.toggleClass('gray', true).text(no_active_text)
+           }
+       },
+       change(active) {
+           if (active) {
+               $label.toggleClass('gray', false).text(active_text)
+           }else{
+               $label.toggleClass('gray', true).text(no_active_text)
+           }
+       }
+    });
+
+    {if (!$page || !$page.id) && empty($options.disable_auto_url) }
+        // Transliterate page title into URL while user types
+        (function() {
+        $.fn.onKeyFinish = function (defer, callback) {
+            return this.each(function () {
+                var that = $(this);
+                that.currentValue = that.val();
+                that.interval = null;
+                $(this).off('keyup.wapages');
+                $(this).on('keyup.wapages', function (e) {
+                    clearInterval(that.interval);
+                    if (that.currentValue != that.val()) {
+                        that.interval = setInterval(function () {
+                            clearInterval(that.interval);
+                            callback.call(that);
+                            that.currentValue = that.val();
+                        }, defer);
+                    }
+                });
+            });
+        };
+        $("#wa-page-settings input:first").focus();
+        $('#wa-page-settings input[name="info[name]"]').onKeyFinish(300, function () {
+            if (!$("#wa-page-form-translit").length) {
+                $page_form.append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+            }
+            var url = $('#wa-page-settings input[name="info[url]"]');
+            if ($(this).val() && (!url.val() || !url.data('changed'))) {
+                $.post("?module=htmlPages&action=translit", { str: $(this).val()}, function (response) {
+                    $("#wa-page-form-translit").remove();
+                    if (response.status == 'ok') {
+                        if (!url.val() || !url.data('changed')) {
+                            url.val(response.data.str);
+                        }
+                    }
+                }, "json");
+            }
+        });
+        $('#wa-page-settings input[name="info[url]"]').on('keyup', function () {
+                   $(this).data('changed', 1);
+                });
+        }());
+    {/if}
+
+    // Show/hide block of OG fields when user clicks the checkbox
+    $('.og-checkbox').change(function () {
+           if ($(this).is(':checked')) {
+               $('.og-group').hide().find('input,textarea').attr('disabled', 'disabled');
+           } else {
+               $('.og-group').show().find('input,textarea').removeAttr('disabled');
+           }
+           $wrapper.data('dialog').resize();
+       });
+
+    $("#wa-page-advanced-params-link").on('click', function(e) {
+        e.preventDefault();
+        $("#wa-page-advanced-params").show();
+        $(this).remove();
+        $wrapper.data('dialog').resize();
+    });
+
+    // Save to server when user clicks Save button
+    $save_button.on('click', function() {
+        saveHandler();
+        return false;
+    });
+    $save_and_edit_button.on('click', function() {
+        saveHandler(true);
+        return false;
+    });
+    $form.submit(function() {
+        saveHandler();
+        return false;
+    });
+
+    {if !empty($page.id)}
+    // Delete page when user clicks on Delete button
+    $wrapper.on('click', '.js-delete', function(e) {
+        e.preventDefault();
+
+        const deleteHandler = (d, is_multiple_delete) => {
+            const $loading = $('<span><i class="fas fa-spinner fa-spin"></i></span>');
+            d.$block.find('.dialog-footer').append($loading);
+            $.post(delete_url, { id: {$page.id}, ...(is_multiple_delete ? { confirm_multiple_delete: 1 } : {}) }, function (r) {
+                if (r?.data?.multiple_delete) {
+                    $.waDialog.confirm({
+                        title: $_('delete_nested_pages'),
+                        text: $_('delete_route_with_nested_pages_msg'),
+                        success_button_title: $_('Delete'),
+                        success_button_class: 'danger',
+                        cancel_button_title: $_('Cancel'),
+                        cancel_button_class: 'light-gray',
+                        onSuccess: (d) => deleteHandler(d, true)
+                    });
+                } else if ($('.site-map').length) {
+                    $wrapper.trigger('page_deleted');
+                } else {
+                    location.href = '{$wa_app_url}map/overview/?domain_id={if !empty($page.domain_id)}{$page.domain_id}{else}{$domain_id}{/if}';
+                }
+            }, "json").always(function() {
+                $loading.remove();
+            });
+        };
+        $.waDialog.confirm({
+            title: $_('delete_page'),
+            text: $_('delete_page_msg'),
+            success_button_title: $_('Delete'),
+            success_button_class: 'danger',
+            cancel_button_title: $_('Cancel'),
+            cancel_button_class: 'light-gray',
+            onSuccess: deleteHandler
+        });
+    });
+        themeSelect();
+        toggleMobileThemeSelect();
+
+        function themeSelect() {
+            $(".js-theme-select").waDropdown({
+                hover: false,
+                items: ".menu > li > a",
+                open: function(dropdown_instance) {
+                    const $dropdown_body = dropdown_instance.$wrapper.find('.dropdown-body');
+                    const height = $dropdown_body.height();
+                    const scrollHeight = $dropdown_body.prop('scrollHeight');
+                    if (scrollHeight > 500 || scrollHeight > height + 1) $dropdown_body.css('max-height', ($dropdown_body.height() - 93.1) + 'px');
+                },
+                change: function(event, target) {
+                    const theme_id = $(target).data("id");
+                    $('[name="info[theme]"]').val(theme_id);
+                    $('.js-theme-settings').attr('href', "{$wa_app_url}themes/?domain_id={$domain_id}#/themes/theme=" + theme_id + "&domain={$domain_decode|urlencode}");
+
+                    if (!$('.js-toggle-mobile-theme-select').is(':checked')) {
+                        $('[name="info[theme_mobile]"]').val(theme_id);
+                    }
+                }
+            });
+        }
+
+        function toggleMobileThemeSelect() {
+            const $checkbox = $('.js-toggle-mobile-theme-select');
+            const $mobile_theme_select_wrapper = $checkbox.closest('li').find('.wa-select');
+            const $mobile_theme_select = $mobile_theme_select_wrapper.find('select');
+
+            $checkbox.on('change', function() {
+                if (!this.checked) {
+                    const theme_id = $('[name="info[theme]"]').val();
+                    $mobile_theme_select.val(theme_id);
+                }
+                $mobile_theme_select_wrapper.toggleClass('hidden');
+            })
+        }
+    {/if}
+
+    function saveHandler(is_edit = false) {
+        wa_loading.show();
+        wa_loading.animate(4000, 99, false);
+
+        $form.find('.state-error').removeClass('state-error');
+        $form.find('.state-error-hint').remove();
+        $place_for_errors.empty();
+
+        if ($('#wa-page-settings input[name="info[name]"]').is(":focus") && !$("#wa-page-form-translit").length) {
+            $form.append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+        }
+
+        const hidden_og_fields = $form.find('[name^="og"]:disabled').removeAttr('disabled');
+        const serialized_data = $form.serialize();
+        hidden_og_fields.attr('disabled', 'disabled');
+
+        $.post(save_url, serialized_data, 'json').then(function(r) {
+            wa_loading.done();
+
+            if (r.status == 'ok') {
+                $wrapper.data('dialog').close();
+
+                if (is_edit && r.data.id) {
+                    location.href = `{$wa_app_url}htmleditor/page/${ r.data.id }/?domain_id={$domain_id}`;
+                    setTimeout(() => $.site.loadMap(), 100);
+                } else {
+                    $wrapper.trigger('page_saved', [{ ...r.data, app_id }]);
+                }
+                return;
+            }
+
+            if (typeof r.errors === 'string') {
+                $place_for_errors.append(r.errors);
+            } else if (Array.isArray(r.errors)) {
+                r.errors.forEach(function(e) {
+                    var $field = null;
+                    if (e.field) {
+                        $field = $form.find('[name="'+e.field+'"]');
+                    }
+
+                    const $msg = $('<div class="state-error-hint"></div>').text(e.description);
+
+                    if($field && $field.length) {
+                        $field.addClass('state-error').after($msg);
+                    } else {
+                        $place_for_errors.append($msg);
+                    }
+                });
+            }
+
+        }, function() {
+            console.log('Error saving page settings', arguments);
+            wa_loading.abort();
+        });
+    }
+
+})();</script>

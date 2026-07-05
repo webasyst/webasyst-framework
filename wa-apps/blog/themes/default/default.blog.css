@@ -12,23 +12,36 @@
  * ... extends base Site app's default.css
  */
 
+:root {
+    --comment-new-bg: light-dark(color-mix(in srgb, var(--accent-color) 15%, white 0%), color-mix(in srgb, var(--accent-color) 10%, black 0%));
+}
+
+@supports not (color: light-dark(white, black)) {
+    :root {
+        --comment-new-bg: color-mix(in srgb, var(--accent-color) 15%, white 0%);
+    }
+}
+
 .sidebar .search { margin: 16px 26px 16px 16px; }
 .sidebar .search .search-wrapper { background: #fff; }
 .sidebar .search input { margin-bottom: 0; }
-.sidebar > ul, .sidebar > div { padding: 30px; margin-bottom: 20px; background: #ffffff; border-radius: 15px; }
 .sidebar .timeline { margin-top: 0; }
 .sidebar .timeline li a {
     padding:         0;
-    margin-bottom:   8px;
     display:         block;
     text-decoration: none;
     font-size:       16px;
-    color:           #333;
+}
+.sidebar .timeline li a:not(:last-child) {
+    margin-bottom:   8px;
 }
 .sidebar .timeline ul {
     padding-left:  0;
-    margin-bottom: 32px;
+    margin-bottom: 0;
     list-style:    none;
+}
+.sidebar .timeline li:not(:last-child) ul {
+    margin-bottom: 32px;
 }
 
 .sidebar .timeline ul a {
@@ -39,16 +52,16 @@
 .subscribe { }
 .subscribe ul { list-style: none; padding-left: 0; margin-bottom: 0; margin-top: 0; }
 .subscribe ul li:not(:last-child) { margin-bottom: 12px; }
-.subscribe ul li a { text-decoration: none; font-size: 16px; color: #333333; }
+.subscribe ul li a { text-decoration: none; font-size: 16px; color: var(--text-color-secondary); }
 .subscribe ul li i.icon16 { margin-top: 0.1em; margin-right: 0.5em; width: 24px; height: 24px; background-position: 0 -50px;}
 .subscribe #twitter-follow-code { overflow: hidden; }
 
-.post { margin-bottom: 20px; padding: 30px; background: #ffffff; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.06); border-radius: 15px; }
+.post { margin-bottom: 20px; padding: 30px; background-color: var(--bg-gray-color); box-shadow: 0 5px 30px rgba(0, 0, 0, 0.06); border-radius: var(--element-border-radius); }
 .post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 24px; }
-.post h3 a { text-decoration: none; color: #333; }
+.post h3 a { text-decoration: none; }
 .post img { max-width: 100%; height: auto !important; }
 .post iframe { max-width: 100%; }
-.post .text { margin-top: 5px; margin-right: 10px; color: #333; font-size: 16px;}
+.post .text { margin-top: 5px; margin-right: 10px; font-size: 16px;}
 .post textarea { width: 100%; min-height: 300px; margin-top: 10px; height: 250px; }
 .post.search-match { margin-top: 20px; margin-bottom: 50px; }
 .post.search-match h3 { font-size: 1.5em; margin-bottom: 5px; }
@@ -57,12 +70,13 @@
 
 .credentials { overflow: hidden; line-height: 1.3em; }
 .credentials a,
-.credentials span { display: inline-block; vertical-align: middle; padding-left: 0; }
+.credentials span:not(.staff) { display: inline-block; vertical-align: middle; padding-left: 0; }
+.credentials .staff { background-color: var(--bg_tr_25); }
 .credentials .userpic { min-width: 20px; display: block; float: left; margin-right: 2px; border-radius: 50%; }
 .credentials .username { margin: 0; }
-.credentials .username, .credentials .username a { color: #828282; padding: 0; display: inline; font-size: 16px; }
+.credentials .username, .credentials .username a { color: var(--text-color-secondary); padding: 0; display: inline; font-size: 16px; }
 .credentials a.username:hover { color: red; }
-.credentials .date {color: #bdbdbd;}
+.credentials .date {color: var(--text-color-additional);}
 .credentials .date,
 .credentials .icon16 { margin: 0 3px; }
 .credentials img.userpic { width: 20px; }
@@ -82,6 +96,7 @@
 .comments .credentials .userpic.icon16 { min-width: 0; width: 16px; height: 16px; margin: 7px 4px 0; }
 .comments textarea { height: 100px; min-height: 100px; width: 75%; margin-top: 0; }
 .comments ul { padding: 0; margin: 0 0 20px 0; list-style: none;}
+.comments ul li:not(:last-child) { margin-bottom: 1rem; }
 .comments ul li ul { margin: 20px 0 0 0; }
 .comments ul li span.hint a { color: #aaa; text-decoration: underline; }
 .comments .text { color:#808080;font-size: 14px; word-break: break-word; }
@@ -91,9 +106,9 @@
 .comments ul li ul { padding-left: 18px; }
 .comments ul li .comment-form { margin-top: 16px; }
 .comments ul li .comment-form textarea { min-height: 100px; }
-.comment { border: 1px solid #e0e0e0; border-radius: 10px;background: #ffffff; padding: 18px;}
-.comment.in-reply-to { background: #eee; position: relative; }
-.comment.new { background: #ffc; margin-left: -13px; }
+.comment { border: 1px solid var(--divider-color); border-radius: var(--element-border-radius);background: var(--bg_tr_8); padding: 18px;}
+.comment.in-reply-to { position: relative; }
+.comment.new { background: var(--comment-new-bg); margin-left: -13px; }
 .comment .credentials { margin-bottom: 16px; }
 
 ul.auth-type { padding: 0 0 10px !important; list-style: none; }
@@ -127,7 +142,8 @@ html.realtime-preview .page { top: 0; margin: 10px 0; }
 
 ul.menu-v.categories { }
 ul.menu-v.categories li { border: none; }
-ul.menu-v.categories li a { padding: 5px 16px; }
+ul.menu-v.categories li:not(:last-child)  { margin-bottom: 16px; }
+ul.menu-v.categories li a { padding: 0; }
 ul.menu-v.categories li.selected a { color: #000; text-decoration: none; font-weight: bold; }
 
 .tags.cloud { text-align: center; }

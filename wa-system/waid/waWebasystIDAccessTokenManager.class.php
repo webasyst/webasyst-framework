@@ -213,8 +213,10 @@ class waWebasystIDAccessTokenManager
         $scopes = waUtils::toStrArray($scope);
         $scopes = array_unique($scopes);
         $info = $this->extractTokenInfo($token);
-        $allowed_scopes = $info['scopes'];
-        $diff = array_diff($scopes, $allowed_scopes);
+        if (!empty($info['scopes']) && is_array($info['scopes'])) {
+            $allowed_scopes = $info['scopes'];
+            $diff = array_diff($scopes, $allowed_scopes);
+        }
         return empty($diff);
     }
 

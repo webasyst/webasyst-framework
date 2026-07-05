@@ -5,6 +5,7 @@ class waPluginsActions extends waActions
     protected $plugins_hash = '#/plugins';
     protected $is_ajax = true;
     protected $shadowed = false;
+    protected $is_no_sidebar_mode = false;
 
     public function defaultAction()
     {
@@ -25,7 +26,11 @@ class waPluginsActions extends waActions
     protected function getTemplatePath($action = null)
     {
         if (wa()->whichUI($this->getAppId()) == '2.0') {
-            $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates/';
+            if ($this->is_no_sidebar_mode) {
+                $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates-no-sidebar/';
+            } else {
+                $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates/';
+            }
         } else {
             $path = $this->getConfig()->getRootPath() . '/wa-system/plugin/templates-legacy/';
         }
@@ -52,7 +57,7 @@ class waPluginsActions extends waActions
                 $params['id'] = $plugin_id;
                 $params['namespace'] = $namespace;
                 $params['title_wrapper'] = '%s';
-                $params['description_wrapper'] = '<br><span class="hint">%s</span>';
+                $params['description_wrapper'] = '<p class="hint">%s</p>';
                 $params['control_wrapper'] = '<div class="name">%s</div><div class="value">%s %s</div>';
 
                 $settings_controls = $plugin->getControls($params);
@@ -62,6 +67,9 @@ class waPluginsActions extends waActions
 
                 $vars['plugin_id'] = $plugin_id;
                 $vars['settings_controls'] = $settings_controls;
+                if (!$settings_controls) {
+                    $vars['settings_disclaimer_html'] = $plugin->getSettingsDisclaimerHtml();
+                }
             }
             waSystem::popActivePlugin();
         }

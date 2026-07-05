@@ -26,6 +26,11 @@ class waContact implements ArrayAccess
 
     protected $settings = null;
 
+    /**
+     * @param int|string|array{id: int} $id
+     * @param array $options
+     * @throws waException
+     */
     public function __construct($id = null, $options = array())
     {
         foreach ($options as $name => $value) {
@@ -663,8 +668,14 @@ class waContact implements ArrayAccess
      */
     public function save($data = array(), $validate = false)
     {
+        $data = $this->removeSpecialFields($data);
+        if (isset($data['name'])) {
+            // Process name field first because otherwise it may conflict with first/middle/lastname
+            $data = ['name' => $data['name']] + $data;
+        }
+
         $add = array();
-        foreach ($this->removeSpecialFields($data) as $key => $value) {
+        foreach ($data as $key => $value) {
             if (strpos($key, '.')) {
                 $key_parts = explode('.', $key);
                 $f = waContactFields::get($key_parts[0]);
@@ -697,7 +708,10 @@ class waContact implements ArrayAccess
 
         $this->data = $this->removeSpecialFields($this->data);
         $this->data['name'] = $this->get('name');
-        $this->data['firstname'] = $this->get('firstname');
+        if (!$this->data['name']) {
+            // When contact has empty name, this will generate name from email or phone
+            $this->data['name'] = $this->data['firstname'] = $this->get('firstname');
+        }
         $this->data['is_company'] = $this->get('is_company');
         if ($this->id && isset($this->data['is_user'])) {
             $c = new waContact($this->id);

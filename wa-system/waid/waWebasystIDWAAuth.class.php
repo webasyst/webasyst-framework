@@ -62,6 +62,9 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
         if (!$request_url) {
             throw new waWebasystIDException(_ws('Webasyst ID authentication endpoint is not available'));
         }
+        if ($this->getClientManager()->isBackendAuthForced()) {
+            $request_url .= '&waid_forced=1';
+        }
         wa()->getResponse()->redirect($request_url);
     }
 

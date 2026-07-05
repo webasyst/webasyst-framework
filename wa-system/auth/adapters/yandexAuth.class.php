@@ -7,7 +7,7 @@
  * http://api.yandex.ru/login/doc/dg/concepts/about.xml
  */
 
-class yandexAuth extends waOAuth2Adapter
+class yandexAuth extends waOAuth2Adapter implements waiAuthAdapterOmnipresent
 {
     protected $check_state = true;
 
@@ -17,11 +17,28 @@ class yandexAuth extends waOAuth2Adapter
         return 'https://oauth.yandex.ru/authorize?response_type=code&client_id='.$this->app_id.'&redirect_uri='.urlencode($url);
     }
 
-    public function getControls()
+    public function getControlsConfig()
     {
         return array(
-            'app_id'     => _ws('Client ID'),
-            'app_secret' => _ws('Client secret'),
+            'app_id'     => 'ClientID',
+            'app_secret' => 'Client secret',
+            'widget_enabled' => [
+                'name' => _ws('Выводить JS-виджет авторизации на каждой странице сайта'),
+                'type' => waHtmlControl::class,
+                'control_type' => waHtmlControl::CHECKBOX,
+            ],
+            'redirect_uri' => _ws('Redirect URI')
+                .'<br><span class="hint">'.
+                sprintf(
+                    _ws('Default value in case of the empty field: %s'),
+                    parent::getCallbackUrl()
+                ).'</span>',
+            'origin' => _ws('Origin')
+                .'<br><span class="hint">'.
+                sprintf(
+                    _ws('Значение параметра должно быть всегда заполнено и не должно содержать символ *.<br>')._ws('Default value in case of the empty field: %s'),
+                    $this->getOrigin()
+                ).'</span>',
         );
     }
 
@@ -83,5 +100,42 @@ class yandexAuth extends waOAuth2Adapter
         } else {
             return parent::getName();
         }
+    }
+
+    protected function getOrigin()
+    {
+        return rtrim(wa()->getRootUrl(true, true), '/');
+    }
+
+    protected function isWidgetEnabled()
+    {
+        return (bool)$this->getOption('widget_enabled');
+    }
+
+    public function renderOmnipresentWidget(): string
+    {
+        if (!$this->isWidgetEnabled()) return '';
+        $client_id = $this->getOption('app_id');
+        $redirect_uri = ifempty(ref($this->getOption('redirect_uri')), parent::getCallbackUrl());
+        $origin = ifempty(ref($this->getOption('origin')), $this->getOrigin());
+
+        return <<<HTML
+<script src="https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js"></script>
+<script>
+    addEventListener("DOMContentLoaded", () => {
+        if (!window.YaAuthSuggest) return;
+
+        YaAuthSuggest.init(
+            {
+                client_id: "{$client_id}",
+                response_type: "token",
+                redirect_uri: "{$redirect_uri}"
+            },
+            "{$origin}"
+        ).then(({ handler }) => handler());
+    });
+</script>
+HTML;
+
     }
 }

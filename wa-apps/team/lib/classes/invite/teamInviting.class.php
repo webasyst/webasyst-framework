@@ -182,6 +182,20 @@ abstract class teamInviting
 
     }
 
+    protected function runInviteUserHook($email, $phone, $groups)
+    {
+        $event_data = compact('email', 'phone', 'groups');
+        $invite_user_event = wa('team')->event('invite_user', $event_data);
+        $errors = [];
+        foreach ($invite_user_event as $message) {
+            if ($message) {
+                $errors[] = $message;
+            }
+        }
+
+        return empty($errors) ? null : join("\n", $errors);
+    }
+
     protected function getTime()
     {
         return time();

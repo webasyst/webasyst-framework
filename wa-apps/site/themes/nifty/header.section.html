@@ -1,0 +1,237 @@
+{if !empty($is_bp_header)}
+    <!-- css -->
+    <link href="{$wa_theme_url}nifty.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+{/if}
+<div id="header">
+    <div class="container">
+
+        <div class="block">
+
+            {if $wa->isAuthEnabled()}
+                <!-- auth & sign up links -->
+                <div class="float-right auth">
+                    <ul class="menu-h">
+                         {if $wa->user()->isAuth()}
+                            {if $wa->shop}
+                                <li><a href="{$wa->getUrl('shop/frontend/my')}"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i>[s`My account`]</a></li>
+                            {else}
+                                    <li><strong>{$wa->user('name')}</strong></li>
+                                {/if}
+                             <li><a href="?logout">[s`Log out`]</a></li>
+                        {else}
+                            <li><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
+                            <li><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+                        {/if}
+                    </ul>
+                </div>
+            {/if}
+
+            {if $wa->shop}
+                <!-- search form (app dependent) -->
+                <div class="float-right search">
+                    <form method="get" action="{$wa->getUrl('shop/frontend/search')}">
+                        <input type="search" name="query" {if !empty($query)}value="{$query}"{/if} id="search" placeholder="[s`Find products`]">
+                    </form>
+                </div>
+            {/if}
+
+
+            <!-- subscription links -->
+            <div class="float-right subscribe">
+                {if $wa->blog}
+                    {$rss = $wa->blog->rssUrl()}
+                    {if $rss}
+                        <a href="{$rss}" title="[s`Subscribe`]" class="bold"><i class="icon16 rss"></i></a>
+                    {/if}
+                {/if}
+                <a href="{$theme_settings.facebook_url}" title="Facebook"><i class="icon16 facebook"></i></a>
+                <a href="{$theme_settings.twitter_url}" title="Twitter"><i class="icon16 twitter"></i></a>
+            </div>
+
+            {if $wa->shop}
+                {if !empty($theme_settings.use_shop_schedule) && method_exists($wa->shop, 'schedule')}
+                    {$_schedule = $wa->shop->schedule()}
+
+                    <div class="float-right schedule">
+                        <div class="s-schedule-wrapper" id="js-home-schedule-wrapper">
+                            <div class="s-visible">
+                                <div class="s-label-wrapper js-show-schedule" title="{_wd("shop", "Business hours")}">
+                                    {_wd("shop", "Business hours")} <i class="s-icon"></i>
+                                </div>
+                            </div>
+                            <div class="s-hidden bottom right">
+                                <div class="s-days-wrapper">
+                                    {foreach $_schedule.current_week as $_day}
+                                        <div class="s-day-wrapper">
+                                            <div class="s-date">{$_day.name|escape}</div>
+                                            <div class="s-value">
+                                                {if !empty($_day.work)}
+                                                    <div class="s-time">{$_day.start_work|escape} — {$_day.end_work|escape}</div>
+                                                {else}
+                                                    <div class="s-text">{_wd("shop", "day off")}</div>
+                                                {/if}
+                                            </div>
+                                        </div>
+                                    {/foreach}
+                                </div>
+                                <i class="s-close-icon js-close-schedule" title="[`Close`]"></i>
+                            </div>
+                            <script>
+                                ( function($) {
+
+                                    var ScheduleSection = ( function($) {
+
+                                        ScheduleSection = function(options) {
+                                            var that = this;
+
+                                            // DOM
+                                            that.$wrapper = options["$wrapper"];
+
+                                            // VARS
+
+                                            // DYNAMIC VARS
+
+                                            // INIT
+                                            that.initClass();
+                                        };
+
+                                        ScheduleSection.prototype.initClass = function() {
+                                            var that = this,
+                                                $wrapper = that.$wrapper;
+
+                                            var open_class = "is-open";
+
+                                            $wrapper.on("click", ".js-show-schedule", function(event) {
+                                                event.preventDefault();
+                                                $wrapper.toggleClass(open_class);
+                                            });
+
+                                            $wrapper.on("click", ".js-close-schedule", function(event) {
+                                                event.preventDefault();
+                                                $wrapper.removeClass(open_class);
+                                            });
+
+                                            $(document).on("click", clickWatcher);
+                                            function clickWatcher(event) {
+                                                var is_exist = $.contains(document, $wrapper[0]);
+                                                if (is_exist) {
+                                                    var is_target = $.contains($wrapper[0], event.target);
+                                                    if (!is_target) {
+                                                        if ($wrapper.hasClass(open_class)) {
+                                                            $wrapper.removeClass(open_class);
+                                                        }
+                                                    }
+                                                } else {
+                                                    $(document).off("click", clickWatcher);
+                                                }
+                                            }
+
+                                            $(document).on("keyup", keyWatcher);
+                                            function keyWatcher(event) {
+                                                var is_exist = $.contains(document, $wrapper[0]);
+                                                if (is_exist) {
+                                                    var is_escape = (event.keyCode === 27);
+                                                    if (is_escape) {
+                                                        if ($wrapper.hasClass(open_class)) {
+                                                            $wrapper.removeClass(open_class);
+                                                        }
+                                                    }
+                                                } else {
+                                                    $(document).off("click", keyWatcher);
+                                                }
+                                            }
+                                        };
+
+                                        return ScheduleSection;
+
+                                    })($);
+
+                                    new ScheduleSection({
+                                        $wrapper: $("#js-home-schedule-wrapper")
+                                    });
+                                })(jQuery);
+                            </script>
+                        </div>
+                    </div>
+                {elseif !empty($theme_settings.manual_schedule)}
+                {strip}
+                    <div class="float-right schedule">
+                        <div class="s-schedule-wrapper">
+                            <div class="s-visible">
+                                <div class="s-label-wrapper">
+                                    <span class="s-text">{$theme_settings.manual_schedule|escape}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/strip}
+                {/if}
+
+                <!-- phone number -->
+                {if $wa->shop->settings('phone')}
+                    <div class="float-right phone">
+                        {$wa->shop->settings('phone')}
+                    </div>
+                {/if}
+            {/if}
+
+            <!-- TITLE -->
+
+            <h2 class="title">
+                <a href="{$wa_url}">{$wa->accountName()}</a>
+            </h2>
+        </div>
+
+        <div id="niftybox" role="navigation">
+            <div class="apps">
+                {if $wa->shop}
+                    {$_cart_url = $wa->getUrl('shop/frontend/cart')}
+                    {if method_exists($wa->shop, 'checkout')}
+                        {$_cart_url = $wa->shop->checkout()->cartUrl()}
+                    {/if}
+
+                    <!-- display shopping cart info in case Shop-Script is installed -->
+                    {$cart_total = $wa->shop->cart->total()}
+                     <div id="cart" class="float-right{if !$cart_total} empty{/if}">
+                         <a href="{$_cart_url}">
+                             <i class="icon16 cart"></i>
+                             <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                         </a>
+
+                         {strip}
+                         {capture assign="_loading_template"}
+                             <div class="s-loading-section">
+                                 <div class="s-loading-content">
+                                     <i class="icon16 loading"></i>
+                                 </div>
+                             </div>
+                         {/capture}
+                         {/strip}
+
+                         <script>
+                             ( function($) {
+                                 var is_loading = false;
+                                 $("#cart").on("click", "a", function() {
+                                     if (!is_loading) {
+                                         is_loading = true;
+                                         $("body").append({$_loading_template|json_encode});
+                                     }
+                                 });
+                             })(jQuery);
+                         </script>
+                     </div>
+                {/if}
+                <!-- main website sections -->
+                <ul class="menu-h">
+                    {foreach $wa->apps() as $a}
+                        <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                    {/foreach}
+                </ul>
+            </div>
+            <div class="app-navigation">
+                {include file="`$wa_active_theme_path`/navigation.html"}
+            </div>
+        </div>
+
+    </div>
+</div>

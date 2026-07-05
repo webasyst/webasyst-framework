@@ -1,0 +1,52 @@
+{*
+ * Лэйаут внутри iframe в редакторе страниц в бекенде.
+ * В этом iframe включены как стили темы дизайна, так и стили WA 2.0 -
+ * iframe нужен, чтобы стили темы не могли сломать ничего из вёрстки бекенда приложения Сайт.
+ *
+ *}{strip}<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
+{/strip}
+
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+    <script src="{$wa_app_static_url}js/compiled/site.editor.defer.min.js?v{$wa->version()}" defer></script>
+
+    {if $wa->getEnv() == 'backend'}
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v{$wa->version(true)}"></script>
+        <link href="{$wa_app_static_url}css/site.min.css?v={$wa->version()}" rel="stylesheet">
+        
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa.switch-mode.js?v3.1.0"></script>
+        <script defer="" src="{$wa_url}wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0"><meta name="referrer" content="origin-when-cross-origin">    
+    {/if}
+
+    {*$wa->css()*}
+    {*$wa->js()*}
+</head>
+<body class="s-blank">
+<div id="wa">
+    <div id="wa-app" class="iframe-editor">
+            {$content}
+    </div>
+
+    {if waSystemConfig::isDebug()}{* !!! TODO: remove development helpers *}
+
+        <script>(function() { "use strict";
+            var $body = $('body').first();
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Control') {
+                    $body.addClass('highlight-not-implemented');
+                }
+            });
+            $(document).on('keyup', function(e) {
+                if (e.key === 'Control') {
+                    $body.removeClass('highlight-not-implemented');
+                }
+            });
+        })();</script>
+    {/if}
+</div>
+</body>
+</html>

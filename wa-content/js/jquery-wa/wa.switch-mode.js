@@ -36,9 +36,13 @@ new class ThemeMode {
     }
 
     toggleTheme() {
-        document.querySelector('[data-wa-mode-toggle]')?.addEventListener('click', () =>
-            this.setThemeManually((localStorage.getItem(this.ls_var_name) === 'light') ? 'dark' : 'light')
-        )
+        document.querySelector('[data-wa-mode-toggle]')?.addEventListener('click', () => {
+            let currentTheme = localStorage.getItem(this.ls_var_name);
+            if (currentTheme === null) {
+                currentTheme = document.documentElement.getAttribute('data-theme');
+            }
+            this.setThemeManually((currentTheme === 'light') ? 'dark' : 'light')
+        })
     }
 
     getSystemTheme() {

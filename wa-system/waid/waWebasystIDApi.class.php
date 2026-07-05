@@ -12,6 +12,7 @@ class waWebasystIDApi
      * @var waWebasystIDUrlsProvider
      */
     protected $provider;
+    const TIMEOUT = 10;
 
     /**
      * waWebasystIDApi constructor.
@@ -130,12 +131,29 @@ class waWebasystIDApi
     public function getProfileUpdated(waContact $contact, $code)
     {
         $token_params = $contact->getWebasystTokenParams();
-        $ok = $this->refreshTokenWhenExpired($token_params, $contact->getId());
-        if (!$ok) {
+        if (empty($token_params)) {
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => sprintf("There is no WAID token for contact %s", $contact->getId())
+            ]);
+        } elseif (!$this->refreshTokenWhenExpired($token_params, $contact->getId())) {
+            $token_params = null;
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => sprintf("Can't refresh token for contact %s", $contact->getId())
+            ]);
+        }
+
+        $access_token = empty($token_params) ? (new waWebasystIDClientManager)->getSystemAccessToken() : $token_params['access_token'];
+        if (empty($access_token)) {
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => "Can't get system token",
+            ]);
             return null;
         }
 
-        $response = $this->requestApiMethod('profile-updated', $token_params['access_token'], [ 'code' => $code ]);
+        $response = $this->requestApiMethod('profile-updated', $access_token, ['code' => $code]);
         if ($response['status'] == 200) {
             return $response['response'];
         }
@@ -214,7 +232,7 @@ class waWebasystIDApi
      * @param bool $is_qrcode QR codes allow for a longer codes with longer expiration time
      * @return array with keys 'code' (string) and 'expire' (string RFC-3339) when successful or with keys 'error' and 'error_description' (both strings) on failure
      */
-    public function installationCode($waid_invite, $is_qrcode=false, $profile_data=[])
+    public function installationCode($waid_invite, $is_qrcode = false, $profile_data = [])
     {
         $cm = new waWebasystIDClientManager();
         if (!$cm->isConnected()) {
@@ -327,7 +345,6 @@ class waWebasystIDApi
                     ]
                 ];
             }
-
         }
 
         return [
@@ -393,7 +410,7 @@ class waWebasystIDApi
         if (!$cm->isConnected()) {
             return null;
         }
-        $result = $this->requestApiMethod('delete', $cm->getSystemAccessToken(), [ 'waid' => $waid_contact_id ], 'DELETE');
+        $result = $this->requestApiMethod('delete', $cm->getSystemAccessToken(), ['waid' => $waid_contact_id], 'DELETE');
         return $result && !empty($result['deleted']);
     }
 
@@ -534,7 +551,12 @@ class waWebasystIDApi
     protected function requestApiMethod($api_method, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
     {
         $url = $this->provider->getApiUrl($api_method);
-        return $this->requestApiUrl($url, $access_token, $params, $http_method, $net_options);
+        try {
+            return $this->requestApiUrl($url, $access_token, $params, $http_method, $net_options, true);
+        } catch (waNetTimeoutException $e) {
+            $url = $this->provider->getApiUrl($api_method);
+            return $this->requestApiUrl($url, $access_token, $params, $http_method, $net_options);
+        }
     }
 
     /**
@@ -552,10 +574,10 @@ class waWebasystIDApi
      *                          string $result['response']['error'] - error from server
      * @throws waNetTimeoutException|waException
      */
-    protected function requestApiUrl($url, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
+    protected function requestApiUrl($url, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [], $do_handle_timeout = false)
     {
         $default_net_options = [
-            'timeout' => 20,
+            'timeout' => self::TIMEOUT,
             'format' => waNet::FORMAT_JSON,
             'request_format' => waNet::FORMAT_RAW,
             'expected_http_code' => null,
@@ -567,7 +589,7 @@ class waWebasystIDApi
         $headers = [
             'Authorization' => "Bearer {$access_token}"
         ];
-
+        
         $net = new waNet($net_options, $headers);
 
         $exception = null;
@@ -576,6 +598,16 @@ class waWebasystIDApi
             $response = $net->query($url, $params, $http_method);
         } catch (Exception $e) {
             if ($e instanceof waNetTimeoutException) {
+                if ($do_handle_timeout) {
+                    if (wa()->appExists('installer')) {
+                        wa('installer');
+                        $zone_detect_result = installerHelper::getInstaller()->detectBestZone();
+                        if (!empty($zone_detect_result['is_zone_changed'])) {
+                            $this->provider->resetSelectedEndpoints();
+                            throw $e;
+                        }
+                    }
+                }
                 $this->provider->complainAboutApiEndpoint();
             }
             $exception = $e;
@@ -609,7 +641,10 @@ class waWebasystIDApi
                 'headers' => $response_headers,
                 'response' => [
                     'error' => 'system_error',
-                    'error_description' => 'System error (see ' . get_class($this) . '.log for details)'
+                    'error_description' => sprintf(
+                        _ws('System error (see file %s.log for details).'),
+                        get_class($this)
+                    )
                 ]
             ];
 

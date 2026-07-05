@@ -47,7 +47,7 @@ class webasystCreateAppCli extends webasystCreateCliController
             $structure['templates/layouts/Default.html'] = $this->getLayoutTemplate();
         }
 
-        $features = array_map('trim', preg_split('@[,\s]+@', ifset($params['features'], $this->getDefaults('features'))));
+        $features = array_map('trim', preg_split('@[,\s]+@', (string)ifset($params, 'features', $this->getDefaults('features'))));
         // api
         if (in_array('api', $features, true)) {
             $structure = array_merge($structure, array(

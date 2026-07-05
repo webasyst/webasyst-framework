@@ -34,11 +34,9 @@ var WaBackendLogin = ( function($) {
 
         if (that.webasyst_id_auth_url) {
             that.initWebasystIDAuthLink();
-            that.initWebasystIDHelpLink();
         }
         if (that.bind_with_webasyst_contact) {
             that.initSignInAndBindWithWebasystID();
-            that.initWebasystIDHelpLink();
         }
     };
 
@@ -66,7 +64,7 @@ var WaBackendLogin = ( function($) {
         that.webasyst_id_auth_url = options.webasyst_id_auth_url || '';
         that.bind_with_webasyst_contact = options.bind_with_webasyst_contact || false;
     };
-    
+
     Self.prototype.setupOnetimePasswordView = function () {
         var that = this,
             $wrapper = that.$wrapper,
@@ -243,20 +241,6 @@ var WaBackendLogin = ( function($) {
             e.preventDefault();
             $.post(that.wa_app_url + '?module=login&action=reset', function () {
                 window.location.reload();
-            });
-        });
-    };
-
-    Self.prototype.initWebasystIDHelpLink = function () {
-        var that = this,
-            $wrapper = that.$wrapper,
-            $link = $wrapper.find('.js-waid-hint');
-
-        $link.on('click', function (e) {
-            e.preventDefault();
-            var url = that.wa_app_url + "?module=backend&action=webasystIDHelp";
-            $.get(url, function (html) {
-                $('body').append(html);
             });
         });
     };

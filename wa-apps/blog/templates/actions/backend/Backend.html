@@ -285,9 +285,9 @@
     {if $stream.all_posts && empty($posts) && empty($text)}
         <div class="rounded-block b-post b-empty-welcome">
             <div class="b-welcome">
-                <i class="fas fa-home text-light-gray custom-mb-24" style="font-size: 8rem;"></i>
-                <h2>[`Welcome to your new blog!`]</h2>
-                <p>
+                <i class="fas fa-pen-alt text-light-gray custom-mb-24" style="font-size: 8rem;"></i>
+                <!-- <h4>[`Welcome to your new blog!`]</h4> -->
+                <p class="small">
                     {if empty($import_link)}
                         {sprintf('[`Start by <a href="%s">writing your first post</a>.`]','?module=post&amp;action=edit&amp;id=')}
                     {else}
@@ -324,4 +324,15 @@
       <!-- dialog end -->
     {/if}
 
+{/if}
+
+{if waRequest::get('is_created') && $wa->installer && method_exists($wa->installer, 'reviewWidget')}
+    {$wa->installer->reviewWidget('app/blog')}
+    <script>
+        (function($) {
+            if (window.history) {
+                history.replaceState(null, '', location.href.replace('&is_created=1', ''));
+            }
+        })(jQuery);
+    </script>
 {/if}

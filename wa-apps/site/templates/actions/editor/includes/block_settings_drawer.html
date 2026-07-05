@@ -1,0 +1,154 @@
+<div class="site-editor-block-settings" id="js-site-editor-block-settings">
+    <h3>Block #<span class="js-block-id"></span></h3>
+</div>
+
+{* КОМПОНЕНТЫ *}
+{$_components = []}
+
+{capture assign="_component_product_id_group"}
+{foreach $wa->apps() as $a}
+    {if $a.id == "shop"}
+        {$_shop_exist = true}
+    {/if}
+{/foreach}
+{*$wa->getUrl('shop/frontend', [], true)*}
+{$shop_url = "`$wa_backend_url`shop/products/"}
+{if (!$_shop_exist)}
+    {$shop_url = "`$wa_backend_url`installer/store/app/shop/"}
+{/if}
+<div class="s-editor-option-wrapper">
+    <div class="s-semi-header semibold small" v-html="
+        $t('custom.Product from **Shop-Script catalog**')
+        .replace('**', '<a href=&quot;{$shop_url}&quot; target=&quot;_blank&quot;>')
+        .replace('**', ' <span><i class=&quot;s-icon fas fa-external-link-alt fa-xs&quot;></i></span></a>')">
+    </div>
+    <div class="s-editor-option-body custom-mt-8 ">
+        <div>
+            <div class="state-with-inner-icon right width-100">
+                <span class="icon text-gray" style="left: 0.75em;"><i class="fas fa-search" ></i></span>
+                <input style="padding-left: 2.25em;" @input="inputAutocomplete($event.target.value)" @focus="inputAutocomplete('')" v-model.trim="productName" class="width-100 smaller custom-mr-0" type="text" :name="active_id" :placeholder="$t('custom.Start typing name')">
+                <span class="icon text-gray" @click="productName = ''" v-show="productName"><i class="fas fa-times-circle" ></i></span>
+            </div>
+            <div v-if="productStatus === '0'" class="state-error-hint custom-mt-8">{ { $t('custom.product_status_temporarily_hidden') } }</div>
+            <div v-if="productStatus === '-1'" class="state-error-hint custom-mt-8">{ { $t('custom.product_status_not_published') } }</div>
+        </div>
+    </div>
+</div>
+{/capture}
+{$_components["component-product-id-group"] = $_component_product_id_group|strip}
+
+{capture assign="_component_ai_generator"}
+{*literal*}
+<div class="ai-panel-container card" :class="container_class">
+    <div class="prompt-container custom-pb-4">
+        <textarea v-show="!show_settings" rows="1" v-model.trim="prompt" ref="textarea" @input="resizeTextarea" v-on:keyup.enter="onEnter" class="small prompt-textarea" :placeholder="$t('custom.placeholder_' + active_facility) + '...'"></textarea>
+        <div class="settings-container custom-pt-4" v-show="show_settings">
+            <div class="s-icon icon settings-back-icon cursor-pointer" @click="show_settings = !show_settings"><i class="fas fa-arrow-circle-left"></i></div>
+            <form class="settings-fields small custom-mt-8" v-if="prompt_settings.length">
+                <div class="settings-fields-field custom-mb-12" v-for="field in prompt_settings" :data-field-id="field.id">
+                    <div class="name for-checkbox custom-mb-4 semibold">
+                        { { field.title } }
+                    </div>
+                    <div class="value">
+                        <input v-if="field.type === 'input'" :name="field.id" type="text" class="long" :value="field.value" :placeholder="field.example">
+                        <textarea v-if="field.type === 'textarea'" :name="field.id" :placeholder="field.example">{ { field.value } }</textarea>
+                        <label class="flexbox space-4 custom-mb-8" v-if="field.type === 'radio'" v-for="(item_label, item_value) in field.items">
+                            <span class="wa-radio custom-mt-4">
+                                <input type="radio" :name="field.id" :value="item_value" :checked="field.value === item_value">
+                                <span></span>
+                            </span>
+                            <span>{ { item_label } }</span>
+                        </label>
+                        <label class="flexbox middle space-4 custom-mb-4" v-if="field.type === 'checklist'" v-for="(item_label, item_value) in field.items">
+                            <span class="wa-checkbox">
+                                <input type="checkbox" :name="field.id + '[' + item_value + ']'" value="1" :checked="field.value === item_value">
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </span>
+                            </span>
+                            <span>{ { item_label } }</span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+            <div class="spinner-container" v-if="!prompt_settings.length">
+                <div class="spinner custom-p-8" ></div>
+            </div>
+        </div>
+        <div class="state-error-hint" style="display: none" ></div>
+        <div class="top-up-error small" style="display: none" ><a class="state-caution" href="" target="_blank"><i class="fas fa-exclamation-triangle small"></i> { { $t('custom.top up balance') } } <i class="fas fa-external-link-alt small"></i></a></div>
+
+    </div>
+    <div class="ai-controls full-width flexbox middle custom-pt-4">
+        <button class="black button rounded small main-button normal"  @click="generateAiData">
+            <span class="s-text" v-show="!loading && !success">{ { $t('custom.Generate') } }</span>
+            <div class="stars-container" v-show="loading">
+                <svg class="star" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_10705_126373_1)">
+                        <path class="star1" d="M3.41931 1.04579C3.46018 0.901404 3.66482 0.901404 3.70569 1.04579L4.24658 2.9566C4.29585 3.13064 4.43186 3.26665 4.6059 3.31592L6.51671 3.85681C6.6611 3.89768 6.6611 4.10232 6.51671 4.14319L4.6059 4.68408C4.43186 4.73335 4.29585 4.86936 4.24658 5.0434L3.70569 6.95421C3.66482 7.0986 3.46018 7.0986 3.41931 6.95421L2.87842 5.0434C2.82915 4.86936 2.69314 4.73335 2.5191 4.68408L0.608287 4.14319C0.463904 4.10232 0.463904 3.89768 0.608287 3.85681L2.5191 3.31592C2.69314 3.26665 2.82915 3.13064 2.87842 2.9566L3.41931 1.04579Z" fill="#F5C400"/>
+                        <path class="star2" d="M9.46248 4.60767C9.5267 4.38078 9.8483 4.38078 9.91252 4.60767L10.7625 7.61038C10.8399 7.88386 11.0536 8.0976 11.3271 8.17501L14.3298 9.02498C14.5567 9.0892 14.5567 9.4108 14.3298 9.47502L11.3271 10.325C11.0536 10.4024 10.8399 10.6161 10.7625 10.8896L9.91252 13.8923C9.84829 14.1192 9.5267 14.1192 9.46248 13.8923L8.61251 10.8896C8.5351 10.6161 8.32136 10.4024 8.04788 10.325L5.04517 9.47502C4.81828 9.41079 4.81828 9.0892 5.04517 9.02498L8.04788 8.17501C8.32136 8.0976 8.5351 7.88386 8.61251 7.61038L9.46248 4.60767Z" fill="#55DDDD"/>
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_10705_126373_1">
+                            <rect width="14" height="14" fill="white" transform="translate(0.5 0.5)"/>
+                        </clipPath>
+                    </defs>
+                </svg>
+            </div>
+            <!--<span class="icon webasyst-ai" v-show="false" ></span>-->
+            <span class="s-icon icon success-icon" v-show="success" ><i class="fas fa-check"></i></span>
+        </button>
+        <span class="s-text small custom-mr-auto" v-show="success">{ { $t('custom.Done') } }!</span>
+        <button class="button rounded nobutton gray small settings-button" v-if="!success && !loading">
+            <span class="s-icon icon" @click="show_settings = !show_settings"><i class="fas fa-sliders-h"></i></span>
+        </button>
+        <button class="button rounded nobutton gray small cancel-button" v-if="!success && loading">
+            <span class="s-text small" @click="cancelGeneration">{ { $t('custom.Cancel') } }</span>
+        </button>
+        <div class="success-buttons flexbox" v-if="success">
+            <button class="button rounded nobutton gray small" @click="undo">
+                <span class="s-icon icon"><i class="fas fa-undo"></i></span>
+            </button>
+            <button class="button rounded nobutton gray small" @click="returnToPrompt">
+                <span class="s-icon icon"><i class="fas fa-pencil-alt"></i></span>
+            </button>
+            <button class="button rounded nobutton gray small" @click="closeForm">
+                <span class="s-icon icon"><i class="fas fa-times"></i></span>
+            </button>
+        </div>
+    </div>
+</div>
+{*/literal*}
+{/capture}
+{$_components["component-ai-generator"] = $_component_ai_generator|strip}
+
+
+<script>(function() { "use strict";
+
+    //
+    // Once the drawer is ready (after vue init or whatever) this JS must trigger
+    // jQ event 'block_settings_form_ready' on '#js-site-editor-block-settings' containing interface object
+    // to communicate with the drawer.
+    //
+    // Code inside SiteEditor listens to this event, takes the object and uses
+    // its methods to open drawer, update its state etc.
+    //
+
+    var $wrapper = $('#js-site-editor-block-settings');
+
+    // !!! тут setTimeout() нужен только чтобы сделать вид, что инициализация сложной формы
+    // занимает какое-то время (vue.js, загрузка скриптов и т.п.)
+    setTimeout(() => {
+
+        var interface_object = new BlockSettingsDrawer({
+            $wrapper: $wrapper,
+            html_templates: {$_components|json_encode},
+        });
+
+        $wrapper.trigger('block_settings_form_ready', [interface_object]);
+
+    }, 100);
+
+})();</script>

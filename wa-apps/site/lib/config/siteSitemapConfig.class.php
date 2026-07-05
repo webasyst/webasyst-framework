@@ -10,6 +10,9 @@ class siteSitemapConfig extends waSitemapConfig
         foreach ($routes as $route) {
             $this->addPages($page_model,$route);
         }
+
+        // get blockpages
+        $this->addPages(new siteBlockpageModel(), null);
     }
 
     /**
@@ -26,12 +29,30 @@ class siteSitemapConfig extends waSitemapConfig
             return;
         }
 
-        $sql = "SELECT id, parent_id, name, title, full_url as url, create_datetime, update_datetime
-            FROM ".$page_model->getTableName().'
-            WHERE domain_id = i:domain_id AND route = s:route AND status = 1
-            ORDER BY sort';
-        $pages = $page_model->query($sql, array('domain_id' => $domain['id'], 'route' => $route['url']))->fetchAll('id');
+        if ($page_model instanceof siteBlockpageModel) {
+            $sql = "SELECT id, parent_id, full_url as url, create_datetime, update_datetime
+                FROM ".$page_model->getTableName().'
+                WHERE domain_id = i:domain_id AND status = "final_published"
+                ORDER BY sort';
+            $pages = array_map(function($p) {
+                $p['url'] = rtrim($p['url'], '/').'/';
+                return $p;
+            }, $page_model->query($sql, ['domain_id' => $domain['id']])->fetchAll('id'));
+        } else {
+            $sql = "SELECT id, parent_id, name, title, full_url as url, create_datetime, update_datetime
+                FROM ".$page_model->getTableName().'
+                WHERE domain_id = i:domain_id AND route = s:route AND status = 1
+                ORDER BY sort';
+            $pages = $page_model->query($sql, array('domain_id' => $domain['id'], 'route' => $route['url']))->fetchAll('id');
+        }
 
         return $pages;
+    }
+
+    public function getUrlByRoute($route)
+    {
+        return parent::getUrlByRoute(ifset($route, [
+            'url' => '*',
+        ]));
     }
 }

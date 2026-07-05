@@ -505,7 +505,9 @@ class waSystemConfig
         }
 
         if (file_exists($file = waConfig::get('wa_path_apps').'/'.$application.'/lib/config/'.$class_name.'.class.php')) {
-            require_once($file);
+            if (!class_exists($class_name)) {
+                require_once($file);
+            }
             return new $class_name($environment, $root_path, $application, $locale);
         } elseif (file_exists($file = waConfig::get('wa_path_apps').'/'.$application.'/lib/config/app.php')) {
             return new waAppConfig($environment, $root_path, $application, $locale);

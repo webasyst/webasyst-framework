@@ -2,11 +2,11 @@
 
 return array(
     'name'       => 'Site', // _w('Site')
-    'icon'       => 'img/site512.png',
+    'icon'       => 'img/site.svg',
     'sash_color' => '#49a2e0',
     'frontend'   => true,
-    'version'    => '2.6.2',
-    'critical'   => '2.6.0',
+    'version'    => '3.5.3',
+    'critical'   => '3.5.3',
     'vendor'     => 'webasyst',
     'system'     => true,
     'rights'     => true,
@@ -16,4 +16,8 @@ return array(
     'auth'       => true,
     'csrf'       => true,
     'my_account' => true,
+    'routing_params'   => array(
+        'priority_settlement' => true,
+    ),
+    'ui'         => '2.0,1.3',
 );

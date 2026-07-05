@@ -1,0 +1,92 @@
+{$block_id = $data->getId()}
+{$themeTemplate = $wa->site->getThemeFileTemplate('blockpage.footer.html', 'site')}
+{$empty_template = empty($themeTemplate)}
+{$enable_app_template = $data->data['app_template']['active'] && !$empty_template}
+
+{$elements = $data->data['elements']}
+{$static_main = "`$elements.main` f-w"}
+{$static_wrapper = "`$elements.wrapper` style-wrapper rw"}
+
+{$render_only_app_template = $is_backend || (!$is_backend && $enable_app_template)}
+{$render_only_block_template = $is_backend || (!$is_backend && !$enable_app_template)}
+{$anchor_id = $data->data['id']|default:0}
+
+{$href = ''}
+{$target = ''}
+{$rel = ''}
+{if !empty($data->data['link_props'][$elements.wrapper])}
+    {$link_props = $data->data['link_props'][$elements.wrapper]}
+    {$href = ifempty($link_props.href)}
+    {$target = ifempty($link_props.target)}
+    {$rel = ifempty($link_props.rel)}
+{/if}
+
+{if $render_only_block_template}
+<section {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_main}" style="{if $is_backend}visibility: hidden;{/if}{if $enable_app_template}display: none;{/if}" data-block-id="{$block_id|escape}" data-page-id="{$data->getPageId()|escape}" data-static="{$static_main}" >
+    {if !$is_backend && !empty($href)}
+        <a href="{$href}" {if $target}target="{$target}"{/if} {if $rel}rel="nofollow"{/if}></a>
+    {/if}
+
+    <div class="{$static_wrapper}" data-static="{$static_wrapper}">
+        {$href = ''}
+        {$target = ''}
+        {$rel = ''}
+        {if !empty($data->data['link_props'][$elements.wrapper])}
+            {$link_props = $data->data['link_props'][$elements.wrapper]}
+            {$href = ifempty($link_props.href)}
+            {$target = ifempty($link_props.target)}
+            {$rel = ifempty($link_props.rel)}
+        {/if}
+        {if !$is_backend && !empty($href)}
+            <a href="{$href}" {if $target}target="{$target}"{/if} {if $rel}rel="nofollow"{/if}></a>
+        {/if}
+
+        {foreach $children as $c}
+            {$c.html}
+        {/foreach}
+    </div>
+</section>
+{/if}
+{if $render_only_app_template}
+<section class="app-template" {if !$enable_app_template}style="display: none;"{/if} {if $is_backend}data-template="{$themeTemplate|escape}"{/if}>
+    {if $enable_app_template}{$themeTemplate}{/if}
+</section>
+{/if}
+
+{if $is_backend}
+<script>
+    $(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $block_wrapper = $('.site-block-footer[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+
+    $block_wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (updated_block_id == block_id) {
+            updateBlockStyles($block_wrapper, data, block_id);
+        }
+    });
+    /*Set disabled param for menu settings*/
+    if (!data['app_template']['disabled'] && {if $empty_template}1{else}0{/if} ) {
+        data['app_template']['disabled'] = true;
+        $(() => setTimeout(function(){
+            $.wa.editor.updateBlockData(block_id, data);
+        }, 0));
+    } else {
+        data['app_template']['disabled'] = false;
+        $(() => setTimeout(function(){
+            $.wa.editor.updateBlockData(block_id, data);
+        }, 0));
+    }
+    })
+
+</script>
+{else}
+<script>(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.site-block-footer[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+
+})();</script>
+{/if}

@@ -50,7 +50,7 @@ class waContactNameField extends waContactStringField
         return $this->format($name, $format);
     }
 
-    public function prepareSave($value, waContact $contact = null) {
+    public function prepareSave($value, ?waContact $contact = null) {
 
         if (!$contact) {
             return $value;
@@ -62,7 +62,10 @@ class waContactNameField extends waContactStringField
             $mdl = trim(ifset($contact, 'middlename', ''));
             $lst = trim(ifset($contact, 'lastname', ''));
             $cmp = trim(ifset($contact, 'company', ''));
-            $eml = trim($contact->get('email', 'default'));
+            $eml = $contact->get('email', 'default');
+            if (!empty($eml)) {
+                $eml = trim($eml);
+            }
 
             $name = array();
             if ($fst || $fst === '0' || $mdl || $mdl === '0' || $lst || $lst === '0')
@@ -99,6 +102,7 @@ class waContactNameField extends waContactStringField
 
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
+        $value = (string)$value;
         $value = preg_replace('~\s+~u', ' ', trim($value));
 
         if ($contact['name'] == $value) {

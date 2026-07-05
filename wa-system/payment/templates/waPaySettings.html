@@ -1,0 +1,66 @@
+{*
+ * see waPayPayment->getSettingsHTML()
+ *}
+<p class="small">
+    [s`Select and set up the parameters of your account in the payment system which will handle payments and be used to generate payment QR codes and bank card payment links.`]
+</p>
+
+{if !$wa_pay_support}
+    <p class="small state-error">
+        <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf(_ws('<b>Webasyst Pay is disabled, payments by this method are currently cannot be accepted.</b> Enable Webasyst services in the <a href="%s" class="underline">Settings</a> app and connect your Webasyst ID to sign in.'), "{$wa_backend_url}webasyst/settings/")}'</p>
+{/if}
+
+<ul class="tabs bordered-bottom" id="js-provider-tabs">
+    <li><a href="javascript:void(0)"></a></li>
+</ul>
+
+<div id="js-form-wrapper">
+    {$fields_html}
+</div>
+
+<script>(function() {
+    //
+    // Initialize ul.tabs to work as 'provider' selector
+    //
+    const $form_wrapper = $('#js-form-wrapper');
+    const $provider_select = $('#wahtmlcontrol_payment_settings_provider');
+    const $ul_tabs = $('#js-provider-tabs');
+
+    $provider_select.closest('.field').hide();
+
+    {if $is_new}
+        // init wizard
+        $('#s-settings-payment-setup').prepend({{include file="./waPaySettingsWizard.inc.html" inline}|json_encode});
+    {/if}
+
+    // Create tabs based on select options
+    const $li_template = $('#js-provider-tabs').children('li').first().detach();
+    $provider_select.find('option').each(function() {
+        const $option = $(this);
+        const $li = $li_template.clone();
+        $li.data('value', $option.attr('value')).children('a').html($option.html());
+        if ($li.data('value') == $provider_select.val()) {
+            $li.addClass('selected');
+        }
+        $ul_tabs.append($li);
+    });
+
+    // Show initially selected tab
+    showProviderTab($ul_tabs.children('.selected').first().data('value'));
+
+    // When user clicks on a tab, show corresponding fields
+    $ul_tabs.on('click', 'li', function() {
+        const $li = $(this);
+        $li.addClass('selected').siblings().removeClass('selected');
+        $provider_select.val($li.data('value'));
+        showProviderTab($li.data('value'));
+    });
+
+    // Validate required fields of a given
+
+    // Helper to show fields that belong to a biven provider
+    function showProviderTab(provider) {
+        $form_wrapper.find('.field-provider-specific').closest('.field').hide();
+        $form_wrapper.find('.provider-'+provider).closest('.field').show();
+    }
+}());</script>

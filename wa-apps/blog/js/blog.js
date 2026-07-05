@@ -301,4 +301,3 @@ $.wa_blog = $.extend(true, $.wa_blog, {
 });
 
 $.wa_blog.common.init();
-

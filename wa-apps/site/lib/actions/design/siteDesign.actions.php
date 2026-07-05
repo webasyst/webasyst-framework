@@ -19,7 +19,10 @@ class siteDesignActions extends waDesignActions
     public function __construct()
     {
         if (!$this->getRights('design')) {
-            throw new waRightsException("Access denied");
+            throw new waRightsException("Access denied.");
+        }
+        if (wa()->whichUI() != '1.3') {
+            $this->design_url = '#/themes/';
         }
     }
 

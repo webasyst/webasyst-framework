@@ -1,0 +1,80 @@
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
+{if !empty($is_block_page)}
+<script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version()}"></script>
+{/if}
+<div class="s-variables flexbox custom-pl-24">
+    <div class="sidebar flexbox blank bordered-right width-16rem">
+        <div class="sidebar-header custom-pr-24 custom-pt-24">
+            <div class="flexbox middle full-width custom-pb-16">
+                <h4 class="custom-mb-0">[s`Variables`] <span class="js-wa-tooltip cursor-pointer" data-wa-tooltip-template="#s-variables-tooltip-header" data-wa-tooltip-placement="bottom"><i class="fas fa-question-circle text-light-gray smaller" ></i></span></h4>
+                <span class="smaller">
+                            <a href="javascript:void(0);" class="button circle js-add-variable" title="[`New variable`]">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        </span>
+            </div>
+            <template id="s-variables-tooltip-header">
+                <p>[`Variables allow you to display the same information in various parts of a site, easily editable in one place.`]</p>
+                <p>[`“Text variables” are useful for displaying simple information like contact details.`]</p>
+                <p>[`“Blocks & codes” can be used to display large amounts of information, to embed integration snippets from third-party services, etc.`]</p>
+            </template>
+        </div>
+        <div class="sidebar-body custom-pr-24 custom-pb-24">
+            <div class="toggle js-variables-types-toggle flex" style="display:flex;">
+                <div class="width-50{if $mode == 'variables'} selected{/if}" data-type="variables">
+                    <i class="fas fa-book large"></i>
+                    <p class="custom-mt-8 small">[`Text variables`]</p>
+                </div>
+                <div class="width-50{if $mode == 'blocks'} selected{/if}" data-type="blocks">
+                    <i class="fas fa-code large"></i>
+                    <p class="custom-mt-8 small">[`Blocks & codes`]</p>
+                </div>
+            </div>
+            <ul id="ul-variables" class="menu{if $mode == 'blocks'} hidden{/if}">
+                {foreach $variables as $b}
+                    <li data-variable-id="{$b.id}" class="rounded{if !isset($b.app)} sortable{/if}{if $variable && $b.id == $variable.id} selected{/if}">
+                        <a href="javascript:void(0);">
+                            {if isset($b.app) || isset($b.app_icon)}
+                                <span class="icon">
+                                            <img src="{$wa_url}{if isset($b.app)}{$b.app.icon.16}{else}{$b.app_icon.16}{/if}" alt="">
+                                        </span>
+                            {else}
+                                <i class="fas fa-dollar-sign"></i>
+                            {/if}
+                            <span class="s-block-item">
+                                <div>{$b.description|default:''|trim|escape}</div>
+                                <div class="hint">{$b.id|escape}</div>
+                            </span>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+            <ul id="ul-blocks" class="menu{if $mode == 'variables'} hidden{/if}">
+                {foreach $blocks as $b}
+                    <li data-block-id="{$b.id}" class="rounded{if !isset($b.app)} sortable{/if}{if $block && $b.id == $block.id} selected{/if}">
+                        <a href="javascript:void(0);">
+                            {if isset($b.app) || isset($b.app_icon)}
+                                <span class="icon">
+                                            <img src="{$wa_url}{if isset($b.app)}{$b.app.icon.16}{else}{$b.app_icon.16}{/if}" alt="">
+                                        </span>
+                            {else}
+                                <i class="fas fa-dollar-sign"></i>
+                            {/if}
+                            <span class="s-block-item">
+                                <div>{$b.description|default:''|trim|escape}</div>
+                                <div class="hint">{$b.id|escape}</div>
+                            </span>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        </div>
+    </div>
+    <div class="content js-variable-editor flexbox vertical full-width">
+        {include file="templates/actions/variables/includes/form.html" _type='variable' _item=$variable _is_dialog=true inline}
+        {include file="templates/actions/variables/includes/form.html" _type='block' _item=$block _is_dialog=true inline}
+    </div>
+</div>
+
+{* SCRIPT *}
+{include file="templates/actions/variables/includes/main_script.html" is_dialog=true inline}

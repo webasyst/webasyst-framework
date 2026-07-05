@@ -2,34 +2,172 @@
   <div class="box">
     <ul class="menu large">
         {$icons = [
-            'general' => 'fa-sliders-h',
-            'field' => 'fa-layer-group',
-            'regions' => 'fa-globe',
-            'maps' => 'fa-map-marker-alt',
-            'captcha' => 'fa-unlock-alt',
-            'push' => 'fa-bell',
-            'email' => 'fa-envelope',
-            'email-template' => 'fa-file-alt',
-            'sms' => 'fa-sms',
-            'sms-template' => 'fa-file-alt',
-            'auth' => 'fa-key',
-            'waid' => '/wa-content/img/wa-settings/ws-waid.svg',
-            'db' => 'fa-database'
+            'general' => 'fas fa-sliders-h',
+            'field' => 'fas fa-user',
+            'regions' => 'fas fa-globe',
+            'maps' => 'fas fa-map-marker-alt',
+            'captcha' => 'fas fa-unlock-alt',
+            'push' => 'fas fa-bell',
+            'email' => 'fas fa-at',
+            'sms' => 'fas fa-sms',
+            'auth' => 'fas fa-key',
+            'waid' => 'icon webasyst-magic-wand custom-mr-12',
+            'db' => 'fas fa-database',
+            'privacy' => 'far fa-check-square'
         ]}
         {foreach $items as $_id => $item}
             <li data-id="{$_id}" class="rounded">
                 <a href="{$item.url}">
-                    {if $_id === 'waid'}
-                       <svg class="svg-inline--fa fa-w-16" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16">
-                            <path fill="currentColor" d="M37.4727112,189.39618 C39.5543999,189.39618 41.241942,191.06765 41.241942,193.129513 L41.241942,194.729513 L42.318865,194.729513 C42.9136332,194.729513 43.3957881,195.207076 43.3957881,195.79618 L43.3957881,204.329513 C43.3957881,204.918617 42.9136332,205.39618 42.318865,205.39618 L30.4727112,205.39618 C29.877943,205.39618 29.3957881,204.918617 29.3957881,204.329513 L29.3957881,195.79618 C29.3957881,195.207076 29.877943,194.729513 30.4727112,194.729513 L31.5496343,194.729513 L31.5496343,193.129513 C31.5496343,191.06765 33.2371764,189.39618 35.318865,189.39618 L37.4727112,189.39618 Z M38.7404542,197.066386 L35.4801971,200.359621 L34.0647229,198.909331 C33.92162,198.760502 33.6883,198.760502 33.5420862,198.906165 L32.6679142,199.789638 C32.5217004,199.9353 32.5217004,200.172793 32.6648033,200.321622 L35.206435,202.927711 C35.3495379,203.07654 35.5828578,203.07654 35.7290717,202.930877 L40.1248191,198.491344 C40.2679219,198.342515 40.2710329,198.105022 40.12793,197.95936 L39.2630908,197.069553 C39.1199879,196.920724 38.886668,196.920724 38.7404542,197.066386 Z M37.4727112,191.529513 L35.318865,191.529513 C34.4267128,191.529513 33.7034804,192.245857 33.7034804,193.129513 L33.7034804,194.729513 L39.0880958,194.729513 L39.0880958,193.129513 C39.0880958,192.245857 38.3648635,191.529513 37.4727112,191.529513 Z" transform="translate(-29.396 -189.396)"/>
+                    {if $_id === 'ai'}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                            <path fill="currentColor" d="M8.326 7.703a.912.912 0 0 0-1.272-.018L.47 13.82a1.233 1.233 0 1 0 1.74 1.742l6.134-6.584a.913.913 0 0 0-.017-1.274ZM2.55 3.992a.126.126 0 0 1 .242 0l.457 1.614a.44.44 0 0 0 .303.304l1.615.456c.122.035.122.208 0 .242l-1.615.457a.44.44 0 0 0-.303.304l-.457 1.614a.126.126 0 0 1-.242 0l-.457-1.614a.44.44 0 0 0-.303-.304L.175 6.608c-.122-.034-.122-.207 0-.242L1.79 5.91a.44.44 0 0 0 .303-.304l.457-1.614ZM5 .122c.027-.092.16-.092.187 0l.351 1.217c.032.11.12.197.234.229l1.241.344a.094.094 0 0 1 0 .183l-1.241.344a.335.335 0 0 0-.234.229l-.351 1.217c-.027.092-.16.092-.186 0l-.352-1.217a.335.335 0 0 0-.233-.229l-1.242-.344a.094.094 0 0 1 0-.183l1.242-.344a.335.335 0 0 0 .233-.229L5.001.122ZM8.732 11.85c.026-.092.156-.092.182 0l.345 1.217c.031.11.118.197.229.229l1.217.344c.091.026.091.157 0 .183l-1.217.344a.332.332 0 0 0-.23.229l-.344 1.217c-.026.092-.156.092-.182 0l-.344-1.217a.332.332 0 0 0-.23-.229l-1.216-.344c-.092-.026-.092-.157 0-.183l1.217-.344a.332.332 0 0 0 .229-.229l.344-1.217Zm4.616-2.688c.033-.116.198-.116.231 0l.436 1.54c.04.14.15.25.29.29l1.54.435c.115.033.115.198 0 .23l-1.54.437a.42.42 0 0 0-.29.29l-.436 1.539c-.033.116-.198.116-.23 0l-.437-1.54a.42.42 0 0 0-.289-.29l-1.54-.435c-.116-.033-.116-.198 0-.231l1.54-.436a.42.42 0 0 0 .29-.29l.435-1.539ZM10.729.229c.066-.234.398-.234.465 0l.878 3.102c.08.282.3.503.583.583l3.102.878c.234.066.234.398 0 .465l-3.102.878a.845.845 0 0 0-.583.583l-.878 3.102c-.067.234-.399.234-.465 0L9.85 6.718a.845.845 0 0 0-.583-.583l-3.102-.878c-.234-.067-.234-.399 0-.465l3.102-.878c.282-.08.503-.3.583-.583l.878-3.102Z"/>
                         </svg>
                     {else}
-                        <i class="fas {$icons[$_id]}"></i>
+                        <i class="{$icons[$_id]}"></i>
                     {/if}
                     <span>{$item.name}</span>
+                    {if $_id === 'general'}
+                        <span class="count js-debug-icon{if !$wa->debug()} hidden{/if}"><span class="badge"><i class="fas fa-code text-white" style="font-size: 0.75rem;"></i></span></span>
+                    {/if}
                 </a>
             </li>
         {/foreach}
     </ul>
+
+    {if !empty($items.waid)}
+    <div class="custom-mb-4">
+        <div class="blank box rounded js-balance-wrapper">
+            <div class="flexbox space-8">
+                <div class="wide custom-mt-2">
+                    <header class="heading custom-m-0 custom-pb-4">
+                        <span>
+                            <span class="title b-all-drafts">[`Webasyst Services`]</span>
+                        </span>
+                    </header>
+                    <div class="js-balance-toggle-content">
+                        {if $waid_is_connected}
+                            {if $wa_api_errors}
+                                <p class="state-caution-hint custom-mt-8"><i class="fas fa-exclamation-triangle"></i> [`No access to Webasyst API.`]</p>
+                                {foreach $wa_api_errors as $_err}
+                                    {if !empty($_err)}
+                                        <p class="state-error-hint custom-my-8"><i class="fas fa-exclamation-triangle"></i> {$_err}</p>
+                                    {/if}
+                                {/foreach}
+                            {else}
+
+                                {if $wa_total_emails}
+                                    <p class="bold small custom-my-0"><i class="fas fa-at text-light-gray"></i> {$wa_total_emails|wa_format:false} {_ws('message', 'messages', $wa_total_emails)}</p>
+                                {/if}
+                                {* based on $wa_balance // if $wa_total_sms}
+                                    <p class="bold small custom-my-0"><i class="fas fa-sms text-light-gray"></i> ≈{$wa_total_sms|wa_format:false} SMS</p>
+                                {/if *}
+                                {if $wa_is_positive_balance}
+                                    <p class="bold small custom-my-0"><i class="fas fa-wallet text-light-gray"></i> {$wa_balance}</p>
+                                {/if}
+
+                                {$ai_params = webasystHelper::getAiParams()}
+                                <p class="bold small custom-my-0">
+                                    <span class="icon text-light-gray">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                            <path fill="currentColor" d="M8.326 7.703a.912.912 0 0 0-1.272-.018L.47 13.82a1.233 1.233 0 1 0 1.74 1.742l6.134-6.584a.913.913 0 0 0-.017-1.274ZM2.55 3.992a.126.126 0 0 1 .242 0l.457 1.614a.44.44 0 0 0 .303.304l1.615.456c.122.035.122.208 0 .242l-1.615.457a.44.44 0 0 0-.303.304l-.457 1.614a.126.126 0 0 1-.242 0l-.457-1.614a.44.44 0 0 0-.303-.304L.175 6.608c-.122-.034-.122-.207 0-.242L1.79 5.91a.44.44 0 0 0 .303-.304l.457-1.614ZM5 .122c.027-.092.16-.092.187 0l.351 1.217c.032.11.12.197.234.229l1.241.344a.094.094 0 0 1 0 .183l-1.241.344a.335.335 0 0 0-.234.229l-.351 1.217c-.027.092-.16.092-.186 0l-.352-1.217a.335.335 0 0 0-.233-.229l-1.242-.344a.094.094 0 0 1 0-.183l1.242-.344a.335.335 0 0 0 .233-.229L5.001.122ZM8.732 11.85c.026-.092.156-.092.182 0l.345 1.217c.031.11.118.197.229.229l1.217.344c.091.026.091.157 0 .183l-1.217.344a.332.332 0 0 0-.23.229l-.344 1.217c-.026.092-.156.092-.182 0l-.344-1.217a.332.332 0 0 0-.23-.229l-1.216-.344c-.092-.026-.092-.157 0-.183l1.217-.344a.332.332 0 0 0 .229-.229l.344-1.217Zm4.616-2.688c.033-.116.198-.116.231 0l.436 1.54c.04.14.15.25.29.29l1.54.435c.115.033.115.198 0 .23l-1.54.437a.42.42 0 0 0-.29.29l-.436 1.539c-.033.116-.198.116-.23 0l-.437-1.54a.42.42 0 0 0-.289-.29l-1.54-.435c-.116-.033-.116-.198 0-.231l1.54-.436a.42.42 0 0 0 .29-.29l.435-1.539ZM10.729.229c.066-.234.398-.234.465 0l.878 3.102c.08.282.3.503.583.583l3.102.878c.234.066.234.398 0 .465l-3.102.878a.845.845 0 0 0-.583.583l-.878 3.102c-.067.234-.399.234-.465 0L9.85 6.718a.845.845 0 0 0-.583-.583l-3.102-.878c-.234-.067-.234-.399 0-.465l3.102-.878c.282-.08.503-.3.583-.583l.878-3.102Z"/>
+                                        </svg>
+                                    </span>
+                                    {$ai_params.remaining_count} {_ws('prompt', 'prompts', $ai_params.remaining_count)}
+                                </p>
+
+                                <p class="hint custom-mt-4 custom-mb-12">
+                                    <i class="fas fa-check-circle text-green"></i> [`Use Email, SMS and other links above to configure and get the most out of Webasyst services.`]
+                                </p>
+                                <p class="custom-mt-8 custom-mb-4">
+                                    <a href="javascript:void(0)" class="button green smallest js-balance-button">[`Add credit`]</a>
+                                </p>
+                            {/if}
+                        {else}
+                            <p class="hint custom-mt-4 custom-mb-12">
+                                [`Transactional email, SMS, secure mobile-ready Webasyst ID authentication, and more.`]
+                            </p>
+                            <a href="{$wa_backend_url}webasyst/settings/waid/" class="button light-gray smallest custom-mb-4">[`Enable services for free`]</a>
+                        {/if}
+                    </div>
+                </div>
+                <div class="custom-mt-0">
+                    <a href="javascript:void(0)" class="js-balance-toggle text-light-gray small">
+                        <span class="js-balance-toggle-content"><i class="fas fa-chevron-up"></i></span>
+                        <span class="js-balance-toggle-content" style="display: none;"><i class="fas fa-chevron-down" style="position: relative; top: -2px;"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog" id="js-dialog-elements">
+            <header class="dialog-header js-header-1"><h1>[s`Confirmation code`]</h1></header>
+            <header class="dialog-header js-header-2"><h3>[s`Server response`]</h3></header>
+            <div class="dialog-content">
+                <input type="text" class="semibold js-code" placeholder="1234">
+                <button class="button js-code-confirm">[s`Confirm`]</button>
+                <div class="gray custom-mt-8 js-message"></div>
+            </div>
+            <footer class="dialog-footer"><button class='button gray js-close-dialog'>[s`Close`]</button></footer>
+        </div>
+
+        <script>
+            (function () {
+                "use strict";
+                const response_code_str = {_w('Response code: %s.')|json_encode};
+                const code_sent_to_phone_str = {_w('Code has been sent to phone number %s.')|json_encode};
+                const code_sent_to_email_str = {_w('Code has been sent to email address %s.')|json_encode};
+
+                const $balance = $('.js-balance-wrapper');
+                let balance_collapsed = localStorage.getItem('wa_settings_sidebar_balance_collapsed');
+                try {
+                    balance_collapsed = balance_collapsed === null ? false : JSON.parse(balance_collapsed);
+                } catch (e) {
+                    balance_collapsed = false;
+                }
+                if (balance_collapsed) {
+                    $balance.find('.js-balance-toggle-content').toggle();
+                }
+                $balance.on('click', '.js-balance-toggle', function(e){
+                    e.preventDefault();
+                    $balance.find('.js-balance-toggle-content').toggle();
+                    balance_collapsed = !balance_collapsed;
+                    localStorage.setItem('wa_settings_sidebar_balance_collapsed', balance_collapsed);
+                })
+
+                $balance.on('click', '.js-balance-button:not(.disabled)', function (e) {
+                    e.preventDefault();
+                    $(this).addClass('disabled');
+                    const $button = $(this);
+                    $.get('?module=settings&action=balanceBuy', function (data) {
+                        const resp = data.data.response;
+                        const status = data.data.status || '-';
+                        const err = resp.error_description || resp.error || resp.errors || null;
+                        if (data.status === 'fail') {
+                            console.warn('balance', data);
+                            responseDialog(status, '');
+                            $button.removeClass('disabled');
+                        } else if (err) {
+                            responseDialog(status, err.toString());
+                            $button.removeClass('disabled');
+                        } else if (typeof resp.url !== 'undefined') {
+                            document.location = resp.url;
+                        }
+                    });
+                });
+
+                function responseDialog(code, message) {
+                    let content = response_code_str.replace('%s', code);
+                    content += message ? '<br><pre class="small gray">'+ message +'</pre>' : '';
+                    $.waDialog({
+                        header: $('#js-dialog-elements header.js-header-2').html(),
+                        content: content,
+                        footer: $('#js-dialog-elements footer').html(),
+                    });
+                }
+            })();
+        </script>
+    </div>
+    {/if}
+
   </div>
 </div>

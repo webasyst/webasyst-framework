@@ -29,16 +29,24 @@ class webasystHelper
 
         $items = array(
             'general'        => array(
-                'name' => _ws('General settings'),
+                'name' => _ws('General'),
                 'url'  => $app_url,
             ),
-            'field'          => array(
-                'name' => _ws('Contact fields'),
-                'url'  => $app_url.'field/',
+            'email'          => array(
+                'name' => _ws('Email'),
+                'url'  => $app_url.'email/',
             ),
-            'regions'        => array(
-                'name' => _ws('Countries & regions'),
-                'url'  => $app_url.'regions/',
+            'sms'            => array(
+                'name' => _ws('SMS'),
+                'url'  => $app_url.'sms/',
+            ),
+            'ai'             => array(
+                'name' => _w('AI'),
+                'url'  => $app_url.'ai/',
+            ),
+            'push'           => array(
+                'name' => _ws('Push'),
+                'url'  => $app_url.'push/',
             ),
             'maps'           => array(
                 'name' => _ws('Maps'),
@@ -48,39 +56,35 @@ class webasystHelper
                 'name' => _ws('Captcha'),
                 'url'  => $app_url.'captcha/',
             ),
-            'push'           => array(
-                'name' => _ws('Web push notifications'),
-                'url'  => $app_url.'push/',
+            'field'          => array(
+                'name' => _ws('Contact fields'),
+                'url'  => $app_url.'field/',
             ),
-            'email'          => array(
-                'name' => _ws('Email settings'),
-                'url'  => $app_url.'email/',
-            ),
-            'email-template' => array(
-                'name' => _ws('Email templates'),
-                'url'  => $app_url.'email/template/',
-            ),
-            'sms'            => array(
-                'name' => _ws('SMS providers'),
-                'url'  => $app_url.'sms/',
-            ),
-            'sms-template'   => array(
-                'name' => _ws('SMS templates'),
-                'url'  => $app_url.'sms/template/',
+            'regions'        => array(
+                'name' => _ws('Countries & regions'),
+                'url'  => $app_url.'regions/',
             ),
             'auth'           => array(
                 'name' => _ws('Backend authorization'),
                 'url'  => $app_url.'auth/',
             ),
-            'waid'          => array(
-                'name' => _w('Webasyst ID'),
-                'url'  => $app_url.'waid/',
+            'privacy'        => array(
+                'name' => _ws('Privacy'),
+                'url'  => $app_url.'privacy/',
             ),
             'db'             => array(
                 'name' => _w('Database'),
                 'url'  => $app_url.'db/',
-            )
+            ),
+            'waid'          => array(
+                'name' => _w('Webasyst ID'),
+                'url'  => $app_url.'waid/',
+            ),
         );
+
+        if (!wa()->appExists('installer')) {
+            unset($items['waid']);
+        }
 
         /**
          * @event settings_sidebar
@@ -102,5 +106,99 @@ class webasystHelper
     public static function smsTemplateAvailable()
     {
         return true;
+    }
+
+    public static function getAiParams(): array {
+        $remaining_count = 0;
+        $waid_is_connected = (new waServicesApi())->isConnected();
+
+        if ($waid_is_connected) {
+            try {
+                $wa_service_api = new waServicesApi();
+            } catch (Throwable $e) {
+                return [
+                    'waid_is_connected' => false,
+                    'remaining_count' => 0,
+                ];
+            }
+
+
+            if (method_exists($wa_service_api, 'isBrokenConnection') && $wa_service_api->isBrokenConnection()) {
+                return [
+                    'waid_is_connected' => false,
+                    'remaining_count' => 0,
+                ];
+            }
+
+            if (!$wa_service_api->isConnected()) {
+                return [
+                    'waid_is_connected' => false,
+                    'remaining_count' => 0,
+                ];
+            }
+
+            $res = $wa_service_api->getBalance('AI');
+            if ($res['status'] != 200) {
+                return [
+                    'waid_is_connected' => false,
+                    'remaining_count' => 0,
+                ];
+            }
+
+            $balance_amount = ifset($res, 'response', 'amount', 0);
+            $price_value = ifset($res, 'response', 'price', 0);
+            $remaining_free_calls = ifempty($res, 'response', 'remaining_free_calls', []);
+            $remaining_pack = ifset($remaining_free_calls, 'pack', 0);
+            unset($remaining_free_calls['pack']);
+            if ($balance_amount > 0 && $price_value > 0) {
+                $messages_count = intval(floor($balance_amount / $price_value));
+            }
+
+            $remaining_count = ifset($messages_count, 0)
+                        + ifset($remaining_free_calls, 'total', 0)
+                        + ifset($remaining_pack, 0);
+        }
+
+        return [
+            'waid_is_connected' => $waid_is_connected,
+            'remaining_count' => $remaining_count,
+        ];
+    }
+
+    public static function logAgreementAcceptance($document_name, $document_text, $accept_method, $contact_id = null, $context = null, $app_id = null, $form_url = null)
+    {
+        try {
+            $domain = waRequest::server('HTTP_HOST');
+            if (empty($app_id)) {
+                $app_id = wa()->getApp();
+            }
+            if (empty($form_url)) {
+                $form_url = waRequest::server('HTTP_REFERER') ?: waRequest::server('REQUEST_URI');
+            }
+
+            $document_id = (new waAgreementDocumentModel())->getDocumentId($document_name, $document_text, wa()->getLocale(), $app_id, $context, $domain);
+
+            (new waAgreementLogModel)->insert([
+                'create_datetime' => date('Y-m-d H:i:s'),
+                'app_id' => $app_id,
+                'contact_id' => $contact_id ?: (wa()->getUser()->isAuth() ? wa()->getUser()->getId() : null),
+                'ip' => waRequest::getIp(),
+                'user_agent' => waRequest::getUserAgent(),
+                'context' => $context,
+                'document_name' => $document_name,
+                'document_id'   => $document_id,
+                'accept_method' => $accept_method,
+                'domain' => $domain,
+                'form_url' => $form_url
+            ]);
+        } catch (Exception $e) {
+            $message = join(PHP_EOL, [
+                'Error on saving agreement acceptance log', 
+                get_class($e), 
+                $e->getMessage(), 
+                $e->getTraceAsString()
+            ]);
+            waLog::log($message);
+        }
     }
 }

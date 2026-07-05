@@ -1,0 +1,281 @@
+<div id="wa-themes-installed" style="display:none;">
+    {include file="./Themes.installed.include.html" inline}
+</div>
+
+<div id="wa-theme-content" class="custom-mt-32 hidden">[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i></div>
+
+<div class="wa-themes-store-wrapper">
+    <h4 class="wa-themes-store-header" style="display:none;">[`All themes`]</h4>
+    <div id="wa-themes-store" class="wa-themes-store" style="display:none;">
+        <div style="margin:3rem 0 -0.5rem 0.5rem;">[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i></div>
+    </div>
+</div>
+
+
+
+<div class="dialog" id="wa-theme-start-using-dialog" data-url="{$design_url}">
+    <div class="dialog-background"></div>
+    <form class="dialog-body">
+        <div class="dialog-content">
+            <p>{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
+
+            <div class="fields">
+                <div class="field">
+                    <div class="name for-checkbox">[s`Existing route`]</div>
+                    {foreach $routes as $r}
+                    <div class="value">
+                        <label>
+                            <span class="wa-radio">
+                                <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
+                                <span></span>
+                            </span>
+                            {waIdna::dec($r._domain|escape)|replace:'www.':''}/{$r.url}
+                            <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
+                        </label>
+                    </div>
+                    {foreachelse}
+                    <div class="value gray">
+                        {sprintf('[s`There are no routes for %s app on this site yet.`]', $app.name)}
+                    </div>
+                    {/foreach}
+                </div>
+                <div class="field">
+                    <div class="name for-checkbox">[s`New route`]</div>
+                    <div class="value">
+                        <label>
+                            <span class="wa-radio">
+                                <input name="route" id="create-new-route-choice" value="new" type="radio"{if !count($routes)} checked{/if}>
+                                <span></span>
+                            </span>
+                        </label>
+
+                        {if count($domains) == 1}
+                        <input name="domain" type="hidden" value="{current($domains)}">
+                        {current($domains)}/{else}
+                        <div class="wa-select">
+                            <select name="domain" class="create-new-route-control">
+                                {foreach $domains as $d}
+                                <option value="{$d}">{str_replace('www.','',waIdna::dec($d))|truncate:23:'...':false:true}</option>
+                                {/foreach}
+                            </select>/
+                        </div>
+                        {/if}
+                        <input type="text" name="url" value="" placeholder="*" class="short create-new-route-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <input type="hidden" name="theme" value="">
+            <input type="submit" class="button green" data-value="{sprintf("[s`Start using %s theme`]", '%THEME%')}">
+            [s`or`] <a href="#" class="js-close-dialog">[s`cancel`]</a>
+        </div>
+    </form>
+</div>
+
+{function theme_skeleton}{strip}
+<div class="skeleton">
+    <div>
+        <span class="skeleton-line" style="height: 40px;"></span>
+        {for $i=1 to 3}
+            <span class="skeleton-header" style="height: 100px;"></span>
+        {/for}
+    </div>
+</div>
+{/strip}{/function}
+
+<script type="text/javascript">
+    $(function () {
+        $.themes = {
+            $themes_installed: null,
+            $content: null,
+            $store_content: null,
+            options: {
+                loading: '{theme_skeleton}',
+                path: '{$themes_url}'
+            },
+            path: {
+                theme: false,
+                tail: null,
+                params: { }
+            },
+
+            ready: false,
+            $menu: null,
+            xhr: null,
+
+            init: function (options) {
+                this.options = $.extend(this.options, options || { });
+                if (this.ready) {
+                    return;
+                }
+                this.ready = true;
+
+                this.$themes_installed = $("#wa-themes-installed");
+                this.$content = $("#wa-theme-content");
+                this.$store_content = $("#wa-themes-store");
+
+                this.dispatch(location.hash, true);
+
+                {if $wa->installer}
+                    this.$store_content.load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}&return_hash={"`$design_url`theme=%theme_id%&domain={$domain|urlencode}&show_start_using=1"|escape:'url'}&full_width=1&hide_back=1&go_return_hash_after_installation=1',function(){
+                        $('.wa-design-gray-toolbar h4 svg').hide();
+                    });
+                {else}
+                    // installer app does not exist
+                    this.$store_content.html('').closest('.wa-themes-store-wrapper').hide();
+                {/if}
+            },
+
+            parsePath: function (path) {
+                path = path.replace(new RegExp('^.*' + this.options.path), '');
+
+                var splited_array = path.split("/"),
+                    tail = (splited_array.length > 1) ? splited_array[1] : null;
+
+                return {
+                    theme: path.replace(/\/.*$/, '') || null,
+                    tail: tail,
+                    raw: path
+                };
+            },
+
+            dispatch: function (hash, force) {
+                if (hash === undefined) {
+                    hash = window.location.hash;
+                }
+
+                var $theme = $();
+                var path = this.parsePath(hash);
+                if (path && path.theme) {
+                    var full_hash = this.options.path + path.theme;
+                    if (window.location.hash !== full_hash) {
+                        if (window.history && window.history.pushState) {
+                            const content_url = location.href + path.theme;
+                            window.history.pushState({ content_url }, null, content_url);
+                        } else {
+                            window.location.hash = full_hash;
+                        }
+                    }
+                }
+
+                var load = force || (path.theme !== this.path.theme);
+                if (!load) {
+                    return;
+                }
+
+                this.path.tail = null;
+                if (path.theme) {
+                    $theme = this.$themes_installed.find('.s-theme-wrapper[data-id="'+path.theme+'"]');
+                }
+
+                var url = this.helper.getContentUrl($theme, path);
+                if (!url) {
+                    // All themes
+                    this.showList();
+                    this.showStore();
+                    $(document).trigger('load_all.wa_themes');
+                    return;
+                }
+
+                this.path.theme = path.theme;
+                this.$content.removeClass('hidden')
+                this.hideList();
+                this.hideStore();
+                $(document).trigger('load_theme.wa_themes');
+
+                if (this.xhr) {
+                    this.xhr.abort();
+                }
+                this.$content.html(this.options.loading);
+                var self = this;
+                this.xhr = $.ajax({
+                    url: url,
+                    success: function (data) {
+                        self.xhr = null;
+                        if (self.path.theme == path.theme) {
+                            self.$content.html(data);
+                            $(document).trigger('wa_loaded');
+                        }
+                        $(document).trigger('loaded_theme.wa_themes');
+                    }
+                });
+            },
+
+            reloadThemesInstalled: function() {
+                const is_extended_param = this.$themes_installed.find('.s-themes-list-wrapper.is-extended').length ? '&is_extended=1' : '';
+                this.$themes_installed.load('?module=themes&action=themesInstalled' + is_extended_param);
+            },
+
+            helper: {
+                getContentUrl: function ($item, path) {
+                    var url = '';
+                    if ($item.data('url')) {
+                        url = $item.data('url');
+                    } else if (path.theme) {
+                        var param_domain_id = '{if empty($domain_id)}{else}&domain_id={$domain_id}{/if}';
+                        // url = '?module=design&action=theme&theme=' + path.theme + param_domain_id;
+                        url = 'module=theme' + param_domain_id + '&' + path.theme;
+
+                        const params = new URLSearchParams(url);
+                        params.delete('action');
+                        url = '?' + params;
+                    }
+
+                    url += ( path.tail ? "&" + path.tail : "" );
+
+                    return url;
+                }
+            },
+
+            showList: function () {
+                this.$themes_installed.show();
+                this.$content.addClass('hidden')
+            },
+            hideList: function () {
+                this.$themes_installed.hide();
+            },
+            showStore: function () {
+                this.$store_content.show();
+                this.showStoreHeader();
+            },
+            hideStore: function () {
+                this.$store_content.hide();
+                this.hideStoreHeader();
+            },
+            showStoreHeader: function () {
+                $('.wa-themes-store-header').show();
+            },
+            hideStoreHeader: function () {
+                $('.wa-themes-store-header').hide();
+            },
+        }
+
+        $.site.isWithoutReload = () => $('.s-themes').length > 0;
+        $.themes.init();
+
+        {* запоминаем к настройкам какой темы нужно перейти после обновления страницы *}
+        $(document).on('installer_after_install_go_to_settings', (e, data) => {
+            if (data.type === 'theme') {
+                sessionStorage.setItem('wa_theme_onload', data.id);
+                location.reload();
+            }
+        });
+        var wa_theme_onload = sessionStorage.getItem('wa_theme_onload');
+        if (wa_theme_onload) {
+            $('#js-installed-themes').find('[data-id="'+wa_theme_onload+'"] a').on('click', function  () {
+                sessionStorage.removeItem('wa_theme_onload');
+            }).click();
+        }
+
+        $(document).on('installer_installation_successfull', () => {
+            $.themes.reloadThemesInstalled();
+        });
+    });
+</script>
+
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery.history.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}js/theme.js?v{$wa->version()}"></script>
+<script type="text/javascript">
+    $.theme.init();
+</script>

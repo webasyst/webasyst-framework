@@ -1,0 +1,56 @@
+{$block_id = $data->getId()}
+{$elements = $data->data['elements']}
+
+{$inline_props = ''}
+{$inline_props_main = ''}
+{$inline_props_wrap = ''}
+{if !empty($data->data['inline_props'])}
+    {$inline_props = $data->data['inline_props']}
+    {if !empty($inline_props[$elements.main])}
+        {$temp = $inline_props[$elements.main]}
+        {foreach $temp as $n => $p}
+            {$inline_props_main="`$inline_props_main``$n`: `$p.value`;"}
+        {/foreach}
+    {/if}
+    {if !empty($inline_props[$elements.wrapper])}
+        {$temp = $inline_props[$elements.wrapper]}
+        {foreach $temp as $n => $p}
+            {$inline_props_wrap="`$inline_props_wrap``$n`: `$p.value`;"}
+        {/foreach}
+    {/if}
+{/if}
+
+{$block_props = []}
+{$classes_props_main = ''}
+{$classes_props_wrap = ''}
+{if !empty($data->data['block_props'])}
+    {$block_props = $data->data['block_props']}
+    {if !empty($block_props[$elements.main])}
+        {$temp = $block_props[$elements.main]}
+        {foreach $temp as $n => $p}
+            {$temp_class = $p}
+            {if !is_string($p)}
+                {$temp_class = $p.value}
+            {/if}
+            {$classes_props_main="`$classes_props_main` `$temp_class`"}
+        {/foreach}
+    {/if}
+    {if !empty($block_props[$elements.wrapper])}
+        {$temp = $block_props[$elements.wrapper]}
+        {foreach $temp as $n => $p}
+            {$temp_class = $p}
+            {if !is_string($p)}
+                {$temp_class = $p.value}
+            {/if}
+            {$classes_props_wrap="`$classes_props_wrap` `$temp_class`"}
+        {/foreach}
+    {/if}
+{/if}
+{$anchor_id = $data->data['id']|default:0}
+<div {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$elements.main} {$classes_props_main}" style="{$inline_props_main}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    <div class="{$elements.wrapper} style-wrapper cl {$classes_props_wrap}" style="{$inline_props_wrap}">
+        {foreach $children as $c}
+            {$c.html}
+        {/foreach}
+    </div>
+</div>

@@ -55,11 +55,49 @@ function smarty_modifier_date_format($string, $format=null, $default_date='', $f
                 $_win_to[] = sprintf('%\' 2d', date('h', $timestamp));
             } 
             $format = str_replace($_win_from, $_win_to, $format);
-        } 
-        return strftime($format, $timestamp);
-    } else {
-        return date($format, $timestamp);
+        }
+        $replacement = [
+            '%a' => 'D',
+            '%A' => 'l',
+            '%d' => 'd',
+            '%e' => 'j',
+            '%u' => 'N',
+            '%w' => 'w',
+            '%W' => 'W',
+            '%b' => 'M',
+            '%h' => 'M',
+            '%B' => 'F',
+            '%m' => 'm',
+            '%y' => 'y',
+            '%Y' => 'Y',
+            '%D' => 'm/d/y',
+            '%F' => 'Y-m-d',
+            '%x' => 'm/d/y',
+            '%n' => "\n",
+            '%t' => "\t",
+            '%H' => 'H',
+            '%k' => 'G',
+            '%I' => 'h',
+            '%l' => 'g',
+            '%M' => 'i',
+            '%p' => 'A',
+            '%P' => 'a',
+            '%r' => 'h:i:s A',
+            '%R' => 'H:i',
+            '%S' => 's',
+            '%T' => 'H:i:s',
+            '%X' => 'H:i:s',
+            '%z' => 'O',
+            '%Z' => 'T',
+            '%c' => 'D M j H:i:s Y',
+            '%s' => 'U',
+            '%%' => '%',
+            '%' => '',
+        ];
+        $format = str_replace(array_keys($replacement), array_values($replacement), $format);
     }
-} 
+
+    return date($format, $timestamp);
+}
 
 ?>

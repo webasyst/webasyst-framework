@@ -15,6 +15,7 @@ class waRouting
 
     public function __construct(waSystem $system, $routes = array())
     {
+        $this->root_url = '';
         $this->system = $system;
         if (!$routes) {
             $routes = $this->system->getConfig()->getConfigFile('routing');
@@ -150,35 +151,39 @@ class waRouting
         if ($domain) {
             return $domain;
         }
-        if ($this->domain === null || !$return_alias) {
-            $this->domain = $this->getDomainNoAlias();
-            if ($this->domain === null) {
-                return null;
-            }
+        if ($return_alias && $this->domain) {
+            return $this->domain;
         }
 
-        if ($check && !isset($this->routes[$this->domain])) {
-            if (substr($this->domain, 0, 4) == 'www.') {
-                $domain = substr($this->domain, 4);
+        $result = $this->getDomainNoAlias();
+        if ($result === null) {
+            return $this->domain;
+        }
+
+        if ($check && !isset($this->routes[$result])) {
+            if (substr($result, 0, 4) == 'www.') {
+                $domain = substr($result, 4);
             } else {
-                $domain = 'www.'.$this->domain;
+                $domain = 'www.'.$result;
             }
             if (isset($this->routes[$domain])) {
-                $this->domain = $domain;
+                $result = $domain;
                 if (wa()->getEnv() == 'frontend' && !waRequest::param('no_domain_www_redirect')) {
                     $url = 'http'.(waRequest::isHttps()? 's' : '').'://';
                     $url .= $this->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
                     wa()->getResponse()->redirect($url, 301);
                 }
             }
-            return $this->domain;
         }
 
-        if ($return_alias && isset($this->aliases[$this->domain])) {
-            $this->domain = $this->aliases[$this->domain];
+        if ($return_alias && isset($this->aliases[$result])) {
+            $result = $this->aliases[$result];
         }
 
-        return $this->domain;
+        if (!$this->domain && ($return_alias || !isset($this->aliases[$result]))) {
+            $this->domain = $result;
+        }
+        return $result;
     }
 
     protected function getDomainNoAlias()
@@ -213,13 +218,59 @@ class waRouting
         if (mb_check_encoding($decoded_url, 'UTF-8')) {
             $url = $decoded_url;
         }
-        $r = $this->dispatchRoutes($this->getRoutes(), $url);
-        if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
+        $routes = $this->getRoutes();
+
+        // Priority route?
+        $apps_called = [];
+        $priority_route = null;
+        foreach(array_reverse($routes) as $r) {
+            if (!empty($r['priority_settlement']) && !empty($r['app']) && empty($apps_called[$r['app']])) {
+                try {
+                    $apps_called[$r['app']] = true;
+                    $priority_route = wa($r['app'])->getConfig()->dispatchPrioritySettlement($r, $url);
+                } catch (Throwable $e) {
+                    continue;
+                }
+                if ($priority_route) {
+                    foreach ($priority_route as $k => $v) {
+                        if ($k !== 'url') {
+                            waRequest::setParam($k, $v);
+                        }
+                    }
+                    $this->setRoute($priority_route);
+                    return $priority_route;
+                }
+            }
+        }
+
+        $r = $this->dispatchRoutes($routes, $url);
+        if ($r) {
+            $this->processStaticRoute($r);
+        }
+        if (!$r || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
             $r2 = $this->dispatchRoutes($this->getRoutes(), $url.'/');
             if ($r2 && (!$r || $r2['url'] != '*')) {
+                if (isset($r2['redirect'])) {
+                    $this->processStaticRoute($r2);
+                }
                 $this->system->getResponse()->redirect($this->system->getRootUrl().$url.'/', 301);
             }
         }
+
+        // While figuring out priority settlement, some apps could have been initialized
+        // before route locale became known. Reset locale for those apps.
+        if ($apps_called) {
+            $locale = waRequest::param('locale');
+            if ($locale && $locale !== wa()->getLocale()) {
+                $locale = wa()->getUser()->getLocale();
+                foreach ($apps_called as $app_id => $_) {
+                    if (waSystem::isLoaded($app_id)) {
+                        wa($app_id)->setLocale($locale);
+                    }
+                }
+            }
+        }
+
         // if route found and app exists
         if ($r && isset($r['app']) && $r['app'] && $this->system->appExists($r['app'])) {
             $this->setRoute($r);
@@ -235,12 +286,60 @@ class waRouting
                     $offset += strlen($s) - strlen($m[0][0]);
                 }
             }
-            $this->root_url = self::clearUrl($u);
+            $this->root_url = (string) self::clearUrl($u);
             $url = isset($params['url']) ? $params['url'] : substr($url, strlen($this->root_url));
             $this->dispatchRoutes($this->getAppRoutes($r['app'], $r, true), $url);
         }
 
         return $r;
+    }
+
+    /**
+     * @since 3.8.0
+     */
+    public function dispatchFullUrl($absolute_url) 
+    {
+        // save waRequest::param() because waRouting->dispatchRoutes() changes it as a side effect
+        $request_params = waRequest::param();
+
+        // Figure out app and global routing settlement and in-app url
+        $u = parse_url($absolute_url);
+        $url = ltrim($u['path'], '/');
+        $domain = $u['host'];
+        $u = trim($this->system->getRootUrl(), '/');
+        if ($u) {
+            $domain .= '/'.$u;
+        }
+        $settlement = $this->dispatchRoutes(ifset($this->routes, $domain, []), $url);
+
+        // Figure out in-app settlement and params
+        if (!empty($settlement['app']) && wa()->appExists($settlement['app'])) {
+            $settlement['_domain'] = $domain;
+            $old_route = [$this->route, $this->domain, $this->root_url];
+            $old_domain = $this->domain;
+            $old_root_url = $this->root_url;
+            $this->setRoute($settlement, $domain);
+            $new_params = waRequest::param();
+            $u = $settlement['url'];
+            if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $u, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
+                $offset = 0;
+                foreach ($match as $m) {
+                    $v = $m[1][0];
+                    $s = (isset($new_params[$v]) && $v != 'url') ? $new_params[$v] : '';
+                    $u = substr($u, 0, $m[0][1] + $offset).$s.substr($u, $m[0][1] + $offset + strlen($m[0][0]));
+                    $offset += strlen($s) - strlen($m[0][0]);
+                }
+            }
+            $this->root_url = (string) self::clearUrl($u);
+            $in_app_url = isset($new_params['url']) ? $new_params['url'] : substr($url, strlen($this->root_url));
+            $app_route = $this->dispatchRoutes($this->getAppRoutes($settlement['app'], $settlement, true), $in_app_url);
+            list($this->route, $this->domain, $this->root_url) = $old_route;
+            $new_params = waRequest::param();
+            $url_params = array_diff_key($new_params, $settlement, $app_route) + array_intersect_key($new_params, ['url' => 1]);
+        }
+
+        waRequest::setParam($request_params);
+        return [ifset($settlement), ifset($app_route), ifset($url_params)];
     }
 
     public function getRouteParam($name)
@@ -338,7 +437,7 @@ class waRouting
                 (!isset($r['module']) || $r['module'] != $this->route['module'])) {
                 continue;
             }
-            $pattern = str_replace(array(' ', '.', '('), array('\s', '\.', '(?:'), ifset($r, 'url', ''));
+            $pattern = str_replace(array(' ', '.', '(', '!'), array('\s', '\.', '(?:', '\!'), ifset($r, 'url', ''));
             $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
             if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $pattern, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
                 $offset = 0;
@@ -372,7 +471,7 @@ class waRouting
                 continue;
             }
             $vars = array();
-            $pattern = str_replace(array(' ', '.', '('), array('\s', '\.', '(?:'), ifset($r, 'url', ''));
+            $pattern = str_replace(array(' ', '.', '(', '!'), array('\s', '\.', '(?:', '\!'), ifset($r, 'url', ''));
             $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
             if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $pattern, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
                 $offset = 0;
@@ -399,27 +498,9 @@ class waRouting
                             }
                         }
                     }
-                    $redirect_code = (!empty($r['code']) && $r['code'] == 302) ? 302 : 301;
-                    wa()->getResponse()->redirect($r['redirect'], $redirect_code);
+                    return $r;
                 } elseif (isset($r['static_content'])) {
-                    $response = wa()->getResponse();
-                    switch (ifset($r['static_content_type'])){
-                        case 'text/plain':
-                            $response->addHeader('Content-Type', 'text/plain; charset=utf-8');
-                            break;
-                        case 'text/html':
-                            $response->addHeader('Content-Type', 'text/html; charset=utf-8');
-                            break;
-                        default:
-                            if ($type = waFiles::getMimeType($r['url'])) {
-                                $response->addHeader('Content-Type', $type);
-                            }
-
-                            break;
-                    }
-                    $response->sendHeaders();
-                    print $r['static_content'];
-                    exit;
+                    return $r;
                 }
                 if ($vars) {
                     array_shift($match);
@@ -441,6 +522,32 @@ class waRouting
         return $result;
     }
 
+    protected function processStaticRoute($r)
+    {
+        if (isset($r['redirect']) && empty($r['disabled'])) {
+            $redirect_code = (!empty($r['code']) && $r['code'] == 302) ? 302 : 301;
+            wa()->getResponse()->redirect($r['redirect'], $redirect_code);
+        } elseif (isset($r['static_content'])) {
+            $response = wa()->getResponse();
+            switch (ifset($r['static_content_type'])){
+                case 'text/plain':
+                    $response->addHeader('Content-Type', 'text/plain; charset=utf-8');
+                    break;
+                case 'text/html':
+                    $response->addHeader('Content-Type', 'text/html; charset=utf-8');
+                    break;
+                default:
+                    if ($type = waFiles::getMimeType($r['url'])) {
+                        $response->addHeader('Content-Type', $type);
+                    }
+                    break;
+            }
+            $response->sendHeaders();
+            print $r['static_content'];
+            exit;
+        }
+    }
+
     /**
      * @param string $path
      * @param array $params
@@ -454,6 +561,9 @@ class waRouting
         if (is_bool($params)) {
             $absolute = $params;
             $params = array();
+        }
+        if (!is_array($params)) {
+            $params = [];
         }
 
         $parts = explode('/', $path);
@@ -787,5 +897,10 @@ class waRouting
         } else {
             return null;
         }
+    }
+
+    public function getAllRoutes()
+    {
+        return $this->routes;
     }
 }

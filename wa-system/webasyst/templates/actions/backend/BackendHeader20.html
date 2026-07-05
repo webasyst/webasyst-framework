@@ -46,7 +46,7 @@
 {if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
 
 {if !empty($include_wa_push)}
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js?v={$wa->version('webasyst')}"></script>
 {/if}
 
 {$has_dasboard = ($current_app === 'webasyst' && isset($activity))}
@@ -62,16 +62,32 @@
                 <p class="wa-header-sitename flexbox middle space-16">
                     <span class="h2 wa-sitename{if $request_uri == $backend_url || $request_uri == "`$backend_url`/"} is-main-dashboard{/if}">{$wa->accountName()|truncate:42}</span>
                 </p>
-                {if $has_dasboard && $wa->user()->getRights('team', 'edit_announcements')}
-                    <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new larger button rounded light-gray small">
-                        <i class="fas fa-bell text-gray custom-mr-4"></i>
-                        [`Add announcement`]
-                    </a>
-                {/if}
             </div>
             {if $has_dasboard}
-                <div class="flexbox middle custom-ml-20 custom-mt-12">
-                    <span class="js-header-datetime wa-header-datetime gray semibold"></span>
+                <div class="flexbox middle space-8 custom-ml-20 custom-mt-12">
+                    {if $wa->user()->getRights('team', 'edit_announcements')}
+                        <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new button rounded light-gray small">
+                            <i class="icon webasyst-magic-wand-ai-black text-gray custom-mr-4"></i>
+                            [s`Post`]
+                        </a>
+                    {/if}
+
+                    <span class="js-header-datetime wa-header-datetime gray semibold nowrap"></span>
+
+                    <div class="dropdown custom-ml-4" id="wa-announcement-links">
+                        <span class="dropdown-toggle without-arrow">
+                            <i class="fas fa-ellipsis-h custom-ml-4 text-gray"></i>
+                        </span>
+                        <div class="dropdown-body right">
+                            <ul class="menu">
+                                <li>
+                                    <a href="javascript:void(0)" class="js-show-hidden-announcements">
+                                        <span>[s`Show read items`]</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             {/if}
         </div>
@@ -186,24 +202,20 @@
                     <span class="dropdown-toggle without-arrow js-wa2ui custom-pr-0" title="[s`New Webasyst 2 UI`]" style="color: var(--text-color-link); cursor: pointer;"><span class="badge blue">2.0</span></span>
                     <div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
                         <div class="wa-notification">
-                            <div class="wa-notification-header wa2ui-teaser">
-                                <div class="flexbox middle space-8">
-                                    {if $app_info.id != 'webasyst'}<img src="{$root_url}{$app_info.icon.48}" style="width: 24px; height: 24px;">{/if}
-                                    [s`All-new Webasyst 2 UI`]
-                                </div>
-                            </div>
                             <div class="wa-notification-body">
                                 <p>
-                                    {sprintf('[s`This is a fully functional version of this app in the new style. We encourage you to use the new UI in full and <a href="%s" target="_blank">share your feedback %s</a> with us in case of any issues.`]', '[s`https://support.webasyst.com`]', '<i class="fas fa-external-link-alt"></i>')}
+                                    [s`You are in the newest UI mode with all the latest features and the top performance. Great to see you here!`]
                                 </p>
                                 <p>
                                     [s`Try it in both light and dark modes:`]
                                     <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 5px 0 8px; cursor: pointer" title="[s`Light mode`]" data-wa-theme-mode="light"></span>
-                                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode`]" data-wa-theme-mode="dark"></span>
+                                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 3px 0 0; cursor: pointer" title="[s`Dark mode`]" data-wa-theme-mode="dark"></span>
                                     <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span>
                                 </p>
-
-                                <button class="button gray outlined small custom-mr-4" onClick="_setCookie('force_set_wa_backend_ui_version', '1.3', 365); _setCookie('force_hide_wa2ui_teaser', 0, -1); window.location.reload();"><span>[s`Back to the classic UI`]</span></button>
+                                <div class="flexbox space-8 middle">
+                                    <button class="button gray outlined small custom-mr-4" onClick="_setCookie('force_set_wa_backend_ui_version', '1.3', 365); _setCookie('force_hide_wa2ui_teaser', 0, -1); window.location.reload();"><span>[s`Back to the legacy UI`]</span></button>
+                                    <span class="small gray">&larr; [s`not supported`]</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -233,7 +245,7 @@
     <script>
         $(function () {
             new WaHeader();
-            new BellAnnouncement();
+            new WaBellAnnouncement();
 
             /* Active All Notifications On Main Dashboard */
             {* old logic {if !empty($notifications) && ($request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard)} *}
@@ -249,6 +261,12 @@
                     $(this).next('.alert-fixed-box').toggle().removeClass('hidden');
                 });
             {/if}
+
+            $("#wa-announcement-links").waDropdown({
+                {if $wa->isMobile()}
+                    hover: false
+                {/if}
+            });
 
             /* Frontend links */
             $("#wa-frontend-links").waDropdown({

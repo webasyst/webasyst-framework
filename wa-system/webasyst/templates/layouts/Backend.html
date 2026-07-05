@@ -21,7 +21,7 @@
             {$is_fixed_header = $wa->cookie('wa_header_fixed', 0)}
             <div class="content blank box dashboard js-main-content{if $is_fixed_header} header-apps header-fixed{/if}{if strpos(waRequest::server('REQUEST_URI'), "/webasyst/dashboard/dashboard/") !== false} is-dashboard{/if}">
                 {if $wa_app == 'webasyst'}
-                    {$wa->header()}
+                    {$wa->header(['keep_unpublished' => true])}
                 {/if}
                 {$content}
                 {* New dashboard dialog *}

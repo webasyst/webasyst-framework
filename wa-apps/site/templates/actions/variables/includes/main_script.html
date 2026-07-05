@@ -1,0 +1,596 @@
+{include file="templates/actions/backend/includes/unsaved_dialog.html" inline}
+<script>
+$(function() {
+    new class waVariables {
+        constructor() {
+            this.$variables_list = $("#ul-variables");
+            this.$blocks_list = $("#ul-blocks");
+            this.$variable_form = $("#site-form-variable");
+            this.$block_form = $("#site-form-block");
+            this.dialog = this.$variables_list.closest('.dialog').data('dialog') || {
+                resize() { },
+                close() { }
+            };
+            this.is_dialog = !!this.dialog.$content;
+            this.$content = this.is_dialog ? $(this.dialog.$content.get(0)) : $('#wa-app');
+
+            this.wa_backend_url = '{$wa_backend_url}';
+            this.wa_url = '{$wa_url}';
+
+            {if $variable}
+                this.variable = {
+                    id: {if !empty($variable.id)}'{$variable.id|escape}'{else}null{/if},
+                    app: {if isset($variable.app)}true{else}null{/if},
+                    original: {if isset($variable.original)}{$variable.original|json_encode}{else}null{/if},
+                };
+            {else}
+                this.variable = null;
+            {/if}
+
+            {if $block}
+                this.block = {
+                    id: {if !empty($block.id)}'{$block.id|escape}'{else}null{/if},
+                    app: {if isset($block.app)}true{else}null{/if},
+                    original: {if isset($block.original)}{$block.original|json_encode}{else}null{/if},
+                };
+            {else}
+                this.block = null;
+            {/if}
+
+            this.active_type = '{$mode}';
+            this.is_block_page = '{!empty($is_block_page)}';
+            this.is_dialog = '{!empty($is_dialog)}';
+            this.cheat_sheet_name = '{$cheat_sheet_name|default:"webasyst"}';
+
+            this.form_has_changes = false;
+
+            this.locales = {
+                confirm_restore_block_title: '[`Restore block?`]',
+                confirm_restore_variable_title: '[`Restore variable?`]',
+                confirm_delete_block_title: '[`Delete block?`]',
+                confirm_delete_variable_title: '[`Delete variable?`]',
+
+                confirm_restore_block_text: '[`This will reset all changes you have applied to this block.`]',
+                confirm_restore_variable_text: '[`This will reset all changes you have applied to this variable.`]',
+                confirm_delete_block_text: '[`This will permanently delete this snippet.`]',
+                confirm_delete_variable_text: '[`After deletion, the variable will not work any more in any templates or site pages where it might have been added.`]',
+            };
+
+            this.init();
+        }
+
+    {literal}
+        init() {
+            $('.js-wa-tooltip').waTooltip();
+
+            this.initEditor('block');
+            this.sortItems();
+            this.contentUpdate();
+            this.onSubmit();
+            this.onToggle();
+            this.onShowCheatsheet();
+            this.onShowOriginal();
+            if (this.variable?.id || this.block?.id) {
+                this.onDelete();
+                this.copyToClipboard();
+            }
+            if ((this.active_type === 'variables' && !this.variable) || (this.active_type === 'blocks' && !this.block)) {
+                this.initTranslit();
+            }
+            this.onUnsaved();
+        }
+
+        initEditor(id) {
+            waEditorAceInit({
+                id: `${id}-content`,
+                ace_editor_container: `wa-ace-editor-${id}-dialog`,
+            });
+            wa_editor.setOption('fontSize', 14);
+            wa_editor.setOption('minLines', 10);
+            this.dialog.resize();
+        }
+
+        initTranslit() {
+            $.fn.onKeyFinish = function (defer, callback) {
+                return this.each(function () {
+                    var that = $(this);
+                    that.currentValue = that.val();
+                    that.interval = null;
+                    $(this).off('keyup.wa_variables').on('keyup.wa_variables', function (e) {
+                        clearInterval(that.interval);
+                        if (that.currentValue != that.val()) {
+                            that.interval = setInterval(function () {
+                                clearInterval(that.interval);
+                                callback.call(that);
+                                that.currentValue = that.val();
+                            }, defer);
+                        }
+                    });
+                });
+            };
+
+            const $input_id = this.$content.find('input[name="info[id]"]:visible');
+
+            this.$content.find('input[name="info[description]"]').onKeyFinish(300, function () {
+                const url = $(this).val();
+                if (url && (!$input_id.val() || !$input_id.data('changed'))) {
+                    $.post("?module=htmlPages&action=translit", { str: url }, function (response) {
+                        if (response.status === 'ok') {
+                            if (!$input_id.val() || !$input_id.data('changed')) {
+                                $input_id.val(response.data.str);
+                            }
+                        }
+                    }, "json");
+                }
+            });
+
+            $input_id.on('keyup', function () {
+                const $self = $(this);
+
+                $self.data('changed', 1);
+                if (!$self.val()) {
+                    $self.data('changed', 0);
+                }
+            });
+        }
+
+        sortItems() {
+            const self = this;
+
+            if (window.Sortable === undefined) {
+                const $script = $("#wa-header-js");
+                const path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
+
+                const urls = [
+                    "wa-content/js/sortable/sortable.min.js",
+                    "wa-content/js/sortable/jquery-sortable.min.js",
+                ];
+
+                const loadScript = (url) => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            cache: true,
+                            dataType: "script",
+                            url: path + url,
+                            success: resolve,
+                            error: reject
+                        });
+                    });
+                };
+
+                loadScript(urls[0])
+                    .then(() => loadScript(urls[1]))
+                    .then(() => sort())
+                    .catch(error => console.error(error));
+            } else {
+                sort()
+            }
+            function sort() {
+                self.$variables_list.sortable({
+                    animation: 150,
+                    draggable: 'li.sortable',
+                    onEnd: function (event) {
+                        const li = $(event.item);
+                        const id = li.data('variable-id');
+                        const pos = li.prevAll('li.sortable').length + 1;
+                        $.post(`${self.wa_backend_url}site/?module=variables&action=sort`, { id: id, pos: pos}, function () {
+                        }, "json");
+                    }
+                });
+
+                self.$blocks_list.sortable({
+                    animation: 150,
+                    draggable: 'li.sortable',
+                    onEnd: function (event) {
+                        const li = $(event.item);
+                        const id = li.data('block-id');
+                        const pos = li.prevAll('li.sortable').length + 1;
+                        $.post(`${self.wa_backend_url}site/?module=blocks&action=sort`, { id: id, pos: pos}, function () {
+                        }, "json");
+                    }
+                });
+            }
+        }
+
+        onSubmit() {
+            const self = this;
+            self.$content.off('click').on('click', 'form:not(.hidden) [type=submit]', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                const $submit_btn = $(this);
+                const form = $submit_btn.closest('form');
+                const type = form.attr('id').includes('block') ? 'block' : 'variable';
+                const original_submit_name = $submit_btn.text();
+
+                waEditorUpdateSource({ 'id': 'block-content'});
+
+                $(".state-error").removeClass('state-error');
+                $(".state-error-hint").remove();
+                $.post(form.attr('action'), form.serialize(), function (response) {
+                    if (response.status == 'ok') {
+                        const { data } = response;
+
+                        $submit_btn.html('<i class="fas fa-check-circle"></i> [`Saved`]');
+                        $submit_btn.removeClass('red').addClass('green');
+
+                        const blockHtml = function(b) {
+                            let icon = '<i class="fas fa-dollar-sign"></i>';
+                            if (b.app_icon) {
+                                icon = `<span class="icon"><img src="${wa_url}${b.app_icon["16"]}" alt=""></span>`;
+                            }
+
+                            return `<li data-${type}-id="${b.id}" class="rounded selected sortable">
+                                        <a href="javascript:void(0);">
+                                            ${icon}
+                                            <span class="s-block-item">
+                                                <div>${b.description.trim()}</div>
+                                                <div class="hint">${b.id}</div>
+                                            </span>
+                                        </a>
+                                    </li>`;
+                        }
+
+                        const blocks_ul = $(`#ul-${type}s`);
+
+                        form.attr('action', updateFormActionIdParam(form.attr('action'), `id=${data.id}`));
+                        form.find('.js-code-preview span').text(data.id || '');
+                        form.find('[data-clipboard-text]').data('clipboard-text', form.find('.js-code-preview').text());
+
+                        if (!self[type] || self[type].app) {
+
+                            if (self[type]){
+                                blocks_ul.find(`li[data-${type}-id="${data.id}"]`).remove();
+                            }
+
+                            blocks_ul.find("li.selected").removeClass('selected');
+
+                            let insert_target = blocks_ul.find("li.sortable:last");
+
+                            if (insert_target.length) {
+                                insert_target.after(blockHtml(data));
+                            } else {
+                                insert_target = blocks_ul.find("li:first");
+                                if (insert_target.length) {
+                                    insert_target.before(blockHtml(data));
+                                } else {
+                                    blocks_ul.append(blockHtml(data));
+                                }
+                            }
+
+                            if (!self[type]) {
+                                blocks_ul.find(`li[data-${type}-id="${data.id}"] a`).click();
+                            }
+                        } else {
+                            const li = blocks_ul.find(`li[data-${type}-id="${(data.old_id || data.id)}"]`);
+                            if (data.old_id) {
+                                li.replaceWith(blockHtml(data));
+                            } else {
+                                const $hint = li.find('.hint');
+                                if ($hint.prev('div').length) {
+                                    $hint.prev('div').html(data.description);
+                                } else {
+                                    $hint.before('<div>' + data.description + '</div>');
+                                }
+                            }
+                        }
+                        self.form_has_changes = false;
+                    } else if (response.status == 'fail') {
+                        if ($.isArray(response.errors)) {
+                            const $field_val = form.find(response.errors[1]).addClass('state-error');
+                            if (response.errors[2]) {
+                                $field_val.after(`<div class="state-error-hint">${response.errors[0] || ''}</div>`);
+                            }
+                        } else {
+                            err = '[`Error`]: ' + response.errors;
+                            alert(err);
+                        }
+                        $submit_btn.removeClass('green').addClass('red');
+                    }
+                    setTimeout(() => {
+                        $submit_btn.text(original_submit_name);
+                        $submit_btn.removeClass(['green', 'red']);
+                    }, 1500);
+                }, "json");
+
+                return false;
+            });
+
+            function updateFormActionIdParam(actionUrl, idParam) {
+                const hasId = actionUrl.includes('id=');
+
+                // Если параметр id уже существует, заменяем его
+                if (hasId) {
+                    return actionUrl.replace(/([?&])id=[^&]*/, `$1${idParam}`);
+                }
+
+                // Если параметра нет, добавляем его
+                const separator = actionUrl.includes('?') ? '&' : '?';
+                return `${actionUrl}${separator}${idParam}`;
+            }
+        }
+
+        onToggle(){
+            const self = this;
+
+            $(".js-variables-types-toggle").waToggle({
+                change: function(event, target, toggle) {
+                    const type = $(target).data('type');
+                    self.active_type = type;
+                    self.$variables_list.toggleClass('hidden', type === 'blocks');
+                    self.$blocks_list.toggleClass('hidden', type === 'variables');
+                    self.$variable_form.toggleClass('hidden', type === 'blocks');
+                    self.$block_form.toggleClass('hidden', type === 'variables');
+                    self.dialog.resize();
+                }
+            });
+        }
+
+        contentUpdate(){
+            const self = this;
+
+            self.$variables_list.on('click', 'a', function(){
+                update($(this).parent().data('variable-id'), 'variable_');
+            });
+
+            self.$blocks_list.on('click', 'a', function(){
+                update($(this).parent().data('block-id'), '');
+            });
+
+            $('.js-add-variable').on('click', () => {
+                if (self.form_has_changes) {
+                    return false;
+                }
+                update('', self.active_type === 'blocks' ? '' : 'variable_')
+            });
+
+            function update(id = '', type = 'variable_') {
+                const url = `${self.wa_backend_url}site/?module=variables&${type}id=${id}&is_block_page=${self.is_block_page}&is_dialog=${self.is_dialog}`;
+                $.get(url, function(html) {
+                    self.$content.html(html);
+                    setTimeout(() => self.dialog.resize());
+                });
+            }
+
+            self.$content.find('input[name="info[id]"]').on('focus', function() {
+                $(this).removeClass('state-error');
+            });
+        }
+
+        onDelete(){
+            const self = this;
+
+            $("#s-variable-delete").on('click', function () {
+                self.form_has_changes = false;
+                const is_original = !!self.variable?.original;
+                self.confirmDeleteDialog({
+                    title: is_original ? self.locales.confirm_restore_variable_title : self.locales.confirm_delete_variable_title,
+                    text: is_original ? self.locales.confirm_restore_variable_text : self.locales.confirm_delete_variable_text,
+                    is_original,
+                    onSuccess: () => {
+                        $.post(`${self.wa_backend_url}site/?module=variables&action=delete`, { id: self.variable.id }, function (response) {
+                            if (response.status == 'ok') {
+                                const $ul_blocks = $("#ul-variables");
+                                $(".js-variable-editor").empty();
+                                $ul_blocks.find(`li[data-variable-id="${self.variable.id}"]`).remove();
+
+                                if($ul_blocks.find('li').length) {
+                                    $ul_blocks.find('li:first a').click();
+                                }
+                            }
+                        }, "json");
+                    }
+                });
+
+                return false;
+            });
+
+            $("#s-block-delete").on('click', function () {
+                self.form_has_changes = false;
+                const is_original = !!self.block?.original;
+                self.confirmDeleteDialog({
+                    title: is_original ? self.locales.confirm_restore_block_title : self.locales.confirm_delete_block_title,
+                    text: is_original ? self.locales.confirm_restore_block_text : self.locales.confirm_delete_block_text,
+                    is_original,
+                    onSuccess: () => {
+                        $.post(`${self.wa_backend_url}site/?module=blocks&action=delete`, { id: self.block.id }, function (response) {
+                            if (response.status == 'ok') {
+                                const $ul_blocks = $("#ul-blocks");
+                                $(".js-variable-editor").empty();
+                                $ul_blocks.find(`li[data-block-id="${self.block.id}"]`).remove();
+
+                                if($ul_blocks.find('li').length) {
+                                    $ul_blocks.find('li:first a').click();
+                                }
+                            }
+                        }, "json");
+                    }
+                });
+
+                return false;
+            });
+        }
+
+        copyToClipboard(){
+            $('.js-copy-to-clipboard').on('click', async function () {
+                const $btn = $(this);
+                const $icon = $btn.find('[data-icon]');
+                const $btn_text_wrapper = $btn.find('span');
+                const $btn_text = $btn_text_wrapper.text();
+
+                try {
+                    await $.wa.copyToClipboard($(this).data('clipboard-text'));
+
+                    $btn.addClass('green');
+                    $icon.attr('data-icon', 'check-circle');
+                    $btn_text_wrapper.text('[`Copied`]');
+                } catch (e) {
+                    console.error(e);
+
+                    $btn.addClass('red');
+                    $icon.attr('data-icon', 'times-circle');
+                    $btn_text_wrapper.text('[`Copying error`]');
+                } finally {
+                    setTimeout(() => {
+                        $btn.removeClass('green red');
+                        $btn.find('[data-icon]').attr('data-icon', 'copy');
+                        $btn_text_wrapper.text($btn_text);
+                    }, 1000)
+                }
+            });
+        }
+
+        onShowCheatsheet(){
+            $('.js-cheatsheet-show').on('click', () => {
+                $(`#wa-editor-help-link-${this.cheat_sheet_name}`).click();
+                setTimeout(() => $(`#wa-editor-help-${this.cheat_sheet_name}`).show());
+            });
+        }
+
+        onShowOriginal() {
+            $('.s-block-view-original').on('click', function() {
+                const d = $('#s-block-view-original-dialog');
+                if (d.length) {
+                    $.waDialog({
+                        $wrapper: d.clone(),
+                        onOpen: function($dialog, dialog) {
+                            dialog.$content.append(`<div id="s-block-original" style="width: 100%; height: 220px;"></div>`);
+                            $('#s-block-original').html($dialog.find('template').html());
+
+                            const editor = ace.edit('s-block-original');
+                            ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
+
+                            setEditorTheme();
+                            document.documentElement.addEventListener('wa-theme-change', setEditorTheme);
+
+                            function setEditorTheme() {
+                                const theme = document.documentElement.dataset.theme;
+
+                                if (theme === 'dark') {
+                                    editor.setTheme("ace/theme/monokai");
+                                } else {
+                                    editor.setTheme("ace/theme/eclipse");
+                                }
+                            }
+
+                            const session = editor.getSession();
+                            session.setMode("ace/mode/css");
+                            session.setMode("ace/mode/javascript");
+                            session.setMode("ace/mode/smarty");
+
+                            session.setUseWrapMode(true);
+                            editor.renderer.setShowGutter(false);
+                            editor.setShowPrintMargin(false);
+                            editor.setFontSize(13);
+                            editor.setHighlightActiveLine(false);
+                            editor.setReadOnly(true);
+
+                            setTimeout(function () {
+                                let newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+                                if (newHeight < 220) {
+                                    newHeight = 220;
+                                }
+                                $('#s-block-original').height(newHeight.toString() + "px");
+                                editor.resize();
+                                dialog.resize();
+                            }, 50);
+                        }
+                    });
+                }
+                return false;
+            });
+        }
+
+        onUnsaved() {
+            const self = this;
+
+            // bind events
+            const change_event = 'input.wa_variables_onunsaved';
+            this.$variable_form.off(change_event).on(change_event, function () {
+                if ($(this).is(':visible')) {
+                    self.form_has_changes = true;
+                }
+            });
+            this.$block_form.off(change_event).on(change_event, function () {
+                if ($(this).is(':visible')) {
+                    self.form_has_changes = true;
+                }
+            });
+            wa_editor.getSession().on('change', () => {
+                self.form_has_changes = true;
+            });
+
+            // show dialog
+            const $forms = this.$variable_form.add(this.$block_form);
+            const $links = $(`${self.is_dialog ? '.dialog .s-variables a:not([target="_blank"])' : '#wa a:not([target="_blank"])'}, .js-variables-types-toggle > [data-type]`);
+            const event_name = 'click.wa_variables_unsaved';
+
+            $links.off(event_name).on(event_name, showDialog);
+
+            if (self.is_dialog) {
+                const oldOnClose = self.dialog.onClose;
+                self.dialog.onClose = () => {
+                    return oldOnClose() && showDialog(null, () => {
+                        self.dialog.close();
+                    });
+                };
+            }
+
+            const unbindEvent = () => $links.off(event_name);
+
+            function showDialog (e, onClose) {
+                if (!self.form_has_changes) {
+                    if (!e || !$(this).closest('.js-variables-types-toggle').length) {
+                        unbindEvent();
+                    }
+                    return true;
+                }
+
+                const $a = $(this);
+                if ($a.attr('href') === '#' || String($a.attr('href')).startsWith('javascript:')) {
+                    return true;
+                }
+
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                $.confirmUnsaved({
+                    onSave() {
+                        self.form_has_changes = false;
+                        unbindEvent();
+                        $forms.filter(':visible').find('[type="submit"]').click();
+                        self.dialog.close();
+                        $a.click();
+                    },
+                    onLeave() {
+                        self.form_has_changes = false;
+                        unbindEvent();
+                        if (typeof onClose === 'function') {
+                            onClose();
+                        } else {
+                            $a.click();
+                        }
+                    }
+                });
+
+                return false;
+            };
+        }
+
+        confirmDeleteDialog({ title, text, is_original, onSuccess }) {
+            $.waDialog.confirm({
+                title,
+                text,
+                success_button_title: is_original ? '[`Revert to original`]' :$_('Delete'),
+                success_button_class: is_original ? 'orange' : 'danger',
+                cancel_button_title: $_('Cancel'),
+                cancel_button_class: 'light-gray',
+                onSuccess
+            });
+        }
+    }
+    {/literal}
+})
+</script>

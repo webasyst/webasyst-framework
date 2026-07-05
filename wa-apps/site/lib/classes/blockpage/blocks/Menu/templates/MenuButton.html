@@ -1,0 +1,41 @@
+{$default_empty_image_url = "`$wa_app_static_url`img/image.svg"}
+{$open_menu_img = $data->data['image']['open_menu_svg_html']|default:''}
+{$close_menu_img = $data->data['image']['close_menu_svg_html']|default:''}
+{if $is_backend}
+    {$img = $open_menu_img}
+{else}
+    {$img = $open_menu_img|cat:$close_menu_img}
+{/if}
+{if empty($img)}
+    {$img = $default_empty_image_url}
+{/if}
+
+{$anchor_id = $data->data['id']|default:0}
+{$static_classes_props = 'cl style-wrapper image-wrapper'}
+{$tag = 'div'}
+<{$tag} {if $anchor_id}id="{$anchor_id|escape}"{/if} class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}">
+    <picture class="img">
+    {if $is_backend}{$wa->site->sanitizeHTML($img)}{else}{$img}{/if}
+    </picture>
+</{$tag}>
+{if $is_backend}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.image-wrapper[data-block-id="'+block_id+'"]');
+
+    $wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+        event.stopPropagation();
+
+        if (updated_block_id == block_id) {
+            updateBlockStyles($wrapper, data, block_id);
+        }
+    });
+});</script>
+{else}
+<script>(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.image-wrapper[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+})();</script>
+{/if}

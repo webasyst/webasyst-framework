@@ -1,0 +1,233 @@
+<!-- Кнопка для открытия визуального редактора -->
+<div class="theme-editor-trigger-wrapper">
+    <button id="openThemeEditor" class="theme-editor-trigger" title="{_wd('site', 'Set up theme')}">
+        <span class="theme-editor-trigger-badge" id="editorBadge">●</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M0 48C0 21.5 21.5 0 48 0l96 0c26.5 0 48 21.5 48 48l0 368c0 53-43 96-96 96S0 469 0 416L0 48zM240 409.6l0-271.5 48.1-48.1c18.7-18.7 49.1-18.7 67.9 0l67.9 67.9c18.7 18.7 18.7 49.1 0 67.9L240 409.6zM205.5 512l192-192 66.6 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-258.5 0zM80 64c-8.8 0-16 7.2-16 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16L80 64zM64 208l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zM96 440a24 24 0 1 0 0-48 24 24 0 1 0 0 48z" fill="currentColor"/></svg>
+        {_wd('site', 'Change design')}
+    </button>
+</div>
+<!-- Модальное окно визуального редактора темы -->
+<div id="themeEditorModal" class="theme-editor-modal">
+    <div class="theme-editor-modal-content" id="themeEditorContent">
+        <!-- Заголовок с возможностью перемещения -->
+        <div class="theme-editor-header" id="themeEditorHeader">
+            <div class="theme-editor-title-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M128 40c0-22.1-17.9-40-40-40L40 0C17.9 0 0 17.9 0 40L0 88c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48zm0 192c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48zM0 424l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40zM320 40c0-22.1-17.9-40-40-40L232 0c-22.1 0-40 17.9-40 40l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48zM192 232l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40zM320 424c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48z" fill="currentColor"/></svg>
+            </div>
+            <div class="theme-editor-title">
+                <span>{_wd('site', 'Basic design settings')}</span>
+            </div>
+            <div class="theme-editor-header-actions">
+                <button class="theme-editor-minimize" id="minimizeThemeEditor" title="{_wd('site', 'Minimize')}">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M19 13H5v-2h14v2z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="theme-editor-close" id="closeThemeEditor" title="{_wd('site', 'Close')}">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <div class="theme-editor-tabs">
+            <button class="theme-editor-tab active" data-tab="general">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M457.01 344.42c-25.05 20.33-52.63 37.18-82.54 49.05l54.38 94.19 53.95 23.04c9.81 4.19 20.89-2.21 22.17-12.8l7.02-58.25-54.98-95.23zm42.49-94.56c4.86-7.67 1.89-17.99-6.05-22.39l-28.07-15.57c-7.48-4.15-16.61-1.46-21.26 5.72C403.01 281.15 332.25 320 256 320c-23.93 0-47.23-4.25-69.41-11.53l67.36-116.68c.7.02 1.34.21 2.04.21s1.35-.19 2.04-.21l51.09 88.5c31.23-8.96 59.56-25.75 82.61-48.92l-51.79-89.71C347.39 128.03 352 112.63 352 96c0-53.02-42.98-96-96-96s-96 42.98-96 96c0 16.63 4.61 32.03 12.05 45.66l-68.3 118.31c-12.55-11.61-23.96-24.59-33.68-39-4.79-7.1-13.97-9.62-21.38-5.33l-27.75 16.07c-7.85 4.54-10.63 14.9-5.64 22.47 15.57 23.64 34.69 44.21 55.98 62.02L0 439.66l7.02 58.25c1.28 10.59 12.36 16.99 22.17 12.8l53.95-23.04 70.8-122.63C186.13 377.28 220.62 384 256 384c99.05 0 190.88-51.01 243.5-134.14zM256 64c17.67 0 32 14.33 32 32s-14.33 32-32 32-32-14.33-32-32 14.33-32 32-32z" fill="currentColor"/></svg>
+                {_wd('site', 'General')}
+            </button>
+            <button class="theme-editor-tab" data-tab="colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M512 320s-64 92.65-64 128c0 35.35 28.66 64 64 64s64-28.65 64-64-64-128-64-128zm-9.37-102.94L294.94 9.37C288.69 3.12 280.5 0 272.31 0s-16.38 3.12-22.62 9.37l-81.58 81.58L81.93 4.76c-6.25-6.25-16.38-6.25-22.62 0L36.69 27.38c-6.24 6.25-6.24 16.38 0 22.62l86.19 86.18-94.76 94.76c-37.49 37.48-37.49 98.26 0 135.75l117.19 117.19c18.74 18.74 43.31 28.12 67.87 28.12 24.57 0 49.13-9.37 67.87-28.12l221.57-221.57c12.5-12.5 12.5-32.75.01-45.25zm-116.22 70.97H65.93c1.36-3.84 3.57-7.98 7.43-11.83l13.15-13.15 81.61-81.61 58.6 58.6c12.49 12.49 32.75 12.49 45.24 0s12.49-32.75 0-45.24l-58.6-58.6 58.95-58.95 162.44 162.44-48.34 48.34z" fill="currentColor"/></svg>
+                {_wd('site', 'Colors')}
+            </button>
+            <button class="theme-editor-tab" data-tab="fonts">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M304 32H16A16 16 0 0 0 0 48v96a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-32h56v304H80a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16h-40V112h56v32a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zm256 336h-48V144h48c14.31 0 21.33-17.31 11.31-27.31l-80-80a16 16 0 0 0-22.62 0l-80 80C379.36 126 384.36 144 400 144h48v224h-48c-14.31 0-21.32 17.31-11.31 27.31l80 80a16 16 0 0 0 22.62 0l80-80C580.64 386 575.64 368 560 368z" fill="currentColor"/></svg>
+                {_wd('site', 'Fonts')}
+            </button>
+        </div>
+
+        <!-- Содержимое вкладок -->
+        <div class="theme-editor-body">
+
+            <!-- Вкладка: Общие -->
+            <div class="theme-editor-panel active" data-panel="general">
+
+                <!-- Скругление углов -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>{_wd('site', 'Corner rounding')}</span>
+                        <span class="theme-editor-hint">{_wd('site', 'Border radius for various elements')}</span>
+                    </label>
+                    <div class="theme-editor-control">
+                        <input type="range"
+                               id="borderRadiusSlider"
+                               min="0"
+                               max="30"
+                               value="12"
+                               step="1"
+                               class="theme-editor-slider">
+                        <div class="theme-editor-value-input">
+                            <input type="number"
+                                   id="borderRadiusInput"
+                                   value="12"
+                                   min="0"
+                                   max="30"
+                                   step="1">
+                            <span class="theme-editor-unit">px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Цветовая схема -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>{_wd('site', 'Color scheme')}</span>
+                        <span class="theme-editor-hint">{_wd('site', 'Light or dark style (if supported by the browser)')}</span>
+                    </label>
+                    <div class="theme-editor-radio-group">
+                        <label class="theme-editor-radio">
+                            <input type="radio" name="colorScheme" value="auto" checked>
+                            <span class="theme-editor-radio-label">
+                                <svg width="20" height="20" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M10 3 A7 7 0 0 1 10 17 Z" fill="currentColor"/>
+                                </svg>
+                                {_wd('site', 'Auto')}
+                            </span>
+                        </label>
+                        <label class="theme-editor-radio">
+                            <input type="radio" name="colorScheme" value="light">
+                            <span class="theme-editor-radio-label">
+                                <svg width="20" height="20" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                {_wd('site', 'Light')}
+                            </span>
+                        </label>
+                        <label class="theme-editor-radio">
+                            <input type="radio" name="colorScheme" value="dark">
+                            <span class="theme-editor-radio-label">
+                                <svg width="20" height="20" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="7" fill="currentColor"/>
+                                </svg>
+                                {_wd('site', 'Dark')}
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Вкладка: Цвета -->
+            <div class="theme-editor-panel" data-panel="colors">
+
+                <!-- Акцентный цвет -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>{_wd('site', 'Accent color')}</span>
+                        <span class="theme-editor-hint">{_wd('site', 'Main color for buttons &amp; links')}</span>
+                    </label>
+                    <div class="theme-editor-color-grid" id="accentColorGrid">
+                        {foreach $theme_settings_config.color_accent.options as $c_value => $c_name}
+                            <button class="theme-editor-color-option{if $c_value == $theme_settings.color_accent} active{/if}" data-color="{$c_value}" style="background-color: {$c_value};{if $c_value == $theme_settings.color_accent} border: 1px solid #e0e0e0;{/if}" title="{$c_name}"></button>
+                        {/foreach}
+                    </div>
+                </div>
+
+                <div class="theme-editor-setting title">
+                    <label class="theme-editor-label">
+                        <span>{_wd('site', 'Page background')}</span>
+                    </label>
+                </div>
+
+                <!-- Фон светлой темы -->
+                <div class="theme-editor-setting" data-theme-color-block="light">
+                    <label class="theme-editor-label">
+                        <span class="theme-editor-hint">{_wd('site', 'Background color in the light mode')}</span>
+                    </label>
+                    <div class="theme-editor-color-grid" id="bgColorLightGrid">
+                        {foreach $theme_settings_config.color_background_light.options as $c_value => $c_name}
+                            <button class="theme-editor-color-option{if $c_value == $theme_settings.color_background_light} active{/if}" data-color="{$c_value}" style="background-color: {$c_value};{if $c_value == $theme_settings.color_background_light} border: 1px solid #e0e0e0;{/if}" title="{$c_name}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" fill="currentColor"/></svg>
+                            </button>
+                        {/foreach}
+                    </div>
+                </div>
+
+                <!-- Фон тёмной темы -->
+                <div class="theme-editor-setting" data-theme-color-block="dark">
+                    <label class="theme-editor-label">
+                        <span class="theme-editor-hint">{_wd('site', 'Background color in the dark mode')}</span>
+                    </label>
+                    <div class="theme-editor-color-grid" id="bgColorDarkGrid">
+                    {foreach $theme_settings_config.color_background_dark.options as $c_value => $c_name}
+                        <button class="theme-editor-color-option" data-color="{$c_value}" style="background-color: {$c_value};" title="{$c_name}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" fill="currentColor"/></svg>
+                        </button>
+                    {/foreach}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Вкладка: Шрифты -->
+            <div class="theme-editor-panel" data-panel="fonts">
+
+                <!-- Семейство шрифтов -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>{_wd('site', 'Font family')}</span>
+                        <span class="theme-editor-hint">{_wd('site', 'Main font for entire text')}</span>
+                    </label>
+                    <select id="fontFamilySelect" class="theme-editor-select">
+                        {foreach $theme_settings_config.font_family.options as $font_name => $font_value}
+                            {if $font_name == ''}{$font_name = 'Rubik'}{/if}
+                            <option value="{$font_name}">{$font_value}</option>
+                        {/foreach}
+                    </select>
+                </div>
+                <!-- Размер шрифта -->
+                <div class="theme-editor-setting">
+                    <label class="theme-editor-label">
+                        <span>{_wd('site', 'Font size')}</span>
+                        <span class="theme-editor-hint">{_wd('site', 'Base font size on website')}</span>
+                    </label>
+                    <div class="theme-editor-control">
+                        <input type="range"
+                               id="fontSizeSlider"
+                               min="12"
+                               max="18"
+                               value="16"
+                               step="1"
+                               class="theme-editor-slider">
+                        <div class="theme-editor-value-input">
+                            <input type="number"
+                                   id="fontSizeInput"
+                                   value="16"
+                                   min="12"
+                                   max="18"
+                                   step="1">
+                            <span class="theme-editor-unit">px</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Футер с кнопками -->
+        <div class="theme-editor-footer">
+            <button class="theme-editor-btn-secondary" id="resetSettings">
+                {_wd('site', 'Reset')}
+            </button>
+            <button class="theme-editor-btn-primary" id="saveSettings">
+                {_wd('site', 'Save')}
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<link rel="stylesheet" href="{$wa_theme_url}css/theme-settings.css?v{$wa_theme_version}">

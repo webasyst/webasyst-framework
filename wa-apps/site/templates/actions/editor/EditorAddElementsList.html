@@ -1,0 +1,52 @@
+{function render_item b=[]}
+    <li>
+        {$premium_only = !$is_premium && !empty($b.premium)}
+        {if !empty($b['blocks'])}
+            <div class="item dropdown extra-dropdown" data-tag="{$b.tags[0]}">
+                <div class="dropdown-toggle">
+                    {if !empty($b.app_icon)}
+                        <img src="{$wa_url}{$b.app_icon}" class="app_icon icon" alt="">
+                    {elseif !empty($b.icon)}
+                        <span class="icon"><i class="fas fa-{$b.icon}"></i></span>
+                    {/if}
+                    {$b.title|escape}
+                    <span class="icon icon-spec"><i class="fas fa-angle-right"></i></span>
+                </div>
+                <div class="dropdown-body">
+                    <ul class="menu">
+                        {foreach $b['blocks'] as $b2}
+                            {render_item b=$b2}
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+        {else}
+            <a href="javascript:void(0)" data-type-id="{$b.id|escape}"{if $premium_only} data-premium-required="1" class="opc-5"{/if}>
+                {if !empty($b.app_icon)}
+                    <img src="{$wa_url}{$b.app_icon}" class="app_icon icon" alt="">
+                {elseif !empty($b.icon)}
+                    <span class="icon"><i class="fas fa-{$b.icon}"></i></span>
+                {/if}
+                <span>{$b.title|escape}</span>
+                {if $premium_only}
+                    <span class="count">
+                        <i class="badge-icon fas fa-crown"></i>
+                    </span>
+                {/if}
+            </a>
+        {/if}
+    </li>
+{/function}
+
+<ul class="menu js-list-of-elements">
+    {foreach $library as $b}
+        {render_item b=$b}
+    {/foreach}
+    <li>
+        <a href="{$wa_app_url}plugins/?domain_id={$domain_id}#/plugins/">
+            <img src="{$wa_url}wa-content/img/webasyst-wand-default.svg" class="app_icon icon" alt="">
+            <span>[`More elements in plugins for Site`]</span>
+            <span class="count"><i class="fas fa-external-link-alt fa-xs"></i></span>
+        </a>
+    </li>
+</ul>

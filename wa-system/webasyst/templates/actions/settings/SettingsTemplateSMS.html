@@ -8,18 +8,35 @@
         <div class="article">
             <div class="article-body">
                 {if $channel->getId()}
-                <form class="s-template-form fields vertical" action="?module=settingsTemplateSMSSave&id={$channel->getId()|escape}">
+                <form class="s-template-form fields" action="?module=settingsTemplateSMSSave&id={$channel->getId()|escape}">
                     <div class="s-sms-templates">
-                        <h1 class="s-template-name">{$channel->getName()|escape}</h1>
-                        <div class="fields-group blank">
+                        <div class="flexbox wrap-mobile">
+                            <div class="wide">
+                                <h1 class="s-template-name custom-mb-0">{$channel->getName()|escape}</h1>
+                            </div>
+                            <div class="js-footer-actions">
+                                <a href="javascript:void(0);" class="button light-gray smaller js-reset custom-mt-4" title="[s`Restore default text`]">
+                                    <span><i class="fas fa-broom text-brown custom-mr-4"></i>[s`Reset`]</span>
+                                </a>
+                                <a href="javascript:void(0);" class="button light-gray smaller js-duplicate custom-mt-4" title="[s`Duplicate templates`]">
+                                    <span><i class="fas fa-copy text-blue custom-mr-4"></i>[s`Duplicate`]</span>
+                                </a>
+                                {if !$channel->isSystem()}
+                                    <a href="javascript:void(0);" class="button light-gray smaller js-delete custom-mt-4" title="[s`Delete templates`]">
+                                        <span><i class="fas fa-trash-alt text-red custom-mr-4"></i>[s`Delete`]</span>
+                                    </a>
+                                {/if}
+                            </div>
+                        </div>
+                        <div class="fields-group blank custom-mt-16">
                             <div class="field">
                                 <div class="name">[s`Template group name`]</div>
                                 <div class="value">
-                                    <input type="text" class="wide" name="data[name]" value="{$channel->getName()|escape}" />
+                                    <input type="text" name="data[name]" value="{$channel->getName()|escape}" />
                                 </div>
                             </div>
                             <div class="field">
-                                <div class="name">[s`Sender`]</div>
+                                <div class="name for-input">[s`Sender`]</div>
                                 <div class="value">
                                     <div class="wa-select">
                                     <select name="data[address]">
@@ -32,15 +49,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="field-group">
+                        <div class="field-group blank">
                             {foreach $channel->getTemplatesList() as $_template_id => $_template_name}
-                                <div class="field" data-template="{$_template_id|escape}">
+                                <div class="field custom-mb-32" data-template="{$_template_id|escape}">
                                     <div class="name">{$_template_name|escape}</div>
                                     <div class="value">
                                         <textarea class="wide" name="data[params][template][{$_template_id|escape}]" data-template="{$_template_id|escape}">{$channel->getTemplate($_template_id)|escape}</textarea>
-                                        <div class="s-preview">
-                                            <a class="s-preview-link js-preview-link hint" href="javascript:void(0);">
-                                                <i class="fas fa-eye"></i> [s`Preview template`]
+                                        <div class="s-preview custom-mt-12">
+                                            <a class="s-preview-link js-preview-link button smaller light-gray custom-mb-0" href="javascript:void(0);">
+                                                <i class="fas fa-eye text-blue custom-mr-4"></i> [s`Preview template`]
                                             </a>
                                         </div>
                                     </div>
@@ -53,36 +70,15 @@
                                 <div class="nowrap">
                                     {* Save *}
                                     <input class="button js-submit-button green" type="submit" name="" value="[s`Save`]">
-                                    {* Cancel *}
-                                    <span class="c-hidden">
-                                        <a href="{$wa_backend_url}webasyst/settings/sms/template/{$channel->getId()|escape}" class="button light-gray js-cancel">[s`Cancel`]</a>
-                                    </span>
                                     <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
                                 </div>
                                 <div class="flexbox wrap-mobile">
                                     {* Check sending *}
-                                    <input class="smallest button gray rounded js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
+                                    <input class="button gray outlined nowrap js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
                                     {* Cheat sheet *}
                                     <div class="s-cheat-sheet-wrapper js-cheat-sheet-wrapper"></div>
                                 </div>
-                                <div class="flexbox wrap-mobile">
-                                    {* Actions *}
-                                    {* Reset *}
-                                    <a href="javascript:void(0);" class="button rounded gray outlined smallest js-reset" title="[s`Restore default text`]">
-                                        <span><i class="fas fa-broom"></i>
-                                        <b class="hide-on-small-screens"><i>[s`Reset`]</i></b></span>
-                                    </a>
-                                    {* Duplicate *}
-                                    <a href="javascript:void(0);" class="button rounded gray outlined smallest js-duplicate" title="[s`Duplicate templates`]">
-                                        <span><i class="fas fa-copy"></i><span class="hide-on-small-screens"> [s`Duplicate`]</span></span>
-                                    </a>
-                                    {* Delete *}
-                                    {if !$channel->isSystem()}
-                                        <a href="javascript:void(0);" class="button rounded gray outlined smallest js-delete" title="[s`Delete templates`]">
-                                            <span><i class="fas fa-trash"></i><span class="hide-on-small-screens"> [s`Delete`]</span></span>
-                                        </a>
-                                    {/if}
-                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -111,7 +107,7 @@
         <div class="dialog-content"></div>
         <div class="dialog-footer">
             <input type="submit" class="button red js-submit-button" value="[s`Delete`]">
-            &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="js-close-dialog">[s`cancel`]</a>
+            <a href="javascript:void(0);" class="button light-gray js-close-dialog">[s`Cancel`]</a>
             <i class="fas fa-spinner fa-spin loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
         </div>
     </form>
@@ -135,7 +131,7 @@
                 </div>
             </div>
             <footer class="dialog-footer">
-                <button class="js-close-dialog button gray">[s`Close`]</button>
+                <button class="js-close-dialog button light-gray">[s`Close`]</button>
             </footer>
         </div>
 </div>
@@ -145,39 +141,39 @@
     <div class="dialog-background"> </div>
     <form action="?module=settingsTemplateCheckSending" class="dialog-body">
         <h4 class="dialog-header">[s`Checking the sending of SMS messages`]</h4>
-        <div class="dialog-content fields">
-                <div class="fields-group blank">
-                    {* Recipient *}
-                    <div class="field s-recipient-field">
-                        <div class="name">[s`Recipient's phone number`]</div>
-                        <div class="value">
-                            <input type="text" name="data[recipient]" value="{$user->get('phone', 'default')|escape}" />
-                            <p class="hint">[s`+1XXXXXXXXXX, 1XXXXXXXXXX`]</p>
-                        </div>
+        <div class="dialog-content">
+            <div class="fields">
+                {* Recipient *}
+                <div class="field s-recipient-field">
+                    <div class="name for-input">[s`Recipient's phone number`]</div>
+                    <div class="value">
+                        <input type="text" name="data[recipient]" value="{$user->get('phone', 'default')|escape}" />
+                        <p class="hint">[s`+1XXXXXXXXXX, 1XXXXXXXXXX`]</p>
                     </div>
-                    {* Templates *}
-                    <div class="field">
-                        <div class="name">[s`Templates`]</div>
-                        <div class="value s-templates-list js-templates-list">
-                            {foreach $channel->getTemplatesList() as $_template_id => $_template_name}
-                                {$_id = uniqid("template_`$channel->getId()|escape`_`$_template_id|escape`")}
-                                <div class="s-template-item js-template-item">
-                                    <input id="{$_id}" class="js-template-item-checkbox" type="checkbox" name="data[template][{$_template_id|escape}]" checked />
-                                    <label for="{$_id}">{$_template_name|escape}</label>
-                                </div>
-                            {foreachelse}
-                                <span style="color: #999;">[s`Templates not found`]</span>
-                            {/foreach}
-                        </div>
-                    </div>
-                    <input type="hidden" name="data[channel_id]" value="{$channel->getId()|escape}" />
                 </div>
+                {* Templates *}
+                <div class="field">
+                    <div class="name">[s`Templates`]</div>
+                    <div class="value s-templates-list js-templates-list">
+                        {foreach $channel->getTemplatesList() as $_template_id => $_template_name}
+                            {$_id = uniqid("template_`$channel->getId()|escape`_`$_template_id|escape`")}
+                            <div class="s-template-item js-template-item">
+                                <input id="{$_id}" class="js-template-item-checkbox" type="checkbox" name="data[template][{$_template_id|escape}]" checked />
+                                <label for="{$_id}">{$_template_name|escape}</label>
+                            </div>
+                        {foreachelse}
+                            <span style="color: #999;">[s`Templates not found`]</span>
+                        {/foreach}
+                    </div>
+                </div>
+                <input type="hidden" name="data[channel_id]" value="{$channel->getId()|escape}" />
+            </div>
         </div>
 
         <div class="dialog-footer">
             <input type="submit" class="button blue js-submit-button" value="{sprintf('[s`Send %s SMS`]', count($channel->getTemplatesList()))}"{if count($channel->getTemplatesList()) == 0} disabled{/if}>
-                &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="js-close-dialog">[s`cancel`]</a>
-            <i class="fas fa-spinner fa-spin loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+            <a href="javascript:void(0);" class="button light-gray js-close-dialog">[s`Cancel`]</a>
+            <i class="fas fa-spinner fa-spin loading text-light-gray" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
         </div>
     </form>
 </div>

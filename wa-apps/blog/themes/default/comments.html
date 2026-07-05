@@ -25,6 +25,23 @@ $(document).ready(function() {
             });
         }
     })
+
+
+    const firstButton = document.querySelector('.js-comment0');
+    const secondButton = document.querySelector('.comment-submit [type="submit"]');
+    const handleIntersection = (entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                firstButton.style.display = 'none';
+            } else {
+                firstButton.style.display = 'block';
+            }
+        });
+    };
+    const observer = new IntersectionObserver(handleIntersection, {
+        threshold: 0
+    });
+    observer.observe(secondButton);
 });
 </script>
 

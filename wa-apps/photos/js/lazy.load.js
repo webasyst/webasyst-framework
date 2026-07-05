@@ -93,7 +93,7 @@
         function distanceBetweenBottoms(offset)
         {
             offset = offset || 0;
-            return (container.position().top + container.outerHeight() - offset) - (win.scrollTop() + win.outerHeight());
+            return (container.offset().top + container.outerHeight() - offset) - (win.scrollTop() + win.outerHeight());
         }
     };
 })(jQuery);

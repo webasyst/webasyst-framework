@@ -16,6 +16,9 @@ class blogFrontController extends waFrontController
 
                 #parse request URL
                 $params = waRequest::param();
+                if (empty($params['module'])) {
+                    throw new waException(_ws("Page not found"),404);
+                }
                 #determine blog ID which are dependent on routing settings
                 $blog_model = new blogBlogModel();
                 $blogs = array();

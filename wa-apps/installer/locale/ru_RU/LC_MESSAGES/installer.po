@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -144,6 +144,9 @@ msgstr "Темы дизайна"
 
 msgid "Please select items for update"
 msgstr "Выберите продукты для обновления"
+
+msgid "This product is already installed"
+msgstr "Этот продукт уже установлен"
 
 msgid "Design theme not deleted: .svn or .git folder located in the theme directory."
 msgstr "Тема дизайна не удалена: в директории есть папка с названием .svn или .git."
@@ -376,8 +379,8 @@ msgstr "Системные настройки"
 msgid "<a href=\"%s\">Change system settings in Settings app</a>."
 msgstr "<a href=\"%s\">Управляйте системными настройками в приложении «Настройки»</a>."
 
-msgid "Failed to get the URL of the remote Store"
-msgstr "Не удалось получить URL удаленного Магазина"
+msgid "Failed to connect to the Webasyst products catalog."
+msgstr "Не удалось подключиться к каталогу продуктов Webasyst."
 
 msgid "Your review"
 msgstr "Ваш отзыв"
@@ -563,10 +566,52 @@ msgid "An unknown error has occurred during the installation. Please check your 
 msgstr "Произошла неизвестная ошибка во время установки. Проверьте сетевое подключение и повторите попытку."
 
 msgid "Product not found."
-msgstr "ПРодукт не найден."
+msgstr "Продукт не найден."
 
 msgid "Cannot resolve the download URL."
 msgstr "Не удалось определить URL загрузки."
 
 msgid "The requirements are not satisfied."
 msgstr "Требования не соблюдены."
+
+msgid "A license is required to install this product."
+msgstr "Для установки этого продукта требуется лицензия."
+
+msgid "Go to settings"
+msgstr "Перейти к настройкам"
+
+msgid "Continue shopping"
+msgstr "Продолжить просмотр"
+
+msgid "Start using"
+msgstr "Начать использование"
+
+msgid "Not connected to Webasyst ID."
+msgstr "Не настроено подключение к Webasyst ID."
+
+msgid "Webasyst API access error."
+msgstr "Нет доступа к API Webasyst."
+
+msgid "Send your Installer ID to a developer to obtain access to their products’ beta versions."
+msgstr "Отправьте свой ID Инсталлера разработчику, бета-версии чьих продуктов вы хотите устанавливать."
+
+msgid "Services"
+msgstr "Службы"
+
+msgid "Home"
+msgstr "Главная"
+
+msgid "Response code: %s."
+msgstr "Код ответа: %s."
+
+msgid "Remaining Webasyst AI prompts: %s."
+msgstr "Доступно запросов к Webasyst AI: %s."
+
+msgid "Webasyst CRON API error."
+msgstr "Ошибка Webasyst CRON API."
+
+msgid "Failed to get information about the process progress. Please restart the installation."
+msgstr "Не удалось получить информацию о ходе процесса. Пожалуйста, перезапустите процесс установки."
+
+msgid "Update error. Please restart the installation."
+msgstr "Ошибка обновления. Пожалуйста, перезапустите, процесс установки."

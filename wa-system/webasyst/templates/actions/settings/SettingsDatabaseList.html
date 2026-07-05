@@ -1,11 +1,11 @@
 {if !empty($tables)}
-    <table class="zebra">
+    <table class="table bigdata">
         <thead>
             <tr class="white" style="font-size: 11px; color: #777; text-transform: uppercase; font-weight: bold;">
                 <td></td>
                 <td width="50%;">[`Table`]</td>
                 <td>[`Fields`]</td>
-                <td>[`Collation`]</td>
+                <td>[`Encoding`]</td>
                 <td></td>
                 <td></td>
             </tr>
@@ -16,7 +16,7 @@
                 <tr class="js-list-item js-table" data-table="{$_table.Name}"{if $_table.is_convertable} data-is-mb4="{if $_table.is_mb4}1{else}0{/if}"{/if}>
                     <td></td>
                     <td colspan="2"><b>{$_table.Name|escape}</b></td>
-                    <td class="js-collation {if $_table.is_mb4}good{else}bad{/if}">{$_table.Collation|escape}</td>
+                    <td class="js-collation nowrap {if $_table.is_mb4}good{else}bad{/if}">{$_table.Collation|escape}</td>
                     <td class="js-status"></td>
                     <td></td>
                 </tr>
@@ -27,7 +27,7 @@
                             <td></td>
                             <td></td>
                             <td>{$_column.Field|escape}</td>
-                            <td class="js-collation {if $_column.is_mb4}good{else}bad{/if}">{$_column.Collation|escape}</td>
+                            <td class="js-collation nowrap {if $_column.is_mb4}good{else}bad{/if}">{$_column.Collation|escape}</td>
                             <td class="js-status"></td>
                             <td></td>
                         </tr>

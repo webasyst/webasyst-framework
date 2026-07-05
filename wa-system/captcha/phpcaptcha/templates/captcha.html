@@ -8,6 +8,7 @@
         <a href="#" class="wa-captcha-refresh">{$refresh}</a>
     </p>
     <script>
+        window.captchaInitialized = true;
         $(function () {
             $('div.{$wrapper_class} .wa-captcha-img').on('load', function () {
                 $(window).trigger('wa_captcha_loaded');

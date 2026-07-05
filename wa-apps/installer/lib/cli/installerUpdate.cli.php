@@ -32,12 +32,11 @@ class installerUpdateCli extends waCliController
 
     public function unsafeExecute()
     {
-        $update_check = $update_everything = false;
+        $update_check = false;
         $update_list = waRequest::param();
         switch (ifset($update_list, 0, '')) {
             case 'everything':
-                $update_everything = true;
-                $update_list = [];
+                $update_list = null;
                 break;
             case 'list':
                 array_shift($update_list);
@@ -47,24 +46,24 @@ class installerUpdateCli extends waCliController
                 break;
             case 'check':
                 $update_check = true;
-                $update_list = [];
+                $update_list = null;
                 break;
             default:
                 return $this->usage();
         }
 
         $items = installerHelper::getUpdates();
-        list($items, $inapplicable_count, $applicable_slugs) = $this->filterInapplicable($items);
+        list($items, $inapplicable_count, $applicable_slugs) = $this->filterInapplicable($items, $update_list);
         if ($update_check) {
             echo join(PHP_EOL, $applicable_slugs);
             return;
         }
 
         $urls = $this->prepareInstallationUrls($items);
+        if ($urls) {
+            $this->executeUpdate($urls);
+        }
 
-        $this->executeUpdate($urls);
-
-        $items = installerHelper::getUpdates();
         echo "PENDING ".$inapplicable_count."\n";
     }
 
@@ -78,7 +77,7 @@ shop
 shop/plugin/brands
 shop/theme/hypermarket
 
-> php cli.php installer update shop shop/plugin/brands shop/theme/hypermarket
+> php cli.php installer update list shop shop/plugin/brands shop/theme/hypermarket
 UPDATED 3
 PENDING 1
 
@@ -113,7 +112,7 @@ PENDING 0
         $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'] = $domain;
     }
 
-    protected function filterInapplicable($items)
+    protected function filterInapplicable($items, $update_list)
     {
         $execute_actions = array(
             waInstallerApps::ACTION_INSTALL, // update may be ACTION_INSTALL if vendor changed or licence type changed (normal -> premium)
@@ -123,10 +122,11 @@ PENDING 0
 
         $applicable_slugs = [];
         $inapplicable_count = 0;
-        $checkItem = function(&$info) use ($execute_actions, &$applicable_slugs, &$inapplicable_count) {
+        $checkItem = function(&$info) use ($execute_actions, $update_list, &$applicable_slugs, &$inapplicable_count) {
             if (!in_array($info['action'], $execute_actions)
               || empty($info['applicable'])
               || (!empty($info['commercial']) && empty($info['purchased']))
+              || ($update_list !== null && !in_array($info['slug'], $update_list))
             ) {
                 $inapplicable_count++;
                 return false;

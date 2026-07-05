@@ -130,7 +130,7 @@ class webasystBackendHeaderAction extends waViewAction
         if ($this->single_app_mode) {
             $template_path = 'templates/actions/backend/BackendHeaderSingleApp.html';
         } else {
-            $this->assignNotificationsData(['backend_header_notification' => $header_notification]);
+            $this->assignNotificationsData(['backend_header_notification' => $header_notification, 'keep_unpublished' => !empty($this->params['keep_unpublished'])]);
             $template_path = 'templates/actions/backend/BackendHeader.html';
         }
         $this->setTemplate(wa()->getAppPath($template_path, 'webasyst'));

@@ -3,10 +3,17 @@
 class onesignalPush extends waPushAdapter
 {
     const PROVIDER_NAME = 'OneSignal';
-    const API_URL = 'https://onesignal.com/api/v1/';
+    const API_URL_V1 = 'https://onesignal.com/api/v1/';
+    const API_URL_V2 = 'https://api.onesignal.com/';
     const API_TOKEN = 'api_token';
+    const ORG_ID = 'org_id';
+    const ORG_KEY = 'org_key';
+    const APP_KEY = 'app_key';
+
+    const EMPTY_API_KEY_TEMPLATE = '--EMPTY-API-KEY--';
 
     protected $net_api_token;
+    protected $force_expose_exceptions = false;
     protected $lock_fd = null;
 
     /**
@@ -26,9 +33,15 @@ class onesignalPush extends waPushAdapter
     public function isEnabled()
     {
         try {
-            $api_token = $this->getSettings(self::API_TOKEN);
             $app = $this->getAppByDomain();
-            return !empty($api_token) && !empty($app);
+            if ($this->isLegacyV1()) {
+                return !empty($app);
+            }
+
+            $org_key = $this->getSettings(self::ORG_KEY);
+            $org_id = $this->getSettings(self::ORG_ID);
+            $app_key = empty($app) ? null : $this->getSettings(self::APP_KEY . '_' . $app['id']);
+            return !empty($org_key) && !empty($org_id) && !empty($app_key);
         } catch (waException $e) {
             return false;
         }
@@ -45,19 +58,22 @@ class onesignalPush extends waPushAdapter
         $webasyst_app_url = wa()->getConfig()->getBackendUrl(true).'webasyst/';
 
         $app = $this->getAppByDomain();
+        //$app = $this->getApp();
 
-        $options = array(
+        $options = [
             'api_app_id'         => $app['id'],
             'api_subdomain_name' => $app['chrome_web_sub_domain'],
-        );
+            'external_id'        => wa()->getUser()->getId(),
+            'ui'                 => wa()->whichUI(),
+        ];
 
         $view = wa('webasyst')->getView();
-        $view->assign(array(
+        $view->assign([
             'options'          => $options,
             'actions_url'      => $actions_url,
             'webasyst_app_url' => $webasyst_app_url,
-            'api_token'        => $this->getSettings(self::API_TOKEN),
-        ));
+            //'api_token'        => $this->getSettings(self::ORG_KEY),
+        ]);
         $template = wa()->getConfig()->getRootPath().'/wa-system/push/adapters/onesignal/init.js';
         return $view->fetch($template);
     }
@@ -77,52 +93,161 @@ class onesignalPush extends waPushAdapter
         ];
     }
 */
+
+    public function getSettingsHtml($params = array())
+    {
+        self::clearCache();
+        return parent::getSettingsHtml($params);
+    }
+
     protected function initControls()
     {
         $api_token = $this->getSettings(self::API_TOKEN);
+        $org_id = $this->getSettings(self::ORG_ID);
+        $org_key = $this->getSettings(self::ORG_KEY);
+        $domains = [];
+        $current_domain = wa()->getConfig()->getHostUrl();
 
-        $domains = array();
-
-        $is_api_key_ok = !!$api_token;
+        $is_api_key_ok = $this->isLegacyV1() || (!empty($org_key) && !empty($org_id));
         if ($is_api_key_ok) {
             try {
                 // List of connected domains
                 $domains = $this->getConnectedDomains();
 
-                // Add current domain as unconnected if not in the list
-                $current_domain = wa()->getConfig()->getHostUrl();
-                $domains += array(
-                    $current_domain => array(
-                        'name'      => $current_domain,
-                        'connected' => false,
-                    ),
-                );
+                if (strpos($current_domain, 'https://') === 0) {
+                    // Add current domain as unconnected if not in the list
+                    $domains += [
+                        $current_domain => [
+                            'name'      => $current_domain,
+                            'id'        => null,
+                            'connected' => false,
+                        ],
+                    ];
 
-                // Current domain always first, no matter connected or not
-                $domains = array(
+                    // Current domain always first, no matter connected or not
+                    $domains = [
                         $current_domain => $domains[$current_domain],
-                    ) + $domains;
+                    ] + $domains;
+                }
+
             } catch (Exception $e) {
                 $api_token_error = $e->getMessage();
                 $is_api_key_ok = false;
             }
         }
 
+        $this->controls = [];
+        if (!empty($api_token)) {
+            $this->controls = [
+                self::API_TOKEN => [
+                    'title'        => _ws('User Auth Key'),
+                    'control_type' => waHtmlControl::INPUT,
+                    'description'  => '<p class="hint state-caution-hint">'._ws('Authentication by User Auth Key is deprecated. You need to set up Organization ID and Organization API Auth Key.').'</p>',
+                    'translate' => false,
+                ]
+            ];
+        }
+
+        $this->controls[self::ORG_ID] = [
+            'title'        => _ws('Organization ID'),
+            'control_type' => waHtmlControl::INPUT,
+            'description'  => '<p class="hint">'.sprintf_wp('How to find the <em>Organization ID</em>: Navigate to the Organization from %s. The Organization ID is the UUID found in the URL after <em>/organizations/</em>.',
+                sprintf_wp('<%s>organization list page<%s><%s>', 'a href="https://dashboard.onesignal.com/organizations/" target="_blank"', 'i class="icon16 new-window"></i', '/a')).
+                '</p>',
+            'translate' => false,
+        ];
+
         $view = wa('webasyst')->getView();
-        $view->assign(array(
+        $view->assign([
             'domains'         => $domains,
+            'current_domain'  => $current_domain,
             'is_api_key_ok'   => $is_api_key_ok,
             'api_token_error' => ifset($api_token_error),
-        ));
+        ]);
         $template = wa()->getConfig()->getRootPath().'/wa-system/push/adapters/onesignal/api_key_description.html';
-
         $description = $view->fetch($template);
-
-        $this->controls[self::API_TOKEN] = array(
-            'title'        => _ws('OneSignal User Auth Key'),
+        $this->controls[self::ORG_KEY] = [
+            'title'        => _ws('Organization API Auth Key'),
             'control_type' => waHtmlControl::INPUT,
             'description'  => $description,
-        );
+            'translate' => false,
+        ];
+
+        foreach ($domains as $domain => $domain_data) {
+            if (!empty($domain_data['id']) && !empty($domain)) {
+                $this->controls[self::APP_KEY . '_' . $domain_data['id']] = [
+                    'title'        => $domain,
+                    'control_type' => waHtmlControl::INPUT,
+                    'description'  => sprintf_wp('Create an API key on the %s page.',
+                        '<a href="https://dashboard.onesignal.com/apps/'.$domain_data['id'].'/settings/keys_and_ids" target="_blank">App Keys &amp; IDs<i class="icon16 new-window"></i></a>'),
+                    'translate' => false,
+                ];
+            }
+        }
+    }
+
+    public function validateSettings($settings = [])
+    {
+        if ($this->isLegacyV1()) {
+            // do not validate legacy settings
+            return null;
+        }
+
+        $org_id = ifset($settings[self::ORG_ID]);
+        $org_key = ifset($settings[self::ORG_KEY]);
+        if (empty($org_key) || empty($org_id)) {
+            return _ws('OneSignal Organization ID and API Auth Key are required.');
+        }
+
+        list($apps, $errors) = $this->testApiKey('apps', $org_key, _ws('Invalid Organization API Auth Key.'));
+        if (!empty($errors)) {
+            return $errors;
+        }
+
+        $errors = [];
+        foreach ($apps as $app) {
+            $domain = $app['chrome_web_origin'];
+            if (!empty($domain)) {
+                $api_key = ifset($settings[self::APP_KEY . '_' . $app['id']]);
+                if (!empty($api_key)) {
+                    list($res, $err) = $this->testApiKey('templates?app_id=' . $app['id'], $api_key, sprintf(_ws('Invalid App API Key for %s.'), $domain));
+                    if (!empty($err)) {
+                        $errors[] = $err;
+                    }
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            return join("\n", $errors);
+        }
+
+        return null;
+    }
+
+    protected function testApiKey($api_method, $api_key, $access_denied_error_str)
+    {
+        $res = null;
+        $errors = null;
+        $this->setApiKey($api_key);
+        $this->force_expose_exceptions = true;
+        try {
+            $res = (array)$this->request($api_method, [], waNet::METHOD_GET);
+        } catch (waException $e) {
+            if ($e->getCode() == 403) {
+                $errors = $access_denied_error_str;
+            } else {
+                $error_result = @json_decode($e->getMessage(), 1);
+                if (empty($error_result['errors'])) {
+                    $errors = $e->getMessage();
+                } else {
+                    $errors = join("\n", (array)$error_result['errors']);
+                }
+            }
+        }
+        $this->clearApiKey();
+        $this->force_expose_exceptions = false;
+        return [$res, $errors];
     }
 
     protected function normalizeSubscriberData($data)
@@ -146,42 +271,55 @@ class onesignalPush extends waPushAdapter
     public function send($id, $data)
     {
         $request_data = $this->prepareRequestData($data);
-
         $subscriber_list = $this->getSubscriberListByField('id', $id);
         $request_data['subscriber_list'] = $subscriber_list;
-
         $result = [];
         foreach ($subscriber_list as $app_id => $user_ids) {
-            $push_data = $request_data;
-            $push_data['app_id'] = $app_id;
             $user_ids = array_filter($user_ids);
             if ($user_ids) {
-                $push_data['include_player_ids'] = $user_ids;
-                $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
+                $result[] = $this->createPush($request_data, $app_id, $user_ids);
+            }
+        }
+
+        $success_result = array_filter($result, function($res) {
+            return $res['status'];
+        });
+
+        return [ 'status' => !empty($success_result) ];
+    }
+
+    public function sendByContact($contact_id, $data)
+    {
+        $request_data = $this->prepareRequestData($data);
+        $subscriber_list = $this->getSubscriberListByField('contact_id', $contact_id);
+        $result = [];
+        foreach ($subscriber_list as $app_id => $user_ids) {
+            $user_ids = array_filter($user_ids);
+            if (!empty($user_ids)) {
+                $result[] = $this->createPush($request_data, $app_id, $user_ids);
             }
         }
 
         return $result;
     }
 
-    public function sendByContact($contact_id, $data)
-    {
-        $request_data = $this->prepareRequestData($data);
-
-        $subscriber_list = $this->getSubscriberListByField('contact_id', $contact_id);
-
-        $result = array();
-        foreach ($subscriber_list as $app_id => $user_ids) {
-            $push_data = $request_data;
-            $push_data['app_id'] = $app_id;
-            $user_ids = array_filter($user_ids);
-            if ($user_ids) {
-                $push_data['include_player_ids'] = $user_ids;
-                $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
-            }
+    protected function createPush($data, $app_id, $user_ids) {
+        $api_key = $this->getSettings(self::APP_KEY . '_' . $app_id);
+        if (empty($api_key) && !$this->isLegacyV1()) {
+            $api_key = self::EMPTY_API_KEY_TEMPLATE;
         }
+        $this->setApiKey($api_key);
+        $data['app_id'] = $app_id;
+        $data['include_player_ids'] = $user_ids;
+        $res = $this->request('notifications', $data, waNet::METHOD_POST);
+        $this->clearApiKey();
 
-        return $result;
+        return [
+            'status' => !empty($res['id']),
+            'has_errors' => !empty($res['errors']),
+            'invalid_player_ids' => ifset($res['errors']['invalid_player_ids']),
+            'response' => $res,
+        ];
     }
 
     protected function prepareRequestData(array $data)
@@ -272,7 +410,7 @@ class onesignalPush extends waPushAdapter
             case 'OneSignalSDKWorker.djs':
             case 'OneSignalSDKUpdaterWorker.js':
             case 'OneSignalSDKUpdaterWorker.djs':
-                return "importScripts('https://cdn.onesignal.com/sdks/OneSignalSDK.js');";
+                return 'importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");';
             case 'manifest.json':
                 return json_encode(array(
                     "name"                  => wa()->accountName()." WebPush",
@@ -300,27 +438,42 @@ class onesignalPush extends waPushAdapter
 
             return array('reload' => true);
         } catch (waException $e) {
+            wa_dump($e);
             return array('errors' => $e->getMessage());
         }
     }
 
     public function addApp($domain)
     {
-        $api_token = $this->getSettings(self::API_TOKEN);
-        if (!$api_token) {
-            throw new waException(_ws('OneSignal User Auth Key is required.'));
+        $org_id = $this->getSettings(self::ORG_ID);
+        $org_key = $this->getSettings(self::ORG_KEY);
+        if (!$this->isLegacyV1() && empty($org_key) && empty($org_id)) {
+            return [];
+        }
+        if (strpos($domain, 'http://') === 0) {
+            // Support httpS only
+            return [];
+        }
+        if (!$this->isLegacyV1() && (empty($org_key) || empty($org_id))) {
+            throw new waException(_ws('OneSignal Organization ID and API Auth Key are required.'));
         }
 
         // Fetch data from API
         try {
             $sub_domain = str_replace(array('http://', 'https://'), '', $domain);
-            $sub_domain = str_replace('.', '_', $sub_domain);
+            $sub_domain = str_replace('.', '-', $sub_domain);
 
-            $request_data = array(
-                'name'                                 => 'WA Push '.$sub_domain,
+            $request_data = [
+                'name'                                 => 'WA '.$sub_domain,
                 'chrome_web_origin'                    => $domain,
                 'chrome_web_default_notification_icon' => wa()->getRootUrl(true).'wa-content/img/wa-logo.png',
-            );
+                'safari_site_origin'                   => $domain,
+                'safari_icon_256_256'                  => wa()->getRootUrl(true).'wa-content/img/wa-logo.png',
+                'site_name'                            => wa()->accountName(),
+            ];
+            if (!$this->isLegacyV1()) {
+                $request_data['organization_id'] = $org_id;
+            }
 
             // First create the app without chrome subdomain
             $app = $this->request('apps', $request_data, waNet::METHOD_POST);
@@ -332,27 +485,32 @@ class onesignalPush extends waPushAdapter
             throw $e;
         }
 
+        /* No more support for http (Support httpS only)
+
         // Then edit the app, trying to add a (semi-random) subdomain until there's no error.
         // This is only required for non-HTTPS domains.
-        if (substr($domain, 0, 8) !== 'https://') {
+        if (substr($domain, 0, 8) !== 'https://' && !empty($app)) {
             $i = 0;
             $updated = false;
             while (!$updated && $i < 4) {
                 $i++;
                 try {
-                    $request_data = array(
+                    $request_data = [
                         'chrome_web_origin'                    => $domain,
                         'chrome_web_sub_domain'                => $sub_domain,
                         'chrome_web_default_notification_icon' => '',
-                    );
-                    $app = $this->request('apps', $request_data, waNet::METHOD_PUT);
+                        'safari_site_origin'                   => $domain,
+                        'safari_icon_256_256'                  => '',
+                        'site_name'                            => wa()->accountName(),
+                    ];
+                    $app = $this->request('apps/'.$app['id'], $request_data, waNet::METHOD_PUT);
                     $updated = true;
                 } catch (waException $e) {
                     $sub_domain .= mt_rand(0, 99);
                     sleep(mt_rand(1, $i));
                 }
             }
-        }
+        } */
 
         self::clearCache();
 
@@ -365,15 +523,20 @@ class onesignalPush extends waPushAdapter
      */
     public function getApps()
     {
-        $api_token = $this->getSettings(self::API_TOKEN);
-        if (!$api_token) {
-            throw new waException(_ws('OneSignal User Auth Key is required.'));
+        $org_id = $this->getSettings(self::ORG_ID);
+        $org_key = $this->getSettings(self::ORG_KEY);
+        if (!$this->isLegacyV1() && empty($org_key) && empty($org_id)) {
+            return [];
         }
+        if (!$this->isLegacyV1() && (empty($org_key) || empty($org_id))) {
+            throw new waException(_ws('OneSignal Organization ID and API Auth Key are required.'));
+        }
+        $api_key = $this->isLegacyV1() ? $this->getSettings(self::API_TOKEN) : $org_key;
 
         $this->lock();
 
         // Valid cache exists?
-        $cache = $this->getCache('apps', $api_token);
+        $cache = $this->getCache('apps', $api_key);
         if ($cache->isCached()) {
             $this->unlock();
             return $cache->get();
@@ -414,8 +577,13 @@ class onesignalPush extends waPushAdapter
             $domain = wa()->getConfig()->getHostUrl();
         }
 
+        if (strpos($domain, 'http://') === 0) {
+            // Support httpS only
+            return null;
+        }
+
         foreach ($this->getApps() as $app) {
-            if ($app['chrome_web_origin'] == $domain) {
+            if (is_array($app) && isset($app['chrome_web_origin']) && $app['chrome_web_origin'] == $domain) {
                 return $app;
             }
         }
@@ -427,26 +595,45 @@ class onesignalPush extends waPushAdapter
     {
         $domains = array();
         foreach ($this->getApps() as $app) {
-            $domain = $app['chrome_web_origin'];
-            $domains[$domain] = array(
-                'name'      => $domain,
-                'connected' => true,
-            );
+            $domain = is_array($app) && isset($app['chrome_web_origin']) ? $app['chrome_web_origin'] : null;
+            if (!empty($domain) && strpos($domain, 'https://') === 0) {
+                $api_key = $this->getSettings(self::APP_KEY . '_' . $app['id']);
+                $domains[$domain] = array(
+                    'name'      => $domain,
+                    'id'        => $app['id'],
+                    'api_key'   => $api_key,
+                    'connected' => true,
+                );
+            }
         }
         return $domains;
     }
 
     //
     // API
+    // If $api_key === false no authorization header will be used
     //
-
     protected function request($api_method, $request_data = array(), $request_method = waNet::METHOD_GET)
     {
         $res = null;
         try {
-            $url = self::API_URL.$api_method;
+            $url = ($this->isLegacyV1() ? self::API_URL_V1 : self::API_URL_V2) .$api_method;
             $content = !empty($request_data) ? json_encode($request_data) : null;
-            $res = $this->getNet()->query($url, $content, $request_method);
+            $net = $this->getNet();
+            if (empty($net)) {
+                // Do not send notification
+                return null;
+            }
+            $res = $net->query($url, $content, $request_method);
+            if (waSystemConfig::isDebug()) {
+                $log = array(
+                    'api_method'     => $api_method,
+                    'data'           => $request_data,
+                    'request_method' => $request_method,
+                    'response'       => $res,
+                );
+                waLog::dump($log, 'push/onesignal.log');
+            }
         } catch (Exception $e) {
             $log = array(
                 'api_method'     => $api_method,
@@ -456,9 +643,31 @@ class onesignalPush extends waPushAdapter
                 'error_code'     => $e->getCode(),
             );
             waLog::dump($log, 'push/onesignal.log');
+            if ($this->force_expose_exceptions || $api_method !== 'notifications' && waRequest::method() === waRequest::METHOD_GET) {
+                throw $e;
+            }
         }
 
         return $res;
+    }
+
+    protected function setApiKey($api_key = null)
+    {
+        if ($api_key === null) {
+            $api_key = $this->isLegacyV1() ? $this->getSettings(self::API_TOKEN) : $this->getSettings(self::ORG_KEY);
+        }
+        if ($this->net_api_token !== $api_key) {
+            $this->net = null;
+            $this->net_api_token = $api_key;
+        }
+
+        return $this->net_api_token;
+    }
+
+    protected function clearApiKey()
+    {
+        $this->net = null;
+        $this->net_api_token = null;
     }
 
     /**
@@ -466,20 +675,25 @@ class onesignalPush extends waPushAdapter
      */
     protected function getNet()
     {
-        $api_token = $this->getSettings(self::API_TOKEN);
-        if (empty($this->net) || $api_token !== $this->net_api_token) {
-
-            $options = array(
-                'format' => waNet::FORMAT_JSON,
-            );
-
-            $custom_headers = array(
-                'timeout'       => 7,
-                'Authorization' => 'Basic '.(string)$api_token,
-            );
-
-            $this->net_api_token = $api_token;
-
+        if (empty($this->net)) {
+            if (empty($this->net_api_token) && $this->net_api_token !== false) {
+                if (empty($this->setApiKey())) {
+                    throw new waException(_ws('OneSignal API Key is required.'));
+                }
+            }
+            if ($this->net_api_token === self::EMPTY_API_KEY_TEMPLATE) {
+                // No api key for required app_id
+                // Do not send notifications
+                return null;
+            }
+            $options = [
+                'timeout' => 7,
+                'format' => waNet::FORMAT_JSON
+            ];
+            $custom_headers = [];
+            if ($this->net_api_token !== false) {
+                $custom_headers['Authorization'] = ($this->isLegacyV1() ? 'Basic ' : 'Key ') . $this->net_api_token;
+            }
             $this->net = new waNet($options, $custom_headers);
         }
 
@@ -538,5 +752,13 @@ class onesignalPush extends waPushAdapter
             $this->lock_fd = null;
         }
         return true;
+    }
+
+    protected function isLegacyV1()
+    {
+        $api_token = $this->getSettings(self::API_TOKEN);
+        $org_id = $this->getSettings(self::ORG_ID);
+        $org_key = $this->getSettings(self::ORG_KEY);
+        return !empty($api_token) && (empty($org_id) || empty($org_key));
     }
 }

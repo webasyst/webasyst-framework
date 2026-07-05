@@ -29,35 +29,19 @@
 
     <{if empty($albums)}h1{else}h2{/if} class="p-page-title">[`Photostream`]</{if empty($albums)}h1{else}h2{/if}>
 
-    {if !empty($photos)}   
+    {if !empty($photos)}
         {include file='photos-thumbs.html'}
     {/if}
     
-    
-    <!-- FOLLOW -->
-    <aside class="connect inline align-center">
-        {if !empty($theme_settings.facebook_likebox_code)}
+    {*
+        <!-- FOLLOW -->
+        <aside class="connect">
             <div class="likebox">
-                {$theme_settings.facebook_likebox_code}
+                 your custom social code widgets
             </div>
-        {/if}
-        {if !empty($theme_settings.twitter_timeline_code)}
-            <div class="likebox">
-                {$theme_settings.twitter_timeline_code}
-            </div>
-        {/if}
-        {if !empty($theme_settings.vk_widget_code)}
-            <div class="likebox">
-                {$theme_settings.vk_widget_code}
-            </div>
-        {/if}
-        {*
-        <div class="likebox">
-             your custom social widget
-        </div>
-        *}
-    </aside>
-    
+        </aside>
+    *}
+
 {else}
 
     <div class="welcome">
@@ -67,5 +51,5 @@
     <style>
         .page-content.with-sidebar { margin-left: 0; border-left: 0; }
     </style>
-            
+
 {/if}

@@ -107,17 +107,31 @@ class waContactAddressField extends waContactCompositeField
         return $value;
     }
 
-    public function prepareSave($value, waContact $contact = null)
+    public function prepareSave($value, ?waContact $contact = null)
     {
         if (isset($value[0])) {
             foreach ($value as &$v) {
+                $v = $this->clearEmpty($v);
                 $v = $this->setGeoCoords($v);
             }
             unset($v);
         } else {
+            $value = $this->clearEmpty($value);
             $value = $this->setGeoCoords($value);
         }
         return parent::prepareSave($value, $contact);
+    }
+
+    protected function clearEmpty($value) {
+        if (!isset($value['data'])) {
+            return $value;
+        }
+
+        $nonempty_subfields = array_filter((array)$value['data']);
+        if (empty(array_diff(array_keys($nonempty_subfields), ['country', 'lng', 'lat']))) {
+            return [];
+        }
+        return $value;
     }
 }
 

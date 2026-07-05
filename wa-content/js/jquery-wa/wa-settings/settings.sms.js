@@ -146,7 +146,7 @@ class WASettingsSMSTemplate {
         //
         let $sidebar = $('#js-sidebar-wrapper');
         $sidebar.find('ul li').removeClass('selected');
-        $sidebar.find('[data-id="sms-template"]').addClass('selected');
+        $sidebar.find('[data-id="sms"]').addClass('selected');
 
         // Init Ace
         if (that.template_areas.length) {

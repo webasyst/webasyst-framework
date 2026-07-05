@@ -135,6 +135,9 @@ const helpers = {
     if ('put' in method_value) {
       return 'put';
     }
+    if ('patch' in method_value) {
+      return 'patch';
+    }
     if ('delete' in method_value) {
       return 'delete';
     }

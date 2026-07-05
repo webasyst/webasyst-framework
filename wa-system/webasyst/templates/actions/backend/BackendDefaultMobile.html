@@ -2,8 +2,9 @@
 <html class="mobile">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <title>{$wa->accountName()}</title>
     <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-2.0.css?v={$wa->version(true)}" />
@@ -193,8 +194,8 @@
                                 {if $wa->user()->getRights('team', 'edit_announcements')}
                                     <div class="align-center">
                                         <a href="javascript:void(0)" class="js-new-announcement wa-announcement-button-new larger button rounded light-gray small custom-mx-16 custom-mx-auto-mobile">
-                                            <i class="fas fa-bell small text-gray custom-mr-4"></i>
-                                            [`Add announcement`]
+                                            <i class="icon webasyst-magic-wand-ai-black text-gray custom-mr-4"></i>
+                                            [s`Post`]
                                         </a>
                                     </div>
                                 {/if}
@@ -254,7 +255,7 @@
                                             {$_is_calendar_group = isset($today_group.calendar)}
                                             {foreach $today_group.contacts as $birthday_user}
                                             <div>
-                                                <a href="{$wa_backend_url}contacts/#/contact/{$birthday_user.id}" class="userpic userpic48 outlined" style="z-index:{$user_count - $birthday_user@index}">
+                                                <a href="{$wa_backend_url}team/id/{$birthday_user.id}" class="userpic userpic48 outlined" style="z-index:{$user_count - $birthday_user@index}">
                                                     <img src="{$birthday_user.photo_url_48}" alt="{$birthday_user.formatted_name|escape}">
 
                                                     {if $birthday_user@last && $birthday_user@iteration < 5}
@@ -280,7 +281,7 @@
                                             {$contact_count = count($today_group.contacts)}
                                             {foreach $today_group.contacts as $contact}
                                             <div>
-                                                <a href="{$wa_backend_url}contacts/#/contact/{$contact.id}" class="userpic userpic48 outlined" style="z-index:{$contact_count - $contact@index}">
+                                                <a href="{$wa_backend_url}team/id/{$contact.id}" class="userpic userpic48 outlined" style="z-index:{$contact_count - $contact@index}">
                                                     <img src="{$contact.photo_url_48}" alt="{$contact.formatted_name|escape}">
                                                     {if $contact@last && $contact@iteration < 5}
                                                         <span class="userstatus" style="background-color:{$today_group.bg_color|escape};color:{$today_group.font_color|escape}">

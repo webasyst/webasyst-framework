@@ -61,11 +61,21 @@ CLI;
 
     public function installDefaultVerificationChannel()
     {
+        // Create default Email channel (model does this internally) and set it as default
         $vcm = new waVerificationChannelModel();
         $channel = $vcm->getDefaultSystemEmailChannel();
         $channel_id = isset($channel['id']) ? $channel['id'] : null;
         $this->setVerificationChannelForDomainConfigs($channel_id);
         $this->setVerificationChannelForBackendConfig($channel_id);
+
+        // Create SMS channel
+        // (wa-config/sms.php is not written here, see waSms::getNoSettingsAdapter())
+        $vcm->addChannel(array(
+            'name' => _ws('System templates'),
+            'type' => waVerificationChannelModel::TYPE_SMS,
+            'address' => '*',
+            'system' => 0,
+        ));
     }
 
     protected function setVerificationChannelForDomainConfigs($channel_id)
@@ -130,7 +140,13 @@ CLI;
     public function connectToWaid($source='install.php')
     {
         if (!class_exists('waWebasystIDClientManager')) {
-            return; // paranoid
+            // paranoid
+            return [
+                'status' => false,
+                'details' => [
+                    'error_code' => 'class_not_exists',
+                ]
+            ];
         }
         try {
             $manager = new waWebasystIDClientManager();
@@ -147,6 +163,7 @@ CLI;
                     $log[] = "Error code {$error_code}: {$error_message}";
                     $log[] = wa_dump_helper($result);
                     waLog::log(join("\n", $log), 'webasyst/waWebasystIDClientManager.log');
+                    return $result;
                 }
             }
         } catch (waException $e) {
@@ -156,8 +173,15 @@ CLI;
             $log[] = "Call stack:";
             $log[] = $e->getFullTraceAsString();
             waLog::log(join("\n", $log), 'webasyst/waWebasystIDClientManager.log');
+            return [
+                'status' => false,
+                'details' => [
+                    'error_code' => $e->getCode(),
+                    'error_message' => $e->getMessage(),
+                ]
+            ];
         }
-
+        return ['status' => true];
     }
 
     protected function populateTable($table)

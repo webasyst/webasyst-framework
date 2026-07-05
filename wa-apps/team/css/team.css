@@ -2650,25 +2650,6 @@ svg {
 .t-settings-page .t-calendar-settings .t-calendar-item .button {
   margin: 0.35em 0 auto auto;
 }
-.t-welcome-page {
-  height: calc(100vh - 4rem);
-}
-.t-welcome-page .t-content-body .t-invite-wrapper .t-invite-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.t-welcome-page .t-content-body .t-invite-wrapper .t-invite-list .t-invite-item {
-  position: relative;
-  align-items: flex-start;
-}
-.t-welcome-page .t-content-body .t-invite-wrapper .t-invite-list .t-invite-item:hover .t-remove {
-  visibility: visible;
-}
-.t-welcome-page .t-content-body .t-invite-wrapper .t-invite-list .t-invite-item .t-remove {
-  visibility: hidden;
-  cursor: pointer;
-}
 /*
 //
 @import "./todo.styl";

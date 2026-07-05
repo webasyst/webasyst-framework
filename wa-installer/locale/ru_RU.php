@@ -66,7 +66,7 @@ return array(
     'Installation Guide'
     => 'Инструкции по установке',
     'install_guide_url'
-    => 'https://www.webasyst.ru/developers/docs/installation/',
+    => 'https://developers.webasyst.ru/docs/installation/',
     'Extracting Webasyst archive...'
     => 'Распаковка архива Вебасист...',
     'Check available updates'
@@ -157,8 +157,8 @@ return array(
     => 'Веб-сервер',
 
 
-    'Use friendly URLs'
-    => 'Есть возможность использовать ЧПУ',
+        'Use friendly URLs'
+    => 'Поддерживаются удобные для чтения адреса страниц, например, /page/1/',
     'Check archives and files checksum'
     => 'Проверка целостности архива с файлами установщика и приложениями Вебасиста',
     'Check folder rights for installation &amp; updates'

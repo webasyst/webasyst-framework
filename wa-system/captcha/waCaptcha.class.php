@@ -96,6 +96,11 @@ class waCaptcha
         return $this->getRealCaptcha()->isValid($code, $error);
     }
 
+    public function isInvisible()
+    {
+        return $this->getRealCaptcha()->isInvisible();
+    }
+
     public function __call($name, $arguments)
     {
         $captcha = $this->getRealCaptcha();

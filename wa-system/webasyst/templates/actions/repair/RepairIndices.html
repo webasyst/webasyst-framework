@@ -11,7 +11,8 @@
     </style>
 </head>
 <body>
-    <div class="block double-padded">
+<div id="wa">
+    <div id="wa-app" class="block double-padded box blank">
         <h1>[`Restoring of missing database indices and AUTO_INCREMENT values`]</h1>
         {if isset($comparison)}
             <form action="{$wa_backend_url}webasyst/repair/indices/" method="post" name="db-repair">
@@ -26,7 +27,18 @@
                     <tbody>
                         {foreach $comparison as $table_name => $query}
                             <tr>
-                                <td><input type="checkbox" class="table-selector" name="tables[]" value="{$table_name}"></td>
+                                <td>
+                                    <label>
+                                        <span class="wa-checkbox">
+                                            <input type="checkbox" class="table-selector" name="tables[]" value="{$table_name}">
+                                            <span>
+                                                <span class="icon">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </td>
                                 <td title="{ifset($table_definitions, $table_name, '')|escape}">{$table_name}</td>
                                 <td>{$query}</td>
                             </tr>
@@ -58,19 +70,20 @@
         {else}
             <h3>[`No errors found.`]</h3>
         {/if}
-    </div>
-    <script>
-        var elements = document.getElementsByClassName('table-selector');
-        for(var i = 0; i < elements.length; i++) {
-            var element = elements[i];
-            element.onclick = function() {
-                if (document.querySelector('input:checked') !== null) {
-                    document.getElementById('soft-selective').disabled = false;
-                } else {
-                    document.getElementById('soft-selective').disabled = true;
+        <script>
+            var elements = document.getElementsByClassName('table-selector');
+            for(var i = 0; i < elements.length; i++) {
+                var element = elements[i];
+                element.onclick = function() {
+                    if (document.querySelector('input:checked') !== null) {
+                        document.getElementById('soft-selective').disabled = false;
+                    } else {
+                        document.getElementById('soft-selective').disabled = true;
+                    }
                 }
             }
-        }
-    </script>
+        </script>
+    </div>
+</div>
 </body>
 </html>

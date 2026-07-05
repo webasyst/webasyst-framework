@@ -1,0 +1,15 @@
+<style>
+    .site-block-menu-wrapper { display: flex; /*grid-gap: 1em;*/ }
+    .site-block-menu > .site-block-menu-wrapper > .js-seq-wrapper > .seq-child { width: -webkit-fill-available; } 
+    .site-block-menu > a:after, .site-block-menu-wrapper > a:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+    .site-block-menu-wrapper { position: relative; }
+</style>

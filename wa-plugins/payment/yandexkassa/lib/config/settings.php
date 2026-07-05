@@ -11,10 +11,10 @@ return array(
         'title'        => 'Секретный ключ',
         'description'  => <<<HTML
 <span class="js-yandexkassa-registration-link" style="background-color: #e3ffc8; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%; border-radius: 8px;">
-Подключаясь к ЮКассе <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8%</b> на 3&nbsp;месяца.
+Подключаясь к ЮКассе <a href="https://www.webasyst.ru/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank" style="color: #09f;"><b>через Webasyst по этой ссылке</b></a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8%</b> на 3&nbsp;месяца.
 </span>
 <span class="js-yandexkassa-registration-link" style="font-weight: normal; font-size: 14px;color: black;">
-Чтобы получить shopID и ключ, <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">отправьте заявку на подключение</a>.
+Чтобы получить shopID и ключ, <a href="https://www.webasyst.ru/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">отправьте заявку на подключение</a>.
 </span>
 <br><br>
 HTML
@@ -43,7 +43,7 @@ HTML
             .'<br>'
             .'— к элементам заказа и стоимости доставки не применяются налоги'
             .'<br>'
-            .'— налог составляет 0%, 10% либо 20% и <em>включён</em> в стоимость элементов заказа и стоимость доставки',
+            .'— налог составляет 0%, 5%, 7%, 10%, 20% либо 22% и <em>включён</em> в стоимость элементов заказа и стоимость доставки',
         'control_type' => waHtmlControl::CHECKBOX,
     ),
     'payment_subject_type_product'  => array(
@@ -89,7 +89,7 @@ HTML
         'title'            => 'Передача ставок НДС',
         'control_type'     => waHtmlControl::SELECT,
         'description'      => 'Если ваша организация работает по ОСН, выберите вариант «Передавать ставки НДС по каждой позиции».<br>
-Ставка НДС может быть равна 0%, 10% или 20%. В настройках налогов в приложении выберите, чтобы НДС был включён в цену товара.<br>
+Ставка НДС может быть равна 0%, 5%, 7%, 10%, 20% или 22%. В настройках налогов в приложении выберите, чтобы НДС был включён в цену товара.<br>
 Если вы работаете по другой системе налогообложения, выберите «НДС не облагается».',
         'options_callback' => array($this, 'taxesOptions'),
     ),

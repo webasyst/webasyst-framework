@@ -45,7 +45,7 @@ var WaFrontendLogin = ( function($) {
             that.initConfirmView();
         }
 
-        that.initAuthAdapters();
+        //that.initAuthAdapters();
     };
 
     Self.prototype.initAuthAdapters = function() {

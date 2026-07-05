@@ -1,0 +1,163 @@
+{if !isset($selected)}{$selected = 'sitemap'}{/if}
+{$is_alias = ifset($domain.is_alias, null)}
+{$is_premium = waLicensing::check('site')->isPremium()}
+{$tabs = [
+    'sitemap' => [
+        'id' => 'sitemap',
+        'url' => "`$wa_app_url`map/overview/?domain_id=`$domain_id`",
+        'name' => _w('Site map'),
+        'icon' => 'sitemap'
+    ],
+    'settings' => [
+        'id' => 'settings',
+        'url' => "`$wa_app_url`settings/?domain_id=`$domain_id`",
+        'name' => _w('Settings'),
+        'icon' => 'cog'
+    ],
+    'design' => [
+        'id' => 'design',
+        'url' => "`$wa_app_url`themes/?domain_id=`$domain_id`#/themes/",
+        'name' => _w('Design themes'),
+        'icon' => 'palette'
+    ],
+    'plugins' => [
+        'id' => 'plugins',
+        'url' => "`$wa_app_url`plugins/?domain_id=`$domain_id`#/plugins/",
+        'name' => _w('Plugins'),
+        'icon' => 'plug'
+    ],
+    'files' => [
+        'id' => 'files',
+        'url' => "`$wa_app_url`files/?domain_id=`$domain_id`",
+        'name' => _w('Files'),
+        'icon' => 'folder-open'
+    ],
+    'variables' => [
+        'id' => 'variables',
+        'url' => "`$wa_app_url`variables/?domain_id=`$domain_id`",
+        'name' => '[s`Variables`]',
+        'icon' => 'dollar-sign'
+    ]
+]}
+
+<div class="s-site-header blank{if !empty($sidebar_mode)} custom-p-16 custom-pb-0{/if}">
+    <ul class="breadcrumbs custom-pb-8 ">
+        <li><a href="{$wa_app_url}?list">[`My sites`]</a></li>
+        <li class="js-site-breadcrumb hidden">
+            <a href="{$wa_app_url}map/overview/?domain_id={$domain_id}">{waIdna::dec($domain.title|escape)|replace:'www.':''}</a>
+        </li>
+        {if isset($tabs[$selected])}
+            <li class="js-site-breadcrumb hidden">
+                <a href="{$tabs[$selected].url}" class="js-disable-router">{$tabs[$selected].name|escape}</a>
+            </li>
+        {/if}
+    </ul>
+
+    <div class="js-site-tabs-with-domain s-site-tabs custom-mb-{if !empty($sidebar_mode)}8{else}32{/if}">
+        <h3 class="custom-my-0 site-domain-header">
+            <span class="break-word">{waIdna::dec($domain.title|escape)|replace:'www.':''}</span>
+            <a href="//{$domain.name}" target="_blank" class="smallest button circle light-gray" title="[`View`]">
+                <i class="icon fas fa-external-link-alt"></i>
+            </a>
+            <a href="javascript:void(0)" class="smallest button circle light-gray js-duplicate-site-button" title="[`Site copying`]">
+                <i class="icon far fa-clone"></i>
+            </a>
+        </h3>
+
+        <div class="flexbox middle">
+            <ul class="s-tabs tabs wide nowrap overflow-dropdown blank custom-pt-8 {if empty($sidebar_mode)}custom-px-16{else}custom-pl-0{/if}"{if empty($sidebar_mode)} style="margin: 0 -1.25rem;"{/if}>
+                {foreach $tabs as $t}
+                    {$disabled = $is_alias && ($t.id === 'sitemap' || $t.id === 'design')}
+                    <li class="{if $selected == $t.id}selected{/if} {if $disabled}disabled{/if}" {if $disabled}title="[`Section is not available for the site mirror`]"{/if}>
+                        <a href="{$t.url|escape}">
+                            <i class="icon small fas fa-{$t.icon}"></i>
+                            {$t.name|escape}
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+            {if !$is_premium}
+                <div class="s-premium-link-wrapper s-tabs nowrap">
+                    <a href="javascript:void(0)" id="js-premium-section" class="semibold text-purple"><i class="fas fa-crown text-purple"></i> [`Premium`]</a>
+                </div>
+            {/if}
+        </div>
+    </div>
+    <script>
+        ( function($) {
+            const $wrapper = $(".s-site-header");
+            const domain_id = {$domain_id|json_encode};
+
+            if (navigator.platform.indexOf('Mac') > -1) {
+                setTimeout(() => {
+                    $(".tabs", $wrapper).waTabs();
+                });
+            } else {
+                $(".tabs", $wrapper).waTabs();
+            }
+
+            {if empty($sidebar_mode)}
+            $(function() {
+                setTimeout(() => {
+                    $('.tabs').resize();
+                });
+            });
+            {/if}
+
+            $.site.breadcrumbs = new class {
+                constructor () {
+                    this.events = {};
+                }
+                toggleMode(all_links) {
+                    $('.js-site-tabs-with-domain', $wrapper).toggleClass('hidden', all_links);
+                    $('.js-site-breadcrumb', $wrapper).toggleClass('hidden', !all_links);
+                }
+                callEvent(event_name) {
+                    if (!event_name || !this.events[event_name]) {
+                        return;
+                    }
+                    this.events[event_name].forEach(fn => fn.call(null));
+                }
+                showRoot() {
+                    this.toggleMode(false);
+                    this.callEvent('click_parent');
+                    $(".tabs", $wrapper).trigger('resize');
+                }
+                showAll() {
+                    this.toggleMode(true);
+                    this.callEvent('click_child');
+                }
+                on(event_name, callback) {
+                    if (callback && ['click_parent', 'click_child'].includes(event_name)) {
+                        if (!this.events[event_name]) {
+                            this.events[event_name] = [];
+                        }
+                        this.events[event_name].push(callback);
+                    }
+                }
+            };
+
+            $('.js-site-breadcrumb', $wrapper).on('click', function () {
+                $.site.breadcrumbs.showRoot();
+            });
+
+            $('#js-premium-section').on('click', function () {
+                $.site.helper.showPremiumDialog();
+            });
+
+            $wrapper.on('click', '.js-duplicate-site-button', function() {
+                {if $is_premium}
+                $.post('?module=domains&action=duplicateDialog', { domain_id }, function(html) {
+                    if (html) {
+                        $.waDialog({ html });
+                    }
+                });
+                {else}
+                $.site.helper.showPremiumDialog();
+                {/if}
+                return false;
+            });
+
+        })(jQuery);
+    </script>
+</div>

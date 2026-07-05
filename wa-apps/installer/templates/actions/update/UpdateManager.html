@@ -176,8 +176,7 @@ $(document).ready( function() {
                     {{/if}}
                     {/literal}{/if}{literal}
                 </div>
-                <div id="installer-update-complete-log">
-                    <span class="icon"><i class="fas fa-file-alt"></i></span>
+                <div id="installer-update-complete-log" class="small">
                     <a href="?module=update&amp;action=downloadlog">[`Download installation log`]</a>
                     <span class="hint">(.txt)</span>
                 </div>
@@ -221,7 +220,7 @@ $(document).ready( function() {
                         {{if (state_class!=null)}}<i id="update-raw-state-icon" class="fas fa-{{if (state_class == 'yes')}}check-circle{{else}}spinner wa-animation-spin speed-1500 text-gray{{/if}}"></i>{{/if}}
                     </h3>
                     {{each stages}}{{if ($value) && ($value.chunk_id)}}
-                    <p class="custom-my-0">
+                    <p class="custom-my-4 small">
                         <span class="gray">${$value.datetime}</span> <span class="i-app-name">${$value.chunk_id.translate()}</span> ${$value.stage_name.translate()}
                     {{if $value.stage_status == 'heartbeat'}}
                         <i class="fas fa-spinner wa-animation-spin speed-1500 text-gray"></i>

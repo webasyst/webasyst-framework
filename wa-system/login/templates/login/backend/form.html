@@ -1,18 +1,18 @@
-{if $is_onetime_password_auth_type}
-    {include file="./onetime_password_form.inc.html" inline}
-{else}
-    {include file="./default_form.inc.html" inline}
-{/if}
-
 {if $webasyst_id_auth_url && !$bind_with_webasyst_contact}
     <div class="waid-login">
-        <span class="separator">[s`or`]</span>
         <a href="{$webasyst_id_auth_url}" class="waid-auth-link js-webasyst-auth-link"><span class="icon"></span>&nbsp;[s`Sign in with`]&nbsp;Webasyst ID</a>
-        <a href="#" class="hint js-waid-hint">[s`What is it?`]</a>
         {if !empty($webasyst_id_auth_result) && empty($webasyst_id_auth_result.status)}
             <span class="error" data-code="{$webasyst_id_auth_result.details.error_code|default:''}">
             {$webasyst_id_auth_result.details.error_message|default:_ws('Unknown authorization error. Sign in with a login and a password.')}
         </span>
         {/if}
     </div>
+    <div class="waid-login custom-my-20">
+        <span class="separator">[s`or`]</span>
+    </div>
+{/if}
+{if $is_onetime_password_auth_type}
+    {include file="./onetime_password_form.inc.html" inline}
+{else}
+    {include file="./default_form.inc.html" inline}
 {/if}

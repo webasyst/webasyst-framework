@@ -79,7 +79,7 @@ abstract class waLoginAction extends waBaseLoginAction
     protected function saveReferer()
     {
         if (!waRequest::param('secure')) {
-            $referer = waRequest::server('HTTP_REFERER');
+            $referer = waRequest::server('HTTP_REFERER', '', 'string');
             $root_url = wa()->getRootUrl(true);
             if ($root_url != substr($referer, 0, strlen($root_url))) {
                 $this->getStorage()->del('auth_referer');

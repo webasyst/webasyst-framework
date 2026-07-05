@@ -1,31 +1,41 @@
-.brick .icon {
+.sidebar-header .bricks {
+  width: 100%;
+  display: block;
+}
+.sidebar-header .bricks .dropdown-body {
+  width: calc(100% - 2.5rem);
+  min-width: calc(100% - 2.5rem);
+  left: -1px;
+}
+.sidebar-header .brick .icon {
   width: 3rem;
   height: 3rem;
   margin-right: 0.5rem;
 }
-.brick .count {
+.sidebar-header .brick .count {
   color: var(--gray);
   display: block;
   white-space: nowrap;
 }
-.brick .empty {
+.sidebar-header .brick .empty {
   color: var(--light-gray);
   display: block;
   white-space: nowrap;
 }
-.brick .app-wrapper {
+.sidebar-header .brick .app-wrapper {
   vertical-align: top;
   padding-top: 0.25rem;
   display: inline-block;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.brick .app-name {
+.sidebar-header .brick .app-name {
   font-size: 1rem;
   padding-bottom: 0.5rem;
   display: block;
   white-space: nowrap;
 }
+
 .app-icon {
   background-size: 1.25rem 1.25rem;
   left: -0.125rem;
@@ -37,15 +47,6 @@
   width: 1.25rem;
   height: 1.25rem;
   margin-right: 0.25rem;
-}
-.bricks {
-  width: 100%;
-  display: block;
-}
-.bricks .dropdown-body {
-  width: calc(100% - 2.5rem);
-  min-width: calc(100% - 2.5rem);
-  left: -1px;
 }
 
 pre { word-break: break-word; white-space: pre-wrap; }
@@ -62,5 +63,6 @@ pre { word-break: break-word; white-space: pre-wrap; }
 .a-get { background-color: var(--blue); }
 .a-post { background-color: var(--orange); }
 .a-put { background-color: var(--purple); }
+.a-patch { background-color: var(--pink); }
 .a-delete { background-color: var(--brown); }
 .a-unknown { background-color: var(--gray); }

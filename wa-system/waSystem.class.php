@@ -72,7 +72,7 @@ class waSystem
      * @throws  waException
      * @see wa()
      */
-    public static function getInstance($name = null, waSystemConfig $config = null, $set_current = false)
+    public static function getInstance($name = null, ?waSystemConfig $config = null, $set_current = false)
     {
         if ($name === null) {
             if ($config && $config instanceof waAppConfig) {
@@ -503,7 +503,7 @@ class waSystem
         }
     }
 
-    public function getAuthAdapters($domain = null)
+    public function getAuthAdapters($domain = null, $omnipresent_only = false)
     {
         $result = array();
         $config = $this->getAuthConfig($domain);
@@ -513,8 +513,15 @@ class waSystem
         if (!empty($config['adapters'])) {
             foreach ($config['adapters'] as $provider => $params) {
                 if ($params) {
+                    if ($omnipresent_only && empty($params['is_omnipresent'])) {
+                        continue;
+                    }
                     try {
                         $result[$provider] = $this->getAuth($provider, $params);
+                        if ($omnipresent_only && !$result[$provider] instanceof waiAuthAdapterOmnipresent) {
+                            unset($result[$provider]);
+                            continue;
+                        }
                     } catch (waException $e) {
                         // adapter does not work, skip it
                     }
@@ -925,6 +932,17 @@ class waSystem
                 waFiles::create($this->getConfig()->getPath('cache').'/config');
                 $all_apps = include($this->getConfig()->getPath('config', 'apps'));
                 $all_apps['webasyst'] = true;
+
+                // Force enable Installer app in case Webasyst ID is used.
+                // Installer is required for WAID to work properly.
+                if (empty($all_apps['installer'])) {
+                    try {
+                        $waid_enabled = $this->getSetting('waid_credentials', null, 'webasyst');
+                        $all_apps['installer'] = !!$waid_enabled;
+                    } catch (Throwable $e) {
+                    }
+                }
+
                 self::$apps = array();
                 foreach ($all_apps as $app => $enabled) {
                     if ($enabled) {

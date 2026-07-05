@@ -1,0 +1,75 @@
+<div class="sidebar d-sandbox-column bordered-right">
+    <form method="post" class="block fields form width100px" id="d-form-compress">
+        {$wa->csrf()}
+        
+        <div class="field">
+            <div class="name">[`Category`]</div>
+            <div class="value">
+                <select name="product" id="d-product-category">
+                    <option value=""></option>
+                    <option value="plugin">[`Plugins`]</option>
+                    <option value="systemplugin">[`System plugins`]</option>
+                    <option value="theme">[`Themes`]</option>
+                    <option value="widget">[`Widgets`]</option>
+                    <option value="systemwidget">[`System widgets`]</option>
+                    <option value="app">[`Apps`]</option>
+                </select>
+            </div>
+        </div>
+        
+        
+        <div class="field hide-all show-plugin show-theme show-widget">
+            <div class="name">[`Application`]</div>
+            <div class="value">
+                <select name="app_id" id="d-product-app">
+                    <option value=""></option>
+                    {foreach $apps as $app_id => $app}
+                    <option value="{$app_id}" data-themes="{!empty($app['themes'])}" data-plugins="{!empty($app['plugins'])}">{$app['name']|escape}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        
+        <div class="field hide-all show-systemplugin">
+            <div class="name">[`Type`]</div>
+            <div class="value">
+                <select name="type">
+                    <option value=""></option>
+                    <option value="shipping">[`Shipping`]</option>
+                    <option value="payment">[`Payment`]</option>
+                    <option value="sms">SMS</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="field">
+            <div class="name">ID</div>
+            <div class="value">
+                <input name="id" type="text" id="d-product-id" required>
+            </div>
+        </div>
+        
+        <div class="field">
+            <div class="value submit">
+            <input type="submit" class="button green" value="Ok">
+            <span class="hint">[`Alt+Enter`]</span>
+            </div>
+        </div>
+    </form>
+    <div class="clear-left"></div>
+</div>
+
+<div class="sidebar d-sandbox-column">
+    <div class="block">
+        <div class="d-header"><h2>[`Result`]</h2></div>
+    </div>
+    <div class="block" id="d-compress-result"></div>
+    <div class="clear-left"></div>
+</div>
+
+<div class="clear"></div>
+
+{wa_js}
+    {$wa_url}wa-content/js/jquery-wa/wa.core.js
+    {$wa_app_static_url}js/compress.js
+{/wa_js}

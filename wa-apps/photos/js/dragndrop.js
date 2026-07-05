@@ -26,6 +26,8 @@
                 fallbackOnBody: false,
                 swapThreshold: 0.45,
                 dragoverBubble: true,
+                delay: 200,
+                delayOnTouchOnly: true,
                 onAdd(event) {
                     // добавление элемента в группу
                     const $closest_li = event.to.closest('li')

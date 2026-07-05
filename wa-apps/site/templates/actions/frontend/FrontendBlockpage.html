@@ -1,0 +1,27 @@
+{*
+* Default layout for block page in frontend.
+* Used in case design theme does not specify its own custom layout.
+*
+*}
+<!DOCTYPE html>
+   <html lang="{if $wa->locale() == 'ru_RU'}ru{else}en{/if}">
+   <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>{$wa->title()|escape}</title>
+        <meta name="keywords" content="{$wa->meta('keywords')|escape}">
+        <meta name="description" content="{$wa->meta('description')|escape}">
+        <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}">
+        {if !empty($page_params.canonical)}
+            <link rel="canonical" href="{$page_params.canonical}">
+        {/if}
+        <link rel="icon" href="/favicon.ico">
+        <link rel="shortcut icon" href="/favicon.ico">
+        {$wa->head()}
+        <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+        <script src="{$wa_app_static_url}js/jquery/jquery-ui.min.js"></script>
+        <link href="{$wa_app_static_url}css/site.min.css?v={$wa->version()}" rel="stylesheet">
+   </head>
+   <body>
+       {$rendered_page_html}
+   </body>
+   </html>

@@ -1938,11 +1938,10 @@ const Page = ( function($, backend_url) {
                 const dateString = new Intl.DateTimeFormat(locale, date_options).format(now);
                 let timeString = new Intl.DateTimeFormat(locale, time_options).format(now);
 
-                if (now.getSeconds() % 2 === 0) {
-                    timeString = timeString.replace(':', ' ');
-                }
+                const timeArr = timeString.split(':');
+                timeString = `${timeArr[0]}<span${now.getSeconds() % 2 > 0 ? ' style="visibility:hidden"' : ''}>:</span>${timeArr[1]}`;
 
-                $widget_place.text(`${dateString} ${timeString}`);
+                $widget_place.html(`${dateString} ${timeString}`);
             }
         }
     }

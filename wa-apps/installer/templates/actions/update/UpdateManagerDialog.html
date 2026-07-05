@@ -4,6 +4,7 @@
     <div class="dialog-body">
         <div class="dialog-content">
             <div class="width-80 custom-mt-48 custom-mx-auto align-center">
+                <i class="fas fa-check-circle text-green js-update-success" style="display:none;font-size:5rem;"></i>
                 <h4>{strip}
                     {_w('Installing the application','Installing applications', count($queue_apps) - $count_installer_dependencies - 1)}
                     &nbsp;
@@ -23,7 +24,11 @@
                     {join(', ', $product_names)|escape}
                 {/strip}</h4>
             </div>
-            <div class="width-70 custom-mt-24 custom-mb-48 custom-mx-auto align-center">
+            <div class="width-80 custom-mt-24 custom-mb-48 custom-mx-auto align-center">
+                <div class="js-update-success custom-mt-32" style="display: none;">
+                    <a href="javascript:void(0)" class="js-go-to-settings button green">[s`Go to settings`]</a>
+                    <a href="javascript:void(0)" class="js-close-dialog button light-gray">[`Close`]</a>
+                </div>
                 <div class="progressbar" id="installation-progressbar"></div>
             </div>
         </div>
@@ -45,7 +50,7 @@
 
         var installation_in_progress = true;
 
-        $dialog.on('installer_dialog_ready', function(event, dialog) {
+        $dialog.on('installer_dialog_ready', function(event, dialog, is_trial_theme) {
 
             let animator = new ProgressbarAnimation($progressbar.waProgressbar({
                     "display-text": false
@@ -57,9 +62,14 @@
                 if (installation_finished) {
                     $dialog.trigger('installer_installation_successfull');
                 } else {
-                    $dialog.trigger('installer_installation_failed');
-                    dialog.close();
-                    $.waDialog.alert(general_error_alert_params);
+                    if(is_trial_theme) {
+                        // считаем, что при установке пробной версии темы, ошибка не критична
+                        setTimeout(() => $dialog.trigger('installer_installation_successfull'), 3000);
+                    } else {
+                        $dialog.trigger('installer_installation_failed');
+                        dialog.close();
+                        $.waDialog.alert(general_error_alert_params);
+                    }
                 }
             });
 

@@ -341,6 +341,8 @@ class waFiles
                 return 'application/x-shockwave-flash';
             case 'eml':
                 return 'message/rfc822';
+            case 'webmanifest':
+                return 'application/manifest+json';
 
             default:
                 return 'application/octet-stream';
@@ -621,7 +623,7 @@ class waFiles
         $w = stream_get_wrappers();
         if (in_array($s, $w) && ini_get('allow_url_fopen')) {
             $context = self::getStreamContext($options);
-            if ($fp = @fopen($url, 'rb', null, $context)) {
+            if ($fp = @fopen($url, 'rb', false, $context)) {
                 try {
                     if (self::$fp = @fopen($path, 'wb')) {
                         self::$size = stream_copy_to_stream($fp, self::$fp);

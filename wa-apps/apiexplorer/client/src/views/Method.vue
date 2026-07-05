@@ -19,12 +19,53 @@
             </h1>
         </div>
         <div v-if="!!name" class="flexbox full-width custom-mt-32">
-            <p v-if="summary">{{ summary }}</p>
-            <p v-else class="gray"><em>&lt;{{ $t('No method description') }}&gt;</em></p>
-            <div v-if="isSwagger">
-                <a :href="swaggerDescriptionUrl" :title="$t('OpenAPI Document')"><img :src="swaggerIconUrl" style="width: 2rem;" /></a>
+            <div>
+                <p v-if="summary">
+                    {{ summary }}
+                    <span v-if="externalDocUrl" class="badge button-light-gray small nowrap">
+                        <a :href="externalDocUrl">
+                            <i class="fas fa-info-circle"></i> {{ $t('Documentation') }} <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </span>
+                </p>
+                <p v-else>
+                    <span v-if="externalDocUrl">
+                        <a :href="externalDocUrl">
+                            <i class="fas fa-info-circle"></i> {{ $t('Method documentation') }} <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </span>
+                    <em v-else class="gray">&lt;{{ $t('No method description') }}&gt;</em>
+                </p>
+            </div>
+            <div v-if="isSwagger" class="nowrap">
+                <a v-if="show_method_description" href="javascript:void(0)" :title="$t('Hide OpenAPI method description')" @click="show_method_description=false" class="button circle gray"><i class="fas fa-times"></i></a>
+                <a v-else href="javascript:void(0)" :title="$t('Show OpenAPI method description')" @click="show_method_description=true" class="button circle success"><i class="fas fa-book-open"></i></a>
+                <a :href="swaggerDescriptionUrl" :title="$t('Download OpenAPI document')" class="button circle success"><i class="fas fa-file-download"></i></a>
             </div>
             <div v-else></div>
+        </div>
+
+        <div class="custom-mt-8" v-if="isSwagger && show_method_description">
+            <ul class="tabs">
+                <li class="grey">{{ $t("OpenAPI method description:") }}</li>
+                <li :class="description_tab_selected == 'raw' ? ['selected'] : []">
+                    <a href="javascript:void(0);" @click="description_tab_selected='raw'">
+                        {{ $t("Raw description") }}
+                    </a>
+                </li>
+                <li :class="description_tab_selected == 'structure' ? ['selected'] : []">
+                    <a href="javascript:void(0);" @click="description_tab_selected='structure'">
+                        {{ $t("Structure") }}
+                    </a>
+                </li>
+                <li><button href="javascript:void(0)" @click="show_method_description=false" class="smaller nobutton">{{ $t("hide description") }}</button></li>
+            </ul>
+            <div :class="description_tab_selected == 'structure' ? ['fields'] : ['hidden']" style="margin-top: -1rem;">
+                <structure :structure="openApiDescription" :deep="0" :collapse="false" />
+            </div>
+            <div :class="description_tab_selected == 'raw' ? [] : ['hidden']">
+                <code-block :value="openApiDescription" />
+            </div>
         </div>
 
         <div v-if="method.bazaexplorerdata && method.bazaexplorerdata.returns">
@@ -37,7 +78,6 @@
             </div>
             <div class="hint custom-mb-16" v-if="show_returns_description" v-html="method.bazaexplorerdata.returns"></div>
         </div>
-        <hr />
 
         <div class="fields custom-mb-32">
             <div class="fields-group">
@@ -84,32 +124,24 @@
                             :schema="param.schema"
                             :required="param.required"
                             :description="param.description"
+                            :post_body_type="post_body_type"
                             v-model="api_params[param.name]"
                             @updated="checkRequestDataPresence"
                         />
                     </div>
                 </div>
             </div>
-            <div v-if="type !== 'GET' && post_data_schema.type === 'object'" class="fields-group">
+            <div v-if="type !== 'GET' && post_data_schema" class="fields-group">
                 <div>{{ $t('Request body parameters') }}</div>
-                <div v-for="[param, schema] of Object.entries(post_data_schema.properties)" :key="param" class="field">
-                    <div class="name for-input">
-                        <label :for="param">
-                            {{ param }}
-                            <span v-if="post_data_schema.required && post_data_schema.required.includes(param)" class="state-caution">*</span>
-                        </label>
-                    </div>
-                    <div class="value">
-                        <schema-input
-                            :name="param"
-                            :schema="schema"
-                            :description="schema.description"
-                            :required="post_data_schema.required && post_data_schema.required.includes(param)"
-                            v-model="api_request_body[param]"
-                            @updated="checkRequestDataPresence"
-                        />
-                    </div>
-                </div>
+                <schema-input
+                    name="body"
+                    :schema="post_data_schema"
+                    :description="post_data_schema.description || ''"
+                    :post_body_type="post_body_type"
+                    :required="false"
+                    v-model="api_request_body"
+                    @updated="checkRequestDataPresence"
+                />
             </div>
         </div>
         <div v-else>
@@ -125,12 +157,7 @@
                             <div v-if="method.bazaexplorerdata && method.bazaexplorerdata.params_get" class="hint custom-mt-0">
                             <ul>
                                 <li v-for="param in method.bazaexplorerdata.params_get" :key="param.name" class="custom-mb-4">
-                                    <strong>{{ param.name }}</strong>
-                                    <span v-if="param.is_optional == 1">
-                                        
-                                    </span>
-                                    <span v-else class="state-caution"> *</span> &mdash;
-                                    {{ param.description }}
+                                    <parameter-description :parameter="param" />
                                 </li>
                             </ul>
                             </div>
@@ -154,6 +181,7 @@
                 </ul>
                 <div v-if="post_body_tab === 'params'" class="custom-mt-4">
                     <table class="borderless custom-mb-8">
+                    <tbody>
                         <tr>
                             <th>{{ $t('Key') }}</th>
                             <th class="max-width">{{ $t('Value') }}</th>
@@ -170,22 +198,18 @@
                                 <button class="circle outlined light-gray small" @click="api_post_params.splice(index, 1)"><i class="fas fa-times"></i></button>
                             </td>
                         </tr>
+                    </tbody>
                     </table>
                     <button class="outlined light-gray small" @click="api_post_params.push(['', ''])"><i class="fas fa-plus"></i> {{ $t('Add param') }}</button>
                 </div>
                 <div v-if="post_body_tab === 'raw'" class="custom-mt-16">
-                    <textarea v-model="api_post_data" style="width: 100%; height: 160px;" @input="checkRequestDataPresence" placeholder="Raw request body"></textarea>
+                    <textarea v-model="api_post_data" style="width: 100%; height: 160px;" @input="checkRequestDataPresence" :placeholder="$t('Raw request body')"></textarea>
                 </div>
 
                 <div v-if="method.bazaexplorerdata && method.bazaexplorerdata.params_post" class="hint custom-mt-8">
                 <ul>
                     <li v-for="param in method.bazaexplorerdata.params_post" :key="param.name" class="custom-mb-4">
-                        <strong>{{ param.name }}</strong>
-                        <span v-if="param.is_optional == 1">
-                            
-                        </span>
-                        <span v-else class="state-caution"> *</span> &mdash;
-                        {{ param.description }}
+                        <parameter-description :parameter="param" />
                     </li>
                 </ul>
                 </div>
@@ -224,9 +248,9 @@
             <div v-if="response_info.description" v-html="descriptionMarkdown"></div>
             <div>
                 <ul class="tabs bordered-bottom large">
-                    <li v-if="response_info.schema && Object.keys(response_info.schema).length > 0" :class="response_tab_smart==='data' ? ['selected'] : []">
+                    <li v-if="api_response.body && response_info.schema && Object.keys(response_info.schema).length > 0" :class="response_tab_smart==='data' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="switchResponseTab('data')">
-                            {{ $t('Result data') }}
+                            Result data
                         </a>
                     </li>
                     <li :class="response_tab_smart==='raw' ? ['selected'] : []">
@@ -239,8 +263,13 @@
                             {{ $t('Request') }}
                         </a>
                     </li>
+                    <li v-if="response_info.schema && Object.keys(response_info.schema).length > 0" :class="response_tab_smart==='schema' ? ['selected'] : []">
+                        <a href="javascript:void(0);" @click="response_tab='schema'">
+                            Result schema
+                        </a>
+                    </li>
                 </ul>
-                <div v-if="response_tab_smart === 'data' && response_info.schema && Object.keys(response_info.schema).length > 0" class="fields custom-mt-16">
+                <div v-if="response_tab_smart === 'data' && api_response.body && response_info.schema && Object.keys(response_info.schema).length > 0" class="fields custom-mt-16">
                     <schema-data
                         :schema="response_info.schema"
                         :value="api_response.body"
@@ -285,11 +314,26 @@
                         </div>
                     </div>
                     <div class="custom-pt-16 custom-pb-8 bold">Body</div>
-                    <code-block :value="api_response.body || api_response.data" :error="api_response.status >= 400" />
+                    <span v-if="api_binary_response">
+                        <img v-if="['image/jpeg', 'image/png', 'image/webp'].includes(response_content_type)" :src="api_binary_response"/>
+                        <a v-else :href="api_binary_response" :download="binary_response_file_name">{{ $t("File") }} <strong v-if="binary_response_file_name">{{ binary_response_file_name }}</strong></a>
+                    </span>
+                    <code-block v-else-if="response_body" :value="response_body" :error="api_response.status >= 400" />
+                    <div v-else class="small highlighted dark-mode-inverted custom-p-8">
+                        <em class="gray">&lt;{{ $t('empty') }}&gt;</em>
+                    </div>
                 </div>
-                <!--
-                <pre v-else-if="response_tab_smart === 'schema'" class="small highlighted dark-mode-inverted custom-p-8" v-html="prettifyJson(response_info.schema)"></pre>
-                -->
+                
+                <div v-if="response_tab_smart === 'schema' && response_info.schema && Object.keys(response_info.schema).length > 0" class="fields custom-mt-16">
+                    <schema-info
+                        :schema="response_info.schema"
+                        :deep="0"
+                        :iden="'root'"
+                        :collapsable="true"
+                    />
+                </div>
+                <!--pre v-else-if="response_tab_smart === 'schema'" class="small highlighted dark-mode-inverted custom-p-8" v-html="prettifyJson(response_info.schema)"></pre-->
+                
             </div>
         </div>
         <p v-else-if="api_error" class="state-error">{{ api_error }}</p>
@@ -299,19 +343,25 @@
 <script>
 import Axios from 'axios';
 import { marked } from 'marked';
-import SchemaInput from '@/components/SchemaInput';
-import SchemaData from '@/components/SchemaData';
-import Token from '@/components/Token';
-import CodeBlock from '@/components/CodeBlock';
-import { swaggerUrl, appStaticUrl } from '@/funcs'
+import SchemaInput from '@/components/SchemaInput.vue';
+import SchemaData from '@/components/SchemaData.vue';
+import SchemaInfo from '@/components/SchemaInfo.vue';
+import Token from '@/components/Token.vue';
+import CodeBlock from '@/components/CodeBlock.vue';
+import Structure from '@/components/Structure.vue';
+import ParameterDescription from '@/components/ParameterDescription.vue';
+import { swaggerUrl } from '@/funcs.js'
 import { prettyPrintJson } from 'pretty-print-json';
 export default {
     name: "Method",
     components: {
         SchemaInput,
         SchemaData,
+        SchemaInfo,
+        Structure,
         Token,
-        CodeBlock
+        CodeBlock,
+        ParameterDescription
     },
     data() {
         return {
@@ -333,6 +383,8 @@ export default {
             api_post_data: "",
             api_post_params: [['', '']],
             api_response: null,
+            api_binary_response: null,
+            binary_response_file_name: null,
             api_error: null,
             api_params: {},
             api_request: null,
@@ -342,7 +394,9 @@ export default {
             response_tab: 'data',
             post_body_tab: 'params',
             show_token: false,
-            show_returns_description: false
+            show_returns_description: false,
+            show_method_description: false,
+            description_tab_selected: 'raw'
         };
     },
     computed: {
@@ -351,21 +405,6 @@ export default {
         },
         user() {
             return this.$store.getters.current_user;
-        },
-        summary() {
-            if (!this.method) {
-                return '';
-            }
-            if (this.method.post && this.method.post.summary) {
-                return this.method.post.summary;
-            }
-            if (this.method.get && this.method.get.summary) {
-                return this.method.get.summary;
-            }
-            if (this.method.bazaexplorerdata && this.method.bazaexplorerdata.description) {
-                return this.method.bazaexplorerdata.description;
-            }
-            return false;
         },
         type() {
             if (!this.method) {
@@ -377,11 +416,25 @@ export default {
                 }
                 return this.method.type;
             }
-            if ('post' in this.method) {
-                return 'POST';
+            for (const m of ['get', 'post', 'put', 'patch', 'delete']) {
+                if (m in this.method) {
+                    return m.toUpperCase();
+                }
             }
-            if ('get' in this.method) {
-                return 'GET';
+            return false;
+        },
+        typeLc() {
+            return this.type.toLowerCase();
+        },
+        summary() {
+            if (!this.method) {
+                return '';
+            }
+            if (this.typeLc in this.method && this.method[this.typeLc].summary) {
+                return this.method[this.typeLc].summary;
+            }
+            if (this.method.bazaexplorerdata && this.method.bazaexplorerdata.description) {
+                return this.method.bazaexplorerdata.description;
             }
             return false;
         },
@@ -390,6 +443,25 @@ export default {
                 return false;
             }
             return 'isSwagger' in this.method && this.method.isSwagger;
+        },
+        openApiDescription() {
+            if (!this.isSwagger) {
+                return {};
+            }
+            let desc = {};
+            Object.assign(desc, this.method);
+            delete desc.isSwagger;
+            delete desc.http_type;
+            return desc;
+        },
+        externalDocUrl() {
+            if (!this.isSwagger) {
+                return false;
+            }
+            if (this.typeLc in this.method && 'externalDocs' in this.method[this.typeLc] && 'url' in this.method[this.typeLc].externalDocs) {
+                return this.method[this.typeLc].externalDocs.url;
+            }
+            return false;
         },
         methodQueryParams() {
             if (!this.isSwagger) {
@@ -403,15 +475,15 @@ export default {
         },
         post_data_schema() {
             if (!this.post_body_type) {
-                return {};
-            }
-            return this.method.post.requestBody.content[this.post_body_type].schema;
-        },
-        post_body_type() {
-            if (!this.method || !this.isSwagger || !('post' in this.method) || !('requestBody' in this.method.post)) {
                 return null;
             }
-            const bodyTypes = this.method.post.requestBody.content;
+            return this.method[this.typeLc].requestBody.content[this.post_body_type].schema;
+        },
+        post_body_type() {
+            if (!this.method || !this.isSwagger || !(this.typeLc in this.method) || !('requestBody' in this.method[this.typeLc])) {
+                return null;
+            }
+            const bodyTypes = this.method[this.typeLc].requestBody.content;
             if ('application/json' in bodyTypes) {
                 return 'application/json';
             }
@@ -421,7 +493,7 @@ export default {
             if ('multipart/form-data' in bodyTypes) {
                 return 'multipart/form-data';
             }
-            return null;
+            return Object.keys(bodyTypes)[0];
         },
         response_info() {
             if (!this.isSwagger || !this.api_response || !this.type
@@ -442,8 +514,23 @@ export default {
             }
             return { schema: schema, description: response.description };
         },
+        response_body() {
+            return this.isSwagger ? 
+                ((this.response_content_type.startsWith('application/json') ? this.api_response.body : this.escapeHtml(this.api_response.text)) || this.escapeHtml(this.api_response.text)) 
+                : this.api_response.data;
+        },
+        response_content_type() {
+            if ('content-type' in this.api_response.headers) {
+                return this.api_response.headers['content-type'].toLowerCase();
+            }
+            return '';
+        },
         response_tab_smart() {
-            if (this.response_tab === 'data' && (!this.response_info.schema || Object.keys(this.response_info.schema).length == 0)) {
+            if (this.response_tab === 'data' && (
+                !this.api_response.body || 
+                !this.response_info.schema || 
+                Object.keys(this.response_info.schema).length == 0
+            )) {
                 return 'raw';
             }
             return this.response_tab;
@@ -455,13 +542,11 @@ export default {
             return document.location.protocol + '//' + document.location.host + window.appState.rootUrl + 'api.php/' + this.name;
         },
         swaggerDescriptionUrl() {
-            return document.location.protocol + '//' + document.location.host + swaggerUrl(this.app.id);
-        },
-        swaggerIconUrl() {
-            return appStaticUrl() + '/img/openapis-icon.svg';
+            return swaggerUrl(this.app.id);
         }
     },
     async mounted() {
+        scroll(0, 0);
         this.name = this.$route.params.name;
         if (this.name) {
             const app_id = this.name.split('.')[0];
@@ -496,9 +581,10 @@ export default {
                     this.$store.commit('load_method', { app_id: this.app.id, method_name: this.name, method: this.method });
                 }
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         }
+        
         this.show_returns_description = this.method.bazaexplorerdata && this.method.bazaexplorerdata.returns && this.method.bazaexplorerdata.returns.length <= 500;
         const storedData = JSON.parse(localStorage.getItem('method:' + this.name));
         if (storedData) {
@@ -516,6 +602,11 @@ export default {
     },
     methods: {
         async call() {
+            this.api_error = null;
+            this.api_response = null;
+            this.binary_response_file_name = null;
+            this.api_binary_response = null;
+
             const requestInterceptor = (request) => {
                 this.api_request = request;
                 if (this.api_request.url.startsWith('/') && !this.api_request.url.startsWith('//')) {
@@ -523,17 +614,45 @@ export default {
                 } else if (this.api_request.url.startsWith('api.php/')) {
                     this.api_request.url = document.location.protocol + '//' + document.location.host + '/' + this.api_request.url;
                 }
-                if (this.post_body_type === 'multipart/form-data' && 
-                    typeof this.api_request.body === 'object' && 
-                    Object.prototype.toString.call(this.api_request.body) === '[object FormData]'
-                ) {
-                    new Response(this.api_request.body).text().then(text => { this.api_request.body = text; });
-                }
-                if (!('body' in this.api_request) && 'data' in this.api_request) {
-                    this.api_request.body = this.api_request.data;
+                if (this.type.toLowerCase() !== 'get') {
+                    if (this.post_body_type === 'multipart/form-data' && 
+                        typeof this.api_request.body === 'object' && 
+                        this.api_request.body instanceof FormData
+                    ) {
+                        new Response(this.api_request.body).text().then(text => { this.api_request.body = text; });
+                    }
+
+                    if (!('body' in this.api_request) && 'data' in this.api_request) {
+                        this.api_request.body = this.api_request.data;
+                    }
                 }
                 return request;
             };
+
+            const responseInterceptor = async (res) => {
+                if (!res || !(res?.data instanceof Blob) || !('headers' in res) || !('content-type' in res.headers)) {
+                    return res;
+                }
+                if (res.data.type == 'application/json') {
+                    res.data = JSON.parse(await (res.data)?.text());
+                } else if (['application/xml', 'text/xml', 'text/plain', 'text/html'].includes(res.data.type)) {
+                    res.data = await (res.data)?.text();
+                } else {
+                    // binary response case
+                    const reader = new FileReader();
+                    reader.onload = e => this.api_binary_response = e.target.result;
+                    reader.readAsDataURL(res.data);
+
+                    if ('content-disposition' in res.headers) {
+                        const file_name = res.headers['content-disposition'].match(/attachment;\s+filename="([^"]+)"/);
+                        if (file_name) {
+                            this.binary_response_file_name = file_name[1];
+                        }
+                    }
+                }
+                return res;
+            }
+
             this.state.calling = true;
             if (this.isSwagger) {
                 // swagger case
@@ -541,18 +660,25 @@ export default {
                     let call_data = {
                         pathName: '/' + this.name,
                         method: this.type.toLowerCase(),
-                        parameters: this.api_params,
+                        parameters: this.filterUndefinedFields(this.api_params),
                         securities: { authorized: { ApiKeyAuth: this.api_token, BearerAuth: this.api_token } },
-                        requestInterceptor
+                        requestInterceptor,
+                        responseInterceptor
                     };
-                    if (this.type.toLowerCase() !== 'get') {
-                        call_data.requestBody = this.api_request_body;
+                    if (this.type.toLowerCase() !== 'get' && Object.keys(this.api_request_body).length > 0) {
+                        call_data.requestBody = this.filterUndefinedFields(this.api_request_body);
                     }
                     this.api_response = await this.$store.state.swagger[this.app.id].execute(call_data);
                 } catch (err) {
+                    console.error(err);
                     this.api_error = err.toString();
                     if (err.response) {
                         this.api_response = err.response;
+                    } else {
+                        const required_param = this.api_error.match(/^Error: Required parameter (\S+) is not provided$/);
+                        if (required_param) {
+                            this.api_error = this.$t("required-parameter", [required_param[1]]);
+                        }
                     }
                 }
                 this.api_request_body_called = this.prettifyJson(this.api_request_body);
@@ -562,23 +688,24 @@ export default {
                 }));
             } else {
                 const method_type = Array.isArray(this.method.type) ? this.method.type[0] : this.method.type;
-                const axiosInstance = Axios.create({
-                    baseURL: window.appState.rootUrl
-                });
+                const axiosInstance = Axios.create();
                 axiosInstance.interceptors.request.use(requestInterceptor);
+                axiosInstance.interceptors.response.use(responseInterceptor);
+                
                 if (this.post_body_tab === 'params') {
                     this.api_post_data = this.getRawBodyFromParams();
                 }
                 try {
                     const resp = await axiosInstance({
                         method: method_type,
-                        url: 'api.php/' + this.name + '?' + this.api_query_string,
+                        url: window.appState.rootUrl + 'api.php/' + this.name + '?' + this.api_query_string,
                         data: (method_type === 'GET') ? null : this.api_post_data,
-                        headers: { Authorization: 'Bearer ' + this.api_token }
+                        headers: { Authorization: 'Bearer ' + this.api_token },
+                        responseType: 'blob'
                     });
                     this.api_response = resp;
                 } catch (err) {
-                    this.api_response = err.response;
+                    this.api_response = await responseInterceptor(err.response);
                 }
                 this.api_request_body_called = this.api_post_data;
                 localStorage.setItem('method:' + this.name, JSON.stringify({ 
@@ -621,7 +748,7 @@ export default {
                     this.api_post_params.push([key, value]);
                 }
             } catch(err) {
-                console.log(err);
+                console.error(err);
             }
         },
         getRawBodyFromParams() {
@@ -677,7 +804,29 @@ export default {
                 || this.api_post_data
                 || !this.isObjectEmpty(this.api_post_params);
         },
+        filterUndefinedFields(obj) {
+            if (obj === null) {
+                return null;
+            }
+            if (typeof obj !== 'object') {
+                return obj;
+            }
+            if (Array.isArray(obj)) {
+                return obj.map(item => { return this.filterUndefinedFields(item); });
+            }
+            for (const prop in obj) {
+                if (typeof obj[prop] === 'undefined') {
+                    delete obj[prop];
+                } else {
+                    obj[prop] = this.filterUndefinedFields(obj[prop]);
+                }
+            }
+            return obj;
+        },
         filterLongFields(obj) {
+            if (obj === null) {
+                return null;
+            }
             if (typeof obj === 'string') {
                 return obj.length > 1024 ? '' : obj;
             }
@@ -692,6 +841,22 @@ export default {
                 result[prop] = this.filterLongFields(obj[prop]);
             }
             return result;
+        },
+        escapeHtml(str) {
+            if (typeof str !== 'string') {
+                return '';
+            }
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+        },
+        binaryToBase64(data) {
+            return btoa(data);
         }
     }
 };

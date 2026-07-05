@@ -12,7 +12,7 @@ class installerPluginsEnableController extends waJsonController
         $result = installerHelper::pluginSetStatus($app_id, waRequest::post('plugin_id'), true);
         $this->response['message'] = _w('Cache cleared');
         if ($result !== true) {
-            $this->response['message'] .= "<br>"._w('But with errors:')."<br>".implode("<br>", $result);
+            $this->response['message'] .= "<br>"._w('But with errors:')."<br>".implode("<br>", (array)$result);
         }
 
         /**

@@ -47,7 +47,7 @@ class waWebasystIDEndpointsHealthChecker
     protected function requestHealthEndpoint($url)
     {
         $options = [
-            'timeout' => 20,
+            'timeout' => 5,
             'format' => waNet::FORMAT_JSON
         ];
 

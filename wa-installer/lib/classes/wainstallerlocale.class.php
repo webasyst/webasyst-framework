@@ -39,6 +39,9 @@ class waInstallerLocale
     private function detect()
     {
         $lang = !empty($_POST['lang']) ? $_POST['lang'] : (!empty($_GET['lang']) ? $_GET['lang'] : false);
+        if (!$lang && function_exists('wa')) {
+            $lang = wa()->getLocale();
+        }
 
         $locales = self::listAvailable();
         if ($lang) {

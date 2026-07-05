@@ -233,7 +233,7 @@ class waModel
      * Set cache
      * @param waiCache $cache
      */
-    public function setCache(waiCache $cache = null)
+    public function setCache(?waiCache $cache = null)
     {
         $this->cache = $cache;
     }
@@ -559,8 +559,8 @@ class waModel
                 // breakthrough
             case 'double':
             case 'float':
-                if (strpos($value, ',') !== false) {
-                    $value = str_replace(',', '.', $value);
+                if (strpos((string)$value, ',') !== false) {
+                    $value = str_replace(',', '.', (string)$value);
                 }
                 return str_replace(',', '.', (double) $value);
             case 'date':
@@ -684,7 +684,7 @@ class waModel
      *      'name=VALUES(name)'
      *);<pre>
      *
-     * @return resource|bool Returns true if there are no data to be inserted.
+     * @return waDbResultInsert|bool Returns true if there are no data to be inserted.
      * @throws waException
      */
     public function multipleInsert($data)
@@ -867,7 +867,7 @@ class waModel
      */
     public function countAll()
     {
-        return $this->query("SELECT COUNT(*) FROM ".$this->table)->fetchField();
+        return (int) $this->query("SELECT COUNT(*) FROM ".$this->table)->fetchField();
     }
 
     /**
@@ -1099,7 +1099,7 @@ class waModel
     {
         $sql = "SELECT COUNT(*) FROM ".$this->table;
         $sql .= " WHERE ".$this->getWhereByField($field, $value);
-        return $this->query($sql)->fetchField();
+        return (int)$this->query($sql)->fetchField();
     }
 
     /**
@@ -1159,7 +1159,7 @@ class waModel
     /**
      * Verifies whether specified field exists in model's table.
      *
-     * @param string $field Field name
+     * @param string|array{string, string} $field Field name or [table name, field name]
      * @return bool
      */
     public function fieldExists($field)

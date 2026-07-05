@@ -419,6 +419,11 @@ class waEvent
                     $plugin_info['handlers']['routing'] = 'routing';
                 }
             }
+            if (isset($plugin_info['cron']) && $plugin_info['cron']) {
+                if (!isset($plugin_info['handlers']['cron'])) {
+                    $plugin_info['handlers']['cron'] = 'cron';
+                }
+            }
             if (!empty($plugin_info[$app_id.'_settings'])) {
                 $plugin_info['custom_settings'] = $plugin_info[$app_id.'_settings'];
             }

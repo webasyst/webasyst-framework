@@ -29,6 +29,9 @@ class teamCalendarExternalSync
      */
     protected $calendar;
 
+    /** @var array */
+    protected $process_info;
+
     public function __construct($options = array())
     {
         $this->options = $options;

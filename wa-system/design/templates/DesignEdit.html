@@ -1,10 +1,16 @@
 <div class="wa-design-editor">
-    <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape:'url'}&action=save">
+    <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|default:''|escape:'url'}&action=save">
         <div class="box wa-design-gray-toolbar flexbox wrap full-width middle blank bordered-bottom">
-            <h4 class="custom-mb-0">
-                {$file.id|escape}
-                {if isset($file.description)}<span id="wa-design-desc" class="hint">{$file.description|escape}</span>{/if}
-            </h4>
+            <div class="wa-design-header">
+                {* Theme name *}
+                <h1 class="wa-theme-name wide custom-mb-16" style="display: none;">
+                    {sprintf('[s`Design theme %s`]', $theme.name|escape)}
+                </h1>
+                <h4 class="custom-my-0">
+                    {$file.id|default:''|escape}
+                    {if isset($file.description)}<span id="wa-design-desc" class="hint">{$file.description|escape}</span>{/if}
+                </h4>
+            </div>
             {if $file.id}
                 <ul class="chips custom-my-0 small">
                 {if !empty($file.has_original)}
@@ -42,6 +48,7 @@
                                         }
                                     });
                                 });
+                                return false;
                             });
                         </script>
                     </li>
@@ -61,6 +68,7 @@
                         <script type="text/javascript">
                             $(".wa-design-delete").on('click', function (e) {
                                 e.preventDefault();
+                                e.stopPropagation();
                                 if (confirm('[s`File will be deleted without the ability to recover. Are you sure?`]')) {
                                     $.post($(this).attr('href'), { theme_id:"{$theme_id}", file: "{$file.id}"}, function () {
                                         let li = $("ul.wa-theme-templates li.selected"),
@@ -123,7 +131,7 @@
                                     [s`File name`]
                                 </div>
                                 <div class="value">
-                                    <input name="file" type="text" class="bold" value="{$file.id|escape}" />
+                                    <input name="file" type="text" class="bold" value="{$file.id|default:''|escape}" />
                                     <p class="hint">[s`File should have one of the allowed extensions: .html, .css, .js`]</p>
                                 </div>
                             </div>
@@ -189,7 +197,7 @@
                 </div>
             {/if}
         </div>
-        <div class="wa-editor-core-wrapper ace">
+        <div class="wa-editor-core-wrapper ace custom-mb-32">
             <div style="clear:both">
                 <textarea style="display:none" id="wa-design-content" name="content">{$file.content|escape}</textarea>
             </div>
@@ -202,15 +210,14 @@
 <script>
     $(document).ready(function () {
         let is_error = false;
-        $(".wa-theme-templates").on('click', 'a', function () {
-            if (!waDesignConfirm()) return false;
+        $('.js-tab-content[data-id="edit"]').off('click.wa_theme').on('click.wa_theme', '.wa-theme-templates a', function () {
             $(".js-tab-content li.selected").removeClass('selected');
             $(this).parent().addClass('selected');
             $.wa.setHash($(this).attr('href'));
             {if $options.is_ajax}
-            return false;
+                return false;
             {else}
-            waDesignLoad();
+                waDesignLoad();
             {/if}
         });
 
@@ -221,9 +228,10 @@
 
         var options = {
             'id': 'wa-design-content',
-            'type': "{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{else}html{/if}",
+            'type': "{if !$file.id}html{elseif substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{/if}",
             'prefix': 'wa-design-',
-            'save_button': 'bb_submit'
+            'save_button': 'bb_submit',
+            'scroll_parent_wrapper_at_edge': true
         };
 
         var element = $('#' + options.id);
@@ -231,7 +239,7 @@
         {if $options.is_ajax}
             {if $file && $file.id}
                 document.title = "{$file.id|escape} — {$wa->appName()}";
-                {else}
+            {else}
                 document.title = "[`New file`] — {$wa->appName()}";
             {/if}
         {/if}
@@ -247,9 +255,17 @@
             options.height = h;
         }
 
-        waEditorAceInit(options);
+        const wa_editor = waEditorAceInit(options);
 
-        $("#wa-design-form").on('submit', function (e) {
+        const $design_form = $("#wa-design-form");
+
+        $design_form.on('input', '.error', function (e) {
+            if (is_error) {
+                $design_form.find('.js-alert-error-close').click();
+            }
+        });
+
+        $design_form.on('submit', function (e) {
             const $form = $(this),
                 $status = $("#wa-editor-status"),
                 $submit_btn = $(".js-bb-submit");
@@ -291,7 +307,7 @@
                             waDesignLoad();
                         {/if}
                     {else}
-                    if (response.data.id !== "{$file.id}") {
+                    if (response.data.id !== "{$file.id|default:''}") {
                         $form.find("h4").empty().append(id);
                         let $li = $(".wa-theme-block li.selected");
                         $li.empty().append(`<a class="bold" href="{$design_url}theme={$theme.id}&amp;file=${ id }">

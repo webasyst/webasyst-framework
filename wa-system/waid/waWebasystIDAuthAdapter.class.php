@@ -223,14 +223,27 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
      */
     public function getUrl()
     {
-        return wa()->getRootUrl(false, false).'oauth.php?provider='.$this->getId().'&type='.$this->getType();
+        $referrer_url = wa()->getConfig()->getCurrentUrl();
+        $referrer_url_encoded = waUtils::urlSafeBase64Encode($referrer_url);
+        return wa()->getRootUrl(false, false)
+            .'oauth.php?provider='.$this->getId()
+            .'&type='.$this->getType()
+            .'&referrer_url='.$referrer_url_encoded;
+    }
+
+    public function url()
+    {
+        return parent::url() . '&type='.$this->getType();
     }
 
     public function getUrlWithReferrer($url = null)
     {
         $referrer_url = $url ?: wa()->getConfig()->getCurrentUrl();
         $referrer_url_encoded = waUtils::urlSafeBase64Encode($referrer_url);
-        return $this->getUrl().'&referrer_url='.$referrer_url_encoded;
+        return wa()->getRootUrl(false, false)
+            .'oauth.php?provider='.$this->getId()
+            .'&type='.$this->getType()
+            .'&referrer_url='.$referrer_url_encoded;
     }
 
     /**

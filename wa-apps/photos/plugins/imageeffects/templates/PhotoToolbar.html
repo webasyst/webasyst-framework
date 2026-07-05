@@ -1,47 +1,73 @@
-<li class="top-padded" data-action="imageeffects-blackwhite"><a href="#"><i class="icon16 blackwhite"></i>[`Black &amp; White`]</a></li>
-<li data-action="imageeffects-sepia"><a href="#"><i class="icon16 sepia"></i>[`Sepia`]</a></li>
-<li data-action="imageeffects-contrast"><a href="#"><i class="icon16 contrast"></i>[`Contrast`]</a></li>
-<li data-action="imageeffects-brightness"><a href="#"><i class="icon16 brightness"></i>[`Brightness`]</a></li>
-<script type="text/javascript">{literal}
-    $(function() {
-        $.photos.menu.extend('photo','#edit-menu', {
-                'imageeffectsSepiaAction':function() {filter('sepia');},
-                'imageeffectsBlackwhiteAction': function() {filter('grayscale');},
-                'imageeffectsContrastAction': function() {filter('contrast');},
-                'imageeffectsBrightnessAction': function() {filter('brightness');}
+<li data-action="imageeffects-blackwhite"><a href="#">[`Black &amp; White`]</a></li>
+<li data-action="imageeffects-sepia"><a href="#">[`Sepia`]</a></li>
+<li data-action="imageeffects-contrast"><a href="#">[`Contrast`]</a></li>
+<li data-action="imageeffects-brightness"><a href="#">[`Brightness`]</a></li>
+<script>
+        $.photos.menu.extend('photo', '#edit-menu', {
+            imageeffectsBlackwhiteAction() {
+                filter('grayscale');
+            },
+            imageeffectsSepiaAction() {
+                filter('sepia');
+            },
+            imageeffectsContrastAction() {
+                filter('contrast');
+            },
+            imageeffectsBrightnessAction() {
+                filter('brightness');
+            }
         });
+
         function filter(filter_name) {
             var id = $.photos.getPhotoId();
+
+            let waLoading;
+            const $wrapper = $("body");
+            const locked_class = "is-locked";
+
+            if ('{$wa->whichUI()}' !== '1.3') {
+                waLoading = $.waLoading();
+
+                waLoading.show();
+                waLoading.animate(10000, 95, false);
+                $wrapper.addClass(locked_class);
+            }
+
             $.post('?plugin=imageeffects&module=backend', { id: id, filter: filter_name },
                 function(r) {
-                    if (r.status == 'ok') {
-                        var photo = r.data.photo,
-                            edit_datetime = photo.edit_datetime,
-                            salt = '?' + Date.parseISO(edit_datetime),
-                            src = $('#photo').attr('src').replace(/\?.+/, '') + salt;
+                    if (r.status !== 'ok') {
+                        return;
+                    }
 
-                        if (photo.parent_id == 0) {
-                            photo = $.photos.photo_stream_cache.updateById(id, photo);
-                        } else {
-                            photo = $.photos.photo_stack_cache.updateById(id, photo);
-                        }
-                        $.photos.updatePhotoOriginalBlock(photo);
+                    var photo = r.data.photo,
+                        edit_datetime = photo.edit_datetime,
+                        salt = '?' + Date.parseISO(edit_datetime),
+                        src = $('#photo').attr('src').replace(/\?.+/, '') + salt;
 
-                        $.photos.updatePhotoImgs(photo, function() {
-                            $.photos.unsetCover();
-                        });
+                    if (photo.parent_id == 0) {
+                        photo = $.photos.photo_stream_cache.updateById(id, photo);
+                    } else {
+                        photo = $.photos.photo_stack_cache.updateById(id, photo);
+                    }
+                    $.photos.updatePhotoOriginalBlock(photo);
+
+                    $.photos.updatePhotoImgs(photo, function() {
+                        '{$wa->whichUI()}' !== '1.3' ? $.photos.unsetCover(true) : $.photos.unsetCover()
+                    });
+
+                    if ('{$wa->whichUI()}' !== '1.3') {
+                        waLoading.done();
+                        $wrapper.removeClass(locked_class);
                     }
                 },
             'json').error(function(xhr) {
                 $.photos.showServerError(xhr.responseText);
-                $.photos.unsetCover();
+                '{$wa->whichUI()}' !== '1.3' ? $.photos.unsetCover(true) : $.photos.unsetCover()
+
+                if ('{$wa->whichUI()}' !== '1.3') {
+                    waLoading.abort();
+                    $wrapper.removeClass(locked_class);
+                }
             });
         }
-    });{/literal}
 </script>
-<style>
-    i.icon16.sepia { background: url({$static_url}img/sepia.png) center no-repeat; }
-    i.icon16.blackwhite { background: url({$static_url}img/blackandwhite.png) center no-repeat; }
-    i.icon16.contrast { background: url({$static_url}img/contrast.png) center no-repeat; }
-    i.icon16.brightness { background: url({$static_url}img/brightness.png) center no-repeat; }
-</style>

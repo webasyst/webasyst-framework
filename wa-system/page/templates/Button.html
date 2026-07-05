@@ -1,4 +1,7 @@
-<button class="button nobutton js-show-cheatsheet custom-ml-auto" id="wa-editor-help-link-{$cheat_sheet_name|escape}"><i class="fas fa-code"></i> [s`Cheat sheet`]</button>
+<div class="flexbox custom-ml-auto"{if $data.is_block_page|default:false} style="display: none;"{/if}>
+    <button class="button nobutton js-show-variables gray"><i class="fas fa-dollar-sign"></i> [s`Variables`]</button>
+    <button class="button nobutton js-show-cheatsheet gray" id="wa-editor-help-link-{$cheat_sheet_name|escape}"><i class="fas fa-code"></i> [s`Cheat sheet`]</button>
+</div>
 
 <script type="text/javascript">
     (function () {
@@ -17,10 +20,13 @@
                             <div class="drawer js-cheatsheet-drawer" id="wa-editor-help-{$cheat_sheet_name|escape}">
                                 <div class="drawer-background"></div>
                                 <div class="drawer-body">
+                                    <a href="#" class="drawer-close js-close-drawer"><i class="fas fa-times"></i></a>
                                     <div class="drawer-block"></div>
                                 </div>
                             </div>`;
-                document.querySelector("body").insertAdjacentHTML('beforeend', $cheatsheet_drawer_template);
+                if (!$('#wa-editor-help-{$cheat_sheet_name|escape}').length) {
+                    document.querySelector("body").insertAdjacentHTML('beforeend', $cheatsheet_drawer_template);
+                }
                 $cheatsheet_drawer = $('#wa-editor-help-{$cheat_sheet_name|escape}')
             },
             getHelpEvent: function () {
@@ -65,6 +71,18 @@
                         $wrapper: $cheatsheet_drawer,
                         onOpen($drawer) {
                             $.cheatsheet[cheat_sheet_name].insertVarEvent($drawer)
+
+                            if (!$('#js-cheatsheet-alerts').length) {
+                                $('body:first').append(`<div id="js-cheatsheet-alerts" class="alert-fixed-box" style="top:0.5rem;right:3.5rem;">
+                                    <div class="alert success js-copied-alert" style="display:none;">
+                                        <i class="fas fa-check-circle"></i>
+                                        [s`Copied`]
+                                    </div>
+                                </div>`);
+                            }
+                        },
+                        onBgClick() {
+                            this.close();
                         }
                     });
 
@@ -86,40 +104,45 @@
                         el = el.children('b');
                     }
 
-                    if ($design_content.length) {
-                        //If the design reactor is turned on and the html editor is selected
-                        if ($el_rte.length && $el_rte.is(':visible')) {
-                            try {
-                                $design_content.elrte()[0].elrte.selection.insertHtml(el.text());
-                            } catch (e) {
+                    $.wa.copyToClipboard(el.text()).then(() => {
+                        const $copied_alert = $('#js-cheatsheet-alerts .js-copied-alert');
+                        $copied_alert.show();
+                        setTimeout(() => {
+                            $copied_alert.hide();
+                        }, 1500);
+                    });
+                });
+            }
+        };
+        $(document).trigger('wa_cheatsheet_init.' + cheat_sheet_name);
+        $.cheatsheet[cheat_sheet_name].init();
 
-                            }
-                        } else {
-                            //If the design reactor is turned and text editor is selected
-                            try {
-                                wa_editor.insert(el.text());
-                            } catch (e) {
+        const variables_template = html => `
+            <div class="dialog" style="z-index:1030;">
+                <div class="dialog-background"></div>
+                <div class="dialog-body" style="width: 900px;">
+                    <div class="dialog-content custom-p-0" data-cheatsheet-name="{$cheat_sheet_name|escape}">${ html }</div>
+                </div>
+            </div>`;
 
-                            }
-                        }
-                    } else {
-                        //If only text editor is selected
-                        try {
-                            wa_editor.insert(el.text());
-                        } catch (e) {
-
-                                }
-                            }
-                            if ($page_content.length) {
-                                $.wa_editor_ready.then(function (method) {
-                                    $page_content[method]('insert', el.text());
-                                });
-                            }
-                        });
+        let is_loading = false;
+        $('.js-show-variables').on('click', function(e) {
+            if (is_loading) {
+                return false;
+            }
+            is_loading = true;
+            e.preventDefault();
+            $.get('{$wa_backend_url}site/?module=variables&is_block_page={$data.is_block_page|default:false}&is_dialog=1', function(html) {
+                $.waDialog({
+                    html: variables_template(html),
+                    onClose() {
+                        const $cheatsheet_drawer = $('.js-cheatsheet-drawer');
+                        const is_hide = !$cheatsheet_drawer.length || $cheatsheet_drawer.is(':hidden');
+                        return is_hide;
                     }
-                };
-                $(document).trigger('wa_cheatsheet_init.' + cheat_sheet_name);
-                $.cheatsheet[cheat_sheet_name].init()
-
+                });
+                is_loading = false;
+            });
+        });
     }());
 </script>

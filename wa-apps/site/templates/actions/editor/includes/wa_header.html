@@ -1,0 +1,80 @@
+{*
+ * Этот HTML вставляется вместо иконок приложений в лэйауте редактора.
+ * см. include в templates/layouts/Backend.html
+ *}
+
+<style>
+.site-editor-wa-header-wrapper { height: 4rem; margin: 0 .5rem 0 .5rem; }
+.site-editor-wa-header-wrapper .site-screen-toggle { margin: 0 auto; }
+.site-editor-wa-header-wrapper .site-editor-page-name { max-width: 13rem; }
+.site-editor-wa-header-wrapper .site-editor-page-settings:not(:hover) { color: var(--gray); }
+.site-editor-wa-header-wrapper.block_editor .site-editor-page-name { max-width: 46%; min-width: 2.39rem; }
+.site-editor-wa-header-wrapper.block_editor .site-editor-page-name-wrapper { min-width: 20rem; max-width: 40%; }
+
+@media screen and (min-width: 1150px) {
+    .site-editor-wa-header-wrapper.block_editor .site-editor-page-name-wrapper { max-width: unset; }
+    .site-editor-wa-header-wrapper.block_editor .site-editor-page-name { max-width: 13rem; }
+}
+@media screen and (max-width: 760px) {
+    .site-editor-wa-header-wrapper { margin-inline: 1rem; }
+    .site-editor-wa-header-wrapper.block_editor .site-editor-page-name-wrapper { min-width: 5rem; }
+}
+</style>
+
+<div class="site-editor-wa-header-wrapper flexbox full-width middle {$custom_header_type}">
+    <div class="site-editor-page-name-wrapper flexbox middle nowrap">
+        <button class="button light-gray small custom-mr-12" id="js-wa-header-hamburger" type="button" title="[`Site map`]">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="site-editor-page-name text-ellipsis">
+            <span class="js-hamburger-draft-icon icon disabled-icon custom-mr-8 text-glyph desktop-only hidden" title="[`Unpublished`]"><i class="fas fa-eye-slash"></i></span>
+            <span class="js-hamburger-draft-changed-icon icon rounded bg-yellow smaller custom-mr-2 desktop-only hidden" title="[`Non-published changes exist`]"></span>
+            <span class="js-hamburger-label bold desktop-only"></span>
+        </div>
+
+        <a href="javascript:void(0)" id="js-wa-header-settings" class="site-editor-page-settings small custom-mx-8 custom-mt-4 desktop-only" title="[`Page settings`]">
+            <i class="fas fa-cog large"></i>
+        </a>
+
+        {*<button class="small button light-gray desktop-and-tablet-only" id="js-wa-header-theme">
+            <i class="fas fa-palette"></i>
+        </button>*}
+    </div>
+
+    {if $custom_header_type == 'block_editor'}
+        <div class="wide flexbox middle desktop-only">
+
+            <div class="small toggle site-screen-toggle" id="js-wa-header-screen-toggle">
+                <span id="mobile"><i class="fas fa-mobile-alt"></i></span>
+                <span id="tablet"><i class="fas fa-tablet-alt"></i></span>
+                <span id="laptop"><i class="fas fa-laptop"></i></span>
+                <span id="" class="selected"><i class="fas fa-desktop"></i></span>
+            </div>
+
+        </div>
+
+        {$wa->getCheatSheetButton(['is_block_page' => true, 'hide_common_blocks' => true])}
+    {/if}
+    <div class="flexbox">
+        {if $custom_header_type == 'block_editor'}
+            <button class="button small light-gray desktop-and-tablet-only custom-ml-12" id="js-wa-header-undo">
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <button class="button small light-gray desktop-and-tablet-only" id="js-wa-header-redo">
+                <i class="fas fa-redo"></i>
+            </button>
+
+            {include file="./publication_control.html" inline}
+        {/if}
+        {if $custom_header_type == 'html_editor'}
+            <span id="wa-editor-status" class="custom-mr-16" style="display: none"></span>
+            <input id="wa-page-button" type="submit" class="js-page-submit-button button green small" value="[s`Save`]" />
+            <a class="button small light-gray desktop-and-tablet-only text-blue" id="js-wa-header-preview" target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                <span class="desktop-and-tablet-only custom-ml-4">[`View`]</span>
+            </a>
+        {/if}
+    </div>
+</div>

@@ -1,8 +1,8 @@
-class BellAnnouncement {
+window.WaBellAnnouncement = class {
     static is_setted_seen = false;
 
     constructor () {
-        this.$notification_wrapper = $('.js-notification-wrapper,.js-wa-announcement');
+        this.$notification_wrapper = $('.js-notification-wrapper,.js-wa-announcement').first();
         this.$notification_close_selector = '.js-announcement-close';
 
         this.initToggleByBell();
@@ -10,7 +10,7 @@ class BellAnnouncement {
     }
 
     static setSeen () {
-        if (BellAnnouncement.is_setted_seen) {
+        if (WaBellAnnouncement.is_setted_seen) {
             return;
         }
 
@@ -19,14 +19,13 @@ class BellAnnouncement {
             name: 'wa_announcement_seen',
             value: 'now()'
         }, (r) => {
-            BellAnnouncement.is_setted_seen = (r && r.status === 'ok');
+            WaBellAnnouncement.is_setted_seen = (r && r.status === 'ok');
         });
     }
 
     initToggleByBell () {
         /* Notification Actions */
-        const $notifications_bell = $('.js-notifications-bell');
-        $notifications_bell.on('click', function (e, params) {
+        $('.js-notifications-bell').on('click', function (e, params) {
             e.preventDefault();
             params = params || { disable_set_seen: false };
 
@@ -39,15 +38,14 @@ class BellAnnouncement {
             }
 
             const $notifications_wrapper = $(this).next('.js-notification-wrapper');
-            $notifications_wrapper.toggle().removeClass('hidden');
-            if (!$notifications_wrapper.hasClass('hidden')) {
-                const $notifications_dropdown = $('#wa-notifications-dropdown');
-                $notifications_dropdown.is(':hidden') && $notifications_dropdown.show();
+            if (!params.disable_set_seen && $notifications_wrapper.is(':visible')) {
+                WaBellAnnouncement.setSeen();
             }
 
-            if (!params.disable_set_seen && $notifications_wrapper.is(':visible')) {
-                BellAnnouncement.setSeen();
-            }
+            $notifications_wrapper.toggle();
+
+            const $notifications_dropdown = $('#wa-notifications-dropdown');
+            $notifications_dropdown.is(':hidden') && $notifications_dropdown.show();
         });
     }
 
@@ -95,6 +93,12 @@ class BellAnnouncement {
                     $('#js-show-all-notifications').remove();
                 }
 
+                // if notifications are empty
+                if (!$('.js-wa-announcement:visible').length) {
+                    that.$notification_wrapper.removeClass('visible-only-unread').hide();
+                    that.$notification_wrapper.find('.wa-notification-empty').show();
+                }
+
                 if (key && app_id === 'installer') {
                     $.post(`${backend_url}installer/?module=announcement&action=hide`, { key, app_id }, function(response) {
                         if (response === 'ok') {
@@ -137,5 +141,29 @@ class BellAnnouncement {
             }
 
         });
+    }
+
+    static adhocShow ($notification, id, icon_url = null) {
+        const $notification_wrapper = $('.js-notification-wrapper').first();
+        const $bell_announcement = $('<div id="adhoc-' + id + '" />').addClass("alert wa-notification is-unread-group")
+            .html('<div class="wa-notification-body"><ul class="list custom-m-0"><li class="js-wa-announcement is-unread"></li></ul><a href="javascript:void(0);" class="custom-ml-16 custom-py-4 back js-close wa-announcement-close"><i class="fas fa-times"></i></a></div>');
+        const $announcement_item = $bell_announcement.find('.js-wa-announcement');
+        const $icon = !!icon_url ? $('<img class="icon size-20" src="' + icon_url + '">') : $('<i class="icon webasyst-magic-wand"></i>');
+        $announcement_item.append($('<span />').append($icon))
+            .append($('<span class="wa-notification-content"></span>').append($notification));
+
+        $notification_wrapper.find('.wa-notification-empty').hide();
+        $notification_wrapper.prepend($bell_announcement).show();
+        $bell_announcement.find('.js-close').on('click', () => {
+            WaBellAnnouncement.adhocHide(id);
+        })
+    }
+
+    static adhocHide (id) {
+        const $notification_wrapper = $('.js-notification-wrapper').first();
+        $notification_wrapper.find('#adhoc-' + id).remove();
+        if (!$notification_wrapper.find('.js-wa-announcement:visible').length) {
+            $notification_wrapper.hide();
+        }
     }
 };

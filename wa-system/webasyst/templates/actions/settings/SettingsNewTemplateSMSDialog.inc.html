@@ -1,13 +1,13 @@
 {* New template dialog *}
 <div class="dialog" id="wa-sms-new-template-dialog">
     <div class="dialog-background"> </div>
-    <form action="?module=settingsTemplateSMSNew" class="dialog-body fields">
+    <form action="?module=settingsTemplateSMSNew" class="dialog-body">
         <header class="dialog-header">
-            <h3>[s`Creating new templates`]</h3>
+            <h3 class="custom-mb-0">[s`Creating new templates`]</h3>
             <span class="js-error" style="color: red;font-weight: bold;"></span>
         </header>
         <div class="dialog-content">
-            <div class="fields-group blank form">
+            <div class="fields">
                 <div class="field">
                     <div class="name for-input">
                         [s`Template group name`]
@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-input">
                         [s`Sender`]
                     </div>
                     <div class="value">
@@ -36,15 +36,9 @@
             </div>
         </div>
         <footer class="dialog-footer dialog-buttons">
-            <div class="fields-group blank">
-                <div class="field">
-                    <div class="value submit">
-                        <input type="submit" class="button js-submit-button" value="[s`Save`]">
-                        &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="js-close-dialog">[s`cancel`]</a>
-                        <i class="fas fa-spinner fa-spin s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
-                    </div>
-                </div>
-            </div>
+            <input type="submit" class="button js-submit-button" value="[s`Save`]">
+            <a href="javascript:void(0);" class="button light-gray js-close-dialog">[s`Cancel`]</a>
+            <i class="fas fa-spinner fa-spin s-loading text-light-gray" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
         </footer>
     </form>
 </div>

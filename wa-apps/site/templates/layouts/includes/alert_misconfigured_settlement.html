@@ -1,0 +1,23 @@
+{if $misconfigured_settlement}
+<div class="incorrect-rule-error alert warning small">
+    <div class="flexbox space-12">
+        <div>
+            <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+        </div>
+        <div class="wide">
+            [`This section or app were set up with an error in the old interface and is, therefore, unavailable on the site. You can fix the error either in the old interface or right here.`]
+        </div>
+        <div>
+            <a href="javascript:void(0)" class="js-fix-incorrect-rule button orange nowrap">[`Fix it`]</a>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('.js-fix-incorrect-rule').one('click', function () {
+            $('#js-section-settings-dialog form:first').append('<input type="hidden" name="fix_incorrect_rule" value="1">');
+            $('.incorrect-rule-error').remove();
+        });
+    })
+</script>
+{/if}

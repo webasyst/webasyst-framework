@@ -1,0 +1,11 @@
+{$block_id = $data->getId()}
+{$is_horizontal = ifset($data->data['is_horizontal'], false)}
+{$static_main = "js-seq-wrapper"}
+
+<div class="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" data-static="{$static_main} {if $is_horizontal}hseq-wrapper{else}vseq-wrapper{/if}" {if $block_id}data-block-id="{$block_id|escape}"{else}id="js-global-seq"{/if} data-page-id="{$data->getPageId()}">
+    {foreach $children as $c}
+        <div class="seq-child" data-static="seq-child" data-block-id="{$c.id|escape}">
+            {$c.html}
+        </div>
+    {/foreach}
+</div>

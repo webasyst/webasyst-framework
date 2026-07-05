@@ -147,11 +147,33 @@ trait webasystHeaderTrait
                         'app_id' => 'installer',
                         'text' => $notification,
                         'datetime' => date('Y-m-d H:i:s'),
+                        'is_unpublished' => false,
                         'is_virtual' => true,
                     ] + $empty_row);
                     $virtual_id++;
                 }
             }
+        }
+
+        if (empty($options['keep_unpublished'])) {
+            $data = array_filter($data, function($n) {
+                return empty($n['is_unpublished']);
+            });
+        }
+        if (!empty($options['load_reactions'])) {
+            $ids = array_column($data, 'id');
+
+            $announcement_reactions_model = new waAnnouncementReactionsModel();
+            $reactions = $announcement_reactions_model->getReactionsByAnnouncement($ids);
+
+            $announcement_comments_model = new waAnnouncementCommentsModel();
+            $comments_count = $announcement_comments_model->countByAnnouncement($ids);
+
+            foreach ($data as &$row) {
+                $row['reactions'] = ifset($reactions, $row['id'], []);
+                $row['comments_count'] = (int) ifset($comments_count, $row['id'], 0);
+            }
+            unset($row);
         }
 
         $contact_ids = array_keys(array_flip(array_filter(array_map(function($row) {
@@ -225,7 +247,7 @@ trait webasystHeaderTrait
             }
             foreach ($n['rows'] as $row) {
                 $notifications_count++;
-                if (!empty($announcement_seen_ts) && strtotime($row['datetime']) > $announcement_seen_ts) {
+                if (!empty($announcement_seen_ts) && strtotime($row['datetime']) > $announcement_seen_ts && $row['contact_id'] != wa()->getUser()->getId()) {
                     $has_new_notifications = true;
                     $new_notification_group_id_to_id[$n['id']][$row['id']] = 1;
                 } else {
@@ -234,9 +256,7 @@ trait webasystHeaderTrait
             }
         }
 
-        $total_count = $announcement_model->countByField([
-            'app_id' => array_keys($wa->getUser()->getApps() + ['webasyst' => 1]),
-        ]);
+        $total_count = $announcement_model->countByApps(array_keys($wa->getUser()->getApps() + ['webasyst' => 1]));
 
         $notifications_load_more_url = $backend_url."webasyst/announcements/loadMore/";
         if ($notifications_count >= $total_count) {

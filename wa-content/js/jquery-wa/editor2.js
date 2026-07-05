@@ -388,6 +388,17 @@ jQuery.fn.waEditor2 = function () {
         editor.setOption("maxLines", 10000);
         editor.setAutoScrollEditorIntoView(true);
 
+        if (options.scroll_parent_wrapper_at_edge) {
+            const scroll_speed = 20;
+            $(editor.textInput.getElement()).on('keydown', (e) => {
+                if (e.key === 'ArrowUp' && editor.selection.lead.row === 0) {
+                    window.scrollBy(0, -scroll_speed);
+                } else if (e.key === 'ArrowDown' && editor.renderer.layerConfig.lastRow === editor.selection.lead.row) {
+                    window.scrollBy(0, scroll_speed);
+                }
+            });
+        }
+
         if (options['focus']) {
             editor.focus();
             editor.navigateTo(0, 0);
@@ -464,7 +475,7 @@ jQuery.fn.waEditor2 = function () {
             }
             return false;
         });
-        $uploader_button.one('click', function () {
+        $uploader_button.on('click', function () {
             if (!$.fn.fileupload) {
                 return;
             }
@@ -498,7 +509,11 @@ jQuery.fn.waEditor2 = function () {
                 },
 
                 stop: function () {
-                    $dialog_wrapper.hide();
+                    if ($('html').hasClass('is-wa2')) {
+                        $dialog_wrapper.data('dialog').close();
+                    } else {
+                        $dialog_wrapper.hide();
+                    }
                     $dialog_wrapper.find("div.loading").hide();
                     $dialog_wrapper.find("input[type=submit]").removeAttr('disabled');
                 }

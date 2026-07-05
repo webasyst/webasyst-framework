@@ -1,0 +1,93 @@
+<form id="site-form-{$_type}" class="height-100 fields{if $mode != "`$_type`s"} hidden{/if}" method="post" action="{$wa_backend_url}site/?module={$_type}s&action=save{if $_item && !isset($_item.app)}&id={$_item.id|escape}{/if}">
+    <div class="custom-px-24">
+        <div class="field">
+            <div class="value">
+                <h4 class="heading custom-mb-8 custom-mx-0">[`Description`]</h4>
+                <input type="text" class="full-width" name="info[description]" value="{if $_item}{$_item.description|escape}{/if}">
+                <p class="hint">[`Not visible on the site.`] [`Optional.`]</p>
+            </div>
+        </div>
+        <div class="field">
+            <div class="value">
+                <h4 class="heading custom-my-8 custom-mx-0">[`Identifier`]</h4>
+                <input name="info[id]" type="text" class="full-width{if !$_item && (!$is_new_variable && !$is_new_block)} state-error{/if}" value="{if $_item}{$_item.id|escape}{/if}" spellcheck="false" />
+                <p class="hint">[`Use Latin letters, and hyphens instead of whitespaces; e.g., “company-name”.`]</p>
+            </div>
+        </div>
+
+        {if $_item}
+            <h4 class="heading custom-mb-8 custom-mx-0">[`Add the variable to a site page or a design template`]</h4>
+            <div class="alert info small custom-m-0">
+                <div class="flexbox middle full-width wrap-mobile space-12">
+                    <strong class="js-code-preview break-all">&#123;$wa-&gt;{$_type}("<span>{$_item.id|escape}</span>")&#125;</strong>
+                    <div>
+                        <button type="button" class="button light-gray js-copy-to-clipboard nowrap" data-clipboard-text="&#123;$wa-&gt;{$_type}(&quot;{$_item.id|escape}&quot;)&#125;">
+                            <i class="fas fa-copy"></i>
+                            <span class="custom-ml-4">[`Copy to clipboard`]</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {if $_type == 'block'}
+                <p class="hint custom-mt-8">
+                    {sprintf_wp(
+                        'You can pass additional parameters to a variable after a comma: %s<br>Instead of %s must be specified an associative array of parameters; e.g., %s<br>Each passed parameter is accessible in the code by its name as a Smarty variable; e.g., %s',
+                        sprintf("<code class='nowrap'>&#123%s-&gt;block('%s', <strong>%s</strong>)&#125;</code>", '$wa', $_item.id|escape, '$params'),
+                        '<em>$params</em>',
+                        "<code class='nowrap'>['<strong>first</strong>' =&gt; 100, '<strong>second</strong>' =&gt; 500]</code>",
+                        '<code class="nowrap">&#123$sum = <strong>$first</strong> + <strong>$second</strong>&#125</code>'
+                    )}
+                </p>
+            {/if}
+        {/if}
+
+        <h4 class="heading custom-mb-8 custom-mx-0">
+            [`Contents displayed to website visitors instead of the variable`]
+            <span>
+                <span class="s-varibles-use-smaty-hint custom-ml-4 small js-wa-tooltip" data-wa-tooltip-content="[`You can use HTML and Smarty code in this field.`]">
+                    <i class="fas fa-question-circle text-light-gray"></i>
+                </span>
+            </span>
+        </h4>
+
+        {if $_type == 'block' && $_item}
+            <div class="flexbox middle">
+                {if isset($_item.original)}
+                    <button type="button" class="button outlined s-block-view-original small"><i class="fas fa-file-alt"></i> [`View original`]</button>
+                {/if}
+                {if !isset($_item.app) && isset($_item.original)}
+                    <button id="s-block-delete" type="button" class="button outlined orange small"><i class="fas fa-undo-alt"></i> [`Revert to original`]</button>
+                {/if}
+            </div>
+
+            <div id="s-block-view-original-dialog" class="dialog">
+                <div class="dialog-background"></div>
+                <div class="dialog-body">
+                    <h1 class="dialog-header">{$_item.id}</h1>
+                    <div class="dialog-content">
+                        <template>{$_item.original|escape}</template>
+                    </div>
+                    <div class="dialog-footer">
+                        <button type="button" class="button light-gray js-close-dialog">[`Close`]</button>
+                    </div>
+                </div>
+            </div>
+        {/if}
+
+        <div class="s-editor-core-wrapper bordered custom-mt-16 custom-p-0 box rounded" style="overflow: hidden;">
+            <div class="ace">
+                <textarea id="{$_type}-content" name="info[content]" class="s-entire-core width-100">{if $_item}{$_item.content|escape}{/if}</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="flexbox middle space-8 bottombar sticky width-100 custom-mt-20 custom-px-32">
+        <button type="submit" class="button">[`Save`]</button>
+        {if isset($_is_dialog)}
+            <button type="button" class="button light-gray js-close-dialog" id="s-variable-close">[`Close`]</button>
+        {/if}
+        <button type="button" class="button nobutton js-cheatsheet-show"><i class="fas fa-code"></i> [s`Cheat sheet`]</button>
+        {if $_item && !isset($_item.app) && !isset($_item.original)}
+            <button type="button" class="button nobutton red custom-ml-auto" id="s-{$_type}-delete"><i class="fas fa-trash-alt"></i> [`Delete`]</button>
+        {/if}
+    </div>
+</form>

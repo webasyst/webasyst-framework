@@ -23,7 +23,7 @@
                         {$_name = $a->getName()}
 
                         <li>
-                            <a href="{$a->getUrl()|escape}" title="{$_name|escape}" data-id="{$_id|escape}"
+                            <a href="{$a->url()|escape}" title="{$_name|escape}" data-id="{$_id|escape}"
                                 data-width="{$oauth_adapter_sizes[$_id].width}"
                                 data-height="{$oauth_adapter_sizes[$_id].height}">
                                 <img alt="{$_name|escape}" src="{$a->getIcon()}"/>

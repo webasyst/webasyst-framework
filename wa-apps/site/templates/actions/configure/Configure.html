@@ -1,0 +1,1139 @@
+{* Тестовые переменные удалить по мере появления актуальных *}
+
+{if !isset($title)}
+    {$title = $domain.title !== $domain.name}
+{/if}
+
+{$url = $domain.name}
+
+{function name="_renderCdnItem" _cdn=''}
+    <div class="s-cdn-item js-cdn">
+        <input class="s-cdn-input long" type="text" name="cdn[]" value="{$_cdn}" autocomplete="off" placeholder="[`CDN address`]" />
+        <span class="icon cursor-pointer js-cdn-remove" title="[`Remove`]" style="display: none;"><i class="fas fa-times-circle" ></i></span>
+    </div>
+{/function}
+{function name="_renderRobotsControl"}
+    <div class="field">
+        <div class="name">robots.txt</div>
+        <div class="value">
+            <textarea class="width-100 s-small" name="robots">{$robots|escape}</textarea>
+            {if isset($robots_message)}<div class="hint text-red">{$robots_message}</div>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
+        </div>
+    </div>
+{/function}
+
+<div class="article site-base">
+    <div class="article-body">
+        {include file="templates/actions/backend/includes/domain_tabs.html" selected='settings' inline}
+        <div class="form s-settings-page" id="s-settings-page">
+            <form target="s-settings-iframe" id="s-settings-form" method="post" action="?module=configure&action=save&domain_id={$domain_id}" enctype="multipart/form-data">
+                {$wa->csrf()}
+                <div class="fields custom-my-32">
+                    <div class="field">
+                        <div class="name bold for-input">[`Domain name`]</div>
+                        <div class="value">
+                            <strong class="custom-pr-4">http://</strong><input type="text" class="bold longer" name="url" value="{waIdna::dec($domain.name|escape)}" /><br />
+                            <p class="hint">
+                                <span class="custom-mr-2">[`The domain name must be registered and set up to point to this Webasyst account.`]</span>
+                                <a href="[`https://support.webasyst.com/47317/get-domain-name/`]" target="_blank" class="nowrap">
+                                    [`Help`] <i class="fas fa-external-link-alt icon smaller custom-ml-2"></i>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name bold for-switch">[`Site name`]</div>
+                        <div class="value">
+                            <div class="s-domain-title-wrapper">
+                                <div class="switch-with-text custom-pb-8" >
+                                    <span class="switch smaller" id="switch-domain-title">
+                                        <input id="s-domain-title" type="checkbox" name="" {if !$title}checked{/if}>
+                                    </span>
+                                    <label for="s-domain-title">[`Matches domain name`]</label>
+                                </div>
+                                <div class="s-domain-title-input" {if !$title}style="display:none"{/if}>
+                                    <input type="text" class="" name="title" value="{if $title}{$domain.title|escape}{/if}"><br>
+                                    <span class="hint">[`It can be used in the backend in the site selection section and on the site itself in the navigation menu`] &#123;$wa-&gt;apps()&#125;</span>
+                                </div>
+                                <script>
+                                    ( function($) {
+                                        $("#switch-domain-title").waSwitch({
+                                            ready: function (wa_switch) {
+                                            },
+                                            change: function(active, wa_switch) {
+                                                const $input_wrapper = $('.s-domain-title-input');
+                                                if (!active) {
+                                                    $input_wrapper.show();
+                                                    $input_wrapper.children('input').removeAttr('disabled');
+                                                }
+                                                else {
+                                                    $input_wrapper.hide();
+                                                    $input_wrapper.children('input').attr('disabled', 'disabled');
+                                                }
+                                            }
+                                        });
+                                    })(jQuery);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                {if !empty($domain_alias)}
+                    <div class="field">
+                        <div class="name bold">[`Alias (mirror) for site`]</div>
+                        <div class="value no-shift">
+                            {$domain_alias}
+                        </div>
+                    </div>
+                {else}
+                    <div class="field">
+                        <div class="name bold for-switch">[`Security`]</div>
+                        <div class="value no-shift">
+                            <div class="switch-with-text ">
+                                <span class="switch smaller" id="switch-ssl-all">
+                                    <input type="checkbox" name="ssl_all" id="ssl_all" {if ifset($ssl_all)} checked{/if} {if empty($is_https)}disabled{/if}/>
+                                </span>
+                                <label for="ssl_all">[`Redirect to HTTPS`]</label>
+
+                            </div>
+                            <div class="hint">
+                                <span class="ssl_server_https bold" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]<br></span>
+                                <span class="ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></span>
+                                [`Redirect website visitors from ordinary HTTP to secure HTTPS connection.`]
+                                <br>
+                                [`This option will work only if an SSL certificate is installed for your domain name.`]
+                            </div>
+
+                            <script>
+                                ( function($) {
+                                    $("#switch-ssl-all").waSwitch();
+                                })(jQuery);
+                            </script>
+                        </div>
+                    </div>
+
+
+                    <div class="field s-field-waapps">
+                        <div class="name">
+                            [`Links in the site navigation menu`]
+                            <div class="name-wa-apps">&#123;$wa-&gt;apps()&#125;</div>
+                        </div>
+                        <div class="value">
+                            <div class="alert">
+                                <div class="flexbox space-12 s-small">
+                                    <span> <i class="fas fa-info-circle"></i></span>
+                                    [`Visual appearance can be supplemented or completely modified by design settings.`]
+                                </div>
+                            </div>
+                            <div class="flexbox space-4 custom-mb-12 waapps-auto">
+                                <label for="waapps-auto">
+                                    <span class="wa-radio custom-pt-4">
+                                        <input type="radio" name="wa_apps_type" {if !$domain_apps_type}checked{/if} id="waapps-auto" value="0">
+                                        <span></span>
+                                    </span>
+                                </label>
+                                <div>
+                                    <label for="waapps-auto" class="flexbox vertical custom-mb-12">
+                                        [`Generate automatically from top-level sections and pages in the site map`]
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="waapps-select">
+                                <label for="waapps-select">
+                                <span class="wa-radio custom-pt-4">
+                                    <input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" />
+                                    <span></span>
+                                </span>
+                                </label>
+                                <label for="waapps-select"> [`Manual settings`]</label>
+                                <div class="custom-my-16" {if !$domain_apps_type}style="display:none"{/if}>
+                                    <table id="s-wa-apps" class="s-settings-apps custom-mt-16 custom-mb-8">
+                                        {foreach $domain_apps as $row}
+                                        <tr>
+                                           <td class="s-app"><a href="#" onclick="return false" class="custom-pr-8 text-light-gray"><span class="s-sort icon"><i class="fas fa-grip-vertical"></i></span></a>
+                                              <span>{$row.name|escape}</span>
+                                              <input style="display:none" type="text" name="apps[name][]" value="{$row.name|escape}" />
+                                           </td>
+                                           <td>
+                                              <span>{$row.url|escape}</span>
+                                              <input style="display:none" type="text" name="apps[url][]" value="{$row.url|escape}" />
+                                           </td>
+                                           <td class="s-actions">
+                                                <a href="#" class="s-apps-edit custom-pr-16 text-light-gray" title="[`Edit`]"><i class="icon fas fa-pen edit"></i></a>
+                                                <a href="#" class="s-apps-delete text-light-gray" title="[`Delete`]"><i class="icon fas fa-times-circle delete"></i></a>
+                                           </td>
+                                        </tr>
+                                        {/foreach}
+                                    </table>
+                                    <div style="display:none; text-align: right;" class="custom-mb-8"><span class="hint">[`When you have finished editing, click “Save” to apply changes.`]</span></div>
+                                    <a href="#" class="button rounded outlined smaller custom-mt-8" id="s-apps-add">
+                                        <span class="icon add custom-pr-8"><i class="fas fa-plus"></i></span>[`Add link`]
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                    {/if}
+
+
+                    {if !empty($domain_alias)}
+                    {* ROBOTS.TXT *}
+                    {_renderRobotsControl }
+                    {/if}
+
+                    {if empty($domain_alias)}
+
+                    {* FAVICON *}
+                    <div class="field s-field-favicon">
+                        {$has_favicon = !empty($favicon)}
+                        <div class="name">
+                            [`Site icon for browsers and search engines (favicon)`]
+                        </div>
+                        <div class="value">
+                            <div class="favicon-wrapper flexbox middle space-8 custom-pb-8" style="{if !$has_favicon}display: none{/if}">
+                                <i class="icon favicon-icon" style="background-image: url('{if $has_favicon}{$favicon.icon}{/if}');"></i>
+                                <span class="favicon-name s-small bold">{if $has_favicon}{$favicon.name}{/if}</span>
+                            </div>
+                            <div class="flexbox wrap space-4 favicon-settings">
+                                <a href="javascript:void(0)" class="button red rounded outlined smaller file-delete" style="{if !$has_favicon}display: none{/if}">
+                                    <span class="icon add custom-pr-8 "><i class="fas fa-trash-alt"></i></span>[`Delete`]
+                                </a>
+                                <div id="file-upload-favicon">
+                                    <div class="upload flexbox">
+                                        <label class="link button rounded outlined smaller">
+                                            <i class="fas fa-file-upload"></i>
+                                            <span>[`Upload`]</span>
+                                            <input name="favicon" type="file" autocomplete="off">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {if isset($favicon_message)}<div class="hint text-red custom-mt-8">{$favicon_message}</div>{/if}
+                            <div class="hint">
+                                [`Recommendations: square shape, 48x48 pixels size, PNG or ICO file format.`]
+                                <div class="semibold">
+                                    [`A PNG favicon will be additionally converted to the ICO format.`]
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {* ICON FOR IOS *}
+                    <div class="field s-field-touchicon">
+
+                        {$has_touchicon = !empty($touchicon)}
+                        <div class="name">[`Icon for smartphones`]</div>
+                        <div class="value">
+                            <div class="touchicon-wrapper flexbox middle space-8 custom-pb-8" style="{if !$has_touchicon}display: none{/if}">
+                                <img src="{if $has_touchicon}{$touchicon.icon}{/if}" class="touchicon-icon">
+
+                                <span class="touchicon-name s-small bold">{if $has_touchicon}{$touchicon.name}{/if}</span>
+                            </div>
+                            <div class="flexbox wrap space-4 touchicon-settings">
+                                <a href="javascript:void(0)" class="button red rounded outlined smaller file-delete" style="{if !$has_touchicon}display: none{/if}">
+                                    <span class="icon add custom-pr-8 "><i class="fas fa-trash-alt"></i></span>[`Delete`]
+                                </a>
+                                <div id="file-upload-touchicon">
+                                    <div class="upload flexbox">
+                                        <label class="link button rounded outlined smaller">
+                                            <i class="fas fa-file-upload"></i>
+                                            <span>[`Upload`]</span>
+                                            <input name="touchicon" type="file" autocomplete="off">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hint">[`The icon is displayed, for instance, when a site label is added to smartphone home screen. Recommendations: square shape, from 192x192 to 1024x1024 pixels size, PNG file format.`]</div>
+                            {if isset($touchicon_message)}<div class="hint text-red">{$touchicon_message}</div>{/if}
+                            <div class="custom-mt-8">
+                                <input type="text" name="touchicon_title" value="{$touchicon_title}">
+                                <div class="hint">[`Label under icon`]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {* ROBOTS.TXT *}
+                    {_renderRobotsControl}
+
+                    {* CDN *}
+                    <div class="field">
+                        <div class="name">[`CDN`]</div>
+                        <div class="value js-cdn-wrapper">
+                            <div class="js-cdn-list flexbox wrap space-12 vertical custom-pb-12">
+                                {foreach $cdn_list as $_cdn}
+                                    {_renderCdnItem _cdn=$_cdn}
+                                {foreachelse}
+                                    {_renderCdnItem}
+                                {/foreach}
+                            </div>
+                            <a href="javascript:void(0)" class="s-cdn-add js-cdn-add button rounded outlined smaller">
+                                <span class="icon add custom-pr-8"><i class="fas fa-plus"></i></span>[`Add`]
+                            </a>
+                            <p class="hint">
+                                [`Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix.`]
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="field s-field-custom-code">
+                        <div class="name">[`Custom JavaScript code within &lt;head&gt;`]</div>
+                        <div class="value">
+                            <div class="">
+                                <div class="width-100 s-small custom-pb-8">[`Additional JavaScript code to be added before the closing &lt;/head&gt; tag:`]</div>
+                                <textarea class="width-100 s-small custom-code-textarea" name="head_js" placeholder="&lt;script&gt;&lt;/script&gt;">{$head_js|escape}</textarea>
+                            </div>
+
+                            <div class="flexbox wrap space-8 custom-pb-16">
+                                <div class="width-100 s-small">[`Google Analytics Property ID`]:</div>
+                                <input class="long" type="text" name="google_analytics[code]" value="{$google_analytics.code|escape}">
+                                <div class="wa-select">
+                                    <select name="google_analytics[universal]" class="js-ga-select">
+                                        <option value="1" data-hint="UA-123456-1" {if !empty($google_analytics.universal)}selected{/if}>[`Universal Analytics`]</option>
+                                        <option value="0" data-hint="G-FJBLKODBA0" {if empty($google_analytics.universal)}selected{/if}>[`Google Analytics 4`]</option>
+                                    </select>
+                                </div>
+
+                                {if !empty($google_analytics.universal)}
+                                    {$code_hint = 'UA-123456-1'}
+                                {else}
+                                    {$code_hint = 'G-FJBLKODBA0'}
+                                {/if}
+                                <span class="hint ga-hint">{sprintf('[`E.g., <strong>%s</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag.`]', $code_hint)}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- plugin hook: 'backend_settings.section' -->
+                    {* @event backend_settings.%plugin_id%.section *}
+                    {foreach $backend_settings as $_}{ifset($_.section)}{/foreach}
+
+                    {* Custom text *}
+                    <div class="fields-group s-field-group s-field-custom-text custom-py-20">
+                        <div class="flexbox full-width space-12">
+                            <div class="flexbox middle space-4">
+                                <h4 class="custom-mb-0">[`Custom files in site root`]</h4>
+                            </div>
+                            <button type="button" class="button nobutton small light-gray js-custom-text-toggle">
+                                <i class="fas fa-cog"></i> [`Settings`] <span><i class="fas fa-caret-down js-toggle-icon"></i></span>
+                            </button>
+                        </div>
+
+                        <p class="small custom-mb-0">
+                            [`Help confirm the site ownership for third-party services and may also be used for other purposes.`]
+                        </p>
+
+                        <div class="js-custom-text-value" style="display: none;">
+                            <div class="table-scrollable-x custom-py-20">
+                                <table id="s-custom-text-routes" class="s-routing single-lined">
+                                    {foreach $custom_texts as $route_id=>$route}
+                                        <tr data-route-id="{$route_id}">
+                                            <td class="nowrap app-name-td {if !empty($route.private)}gray{/if}">
+                                                <div class="flexbox middle space-8 app-name-wrapper">
+                                                    <span class="app-icon"><i class="fas fa-file-code"></i></span>
+                                                    <span class="text">{ifset($route, '_name', ifset($route.static_content))|truncate:32|escape}</span>
+                                                </div>
+                                            </td>
+                                            <td class="s-url max-width {if !empty($route.private)}gray{/if}">
+                                                <div>{$route.url|escape|truncate:30:'...':false:true}<i class="shortener"></i></div>
+                                            </td>
+                                            <td class="s-link">
+                                                <a href="//{$domain.name}/{$route.url}" target="_blank"><i class="fas fa-external-link-alt"></i></a>
+                                            </td>
+                                            <td class="s-actions s-route-settings js-route-settings align-right">
+                                                <span class="icon cursor-pointer" title="[`Settings`]"><i class="icon fas fa-pen"></i></span>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                    <!-- /fields -->
+                                </table>
+                            </div>
+                            <a class="js-custom-text-add button rounded outlined smaller custom-mb-8" data-app-id=":text" href="javascript:void(0)">
+                                <span class="icon add custom-pr-8"><i class="fas fa-plus"></i></span>[`Add`]
+                            </a>
+                        </div>
+                    </div>
+
+                    {* Redirect *}
+                    <div class="fields-group s-field-group s-field-redirect custom-py-20">
+                        <div class="flexbox full-width space-12">
+                            <div class="flexbox middle space-4">
+                                <h4 class="custom-mb-0">[`Redirects`]</h4>
+                            </div>
+                            <button type="button" class="button nobutton small light-gray js-redirect-toggle">
+                                <i class="fas fa-cog"></i> [`Settings`] <span><i class="fas fa-caret-down js-toggle-icon"></i></span>
+                            </button>
+                        </div>
+
+                        <p class="small custom-mb-0">
+                            [`Redirect site visitors from outdated to new URLs.`]
+                        </p>
+
+                        <div class="js-redirect-value" style="display: none;">
+                            <div class="table-scrollable-x custom-py-20">
+                                <table id="s-routes" class="s-routing single-lined">
+                                    {foreach $redirects as $route_id=>$route}
+                                        {if empty($route.disabled) && ifempty($route.disabled) <= 0}
+                                            {$route_disabled = 1}
+                                        {else}
+                                            {$route_disabled = null}
+                                        {/if}
+                                        <tr id="route-{$route_id}" data-id="{$route_id}" class="s-inc">
+                                            <td class="s-url nowrap max-width {if !$route_disabled}text-gray{/if}">
+                                                <div>
+                                                    <span class="s-domain-url">{waIdna::dec($url|default:'')}/</span><span class="s-editable-url">{$route.url|escape|truncate:30:'...':false:true}</span>
+                                                    <span class="icon custom-px-4"><i class="fas fa-long-arrow-alt-right"></i></span>
+                                                    <span class="redirect">{$route.redirect|escape}</span>
+                                                    <i class="shortener"></i>
+                                                </div>
+
+                                            </td>
+                                            {*<td class="s-actions align-right js-s-disable-route">
+                                                <span class="switch smaller" id="switch-redirect-{$route_id}">
+                                                    <input type="checkbox" name="params[disabled]" {if $route_disabled}checked{/if}>
+                                                </span>
+                                            </td>*}
+                                            <td class="s-actions s-route-settings js-route-settings align-right">
+                                                <span class="icon cursor-pointer" title="[`Settings`]"><i class="icon fas fa-pen"></i></span>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                    <!-- /fields -->
+                                </table>
+                            </div>
+                            <a href="javascript:void(0)" class="s-redirect-add js-redirect-add button rounded outlined smaller custom-mb-8">
+                                <span class="icon add custom-pr-8"><i class="fas fa-plus"></i></span>[`Add`]
+                            </a>
+                        </div>
+                    </div>
+
+                    {* Section settings *}
+                    <div class="fields-group s-field-group s-field-app custom-py-20">
+                        <div class="flexbox full-width space-12">
+                            <div class="flexbox middle space-8">
+                                <h4 class="custom-mb-0">[`Apps on the site`]</h4>
+                            </div>
+                            <button type="button" class="button nobutton small light-gray js-app-toggle">
+                                <i class="fas fa-cog"></i> [`Settings`] <span><i class="fas fa-caret-down js-toggle-icon"></i></span>
+                            </button>
+                        </div>
+
+                        <p class="small custom-mb-0">
+                            [`These apps cannot form a whole site section but are capable of displaying useful content somewhere on the site or by a special link.`]
+                        </p>
+
+                        {$routing_errors = siteHelper::getRoutingErrorsInfo()}
+                        {if !empty($routing_errors['not_install'])}
+                        <div id="not-install-error" class="text-orange custom-mt-12 custom-mb-4">
+                            <div class="flexbox space-8">
+                                <div>
+                                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                                </div>
+                                <span class="alert-content wide">{$routing_errors['not_install']}</span>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="js-app-value" style="display: none;">
+                            <div class="table-scrollable-x custom-py-20">
+                                <table id="s-apps" class="s-apps s-routing single-lined">
+                                    {foreach $routes as $route_id=>$route}
+                                    {if $route.app === ':text' || isset($route.app.id)}
+                                        {$is_misconfigured_settlement = !empty($route.misconfigured_settlement)}
+                                        {$app_disabled = !empty($route.app.disabled)}
+                                        <tr data-route-id="{$route_id}">
+                                            <td class="nowrap app-name-td {if $app_disabled || !empty($route.private) || !empty($route.disabled) || ($route.app !== ':text' && !is_array($route.app) )}gray{/if}">
+                                            <div class="flexbox middle space-8 app-name-wrapper">
+                                                {if is_array($route.app)}
+                                                    <span class="app-icon">
+                                                        {if !empty($route.app.icon)}
+                                                        <img src="{$wa_url}{$route.app.icon.24}" alt="">
+                                                        {else}
+                                                        <i class="fas fa-question"></i>
+                                                        {/if}
+                                                    </span>
+                                                    {$route._name|default:$route.app.name|default:$route.app.id}
+                                                {elseif $route.app ===':text'}
+                                                    <span class="app-icon"><i class="fas fa-file-code"></i></span>
+                                                    <span class="text">{$route.static_content|default:''|truncate:32|escape}</span>
+                                                {else}
+                                                    {$route.app|escape}
+                                                {/if}
+
+                                                {if $app_disabled || $is_misconfigured_settlement}
+                                                    <span class="js-misconfigured-settlement icon small"><i class="fas fa-exclamation-triangle"></i></span>
+                                                {/if}
+                                            </div>
+                                            </td>
+                                            <td class="{if $app_disabled || !empty($route.private) || !empty($route.disabled) || ($route.app !== ':text' && !is_array($route.app))}gray{/if}{if $app_disabled || $is_misconfigured_settlement} js-misconfigured-settlement strike{/if}">{strip}
+                                                {if $route.app === ':text'}
+                                                    /{$route.url|escape|truncate:30:'...':false:true}
+                                                {else}
+                                                    /{$route.url|rtrim:'/*'|escape|truncate:30:'...':false:true}/
+                                                {/if}
+                                            {/strip}</td>
+                                            <td class="min-width s-route-settings js-app-settings cursor-pointer">
+                                                <span class="icon cursor-pointer" title="[`Settings`]"><i class="fas fa-cog"></i></span>
+                                            </td>
+                                        </tr>
+                                    {/if}
+                                    {/foreach}
+                                </table>
+                            </div>
+                            <div class="dropdown app-dropdown custom-mb-8" id="js-app-dropdown-add">
+                                <a href="javascript:void(0)" class="dropdown-toggle without-arrow button rounded outlined smaller ">
+                                    <span class="icon add custom-pr-8"><i class="fas fa-plus"></i></span>[`Add`]
+                                </a>
+                                <div class="dropdown-body">
+                                    <ul class="menu">
+                                        {foreach $apps as $app}
+                                        <li>
+                                            <a href="javascript:void(0);" class="js-add-app" data-app-id="{$app.id}">
+                                                {if isset($app.icon_class)}
+                                                <i class="{$app.icon_class}"></i>
+                                                {else}
+                                                <i class="icon"><img src="{$wa_url}{$app.icon.24}" alt=""></i>
+                                                {/if}
+                                                <span>{$app.name}</span>
+                                            </a>
+                                        </li>
+                                        {/foreach}
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <script>
+                        (function($) {
+                            {$scroll_to = waRequest::get('scroll_to')}
+                            if ({json_encode(in_array($scroll_to, ['redirects', 'custom-texts']))}) {
+                                localStorage.setItem('site/settings/{$scroll_to}-expanded', 1);
+                            }
+
+                            const sections = {
+                                'site/settings/custom-texts-expanded': '.js-custom-text-value',
+                                'site/settings/redirects-expanded': '.js-redirect-value',
+                                'site/settings/apps-expanded': '.js-app-value',
+                            };
+                            for (const key in sections) {
+                                if (localStorage.getItem(key) == 1) {
+                                    $(sections[key])
+                                        .show()
+                                        .closest('.s-field-group').find('.js-toggle-icon').addClass('fa-caret-up').removeClass('fa-caret-down');
+                                }
+                            }
+                        })(jQuery);
+                    </script>
+                {/if}
+
+                </div>
+                <div class="s-footer-field flexbox middle bottombar sticky full-width custom-mt-20">
+                    <div class="value save_button">
+                        <input type="submit" name="save" class="button" value="[`Save`]">
+                        <span id="s-settings-form-status" style="display:none">[`Saved`]</span>
+                    </div>
+                    <div>
+                        <a href="javascript:void(0)" class="js-delete button nobutton red "><i class="fas fa-trash-alt custom-pr-4"></i>[`Delete entire website`]</a>
+                    </div>
+                </div>
+                <iframe style="display:none" name="s-settings-iframe" id="s-settings-iframe"></iframe>
+                </form>
+        </div>
+    </div>
+</div>
+
+{$_domains = $domains|default:[]}
+{$_domains_count = $_domains|@count}
+{$_latter_apps_names = $latter_apps_names|default:[]}
+{$_latter_apps_names_count = $_latter_apps_names|count}
+
+{$single_site = ($_domains_count === 1)|json_encode},
+{$delete_content = '[`This will delete entire website including all its pages without the ability to recover. Are you sure?`]'}
+
+{if ($single_site) }
+{$delete_content = '[`Deleting this site will also delete routing rules set up for installed apps. This will limit their functionality. Delete the site?`]'}
+{/if}
+{if !empty($latter_apps_names)}
+{$delete_content = sprintf(_w( "Deleting this site will also delete routing rules set up for <b>%s</b> app. This will limit its functionality.</p><p>Upon site deletion, set up routing rules for this app in the structure settings of remaining sites to continue using all functions.", "Deleting this site will also delete routing rules set up for <b>%s</b> apps. This will limit their functionality.</p><p>Upon site deletion, set up routing rules for these apps in the structure settings of remaining sites to continue using all functions.", $_latter_apps_names_count, false), $_latter_apps_names|@join:"[`”</b>, <b>“`]")}
+{/if}
+
+{if !empty($domain_alias) && empty($latter_apps_names)}
+{$delete_content = '[`Delete this site alias? It will <strong>not</strong> delete any data of the main site.`]'}
+{/if}
+
+<script type="text/javascript">
+    SiteSettings = (function ($) {
+        return class {
+            constructor(options) {
+                const that = this;
+                // DOM
+                that.$wrapper = options["$wrapper"];
+                that.form = that.$wrapper.find('#s-settings-form');
+
+                // VARS
+                that.locales = options["locales"];
+                that.$wa_app_url = options["$wa_app_url"];
+                that.domain_id = options["domain_id"];
+                that.cdn_template = options["cdn_template"];
+                that.$delete_content = options["$delete_content"];
+                that.redirect_after_delete = options["redirect_after_delete"];
+                that.storage = that.initStorage();
+                that.icon_mime_types = options["icon_mime_types"];
+                that.icon_extensions = options["icon_extensions"];
+
+                // INIT
+                that.initClass(options);
+            };
+
+            initClass(options) {
+                const that = this;
+                // this.oldData = this.$form.serialize();
+                that.initWaApps();
+                that.initFavicon();
+                that.initTouchicon();
+                that.initCdn();
+                that.initCustomTextRoutes();
+                that.initRedirectRoutes();
+                that.initRouteSettings();
+                that.initAppSettings();
+                that.initDeleteSite();
+                that.initSubmitSettings();
+
+                // handler get-params
+                if (options["dialog_add_app"] || options["scroll_to"]) {
+                    const content_url = options['$wa_app_url'] + 'settings/?domain_id=' + options['domain_id'];
+                    history.pushState({ content_url }, null, content_url);
+
+                    that.showAddAppDialog(options["dialog_add_app"])
+                    that.scrollToSection(options["scroll_to"]);
+                }
+            }
+
+            initWaApps() {
+                const that = this,
+                    $wrapper = that.$wrapper,
+                    $section = $wrapper.find('.s-field-waapps'),
+                    $table = $section.find('#s-wa-apps'),
+                    $input = $section.find('input[name=wa_apps_type]'),
+                    //$waapps_domain_title = $section.find('.waapps-auto-domain-title'),
+                    $waapps_select = $section.find('.waapps-select'),
+                    $waapps_select_input = $section.find('#waapps-select');
+
+                $input.on('change', function () {
+                    if ($waapps_select_input.is(":checked")) {
+                        $waapps_select.children('div').show();
+                        //$waapps_domain_title.hide();
+                    } else {
+                        $waapps_select.children('div').hide();
+                        //$waapps_domain_title.show();
+                    }
+                });
+
+                $("a#s-apps-add").click(function () {
+                    $table.append('<tr><td><a style="display:inline" href="#" onclick="return false" class="custom-pr-8 text-light-gray"><i class="icon fas fa-grip-vertical sort"></i></a>' +
+                                        '<span></span><input type="text" name="apps[name][]" value="" /></td>' +
+                                        '<td><span></span><input type="text" name="apps[url][]" value="" /></td>' +
+                                        '<td class="s-actions">' +
+                                            '<a href="#" class="s-apps-edit custom-pr-16 text-light-gray" title="[`Edit`]"><i class="icon fas fa-pen edit"></i></a>' +
+                                            '<a href="#" class="s-apps-delete text-light-gray" title="[`Delete`]"><i class="icon fas fa-times-circle delete"></i></a>' +
+                                        '</td></tr>');
+                    $table.next('div').show();
+                    return false;
+                });
+
+                $table.on('click', 'a.s-apps-edit', function () {
+                    var tr = $(this).parents('tr');
+                    tr.find('span').hide();
+                    tr.find('input').show();
+                    $table.next('div').show();
+                    return false;
+                });
+
+                $table.on('click', 'a.s-apps-delete', function () {
+                    if (confirm('[`This will delete the link from the menu. Are you sure?`]')) {
+                        $(this).parents('tr').remove();
+                    }
+                    $table.next('div').show();
+                    return false;
+                });
+
+                $.site.helper.loadSortableJS().then(() => {
+                    $table.find('tbody').sortable({
+                        animation: 150,
+                        handle: '.s-sort',
+                        draggable: 'tr',
+                        opacity: 0.75,
+                        tolerance: 'pointer',
+                        onEnd: function () {
+                            $table.next('div').show();
+                        }
+                    });
+                });
+            }
+
+            initFavicon() {
+                const that = this;
+                const $field_wrapper = that.$wrapper.find(".s-field-favicon"),
+                    $file_loader = $field_wrapper.find("#file-upload-favicon"),
+                    $file_delete = $field_wrapper.find(".file-delete");
+
+                $file_loader.waUpload({
+                    show_file_name: false
+                })
+                $file_loader.on('change', 'input', function(evt){
+                    const $input = $(this),
+                        $file_error = $field_wrapper.find(".file-error");
+                    if ($file_error.length) $file_error.remove();
+
+                    const tgt = evt.target || window.event.srcElement,
+                        files = tgt.files,
+                        file_ext = files[0].type;
+
+                    if (file_ext && that.icon_mime_types.includes(file_ext)) {
+                        if (FileReader && files && files.length) {
+                            const fr = new FileReader();
+                            fr.onload = function () {
+                                $field_wrapper.find('i.favicon-icon').css('background-image', 'url(' + fr.result + ')');
+                                $field_wrapper.find('.favicon-name').text(files[0].name);
+                                $field_wrapper.find('.favicon-wrapper').show();
+                            }
+                            fr.readAsDataURL(files[0]);
+                        } else {
+                            console.error('FileReader Not supported');
+                        }
+
+                        if ($input.val()) {
+                            $file_delete.show();
+                        } else{
+                            $file_delete.hide();
+                        }
+                    } else {
+                        const msg = '[`Only files with name extensions %s are allowed.`]'.replace('%s', that.icon_extensions.map(ext => ('.'+ext)).join(', '));
+                        $field_wrapper.find('.value').append($('<div class="small text-red file-error" />').text(msg));
+                        $input.val('');
+                        $field_wrapper.find('.favicon-wrapper').hide();
+                    }
+                })
+                $file_delete.on('click', function(){
+                    that.form.append('<input type="hidden" name="remove_favicon" value="1">');
+                    $file_loader.find('input').val('');
+                    $(this).hide();
+                    $field_wrapper.find('.favicon-wrapper').hide();
+                })
+            }
+
+            initTouchicon() {
+                const that = this;
+                const $field_wrapper = that.$wrapper.find(".s-field-touchicon"),
+                $file_loader = $field_wrapper.find("#file-upload-touchicon"),
+                $file_delete = $field_wrapper.find(".file-delete");
+
+                $file_loader.waUpload({
+                    show_file_name: false
+                })
+                $file_loader.on('change', 'input', function(evt){
+                    const $input = $(this),
+                        $file_error = $field_wrapper.find(".file-error");
+                    if ($file_error.length) $file_error.remove();
+
+                    const tgt = evt.target || window.event.srcElement,
+                        files = tgt.files,
+                        file_ext = files[0].type;
+                    // FileReader support
+                    if (file_ext.includes('png')){
+                        if (FileReader && files && files.length) {
+                            const fr = new FileReader();
+
+                            fr.onload = function () {
+
+                                $field_wrapper.find('.touchicon-icon').attr('src', fr.result);
+                                $field_wrapper.find('.touchicon-name').text(files[0].name);
+                                $field_wrapper.find('.touchicon-wrapper').show();
+                            }
+                            fr.readAsDataURL(files[0]);
+                        }
+                        // Not supported
+                        else {
+                            console.error('FileReader Not supported');
+                        }
+
+                        if ($input.val()) {
+                            $file_delete.show();
+                        }
+                        else{
+                            $file_delete.hide();
+                        }
+                    }
+                    else {
+                        $field_wrapper.find('.value').append('<div class="small text-red file-error">[`Files with extension *.png are allowed only.`]</div>')
+                        $input.val('');
+                        $field_wrapper.find('.touchicon-wrapper').hide();
+                    }
+                })
+                $file_delete.on('click', function(){
+                    that.form.append('<input type="hidden" name="remove_touchicon" value="1">');
+                    $file_loader.find('input').val('');
+                    $(this).hide();
+                    $field_wrapper.find('.touchicon-wrapper').hide();
+                })
+            }
+
+            initCdn() {
+                const that = this;
+                const $cdn_wrapper = that.$wrapper.find('.js-cdn-wrapper'),
+                $cnd_list = $cdn_wrapper.find('.js-cdn-list'),
+                $add_cdn = $cdn_wrapper.find('.js-cdn-add'),
+                cdn_template = that.cdn_template;
+
+                switchCdnRemoveIcon();
+
+                $add_cdn.on('click', function (e) {
+                    e.preventDefault();
+                    addCdnInput();
+                });
+
+                $cdn_wrapper.on('click', '.js-cdn-remove', function (e) {
+                    var $item = $(this).parent('.js-cdn');
+                    removeCdnInput($item);
+                });
+
+                function switchCdnRemoveIcon() {
+                    var $items = $cdn_wrapper.find('.js-cdn');
+
+                    if ($items.length > 1) {
+                        $items.each(function (i, item) {
+                            var $item = $(item);
+                            $item.find('.js-cdn-remove').show();
+                        });
+                    } else {
+                        $items.each(function (i, item) {
+                            var $item = $(item);
+                            $item.find('.js-cdn-remove').hide();
+                        });
+                    }
+                }
+
+                function addCdnInput() {
+                    var $item = $(cdn_template);
+                    $cnd_list.append($item);
+                    switchCdnRemoveIcon();
+                }
+
+                function removeCdnInput($item) {
+                    $item.remove();
+                    switchCdnRemoveIcon();
+                }
+            }
+
+            initRedirectRoutes() {
+                const that = this,
+                    $wrapper = that.$wrapper,
+                    $switchers = $wrapper.find('.js-s-disable-route'),
+                    xhr = null,
+                    url = that.$wa_app_url + '?module=configure&action=saveroutes&domain_id=' + that.domain_id;
+
+                $switchers.each(function () {
+                    const $switch_wrapper = $(this),
+                        $item = $switch_wrapper.closest('tr'),
+                        id = $item.data('id'),
+                        $loading = $item.find('.s-loading'),
+                        $switch = $switch_wrapper.find("#switch-redirect-" + id);
+                        //is_disabled = $item.hasClass('c-is-disabled'),
+                        $switch.waSwitch({
+                            ready: function (wa_switch) {
+                            },
+                            change: function(active, wa_switch) {
+                                //$loading.show();
+                                //wa_switch.disable(true);
+                                const data = {
+                                    id: id,
+                                    disabled: active ? 0 : 1
+                                }
+                            }
+                        });
+                });
+            };
+
+            initCustomTextRoutes() {
+                const that = this,
+                $section = that.$wrapper.find('.s-field-custom-text'),
+                $table_wrapper =  $section.find('.js-custom-text-value'),
+                $table = $section.find('#s-custom-text-routes');
+
+                $table.on('click', '.js-route-settings', that.openAppDialog());
+                $section.on('click', '.js-custom-text-add', that.openAppDialog());
+
+                $section.on('click', '.js-custom-text-toggle', function(e, data){
+                    data = data || {};
+                    that.storage.setExpandCustomTexts($table_wrapper.is(':hidden'));
+                    $table_wrapper.slideToggle(data.no_animation ? 0 : 350);
+                    $(this).find('.js-toggle-icon').toggleClass('fa-caret-down fa-caret-up');
+                });
+            }
+
+            initAppSettings() {
+                const that = this,
+                $section = that.$wrapper.find('.s-field-app'),
+                $table_wrapper =  $section.find('.js-app-value'),
+                $dropdown_add =  $section.find('#js-app-dropdown-add'),
+                $table = $section.find('#s-apps');
+
+                $table.on('click', '.js-app-settings', that.openAppDialog());
+
+                $section.on('click', '.js-app-toggle', function(e, data){
+                    data = data || {};
+                    that.storage.setExpandApps($table_wrapper.is(':hidden'));
+                    $table_wrapper.slideToggle(data.no_animation ? 0 : 350);
+                    $(this).find('.js-toggle-icon').toggleClass('fa-caret-down fa-caret-up');
+                });
+
+                $dropdown_add.waDropdown({
+                    hover: false,
+                    ready: function(dropdown) {
+                            const $menu = dropdown.$wrapper.find('.menu');
+                            $menu.on('click', '.js-add-app', function(e){
+                                let closed = false;
+                                let dialog;
+                                const data = {
+                                    domain_id: that.domain_id,
+                                    app: $(this).data('app-id'),
+                                }
+
+                                $.post(that.$wa_app_url+'?module=configure&action=sectionDialog&domain_id=' + that.domain_id, data, function(html) {
+                                    if (closed) {
+                                        return;
+                                    }
+                                    dialog = $.waDialog({
+                                        html: html
+                                    });
+                                });
+                                return false;
+                            })
+                        }
+                });
+            }
+
+            openAppDialog() {
+                const that = this;
+
+                return function() {
+                    const $item = $(this),
+                    $tr = $item.closest('tr'),
+                    item_id = $tr.data('route-id');
+
+                    const href = that.$wa_app_url + "?module=configure&action=sectionDialog";
+                    const data = {
+                        ...(item_id !== undefined ? { route: item_id }: {}),
+                        ...($item.data('app-id') !== undefined ? { app: $item.data('app-id') }: {}),
+                        domain_id: that.domain_id,
+                    };
+
+                    $.post(href, data, function (html) {
+                        $.waDialog({
+                            html: html,
+                        })
+                    })
+                }
+            }
+
+            initRouteSettings() {
+                const that = this,
+                $section = that.$wrapper.find('.s-field-redirect'),
+                $table_wrapper =  $section.find('.js-redirect-value'),
+                $table = $section.find('#s-routes');
+
+                $table.on('click', '.js-route-settings', openDialog);
+
+                $section.on('click', '.js-redirect-add', openDialog);
+
+                $section.on('click', '.js-redirect-toggle', function(e, data){
+                    data = data || {};
+                    that.storage.setExpandRedirects($table_wrapper.is(':hidden'));
+                    $table_wrapper.slideToggle(data.no_animation ? 0 : 350);
+                    $(this).find('.js-toggle-icon').toggleClass('fa-caret-down fa-caret-up');
+                });
+
+                function openDialog() {
+                    const $item = $(this),
+                        $tr = $item.closest('tr'),
+                        item_id = $tr.data('id');
+
+                    const href = that.$wa_app_url + "?module=configure&action=redirectDialog";
+                    const data = {
+                        'route': item_id,
+                        'domain_id': that.domain_id
+                    };
+                    $.get(href, data, function (html) {
+                        $.waDialog({
+                            html: html,
+                        })
+                    })
+                }
+            }
+
+            initDeleteSite() {
+                const that = this,
+                $section = that.$wrapper.find('.s-footer-field'),
+                delete_url = '?module=configure&action=delete';
+
+                $section.on('click', '.js-delete', function () {
+
+                $.waDialog.confirm({
+                    title: that.locales["delete_confirm_title"],
+                    text: that.locales["delete_confirm_text"],
+                    success_button_title: that.locales["delete_confirm_button"],
+                    success_button_class: 'danger',
+                    cancel_button_title: that.locales["delete_cancel_button"],
+                    cancel_button_class: 'light-gray',
+                    onSuccess: deleteSite
+                });
+
+                function deleteSite() {
+                    console.log('Delete site id =', that.domain_id);
+
+                    $.post(delete_url, "domain_id=" + that.domain_id, function (response) {
+                        if (response.status === 'ok') {
+                            if (that.redirect_after_delete) {
+                                location.href = that.redirect_after_delete;
+                            }
+                        }
+                    }, "json");
+                }
+
+                return false;
+                });
+            }
+
+            initSubmitSettings(){
+                const that = this,
+                $form = that.form,
+                save_url = '?module=configure&action=save&domain_id=' + that.domain_id,
+                $iframe = that.$wrapper.find("#s-settings-iframe"),
+                $form_status = that.$wrapper.find("#s-settings-form-status");
+                const wa_loading = $.waLoading();
+
+                $form.on("submit", function (e) {
+                    $form_status.html('<span class="icon size-16 loading"><i class="fas fa-spinner fa-spin"></i></span>').css('color', 'var(--text-color)').show();
+                    wa_loading.show();
+                    wa_loading.animate(4000, 99, false);
+
+                    $iframe.one('load', function () {
+                        var response = $.parseJSON($(this).contents().find('body').html());
+                        if (response.status == 'ok') {
+                            $form_status.html('<span class="icon size-16 loading nowrap"><i class="fas fa-check-circle"></i> [`Saved`]</span>').css('color', 'var(--green)').show();
+                            $form_status.fadeOut(3000);
+                            location.reload();
+                        } else {
+                            const alert_text = response.errors ? response.errors : response;
+                            $.waDialog.alert({
+                                title: '<i class="fas fa-exclamation-triangle text-red"></i>',
+                                text: '<span class="text-red">' + alert_text + '</span>',
+                                button_title: that.locales["alert_button"],
+                                button_class: 'warning',
+                            });
+                            $form_status.hide();
+                            //$form_status.html(response.errors ? response.errors : response).css('color', 'red');
+                            wa_loading.abort();
+                            //$form_status.fadeIn("slow");
+                        }
+                    });
+                });
+            }
+
+            showAddAppDialog(app_id) {
+                if (!app_id) return;
+                const $app_toggler = this.$wrapper.find('.js-app-toggle').trigger('click');
+                setTimeout(() => this.$wrapper.find('#js-app-dropdown-add').get(0).scrollIntoView(), 350);
+                this.$wrapper.find(`.js-add-app[data-app-id="${ app_id }"]`).trigger('click');
+            }
+
+            scrollToSection(section) {
+                if (!section) return;
+
+                section = section.slice(0, -1);
+                const offset_top = ($('#wa-nav').height() || 0) + ($('.s-tabs').height() || 0);
+                const $section = $('.s-field-'+section);
+
+                if ($section.length) {
+                    const top = $section.offset().top - offset_top;
+                    window.scroll(0, top);
+                }
+            }
+
+            initStorage() {
+                const custom_texts_expanded_key = 'site/settings/custom-texts-expanded';
+                const redirects_expanded_key = 'site/settings/redirects-expanded';
+                const apps_expanded_key = 'site/settings/apps-expanded';
+
+                return {
+                    isCustomTextsExpanded: () => localStorage.getItem(custom_texts_expanded_key) == 1,
+                    isRedirectsExpanded: () => localStorage.getItem(redirects_expanded_key) == 1,
+                    isAppsExpanded: () => localStorage.getItem(apps_expanded_key) == 1,
+                    setExpandCustomTexts: (is_expand = false) => {
+                        if (is_expand) {
+                            localStorage.setItem(custom_texts_expanded_key, 1);
+                        } else {
+                            localStorage.removeItem(custom_texts_expanded_key);
+                        }
+                    },
+                    setExpandRedirects: (is_expand = false) => {
+                        if (is_expand) {
+                            localStorage.setItem(redirects_expanded_key, 1);
+                        } else {
+                            localStorage.removeItem(redirects_expanded_key);
+                        }
+                   },
+                   setExpandApps: (is_expand = false) => {
+                        if (is_expand) {
+                            localStorage.setItem(apps_expanded_key, 1);
+                        } else {
+                            localStorage.removeItem(apps_expanded_key);
+                        }
+                   }
+                }
+            }
+        }
+    })(jQuery);
+
+    $(function() {
+        document.title = '[`Site setup`] — ' + {json_encode($domain_idn)};
+        new SiteSettings({
+            $wrapper: $("#s-settings-page"),
+            domain_id: '{$domain_id}',
+            $wa_app_url: '{$wa_app_url}',
+            cdn_template: {_renderCdnItem|json_encode},
+            redirect_after_delete: {$wa_app_url|json_encode},
+            locales: {
+                delete_confirm_title: '[`Delete entire website`]',
+                delete_confirm_text: '{$delete_content}',
+                delete_confirm_button: "[`Delete`]",
+                delete_cancel_button: "[`Cancel`]",
+                alert_title: "[`Error message`]",
+                alert_button: "[`Close`]",
+            },
+            dialog_add_app: {waRequest::get('dialog_add_app')|json_encode},
+            scroll_to: {waRequest::get('scroll_to')|json_encode},
+            icon_extensions: ['icon', 'png'],
+            icon_mime_types: ['image/x-icon', 'image/vnd.microsoft.icon', 'image/png', 'image/jpeg', 'image/webp', 'image/gif'],
+        });
+    });
+
+    (function($) {
+        const storage_key  = 'site/settings/scroll-pos';
+        const scroll_pos = sessionStorage.getItem(storage_key);
+        if (scroll_pos) {
+            window.scrollTo(0, scroll_pos);
+            sessionStorage.removeItem(storage_key);
+        }
+
+        $.site.reloadWithScrollTo = function () {
+            $('body').removeClass('is-locked');
+            sessionStorage.setItem(storage_key, window.scrollY);
+            this.reload();
+        }
+    })(jQuery);
+</script>

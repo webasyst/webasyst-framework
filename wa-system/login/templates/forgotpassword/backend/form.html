@@ -9,7 +9,7 @@
             {$_errors = $errors.login|default:[]}
             {$_value = $data.login|default:''}
 
-            <input type="text" name="{$renderer->getInputName('login')}" class="wa-login-text-input"
+            <input type="text" name="{$renderer->getInputName('login')}" class="wa-login-text-input large"
                    value="{$_value|escape}"
                    autocomplete="off"
                    placeholder="{$login_placeholder|escape}">
@@ -27,7 +27,7 @@
         </div>
         <div class="value">
             <input type="text" name="{$renderer->getInputName('confirmation_code')}"
-                   class="wa-login-text-input" placeholder="{$code_placeholder|escape}">
+                   class="wa-login-text-input large" placeholder="{$code_placeholder|escape}">
 
             <div class="wa-confirmation-code-input-message"></div>
             <div class="wa-send-again-confirmation-code-link-wrapper" style="display: none">
@@ -47,10 +47,12 @@
 
             {$renderer->renderUncaughtErrors()}
 
-            <input type="submit" value="[s`Password recovery`]" class="button green wa-recovery-button">
-            <input type="submit" value="[`Confirm and change password`]" class="button gray wa-confirm-button">
+            <div class="flexbox middle space-16 wrap-mobile custom-mt-16">
+                <input type="submit" value="[s`Password recovery`]" class="button wa-recovery-button width-100-mobile">
+                <input type="submit" value="[`Confirm and change password`]" class="button wa-confirm-button width-100-mobile">
 
-            <a href="{$login_url}{if $force_login_form}?force_login_form=1{/if}" class="wa-remember-now-link" data-type="login">[s`I remember it now!`]</a>
+                <a href="{$login_url}{if $force_login_form}?force_login_form=1{/if}" class="wa-remember-now-link nowrap" data-type="login">[s`I remember it now!`]</a>
+            </div>
         </div>
     </div>
 

@@ -17,8 +17,16 @@ class webasystProfileCustomerAction extends waViewAction
             ]);
             return;
         }
+        
+        $auth_url = $result['details']['auth_url'];
+        $goal_url = waRequest::get('goal_url', null, waRequest::TYPE_STRING_TRIM);
+        if (!empty($goal_url)) {
+            $url_parts = parse_url($auth_url);
+            $auth_url = $url_parts['scheme'] . '://' . $url_parts['host'] . ifset($url_parts['path'], '/') 
+                . '?goal_url=' . urlencode($goal_url) . '&' . ifset($url_parts['query'], '');
+        }
 
-        $this->redirect($result['details']['auth_url']);
+        $this->redirect($auth_url);
     }
 
 

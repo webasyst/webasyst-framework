@@ -16,6 +16,7 @@
   <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.history.js"></script>
   <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.tmpl.min.js"></script>
 
+  <script src="{$wa_app_static_url}js/contentRouter.js"></script>
 
   {wa_js file="js/blog.min.js"}
   {$wa_app_static_url}js/jquery.sticky.js
@@ -51,7 +52,8 @@
     {$wa->header()}
     <div id="wa-app" class="flexbox wrap-mobile">
       {$sidebar}
-      <main class="{if $module == 'pages'}flexbox {/if}content s-hide-scrollbar not-blank js-main-content">
+      {$_is_flexbox = $module == 'pages' || ($module == 'post' && $action == 'edit')}
+      <main class="{if $_is_flexbox}flexbox {/if}content s-hide-scrollbar not-blank js-main-content">
         {if $_has_wrapper}
           <div class="article wide"><div class="article-body">
         {/if}

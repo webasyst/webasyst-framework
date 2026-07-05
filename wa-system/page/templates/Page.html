@@ -140,7 +140,7 @@
 </style>
 
 {if $sidebar}
-    <div class="sidebar width-21rem bordered-right bordered-left blank">
+    <div class="sidebar width-21rem bordered-right bordered-left blank" style="{if $wa->isMobile()}position: relative; width:100%; height: auto !important; min-height: auto; top: 0;{/if}">
         {foreach $routes as $r => $route}
             {if (count($routes) > 1) && !$r && is_array($route.pages) && $route.pages}
                 {$unsettled_pages_count = count($route.pages)}
@@ -409,7 +409,9 @@
                 {if $options.is_ajax}
                 let new_hash = {$page_url|json_encode} +id;
                 if (new_hash == location.hash) {
-                    $.wa.site.dispatch();
+                    if ($('.block-pages ul li.selected:not([data-page-id])').length) {
+                        waLoadPage(id);
+                    }
                 } else {
                     $.wa.setHash(new_hash);
                 }

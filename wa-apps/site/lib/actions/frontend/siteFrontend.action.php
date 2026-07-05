@@ -28,6 +28,14 @@ class siteFrontendAction extends waPageAction
                 'keywords' => isset($page['keywords']) ? $page['keywords'] : '',
                 'description' => isset($page['description']) ? $page['description'] : ''
             ));
+            
+            if (ifset($page['params'], 'og_active', false)) {
+                foreach (ifset($page['params'], array()) as $property => $content) {
+                    if ($content && $property !== 'og_active') {
+                        substr($property, 0, 3) == 'og_' && wa()->getResponse()->setOGMeta('og:'.substr($property, 3), $content);
+                    }
+                }
+            }
 
             $this->view->assign('breadcrumbs', $this->getBreadcrumbs($page));
             $this->setThemeTemplate('page.html');

@@ -1,0 +1,81 @@
+{if !empty($is_bp_header)}
+    <!-- css -->
+    <link href="{$wa_theme_url}clear.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+{/if}
+<div id="header">
+    <div class="container" role="navigation">
+
+        {if $wa->shop}
+            {$_cart_url = $wa->getUrl('shop/frontend/cart')}
+            {if method_exists($wa->shop, 'checkout')}
+                {$_cart_url = $wa->shop->checkout()->cartUrl()}
+            {/if}
+
+            <!-- display shopping cart info in case Shop-Script is installed -->
+            {$cart_total = $wa->shop->cart->total()}
+             <div id="cart" class="float-right{if !$cart_total} empty{/if}">
+                 <a href="{$_cart_url}">
+                     <i class="icon16 cart"></i>
+                     [s`Cart`]:
+                     <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                 </a>
+
+                 {strip}
+                 {capture assign="_loading_template"}
+                     <div class="s-loading-section">
+                         <div class="s-loading-content">
+                             <i class="icon16 loading"></i>
+                         </div>
+                     </div>
+                 {/capture}
+                 {/strip}
+
+                 <script>
+                     ( function($) {
+                         var is_loading = false;
+                         $("#cart").on("click", "a", function() {
+                             if (!is_loading) {
+                                 is_loading = true;
+                                 $("body").append({$_loading_template|json_encode});
+                             }
+                         });
+                     })(jQuery);
+                 </script>
+             </div>
+        {/if}
+
+        {if $wa->isAuthEnabled()}
+            <!-- auth & sign up links -->
+            <div class="float-right nowrap auth">
+                <ul class="menu-h">
+                     {if $wa->user()->isAuth()}
+                        {if $wa->shop}
+                            <li><a href="{$wa->getUrl('shop/frontend/my')}">{* uncomment to display userpic too <i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i> *}[s`My account`]</a></li>
+                        {else}
+                                <li><strong>{$wa->user('name')}</strong></li>
+                            {/if}
+                         <li><a href="?logout">[s`Log out`]</a></li>
+                    {else}
+                        <li><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
+                        <li><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+                    {/if}
+                </ul>
+            </div>
+        {/if}
+
+        <!-- search form (app dependent) -->
+        <div class="search">
+            {include file="`$wa_active_theme_path`/searchform.html" inline}
+        </div>
+
+        <!-- main website sections -->
+        <ul class="menu-h">
+            {foreach $wa->apps() as $a}
+                <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+            {/foreach}
+        </ul>
+
+        <div class="clear-both"></div>
+
+    </div>
+</div>

@@ -588,11 +588,11 @@ final class waInstallerRequirements
         }
 
         if ($bad_folders) {
-            $requirement['warning'] .= sprintf($this->wa_locale->_('%s should be writable'), implode(', ', $bad_folders));
+            $requirement['warning'] .= '<div><div>'.sprintf($this->wa_locale->_('%s should be writable'), implode('</div><div>', $bad_folders)).'</div></div>';
         }
 
         if ($good_folders) {
-            $requirement['note'] .= sprintf($this->wa_locale->_('%s is writable'), implode(', ', $good_folders));
+            $requirement['note'] .= '<div><div>'.sprintf($this->wa_locale->_('%s is writable'), implode('</div><div>', $good_folders)).'</div></div>';
         }
     }
 

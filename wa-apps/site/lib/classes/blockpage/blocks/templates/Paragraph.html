@@ -1,0 +1,43 @@
+{$block_props = []}
+{$tag = 'p'}
+{if !empty($data->data['tag'])}
+    {$tag = $data->data['tag']}
+{/if}
+{$static_classes_props = 'site-block-paragraph style-wrapper f-w'}
+{$anchor_id = $data->data['id']|default:0}
+<{$tag} class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}"{if $is_backend} contenteditable="true"{/if} {if $anchor_id}id="{$anchor_id}"{/if}>
+    {$data->data['html']}
+</{$tag}>
+
+{if $is_backend}
+<script>
+    $(function() { "use strict";
+        const block_id = {$data->getId()|json_encode};
+        const wrapper_class = '.site-block-paragraph[data-block-id="'+block_id+'"]';
+        const $wrapper_parent = $(wrapper_class).parent();
+
+        $wrapper_parent.on('input', wrapper_class, function() {
+            const data = $.extend({}, $.wa.editor.api.block_storage.getData(block_id));
+            data.html = $(this).html();
+            $.wa.editor.saveBlockData(block_id, data);
+        });
+
+        $wrapper_parent.on('block_data_updated', wrapper_class, function(event, updated_block_id, data) {
+            event.stopPropagation();
+            if (+updated_block_id === +block_id) {
+                updateBlockStyles($(this), data, block_id);
+                $(this).html(data.html);
+            }
+        });
+    });
+</script>
+{else}
+<script>
+    (function() { "use strict";
+        const block_id = {$data->getId()|json_encode};
+        const $wrapper = $('.site-block-paragraph[data-block-id="'+block_id+'"]');
+        const data = {$data->data|json_encode};
+        updateBlockStyles($wrapper, data, block_id);
+    })();
+</script>
+{/if}

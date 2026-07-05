@@ -193,8 +193,8 @@ class waOrder implements ArrayAccess
                             $item += array(
                                 'total' => $item['price'] * $item['quantity'],
                             );
-                            unset($item);
                         }
+                        unset($item);
 
                         break;
                 }
@@ -208,13 +208,19 @@ class waOrder implements ArrayAccess
             }
         }
 
-        $subtotal = 0.0 + $this->total;
-        if ($this->tax_included !== true) {
-            $subtotal -= $this->tax;
+        $subtotal = 0.0;
+        if (isset($this->data['items'])) {
+            foreach ($this->data['items'] as $item) {
+                $subtotal += $item['total'];
+            }
+        } else {
+            $subtotal += $this->total;
+            if ($this->tax_included !== true) {
+                $subtotal -= $this->tax;
+            }
+            $subtotal += $this->discount;
+            $subtotal -= $this->shipping;
         }
-
-        $subtotal += $this->discount;
-        $subtotal -= $this->shipping;
 
         $this->subtotal = $subtotal;
         $this->init();
@@ -228,6 +234,17 @@ class waOrder implements ArrayAccess
     public function __set($name, $value)
     {
         return $this->offsetSet($name, $value);
+    }
+
+    public function __isset(string $name): bool
+    {
+        if (isset($this->alias[$name])) {
+            $name = $this->alias[$name];
+        }
+        if (isset($this->data[$name])) {
+            return true;
+        }
+        return $this->offsetExists($name);
     }
 
     /**
@@ -280,8 +297,10 @@ class waOrder implements ArrayAccess
         if (isset($this->alias[$offset])) {
             $offset = $this->alias[$offset];
         }
-        return isset($this->data[$offset]);
-
+        if (array_key_exists($offset, $this->data)) {
+            return true;
+        }
+        return !!$this->methodName($offset) || substr($offset, 0, 8) === 'contact_';
     }
 
     /**

@@ -21,12 +21,14 @@ class waViewHelper
     protected $view;
     protected $version;
     protected $app_id;
+    protected $options;
     protected static $helpers = array();
     protected static $params = array();
 
-    public function __construct(waView $view)
+    public function __construct(waView $view, array $options=[])
     {
         $this->view = $view;
+        $this->options = $options;
         $this->app_id = wa()->getApp();
     }
 
@@ -67,8 +69,6 @@ class waViewHelper
      */
     public function appIconUrl($app_id, $absolute = false)
     {
-        $static_app_url = wa()->getAppStaticUrl($app_id, $absolute);
-
         $app_info = wa()->getAppInfo($app_id);
 
         $icon = '';
@@ -86,13 +86,13 @@ class waViewHelper
         }
 
         $icon = ltrim($icon, '/');
-        $prefix = wa()->getAppStaticUrl($app_id);
+        $prefix = ltrim(wa()->getAppStaticUrl($app_id), '/');
         $prefix_len = strlen($prefix);
-
         if (substr($icon, 0, $prefix_len) === $prefix) {
             $icon = substr($icon, $prefix_len);
         }
 
+        $static_app_url = wa()->getAppStaticUrl($app_id, $absolute);
         return $static_app_url . $icon;
     }
 
@@ -103,7 +103,7 @@ class waViewHelper
 
     public function apps()
     {
-        if (wa()->getEnv() == 'frontend') {
+        if ($this->getEnv() == 'frontend') {
             $domain = wa()->getRouting()->getDomain(null, true);
             $domain_config_path = $this->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
             if (file_exists($domain_config_path)) {
@@ -267,9 +267,12 @@ class waViewHelper
 
         if (file_exists($domain_config_path)) {
             /**
-             * @var $domain_config array
+             * @var array
              */
             $domain_config = include($domain_config_path);
+
+            $html .= $this->getFavicons($domain_config);
+
             if (!empty($domain_config['head_js'])) {
                 $html .= $domain_config['head_js'];
             }
@@ -313,7 +316,119 @@ HTML;
             $html .= '<link rel="canonical" href="' . htmlspecialchars($canonical) . '">' . PHP_EOL;
         }
 
+        if ($this->getEnv() == 'frontend' && ($this->app_id === 'shop' || $this->getConfig()->isFrontendAnnouncementsEnabled())) {
+            $html .= $this->getCachedFrontAnnouncements();
+        }
+
+        if ($this->getEnv() == 'frontend') {
+            $params = ['domain' => $domain];
+            $event_result = wa()->event([wa()->getApp(), 'wa.frontend_head'], $params);
+            foreach ($event_result as $_result) {
+                $html .= $_result;
+            }
+            unset($_result);
+
+            if (!wa()->getUser()->isAuth()) {
+                $adapters = wa()->getAuthAdapters(null, true);
+                foreach ($adapters as $adapter) {
+                    $html .= $adapter->renderOmnipresentWidget();
+                }
+            }
+        }
+
         return $html;
+    }
+
+    private function getCachedFrontAnnouncements()
+    {
+        try {
+            if ($cache = wa()->getCache()) {
+                $cache_key = 'front_announcements';
+                $result = $cache->get($cache_key);
+                if (!$result) {
+                    $result = $this->getFrontAnnouncements();
+                    if ($result) {
+                        $cache->set($cache_key, $result, 600);
+                    }
+                }
+                return $result;
+            } else {
+                return $this->getFrontAnnouncements();
+            }
+        } catch (Exception $e) {
+            waLog::log($e->__toString());
+            return '';
+        }
+    }
+
+    private function getFrontAnnouncements()
+    {
+        $records = (new waAppSettingsModel)->get('installer');
+        $announcements = array_filter($records, function ($key) {
+            return strpos($key, 'a-') === 0;
+        }, ARRAY_FILTER_USE_KEY);
+        $announcements = array_map(function ($announcement) {
+            return json_decode($announcement, true);
+        }, $announcements);
+
+        $app_id = wa()->getApp();
+        $announcements = array_filter($announcements, function ($announcement) use ($app_id) {
+            if (!isset($announcement['html']) || empty($announcement['html']['front'])) {
+                return false;
+            }
+            if (isset($announcement['app_id']) && $announcement['app_id'] !== $app_id) {
+                return false;
+            }
+            if (isset($announcement['expire'])) {
+                $expire = new DateTime($announcement['expire'], new DateTimeZone('UTC'));
+                if ($expire <= new DateTime()) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        return array_reduce($announcements, function ($result, $announcement) {
+            return $result . $announcement['html']['front'];
+        }, '');
+    }
+
+    private function getFavicons($domain_config)
+    {
+        $links = '';
+        $domain_favicons = ifset($domain_config['favicons']);
+        if (!is_array($domain_favicons) && wa()->appExists('site')) {
+            try {
+                wa('site');
+                if (method_exists('siteHelper','updateFaviconsConfig')) {
+                    siteHelper::updateFaviconsConfig($domain_config);
+                    $domain_favicons = $domain_config['favicons'];
+                }
+            } catch (Throwable $e) {
+            }
+        }
+
+        $wa_url = wa_url();
+        if (isset($domain_favicons['favicon.ico'])) {
+            $links .= '<link rel="icon" href="'.$wa_url.$domain_favicons['favicon.ico'].'" type="image/x-icon" />';
+        } else {
+            $links .= '<link rel="icon" href="'.$wa_url.'favicon.ico" type="image/x-icon" />';
+        }
+        if (isset($domain_favicons['favicon-96.png'])) {
+            $links .= '<link rel="icon" href="'.$wa_url.$domain_favicons['favicon-96.png'].'" sizes="96x96" type="image/png" />';
+        }
+        if (isset($domain_favicons['apple-touch-icon.png'])) {
+            $links .= '<link rel="apple-touch-icon" href="'.$wa_url.$domain_favicons['apple-touch-icon.png'].'" />';
+            if ($touchicon_title = htmlspecialchars($domain_config['touchicon_title'] ?? '')) {
+                $links .= '<meta name="apple-mobile-web-app-title" content="'.$touchicon_title.'" />';
+                $links .= '<meta name="application-name" content="'.$touchicon_title.'" />';
+            }
+        }
+        if (isset($domain_favicons['site.webmanifest'])) {
+            $links .= '<link rel="manifest" href="'.$wa_url.$domain_favicons['site.webmanifest'].'" crossorigin="use-credentials" />';
+        }
+
+        return $links;
     }
 
     public function headJs()
@@ -428,7 +543,7 @@ HTML;
         $ui_version = $this->whichUI();
 
         $css = '';
-        if (wa()->getEnv() == 'backend' || wa()->getEnv() == 'api') {
+        if ($this->getEnv() == 'backend' || $this->getEnv() == 'api') {
 
             if ($ui_version != '2.0') {
                 return $this->legacyCss($strict);
@@ -437,7 +552,7 @@ HTML;
             $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-2.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css">
             <script src="'.wa()->getRootUrl().'wa-content/js/jquery-wa/wa.switch-mode.js?v'.$this->version(true).'"></script>
     <script defer src="'.wa()->getRootUrl().'wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0">';
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0, viewport-fit=cover">';
 
             // no referrer for backend urls
             $css .= '<meta name="referrer" content="origin-when-cross-origin">';
@@ -528,9 +643,19 @@ HTML;
 
     public function domainUrl()
     {
-        if (wa()->getEnv() === 'cli') {
+        $env = $this->getEnv();
+        if ($env === 'cli') {
             $app_settings_model = new waAppSettingsModel();
             return $app_settings_model->get('webasyst', 'url', '#');
+        } else if ($env === 'frontend') {
+            if (waRequest::isHttps()) {
+                $proto = 'https://';
+            } else {
+                $proto = 'http://';
+            }
+            $host = wa()->getRouting()->getDomain();
+            $host = ifempty($host, 'localhost');
+            return $proto.$host;
         } else {
             return $this->getConfig()->getHostUrl();
         }
@@ -680,6 +805,9 @@ HTML;
 
     public function getEnv()
     {
+        if (!empty($this->options['is_frontend'])) {
+            return 'frontend';
+        }
         return wa()->getEnv();
     }
 
@@ -722,6 +850,33 @@ HTML;
             }
         }
         return '';
+    }
+
+    public function variable($id, $params = array())
+    {
+        if ($id && wa()->appExists('site')) {
+            wa('site');
+            if (!class_exists('siteVariableModel')) {
+                return ''; // old version of Site app
+            }
+            $variable = (new siteVariableModel())->getById($id);
+
+            if (!$variable) {
+                return '';
+            }
+
+            try {
+                $this->view->assign($params);
+                return $this->view->fetch('string:'.$variable['content']);
+            } catch (Exception $e) {
+                if (waSystemConfig::isDebug()) {
+                    return '<pre class="error">'.htmlentities($e->getMessage(), ENT_QUOTES, 'utf-8')."</pre>";
+                }
+
+                waLog::log($e->__toString());
+                return '<div class="error">'._ws('Syntax error at block').' '.$id.'</div>';
+            }
+        }
     }
 
     public function snippet($id)
@@ -1137,7 +1292,7 @@ HTML;
             }
 
             $html = $form->render($data, $errors);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             waLog::log($e->getMessage().PHP_EOL.$e->getTraceAsString());
             $html = '';
         }
@@ -1469,7 +1624,7 @@ HTML;
     public function getContactTabs($id)
     {
         $id = (int)$id;
-        $env = wa()->getEnv();
+        $env = $this->getEnv();
         if (!$id || !in_array($env, ['backend', 'api'])) {
             return array();
         }
@@ -1515,7 +1670,7 @@ HTML;
             foreach ($one_or_more_links as $link) {
                 while (empty($link['id']) || isset($links[$link['id']])) {
                     $link['id'] = $plugin_app_id.$i;
-                    $i++;
+                    $i = ifempty($i, 0) + 1;
                 }
 
                 // Do not show tabs user has no access to and would not be able to load
@@ -1564,7 +1719,7 @@ HTML;
     }
 
     /**
-     * @since 10.0.1
+     * @since 3.0.1
      */
     public function headerSingleAppUser()
     {

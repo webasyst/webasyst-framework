@@ -1,0 +1,216 @@
+<section class="article">
+    <div class="article-body js-wrapper">
+        <h1>[s`Webasyst Services`]</h1>
+
+        {if $waid_is_connected}
+
+            {if $wa_api_errors}
+                <p class="state-caution-hint custom-mt-8"><i class="fas fa-exclamation-triangle"></i> [s`No access to Webasyst API.`]</p>
+                {foreach $wa_api_errors as $_err}
+                    {if !empty($_err)}
+                        <p class="state-error-hint custom-my-8"><i class="fas fa-exclamation-triangle"></i> {$_err}</p>
+                    {/if}
+                {/foreach}
+            {else}
+
+                <figure class="card custom-mb-24" style="container-type: inline-size;">
+                    <div class="details width-70">
+                        <h4 class="custom-mb-8">
+                            [s`Webasyst AI`]
+                        </h4>
+                        <p class="small gray custom-mt-8 cust1om-mb-8">
+                            [s`Transactional AI service for promo text generation, spell check, and other kinds of text job handled by Webasyst apps.`]
+                            <a href="[s`https://www.webasyst.com/ai/`]" target="_blank" class="nowrap text-blue"><u>[s`How AI works`]</u> <i class="fas fa-external-link-alt fa-xs opacity-70"></i></a>
+                        </p>
+                    </div>
+                    <div class="details width-70">
+                        {$ai_params = webasystHelper::getAiParams()}
+
+                        <p class="small">
+                            <span>{sprintf_wp('Remaining Webasyst AI prompts: %s.', '<strong>'|cat:$ai_params.remaining_count|cat:'</strong>')}</span>
+                        </p>
+
+                        <p class="custom-mt-8 custom-mb-4">
+                            <a href="javascript:void(0)" data-service="AI" class="button green small js-balance-button">[s`Add credit`]</a>
+                        </p>
+                    </div>
+                    <span class="icon webasyst-magic-wand-ai" style="font-size:clamp(4rem, 12cqw, 7rem);position:absolute;top:0;right:7cqw;bottom:0;margin:auto;"></span>
+                </figure>
+
+                <div class="flexbox space-24 wrap-mobile fixed full-width">
+                    <figure class="card">
+                        <div class="details">
+                            <h4 class="custom-mb-8">
+                                <i class="fas fa-at text-light-gray"></i>
+                                [s`Webasyst Email`]
+                            </h4>
+                            <p class="small gray custom-mt-8 cust1om-mb-8">
+                                [s`Transactional bulk email service with pay-as-you-go pricing.`]
+                                <a href="[s`https://www.webasyst.com/pricing/#services`]" target="_blank" class="nowrap text-gray"><u>[s`How it works`]</u> <i class="fas fa-external-link-alt fa-xs opacity-70"></i></a>
+                            </p>
+                        </div>
+                        <div class="image" style="height: 2px;">
+                        </div>
+                        <div class="details">
+                            {if !empty($email_free_limits)}
+                                <p class="small">
+                                    <b>[s`From`] {$email_price_str}</b>
+                                    <br>
+                                    [s`Free `]
+                                    {foreach $email_free_limits as $period => $limit}
+
+                                        {if $period == 'total'}
+                                            {if isset($email_remaining_free[$period]) && $email_remaining_free[$period] < $limit}
+                                                <span class="">{_ws('%d message left', '%d messages left', $email_remaining_free[$period])}</span>
+                                            {else}
+                                                <span class="">{_ws('%d message', '%d messages', $limit)}</span>
+                                            {/if}
+                                            {if count($email_free_limits) > 1}
+                                                / {_ws($period)}
+                                            {/if}
+                                        {else}
+                                            <span class="">
+                                                {_ws('%d message', '%d messages', $limit)}
+                                                / {_ws($period)}
+                                            </span>
+                                            {if isset($email_remaining_free[$period]) && $email_remaining_free[$period] < $limit}
+                                                <span class="gray nowrap{if !$wa_total_emails && $email_remaining_free[$period] <= 0} state-caution{/if}">{if !$wa_total_emails && $email_remaining_free[$period] <= 0}<i class="fas fa-exclamation-triangle small"></i> {/if}{_ws('%s remains', '%s remain', $email_remaining_free[$period])}</span>
+                                            {/if}
+                                        {/if}
+
+                                    {/foreach}
+                                </p>
+                            {/if}
+
+                            {if $is_email_connected}
+                                <p class="custom-mt-8 custom-mb-4">
+                                    <a href="javascript:void(0)" data-service="{installerServicesApi::EMAIL_MESSAGE_SERVICE}" class="button green small js-balance-button">[s`Add credit`]</a>
+                                </p>
+                            {else}
+                                <p class="custom-mt-8 custom-mb-4">
+                                    <a href="{$wa_backend_url}webasyst/settings/email/" class="button green small">[s`Enable for free`]</a>
+                                </p>
+                            {/if}
+                        </div>
+                    </figure>
+
+                    <figure class="card">
+                        <div class="details">
+                            <h4 class="custom-mb-8">
+                                <i class="fas fa-sms text-light-gray"></i>
+                                [s`Webasyst SMS`]
+                            </h4>
+                            <p class="small gray custom-mt-8 cust1om-mb-8">
+                                [s`Simple turnkey SMS notification service with the free Webasyst SMS plugin.`]
+                            </p>
+                        </div>
+                        <div class="image" style="height: 2px;">
+                        </div>
+                        <div class="details">
+                            <p class="small">
+                                <b>[s`From`] {$sms_price_str}</b>
+                                <br>
+                                {if !empty($sms_free_limits) && (!isset($sms_remaining_free['total']) || $sms_remaining_free['total'] > 0)}
+                                    [s`Free `]
+                                    {foreach $sms_free_limits as $period => $limit}
+
+                                            {if $period == 'total'}
+                                                {if isset($sms_remaining_free[$period]) && $sms_remaining_free[$period] < $limit}
+                                                    <span class="">{_ws('%d message left', '%d messages left', $sms_remaining_free[$period])}</span>
+                                                {else}
+                                                    <span class="">{_ws('%d message', '%d messages', $limit)}</span>
+                                                {/if}
+                                                {if count($sms_free_limits) > 1}
+                                                    / {_ws($period)}
+                                                {/if}
+                                            {else}
+                                                <span class="">
+                                                    {_ws('%d message', '%d messages', $limit)}
+                                                    / {_ws($period)}
+                                                </span>
+                                                {if isset($sms_remaining_free[$period]) && $sms_remaining_free[$period] < $limit}
+                                                    <span class="gray nowrap{if !$wa_total_sms && $sms_remaining_free[$period] <= 0} state-caution{/if}">{if !$wa_total_sms && $sms_remaining_free[$period] <= 0}<i class="fas fa-exclamation-triangle small"></i> {/if}{_ws('%s remains', '%s remain', $sms_remaining_free[$period])}</span>
+                                                {/if}
+                                            {/if}
+
+                                    {/foreach}
+                                {else}
+                                    <span class="gray">[s`Try free`]</span>
+                                {/if}
+                            </p>
+                            {if $is_wasms_installed}
+                                {if $is_wasms_connected}
+                                    <p class="custom-mt-8 custom-mb-4">
+                                        <a href="javascript:void(0)" data-service="{installerServicesApi::SMS_SERVICE}" class="button green small js-balance-button">[s`Add credit`]</a>
+                                    </p>
+                                {else}
+                                    <p class="custom-mt-8 custom-mb-4">
+                                        <a href="{$wa_backend_url}webasyst/settings/sms/" class="button green small">[s`Enable`]</a>
+                                    </p>
+                                {/if}
+                            {else}
+                                <p class="custom-mt-8 custom-mb-4">
+                                    <a href="{$install_wa_sms_link}" class="button green small">[s`Install plugin`]</a>
+                                </p>
+                            {/if}
+                        </div>
+                    </figure>
+                </div>
+
+            {/if}
+
+        {else}
+            <p class="small custom-mt-4">
+                [s`Transactional email, SMS, secure mobile-ready Webasyst ID authentication, and more.`]
+            </p>
+            <a href="{$wa_backend_url}webasyst/settings/waid/" class="button light-gray small custom-mb-4">[s`Enable services for free`]</a>
+        {/if}
+    </div>
+</section>
+
+<div class="dialog" id="js-dialog-elements">
+    <header class="dialog-header js-header"><h3>[s`Server response`]</h3></header>
+    <div class="dialog-content">
+
+    </div>
+    <footer class="dialog-footer"><button class='button gray js-close-dialog'>[s`Close`]</button></footer>
+</div>
+
+
+<script>
+    (function () {
+        "use strict";
+        const response_code_str = {_w('Response code: %s.')|json_encode};
+
+        $('.js-wrapper').on('click', '.js-balance-button:not(.disabled)', function (e) {
+            e.preventDefault();
+            $(this).addClass('disabled');
+            const $button = $(this);
+            $.get('{$wa_backend_url}webasyst/settings/?module=settings&action=balanceBuy&service=' + $button.data('service'), function (data) {
+                const resp = data.data.response;
+                const status = data.data.status || '-';
+                const err = resp.error_description || resp.error || resp.errors || null;
+                if (data.status === 'fail') {
+                    console.warn('balance', data);
+                    responseDialog(status, '');
+                    $button.removeClass('disabled');
+                } else if (err) {
+                    responseDialog(status, err.toString());
+                    $button.removeClass('disabled');
+                } else if (typeof resp.url !== 'undefined') {
+                    document.location = resp.url;
+                }
+            });
+        });
+
+        function responseDialog(code, message) {
+            let content = response_code_str.replace('%s', code);
+            content += message ? '<br><pre class="small gray">'+ message +'</pre>' : '';
+            $.waDialog({
+                header: $('#js-dialog-elements header.js-header').html(),
+                content: content,
+                footer: $('#js-dialog-elements footer').html(),
+            });
+        }
+    })();
+</script>

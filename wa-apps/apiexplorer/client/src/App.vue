@@ -36,7 +36,7 @@
           </div>
         </aside>
 
-          <div class="article content">
+          <div class="article content wide">
               <div class="article-body" id="wa-app-content">
                   <router-view v-if="loaded" :key="$route.fullPath"/>
                   <div v-else  class="box skeleton" style="width: 70%;">
@@ -64,9 +64,9 @@
 </template>
 
 <script>
-import AppList from '@/components/AppList';
-import UserList from '@/components/UserList';
-import MethodList from '@/components/MethodList';
+import AppList from '@/components/AppList.vue';
+import UserList from '@/components/UserList.vue';
+import MethodList from '@/components/MethodList.vue';
 export default {
   components: {
     AppList,

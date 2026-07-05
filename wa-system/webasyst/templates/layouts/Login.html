@@ -6,15 +6,14 @@
 
     {if $env == 'backend'}<meta name="robots" content="noindex, nofollow"/>{/if}
 
-    {* for login layout we intentionally include legacy UI css styles *}
-    {$wa->legacyCss()}
+    {$wa->css()}
 
     <link href="{$wa_url}wa-content/css/login/backend/login-page.css?{$wa->version(true)}" rel="stylesheet">
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js"></script>
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version(true)}"></script>
     <script>$.wa.determineTimezone({$wa_url|json_encode});</script>
 </head>
-<body>
+<body style="background: linear-gradient(63deg, #2847a1 0%, #6499cd 46%, #63569e 100%);">
 
 {$_styles = []}
 {if !empty($background)}
@@ -33,22 +32,20 @@
 {/if}
 
 <div class="wa-backend-login-page" id="wa-login" style="{$_styles|join:" "}">
-    <div class="dialog {$_classes|join:" "}" id="js-dialog-wrapper">
-        <div class="dialog-window" style="overflow: visible;">
-            <div class="dialog-content">
-                <div class="dialog-content-indent">{$content}</div>
+    <div class="wa-backend-login-wrapper {$_classes|join:" "}" id="js-backend-login-wrapper">
+        <div class="wa-backend-login">
+            <div class="wa-backend-login-content">
+                {$content}
             </div>
-            <div class="dialog-buttons">
-                <div class="wa-poweredby">
-                    <a href="http://www.webasyst.com/" title="Webasyst">
-                        <span class="wa-dots"></span>
-                    </a>
-                </div>
+            <div class="wa-poweredby">
+                <a href="[s`https://www.webasyst.com`]" title="Webasyst" target="_blank">
+                    <img class="icon size-24" src="{$wa_url}wa-content/img/webasyst-wand-bold-black.svg" alt="Webasyst">
+                </a>
             </div>
         </div>
         <script>
             ( function($) {
-                var $dialog = $('#js-dialog-wrapper'),
+                var $dialog = $('#js-backend-login-wrapper'),
                     $form_wrapper = $dialog.find('.js-backend-auth-form'),
                     form = $form_wrapper.data('WaAuthForm');
                 if (form && typeof form.setFocus === "function") {

@@ -1,0 +1,114 @@
+{assign "can_edit_notifications" $wa->user()->getRights('team', 'edit_announcements') scope="root"}
+
+{function announcement_reaction emoji='' users=[]}
+<button type="button" class="js-announcement-reaction light-gray rounded smallest custom-px-4{if $users && in_array($wa->userId(), $users)} bg-blue text-white{/if}" data-users="{$users|json_encode}">
+    <span data-emoji="{$emoji}">{$emoji|escape}</span><span class="custom-px-4" data-count="{$users|count}">{$users|count}</span>
+</button>
+{/function}
+
+{function announcement_controls n=[] is_editing=true comments_count=0 reactions=[]}
+<span class="wa-announcement-controls">
+    {if $n}
+    <span class="js-announcement-time nowrap hint">{if !empty($n.is_unpublished)}<i class="fas fa-clock" title="[`The announcement will become visible at the specified time.`]"></i> {/if}{waDateTime::format('humandatetime', $n.datetime)}</span>
+    {/if}
+
+    {* Edit *}
+    {if $is_editing }
+        <span class="js-announcement-edit wa-announcement-show-by-hover cursor-pointer smaller small-mobile custom-pr-4" title="[`Edit`]"><span><i class="fas fa-edit text-blue"></i></span></span>
+    {/if}
+
+    {* Comments *}
+    <button type="button" class="js-announcement-toggle-comments light-gray rounded smallest custom-mx-4">
+        <span class="js-icon"><i class="fas fa-comment text-gray"></i></span><span class="js-count custom-pl-4">{$comments_count}</span>
+    </button>
+
+    {* Reactions *}
+    <div class="js-announcement-reaction-list wa-announcement-reaction-list">
+        {foreach $reactions as $_emoji => $_users}
+            {announcement_reaction emoji=$_emoji users=$_users}
+        {/foreach}
+    </div>
+    <button type="button" class="js-announcement-add-reaction light-gray rounded smallest custom-ml-4" style="padding-block:0.3125rem;"><i class="fas fa-plus fa-sm"></i></button>
+</span>
+{/function}
+
+{function announcement_control_close}
+<span class="js-announcement-close wa-announcement-close nowrap back custom-ml-8 cursor-pointer small"
+    title="[`Mark as read`]">
+    <span><i class="fas fa-times"></i></span>
+</span>
+{/function}
+
+{function announcement_item n=null group_notifications=null is_group=false index=0 count_announcements=0}
+
+    {$_info = $group_notifications.app}
+    {* Version *}
+    {if !empty($_info.version)}
+        {$_version = "?v=`$_info.version|escape`"}
+    {else}
+        {$_version = null}
+    {/if}
+
+    {$_is_contact = false}
+    {$_icon_app = "{$root_url}{if !empty($_info.icon.24)}{$_info.icon.24}{else}{$_info.img}{/if}{$_version}"}
+    {if !empty($group_notifications.contact)}
+        {$_icon_app = $group_notifications.contact.photo_url_32}
+        {$_is_contact = true}
+    {/if}
+
+    {$is_editing = $_is_contact && ($is_admin || ($can_edit_notifications && $n.contact_id == $wa->user('id')))}
+    {$visible_counter = $count_announcements > 1 && ( $index === 0 || ($index === 1 && $_counter < $count_rows) )}
+
+    <li class="js-wa-announcement wa-announcement-item js-announcement-toggle-group" data-app-id="{$n.app_id}" data-id="{$n.id}"
+        {if $visible_counter} title="{_w('Another notification', '%d more notifications', $count_announcements - 1 )}"{/if}>
+        <input type="hidden" class="js-is-allowed-edit" value="{if $is_editing}1{else}0{/if}">
+
+        <div class="wa-announcement-item-inner">
+            <i class="icon size-24{if $_is_contact} userpic userpic-24{/if} custom-mt-2" data-wa-tooltip-content="{if $_is_contact}{$group_notifications.contact.name|escape}{else}{$_info.name|escape}{/if}" data-wa-tooltip-placement="right" style="background: url({$_icon_app});"></i>
+            <span class="wa-announcement-item-main">
+                {if $visible_counter}
+                    <span class="badge gray bold small js-announcement-count">{$count_announcements}</span>
+                {/if}
+                <span class="js-announcement-pinned wa-announcement-pinned{if !$n.is_pinned} hidden{/if}"><i class="fas fa-bolt text-orange"></i></span>
+                <span class="js-announcement-content wa-announcement-content semibold{if !empty($n.is_unpublished)} hint{/if}">{$n.text}</span>
+
+                {announcement_controls n=$n is_editing=$is_editing comments_count=$n.comments_count reactions=$n.reactions}
+            </span>
+        </div>
+
+    </li>
+{/function}
+
+{function announcement_list}
+
+    {foreach $notifications as $group_notifications}
+        {$count_rows = count($group_notifications.rows)}
+
+        {* Announcements from installer *}
+        {if $group_notifications.app_id === 'installer' && !empty($group_notifications.is_virtual)}
+            {$group_notifications.text}
+            {if $count_rows === 1}
+                {continue}
+            {/if}
+        {/if}
+
+        <li class="wa-announcement-group js-announcement-group{if $count_rows > 1} is-collapsed{/if}{if $group_notifications@iteration > 5} hidden{/if}"
+            data-app-id="{$group_notifications.app_id}"{if !empty($group_notifications.contact)} data-contact-id="{$group_notifications.contact.id}"{/if}>
+
+            <ul class="js-announcement-list wa-announcement-list menu large custom-mb-0">
+                {$_counter = $count_rows}
+                {for $i=0 to $count_rows - 1}
+                    {$n = $group_notifications.rows[$i]}
+                    {if $i === 0 && !empty($n.is_virtual)}
+                        {$_counter = $_counter - 1}
+                        {continue}
+                    {/if}
+                    {announcement_item n=$n group_notifications=$group_notifications index=$i count_announcements=$_counter}
+                {/for}
+            </ul>
+
+            {announcement_control_close}
+        </li>
+    {/foreach}
+
+{/function}

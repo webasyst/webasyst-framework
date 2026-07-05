@@ -110,7 +110,7 @@ function smarty_block_wa_js($params, $content, &$smarty)
                 if (!empty($cmd)) {
                     $create_source_map = waSystemConfig::systemOption('js_compiler_source_map');
                     if ($create_source_map) {
-                        $cmd .= ' --create_source_map "%outname%.map" --source_map_format=V3';
+                        $cmd .= ' --create_source_map "%outname%.map" --source_map_include_content=true --output_wrapper "%output%//# sourceMappingURL=%outname%.map" --source_map_format=V3 --source_map_location_mapping="'.$root_path.'/|'.$wa->getRootUrl().'"';
                     }
                     foreach ($files_combine as $file) {
                         $cmd .= ' --js "'.$root_path.'/'.$file.'"';

@@ -11,6 +11,7 @@ class installerStoreInAppAction extends installerItemsAction
         $this->store_path = $this->buildStorePath([
             'filters'    => $this->getFilters(),
             'in_app'     => true,
+            'options'    => $this->getOptions(),
         ]);
     }
 

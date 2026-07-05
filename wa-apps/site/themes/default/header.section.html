@@ -1,0 +1,188 @@
+{if empty($_cart_url) && $wa->shop}
+    {$_cart_url = $wa->getUrl('shop/frontend/order')}
+{/if}
+{if !empty($is_bp_header)}
+    <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+    <script src="{$wa_theme_url}js/waTheme.js?v={$wa_theme_version}"></script>
+    <script src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
+{/if}
+ <header class="globalheader"{if $theme_settings.header_custom_image} style="background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');"{/if}>
+
+     {if count($wa->apps())>0 || $wa->isAuthEnabled()}
+         <!-- GLOBAL NAVIGATION -->
+         <div id="globalnav">
+             <div class="container">
+                 <div class="globalnav-bar wa-flex align-items-center space-2">
+                     {if $theme_settings.header_sitename || $theme_settings.logo}
+                         <h2>
+                             <a href="{$wa_url}">
+                                 {if $theme_settings.logo}
+                                     <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
+                                     <span>{$wa->accountName()}</span>
+                                 {else}
+                                     {$wa->accountName()}
+                                 {/if}
+                             </a>
+                         </h2>
+                     {/if}
+                     {$_hide_cart = $wa->globals("hideCart")}
+
+                     <nav class="wa-flex{if !empty($_hide_cart) && !$wa->isAuthEnabled()} wa-mr-0{/if} wa-hide-m overflow-hidden">
+                         {strip}
+                         <ul class="apps" data-more-text="[`More`]">
+                                 {$_links = []}
+                                 {if $theme_settings.header_links == 'site-pages'}
+                                     {if $wa->site}{$_links = $wa->site->pages()}{/if}
+                                 {elseif $theme_settings.header_links == 'shop-pages'}
+                                     {if $wa->shop}{$_links = $wa->shop->pages()}{/if}
+                                 {elseif $theme_settings.header_links == 'blog-pages'}
+                                     {if $wa->blog}{$_links = $wa->blog->pages()}{/if}
+                                 {elseif $theme_settings.header_links == 'photos-pages'}
+                                     {if $wa->photos}{$_links = $wa->photos->pages()}{/if}
+                                 {elseif $theme_settings.header_links == 'hub-pages'}
+                                     {if $wa->hub}{$_links = $wa->hub->pages()}{/if}
+                                 {elseif $theme_settings.header_links != 'none'}
+                                     {$_links = $wa->apps()}
+                                 {/if}
+                                 {foreach $_links as $a}
+                                     {if !($a.url == $wa_url && $a.name == $wa->accountName())}
+                                         <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                                     {/if}
+                                 {/foreach}
+                             </ul>
+                         {/strip}
+                     </nav>
+
+                     <div class="wa-flex wa-flex-fill justify-content-center space-1 wa-ml-auto wa-mr-auto wa-hide-m">
+                         {if $wa->shop}
+                             {$_phone = $wa->shop->settings('phone')|default:''}
+                             {if !empty($_phone)}
+                                <a href="tel:{$_phone|regex_replace:"/[^0-9+]/":""|escape}" class="nowrap">{$_phone|escape}</a>
+                             {/if}
+                         {/if}
+
+                         {if $wa->shop && !empty($theme_settings.use_shop_schedule) && method_exists($wa->shop, 'schedule')}
+                             {$_schedule = $wa->shop->schedule()}
+
+                             <div class="schedule">
+                                 <div class="schedule-title chevron down nowrap" title="{_wd("shop", "Business hours")}">
+                                     {_wd("shop", "Business hours")}
+                                 </div>
+
+                                 <ul class="schedule-dropdown">
+                                     {foreach $_schedule.current_week as $_day}
+                                         <li class="s-day-wrapper">
+                                             <div class="s-date">{$_day.name|escape}</div>
+                                             <div class="s-value">
+                                                 {if !empty($_day.work)}
+                                                     <div class="s-time">{$_day.start_work|escape} — {$_day.end_work|escape}</div>
+                                                 {else}
+                                                     <div class="s-text">{_wd("shop", "day off")}</div>
+                                                 {/if}
+                                             </div>
+                                         </li>
+                                     {/foreach}
+                                 </ul>
+                             </div>
+                         {elseif !empty($theme_settings.manual_schedule)}
+                             <div class="schedule">
+                                 <span class="schedule-title">{$theme_settings.manual_schedule|escape}</span>
+                             </div>
+                         {/if}
+                     </div>
+
+                     <div class="wa-flex wa-ml-auto wa-mr-0 align-items-center">
+                         {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
+                         && !empty($theme_settings.show_cart) && empty($_hide_cart)}
+                             <!-- cart -->
+                             {$cart_count = $wa->shop->cart->count()}
+                             <div id="cart" class="cart wa-flex{if !$cart_count} empty{/if}">
+                                <div id="cart-content">
+                                    {* <div class="cart-just-added">
+                                    %s is now in your shopping cart
+                                    </div> *}
+                                </div>
+                                 <a href="{$_cart_url}" class="cart-summary">
+                                     <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                         <use xlink:href="#img-cart"></use>
+                                     </svg>
+                                     <span class="wa-mr-4 wa-ml-4 h-cart-title">[s`Cart`]</span>
+                                     <strong class="cart-total">{if $cart_count > 0}{$cart_count}{/if}</strong>
+                                 </a>
+                                 <script>
+                                     ( function($) {
+                                         var is_loading = false;
+                                         $("#cart").on("click", function() {
+                                             if (!is_loading) {
+                                                 is_loading = true;
+                                                 $("body").append(`<div class="s-loading-section">
+                                                                        <div class="s-loading-content">
+                                                                            <i class="icon16 loading"></i>
+                                                                        </div>
+                                                                    </div>`);
+                                             }
+                                         });
+                                     })(jQuery);
+                                 </script>
+                             </div>
+                         {/if}
+
+                         {if $wa->isAuthEnabled()}
+                             <!-- user auth -->
+                             {strip}
+                                 <ul class="auth align-items-center space-05 wa-flex" id="js-header-auth-wrapper">
+                                     {if $wa->user()->isAuth()}
+                                         {if $wa->myUrl()}
+                                             <li>
+                                                 <a href="{$wa->myUrl()}">
+                                                    <i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i>
+                                                 </a>
+                                             </li>
+                                             <li class="wa-hide-m"><a href="{$wa->myUrl()}">{$wa->user('firstname')|default:'[`My account`]'}</a></li>
+                                         {else}
+                                             <li class="wa-hide-m">{$wa->user('firstname')|default:'[`My account`]'}</li>
+                                         {/if}
+                                     {else}
+                                         <li class="wa-hide-m">
+                                             <a href="{$wa->loginUrl()}" class="not-visited">
+                                                 <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                                                     <use xlink:href="#img-person"></use>
+                                                 </svg>
+                                             </a>
+                                         </li>
+                                         <li class="wa-flex-fill">
+                                             <a href="{$wa->loginUrl()}" class="not-visited wa-flex-fill nowrap">[s`Log in`]</a>
+                                         </li>
+                                         {*<li><a href="{$wa->signupUrl()}" class="not-visited nowrap">[s`Sign up`]</a></li>*}
+                                     {/if}
+                                 </ul>
+                             {/strip}
+                         {/if}
+                     </div>
+                     <button id="mobile-nav-toggle" class="wa-show-m">
+                        <svg viewBox="0 0 19 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="hamburger-icon">
+                            <path class="hamburger-line hamburger-line-1" fill-rule="evenodd" clip-rule="evenodd" d="M0 1.05C0 0.470101 0.470101 0 1.05 0H17.3836C17.9635 0 18.4336 0.470101 18.4336 1.05C18.4336 1.6299 17.9635 2.1 17.3836 2.1H1.05C0.470101 2.1 0 1.6299 0 1.05Z" fill="#828282"/>
+                            <path class="hamburger-line hamburger-line-2" fill-rule="evenodd" clip-rule="evenodd" d="M0 6.88333C0 6.30343 0.470101 5.83333 1.05 5.83333H17.3836C17.9635 5.83333 18.4336 6.30343 18.4336 6.88333C18.4336 7.46323 17.9635 7.93333 17.3836 7.93333H1.05C0.470101 7.93333 0 7.46323 0 6.88333Z" fill="#828282"/>
+                            <path class="hamburger-line hamburger-line-3" fill-rule="evenodd" clip-rule="evenodd" d="M0 12.7167C0 12.1368 0.470101 11.6667 1.05 11.6667H17.3836C17.9635 11.6667 18.4336 12.1368 18.4336 12.7167C18.4336 13.2966 17.9635 13.7667 17.3836 13.7667H1.05C0.470101 13.7667 0 13.2966 0 12.7167Z" fill="#828282"/>
+                        </svg>
+                     </button>
+                 </div>
+             </div>
+         </div>
+     {/if}
+
+     {if empty ($_is_order_page)}
+         <!-- APP NAVIGATION -->
+         <div class="container appnav wa-flex space-1{if !empty($theme_settings.show_header_search)} wa-justify-content-between{/if} align-items-center" id="header-container">
+             {if $wa->globals('isMyAccount')}
+                 {* focused personal accounts navigation *}
+                 {$wa->myNav('pages')}
+             {else}
+                 <!-- Site app page list -->
+                 {include file="`$wa_active_theme_path`/header.html" inline}
+             {/if}
+         </div>
+     {/if}
+
+     <div class="mobile-nav"></div>
+ </header>

@@ -16,9 +16,13 @@ class installerConfig extends waAppConfig
 {
     const ANNOUNCE_CACHE_TTL = 3600; // sec
     const LICENSE_CACHE_TTL = 3600; // 1 hour
+    const LICENSE_LONG_CACHE_TTL = 86400; // 1 day
+    const LICENSE_FALL_LIMIT = 3;
 
     const INIT_DATA_CACHE_TTL = 10800; // 3 hours
     const INIT_DATA_CACHE_TTL_DEBUG = 900; // 15 mins
+
+    private static $model;
 
     protected $application_config = array();
 
@@ -42,7 +46,7 @@ class installerConfig extends waAppConfig
         $args = func_get_args();
         $force = array_shift($args);
 
-        $model = new waAppSettingsModel();
+        $model = self::getAppSettingsModel();
         $app_id = $this->getApplication();
         $count = null;
 
@@ -74,7 +78,7 @@ class installerConfig extends waAppConfig
 
     public function setCount($n = null)
     {
-        $model = new waAppSettingsModel();
+        $model = self::getAppSettingsModel();
         $model->ping();
         $app_id = $this->getApplication();
         $model->set($app_id, 'update_counter', $n);
@@ -169,21 +173,18 @@ class installerConfig extends waAppConfig
      */
     public function loadInitData($locale)
     {
-        $net_options = array(
-            'timeout' => 7,
-            'format'  => waNet::FORMAT_JSON,
-        );
-        $net = new waNet($net_options);
+        return installerHelper::getInstaller()->zonedNetQuery([$this, 'getInitDataUrl'], 7, $locale);
+    }
 
+    public function getInitDataUrl($locale)
+    {
         $wa_installer = installerHelper::getInstaller();
-
-        $init_url_params = array(
+        $init_url_params = [
             'locale' => $locale,
-        );
-
-        $init_url = $wa_installer->getInstallerInitUrl();
-        $init_url .= '?'.http_build_query($init_url_params);
-        return $net->query($init_url);
+            'hash'   => $wa_installer->getHash(),
+            'domain' => $this->getDomainFromRouting(),
+        ];
+        return $wa_installer->getInstallerInitUrl().'?'.http_build_query($init_url_params);
     }
 
     /**
@@ -212,6 +213,11 @@ class installerConfig extends waAppConfig
         return $function_cache->call($locale);
     }
 
+    public function clearInitDataCache()
+    {
+        waFunctionCache::clearNamespace('installer/init_data');
+    }
+
     /**
      * Load token from remote Update server, required to initialize the Installer app.
      * Received data is recommended to be cached. For example using waFunctionCache (see method getToken).
@@ -221,35 +227,26 @@ class installerConfig extends waAppConfig
      */
     protected function loadTokenData()
     {
-        $net_options = array(
-            'timeout' => 7,
-            'format'  => waNet::FORMAT_JSON,
-        );
-        $net = new waNet($net_options);
-
-        $wa_installer = installerHelper::getInstaller();
-
-        $init_url_params = array(
-            'hash'   => $wa_installer->getHash(),
-            'domain' => $this->getDomainFromRouting(),
-        );
-        if ($previous_hash = $wa_installer->getGenericConfig('previous_hash')) {
-            $init_url_params['previous_hash'] = $previous_hash;
-        }
-
-        $init_url = $wa_installer->getInstallerTokenUrl();
-        $init_url .= '?'.http_build_query($init_url_params);
-        $res = $net->query($init_url);
+        $res = installerHelper::getInstaller()->zonedNetQuery([$this, 'getTokenDataUrl'], 7);
 
         if (!empty($res['token'])) {
             // Save the last received token in the app settings
             $token_data = array('token' => $res['token']['key'], 'expire_datetime' => $res['token']['expire_datetime']);
-            $asm = new waAppSettingsModel();
             $app_id = $this->getApplication();
-            $asm->set($app_id, 'token_data', json_encode($token_data));
+            self::getAppSettingsModel()->set($app_id, 'token_data', json_encode($token_data));
         }
 
         return $res;
+    }
+
+    public function getTokenDataUrl()
+    {
+        $wa_installer = installerHelper::getInstaller();
+        $init_url_params = [
+            'hash'   => $wa_installer->getHash(),
+            'domain' => $this->getDomainFromRouting(),
+        ];
+        return $wa_installer->getInstallerTokenUrl().'?'.http_build_query($init_url_params);
     }
 
     /**
@@ -292,29 +289,7 @@ class installerConfig extends waAppConfig
             return;
         }
 
-        $net_options = array(
-            'timeout' => 7,
-            'format'  => waNet::FORMAT_JSON,
-        );
-        $net = new waNet($net_options);
-
-        $wa_installer = installerHelper::getInstaller();
-
-        $url_params = array(
-            'hash'   => $wa_installer->getHash(),
-            'domain' => $this->getDomainFromRouting(),
-            'locale' => wa()->getLocale(),
-        );
-        $token_data = (new waAppSettingsModel())->get('installer', 'token_data', false);
-        if ($token_data) {
-            $token_data = waUtils::jsonDecode($token_data, true);
-            $url_params['token'] = ifset($token_data, 'token', null);
-        }
-
-        $init_url = $wa_installer->getInstallerAnnounceUrl();
-        $init_url .= '?'.http_build_query($url_params);
-
-        $res = $net->query($init_url);
+        $res = installerHelper::getInstaller()->zonedNetQuery([$this, 'getAnnouncementsUrl'], 7);
         if (!$res || !array_key_exists('data', $res)) {
             return;
         }
@@ -322,7 +297,7 @@ class installerConfig extends waAppConfig
 
         $cache->set($res);
 
-        $wasm = new waAppSettingsModel();
+        $wasm = self::getAppSettingsModel();
 
         if (!$res['data']) {
             $this->clearBanners();
@@ -359,6 +334,22 @@ class installerConfig extends waAppConfig
         }
     }
 
+    public function getAnnouncementsUrl()
+    {
+        $wa_installer = installerHelper::getInstaller();
+        $init_url_params = [
+            'hash'   => $wa_installer->getHash(),
+            'domain' => $this->getDomainFromRouting(),
+            'locale' => wa()->getLocale(),
+        ];
+        $token_data = self::getAppSettingsModel()->get('installer', 'token_data', false);
+        if ($token_data) {
+            $token_data = waUtils::jsonDecode($token_data, true);
+            $init_url_params['token'] = ifset($token_data, 'token', null);
+        }
+        return $wa_installer->getInstallerAnnounceUrl().'?'.http_build_query($init_url_params);
+    }
+
     public function clearAnnouncementsCache()
     {
         $this->clearBanners();
@@ -379,42 +370,58 @@ class installerConfig extends waAppConfig
 
     public function loadLicenses()
     {
+        static $res = false;
+        if ($res !== false) {
+            return $res; // do not ever try to load licenses more than once per request
+        }
+
+        $res = null;
+        $licenses_data = json_decode(self::getAppSettingsModel()->get('installer', 'licenses_data', '{}'), true);
+        if (!empty($licenses_data['failed_timestamp'])) {
+            // Last attempt to fetch licenses failed. Wait before making a new atempt.
+            $delay_sec = 30 + 60 * (-1 + ifset($licenses_data, 'failed_attempt_count', 0));
+            if (time() < $licenses_data['failed_timestamp'] + $delay_sec) {
+                return $res;
+            }
+        }
+
         $cache = new waVarExportCache('licenses', self::LICENSE_CACHE_TTL, $this->getApplication());
         $cache_data = $cache->get();
         if (!$cache->isCached() || time() - ifempty($cache_data, 'timestamp', 0) >= self::LICENSE_CACHE_TTL) {
-            $net_options = array(
-                'timeout' => 7,
-                'format' => waNet::FORMAT_JSON,
-            );
-            $net = new waNet($net_options);
-            $wa_installer = installerHelper::getInstaller();
-
-            $init_url_params = array(
-                'hash' => $wa_installer->getHash(),
-                'domain' => $this->getDomainFromRouting(),
-            );
-            if ($previous_hash = $wa_installer->getGenericConfig('previous_hash')) {
-                $init_url_params['previous_hash'] = $previous_hash;
-            }
-            $token_data = (new waAppSettingsModel())->get('installer', 'token_data', false);
-            if ($token_data) {
-                $token_data = waUtils::jsonDecode($token_data, true);
-                $init_url_params['token'] = ifset($token_data, 'token', null);
-            }
-
-            $init_url = $wa_installer->getInstallerLicenseUrl();
-            $init_url .= '?' . http_build_query($init_url_params);
-            $res = $net->query($init_url);
+            $res = installerHelper::getInstaller()->zonedNetQuery([$this, 'getLicensesUrl'], 7);
 
             if (!empty($res['data'])) {
-                $cache->set([
+                $data = [
                     'data' => $res['data'],
                     'timestamp' => time()
-                ]);
+                ];
+                $cache->set($data);
+                self::getAppSettingsModel()->set('installer', 'licenses_data', json_encode($data));
+            } else {
+                $licenses_data['failed_timestamp'] = time();
+                $licenses_data['failed_attempt_count'] = 1 + ifset($licenses_data, 'failed_attempt_count', 0);
+                self::getAppSettingsModel()->set('installer', 'licenses_data', json_encode($licenses_data));
             }
-
-            return $res;
         }
+        return $res;
+    }
+
+    public function getLicensesUrl()
+    {
+        $wa_installer = installerHelper::getInstaller();
+        $init_url_params = [
+            'hash'   => $wa_installer->getHash(),
+            'domain' => $this->getDomainFromRouting(),
+        ];
+        if ($previous_hash = $wa_installer->getGenericConfig('previous_hash')) {
+            $init_url_params['previous_hash'] = $previous_hash;
+        }
+        $token_data = self::getAppSettingsModel()->get('installer', 'token_data', false);
+        if ($token_data) {
+            $token_data = waUtils::jsonDecode($token_data, true);
+            $init_url_params['token'] = ifset($token_data, 'token', null);
+        }
+        return $wa_installer->getInstallerLicenseUrl().'?'.http_build_query($init_url_params);
     }
 
     /** @since 2.9.0 */
@@ -438,8 +445,7 @@ class installerConfig extends waAppConfig
     }
 
     protected function getLocale() {
-        $app_settings_model = new waAppSettingsModel();
-        $locale = $app_settings_model->get('webasyst', 'locale');
+        $locale = self::getAppSettingsModel()->get('webasyst', 'locale');
         if (empty($locale)) {
             $locale = wa()->getLocale();
         }
@@ -447,5 +453,13 @@ class installerConfig extends waAppConfig
             $locale = 'en_US';
         }
         return $locale;
+    }
+
+    protected static function getAppSettingsModel()
+    {
+        if (!self::$model) {
+            self::$model = new waAppSettingsModel();
+        }
+        return self::$model;
     }
 }

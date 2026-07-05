@@ -32,6 +32,10 @@ var WAThemeSettings = ( function($) {
         that.locale = options["locale"];
         that.wa_url = options["wa_url"];
         that.templates = options["templates"];
+        that.current_domain = options["current_domain"];
+        that.data = options["data"];
+        that.locales = options["locales"];
+        that.has_theme_usage = options["has_theme_usage"];
         that.theme_storage_key = "theme/"+that.theme_id+"/expand";
         that.expand_all_storage_value = '-ALL-';
         that.classes = {
@@ -138,11 +142,13 @@ var WAThemeSettings = ( function($) {
                 $wrapper,
                 onOpen($dialog) {
                     const $form = $dialog.find('form'),
-                        $button = $dialog.find('[type="submit"]');
+                        $button = $dialog.find('[type="submit"]'),
+                        $footer = $dialog.find('.dialog-footer');
 
                     $form.on('submit', function (e) {
                         e.preventDefault();
-                        $button.attr('disabled', true).prop('disabled', true)
+                        $footer.find('.state-error-hint').remove();
+                        $button.attr('disabled', true).prop('disabled', true);
                         let id = $.trim($dialog.find('#wa-theme-rename-id').val()),
                             name = $.trim($dialog.find('#wa-theme-rename-name').val()),
                             href= '?module=design&action=themeRename',
@@ -155,14 +161,20 @@ var WAThemeSettings = ( function($) {
                         $.post(href, data, function (response) {
                             if (response.status == 'ok') {
                                 if(response.data.redirect) {
-                                    location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
-                                    location.reload();
-                                } else {
-                                    location.reload();
+                                    if (location.hash.includes('#/themes/theme=')) {
+                                        const theme = response.data.redirect.match(/theme=([^&\/]+)/)[1];
+                                        if (theme) {
+                                            location.hash = location.hash.replace(/theme=([^&\/]+)[\/&]?/, (...match) => match[0].replace(match[1], theme));
+                                        }
+                                    } else {
+                                        location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                                    }
                                 }
-                            } else {
-                                alert(response.errors);
+                                location.reload();
+                            } else if (response.errors) {
+                                $footer.append($('<span class="state-error-hint"></span>').html(response.errors));
                             }
+                            $button.attr('disabled', false).prop('disabled', false);
                         }, "json");
                     })
                 }
@@ -242,11 +254,17 @@ var WAThemeSettings = ( function($) {
             $dialog_wrapper = that.$wrapper.find('#wa-theme-update-dialog'),
             href = '?module=design&action=themeUpdate&theme='+that.theme_id;
 
-        $dialog_wrapper.load(href);
+        $.ajax({
+            method: 'GET',
+            url: href,
+            global: false, // 403 for trial themes which is safe to ignore here
+        }).then(function(html) {
+            $dialog_wrapper.html(html);
+        });
 
         $link.on('click', function (e) {
             e.preventDefault();
-            if (!$(this).hasClass('disabled'))  {
+            if (!$(this).hasClass('disabled')) {
                 $.waDialog({
                     $wrapper: $dialog_wrapper.clone(),
                     onOpen($dialog, dialog){
@@ -261,24 +279,41 @@ var WAThemeSettings = ( function($) {
                             }
                         });
 
-                        const $submit = $dialog.find('[type="submit"]');
+                        const $submit = $dialog.find('[type="submit"]'),
+                            $footer = $dialog.find('.dialog-footer');
 
                         $submit.on('click', function (e) {
                             e.preventDefault();
-                            $submit.attr('disabled', true).prop('disabled', true)
-                            if (confirm(that.locale.update_notice)) {
-                                let data = $dialog.serialize();
-                                $.post(href, data, function (response) {
-                                    if (response.status == 'ok') {
-                                        location.reload();
-                                    } else {
-                                        dialog.close();
-                                        alert(response.errors);
-                                    }
-                                }, "json");
-                            } else {
-                                $submit.removeAttr('disabled').prop('disabled', false)
-                            }
+                            $footer.find('.state-error-hint').remove();
+
+                            $.waDialog.confirm({
+                                title: that.locale.are_you_sure,
+                                text: that.locale.update_notice,
+                                success_button_class: 'orange',
+                                success_button_title : that.locale.continue,
+                                cancel_button_class: 'light-gray',
+                                cancel_button_title: that.locale.cancel,
+                                onSuccess: function () {
+                                    $submit.attr('disabled', true).prop('disabled', true)
+                                    const $loading = $('<span><i class="fas fa-spinner fa-spin"></i></span>').appendTo($footer);
+                                    const data = $dialog.find('form').serialize();
+
+                                    const enableSubmit = () => {
+                                        $submit.removeAttr('disabled').prop('disabled', false);
+                                        $loading.remove();
+                                    };
+
+                                    $.post(href, data, function (response) {
+                                        if (response.status == 'ok') {
+                                            location.reload();
+                                            setTimeout(enableSubmit, 500);
+                                        } else if(response.errors) {
+                                            $footer.append($('<span class="state-error-hint"></span>').html(response.errors));
+                                            enableSubmit();
+                                        }
+                                    }, "json");
+                                }
+                            });
                         })
                     }
                 });
@@ -301,9 +336,15 @@ var WAThemeSettings = ( function($) {
             $.waDialog({
                 $wrapper,
                 onOpen($dialog){
-                    const $submit = $dialog.find('[type="submit"]');
+                    const $submit = $dialog.find('[type="submit"]'),
+                        $footer = $dialog.find('.dialog-footer');
+
                     $submit.on('click', function (e) {
                         e.preventDefault();
+
+                        $submit.prop('disabled', true);
+                        $footer.find('.state-error-hint').remove();
+
                         let data = $dialog.serialize();
                         if (!data) {
                             data = $dialog.find('form').serialize();
@@ -311,10 +352,10 @@ var WAThemeSettings = ( function($) {
                         $.post(href, data, function (response) {
                             if (response.status == 'ok') {
                                 location.reload();
-                            } else {
-                                dialog.close();
-                                alert(response.errors);
+                            } else if (response.errors) {
+                                $footer.append($('<span class="state-error-hint"></span>').html(response.errors));
                             }
+                            $submit.prop('disabled', false);
                         }, "json");
                     })
                 }
@@ -330,7 +371,7 @@ var WAThemeSettings = ( function($) {
         $link.on('click', function (e) {
             e.preventDefault();
 
-            const themeCopy = (related, options) => {
+            const themeCopy = (related, options, onComplete, onError) => {
                 const href = "?module=design&action=themeCopy",
                     data = {
                         theme: that.theme_id,
@@ -347,8 +388,21 @@ var WAThemeSettings = ( function($) {
                             $wrapper.remove()
                             location.reload(true);
                         }
-                    } else {
-                        alert(response.errors);
+                    } else if (response.errors) {
+                        if (typeof onError === 'function') {
+                            onError(response.errors);
+                        } else {
+                            $.waDialog.alert({
+                                title: that.locale.error,
+                                text: `<div class="state-error">${response.errors}</div>`,
+                                button_title: that.locale.close,
+                                button_class: 'light-gray',
+                            });
+                        }
+                    }
+
+                    if (typeof onComplete === 'function') {
+                        onComplete();
                     }
                 }, "json");
             };
@@ -357,16 +411,26 @@ var WAThemeSettings = ( function($) {
                 $.waDialog({
                     $wrapper,
                     onOpen($dialog){
-                        const $form = $dialog.find('form');
+                        const $form = $dialog.find('form'),
+                            $footer = $dialog.find('.dialog-footer'),
+                            $submit = $dialog.find('[type="submit"]');
+
                         $form.on('submit', function (e) {
                             e.preventDefault();
-                            const options = {
-                                    id: $form.find("#wa-theme-copy-id").val(),
-                                    name: $form.find("#wa-theme-copy-name").val()
-                                };
-                            themeCopy($form.find(':input:checked').val(), options);
-                        })
+                            $submit.prop('disabled', true);
+                            $footer.find('.state-error-hint').remove();
 
+                            const related = $form.find(':input:checked').val();
+                            const options = {
+                                id: $form.find("#wa-theme-copy-id").val(),
+                                name: $form.find("#wa-theme-copy-name").val()
+                            };
+                            themeCopy(related, options, () => {
+                                $submit.prop('disabled', false);
+                            }, (err) => {
+                                $footer.append($('<span class="state-error-hint"></span>').html(err));
+                            });
+                        });
                     }
                 });
             } else {
@@ -385,14 +449,28 @@ var WAThemeSettings = ( function($) {
         let $wrapper = $dialog_wrapper.clone();
         $link.on('click', function (e) {
             e.preventDefault();
-            if (!$(this).hasClass('disabled'))  {
+
+            if ($link.data('disabled-alert')) {
+                $.waDialog.alert({
+                    title: '',
+                    text: $link.data('disabled-alert'),
+                    button_title: that.locale.close
+                });
+                return false;
+            }
+
+            if (!$link.hasClass('disabled'))  {
                 $.waDialog({
                     $wrapper,
                     onOpen($dialog, dialog) {
-                        const $form = $dialog.find('form');
+                        const $form = $dialog.find('form'),
+                            $footer = $dialog.find('.dialog-footer'),
+                            $submit = $dialog.find('[type="submit"]');
 
                         $form.on('submit', function (e) {
                             e.preventDefault();
+                            $submit.prop('disabled', true);
+                            $footer.find('.state-error-hint').remove();
                             $.post(href, $(this).serialize(), function (response) {
                                 if (response.status == 'ok') {
                                     if(response.data.redirect) {
@@ -401,10 +479,10 @@ var WAThemeSettings = ( function($) {
                                     } else {
                                         location.reload();
                                     }
-                                } else {
-                                    dialog.close();
-                                    alert(response.errors);
+                                } else if (response.errors) {
+                                    $footer.append($('<span class="state-error-hint"></span>').html(response.errors));
                                 }
+                                $submit.prop('disabled', false);
                             }, "json");
                         })
                     }
@@ -419,32 +497,288 @@ var WAThemeSettings = ( function($) {
             $link = that.$wrapper.find('.js-theme-start-using'),
             $wrapper = that.$wrapper.find('#wa-theme-start-using-dialog'),
             href = "?module=design&action=themeUse";
+        const $tbody = $('#wa-theme-start-using-dialog-routes').find('tbody');
 
         $link.on('click', function (e) {
             e.preventDefault();
-            if (!$(this).hasClass('disabled'))  {
-                $.waDialog({
-                    $wrapper,
-                    onOpen($dialog) {
-                        const $form = $dialog.find('form'),
-                            $button = $dialog.find('[type="submit"]');
-
-                        $form.on('submit', function (e) {
-                            e.preventDefault();
-                            $button.attr('disabled', true).prop('disabled', true);
-                            $.post(href, $(this).serialize(), function (response) {
-                                if (response.status == 'ok') {
-                                    location.href = that.design_url + 'theme=' + response.data.theme + '&domain=' + response.data.domain + '&route=' + response.data.route;
-                                    location.reload();
-                                } else {
-                                    alert(response.errors);
-                                }
-                            }, "json");
-                        })
-                    }
-                });
+            if ($(this).hasClass('disabled')) {
+                return;
             }
+
+            $.waDialog({
+                $wrapper,
+                onOpen($d, dialog) {
+                    const $select_domain = $d.find('select[name="domain"]');
+                    const $button = $d.find('[type="submit"]');
+                    const $use_all_settlements = $d.find('[name="use_all_settlements"]:checkbox');
+
+                    const disableSubmitIf = (disabled) => {
+                        $button.prop('disabled', !!disabled);
+                    };
+                    const checkedLength = () => {
+                        return $d.find('label:not(.disabled) .js-theme-checkbox:enabled:checked').length;
+                    };
+
+                    // SELECT
+                    $select_domain.on('change', function () {
+                        const domain = $(this).val();
+                        renderRoutesByDomain.call(dialog, domain);
+
+                        $d.trigger('resize');
+
+                        // TOGGLE CHECKBOX
+                        $d.find('.js-theme-checkbox').on('change', function () {
+                            const count_checked = checkedLength();
+                            const $checkbox = $(this);
+
+                            disableSubmitIf(count_checked === 0);
+
+                            $checkbox.data('used-theme-mobile', this.checked);
+                            if (!$d.find('[name="mobile_only"]').is(':checked')) {
+                                $checkbox.data('used-theme', this.checked);
+                            }
+
+                            const count = $d.find('.js-theme-checkbox:enabled').length;
+                            $use_all_settlements.prop('checked', count_checked === count);
+
+                            const $tr = $checkbox.closest('tr');
+                            updateChildrenCheckboxes($tr, this.checked, !$tr.data('is-blockpage'));
+                            disableSubmitIf(checkedLength() === 0);
+                        });
+
+                        $d.find('tr[data-level="0"]').each(function () {
+                            const $tr = $(this);
+                            if (!$tr.data('is-blockpage')) {
+                                updateChildrenCheckboxes($tr, $tr.find('.js-theme-checkbox').is(':checked'), true);
+                            }
+                        });
+                    });
+                    // TOGGLE CHECKBOXES
+                    $use_all_settlements.on('change', function () {
+                        const is_checked = $(this).is(':checked');
+                        $d.find('label:not(.disabled) .js-theme-checkbox:enabled').prop('checked', is_checked);
+                        disableSubmitIf(checkedLength() === 0 || !is_checked);
+                    });
+                    // MOBILE ONLY
+                    $d.find('[name="mobile_only"]').on('change', function () {
+                        const is_mobile_only = this.checked;
+                        const use_all = $use_all_settlements.prop('checked');
+                        $d.find('.js-theme-checkbox[data-used-theme-mobile]:enabled').each(function () {
+                            const $checkbox = $(this);
+                            $checkbox
+                                .prop('checked', use_all || $checkbox.data(is_mobile_only ? 'used-theme-mobile' : 'used-theme'))
+                                .closest('label').toggleClass(
+                                    'disabled',
+                                    $checkbox.attr(is_mobile_only ? 'data-used-theme-mobile' : 'data-used-theme') === 'true'
+                                );
+                        });
+                    });
+
+                    // INIT
+                    ((domain) => {
+                        $select_domain.val(domain).change();
+                        $use_all_settlements.prop('checked', !that.has_theme_usage);
+                        disableSubmitIf(checkedLength() === 0);
+                    })(that.current_domain || Object.keys(that.data.settlements_by_domain)[0]);
+
+                    // SUBMIT
+                    const $form = $d.find('form'),
+                        $footer = $d.find('.dialog-footer-inner');
+                    $form.on('submit', function (e) {
+                        e.preventDefault();
+                        $footer.find('.state-error-hint').remove();
+                        disableSubmitIf(true);
+                        $.post(href, $(this).serialize(), function (response) {
+                            if (response.status == 'ok') {
+                                location.href = that.design_url + 'theme=' + response.data.theme + '&domain=' + encodeURIComponent(response.data.domain) + '&route=' + response.data.route;
+                                location.reload();
+                            } else if (response.errors) {
+                                $footer.append($('<span class="state-error-hint"></span>').html(response.errors));
+                            }
+                            disableSubmitIf(false);
+                        }, "json");
+                    })
+                }
+            });
         });
+
+        function renderRoutesByDomain (domain) {
+            if (!domain) {
+                noRoutes(this.$wrapper);
+                return;
+            }
+
+            const { settlements_by_domain } = that.data;
+            const { main_page, blockpages, sitemap_apps, settings_apps, has_not_support_theme } = settlements_by_domain[domain];
+
+            $('#js-alert-has-not-support-theme').toggleClass('hidden', !has_not_support_theme);
+            $tbody.empty();
+
+            // first row
+            if (main_page) {
+                if (main_page.page_type === 'blockpage') {
+                    appendPage(main_page)
+                } else {
+                    appendRoute(main_page)
+                }
+            }
+
+            if (blockpages) {
+                blockpages.forEach(p => appendPage(p));
+            }
+
+            if (sitemap_apps) {
+                sitemap_apps.forEach(r => appendRoute(r));
+            }
+
+            // apps from settings
+            if (settings_apps) {
+                $tbody.append(`
+                    <tr>
+                        <td colspan="2" style="background: var(--background-color-blank);">
+                            <div class="align-left semibold custom-mt-12">
+                                <span>${that.locales['apps_outside_sitemap_title']}</span>
+                                <span data-wa-tooltip-content="${that.locales['apps_outside_sitemap_hint']}">
+                                    <i class="fas fa-question-circle fa-sm text-light-gray"></i>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                $tbody.find('[data-wa-tooltip-content]').waTooltip();
+                settings_apps.forEach(appendRoute);
+            }
+
+            noRoutes(this.$wrapper);
+        }
+
+        function appendRoute (route) {
+            const $row = $(that.templates.using_dialog_theme_row);
+            const $checkbox = $row.find('.js-theme-checkbox');
+
+            if (route.theme_not_supported) {
+                $row.find('.js-name').parent().addClass('opacity-50');
+                $checkbox.parent().remove();
+            } else {
+                $checkbox
+                    .attr('name', `routes[${route.route_id}]`)
+                    .prop('disabled', !!route.app.disabled);
+                if (that.has_theme_usage) {
+                    $checkbox
+                        .prop('checked', route.used_theme)
+                        .data('used-theme', route.used_theme).attr('data-used-theme', route.used_theme)
+                        .data('used-theme-mobile', route.used_theme_mobile).attr('data-used-theme-mobile', route.used_theme_mobile)
+                        .closest('label').toggleClass('disabled', route.used_theme)
+                } else if (route.app.disabled) {
+                    $checkbox.prop('checked', false);
+                }
+                $row.find('.js-theme-no-support').remove();
+            }
+
+            $row.find('.js-name').text(route._name);
+
+            if (route.app.icon && route.app.icon['16']) {
+                $row.find('.js-app-icon img').attr('src', wa_url + route.app.icon['16']);
+            } else {
+                $row.find('.js-app-icon img').replaceWith('<i class="fas fa-question text-gray"></i>');
+            }
+
+            showUsedThemes($row, route.theme_names)
+            $row.attr('data-level', 0);
+            $tbody.append($row);
+
+            if (Array.isArray(route.pages)) {
+                route.pages.forEach(page => appendPage(page, route, 1));
+            }
+        }
+
+        function appendPage (page, route = null, level = 0) {
+            const $row = $(that.templates.using_dialog_theme_row);
+            const $checkbox = $row.find('.js-theme-checkbox');
+
+            if (route) {
+                // htmlpage
+                if (route.theme_not_supported) {
+                    $row.find('.js-name').parent().addClass('opacity-50');
+                    $checkbox.parent().remove();
+                } else {
+                    $row.find('.js-theme-no-support').remove();
+                    $checkbox
+                        .prop('checked', !!route.used_theme)
+                        .prop('disabled', true)
+                        .closest('label').toggleClass('disabled', true)
+                }
+            } else {
+                //blockpage
+                $row.data('is-blockpage', 1);
+                $row.find('.js-theme-no-support').remove();
+
+                $checkbox
+                    .attr('name', `blockpages[${page.id}]`)
+                    .prop('checked', !!page.used_theme)
+                    .data('used-theme', page.theme).attr('data-used-theme', page.theme)
+                    .closest('label').toggleClass('disabled', page.used_theme)
+            }
+
+            $row.find('.js-name').text(page.name);
+            $row.attr('data-level', level);
+
+            if (level > 0) {
+                $row.find('.js-app-icon').remove();
+
+                const pl = (level > 1 ? 2 : 2.625) * level;
+                $row.children(':first').css('padding-left', `${pl}rem`);
+            }
+
+            showUsedThemes($row, page.theme_names);
+
+            $tbody.append($row);
+
+            if (Array.isArray(page.children)) {
+                page.children.forEach(page => appendPage(page, route, level + 1));
+            }
+        }
+
+        function showUsedThemes($row, theme_names) {
+            if (!Array.isArray(theme_names)) {
+                return;
+            }
+            const getDeviceIcon = (index) => {
+                if (theme_names.length === 1) {
+                    return '';
+                }
+                return `<i class="fas fa-${(index > 0 ? 'mobile-alt' : 'desktop')} fa-xs custom-ml-4"></i>`;
+            };
+            theme_names.forEach((name, i) => {
+                if (name) {
+                    name = `<i class="fas fa-check fa-xs custom-mr-4"></i>${name}`;
+                } else {
+                    name = `<i class="fas fa-exclamation-triangle fa-sm text-orange custom-mr-4"></i><span class="text-red">${that.locales.theme_not_installed}</span>`;
+                }
+                name += getDeviceIcon(i);
+                $row.find('.js-used-themes').append(`<div>${name}</div>`);
+            });
+        }
+
+        function updateChildrenCheckboxes($tr, selected = false, with_disabled = false) {
+            const current_level = $tr.data('level');
+            const $rows = $tr.nextUntil('tr[data-level="0"]').filter(function () {
+                return $(this).data('level') > current_level;
+            });
+
+            $rows.find(`${with_disabled ? '' : 'label:not(.disabled) '}.js-theme-checkbox`).prop('checked', selected);
+        }
+
+        function noRoutes($dialog) {
+            $dialog.find('.js-wa-empty-site-map-hide').toggleClass('hidden', !!$tbody.find('tr').length);
+            $dialog.find('.js-wa-empty-site-map-show').toggleClass('hidden', !$tbody.find('tr').length);
+            if (!$tbody.find('tr').length) {
+                $dialog.find('[type="submit"]').prop('disabled', true);
+            }
+            if ($dialog.find('label:not(.disabled) .js-theme-checkbox:enabled:checked').length) {
+                $dialog.find('[type="submit"]').prop('disabled', false);
+            }
+        }
     };
 
     WAThemeSettings.prototype.initAnchorLink = function() {
@@ -489,31 +823,64 @@ var WAThemeSettings = ( function($) {
 
             if (that.theme_routes.length || that.has_child_themes) {
                 const $wrapper = that.$wrapper.find('#wa-theme-blocking-removal-dialog');
-                $.waDialog({$wrapper});
+                $.waDialog({ $wrapper });
 
                 return false;
             }
 
-            if (!$self.hasClass('disabled') && confirm($self.data('confirm'))) {
-                $.post(href, { theme: that.theme_id }, function (response) {
-                    if (response.status === 'ok') {
-                        if(response.data.theme_id) {
-                            $('#wa-theme-block-' + response.data.theme_id).remove();
-                            $('#wa-theme-list-' + response.data.theme_id).remove();
-                        }
-                        $('#wa-theme-list a').each(function () {
-                            if ($(this).attr('href').indexOf('theme=' + that.theme_id) != -1) {
-                                $(this).parent().remove();
-                            }
-                        });
-                        alert($self.data('success'));
-                        location.href = $('#wa-theme-list li:first a').attr('href');
-                    } else {
-                        alert(response.errors);
-                    }
-                }, "json");
-
+            if ($self.prop('disabled')) {
+                return false;
             }
+
+            $.waDialog({
+                header: `<h3>${that.locale.are_you_sure}</h3>`,
+                content: $self.data('confirm'),
+                footer: `<div>
+                    <button class="js-success-action button red">${that.locale.delete}</button>
+                    <button class="js-dialog-close button light-gray">${that.locale.cancel}</button>
+                </div>`,
+                onOpen: function($d, d) {
+                    const $footer = $d.find('.dialog-footer').addClass('flexbox middle wrap space-8');
+                    const $submit = $footer.find('.js-success-action');
+
+                    $d.find('.js-success-action').on("click", function(e) {
+                        e.preventDefault();
+
+                        $footer.find('.state-error-hint').remove()
+                        $submit.prop('disabled', true);
+
+                        $.post(href, { theme: that.theme_id }, function (response) {
+                            $submit.prop('disabled', false);
+
+                            if (response.status === 'ok') {
+                                if(response.data.theme_id) {
+                                    $('#wa-theme-block-' + response.data.theme_id).remove();
+                                    $('#wa-theme-list-' + response.data.theme_id).remove();
+                                }
+                                $('#wa-theme-list a').each(function () {
+                                    if ($(this).attr('href').indexOf('theme=' + that.theme_id) != -1) {
+                                        $(this).parent().remove();
+                                    }
+                                });
+
+                                if ($('.wa-theme-select-menu').is(':visible')) {
+                                    $('#wa-theme-list li:first a').trigger('click');
+                                } else {
+                                    const themes_link = $('a.wa-themes-link.button:first').attr('href');
+                                    location.href = themes_link;
+                                    location.reload();
+                                }
+
+                                d.close();
+                            } else if (response.errors) {
+                                $footer.append($('<span class="state-error-hint"></span>').html(response.errors));
+                            }
+                        }, "json");
+                        return false;
+                    });
+                }
+            });
+
             return false;
         });
     };
@@ -1087,6 +1454,23 @@ var WAThemeSettings = ( function($) {
             p.off('focus', '#' + field.attr('id')).on('focus', '#' + field.attr('id'), onFocus);
         });
 
+        // Color selectors
+        that.$form.find(".js-theme-color-select").on('click', 'li', function() {
+            const $li = $(this);
+            const $wrapper = $li.closest('.value');
+            const value = $li.data('value');
+            const $picker_block = $wrapper.find('.color-picker');
+
+            if ($li.attr('data-picker') === '') {
+                $picker_block.slideToggle(200);
+            }else{
+                $picker_block.slideUp(200);
+            }
+            $li.addClass('selected').siblings().removeClass('selected');
+            $wrapper.find('input.color').val(value).change();
+            that.$button.removeClass('green').addClass('yellow');
+        });
+
         // Colorpickers
         that.$form.find('.color').each(function() {
             var $input = $(this);
@@ -1095,8 +1479,13 @@ var WAThemeSettings = ( function($) {
                 farbtastic = $.farbtastic($picker, function(color) {
                     $replacer.css('color', color);
                     $input.val(color);
+                    if (timer_id) {
+                        clearTimeout(timer_id);
+                    }
+                    timer_id = setTimeout(function() {
+                        $input.change();
+                    }, 90);
                 });
-
 
             farbtastic.setColor('#'+$input.val());
 
@@ -1106,13 +1495,13 @@ var WAThemeSettings = ( function($) {
             });
 
             var timer_id;
-            $input.unbind('keydown').bind('keydown', function() {
+            $input.unbind('keydown').bind('keydown change', function(e) {
                 if (timer_id) {
                     clearTimeout(timer_id);
                 }
                 timer_id = setTimeout(function() {
                     farbtastic.setColor($input.val());
-                }, 250);
+                }, 90);
             });
 
             $picker.on('click', function () {

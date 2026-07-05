@@ -1,0 +1,83 @@
+{$default_empty_image_url = "`$wa_app_static_url`img/image.svg"}
+{$img_src = $data->getFileUrl('')}
+{*if empty($img_src)}
+    {$img_src = $data->getFileUrl(ifset($data->data['image'], 'name', ''))}
+{/if*}
+{$href = ''}
+{$target = ''}
+{if !empty($data->data['link_props'])}
+    {$link_props = $data->data['link_props']}
+    {if !empty($link_props.href)}
+        {$href = $link_props.href}
+    {/if}
+    {if !empty($link_props.target)}
+        {$target = $link_props.target}
+    {/if}
+{/if}
+
+{$is_svg_type = ifset($data->data['image'], 'type', false) === 'svg'}
+{if $is_svg_type}
+    {$img_src = $data->data['image']['svg_html']|default:''}
+{/if}
+{if ifset($data->data['image'], 'type', false) === 'address'}
+    {$img_src = $data->data['image']['url_text']|default:''}
+{/if}
+{$anchor_id = $data->data['id']|default:0}
+{if empty($img_src)}
+    {$img_src = $default_empty_image_url}
+{/if}
+{$tag = 'div'}
+{if !empty($href)}
+    {$tag = 'a'}
+{/if}
+{$static_classes_props = 'cl style-wrapper image-wrapper'}
+<{$tag} {if $anchor_id}id="{$anchor_id|escape}"{/if} {if !empty($href)}href="{$href}"{/if} class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}" {if !empty($target)}target="{$target}"{/if}>
+    <picture class="img">
+    {if $is_svg_type}
+        {if $is_backend}{$wa->site->sanitizeHTML($img_src)}{else}{$img_src}{/if}
+    {else}
+        <img src="{$img_src|default:''|escape}" {if !empty($data->data['alt'])}alt="{$data->data['alt']}"{/if} {if !empty($data->data['title'])}title="{$data->data['title']}"{/if}>
+    {/if}
+    </picture>
+</{$tag}>
+{if $is_backend}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.image-wrapper[data-block-id="'+block_id+'"]');
+    const $picture = $wrapper.find('picture');
+    const $image = $wrapper.find('img');
+    const empty_url = {$default_empty_image_url|json_encode};
+    let base_data = {$data->data|json_encode};
+
+    $wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+
+        event.stopPropagation();
+        if (updated_block_id == block_id) {
+            base_data = data;
+            updateBlockStyles($wrapper, data, block_id);
+            if (data?.image?.type === 'svg') {
+                $(this).html(data?.image?.svg_html)
+            }
+        }
+    });
+    $wrapper.on('block_file_updated', function(event, updated_block_id, key, file) {
+    if (updated_block_id == block_id && key == '' && base_data?.image?.type === "upload") {
+            if (file && file.url) {
+                $(this).html('<picture class="img"><img src="' + file.url + '" /></picture>')
+            //$image.prop('src', file.url);
+            } else {
+                $(this).html('<picture class="img"><img src="' + empty_url + '" /></picture>')
+                //$image.prop('src', empty_url);
+            }
+        }
+    });
+});</script>
+{else}
+<script>(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.image-wrapper[data-block-id="'+block_id+'"]');
+    const $picture = $wrapper.find('picture');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+})();</script>
+{/if}

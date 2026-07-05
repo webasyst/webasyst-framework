@@ -1,0 +1,43 @@
+{$block_props = []}
+{$href = ''}
+{$target = ''}
+{$rel = ''}
+{if !empty($data->data['link_props'])}
+    {$link_props = $data->data['link_props']}
+    {$href = ifempty($link_props.href)}
+    {$target = ifempty($link_props.target)}
+    {$rel = ifempty($link_props.rel)}
+{/if}
+{$static_classes_props = 'style-wrapper btn'}
+{$anchor_id = $data->data['id']|default:0}
+<a {if $anchor_id}id="{$anchor_id|escape}"{/if} href="{$href}" class="{$static_classes_props}" {if $is_backend}style="visibility: hidden;"{/if} data-static="{$static_classes_props}" data-block-id="{$data->getId()|escape}" data-page-id="{$data->getPageId()|escape}"{if $is_backend} contenteditable="true"{/if} {if !empty($target)}target="{$target}"{/if} {if !empty($rel)}rel="nofollow"{/if}>
+    {$data->data['html']}
+</a>
+
+{if $is_backend}
+<script>$(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.btn[data-block-id="'+block_id+'"]');
+    $wrapper.on('input', function() {
+        const data = $.extend({}, $.wa.editor.api.block_storage.getData(block_id));
+        data.html = $(this).html();
+        $.wa.editor.saveBlockData(block_id, data);
+    });
+
+    $wrapper.on('block_data_updated', function(event, updated_block_id, data) {
+        event.stopPropagation();
+        if (updated_block_id == block_id) {
+            updateBlockStyles($wrapper, data, block_id);
+            $wrapper.html(data.html);
+        }
+    });
+
+});</script>
+{else}
+<script>(function() { "use strict";
+    const block_id = {$data->getId()|json_encode};
+    const $wrapper = $('.btn[data-block-id="'+block_id+'"]');
+    const data = {$data->data|json_encode};
+    updateBlockStyles($wrapper, data, block_id);
+})();</script>
+{/if}

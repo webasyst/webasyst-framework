@@ -113,6 +113,11 @@ class waReCaptcha extends waAbstractCaptcha
         return false;
     }
 
+    public function isInvisible()
+    {
+        return boolval(ifset($this->options['invisible'], false));
+    }
+
     public function display()
     {
 

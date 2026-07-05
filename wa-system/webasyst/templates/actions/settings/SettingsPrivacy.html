@@ -1,0 +1,38 @@
+{$_title = "[s`Privacy`] — {$wa->accountName(false)}"}
+<div class="article s-privacy-page" id="s-privacy-page">
+  <div class="article-body">
+    <h1 class="s-page-title">[s`Privacy`]</h1>
+
+    <p class="small">[`Depending on the local jurisdiction, your business may be required to keep the log of consent to the terms of service and privacy policy confirmed by your site visitors. In Webasyst, all such confirmations, when performed via built-in system routines, are recorded to the database to help you comply with the law.`]</p>
+
+    <button class="light-gray js-download-log">[`Download consent log`]</button>
+    <label>
+        <span class="wa-checkbox">
+            <input type="checkbox" name="include_document_text" class="js-include-document-text" value="1">
+            <span>
+                <span class="icon">
+                    <i class="fas fa-check"></i>
+                </span>
+            </span>
+        </span>
+        [`Download with full policy text`]
+    </label>
+
+  </div>
+</div>
+<script type="text/javascript">
+    (function($) {
+        $.wa.title.set({$_title|json_encode});
+
+        // Highlight selected item in sidebar
+        let $sidebar = $('#js-sidebar-wrapper');
+        $sidebar.find('ul li').removeClass('selected');
+        $sidebar.find('[data-id="privacy"]').addClass('selected');
+
+        $('.js-download-log').click(function(e) {
+            e.preventDefault();
+            let include_document_text = $('.js-include-document-text').is(':checked');
+            window.location.href = '?module=settingsPrivacyLog' + (include_document_text ? '&include_document_text=1' : '');
+        })
+    })(jQuery);
+</script>

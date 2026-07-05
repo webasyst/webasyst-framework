@@ -334,14 +334,14 @@ class teamConfig extends waAppConfig
                         $l['params_html'] = sprintf_wp(
                             $actions[$l['action']]['label'],
                             '<a href="'.$app_url.'calendar/">'.
-                            htmlspecialchars(ifempty($events[$l['params']], $l['params'])).
+                            htmlspecialchars(ifempty($events[$l['params']], ($l['params'] ?: ''))).
                             '</a>'
                         );
                     } elseif ($actions[$l['action']]['format'] == 'calendar') {
                         $l['params_html'] = sprintf_wp(
                             $actions[$l['action']]['label'],
                             '<a href="'.$app_url.'calendar/">'.
-                            htmlspecialchars(ifempty($calendars[$l['params']], $l['params'])).
+                            htmlspecialchars(ifempty($calendars[$l['params']], ($l['params'] ?: ''))).
                             '</a>'
                         );
                     } else {

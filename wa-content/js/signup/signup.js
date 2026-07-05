@@ -47,7 +47,7 @@ var WaSignup = ( function($) {
         var that = this;
         that.initSubmit();
         that.initErrorsAutoCleaner();
-        that.initAuthAdapters();
+        //that.initAuthAdapters();
 
         if (that.is_onetime_password_auth_type) {
             that.initOnetimePasswordView();
@@ -589,11 +589,22 @@ var WaSignup = ( function($) {
         var that = this,
             $form = that.$form,
             data = $form.serializeArray(),
-            errors = {};
+            errors = {},
+            checked_checkboxes = {};
+
+        $form.find(':checkbox:checked').each(function() {
+            checked_checkboxes[$(this).attr('name')] = true;
+        });
+
         $.each(data, function (index, item) {
             var name = item.name,
                 value = $.trim(item.value || ''),
                 $field = that.getFormField(name);
+
+            if (checked_checkboxes[name]) {
+                return;
+            }
+
             if ($field.data('isRequired') && value.length <= 0) {
                 var msg = that.locale.required;
                 if (that.normalizeFieldId(name) === 'onetime_password') {
@@ -892,9 +903,9 @@ var WaSignup = ( function($) {
         var that = this,
             $wrapper = that.$wrapper;
 
-        // If recaptcha presented and loaded
+        // If captcha presented and loaded
         if ($wrapper.find('.wa-captcha-field').length) {
-            $(window).one('wa_recaptcha_loaded wa_captcha_loaded', function () {
+            $(window).one('wa_recaptcha_loaded wa_captcha_loaded wa_smartcaptcha_loaded', function () {
                 that.triggerEvent('wa_auth_form_loaded');
                 that.triggerEvent('wa_auth_form_change_view');
             });

@@ -290,10 +290,10 @@ class waDateTime
         }
 
         if ($format === 'humandatetime') {
-            if (preg_match("/^[0-9]+$/", $time)) {
+            if (preg_match("/^[0-9]+$/", (string) $time)) {
                 $time = date("Y-m-d H:i:s", $time);
             }
-            $date_time = new DateTime($time);
+            $date_time = new DateTime((string) $time);
             $base_date_time = new DateTime(date("Y-m-d H:i:s",strtotime('-1 day')));
             if ($timezone) {
                 $date_timezone = $timezone;

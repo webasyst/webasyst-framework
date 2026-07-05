@@ -1,0 +1,80 @@
+{capture name='form_footer'}
+  {$wa->csrf()}
+  <input type="submit" class="button green" value="Ok">
+  <span class="hint">[`Alt+Enter`]</span>
+{/capture}
+
+<div class="sidebar d-sandbox-column bordered-right">
+  <div class="block" id="translate-tabs">
+    <ul class="tabs">
+      <li><a href="#tab-translate-app">[`Apps`]</a></li>
+      <li><a href="#tab-translate-plugin">[`Plugins`]</a></li>
+      <li><a href="#tab-translate-widget">[`Widgets`]</a></li>
+      <li><a href="#tab-translate-theme">[`Themes`]</a></li>
+    </ul>
+    
+    <form method="post" id="tab-translate-app" class="tab-content">
+      <div class="block">
+        {html_options name='hash' options=$apps}
+      </div>
+      <div class="block">
+        <input type="hidden" name="type" value="app">
+        {$smarty.capture.form_footer}
+      </div>
+    </form>
+  
+    <form method="post" id="tab-translate-plugin" class="tab-content">
+      <div class="block">
+        {html_options name='hash' options=$plugins}
+      </div>
+      <div class="block">
+        <input type="hidden" name="type" value="plugin">
+        {$smarty.capture.form_footer}
+      </div>
+    </form>
+    
+    <form method="post" id="tab-translate-widget" class="tab-content">
+      <div class="block">
+        {html_options name='hash' options=$widgets}
+      </div>
+      <div class="block">
+        <input type="hidden" name="type" value="widget">
+        {$smarty.capture.form_footer}
+      </div>
+    </form>
+    
+    <form method="post" id="tab-translate-theme" class="tab-content">
+      <div class="block">
+        {html_options name='hash' options=$themes}
+      </div>
+      <div class="block">
+        <input type="hidden" name="type" value="theme">
+        {$smarty.capture.form_footer}
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="sidebar d-sandbox-column">
+  <div class="block">
+    <div class="d-header">
+      <h2>[`Result`]</h2>
+    </div>
+  </div>
+  <div class="block" id="translate-result">
+    {if isset($error)}
+      <div class="errormsg">{$error|escape}</div>
+    {elseif isset($result)}
+      <div class="successmsg">{$result|nl2br}</div>
+    {else}
+      &nbsp;
+    {/if}
+  </div>
+</div>
+
+<div class="clear"></div>
+
+{wa_js}
+  {$wa_url}wa-content/js/jquery-wa/wa.core.js
+  {$wa_app_static_url}js/translate.js
+{/wa_js}

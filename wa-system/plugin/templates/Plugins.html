@@ -17,12 +17,14 @@
         top: .5rem;
         right: .5rem;
     }
+    [data-theme="dark"] #wa-plugin-list > li .hint { color: var(--text-color-hint-strong); }
+    #wa-plugins-content:has(.i-store-wrapper) { padding: 0; }
     </style>
 {/if}
 
 {$plugin_names = array()}
-<div id="wa-plugins-container" class="content flexbox{if !empty($container_class)} {$container_class}{/if}">
-    <div class="sidebar flexbox blank width-21rem bordered-right bordered-left">
+<div id="wa-plugins-container" class="content flexbox wrap-mobile{if !empty($container_class)} {$container_class}{/if}">
+    <div class="sidebar flexbox blank width-21rem bordered-right bordered-left" style="{if $wa->isMobile()}position: relative; width:100%; height: auto !important; min-height: auto; top: 0;{/if}">
             <div class="sidebar-body{if empty($installer)} custom-pt-16{/if}">
 
                 {if $wa->user()->getRights('installer')}
@@ -32,7 +34,10 @@
                     <div class="box custom-mt-8 custom-mb-0">
                         <a href="{$plugins_hash}/" data-url="{$plugins_list_url|escape}" class="button webasyst-magic-wand shadowed full-width js-plugins-list custom-py-8">
                             <i class="icon"></i>
-                            {sprintf('[s`Plugins for %s`]', $wa->appName())}
+                            {sprintf(
+                                '[s`All plugins › %s`]',
+                                sprintf('<strong>%s</strong>', $wa->appName())
+                            )}
                         </a>
                     </div>
                 {/if}
@@ -98,7 +103,7 @@
             </div>
         </div>
     <div class="content">
-        <div class="article wider">
+        <div class="article wider"{if $wa->isMobile()} style="max-width: 100vw;"{/if}>
             <div id="wa-plugins-content" class="article-body">
                 {if !empty($plugins)||!empty($installer)}[s`Loading`]... <i class="fas fa-spinner fa-spin loading"></i>{/if}
             </div>
@@ -541,6 +546,22 @@
             return false;
         });
     {/if}
+
+    {* запоминаем к настройкам какого плагина нужно перейти после обновления страницы *}
+    $(document).on('installer_after_install_go_to_settings', function(e, data) {
+        if (data.type === 'plugin' && !data.is_payment && !data.is_shipping) {
+            sessionStorage.setItem('wa_plugin_onload', data.id);
+            location.reload();
+        }
+    });
+    const wa_plugin_onload = sessionStorage.getItem('wa_plugin_onload');
+    if (wa_plugin_onload) {
+        $('.js-plugin-list > li#plugin-' + wa_plugin_onload + ' > a').on('click', function  () {
+            sessionStorage.removeItem('wa_plugin_onload');
+            $.plugins.dispatch($(this).attr('href'), true);
+            return false;
+        }).click();
+    }
 
 })(jQuery);
 </script>

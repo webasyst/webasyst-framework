@@ -4,7 +4,7 @@ class webasystServicesBalanceUrlController extends waJsonController
 {
     public function execute()
     {
-        $result = (new waServicesApi)->getBalanceCreditUrl();
+        $result = (new waServicesApi)->getBalanceCreditUrl(waRequest::get('service', null, waRequest::TYPE_STRING_TRIM));
         if (waRequest::isXMLHttpRequest()) {
             $this->response = $result;
         } elseif (ifset($result, 'response', 'url', false)) {

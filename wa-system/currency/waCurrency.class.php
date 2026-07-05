@@ -150,7 +150,7 @@ class waCurrency
         waLocale::loadByDomain('webasyst', $locale);
         $locale_id = $locale;
         $locale = waLocale::getInfo($locale);
-        self::$format_data['n'] = $n;
+        self::$format_data['n'] = empty($n) ? 0 : $n;
         self::$format_data['locale'] = $locale;
         self::$format_data['locale']['id'] = $locale_id;
         self::$format_data['currency'] = $currency;

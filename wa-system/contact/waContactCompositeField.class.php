@@ -231,6 +231,7 @@ class waContactCompositeField extends waContactField
                             unset($data[$sort]);
                         }
                     }
+                    $data = array_values($data);
                     foreach ($value as $v) {
                         $data[] = $v;
                     }
@@ -379,7 +380,7 @@ class waContactCompositeField extends waContactField
                 if (wa()->getEnv() == 'frontend') {
                     $field_class = 'wa-'.$field_class;
                 }
-                $result[] = '<span class="'.($field->isRequired() ? $required_class : '').'field '.$field_class.'"><span>'.$field->getName().'</span>'.$field->getHTML($params_subfield, $attrs_one).$errors_html.'</span>';
+                $result[] = '<span class="'.($field->isRequired() ? $required_class : '').'field '.$field_class.'"><span>'.htmlspecialchars($field->getName()).'</span>'.$field->getHTML($params_subfield, $attrs_one).$errors_html.'</span>';
             }
         }
         return implode($result);

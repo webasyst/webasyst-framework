@@ -178,7 +178,7 @@
 
     {* Theme name *}
     <h1 class="wa-theme-name">
-        {sprintf('[s`%s design theme`]', $theme.name|escape)}
+        {sprintf('[s`Design theme %s`]', $theme.name|escape)}
         <span class="hint">
             {$theme.version}
             <span style="font-size: smaller;" title="[s`Theme ID`]">({$theme.id|escape})</span>
@@ -502,8 +502,8 @@
                 </div>
                 {if !empty($global_group_divideres)}
                     <div class="wa-theme-anchors js-anchors">
-                        {foreach $global_group_divideres as $_divider_id => $_divider_name}
-                            <a href="javascript:void(0);" class="wa-setting-anchor inline-link js-anchor-item" data-divider-id="{$_divider_id|escape}"><b><i>{strip_tags($_divider_name)}</i></b></a>
+                        {foreach $global_group_divideres as $_divider_id => $_divider}
+                            <a href="javascript:void(0);" class="wa-setting-anchor inline-link js-anchor-item" data-divider-id="{$_divider_id|escape}"><b><i>{strip_tags($_divider.name)}</i></b></a>
                         {/foreach}
                         {if trim($theme.about)}
                             <a href="javascript:void(0);" class="wa-other-anchor inline-link js-other-anchor-item" data-other-id="theme-about"><b><i>[s`About this theme`]</i></b></a>

@@ -26,7 +26,12 @@
   <div v-else-if="!!app_id && !method_groups[app_id]" class="custom-p-32 align-center">
     <i class="fas fa-times-circle" style="font-size: 8rem; opacity: 0.15;"></i>
     <h4>{{ $t('no-api-message', [$store.state.apps[app_id].name]) }}</h4>
-    <p class="hint" v-html="$t('no-api-hint')"></p>
+    <p class="hint" v-if="locale == 'ru'">
+      Если вы являетесь разработчиком данного приложения, ознакомьтесь с инструкцией по созданию <a href='https://developers.webasyst.ru/docs/features/apis/' target='_blank'>публичного API в приложениях Webasyst</a>.
+    </p>
+    <p class="hint" v-else>
+      If you are a developer of this app, please refer to this guide on how to create <a href='https://developers.webasyst.com/features/apis/' target='_blank'>an API-enabled Webasyst app</a>.
+    </p>
   </div>
 </template>
 
@@ -56,6 +61,9 @@ export default {
         } else {
           return "";
         }
+      },
+      locale() {
+        return window.appState.locale;
       }
     },
     methods: {

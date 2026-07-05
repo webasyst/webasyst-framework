@@ -14,7 +14,7 @@
                     {$_template = $channel->getParams('template')|default:[]}
                     <div class="s-email-templates">
                             <h1 class="s-template-name">{$templates_list[$template_id]}</h1>
-                            <div class="fields-group blank">
+                            <div class="fields-group blank custom-mt-0">
                                 <div class="field">
                                     <div class="name">[s`Sender`]</div>
                                     <div class="value">
@@ -26,7 +26,7 @@
                                 <div class="field">
                                     <div class="name">[s`Letter subject`]</div>
                                     <div class="value">
-                                        <input class="js-subject full-width" type="text" name="data[subject]" value="{$template.subject|escape}" />
+                                        <input class="bold js-subject full-width" type="text" name="data[subject]" value="{$template.subject|escape}" />
                                     </div>
                                 </div>
                                 {* Text *}
@@ -35,22 +35,21 @@
                                         [s`Text of the letter`]
                                         <p class="hint">HTML + Smarty</p>
                                     </div>
-                                    <div class="value">
+                                    <div class="value custom-mb-40">
                                         <textarea class="js-template-text" name="data[text]">{$template.text|escape}</textarea>
                                         {* Default template *}
-                                        <p class="hint s-channel-actions">
-                                            <a href="javascript:void(0);" class="inline-link js-reset" title="[s`Restore default text`]">
-                                                <i class="fas fa-home"></i>
-                                                <b class="hide-on-small-screens">[s`Restore default text`]</b>
+                                        <div class="s-channel-actions">
+                                            <a href="javascript:void(0);" class="button smaller light-gray js-reset" title="[s`Restore default text`]">
+                                                [s`Restore default text`]
                                             </a>
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <input type="hidden" name="data[template]" value="{$template_id|escape}" />
 
-                        <div class="fields-group blank s-footer-actions js-footer-actions">
+                        <div class="s-footer-actions js-footer-actions">
 
                         </div>
                         <div class="bottombar flexbox middle"{if $wa->isMobile()} style="overflow-x: scroll;"{/if}>
@@ -58,15 +57,11 @@
                                 <div>
                                     {* Save *}
                                     <input class="button js-submit-button green" type="submit" name="" value="[s`Save`]">
-                                    {* Cancel *}
-                                    <span class="c-hidden">
-                                        <a href="{$wa_backend_url}webasyst/settings/email/template/{$channel->getId()|escape}/{$template_id}/" class="button light-gray js-cancel">[s`Cancel`]</a>
-                                    </span>
                                     <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
                                 </div>
                                 <div>
                                     {* Check sending *}
-                                    <input class="small button gray rounded js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
+                                    <input class="button outlined gray js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
                                     {* Cheat sheet *}
                                     <div class="s-cheat-sheet-wrapper js-cheat-sheet-wrapper"></div>
                                 </div>
@@ -94,22 +89,22 @@
         <form action="?module=settingsTemplateCheckSending" class="dialog-body">
             <h3 class="dialog-header">[s`Checking the sending of email messages`]</h3>
             <div class="dialog-content fields">
-                <div class="field-group">
-                    {* Recipient *}
-                    <div class="field">
-                        <div class="name">[s`Recipient's email`]</div>
-                        <div class="value">
-                            <input type="email" name="data[recipient]" value="{$user->get('email', 'default')|escape}" placeholder="john@example.com" />
-                        </div>
+
+                {* Recipient *}
+                <div class="field">
+                    <div class="name for-input">[s`Recipient's email`]</div>
+                    <div class="value">
+                        <input type="email" class="long" name="data[recipient]" value="{$user->get('email', 'default')|escape}" placeholder="john@example.com" />
                     </div>
-                    <input type="hidden" name="data[channel_id]" value="{$channel->getId()|escape}" />
-                    <input type="hidden" name="data[template][{$template_id|escape}]" value="on" />
                 </div>
+                <input type="hidden" name="data[channel_id]" value="{$channel->getId()|escape}" />
+                <input type="hidden" name="data[template][{$template_id|escape}]" value="on" />
+
             </div>
             <div class="dialog-footer">
                 <input type="submit" class="button blue js-submit-button" value="[s`Send`]">
-                &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="js-close-dialog">[s`cancel`]</a>
-                <i class="fas fa-spinner fa-spin loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+                <a href="javascript:void(0);" class="button light-gray js-close-dialog">[s`Cancel`]</a>
+                <i class="fas fa-spinner fa-spin loading text-light-gray" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
             </div>
         </form>
 </div>

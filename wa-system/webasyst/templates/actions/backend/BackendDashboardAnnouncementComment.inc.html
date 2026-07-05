@@ -1,0 +1,31 @@
+{function renderComment comment=[]}
+{$contact = ifset($contacts[$comment.contact_id])}
+<li class="comment custom-mb-24" data-id="{$comment.id}">
+    <div class="js-announcement-comment-text comment-bubble width-50 custom-mt-8{if $contact && $contact.id == $wa->user('id')} bg-blue text-white{/if}">{$comment.text}</div>
+    <div class="comment-bubble-arrow"></div>
+    <div class="flexbox middle space-8">
+        {if $contact}
+            <img class="userpic userpic-20" src="{$contact.photo_url_32}">
+
+            <div class="small">{$contact.name|escape}</div>
+
+            <div class="smaller gray">
+                <span>{$comment.create_datetime|wa_datetime:'humandatetime'}</span>
+                {if $comment.update_datetime && $comment.create_datetime !== $comment.update_datetime}
+                    <span title="{$comment.update_datetime|wa_datetime:'humandatetime'}">[s`Saved`]</span>
+                {/if}
+            </div>
+            {if $contact.id == $wa->user('id')}
+                <div class="comment-edit">
+                    <button class="js-announcement-comment-edit button nobutton circle smaller custom-m-0" title="[`Edit`]" type="button"><span><i class="fas fa-edit fa-sm"></i></span></button>
+                    <button class="js-announcement-comment-remove button nobutton circle smaller" title="[`Remove`]" type="button"><span><i class="fas fa-trash-alt fa-sm text-gray"></i></span></button>
+                </div>
+            {/if}
+        {/if}
+    </div>
+</li>
+{/function}
+
+{if !empty($comment)}
+    {renderComment comment=$comment}
+{/if}
