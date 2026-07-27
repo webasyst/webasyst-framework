@@ -22,7 +22,7 @@
  * @property-read string $payment_method_type
  *
  */
-class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, waIPaymentRecurrent, waIPaymentCancel, waIPaymentCapture, waIPaymentImage, waIPaymentCancelPending
+class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, waIPaymentRecurrent, waIPaymentCancel, waIPaymentCapture, waIPaymentImage, waIPaymentCancelPending, waIPaymentFiscalize
 {
     private $order_id;
     private $receipt;
@@ -39,15 +39,21 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     /**
      * @return string callback gateway url
      */
-    protected function getEndpointUrl()
+    protected function getEndpointUrl($api_method=null)
     {
-        /*  v1
-            ? 'https://rest-api-test.tinkoff.ru/rest/'
-            : 'https://securepay.tinkoff.ru/rest/';
-        */
-        return $this->testmode
-            ? 'https://rest-api-test.tinkoff.ru/v2/'
-            : 'https://securepay.tinkoff.ru/v2/';
+        $url = $this->testmode
+            ? 'https://rest-api-test.tinkoff.ru/'
+            : 'https://securepay.tinkoff.ru/';
+        if ($api_method === 'SendClosingReceipt') {
+            // ¯\_(ツ)_/¯ https://developer.tbank.ru/eacq/api/send-closing-receipt
+            $url .= 'cashbox/';
+        } else {
+            $url .= 'v2/';
+        }
+        if ($api_method) {
+            $url .= $api_method;
+        }
+        return $url;
     }
 
     public function allowedCurrency()
@@ -231,7 +237,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             }
         }
 
-        $api_url = $this->getEndpointUrl().$method;
+        $api_url = $this->getEndpointUrl($method);
 
         $options = array(
             'request_format' => 'json',
@@ -272,6 +278,8 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 );
 
                 throw new waPaymentException($message);
+            } else {
+                //self::log($this->id, $log);
             }
 
         } catch (Exception $ex) {
@@ -410,7 +418,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 $transaction_data = $this->saveTransaction($transaction_data, $data);
                 $this->execAppCallback($app_payment_method, $transaction_data);
 
-                if ($declare_fiscalization && $this->getSettings('check_data_tax')) {
+                if ($declare_fiscalization && $this->getSettings('check_data_tax') && $this->getSettings('payment_method_type') === 'full_payment') {
                     $this->getAdapter()->declareFiscalization($transaction_data['order_id'], $this, ['id' => $transaction_data['native_id']]);
                 }
             } else {
@@ -879,6 +887,44 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 $transaction_model->deleteById($transaction['id']);
             }
             return null;
+        }
+    }
+
+    public function fiscalize(waOrder $order, $params=[])
+    {
+        if (!$this->getSettings('check_data_tax') || !$this->getSettings('finalization_receipt')) {
+            return;
+        }
+
+        if ($this->getSettings('payment_method_type') === 'full_payment') {
+            return;
+        }
+
+        $transactions = $this->getRelatedTransactions($order['id'], null, true);
+        if (!$transactions) {
+            return;
+        }
+
+        // https://developer.tbank.ru/eacq/api/send-closing-receipt
+        $data = [
+            'PaymentId' => reset($transactions)['native_id'],
+            'Receipt' => $this->getReceiptData($order),
+        ];
+
+        if (empty($data['Receipt']['Items'])) {
+            return;
+        }
+
+        // Закрывающий чек должен быть "полный расчёт" независимо от настройки payment_method_type
+        foreach ($data['Receipt']['Items'] as &$it) {
+            $it['PaymentMethod'] = 'full_payment';
+        }
+        unset($it);
+
+        $result = $this->apiQuery('SendClosingReceipt', $data);
+
+        if (!empty($result['Success'])) {
+            $this->getAdapter()->declareFiscalization($order['id'], $this, []);
         }
     }
 
