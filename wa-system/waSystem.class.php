@@ -812,9 +812,7 @@ class waSystem
                 $app_id = 'webasyst';
             }
         }
-        if ($path) {
-            $path = preg_replace('!\.\.[/\\\]!', '', $path);
-        }
+        $path = waUtils::sanitizePathSegment($path);
         $file = waConfig::get('wa_path_cache').'/apps/'.$app_id.($path ? '/'.$path : '');
         waFiles::create($path ? dirname($file) : $file);
         return $file;
@@ -858,9 +856,7 @@ class waSystem
         if ($app_id === null) {
             $app_id = $this->getConfig()->getApplication();
         }
-        if ($path) {
-            $path = preg_replace('!\.\.[/\\\]!', '', $path);
-        }
+        $path = waUtils::sanitizePathSegment($path);
         $file = waConfig::get('wa_path_data').'/'.($public ? 'public' : 'protected').'/'.$app_id.($path ? '/'.$path : '');
         if ($create) {
             waFiles::create($file);
@@ -906,9 +902,7 @@ class waSystem
         if ($app_id === null) {
             $app_id = $this->getConfig()->getApplication();
         }
-        if ($path) {
-            $path = preg_replace('!\.\.[/\\\]!', '', $path);
-        }
+        $path = waUtils::sanitizePathSegment($path);
         $dir = waConfig::get('wa_path_cache').'/temp/'.$app_id.($path ? '/'.$path : '');
         waFiles::create($dir);
         return $dir;

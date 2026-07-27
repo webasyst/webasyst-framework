@@ -229,7 +229,7 @@ abstract class waAppPayment implements waiPluginApp
     }
 
     /** @since 3.2.0 */
-    public function declareFiscalization($order_id, waPayment $plugin, array $custom_data = null)
+    public function declareFiscalization($order_id, waPayment $plugin, ?array $custom_data = null)
     {
         ;
     }

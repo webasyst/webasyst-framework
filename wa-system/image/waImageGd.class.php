@@ -46,7 +46,10 @@ class waImageGd extends waImage
             throw new waException(sprintf(_ws('GD does not support %s images'), $type));
         }
 
-        $image = $create_function($file);
+        $image = @$create_function($file);
+        if (!$image) {
+            throw new waException(_ws('Not an image or invalid image: ').$file);
+        }
         imagesavealpha($image, true);
 
         return $image;
@@ -109,13 +112,11 @@ class waImageGd extends waImage
     {
 
         if (function_exists("imagerotate")) {
-            $transparent = ($degrees % 90 != 0) ? imagecolorallocatealpha($this->image, 0, 0, 0, 127) : null;
-            $image = imagerotate($this->image, 360 - $degrees, $transparent, 1);
-        } else {
-
+            $transparent = ($degrees % 90 != 0) ? imagecolorallocatealpha($this->image, 0, 0, 0, 127) : 0;
+            $image = imagerotate($this->image, 360 - $degrees, $transparent);
+            imagesavealpha($image, true);
+            $this->updateInfo($image);
         }
-        imagesavealpha($image, true);
-        $this->updateInfo($image);
     }
 
     protected function updateInfo($image = null)

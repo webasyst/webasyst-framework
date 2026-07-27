@@ -3,7 +3,7 @@
  * This implements a special built-in payment plugin id=pay.
  * @since 4.0.0
  */
-class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOptions, waIPaymentImage, waIPaymentRefund, waIPaymentStatePolling, waIPaymentCapture, waIPaymentCancel
+class waPayPayment extends waPayment implements waIPayment, waIPaymentMultipleOptions, waIPaymentImage, waIPaymentRefund, waIPaymentStatePolling, waIPaymentCapture, waIPaymentCancel, waIPaymentFiscalize
 {
     public function supportedOperations()
     {
@@ -98,18 +98,18 @@ HTML
                 ],
                 'receipt' => [
                     'value'        => '',
-                    'title'        => 'Формировать чек оплаты',
-                    'description'  => 'Если включена фискализация, то клиенты смогут использовать этот способ оплаты только в следующих случаях:'
+                    'title'        => 'Фискализация чеков',
+                    'description'  => 'Если включено, то этот способ оплаты доступен только в следующих случаях:'
             .'<br>'
-            .'— к элементам заказа и стоимости доставки не применяются налоги'
+            .'— либо к позициям заказа и стоимости доставки не применяются налоги;'
             .'<br>'
-            .'— налог составляет 0%, 5%, 7%, 10%, 20% либо 22% и <em>включён</em> в стоимость элементов заказа и стоимость доставки',
+            .'— либо размер налога составляет 0%, 5%, 7%, 10%, 20% или 22% и <em>включен</em> в стоимость позиций заказа и в стоимость доставки.',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-yookassa'],
                 ],
                 'payment_subject_type_product' => [
                     'value'        => 'commodity',
-                    'title'        => 'Предмет расчёта в чеках для товаров',
+                    'title'        => 'Предмет расчета в чеках для товаров',
                     'description'  => 'Категория ваших товаров в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
@@ -119,7 +119,7 @@ HTML
                 ],
                 'payment_subject_type_service' => [
                     'value'        => 'service',
-                    'title'        => 'Предмет расчёта в чеках для услуг',
+                    'title'        => 'Предмет расчета в чеках для услуг',
                     'description'  => 'Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
@@ -129,7 +129,7 @@ HTML
                 ],
                 'payment_subject_type_shipping' => [
                     'value'        => 'service',
-                    'title'        => 'Предмет расчёта в чеках для доставки',
+                    'title'        => 'Предмет расчета в чеках для доставки',
                     'description'  => 'Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
@@ -147,11 +147,22 @@ HTML
                     }, $this->getPaymentMethodTypes()),
                     'class'        => ['field-provider-specific', 'provider-yookassa'],
                 ],
+                'finalization_receipt' => array(
+                    'value'        => '',
+                    'title'        => 'Закрывающий чек',
+                    'description'  => 'Если выше в настройке «Признак способа расчёта в чеках» выбран <em>не полный расчёт</em> (например, предоплата), то по закону может дополнительно потребоваться пробитие <em>закрывающего чека</em>. Выберите «Пробивать закрывающий чек», если хотите, чтобы за это отвечал данный плагин оплаты.',
+                    'control_type' => waHtmlControl::SELECT,
+                    'options'      => array(
+                        ''    => 'Без закрывающего чека',
+                        '1' => 'Пробивать закрывающий чек',
+                    ),
+                    'class'        => ['field-provider-specific', 'provider-yookassa'],
+                ),
                 'taxes' => [
                     'value'        => 'no',
                     'title'        => 'Передача ставок НДС',
                     'description'  => 'Если ваша организация работает по ОСН, выберите вариант «Передавать ставки НДС по каждой позиции».<br>
-Ставка НДС может быть равна 0%, 5%, 7%, 10%, 20% или 22%. В настройках налогов в приложении выберите, чтобы НДС был включён в цену товара.<br>
+Ставка НДС может быть равна 0%, 5%, 7%, 10%, 20% или 22%. В настройках налогов в приложении выберите, чтобы НДС был включен в цену товара.<br>
 Если вы работаете по другой системе налогообложения, выберите «НДС не облагается».',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
@@ -180,7 +191,7 @@ HTML
                 'merchant_currency' => [
                     'value'        => 'RUB',
                     'title'        => 'Валюта',
-                    'description'  => 'Выберите валюту, отличную от российского рубля, чтобы принимать платежи в этой валюте.',
+                    'description'  => 'Выберите валюту, отличную от российского рубля, в которой нужно принимать платежи.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => 'RUB', 'title' => 'RUB'],
@@ -191,8 +202,8 @@ HTML
                 ],
                 'manual_capture' => [
                     'value'        => '',
-                    'title'        => 'Использовать двухстадийную оплату',
-                    'description'  => 'Применяется только к оплате по картам. К оплате по СБП не применимо.',
+                    'title'        => 'Двухстадийная оплата картами',
+                    'description'  => 'К оплате через СБП не применяется.',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-yookassa'],
                 ],
@@ -208,10 +219,10 @@ HTML
                     'title'        => 'Входящие уведомления',
                     'description'  => '<p>Отметьте эти события в личном кабинете на сайте «ЮKassa», чтобы автоматически получать актуальную информацию о состоянии платежей:<p>
                         <ul>
-                            <li><code>payment.succeeded</code> — платёж перешёл в статус <i>succeeded</i>
-                            <li><code>payment.waiting_for_capture</code> — платёж перешёл в статус <i>waiting_for_capture</i>
-                            <li><code>payment.canceled</code> — платёж перешёл в статус <i>canceled</i>
-                            <li><code>refund.succeeded</code> — возврат перешёл в статус <i>succeeded</i>
+                            <li><code>payment.succeeded</code> — платеж перешел в статус <i>succeeded</i>
+                            <li><code>payment.waiting_for_capture</code> — платеж перешел в статус <i>waiting_for_capture</i>
+                            <li><code>payment.canceled</code> — платеж перешел в статус <i>canceled</i>
+                            <li><code>refund.succeeded</code> — возврат перешел в статус <i>succeeded</i>
                         </ul>',
                     'control_type' => waHtmlControl::HELP,
                     'class'        => ['field-provider-specific', 'provider-yookassa'],
@@ -241,8 +252,8 @@ HTML
                 ],
                 'currency_id' => [
                     'value'        => 'RUB',
-                    'title'        => 'Валюта',
-                    'description'  => 'Валюта, в которой будут выполняться платежи',
+                    'title'        => 'Валюта платежей',
+                    'description'  => '',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => 'RUB', 'title' => 'RUB'],
@@ -251,19 +262,19 @@ HTML
                 ],
                 'two_steps' => [
                     'value'        => '',
-                    'title'        => 'Использовать двухстадийную оплату',
-                    'description'  => 'Вариант обработки платежей, выбранный при заключении договора с Т-Кассой.<br>Двухстадийную схему подключения можно использовать только с поддерживаемым приложением, например, Shop-Script версии не ниже 8.6.',
+                    'title'        => 'Двухстадийная оплата картами',
+                    'description'  => 'К оплате через СБП не применяется.',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-tbank'],
                 ],
                 'check_data_tax' => [
                     'value'        => '',
-                    'title'        => 'Формировать чек оплаты',
-                    'description'  => 'Если включена интеграция с онлайн-кассами, то клиенты смогут использовать этот способ оплаты только в следующих случаях:'
+                    'title'        => 'Фискализация чеков',
+                    'description'  => 'Если включено, то этот способ оплаты доступен только в следующих случаях:'
             .'<br>'
-            .'— к элементам заказа и стоимости доставки не применяются налоги;'
+            .'— либо к позициям заказа и стоимости доставки не применяются налоги;'
             .'<br>'
-            .'— налог составляет 0%, 5%, 7%, 10%, 20% либо 22% и <em>включен</em> в стоимость позиций заказа и стоимость доставки.',
+            .'— либо размер налога составляет 0%, 5%, 7%, 10%, 20% или 22% и <em>включен</em> в стоимость позиций заказа и в стоимость доставки.',
                     'control_type' => waHtmlControl::CHECKBOX,
                     'class'        => ['field-provider-specific', 'provider-tbank'],
                 ],
@@ -284,7 +295,7 @@ HTML
                 ],
                 'payment_object_type_product' => [
                     'value'        => 'commodity',
-                    'title'        => 'Предмет расчёта в чеках для товаров',
+                    'title'        => 'Предмет расчета в чеках для товаров',
                     'description'  => 'Категория ваших товаров в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
@@ -294,7 +305,7 @@ HTML
                 ],
                 'payment_object_type_service' => [
                     'value'        => 'service',
-                    'title'        => 'Предмет расчёта в чеках для услуг',
+                    'title'        => 'Предмет расчета в чеках для услуг',
                     'description'  => 'Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
@@ -304,7 +315,7 @@ HTML
                 ],
                 'payment_object_type_shipping' => [
                     'value'        => 'service',
-                    'title'        => 'Предмет расчёта в чеках для доставки',
+                    'title'        => 'Предмет расчета в чеках для доставки',
                     'description'  => 'Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => array_map(function($value) {
@@ -322,10 +333,21 @@ HTML
                     }, $this->getPaymentMethodTypes()),
                     'class'        => ['field-provider-specific', 'provider-tbank'],
                 ],
+                'finalization_receipt_tbank' => array(
+                    'value'        => '',
+                    'title'        => 'Закрывающий чек',
+                    'description'  => 'Если выше в настройке «Признак способа расчета в чеках» выбран <em>не полный расчет</em> (например, предоплата), то по закону может дополнительно потребоваться пробитие <em>закрывающего чека</em>. Выберите «Пробивать закрывающий чек», если хотите, чтобы за это отвечал данный плагин оплаты.',
+                    'control_type' => waHtmlControl::SELECT,
+                    'options'      => array(
+                        ''    => 'Без закрывающего чека',
+                        '1' => 'Пробивать закрывающий чек',
+                    ),
+                    'class'        => ['field-provider-specific', 'provider-tbank'],
+                ),
                 'payment_ffd' => [
                     'value'        => '1.2',
                     'title'        => 'Версия ФФД',
-                    'description'  => 'Текущая выбранная версия должна совпадать с версией в настройках ОФД.',
+                    'description'  => 'Должна совпадать с версией в настройках ОФД.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => '1.05', 'title' => '1.05'],
@@ -336,7 +358,7 @@ HTML
                 'payment_language' => [
                     'value'        => 'ru',
                     'title'        => 'Язык платежной формы',
-                    'description'  => 'Выберите язык платежной формы для своих клиентов.',
+                    'description'  => '',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => 'ru', 'title' => 'Русский'],
@@ -442,6 +464,7 @@ HTML
                     'payment_object_type_service' => '',
                     'payment_object_type_shipping' => '',
                     'payment_method_type_tbank' => '',
+                    'finalization_receipt_tbank' => '',
                     'payment_ffd' => '',
                     'payment_language' => '',
                     'testmode' => 0,
@@ -450,6 +473,13 @@ HTML
                     'provider' => 'tbank',
                     'settings' => array_intersect_key($settings + $defaults, $defaults),
                 ];
+        
+                foreach (array_keys($api_save_request['settings']) as $k) {
+                    if (substr($k, -6) === '_tbank') {
+                        $api_save_request['settings'][substr($k, 0, -6)] = $api_save_request['settings'][$k];
+                        unset($api_save_request['settings'][$k]);
+                    }
+                }
                 break;
             case 'yookassa':
                 $defaults = [
@@ -460,6 +490,7 @@ HTML
                     'payment_subject_type_service' => '',
                     'payment_subject_type_shipping' => '',
                     'payment_method_type' => '',
+                    'finalization_receipt' => '',
                     'taxes' => '',
                     'tax_system_code' => '',
                     'merchant_currency' => '',
@@ -485,6 +516,7 @@ HTML
         $api_save_request['callback_url'] = $this->getRelayUrl();
         $response = $this->apiQuery('PAY_SETTINGS', '', $api_save_request, waNet::METHOD_PUT);
         $settings['last_save_response'] = $response;
+        //$settings['last_save_response']['__request'] = $api_save_request;
         $settings['allowed_currency'] = ifset($response, 'response', 'allowed_currency', true);
         $settings['do_fiscalization'] = ifset($response, 'response', 'do_fiscalization', null);
 
@@ -547,7 +579,7 @@ HTML
                 'request' => $request_data,
                 'exception' => (string) $e,
             ]);
-            return _ws('Ошибка инициализации платежа:').' '.$e->getMessage();
+            return _ws('Payment initialization error:').' '.$e->getMessage();
         }
 
         // already paid?..
@@ -575,7 +607,7 @@ HTML
                 ]);
                 return sprintf('%s (%s)', ifset($response, 'response', 'error_description', 'API Error'), ifset($response, 'response', 'error', 'unknown'));
             }
-            return _ws('Состояние платежа изменилось — обновите страницу.');
+            return _ws('The payment status has changed, please reload this page.');
         }
 
         $provider = $this->getSettings('provider');
@@ -616,7 +648,7 @@ EOF;
             }
         }
 
-        return ifset($response, 'response', 'text', _ws('Способ оплаты Webasyst Pay не настроен.'));
+        return ifset($response, 'response', 'text', _ws('Payment method Webasyst Pay is not set up.'));
     }
 
     public function image($order_data)
@@ -644,7 +676,7 @@ EOF;
         }
 
         $error = ifempty($response, 'response', 'error_description', ifset($response, 'response', 'error', null));
-        $error = ifempty($error, 'Способ оплаты Webasyst Pay не настроен.');
+        $error = ifempty($error, _ws('Payment method Webasyst Pay is not set up.'));
         throw new waException($error);
     }
 
@@ -753,7 +785,7 @@ EOF;
         $response = $this->apiQuery('PAY', 'cancel', [
             'order_id' => $transaction['order_id'],
         ], waNet::METHOD_POST);
-        
+
         $success = $response['status'] == 204;
         if ($success) {
             $datetime = date('Y-m-d H:i:s');
@@ -991,6 +1023,49 @@ EOF;
         }
     }
 
+    /** Perform final fiscalization for the order when order is marked as completed. */
+    public function fiscalize(waOrder $order, $params=[])
+    {
+        if ($this->getSettings('provider') === 'empty') {
+            return;
+        }
+
+        $request_data = $this->getRequestDataPaymentInit($order);
+        $request_data['fiscalization_params'] = $params;
+        try {
+            $response = $this->apiQuery('PAY', 'fiscalize', $request_data, waNet::METHOD_POST);
+        } catch (Throwable $e) {
+            self::log($this->id, [
+                'Ошибка запроса к API Webasyst Pay (fiscalize)',
+                'method' => __METHOD__,
+                'merchant' => $this->app_id.'/'.$this->merchant_id,
+                'request' => $request_data,
+                'exception' => (string) $e,
+            ]);
+            return;
+        }
+
+        $error = ifset($response, 'response', 'error', null);
+        if ($error) {
+            self::log($this->id, [
+                'Ошибка фискализации от API Webasyst Pay (fiscalize)',
+                'method' => __METHOD__,
+                'merchant' => $this->app_id.'/'.$this->merchant_id,
+                'request' => $request_data,
+                'response' => $response,
+            ]);
+            return;
+        }
+
+        if (!empty($response['response']['declare_fiscalization'])) {
+            $this->getAdapter()->declareFiscalization(
+                $order['id'], 
+                $this, 
+                ifset($response, 'response', 'declare_fiscalization_data', null)
+            );
+        }
+    }
+
     /**
      * Notifies application about a successfull payment.
      * Called after an API request when it turns out that order is already paid.
@@ -1119,7 +1194,7 @@ EOF;
         self::log($this->id, [
             'method' => __METHOD__,
             'request_url' => wa()->getConfig()->getRequestUrl(),
-            'method' => waRequest::getMethod(),
+            'http_method' => waRequest::getMethod(),
             'GET' => waRequest::get(),
             'POST' => waRequest::post(),
             'request_body' => file_get_contents("php://input"),
@@ -1165,6 +1240,14 @@ EOF;
                 ifset($request, 'payment_method', null) === 'sbp',
                 ifset($request, 'service_fee_percent', null),
                 ifset($request, 'service_fee_value', null)
+            );
+        }
+
+        if (!empty($request['declare_fiscalization'])) {
+            $this->getAdapter()->declareFiscalization(
+                $order_id, 
+                $this, 
+                ifset($request, 'declare_fiscalization_data', null)
             );
         }
 

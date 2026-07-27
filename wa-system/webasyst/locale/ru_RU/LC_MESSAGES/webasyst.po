@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2026-05-28 13:00+0300\n"
+"PO-Revision-Date: 2026-07-06 16:21+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 3.9\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -7546,8 +7546,8 @@ msgstr "Осталось"
 msgid "A file with this name already exists. Please enter a different file name."
 msgstr "Файл с таким именем уже существует. Пожалуйста, введите другое имя файла."
 
-msgid "Use Email, SMS and other links above to configure and get the most out of Webasyst services."
-msgstr "Настраивайте и следите за использованием служб Webasyst в Email, SMS и других разделах выше."
+msgid "Use the Email, SMS, AI and other links above to configure and track the usage of Webasyst services."
+msgstr "Настраивайте и следите за использованием служб Webasyst в разделах «Электронная почта», «SMS», «ИИ» и других."
 
 msgid "Try free"
 msgstr "Пробуйте бесплатно"
@@ -8088,3 +8088,21 @@ msgstr "Настроить"
 
 msgid "Usage settings"
 msgstr "Где используется"
+
+msgid "Show the authorization widget on all site pages"
+msgstr "Показывать виджет авторизации на всех страница сайта"
+
+msgid "The value must be filled in and must not contain the * character."
+msgstr "Значение параметра должно быть заполнено и не должно содержать символ *."
+
+msgid "Origin"
+msgstr "Origin"
+
+msgid "Payment initialization error:"
+msgstr "Ошибка инициализации платежа:"
+
+msgid "The payment status has changed, please reload this page."
+msgstr "Состояние платежа изменилось — обновите страницу."
+
+msgid "Payment method Webasyst Pay is not set up."
+msgstr "Способ оплаты Webasyst Pay не настроен."

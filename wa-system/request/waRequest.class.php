@@ -260,31 +260,33 @@ class waRequest
         }
         $user_agent = self::server('HTTP_USER_AGENT');
 
-        $desktop_platforms = array(
-            'ipad'       => 'ipad',
-            'galaxy-tab' => 'android.*?GT\-P',
-        );
-        foreach ($desktop_platforms as $pattern) {
-            if (preg_match('/'.$pattern.'/i', $user_agent)) {
-                self::$mobile = false;
-                return false;
+        if ($user_agent) {
+            $desktop_platforms = array(
+                'ipad'       => 'ipad',
+                'galaxy-tab' => 'android.*?GT\-P',
+            );
+            foreach ($desktop_platforms as $pattern) {
+                if (preg_match('/'.$pattern.'/i', $user_agent)) {
+                    self::$mobile = false;
+                    return false;
+                }
             }
-        }
 
-        $mobile_platforms = array(
-            "google-mobile" => "googlebot\-mobile",
-            "android"       => "android",
-            "blackberry"    => "(blackberry|rim tablet os)",
-            "iphone"        => "(iphone|ipod)",
-            "opera"         => "opera (mini|mobi|mobile)",
-            "palm"          => "(palmos|avantgo|blazer|elaine|hiptop|palm|plucker|xiino)",
-            "windows"       => "windows\sce;\s(iemobile|ppc|smartphone)",
-            "generic"       => "(kindle|mobile|mmp|midp|o2|pda|pocket|psp|symbian|smartphone|treo|up.browser|up.link|vodafone|wap)",
-        );
-        foreach ($mobile_platforms as $id => $pattern) {
-            if (preg_match('/'.$pattern.'/i', $user_agent)) {
-                self::$mobile = $id;
-                return $id;
+            $mobile_platforms = array(
+                "google-mobile" => "googlebot\-mobile",
+                "android"       => "android",
+                "blackberry"    => "(blackberry|rim tablet os)",
+                "iphone"        => "(iphone|ipod)",
+                "opera"         => "opera (mini|mobi|mobile)",
+                "palm"          => "(palmos|avantgo|blazer|elaine|hiptop|palm|plucker|xiino)",
+                "windows"       => "windows\sce;\s(iemobile|ppc|smartphone)",
+                "generic"       => "(kindle|mobile|mmp|midp|o2|pda|pocket|psp|symbian|smartphone|treo|up.browser|up.link|vodafone|wap)",
+            );
+            foreach ($mobile_platforms as $id => $pattern) {
+                if (preg_match('/'.$pattern.'/i', $user_agent)) {
+                    self::$mobile = $id;
+                    return $id;
+                }
             }
         }
 

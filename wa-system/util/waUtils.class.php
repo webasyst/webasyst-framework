@@ -545,4 +545,22 @@ class waUtils
         $b = max((int) $b, 1);
         return $a*$b / self::gcd($a, $b);
     }
+
+    /**
+     * Make sure filesystem path segment does not contain attempts to escape parent directory,
+     * e.g. ../ segments and null bytes. Useful in cases when realpath() can't help because 
+     * destination does not necessarily exists or parent directory inaccessible.
+     * Strips leading slashes from the $path.
+     * @since 4.2.0
+     */
+    public static function sanitizePathSegment($path): string
+    {
+        $prev_path = null;
+        $path = str_replace(['\\', "\0"], ['/', ''], (string)$path);
+        while ($path !== $prev_path) {
+            $prev_path = $path;
+            $path = str_replace(['../', '//'], ['', '/'], $path);
+        }
+        return ltrim($path, '/');
+    }
 }

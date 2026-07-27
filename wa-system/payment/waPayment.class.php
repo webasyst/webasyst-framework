@@ -1635,3 +1635,18 @@ interface waIPaymentCancelPending
     /** Cancel all pending payment attempts, making them impossible to finish. Useful for apps in case order amount has changed. */
     public function cancelPending($order_data);
 }
+
+/** @since 4.2.0 */
+interface waIPaymentFiscalize
+{
+    /**
+     * Сarry out final fiscalization of all payments for the order.
+     * Called by app on order completion unless plugin declared fiscalization earlier
+     * at payment time.
+     * 
+     * If fiscalization is done successfully, plugin must call
+     * $this->getAdapter()->declareFiscalization()
+     * to notify the app.
+     */
+    public function fiscalize(waOrder $order, $params=[]);
+}

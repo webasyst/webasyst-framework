@@ -24,7 +24,7 @@ abstract class waOAuth2Adapter extends waAuthAdapter
             if (!empty($goal_url_encoded)) {
                 wa()->getStorage()->set('auth_goal_url', $goal_url_encoded);
             }
-    
+
             $url = $this->getRedirectUri();
             if ($this->check_state) {
                 $state = md5(uniqid(rand(), true));

@@ -23,7 +23,7 @@ class yandexAuth extends waOAuth2Adapter implements waiAuthAdapterOmnipresent
             'app_id'     => 'ClientID',
             'app_secret' => 'Client secret',
             'widget_enabled' => [
-                'name' => _ws('Выводить JS-виджет авторизации на каждой странице сайта'),
+                'name' => _ws('Show the authorization widget on all site pages'),
                 'type' => waHtmlControl::class,
                 'control_type' => waHtmlControl::CHECKBOX,
             ],
@@ -36,7 +36,7 @@ class yandexAuth extends waOAuth2Adapter implements waiAuthAdapterOmnipresent
             'origin' => _ws('Origin')
                 .'<br><span class="hint">'.
                 sprintf(
-                    _ws('Значение параметра должно быть всегда заполнено и не должно содержать символ *.<br>')._ws('Default value in case of the empty field: %s'),
+                    _ws('The value must be filled in and must not contain the * character.') . '<br>' . _ws('Default value in case of the empty field: %s'),
                     $this->getOrigin()
                 ).'</span>',
         );

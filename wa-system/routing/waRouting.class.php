@@ -472,7 +472,7 @@ class waRouting
             }
             $vars = array();
             $pattern = str_replace(array(' ', '.', '(', '!'), array('\s', '\.', '(?:', '\!'), ifset($r, 'url', ''));
-            $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
+            $pattern = preg_replace('/(^|[^\.])\*+/ui', '$1.*?', $pattern);
             if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $pattern, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
                 $offset = 0;
                 foreach ($match as $m) {

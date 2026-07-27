@@ -3012,9 +3012,7 @@ HTACCESS;
     public static function getTrialPath($path = null, $app_id = null)
     {
         $trial_path = waConfig::get('wa_path_data').'/trial/';
-        if ($path) {
-            $path = preg_replace('!\.\.[/\\\]!', '', $path);
-        }
+        $path = waUtils::sanitizePathSegment($path);
         if ($app_id) {
             $trial_path .= $app_id.($path ? '/'.$path : '');
         }

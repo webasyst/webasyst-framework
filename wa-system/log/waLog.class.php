@@ -112,7 +112,10 @@ class waLog
     public static function delete($file)
     {
         self::loadPath();
-        $file = preg_replace('!\.\.[/\\\]!','', $file);
+        $file = waUtils::sanitizePathSegment($file);
+        if (!$file) {
+            return;
+        }
         $file = self::$path.$file;
         if (file_exists($file)) {
             waFiles::delete($file);

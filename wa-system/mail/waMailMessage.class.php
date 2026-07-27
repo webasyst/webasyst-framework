@@ -22,6 +22,30 @@ class waMailMessage extends Swift_Message
     }
 
     /**
+     * @param string $html
+     * @param string $plaintext
+     * @param string|null $charset
+     * @return waMailMessage
+     */
+    public function setAlternativeBody($html, $plaintext, $charset = null)
+    {
+        $this->setBody($html, 'text/html', $charset);
+        if ($plaintext === null || $plaintext === '') {
+            return $this;
+        }
+
+        $children = array(
+            Swift_MimePart::newInstance($plaintext, 'text/plain', $charset),
+            Swift_MimePart::newInstance($this->getBody(), 'text/html', $charset),
+        );
+        $this->setChildren($children);
+        $this->setBody('');
+        $this->setContentType('multipart/alternative');
+
+        return $this;
+    }
+
+    /**
      * @param array|string $addresses
      * @param string $name
      * @return waMailMessage

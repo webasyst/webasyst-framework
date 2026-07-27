@@ -39,7 +39,7 @@ class waContactForm
     public static function loadConfig($file, $options = array())
     {
         $config = self::readConfig($file);
-        $form = new self($config['fields'], $options);
+        $form = new static($config['fields'], $options);
         $form->setValue($config['values']);
         return $form;
     }

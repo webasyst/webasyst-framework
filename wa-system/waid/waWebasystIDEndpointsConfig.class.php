@@ -44,10 +44,14 @@ class waWebasystIDEndpointsConfig
 
     public function getEndpoints()
     {
-        $result = $this->requestEndpoints();
+        try {
+            $result = $this->requestEndpoints();
+        } catch (waException $e) {
+            // network error or installer does not exist
+        }
 
         $endpoints = [];
-        if ($result['status']) {
+        if (!empty($result['status'])) {
             $endpoints = $result['details']['endpoints'];
         }
 

@@ -232,7 +232,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
 
         // wa: fix bug with the wrong content type, if the dkim is installed
         //     and the attachment is attached to the message
-        if ($old_content_type === 'multipart/mixed' && $old_content_type !== $this->getContentType()) {
+        if (strpos($old_content_type, 'multipart/') === 0 && $old_content_type !== $this->getContentType()) {
             $this->setContentType($old_content_type);
         }
     }

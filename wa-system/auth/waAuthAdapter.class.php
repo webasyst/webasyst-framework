@@ -36,14 +36,17 @@ abstract class waAuthAdapter
             $site_is_updated = true;
         }
 
-        if (!$site_is_updated) {
+        if (!$site_is_updated || wa()->whichUI() === '1.3') {
             // Site below certain version does not support arbutrary field types
             $config = array_filter($config, function($field) {
                 return is_string($field);
             });
         } else {
             // render waHtmlControl
-            $values = ifempty(ref(func_get_arg(0)), []);
+            $values = [];
+            if (func_num_args() > 0) {
+                $values = func_get_arg(0);
+            }
             foreach ($config as $control_id => &$control) {
                 if (ifset($control, 'type', null) === 'waHtmlControl') {
                     $adapter_id = $this->getId();
