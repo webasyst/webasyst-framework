@@ -15,9 +15,10 @@
  * @property-read string  $payment_subject_type_shipping
  * @property-read string  $payment_method_type
  * @property-read string  $merchant_currency
+ * @property-read string  $payment_ffd
  * @property-read boolean $manual_capture
  */
-class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCancel, waIPaymentRefund, waIPaymentCapture
+class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCancel, waIPaymentRefund, waIPaymentCapture, waIPaymentFiscalize
 {
     protected static $currencies = array(
         'RUB',
@@ -70,7 +71,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             }
         }
 
-        $view->assign('controls', $controls);
+        $view->assign('controls', ifset($controls, []));
 
         return $view->fetch($this->path.'/templates/details.html');
     }
@@ -303,6 +304,55 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         }
     }
 
+    public function fiscalize(waOrder $order, $params=[])
+    {
+        if (!$this->getSettings('receipt') || !$this->getSettings('finalization_receipt')) {
+            return;
+        }
+
+        if ($this->getSettings('payment_method_type') === 'full_payment') {
+            return;
+        }
+
+        $transactions = $this->getRelatedTransactions($order['id'], null, true);
+        if (!$transactions) {
+            return;
+        }
+
+        // https://yookassa.ru/developers/api#create_receipt
+        // timezone ?.. документация говорит, что параметр обязателен при передаче ЧЗ gs_1m, short или fur; но работает без него
+        // добавлять ради этого странного кейса параметр настройки плагина не хочется
+        $data = [
+            'type' => 'payment',
+            'payment_id' => reset($transactions)['native_id'],
+            'send' => true,
+            'settlements' => [[
+                'type' => 'cashless',
+                'amount' => [
+                    'value'    => number_format(round($order->total, 2), 2, '.', ''),
+                    'currency' => $order->currency,
+                ],
+            ]],
+        ] + $this->getReceiptData($order);
+        unset($data['email'], $data['phone']);
+
+        if (empty($data['items'])) {
+            return;
+        }
+
+        // Закрывающий чек должен быть "полный расчёт" независимо от настройки payment_method_type
+        foreach ($data['items'] as &$it) {
+            $it['payment_mode'] = 'full_payment';
+        }
+        unset($it);
+
+        $result = $this->apiQuery('create_receipt', $data);
+
+        $this->getAdapter()->declareFiscalization($order['id'], $this, [
+            'id' => $result['id'],
+        ]);
+    }
+
     /**
      * @param waOrder $order
      * @param string  $type
@@ -390,7 +440,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 break;
             case 'create': #https://api.yookassa.ru/v3/payments
                 if ($data instanceof waOrder) {
-                    $data = $this->formatPaymentData($data);
+                    $data = $this->formatPaymentData($data, $this->payment_type);
                 }
                 $url .= 'payments';
                 break;
@@ -403,6 +453,23 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 } else {
                     #https://api.yookassa.ru/v3/refunds
                     $url .= 'refunds';
+                }
+                break;
+            case 'create_receipt':
+                $url .= 'receipts';
+                break;
+            case 'receipts':
+                $url .= 'receipts';
+                if (is_array($data)) {
+                    $data['__method'] = 'get';
+                }
+                break;
+            case 'receipt_info':
+                if (!is_array($data)) {
+                    $url .= sprintf('receipts/%s', $data);
+                    $data = null;
+                } else {
+                    $url .= 'receipts';
                 }
                 break;
         }
@@ -418,8 +485,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
      */
     protected function apiQuery($action, $data, $hash = null)
     {
-        if (empty($hash) && ($hash !== false)) {
-            $hash = md5(var_export($data, true));
+        if (empty($hash) && ($hash !== false) && $data !== null) {
+            $hash = md5($action.var_export($data, true));
         }
         if (!empty($hash)) {
             $headers = array(
@@ -444,22 +511,29 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
         $url = $this->getEndpointUrl($action, $data);
 
-        $debug = array();
-
-        $debug['url'] = $url;
-        $debug['action'] = $action;
-        $debug['merchant_id'] = $this->merchant_id;
-        $debug['app_id'] = $this->app_id;
-        if (!empty($data)) {
-            $debug['data'] = $data;
-            $debug['headers'] = $headers;
-            $debug['params'] = $params;
+        $method = waNet::METHOD_POST;
+        if ($data === null || ifset($data, '__method', null) === 'get') {
+            $method = waNet::METHOD_GET;
+            if ($data) {
+                unset($data['__method']);
+            }
         }
+
+        $debug = [
+            'url' => $url,
+            'action' => $action,
+            'method' => $method,
+            'merchant_id' => $this->merchant_id,
+            'app_id' => $this->app_id,
+            'data' => $data,
+            'headers' => $headers,
+            'params' => $params,
+        ];
 
         try {
             $net = $this->getTransport($headers);
 
-            $response = $net->query($url, $data, $data === null ? waNet::METHOD_GET : waNet::METHOD_POST);
+            $response = $net->query($url, $data, $method);
 
             if (ifset($response['type']) === 'error') {
                 $debug['response'] = $response;
@@ -470,6 +544,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                     ifset($response, 'description', '--')
                 );
                 throw new waPaymentException($message);
+            } else {
+                //self::log($this->id, $debug + ['response' => $response]);
             }
             if (in_array($action, $actions)) {
 
@@ -753,6 +829,14 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
                         if (!empty($actual_payment)) {
                             $this->handlePayment($actual_payment);
+                            if ($event['event'] === 'payment.succeeded' && $this->getSettings('receipt') && $this->getSettings('payment_method_type') === 'full_payment') {
+                                $order_id = ifset($actual_payment, 'metadata', 'order_id', null);
+                                if ($order_id) {
+                                    $this->getAdapter()->declareFiscalization($order_id, $this, [
+                                        'payment_id' => $actual_payment['id'],
+                                    ]);
+                                }
+                            }
                         }
                         break;
                 }
@@ -794,6 +878,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                         $params = isset($transaction['id']) ? '&transaction_id=' .  $transaction['id'] : '';
 
                         $type = waAppPayment::URL_DECLINE;
+                    } else if (0) { // simple testing without callbacks
+                        $this->handlePayment($payment);
                     }
                 }
             }
@@ -888,16 +974,14 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
         $receipt = array(
             'customer' => $customer,
-            'items'    => array(),
+            'items'    => $this->getReceiptItems($order),
         );
         if ($this->tax_system_code) {
             $receipt['tax_system_code'] = $this->tax_system_code;
         }
 
-        $receipt['items'] = $this->getReceiptItems($order);
-
         #shipping
-        if (($order->shipping) || strlen($order->shipping_name)) {
+        if (($order->shipping) || strlen((string) $order->shipping_name)) {
             $item = array(
                 'quantity'     => 1,
                 'name'         => mb_substr($order->shipping_name, 0, 128),
@@ -914,6 +998,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         }
 
         $receipt += $customer;
+
         return $receipt;
     }
 
@@ -970,7 +1055,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         $items = [];
         for ($i = 0; $i < $quantity; $i++) {
             $value = isset($values[$i]) ? $values[$i] : '';
-            $item['chestnyznak'] = $value;
+            $item['chestnyznak'] = $value; // converted to proper API format in formatReceiptItem()
             $item['quantity'] = 1;
             $items[] = $item;
         }
@@ -1020,12 +1105,38 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             'payment_mode'    => $this->payment_method_type,
         ];
 
+        $is_ffd_12 = $this->payment_ffd === '1.2';
+
         // Код товара — уникальный номер, который присваивается экземпляру товара при маркировке
         // Тут идет конвертация из DataMatrix кода (Честный знак) в 1162 тег код для ККТ
         if (isset($item['chestnyznak'])) {
-            $fiscal_code = $this->convertToFiscalCode($item['chestnyznak']);
-            if ($fiscal_code) {
-                $result['product_code'] = $fiscal_code;
+            if ($is_ffd_12) {
+                $result += [
+                    'mark_mode' => 0,
+                    'payment_subject' => 'marked',
+                    'measure' => $this->measureMap($item),
+                    'mark_code_info' => [
+                        'mark_code_raw' => $item['chestnyznak'],
+                    ],
+                    'mark_quantity' => [
+                        'numerator'   => 1,
+                        'denominator' => 1
+                    ],
+                ];
+                if (class_exists('shopChestnyznakPluginCodeParser')) {
+                    $parsed = shopChestnyznakPluginCodeParser::parse($item['chestnyznak']);
+                    if (empty($parsed['status'])) {
+                        $result['mark_code_info']['unknown'] = $item['chestnyznak'];
+                    }
+                }
+                if (empty($result['mark_code_info']['unknown'])) {
+                    $result['mark_code_info']['gs_1m'] = $item['chestnyznak'];
+                }
+            } else {
+                $fiscal_code = $this->convertToFiscalCode($item['chestnyznak']);
+                if ($fiscal_code) {
+                    $result['product_code'] = $fiscal_code;
+                }
             }
         }
 
@@ -1883,5 +1994,40 @@ HTML;
 
 
         return $result;
+    }
+
+    /**
+     * https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/parameters-values#measure
+     *
+     * @param $item
+     * @return string
+     */
+    private function measureMap($item = [])
+    {
+        $okei_map = [
+            '796' => 'piece',             //Штука, единица товара
+            '163' => 'gram',              //Грамм
+            '166' => 'kilogram',          //Килограмм
+            '168' => 'ton',               //Тонна
+            '4'   => 'centimeter',        //Сантиметр
+            '5'   => 'decimeter',         //Дециметр
+            '6'   => 'meter',             //Метр
+            '51'  => 'square_centimeter', //Квадратный сантиметр
+            '53'  => 'square_decimeter',  //Квадратный дециметр
+            '55'  => 'square_meter',      //Квадратный метр
+            '3'   => 'milliliter',        //Миллилитр
+            '112' => 'liter',             //Литр
+            '113' => 'cubic_meter',       //Кубический метр
+            ''    => 'another'            //Другое
+        ];
+
+        if (!empty($item['stock_unit_code'])) {
+            if (isset($okei_map[$item['stock_unit_code']])) {
+                return $okei_map[$item['stock_unit_code']];
+            }
+            return $okei_map[''];
+        }
+
+        return $okei_map['796'];
     }
 }
