@@ -1503,7 +1503,7 @@ if (Smarty::$_CHARSET !== 'UTF-8') {
 class SmartyException extends Exception {
     public static $escape = true;
     public function __construct($message) {
-        $this->message = self::$escape ? htmlentities($message) : $message;
+        $this->message = self::$escape ? htmlentities($message, ENT_SUBSTITUTE) : $message;
     }
 }
 
