@@ -531,6 +531,7 @@ class waModel
             case 'bigint':
             case 'tinyint':
             case 'int':
+            case 'smallint':
             case 'integer':
                 if (wa_is_int($value)) {
                     return "'".$this->escape($value, 'int')."'";
