@@ -61,7 +61,7 @@ class waLog
     }
 
     /**
-     * Debugging helper to dump any number of variables to a log file.
+     * Debugging helpers to dump any number of variables to a log file.
      *
      * @param mixed $var... any number of arguments to be logged
      * @param string $file Last argument is treated as filename relative to wa-log directory, if it's a string ending with '.log'.
@@ -69,21 +69,35 @@ class waLog
      */
     public static function dump($var, $file = 'dump.log')
     {
-        $args = func_get_args();
+        return self::dumpHelper(__FUNCTION__, func_get_args());
+    }
+
+    public static function json($var, $file = 'json.log')
+    {
+        return self::dumpHelper(__FUNCTION__, func_get_args());
+    }
+
+    public static function serialize($var, $file = 'serialize.log')
+    {
+        return self::dumpHelper(__FUNCTION__, func_get_args());
+    }
+
+    private static function dumpHelper($type, $args)
+    {
         if (count($args) > 1) {
             $last_arg = end($args);
             if (is_string($last_arg) && substr($last_arg, -4) === '.log') {
                 $file = array_pop($args);
-                $vars = $args;
-            } else {
-                $vars = $args;
-                $file = 'dump.log';
             }
-        } else {
-            $vars = array($var);
         }
 
+        if (empty($file)) {
+            $file = "{$type}.log";
+        }
+
+        $vars = $args;
         $result = '';
+
         // Show where we've been called from
         if(function_exists('debug_backtrace')) {
             $result .= "dumped from ";
@@ -91,13 +105,23 @@ class waLog
                 if (ifset($row['file']) == __FILE__ || (empty($row['file']) && ifset($row['function']) == 'wa_dumpc')) {
                     continue;
                 }
-                $result .= ifset($row['file'], '???').' line #'.ifset($row['line'], '???').":\n";
+                $result .= ifset($row['file'], '???').' line #'.ifset($row['line'], '???').":\n\n";
                 break;
             }
         }
 
         foreach ($vars as $var) {
-            $result .= wa_dump_helper($var)."\n";
+            switch ($type) {
+                case 'dump':
+                    $result .= wa_dump_helper($var)."\n\n";
+                    break;
+                case 'json':
+                    $result .= json_encode($var)."\n\n";
+                    break;
+                case 'serialize':
+                    $result .= serialize($var)."\n\n";
+                    break;
+            }
         }
 
         return waLog::log($result, $file);
