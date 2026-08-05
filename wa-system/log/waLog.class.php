@@ -33,7 +33,7 @@ class waLog
             }
             waFiles::create(dirname($file), true);
             touch($file);
-            chmod($file, 0666);
+            @chmod($file, 0666);
         } elseif (!is_writable($file)) {
             return false;
         }
