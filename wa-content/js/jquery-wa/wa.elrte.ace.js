@@ -118,6 +118,7 @@ function waEditorAceInit(options)
         wa_editor.setFontSize(14);
     }
     $('.ace_editor').css('fontFamily', '');
+    $('.ace_gutter').css('z-index',0).css('background-color', '#fff');
     session.setValue($('#' + options.id).hide().val());
     wa_editor.focus();
     wa_editor.navigateTo(0, 0);
