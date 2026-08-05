@@ -393,7 +393,7 @@ class waPlugin
             if (!empty($params['subject']) && !empty($row['subject']) && !in_array($row['subject'], (array)$params['subject'])) {
                 continue;
             }
-            $row = array_merge($row, $params);
+            $row = array_merge($params, $row);
             $row['value'] = $this->getSettings($name);
             if (!empty($row['control_type'])) {
                 $controls[$name] = waHtmlControl::getControl($row['control_type'], $name, $row);
