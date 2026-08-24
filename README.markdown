@@ -9,17 +9,17 @@ Website: http://www.webasyst.com
 
 	* Web server
 		* e.g., Apache, nginx, or IIS
-		
-	* PHP 7.4+
- 
-	* PHP extensions
-		* spl
-		* mbstring
-		* iconv
-		* json
-		* gd or ImageMagick
 
-	* MySQL 4.1+
+	* PHP 7.4+
+
+	* PHP extensions
+        * mbstring
+        * iconv
+        * cURL
+        * GD or Imagick
+        * Zlib
+
+	* MySQL 5.7+
 
 
 ## How to install Webasyst framework ##
@@ -42,7 +42,7 @@ Website: http://www.webasyst.com
 	```
 	cd ..
 	chmod %PATH% 0775
-	
+
 	(or 0777 depending on your server configuration)
 	```
 
