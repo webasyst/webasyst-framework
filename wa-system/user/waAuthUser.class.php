@@ -104,7 +104,7 @@ class waAuthUser extends waUser
 
             // Set CSRF protection cookie
             if (!waRequest::cookie('_csrf')) {
-                waSystem::getInstance()->getResponse()->setCookie('_csrf', uniqid('', true));
+                waSystem::getInstance()->getResponse()->setCookie('_csrf', bin2hex(random_bytes(16)));
             }
         }
     }

@@ -195,6 +195,7 @@ class waLocale
      */
     public static function format($n, $decimals = null, $locale = null)
     {
+        $n = (string) $n;
         if ($locale === null) {
             $locale = self::$locale;
         }

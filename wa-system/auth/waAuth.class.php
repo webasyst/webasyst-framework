@@ -564,6 +564,14 @@ class waAuth implements waiAuth
             throw new waAuthInvalidCredentialsException();
         }
 
+        if ($result && !empty($user_info['id']) && !function_exists('wa_password_verify') && strlen($user_info['password']) == 32 && substr($user_info['password'], 0, 2) !== '$2') {
+            // Re-hash old legacy (non-bcrypt) passwords in DB
+            $user_info['password'] = waContact::getPasswordHash($password);
+            (new waContactModel())->updateById($user_info['id'], [
+                'password' => $user_info['password'],
+            ]);
+        }
+
         // In case auth channel confirmation is required,
         // check that this contact has phone or email confirmed.
         // Otherwise do not allow to log in via frontend.
@@ -754,7 +762,7 @@ class waAuth implements waiAuth
 
     protected function _authByPassword($contact, $password)
     {
-        $contact_password = isset($contact['password']) && is_scalar($contact['password']) ? $contact['password'] : '';
+        $contact_password = isset($contact['password']) && is_scalar($contact['password']) ? (string)$contact['password'] : '';
         return strlen($contact_password) > 0 && waContact::verifyPasswordHash($password, $contact_password);
     }
 

@@ -549,7 +549,8 @@ class waVerificationChannelSMS extends waVerificationChannel
 
         if ($asset['channel_id'] != $this->getId() ||
             $asset['name'] != waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_CODE ||
-            $asset['value'] != waContact::getPasswordHash($secret)) {
+            !$this->isSecretEquals($secret, $asset['value'], $asset['name'])
+        ) {
             return;
         }
 

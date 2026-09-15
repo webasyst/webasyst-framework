@@ -27,6 +27,7 @@ class Smarty_Internal_Function_Call_Handler {
      */
     public static function call($_name, Smarty_Internal_Template $_template, $_params, $_hash, $_nocache)
     {
+        $_name = preg_replace('~[^a-z0-9_]~i', '', $_name);
         if ($_nocache) {
             $_function = "smarty_template_function_{$_name}_nocache";
         } else {

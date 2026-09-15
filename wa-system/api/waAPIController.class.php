@@ -54,6 +54,12 @@ class waAPIController
 
         $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
         if ($request_url === 'api.php/auth') {
+            if (!waRequest::cookie('_csrf')) {
+                waSystem::getInstance()->getResponse()->setCookie('_csrf', bin2hex(random_bytes(16)));
+            }
+            if (waRequest::method() == 'post' && waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
+                throw new waAPIException('invalid_request', _ws('Anti-CSRF protection.'), 403);
+            }
             $user = wa()->getUser();
             if (waRequest::post('cancel')) {
                 $url = waRequest::get('redirect_uri', '', 'string');

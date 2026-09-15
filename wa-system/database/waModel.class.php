@@ -907,8 +907,8 @@ class waModel
                     return (int) (string) $data;
                 }
             case 'like':
-                $data = str_replace('\\', '\\\\', $data);
-                return str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($data));
+                $data = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $data);
+                //passthrough
             default:
                 return $this->adapter->escape($data);
         }

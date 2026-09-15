@@ -196,7 +196,7 @@ HELP;
 
         $exists_schema = array();
         if (file_exists($path)) {
-            $schema = include($path);
+            $schema = (function() use ($path) { return include($path); })();
             $exists_schema = $schema;
             $exists_tables = array_keys($schema);
         } else {

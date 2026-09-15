@@ -60,6 +60,7 @@ class Smarty_Internal_Compile_Function extends Smarty_Internal_CompileBase {
             $compiler->template->has_nocache_code, $compiler->template->required_plugins);
         $this->openTag($compiler, 'function', $save);
         $_name = trim($_attr['name'], "'\"");
+        $_name = preg_replace('~[^a-z0-9_]~i', '', $_name);
         unset($_attr['name']);
         // set flag that we are compiling a template function
         $compiler->compiles_template_function = true;

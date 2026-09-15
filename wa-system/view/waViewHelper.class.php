@@ -86,7 +86,7 @@ class waViewHelper
         }
 
         $icon = ltrim($icon, '/');
-        $prefix = ltrim(wa()->getAppStaticUrl($app_id), '/');
+        $prefix = ltrim(wa()->getAppPathRelativeToFrameworkRoot($app_id), '/');
         $prefix_len = strlen($prefix);
         if (substr($icon, 0, $prefix_len) === $prefix) {
             $icon = substr($icon, $prefix_len);
