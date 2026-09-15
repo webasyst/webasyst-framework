@@ -15,7 +15,7 @@ class waContactCategoryModel extends waModel
     public function getById($value)
     {
         $data = parent::getById($value);
-        if ($data && $data['system_id'] && wa()->appExists($data['system_id'])) {
+        if ($data && !empty($data['system_id']) && wa()->appExists($data['system_id'])) {
             $app = wa()->getAppInfo($data['system_id']);
             $data['name'] = $app['name'];
             $data['icon'] = wa()->getRootUrl(true).$app['icon'][16];

@@ -39,16 +39,36 @@ class webasystSettingsPrivacyLogController extends waController
             array_splice($fields, 10, 0, ['document_text']);
         }
 
+        $header_written = false;
         $delimiter = waRequest::get('delimiter', ',');
         $enclosure = waRequest::get('enclosure', '"');
-        fputcsv($out, $fields, $delimiter, $enclosure, '');
 
         foreach ($log_result_set as $row) {
+
+            if (!$header_written) {
+                $known_fields = array_fill_keys($fields, 1) + ['id' => 1, 'document_id' => 1];
+
+                // Include all data from wa_agreement_log, even if new columns were added by a plugin
+                foreach ($row as $field => $_) {
+                    if (!isset($known_fields[$field])) {
+                        $fields[] = $field;
+                    }
+                }
+
+                fputcsv($out, $fields, $delimiter, $enclosure, '');
+                $header_written = true;
+            }
+
             $data = [];
             foreach ($fields as $field) {
-                $data[] = $row[$field];
+                $data[] = ifset($row, $field, '');
             }
             fputcsv($out, $data, $delimiter, $enclosure, '');
+        }
+
+        // Output the header even if agreement db is empty
+        if (!$header_written) {
+            fputcsv($out, $fields, $delimiter, $enclosure, '');
         }
 
         fclose($out);

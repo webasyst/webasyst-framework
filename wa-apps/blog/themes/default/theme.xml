@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:default" version="26.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:default" version="26.1">
     <name locale="en_US">Webasyst 2026</name>
     <name locale="ru_RU">Webasyst 2026</name>
     <files>

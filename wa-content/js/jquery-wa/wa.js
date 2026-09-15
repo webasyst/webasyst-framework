@@ -2120,7 +2120,7 @@
 
             // DYNAMIC VARS
             that.$before = null;
-            that.$active = that.$wrapper.find("> *." + that.active_class);
+            that.$active = that.$wrapper.children("." + that.active_class).not(".animation-block").first();
 
             // INIT
             that.init();
@@ -2130,7 +2130,7 @@
             var that = this,
                 active_class = that.active_class;
 
-            that.$wrapper.on("click", "> *", onClick);
+            that.$wrapper.on("click", "> *:not(.animation-block)", onClick);
 
             that.$wrapper.trigger("ready", that);
 
@@ -2161,50 +2161,113 @@
             }
         };
 
+        Toggle.prototype.getItems = function() {
+            return this.$wrapper.children().not(".animation-block");
+        };
+
+        Toggle.prototype.syncActive = function() {
+            this.$active = this.getItems().filter("." + this.active_class).first();
+            return this.$active;
+        };
+
         Toggle.prototype.initAnimation = function() {
             var that = this;
 
-            var is_ready = false;
-
-            var observer = new MutationObserver(refresh);
-            observer.observe(that.$wrapper[0],{
-                childList: true,
-                subtree: true
-            });
+            var is_ready = false,
+                frame_id = null,
+                resize_observer = (window.ResizeObserver ? new ResizeObserver(scheduleRefresh) : null),
+                mutation_observer = new MutationObserver(onMutate),
+                request_frame = (window.requestAnimationFrame ? window.requestAnimationFrame.bind(window) : function(callback) {
+                    return window.setTimeout(callback, 16);
+                });
 
             that.$wrapper.addClass("animate");
-            that.$wrapper.on("change", refresh);
+            that.$wrapper.on("change", scheduleRefresh);
+            $(window).on("resize", scheduleRefresh);
 
-            var $wrapper = $("<div class=\"animation-block\" />");
+            var $wrapper = $("<div class=\"animation-block\" />").css({
+                boxSizing: "border-box",
+                margin: 0,
+                padding: 0,
+                pointerEvents: "none"
+            });
 
-            if (that.$active.length) { refresh(); }
+            observeItems();
+            mutation_observer.observe(that.$wrapper[0], {
+                childList: true
+            });
+
+            if (that.$active.length) { scheduleRefresh(); }
+
+            function onMutate() {
+                observeItems();
+                scheduleRefresh();
+            }
+
+            function observeItems() {
+                if (!resize_observer) {
+                    return;
+                }
+
+                resize_observer.disconnect();
+                resize_observer.observe(that.$wrapper[0]);
+
+                that.getItems().each(function() {
+                    resize_observer.observe(this);
+                });
+            }
+
+            function scheduleRefresh() {
+                if (frame_id !== null) {
+                    return;
+                }
+
+                frame_id = request_frame(function() {
+                    frame_id = null;
+                    refresh();
+                });
+            }
 
             function refresh() {
                 var area = getArea(that.$active);
 
-                let sum = 0;
-                for (let key in area) {
-                    sum += area[key];
+                if (!area) {
+                    if (is_ready) {
+                        $wrapper.hide();
+                    }
+                    return;
                 }
 
-                if (sum > 0) {
-                    $wrapper.css(area);
-                    if (!is_ready) {
-                        $wrapper.prependTo(that.$wrapper);
-                        is_ready = true;
-                    }
+                $wrapper.css(area).show();
+
+                if (!is_ready) {
+                    $wrapper.prependTo(that.$wrapper);
+                    is_ready = true;
                 }
             }
 
             function getArea() {
-                var offset = that.$active.offset(),
-                    wrapper_offset = that.$wrapper.offset();
+                var $active = that.syncActive();
+
+                if (!$active.length) {
+                    return null;
+                }
+
+                var active = $active[0],
+                    wrapper = that.$wrapper[0],
+                    rect = active.getBoundingClientRect(),
+                    wrapper_rect = wrapper.getBoundingClientRect();
+
+                if (!(rect.width > 0) || !(rect.height > 0)) {
+                    return null;
+                }
 
                 return {
-                    top: offset.top - wrapper_offset.top,
-                    left: offset.left - wrapper_offset.left,
-                    width: that.$active.width(),
-                    height: that.$active.height()
+                    top: rect.top - wrapper_rect.top,
+                    left: rect.left - wrapper_rect.left,
+                    width: rect.width,
+                    height: rect.height,
+                    borderRadius: window.getComputedStyle(active).borderRadius
                 };
             }
         };

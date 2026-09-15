@@ -130,7 +130,8 @@ final class waDbStatement
                     $replaced_value = ((bool)$this->binded_params[$place_name]) ? 1 : 0;
                     break;
                 case 'l':
-                    $replaced_value = str_replace(array('%', '_', '\\'), array('\%', '\_', '\\\\'), $this->escape($this->binded_params[$place_name]));
+                    $replaced_value = str_replace(array('\\', '%', '_'), array('\\\\', '\%', '\_'), $this->binded_params[$place_name]);
+                    $replaced_value = $this->escape($replaced_value);
                     break;
                 case 'f':
                     $replaced_value = str_replace(',', '.', (float)$this->binded_params[$place_name]);

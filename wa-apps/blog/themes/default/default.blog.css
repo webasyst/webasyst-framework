@@ -56,7 +56,7 @@
 .subscribe ul li i.icon16 { margin-top: 0.1em; margin-right: 0.5em; width: 24px; height: 24px; background-position: 0 -50px;}
 .subscribe #twitter-follow-code { overflow: hidden; }
 
-.post { margin-bottom: 20px; padding: 30px; background-color: var(--bg-gray-color); box-shadow: 0 5px 30px rgba(0, 0, 0, 0.06); border-radius: var(--element-border-radius); }
+.post { margin-bottom: 20px; padding: 30px; background-color: var(--bg-color-accent); box-shadow: 0 5px 30px rgba(0, 0, 0, 0.06); border-radius: var(--element-border-radius); }
 .post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 24px; }
 .post h3 a { text-decoration: none; }
 .post img { max-width: 100%; height: auto !important; }

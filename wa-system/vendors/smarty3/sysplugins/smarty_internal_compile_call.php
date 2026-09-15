@@ -102,6 +102,7 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase {
             $call_function = '$tmp = "smarty_template_function_".' . $_name . '; $tmp';
         } else {
             $_name = trim($_name, "'\"");
+            $_name = preg_replace('~[^a-z0-9_]~i', '', $_name);
             $call_cache = "'{$_name}'";
             $call_function = 'smarty_template_function_' . $_name;
         }

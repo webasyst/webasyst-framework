@@ -188,6 +188,17 @@ HTML
                     ],
                     'class'        => ['field-provider-specific', 'provider-yookassa'],
                 ],
+                'payment_ffd_yookassa' => [
+                    'value'        => '1.2',
+                    'title'        => 'Версия ФФД',
+                    'description'  => 'Должна совпадать с версией в настройках ОФД.',
+                    'control_type' => waHtmlControl::SELECT,
+                    'options'      => [
+                        ['value' => '1.05', 'title' => '1.05'],
+                        ['value' => '1.2', 'title' => '1.2'],
+                    ],
+                    'class'        => ['field-provider-specific', 'provider-yookassa'],
+                ],
                 'merchant_currency' => [
                     'value'        => 'RUB',
                     'title'        => 'Валюта',
@@ -495,11 +506,18 @@ HTML
                     'tax_system_code' => '',
                     'merchant_currency' => '',
                     'manual_capture' => 0,
+                    'payment_ffd_yookassa' => '',
                 ];
                 $api_save_request = [
                     'provider' => 'yookassa',
                     'settings' => array_intersect_key($settings + $defaults, $defaults),
                 ];
+                foreach (array_keys($api_save_request['settings']) as $k) {
+                    if (substr($k, -9) === '_yookassa') {
+                        $api_save_request['settings'][substr($k, 0, -9)] = $api_save_request['settings'][$k];
+                        unset($api_save_request['settings'][$k]);
+                    }
+                }
                 break;
             default: // empty
                 $settings['provider'] = 'empty';
@@ -587,9 +605,15 @@ HTML
         if ($response['status'] == 409) {
             if ($error == 'already_paid') {
                 $r = $this->apiQuery('PAY', 'check', ['order_id' => $order_data['id']], waNet::METHOD_GET);
+
+                $do_fiscalization = ifset($r, 'response', 'declare_fiscalization', false);
+                if ($do_fiscalization) {
+                    $do_fiscalization = ifempty($r, 'response', 'declare_fiscalization_data', true);
+                }
+
                 $this->handlePayment(
                     $order_data['id'], $order_data['total'], $order_data['currency'],
-                    ifset($r, 'response', 'do_fiscalization', !!$this->getSettings('do_fiscalization')),
+                    $do_fiscalization,
                     ifset($r, 'response', 'payment_state', null) === waPayment::STATE_CAPTURED,
                     ifset($r, 'response', 'payment_method', null) === 'sbp',
                     ifset($r, 'response', 'service_fee_percent', null),
@@ -930,7 +954,7 @@ EOF;
                 //'stock_unit_code' => 0,
                 //'total_discount' => 0,
                 //'discount' => 0,
-                //'product_codes' => [],
+                'product_codes' => [],
             ]);
         }
         return $result;
@@ -1009,9 +1033,13 @@ EOF;
         $payment_state = ifset($r, 'response', 'payment_state', null);
         if ($amount && $currency && $payment_state) {
             if ($payment_state === waPayment::STATE_CAPTURED || $payment_state === waPayment::STATE_AUTH) {
+                $do_fiscalization = ifset($r, 'response', 'declare_fiscalization', false);
+                if ($do_fiscalization) {
+                    $do_fiscalization = ifempty($r, 'response', 'declare_fiscalization_data', true);
+                }
                 $this->handlePayment(
                     $order_data['id'], $amount, $currency,
-                    ifset($r, 'response', 'do_fiscalization', !!$this->getSettings('do_fiscalization')),
+                    $do_fiscalization,
                     $payment_state === waPayment::STATE_CAPTURED,
                     ifset($r, 'response', 'payment_method', null) === 'sbp',
                     ifset($r, 'response', 'service_fee_percent', null),
@@ -1140,7 +1168,11 @@ EOF;
         }
 
         if ($do_fiscalization) {
-            $this->getAdapter()->declareFiscalization($order_id, $this);
+            $this->getAdapter()->declareFiscalization(
+                $order_id, 
+                $this, 
+                is_array($do_fiscalization) ? $do_fiscalization : null
+            );
         }
 
         return $transaction_data;
@@ -1235,7 +1267,7 @@ EOF;
         } else if ($request['state'] == waPayment::STATE_AUTH || $request['state'] == waPayment::STATE_CAPTURED) {
             $this->handlePayment(
                 $order_id, $request['amount'], $request['currency_id'],
-                !empty($request['do_fiscalization']),
+                false,
                 $request['state'] == waPayment::STATE_CAPTURED,
                 ifset($request, 'payment_method', null) === 'sbp',
                 ifset($request, 'service_fee_percent', null),

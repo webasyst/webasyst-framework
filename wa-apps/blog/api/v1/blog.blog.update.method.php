@@ -8,7 +8,7 @@ class blogBlogUpdateMethod extends waAPIMethod
     {
         $id = $this->get('id', true);
         
-        if (!wa()->getUser()->getRights("blog.{$id}", true) < blogRightConfig::RIGHT_FULL) {
+        if (wa()->getUser()->getRights('blog', "blog.{$id}") < blogRightConfig::RIGHT_FULL) {
             throw new waAPIException('access_denied', 403);
         }
 
