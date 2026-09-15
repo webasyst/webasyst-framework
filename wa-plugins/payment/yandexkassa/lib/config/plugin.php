@@ -4,7 +4,7 @@ return array(
     'description'         => 'Банковские карты, СБП, SberPay, T-Pay, кошелек ЮMoney',
     'icon'                => 'img/yookassa16.svg',
     'logo'                => 'img/yookassa.svg',
-    'version'             => '1.3.6',
+    'version'             => '1.3.7',
     'vendor'              => 'webasyst',
     'type'                => waPayment::TYPE_ONLINE,
     'partial_refund'      => true,

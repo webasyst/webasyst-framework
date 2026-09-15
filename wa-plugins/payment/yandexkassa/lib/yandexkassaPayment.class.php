@@ -1109,20 +1109,21 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
         // Код товара — уникальный номер, который присваивается экземпляру товара при маркировке
         // Тут идет конвертация из DataMatrix кода (Честный знак) в 1162 тег код для ККТ
-        if (isset($item['chestnyznak'])) {
+        if (!empty($item['chestnyznak'])) {
             if ($is_ffd_12) {
-                $result += [
+                $result = array_merge($result, [
                     'mark_mode' => 0,
                     'payment_subject' => 'marked',
                     'measure' => $this->measureMap($item),
                     'mark_code_info' => [
                         'mark_code_raw' => $item['chestnyznak'],
                     ],
-                    'mark_quantity' => [
-                        'numerator'   => 1,
-                        'denominator' => 1
-                    ],
-                ];
+                    // mark_quantity - это продажа поштучно из коробки, где много штук (один ЧЗ на много товаров)
+                    //'mark_quantity' => [
+                    //    'numerator'   => 1,
+                    //    'denominator' => 1
+                    //],
+                ]);
                 if (class_exists('shopChestnyznakPluginCodeParser')) {
                     $parsed = shopChestnyznakPluginCodeParser::parse($item['chestnyznak']);
                     if (empty($parsed['status'])) {
