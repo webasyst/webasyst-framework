@@ -665,7 +665,6 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
                 @curl_setopt($ch, CURLOPT_USERPWD, "{$login}:{$this->password}");
 
                 @curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                @curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
                 @curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
                 if ($query) {
