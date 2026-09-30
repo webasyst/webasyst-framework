@@ -35,7 +35,7 @@
                 var match = location.search.match(/[&\?](month=.*?&|month=.*)/),
                     month_value = $('select.month').val(),
                     year_value = $('select.year').val(),
-                    month_date = year_value + '-' + (month_value > 10 ? month_value : '0'+month_value);
+                    month_date = year_value + '-' + (month_value >= 10 ? month_value : '0'+month_value);
                 if (match) {
                     var month = match[1],
                         new_month = month.substr(-1) == '&' ? 'month='+month_date+'&' : 'month='+month_date;
