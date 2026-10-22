@@ -5,7 +5,10 @@
             <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
         </div>
         <div class="wide">
-            [`This section or app were set up with an error in the old interface and is, therefore, unavailable on the site. You can fix the error either in the old interface or right here.`]
+            {sprintf_wp(
+                'This section’s address was set up with an error and it is, therefore, unavailable on the site. To fix the error, switch to the “Routing mode” and change the address or simply click on “%s”.',
+                _w('Fix it')
+            )}
         </div>
         <div>
             <a href="javascript:void(0)" class="js-fix-incorrect-rule button orange nowrap">[`Fix it`]</a>

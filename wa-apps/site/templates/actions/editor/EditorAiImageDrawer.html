@@ -1,0 +1,285 @@
+
+{function name="render_aspect_ratio_dropdown"}
+<div class="dropdown site-aiimage-aspect-ratio-dropdown">
+    <button type="button" class="dropdown-toggle without-arrow button nobutton light-gray text-gray rounded custom-m-0 site-aiimage-aspect-ratio-toggle small" title="[`Aspect ratio`]">{$default_aspect_ratio|escape}</button>
+    <div class="dropdown-body bottom">
+        <ul class="menu">
+        {foreach $supported_aspect_ratios as $ratio}
+            <li><a href="javascript:void(0);" class="site-aiimage-aspect-ratio-option" data-aspect-ratio="{$ratio|escape}"><span>{$ratio|escape}</span></a></li>
+        {/foreach}
+        </ul>
+    </div>
+</div>
+{/function}
+
+{function name="render_image_reference_dropdown"}
+<div class="dropdown site-aiimage-reference-dropdown">
+    <button type="button" class="dropdown-toggle without-arrow button nobutton text-gray circle site-aiimage-reference-toggle small" title="[`Attach image`]"><i class="fas fa-paperclip"></i></button>
+    <div class="dropdown-body">
+        <ul class="menu">
+            {if !empty($config.shop.available)}
+                <li><a href="javascript:void(0);" class="site-aiimage-product-action">
+                    <span class="icon"><img class="size-20" src="{$config.shop.icon_url|escape}" alt=""></span>
+                    <span>[`Shop-Script products`]</span>
+                </a></li>
+            {/if}
+            <li class="site-aiimage-reference-page-item"><a class="site-aiimage-reference-page-action" href="javascript:void(0);">
+                <i class="fas fa-image"></i> <span>[`Add from page`]</span>
+            </a></li>
+            <li><a class="site-aiimage-reference-upload-action" href="javascript:void(0);"><i class="fas fa-upload"></i>
+                <span>[`Upload`]</span>
+            </a></li>
+        </ul>
+    </div>
+    <div class="upload site-aiimage-reference-upload hidden"><input type="file" accept="image/jpeg,image/png,image/gif,image/webp" multiple autocomplete="off"></div>
+</div>
+{/function}
+
+{function name="render_recent_chats_dropdown"}
+<div class="dropdown site-aiimage-recent-chats-dropdown" style="display: none;">
+    <button class="dropdown-toggle without-arrow button nobutton circle custom-p-0 text-gray small" type="button" title="[`Recent chats`]">
+        <i class="fas fa-history"></i>
+    </button>
+    <div class="dropdown-body right">
+        <div class="box">
+            <div class="heading custom-my-4">
+                [`Recent chats`]
+                <span class="custom-ml-4" data-wa-tooltip-content="[`Only the 10 most recent chats are kept. Your browser may delete the history, including when browsing data is cleared or storage space runs low. Download any images you want to keep.`]">
+                    <i class="fas fa-question-circle" style="font-size: .875rem;"></i>
+                </span>
+            </div>
+            <p class="hint custom-mt-6">
+                [`Stored only in this browser.`]
+            </p>
+        </div>
+        <ul class="menu custom-mt-0"></ul>
+    </div>
+</div>
+{/function}
+
+{function name="render_product_panel"}
+{if !empty($config.shop.available)}
+    {$_fields = [
+        ["key" => "name", "label" => _w("Name")],
+        ["key" => "summary", "label" => _w("Summary")],
+        ["key" => "description", "label" => _w("Description")],
+        ["key" => "price", "label" => _w("Price")],
+        ["key" => "features", "label" => _w("Features")]
+    ]}
+    <div class="site-aiimage-product-panel" hidden>
+        <div class="site-aiimage-product-head flexbox middle full-width text-gray smaller">
+            <strong>[`Use product`]</strong>
+            <button type="button" class="button nobutton text-gray circle custom-ml-auto site-aiimage-product-close" title="[`Close`]"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="state-with-inner-icon left full-width site-aiimage-product-search-wrap">
+            <input type="search" class="site-aiimage-product-search full-width semibold small" autocomplete="off" placeholder="[`Start typing...`]">
+            <span class="icon"><i class="fas fa-search"></i></span>
+            <a href="javascript:void(0);" type="button" class="nobutton circle text-gray site-aiimage-product-clear custom-mr-4" title="[`Clear selected product`]" hidden><i class="fas fa-times-circle"></i></a>
+        </div>
+        <div class="site-aiimage-product-status state-hint custom-mt-8" hidden></div>
+        <div class="site-aiimage-product-details" hidden>
+            <div class="site-aiimage-product-hint small custom-mt-8"> [`Add product information or image to the request:`] </div>
+            <div class="dropdown site-aiimage-product-info-dropdown custom-mt-8">
+                <button type="button" class="dropdown-toggle button light-gray smaller"><span> [`Information`] </span></button>
+                <div class="dropdown-body"><ul class="menu">
+                    {foreach $_fields as $_f}
+                    <li><a href="javascript:void(0);" class="site-aiimage-product-info-option" data-field="{$_f.key|escape}">
+                        <span>{$_f.label|escape}</span>
+                    </a></li>
+                    {/foreach}
+                </ul></div>
+            </div>
+            <div class="site-aiimage-product-images flexbox wrap space-8 custom-mt-12"></div>
+        </div>
+    </div>
+{/if}
+{/function}
+
+{function name="render_parameters_group_dropdowns"}
+{foreach $parameter_groups as $key => $groups}
+    {$is_primary = $key === 'primary'}
+    <div class="flexbox space-8 {if $is_primary}nowrap{else}wrap{/if}">
+    {foreach $groups as $group}
+        {if empty($group.options)}
+            {continue}
+        {/if}
+        <div class="dropdown site-aiimage-param-dropdown">
+            <a href="javascript:void(0)" class="dropdown-toggle {if $is_primary}button light-gray smaller{else}semibold text-gray small{/if}">
+                <span>{$group.label|escape}</span>
+            </a>
+            <div class="dropdown-body">
+            <ul class="menu" data-group-key="{$group.key|escape}">
+                {if !empty($group.swatches)}
+                    <li class="site-aiimage-color-swatches">
+                        <div class="flexbox wrap space-8">
+                        {foreach $group.swatches as $swatch}
+                            {$swatch_label = $swatch.label|default:$swatch.color:default:''}
+                            {$swatch_prompt_prefix = $group.prompt_prefix|default:$group.label}
+                            <button type="button" class="button circle site-aiimage-color-swatch site-aiimage-param-option"
+                                style="--site-aiimage-swatch: {$swatch.color|default:'transparent'}"
+                                title="{$swatch_label|escape}"
+                                data-prompt-text="{$swatch_prompt_prefix|escape}: {$swatch_label|lower|escape}"></button>
+                        {/foreach}
+                        <div class="site-aiimage-custom-color-row flexbox middle space-8 width-100 custom-mt-8">
+                            <label class="site-aiimage-color-swatch site-aiimage-custom-color-label" title="{$group.custom_color_label|default:''|escape}">
+                                <i class="fas fa-ellipsis-h"></i>
+                                <input class="site-aiimage-custom-color" type="color" value="#e9467f" data-prompt-label="{$group.prompt_prefix|default:$group.label|escape}">
+                            </label>
+                            <code class="site-aiimage-custom-color-value text-gray custom-px-6 custom-py-4">#e9467f</code>
+                            <button type="button" class="site-aiimage-custom-color-add button light-gray smaller nobutton text-gray">[`Add`]</button>
+                        </div>
+                    </li>
+                {/if}
+
+                {foreach $group.options as $key => $opt}
+                    {$label = ifset($opt, 'label', ifset($opt, 'heading', $group.label))}
+                    {$children = ifset($opt, 'options', [])}
+                    {$prompt_text = ifempty($opt, 'prompt_text', "{$group.prompt_prefix|default:$group.label}: {$label}")}
+                    <li>
+                        <a
+                            {if $children}
+                            data-key="{$opt.key|escape}"
+                            class="site-aiimage-param-heading"
+                            {else}
+                            class="site-aiimage-param-option"
+                            {/if}
+                            data-prompt-text="{$prompt_text|escape}"
+                            href="javascript:void(0);"
+                        >
+                            <span>{$label|escape}</span>
+                        </a>
+                        {if $children}
+                            <ul class="menu" style="display: none;">
+                                <li>
+                                    <a class="site-aiimage-param-back back custom-pl-12" href="javascript:void(0);"><i class="fas fa-arrow-circle-left"></i></a>
+                                </li>
+                                <li class="site-aiimage-param-heading">
+                                    <span class="heading custom-pl-0">{$label|escape}</span>
+                                </li>
+                                {foreach $children as $sub_opt}
+                                    {$sub_prompt_text = ifempty($sub_opt, 'prompt_text', ifset($sub_opt, 'label', $label))}
+                                    <li>
+                                        <a class="site-aiimage-param-option custom-pl-16" data-prompt-text="{$sub_prompt_text|escape}" href="javascript:void(0);">
+                                            <span>{$sub_opt.label|escape}</span>
+                                        </a>
+                                    </li>
+                                {/foreach}
+                            </ul>
+                        {/if}
+                    </li>
+                {/foreach}
+            </ul>
+            </div>
+        </div>
+    {/foreach}
+    </div>
+{/foreach}
+{/function}
+
+{function name="render_welcome"}
+<div class="site-aiimage-empty flexbox vertical middle space-8">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M24.9778 22.9478C23.9297 21.8997 22.2385 21.8769 21.1626 22.8962L1.4064 41.2967C-0.104256 42.7278 -0.136709 45.1242 1.33485 46.5957C2.80495 48.0657 5.19729 48.0334 6.62726 46.5241L25.0294 26.7697C26.0502 25.6923 26.0272 23.9971 24.9778 22.9478Z" fill="black"/>
+        <path d="M7.65025 11.8154C7.75383 11.4495 8.27246 11.4495 8.37604 11.8154L9.7468 16.658C9.87164 17.099 10.2163 17.4437 10.6574 17.5686L15.4999 18.9393C15.8658 19.0429 15.8658 19.5615 15.4999 19.6651L10.6574 21.0359C10.2163 21.1607 9.87164 21.5054 9.7468 21.9465L8.37604 26.789C8.27246 27.1549 7.75383 27.1549 7.65025 26.789L6.2795 21.9465C6.15465 21.5054 5.80995 21.1607 5.3689 21.0359L0.526381 19.6651C0.160477 19.5615 0.160477 19.0429 0.526382 18.9393L5.3689 17.5686C5.80995 17.4437 6.15465 17.099 6.2795 16.658L7.65025 11.8154Z" fill="#EE6622"/>
+        <path d="M15.0015 0.206877C15.0812 -0.0689592 15.4802 -0.0689587 15.5598 0.206877L16.6143 3.85739C16.7103 4.18987 16.9755 4.44973 17.3147 4.54384L21.0397 5.57718C21.3212 5.65526 21.3212 6.04623 21.0397 6.12431L17.3147 7.15765C16.9755 7.25176 16.7103 7.51162 16.6143 7.8441L15.5598 11.4946C15.4802 11.7705 15.0812 11.7704 15.0015 11.4946L13.9471 7.8441C13.8511 7.51162 13.5859 7.25176 13.2467 7.15765L9.52165 6.12431C9.24018 6.04623 9.24018 5.65526 9.52165 5.57718L13.2467 4.54384C13.5859 4.44973 13.8511 4.18987 13.9471 3.85739L15.0015 0.206877Z" fill="#55DDDD"/>
+        <path d="M26.1963 35.3905C26.2744 35.1146 26.6654 35.1146 26.7435 35.3905L27.7768 39.041C27.8709 39.3735 28.1308 39.6333 28.4632 39.7274L32.1138 40.7608C32.3896 40.8389 32.3896 41.2298 32.1138 41.3079L28.4632 42.3412C28.1308 42.4354 27.8709 42.6952 27.7768 43.0277L26.7435 46.6782C26.6654 46.954 26.2744 46.954 26.1963 46.6782L25.163 43.0277C25.0689 42.6952 24.809 42.4354 24.4765 42.3412L20.826 41.3079C20.5502 41.2298 20.5502 40.8389 20.826 40.7608L24.4765 39.7274C24.809 39.6333 25.0689 39.3735 25.163 39.041L26.1963 35.3905Z" fill="#F5C400"/>
+        <path d="M40.0451 27.3262C40.1439 26.9772 40.6386 26.9772 40.7374 27.3262L42.0449 31.9452C42.164 32.3659 42.4928 32.6947 42.9135 32.8138L47.5325 34.1213C47.8815 34.2201 47.8815 34.7148 47.5325 34.8136L42.9135 36.1211C42.4928 36.2402 42.164 36.569 42.0449 36.9896L40.7374 41.6087C40.6386 41.9577 40.1439 41.9577 40.0451 41.6087L38.7376 36.9896C38.6185 36.569 38.2898 36.2402 37.8691 36.1211L33.25 34.8136C32.901 34.7148 32.901 34.2201 33.25 34.1213L37.8691 32.8138C38.2898 32.6947 38.6185 32.3659 38.7376 31.9452L40.0451 27.3262Z" fill="#22CC22"/>
+        <path d="M32.1865 0.527313C32.3855 -0.175772 33.3821 -0.175771 33.5811 0.527314L36.215 9.8322C36.4549 10.6797 37.1173 11.342 37.9647 11.5819L47.2696 14.2158C47.9727 14.4148 47.9727 15.4114 47.2696 15.6104L37.9647 18.2443C37.1173 18.4842 36.4549 19.1465 36.215 19.994L33.5811 29.2989C33.3821 30.002 32.3855 30.002 32.1865 29.2989L29.5526 19.994C29.3127 19.1465 28.6504 18.4842 27.8029 18.2443L18.498 15.6104C17.7949 15.4114 17.7949 14.4148 18.498 14.2158L27.8029 11.5819C28.6504 11.342 29.3127 10.6797 29.5526 9.8322L32.1865 0.527313Z" fill="#0088EE"/>
+    </svg>
+    <div class="align-center bold custom-mt-8">[`Create an image with AI`]</div>
+    <div class="align-center text-gray small" style="max-width: 280px;">[`A logo, banner, background, illustration, or photo—describe what you need.`]</div>
+</div>
+{/function}
+
+<link rel="stylesheet" href="{$wa_app_static_url}css/aiimage.css?v={$wa->version()}">
+<div class="drawer site-aiimage-drawer">
+    <div class="drawer-body">
+        <div class="drawer-block custom-p-0">
+            <div class="site-aiimage-close-panel flexbox custom-px-16 custom-py-8">
+                <button class="js-start-chat-drawer button small light-gray circle site-aiimage-close hidden" title="[`Новый чат`]" type="button"><i class="fas fa-plus"></i></button>
+                <button class="js-toggle-width-drawer button nobutton small light-gray circle site-aiimage-close custom-ml-auto custom-ml-16" title="[`Переключить ширину панели`]" type="button">
+                    <span class="js-expand opacity-70 small"><i class="far fa-window-maximize" style="transform: rotate(270deg);"></i></span>
+                    <span class="js-collapse opacity-70 small hidden"><i class="fas fa-window-maximize" style="transform: rotate(90deg);"></i></span>
+                </button>
+                <button class="js-close-drawer button nobutton small light-gray opacity-70 circle site-aiimage-close" title="[`Close`]" type="button"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="drawer-content site-aiimage-chat-layout blank custom-mt-0">
+                <div class="site-aiimage-chat custom-pt-48 custom-mt-12">
+                    {render_welcome}
+                </div>
+                <form class="site-aiimage-composer card custom-m-0 custom-p-8">
+                    <div class="site-aiimage-references flexbox wrap space-8 custom-m-8 hidden"></div>
+                    <textarea class="site-aiimage-prompt full-width small" name="prompt" rows="1" required placeholder="[`Enter description...`]" style="max-height: 264px;height: auto;"></textarea>
+                    <div class="flexbox middle custom-m-8">
+                        <div class="flexbox middle space-4">
+                            <button type="submit" class="button black circle site-aiimage-send small custom-mr-0" title="[`Generate`]"><i class="fas fa-arrow-up"></i></button>
+                            {* <button type="button" class="button nobutton light-gray circle custom-mr-0 site-aiimage-generation-count small" title="[`Generations per request`]">×1</button> *}
+                            {render_image_reference_dropdown}
+                            <button type="button" class="button nobutton text-gray circle custom-mr-0 site-aiimage-settings-toggle small" title="[`Parameters`]"><i class="fas fa-sliders-h"></i></button>
+                            {render_aspect_ratio_dropdown}
+                        </div>
+                        <div class="site-aiimage-secondary-actions flexbox middle space-4 custom-ml-auto">
+                            {render_recent_chats_dropdown}
+                        </div>
+                    </div>
+                    {* for next release: {render_product_panel} *}
+                    <div class="site-aiimage-parameters" hidden>
+                        <div class="site-aiimage-parameters-head flexbox middle full-width text-gray smaller">
+                            <strong>[`Add to prompt`]</strong>
+                            <button type="button" class="button nobutton text-gray circle custom-ml-auto site-aiimage-parameters-close" title="[`Close`]"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="site-aiimage-parameter-groups flexbox wrap space-8">
+                            {render_parameters_group_dropdowns}
+                        </div>
+                    </div>
+                    <div class="site-aiimage-status custom-m-8 state-error-hint" hidden></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{$wa_app_static_url}js/editor/AiImageDrawer.js?v={$wa->version()}"></script>
+<script>
+(function() {
+    $.site.aiImage.initDrawer({
+        $wrapper: $('.drawer.site-aiimage-drawer'),
+        _csrf: {waRequest::cookie('_csrf', '')|json_encode},
+        mode: {$mode|json_encode},
+        aspect_ratio: {$default_aspect_ratio|json_encode},
+        max_references: 10,
+        templates: {
+            welcome: {render_welcome|json_encode}
+        },
+        urls: {
+            generate: "{$wa_app_url}?module=editorAiImage&action=generate",
+            service_worker: "{$wa_app_url}?module=editorAiImage&action=getServiceWorker&v=1"
+        },
+        assets: {
+            wand_ai_shimmer: "{$wa_static_url}wa-content/img/wa-ai/webasyst-wand-ai-shimmer.svg"
+        },
+        locale: {
+            reference_unavailable:'[`The selected image cannot be attached.`]',
+            status_failed:'[`Unable to create image.`]',
+            status_interrupted:'[`Generation was interrupted.`]',
+            max_references:'[`You can attach up to 10 reference images.`]',
+            unsupported_reference:'[`Select a JPEG, PNG, GIF, or WebP image.`]',
+            reference_too_large:'[`The reference image is too large.`]',
+            reference_uploading:'[`Uploading reference image...`]',
+            copy_request:'[`Copy request`]',
+            edit_request:'[`Edit request`]',
+            view:'[`Preview`]',
+            use:'[`Use`]',
+            download:'[`Download`]',
+            attach_image:'[`Attach image`]',
+            save_failed:'[`The image was created, but it could not be saved in Webasyst.`]',
+            request_failed:'[`Request failed.`]',
+            uploaded_image:'[`Uploaded image`]',
+            from_page:'[`From page`]',
+            generating:'[`Generating...`]',
+            generation_continues_after_drawer_close_header: '[`Generation in progress`]',
+            generation_continues_after_drawer_close_text: '[`Keep your browser open so we can save your image. You can keep working in the builder — we’ll let you know when it’s ready.`]',
+        }
+    });
+})();
+</script>

@@ -603,17 +603,14 @@ class SiteEditor {
     }*/
 
     sanitizeHTML(str) {
-        if (!str) {
-            return str;
-        }
-
+        if (!str) return str;
+        // clean up CSS
+        // str = str.replace(/<link\b[^>]*>/igs, '');
         // clean up JS
-        const pattern = /<script[^>]*>.*?<\/script>/igs;
-        const html = str.replace(pattern, '');
-
+        str = str.replace(/<script\b[^>]*>.*?<\/script>/igs, '');
         // keep http(s)
         const sanitizeIframeSrc = (str) => {
-            return str.replace(/<iframe[^>]*src\s*=\s*"(.*?)"[^>]*>/g, (start, src) => {
+            return str.replace(/<iframe\b[^>]*src\s*=\s*"(.*?)"[^>]*>/g, (start, src) => {
                 if (src.match(/^https?:/)) {
                     return start + src;
                 }
@@ -621,7 +618,7 @@ class SiteEditor {
             });
         }
 
-        return sanitizeIframeSrc(html);
+        return sanitizeIframeSrc(str);
     }
 
     showPremiumDialog() {

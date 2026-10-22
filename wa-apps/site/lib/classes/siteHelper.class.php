@@ -82,7 +82,7 @@ class siteHelper
         return array(
             'not_install'   => $not_install_text,
             'incorrect'     => $incorrect_text,
-            'incorrect_ids' => $incorrect_ids
+            'incorrect_ids' => (object)$incorrect_ids
         );
     }
 
@@ -638,6 +638,17 @@ class siteHelper
         if (!$without_save) {
             $domain_config_path = waSystem::getInstance()->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
             waUtils::varExportToFile($domain_config, $domain_config_path);
+        }
+    }
+
+    public static function assertDomainAccess($domain_id)
+    {
+        $user = wa()->getUser();
+        if ($user->isAdmin('site')) {
+            return;
+        }
+        if (!$user->getRights('site', 'domain.'.$domain_id)) {
+            throw new waAPIException('access_denied', 403);
         }
     }
 }

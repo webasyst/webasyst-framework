@@ -35,6 +35,7 @@ const js_sources = [
         'js/editor/form/FormConstructor.js',
         'js/editor/BlockSettingsDrawer.js',
         'js/editor/BlockStorage.js',
+        // 'js/editor/AiImageEditorAdapter.js', // TODO: temporary solution
         'js/editor/UndoRedoQueue.js',
         'js/editor/form/vue.data.js',
         'js/editor/form/vue.templates.js',
@@ -121,7 +122,7 @@ function watchFiles() {
     watch('css/styl/**/*.styl', css);
     watch('css/styl/**/*.styl', cssEditor);
     js_sources.forEach((p) => {
-        watchJs(p[1], p[0]);    
+        watchJs(p[1], p[0]);
     });
 
     function watchJs(files, output) {

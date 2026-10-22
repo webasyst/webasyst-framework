@@ -207,8 +207,9 @@ class siteConfig extends waAppConfig
      */
     public function getRoutingErrors()
     {
+        $is_legacy = wa()->whichUI() == '1.3';
         // Get from cache.
-        $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');
+        $cache_domain = new waVarExportCache('problem_domains'.($is_legacy ? '_legacy' : ''), 3600, 'site/settings/');
         // If not cached, this is null.
         // If cached and there's no routing errors then this is an empty array.
         $cached = $cache_domain->get();
@@ -287,7 +288,7 @@ class siteConfig extends waAppConfig
                     }
                 }
 
-                if (!$domain_id || ifempty($domain_config, 'url_notification', false)) {
+                if (!$domain_id || ($is_legacy && ifempty($domain_config, 'url_notification', false))) {
                     continue;
                 } else {
                     //Save status. We do not know all the problems until we finish the foreach.

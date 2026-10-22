@@ -1,0 +1,436 @@
+{function _misconfigured_settlement_icon}
+    <span class="js-misconfigured-settlement icon small custom-pl-4"><i class="fas fa-exclamation-triangle"></i></span>
+{/function}
+
+{function _main_page_icon}
+    <span class="js-homepage icon gray custom-ml-4"><i class="fas fa-home"></i></span>
+{/function}
+
+{function _render_row route_id=null route=[]}
+    {$has_route = $route_id !== null}
+    {$is_misconfigured_settlement = $has_route && !empty($route.misconfigured_settlement)}
+    {$is_main = $has_route && !$is_misconfigured_settlement && rtrim(ifset($route, 'url', ''), '*') === ''}
+    {$is_redirect = isset($route.redirect)}
+    {$app_id = ifset($route, 'app', null)}
+    {$is_text = $app_id === ':text'}
+    {$app_disabled = $has_route && !$is_redirect && !$is_text && !isset($all_apps[$app_id])}
+    <tr
+        class="{strip}
+            dr
+            {if $app_disabled}
+                {" "}disable-link
+            {/if}
+            {if $is_main}
+                {" "}is-main
+            {/if}
+            {if $app_disabled || !empty($route.private) || !empty($route.disabled)}
+                {" "}gray
+            {/if}
+        {/strip}"
+        data-route-id="{$route_id}"
+        data-app-id="{($is_redirect) ? ':redirect' : $app_id}"
+    >
+        <td class="min-width custom-pr-0 valign-top">
+            <span class="s-sort icon size-20 text-light-gray">
+                <i class="fas fa-grip-vertical"></i>
+            </span>
+        </td>
+        <td class="s-url{if $app_disabled || $is_misconfigured_settlement} js-misconfigured-settlement strike{/if}">{ifset($route, 'url', '')|escape}</td>
+        <td class="s-name valign-top">
+            <span class="s-icon icon size-20 custom-pr-4">
+                {if $is_redirect}
+                    <i class="fas fa-long-arrow-alt-right text-blue"></i>
+                {elseif $is_text}
+                    <i class="fas fa-file-code gray"></i>
+                {elseif $app_id && !empty($all_apps[$route.app]['icon'])}
+                    <img src="{$wa_url}{ifset($all_apps[$route.app]['icon'], '16', '24')}" alt="">
+                {else}
+                    <i class="fas fa-question"></i>
+                {/if}
+            </span>
+            <span class="js-title">{strip}
+            {if $is_redirect}
+                {$route.redirect|escape}
+            {elseif !empty($route._name)}
+                {$route._name|escape}
+            {elseif $app_id && !empty($all_apps[$app_id])}
+                {$all_apps[$app_id].name|escape}
+            {elseif !$is_text }
+                {$app_id|escape}
+            {/if}{/strip}</span>
+            {if $is_main}
+                {_main_page_icon}
+            {/if}
+            {if $app_disabled || $is_misconfigured_settlement}
+                {_misconfigured_settlement_icon}
+            {/if}
+        </td>
+        <td class="min-width">
+            <a class="js-section-settings" href="javascript:void({$route_id|escape})"><i class="fas fa-cog text-gray"></i></a>
+        </td>
+    </tr>
+{/function}
+
+<div class="site-map-flat flexbox vertical s-map-page">
+    <div class="site-map-toolbar-sticky flexbox full-width custom-mb-24">
+        <div class="dropdown map-page-dropdown" id="js-dropdown-add-flat">
+            <button class="dropdown-toggle button small dark-gray">
+                <i class="fas fa-plus"></i> [`Add rule`]
+            </button>
+            <div class="dropdown-body custom-mt-2">
+                <ul class="menu">
+                    {foreach $apps_to_add as $app}
+                        <li>
+                            <a href="javascript:void(0);" class="js-add-app" data-app-id="{$app.id}">
+                                <i class="icon"><img src="{$wa_url}{$app.icon.24}" alt=""></i>
+                                <span>{$app.name}</span>
+                            </a>
+                        </li>
+                    {foreachelse}
+                        <div class="gray custom-py-8 custom-px-12">
+                            {if !$wa->user()->isAdmin('installer') || $wa->isSingleAppMode()}
+                                [`No apps for adding sections are installed.`]
+                            {else}
+                                {sprintf_wp(
+                                    'To add sections, <%s>install apps<%s>',
+                                    sprintf(
+                                        'a href="%s" class="text-dark-gray underline nowrap" target="_blank"',
+                                        "{$wa_backend_url}installer/store/?filters%5Btype%5D=app"
+                                    ),
+                                    '/a'
+                                )} <i class="fas fa-external-link-alt text-dark-gray fa-sm"></i>
+                            {/if}
+                        </div>
+                    {/foreach}
+                    <div>
+                        <hr>
+                    </div>
+                    <li>
+                        <a href="javascript:void(0);" class="js-add-app" data-app-id=":redirect">
+                            <i class="icon fas fa-long-arrow-alt-right text-blue"></i>
+                            <span>[`Redirect`]</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="js-add-app" data-app-id=":text">
+                            <i class="icon fas fa-file-code gray"></i>
+                            <div>
+                                <div>[`Custom text`]</div>
+                                <div class="hint custom-mt-2">[`Custom file or text in site root`]</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="switch-with-text">
+            <span class="switch smaller" id="disable-flat-switch">
+                <input type="checkbox" id="disable-flat" checked>
+            </span>
+            <label for="disable-flat">[`Routing mode`]</label>
+        </div>
+    </div>
+
+    <div class="alert small js-hint-alert" style="display: none;">
+        <a href="javascript:void(0)" class="alert-close"><i class="fas fa-times"></i></a>
+        <div class="flexbox space-8">
+            <div>
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div>
+                [`For advanced users. Shows the complete list of routing rules for this domain in one place: site sections, redirects, apps, and custom files in site root.`]
+                [`Rules are processed one by one in the given order. The first rule matching current HTTP request (web address) will be processed. Use * symbol in the URL fields for wildcard.`]
+                <a href="[`https://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank" class="text-dark-gray underline nowrap">[`Help`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+            </div>
+        </div>
+        <script>
+            (() => {
+                const key = 'site/routing/hide_alert';
+                const is_hide = JSON.parse(localStorage.getItem(key));
+                if (is_hide) return;
+                const $wrapper = $('.js-hint-alert').show();
+                $wrapper.find('.alert-close').on('click', () => {
+                    localStorage.setItem(key, 1);
+                    $wrapper.remove();
+                });
+            })();
+        </script>
+    </div>
+    <div class="alert warning small js-alert-incorrect"{if empty($incorrect)} style="display: none;"{/if}>
+        <div class="flexbox space-8">
+            <div>
+                <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+            </div>
+            <div class="wide js-message">
+                {$incorrect}
+            </div>
+        </div>
+    </div>
+
+    <table class="site-map-flat-table break-word">
+        <tbody>
+            {foreach $table_rows as $route_id => $route}
+                {_render_row route_id=$route_id route=$route}
+            {/foreach}
+        </tbody>
+    </table>
+</div>
+
+<script>
+(function($) {
+    initSwitchToTreeTable();
+
+    initMapOverviewFlat({
+        $wrapper: $('.site-map-flat'),
+        wa_app_url: '{$wa_app_url}',
+        domain_id: {$domain_id|json_encode},
+        templates: {
+            misconfigured_settlement_icon: {_misconfigured_settlement_icon|json_encode},
+            main_page_icon: {_main_page_icon|json_encode},
+            row: {_render_row|json_encode}
+        }
+    });
+
+    function initMapOverviewFlat(options) {
+        return new (class {
+            constructor() {
+                this.$wrapper = options.$wrapper;
+                this.$table = this.$wrapper.find('.site-map-flat-table');
+                this.domain_id = options.domain_id;
+                this.wa_app_url = options.wa_app_url;
+                this.templates = options.templates || {};
+
+                this.init();
+            }
+
+            init() {
+                this.initAddDropdown();
+                this.initRouteSettings();
+                this.initEvents();
+                this.initSort();
+            }
+
+            initEvents() {
+               $(document).on('wa_update_route', (_, rotue_id, data) => {
+                    this.updateRow(rotue_id, data);
+                });
+
+                $(document).on('wa_delete_route', (_, route_id) => {
+                    this.removeRow(route_id);
+                });
+
+                $(document).on('wa_update_routing_errors', (_, data) => {
+                    setTimeout(() => this.updateRoutingErrors(data), 25);
+                });
+            }
+
+            initAddDropdown() {
+                $("#js-dropdown-add-flat").waDropdown({
+                    hover: false,
+                    ready: (dropdown) => {
+                        const $menu = dropdown.$wrapper.find('.menu');
+
+                        $menu.on('click', '.js-add-app', (e) => {
+                            e.preventDefault();
+                            const params = this.getRowData(e.currentTarget);
+                            this.openAppDialog(params);
+                        });
+                    }
+                });
+            }
+
+            initRouteSettings() {
+                this.$table.on('click', 'tr', (e) => {
+                    e.preventDefault();
+                    const params = this.getRowData(e.currentTarget);
+                    this.openAppDialog(params);
+                });
+            }
+
+            openAppDialog({ route, app }) {
+                const data = {
+                    domain_id: this.domain_id,
+                    ...(route !== undefined ? { route } : {})
+                };
+
+                let href = '';
+                if (app === ':redirect') {
+                    href = '?module=configure&action=redirectDialog';
+                } else {
+                    href = '?module=configure&action=sectionDialog&url_exact=1';
+                    if (app) {
+                        data.app = app;
+                    }
+                }
+
+                const url = this.wa_app_url + href;
+                $.site.helper.preventDupeRequest(() => {
+                    return $.get(url, data, (html) => {
+                        $.waDialog({ html });
+                    });
+                }, url);
+            }
+
+            initSort() {
+                $.site.helper.loadSortableJS().then(() => {
+                    this.$table.find('tbody').sortable({
+                        animation: 150,
+                        handle: '.s-sort',
+                        draggable: '[data-app-id]:not(.disabled)',
+                        onEnd: (event) => {
+                            const { item, to, newIndex, oldIndex } = event;
+                            if (newIndex === oldIndex) return;
+                            const $item = $(item);
+                            const route_id = $item.data('route-id');
+                            const before_route_id = $item.prev().data('route-id');
+
+                            const payload = { route_id, before_route_id };
+                            this.routeMove(payload,
+                                (data) => {
+                                    this.updateRoutingErrors(data.routing_errors);
+                                },
+                                () => {
+                                    const $items = $(to).children();
+                                    $items.eq(oldIndex)[newIndex > oldIndex ? 'before' : 'after']($item.detach());
+                                }
+                            );
+                        }
+                    });
+                });
+            }
+
+            routeMove(payload, success, error) {
+                $('#wa-app').trigger('wa_before_load');
+                $.post(this.wa_app_url + "?module=map&action=move&app_id=site_route&domain_id="+this.domain_id, {
+                    route_id: payload.route_id,
+                    before_route_id: payload.before_route_id
+                }, function (r) {
+                    $.site.log('move:response', r);
+                    if (r?.status == 'ok') {
+                        $('#wa-app').trigger('wa_loaded');
+                        success(r.data);
+                    } else {
+                        if (r?.errors?.map) {
+                            let msgs = r.errors.map(function(el) {
+                                return el?.description || '';
+                            });
+                            const text = msgs.join("\n");
+                            $.waDialog.alert({
+                                text,
+                                button_title: '[`Close`]'
+                            });
+                        }
+                        $('#wa-app').trigger('wa_load_fail');
+                        error();
+                    }
+                }, "json");
+            }
+
+            getRowData(target) {
+                let $target = $(target);
+                if (!$target.filter('[data-app-id]').length) {
+                    $target = $target.closest('[data-app-id]');
+                }
+                return {
+                    app: $target.data('app-id'),
+                    route: $target.data('route-id')
+                }
+            }
+
+            updateRoutingErrors(data) {
+                // update alert
+                const $alert = $('.js-alert-incorrect').hide();
+                const $alert_message = $alert.find('.js-message').empty();
+                if (data.incorrect) {
+                    $alert.show();
+                    $alert_message.html(data.incorrect);
+                }
+                // update rows
+                const route_ids = Object.keys(data.incorrect_ids || {});
+                const $rows = this.$table.find('[data-route-id]');
+                $rows.find('.s-name').find('.js-misconfigured-settlement').closest('.dr').removeClass('gray');
+                $rows.find('.s-name').find('.js-misconfigured-settlement').remove();
+                $rows.find('.s-url').removeClass('strike js-misconfigured-settlement');
+
+                route_ids.forEach(route_id => {
+                    const $row = this.getRow(route_id);
+                    $row.addClass('gray');
+                    $row.find('.s-name').append(this.templates.misconfigured_settlement_icon);
+                    $row.find('.s-url').addClass('strike js-misconfigured-settlement');
+                });
+            }
+
+            updateRow(route_id, data) {
+                if (data.add) {
+                    const $row = $(this.templates.row);
+                    $row.attr('data-route-id', route_id || data.route_id);
+                    $row.attr('data-app-id', 'redirect' in data ? ':redirect' : data.app);
+                    this.workupRow($row, data, true);
+                    this.$table.prepend($row);
+                } else {
+                    const $row = this.getRow(route_id);
+                    this.workupRow($row, data);
+                }
+            }
+
+            workupRow($row, data, is_add = false) {
+                if (is_add) {
+                    let icon = '<i class="fas fa-question"></i>';
+                    if (data.app_icon) {
+                        icon = '<img src="'+data.app_icon+'" alt="">';
+
+                    } else if ('redirect' in data) {
+                        icon = '<i class="fas fa-long-arrow-alt-right text-blue"></i>';
+
+                    } else if (data.app === ':text') {
+                        icon = '<i class="fas fa-file-code gray"></i>';
+                    }
+                    $row.find('.s-icon').html(icon);
+                }
+
+                if (data.redirect) {
+                    $row.find('.s-name .js-title').html(data.redirect);
+                } else if (typeof data._name === 'string') {
+                    $row.find('.s-name .js-title').html(data._name);
+                }
+
+                const url = data.url || '';
+                $row.find('.s-url').html(url);
+
+                $row.find('.js-homepage').remove();
+                if (url === '*' || url === '') {
+                    $row.find('.s-name').append(this.templates.main_page_icon);
+                }
+
+                $row.toggleClass('gray', !!data.disabled || !!data.private);
+            }
+
+            removeRow(route_id) {
+                this.getRow(route_id).remove();
+            }
+
+            getRow(route_id) {
+                return this.$table.find('[data-route-id="'+route_id+'"]');
+            }
+        });
+    }
+
+    function initSwitchToTreeTable() {
+        const switchTo = () => {
+            const href = '{$wa_app_url}map/overview/?domain_id={$domain_id}';
+            if (window.history) {
+                history.replaceState(history.state, document.title, href);
+                $.site.reload();
+            } else {
+                location.href = href;
+            }
+        };
+        $('#disable-flat-switch').waSwitch({
+            change: (is_active, instance) => {
+                if (is_active) return;
+                switchTo();
+            }
+        });
+    }
+})(jQuery);
+</script>

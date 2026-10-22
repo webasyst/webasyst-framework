@@ -11,7 +11,6 @@ class siteMapOverviewAction extends waViewAction
 
         $sidebar_mode = (bool) waRequest::request('sidebar_mode');
         $page_id = waRequest::request('page_id', null, 'int');
-        $domain_id = waRequest::request('domain_id', null, 'int');
         $htmleditor = waRequest::request('htmleditor', null, 'int');
 
         // update last_domain_id
@@ -19,24 +18,39 @@ class siteMapOverviewAction extends waViewAction
             siteHelper::saveLastDomainId();
         }
 
-        $domain = $this->getNeedDomain($domain_id);
+        $domain = $this->getNeedDomain();
 
         if ($domain['is_alias']){ //redirect for aliases
-            $this->redirect(wa()->getAppUrl('site').'settings/?domain_id='.$domain_id);
+            $this->redirect(wa()->getAppUrl('site').'settings/?domain_id='.$domain['id']);
         }
-        $blockpage_model = new siteBlockpageModel();
-        $pages = $blockpage_model->getByDomainWithVerifyDraftModifications($domain_id);
 
-        list($apps, $routes, $has_redirect) = $this->getSitemapRoutesApps($domain);
-        $migrated_from_ui13 = wa()->getSetting('migrated_from_ui13', false, 'site');
-        $this->loadHtmlPages($domain, $routes);
+        $this->view->assign([
+            'sidebar_mode'     => $sidebar_mode,
+            'domain_id'        => $domain['id'],
+            'domain_idn'       => waIdna::dec($domain['name']),
+            'domain'           => $domain,
+            'page_id'          => $page_id,
+            'is_htmleditor'    => $htmleditor,
+        ]);
 
-        list($sitemap_tree, $root_page) = $this->buildSitemapTree($routes, $pages);
-        $sitemap_table_rows = $this->buildFlatSitemapTable($sitemap_tree);
+        if (waRequest::get('routing')) {
+            $this->loadFlatList($domain);
+        } else {
+            $this->loadTreeList($domain);
+        }
+    }
+
+    /**
+     * All pages
+     *
+     * @param array $domain
+     * @return void
+     */
+    protected function loadTreeList($domain)
+    {
+        list($sitemap_table_rows, $apps, $root_page, $has_redirect) = $this->getSitemapTreeData();
         $this->workupFrontendLinks($sitemap_table_rows, $domain);
         $this->blockpagesHasUrlOverlapByFrontendLink($sitemap_table_rows);
-
-        $show_alert_moving_to_settings = $migrated_from_ui13 && !wa()->getUser()->getSettings('site', 'hide_alert_moving_to_settings', false);
 
         $apps_to_add = [];
         foreach ($apps as $app) {
@@ -51,25 +65,82 @@ class siteMapOverviewAction extends waViewAction
             ];
         }
 
+        $migrated_from_ui13 = wa()->getSetting('migrated_from_ui13', false, 'site');
+        $show_alert_moving_to_settings = $migrated_from_ui13 && !wa()->getUser()->getSettings('site', 'hide_alert_moving_to_settings', false);
+
         $this->view->assign([
-            'sidebar_mode'     => $sidebar_mode,
             'table_rows'       => $sitemap_table_rows,
-            'domain_id'        => $domain_id,
-            'domain_idn'       => waIdna::dec($domain['name']),
-            'domain'           => $domain,
-            'page_id'          => $page_id,
             'has_redirect'     => $has_redirect,
-            'show_alert_moving_to_settings' => $show_alert_moving_to_settings,
-            'is_htmleditor'    => $htmleditor,
-            'root_page'        => $root_page,
+            'has_root_page'    => (bool)$root_page,
             'apps_to_add'      => $apps_to_add,
             'app_hashes'       => $this->getAppHashes($apps),
+            'show_alert_moving_to_settings' => $show_alert_moving_to_settings,
         ]);
 
         $this->workupAndAssignPersonalApps($domain);
     }
 
-    protected function getSitemapRoutesApps($domain)
+    /**
+     * @return array
+     */
+    public function getSitemapTreeData()
+    {
+        $domain = $this->getNeedDomain();
+
+        list($apps, $routes, $has_redirect) = $this->getSitemapRoutesApps($domain);
+        $this->loadHtmlPages($domain, $routes);
+
+        $blockpage_model = new siteBlockpageModel();
+        $pages = $blockpage_model->getByDomainWithVerifyDraftModifications($domain['id']);
+        list($sitemap_tree, $root_page) = $this->buildSitemapTree($routes, $pages);
+
+        $sitemap_table_rows = $this->buildFlatSitemapTable($sitemap_tree);
+
+        return [$sitemap_table_rows, $apps, $root_page, $has_redirect];
+    }
+
+    /**
+     * Routing rules only
+     *
+     * @param array $domain
+     * @return void
+     */
+    protected function loadFlatList($domain)
+    {
+        $all_apps = wa()->getApps();
+        $routes = wa()->getRouting()->getRoutes($domain['name']);
+
+        $root_settlement = null;
+        foreach ($routes as &$route) {
+            if ($root_settlement) {
+                $route['disabled'] = true;
+                $route['misconfigured_settlement'] = true;
+            } else if ($route['url'] === '*' && !$root_settlement) {
+                $root_settlement = $route;
+                continue;
+            }
+        }
+        unset($route);
+
+        $apps = [];
+        foreach ($all_apps as $app) {
+            if (!empty($app['frontend'])) {
+                $apps[] = $app;
+            }
+        }
+
+        $routing_errors = siteHelper::getRoutingErrorsInfo($domain['id']);
+
+        $this->view->assign([
+            'table_rows'       => $routes,
+            'has_redirect'     => false,
+            'has_root_page'    => true,
+            'all_apps'         => $all_apps,
+            'apps_to_add'      => $apps,
+        ] + $routing_errors);
+    }
+
+    protected function getSitemapRoutesApps(array $domain)
     {
         // В $apps попадают только приложения, разрешённые на этом экране
         // (часть спрятана, чтобы не пугать пользователя техническими подробностями).
@@ -84,7 +155,6 @@ class siteMapOverviewAction extends waViewAction
 
         // В $routes попадают только поселения разрешённых приложений
         $has_redirect = false;
-        $apps_routed = array();
         $routes = wa()->getRouting()->getRoutes($domain['name']);
         foreach ($routes as $route_id => &$route) {
             // do not show redirects
@@ -109,7 +179,6 @@ class siteMapOverviewAction extends waViewAction
             $route['route_id'] = $route_id;
             $route['url_formatted'] = '/'.ltrim(rtrim($route['url'], '*'), '/');
 
-            $apps_routed[$route['app']] = true;
             $route['app'] = ifempty($apps[$route['app']], [
                 'id' => $route['app'],
                 'disabled' => true
@@ -393,8 +462,9 @@ class siteMapOverviewAction extends waViewAction
         return false;
     }
 
-    protected function getNeedDomain(int $domain_id)
+    protected function getNeedDomain()
     {
+        $domain_id = waRequest::request('domain_id', null, 'int');
         $domains = siteHelper::getDomains(true);
         if (!$domain_id || empty($domains[$domain_id])) {
             throw new waException('Domain not found', 404);

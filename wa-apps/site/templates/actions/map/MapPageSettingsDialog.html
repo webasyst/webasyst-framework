@@ -450,22 +450,12 @@
 
             if (Array.isArray(r.errors)) {
                 r.errors.forEach(function(err) {
-                    let $field = null;
                     if (err.field) {
-                        $field = $form.find('[name="'+err.field+'"]');
-                    }
-
-                    const msg = err.description || (typeof err === 'string' ? err : '');
-                    if($field && $field.length) {
+                        const $field = $form.find('[name="'+err.field+'"]');
                         $field.addClass('state-caution');
-                        if (err.bottom) {
-                            $place_for_errors.text(msg);
-                        } else {
-                            const $msg = $('<div class="state-caution-hint"></div>').text(msg);
-                            $field.after($msg);
-                        }
-                    } else {
-                        $place_for_errors.text(msg);
+                    }
+                    if (err.description) {
+                        $place_for_errors.append(err.description + '<br>');
                     }
                 });
             }

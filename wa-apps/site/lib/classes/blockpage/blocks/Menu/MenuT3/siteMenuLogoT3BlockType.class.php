@@ -16,13 +16,12 @@ class siteMenuLogoT3BlockType extends siteBlockType
             "margin-bottom" => "m-b-8",
             "margin-right" => "m-r-12",
             "margin-top" => "m-t-0",
-            'pictures-size' => "i-xl",
         ];
         $logo->data['indestructible'] = false;
         $logo->data['default_image_url'] = wa()->getAppStaticUrl('site').'img/image.svg';
-        $svg_html = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" viewBox="0 0 64 64" fill-rule="evenodd">
-        <path d="M32,47 C40.2842712,47 47,40.2842712 47,32 C47,23.7157288 40.2842712,17 32,17 C23.7157288,17 17,23.7157288 17,32 C17,40.2842712 23.7157288,47 32,47 Z M32,50 C41.9411255,50 50,41.9411255 50,32 C50,22.0588745 41.9411255,14 32,14 C22.0588745,14 14,22.0588745 14,32 C14,41.9411255 22.0588745,50 32,50 Z"/>
-        <path d="M32,61 C15.9837423,61 3,48.0162577 3,32 C3,15.9837423 15.9837423,3 32,3 C48.0162577,3 61,15.9837423 61,32 C61,48.0162577 48.0162577,61 32,61 Z M32,52 C20.954305,52 12,43.045695 12,32 C12,20.954305 20.954305,12 32,12 C43.045695,12 52,20.954305 52,32 C52,43.045695 43.045695,52 32,52 Z"/>
+        $svg_html = '<svg width="44" height="44" viewBox="0 0 44 44" fill="var(--black)" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M22 32.3125C27.6954 32.3125 32.3125 27.6954 32.3125 22C32.3125 16.3046 27.6954 11.6875 22 11.6875C16.3046 11.6875 11.6875 16.3046 11.6875 22C11.6875 27.6954 16.3046 32.3125 22 32.3125ZM22 34.375C28.8345 34.375 34.375 28.8345 34.375 22C34.375 15.1655 28.8345 9.625 22 9.625C15.1655 9.625 9.625 15.1655 9.625 22C9.625 28.8345 15.1655 34.375 22 34.375Z"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M22 41.9375C10.9888 41.9375 2.0625 33.0112 2.0625 22C2.0625 10.9888 10.9888 2.0625 22 2.0625C33.0112 2.0625 41.9375 10.9888 41.9375 22C41.9375 33.0112 33.0112 41.9375 22 41.9375ZM22 35.75C14.4061 35.75 8.25 29.5939 8.25 22C8.25 14.4061 14.4061 8.25 22 8.25C29.5939 8.25 35.75 14.4061 35.75 22C35.75 29.5939 29.5939 35.75 22 35.75Z"/>
         </svg>';
         $logo->data['image'] = ['type' => 'svg', 'svg_html' => $svg_html];
 
@@ -98,7 +97,7 @@ class siteMenuLogoT3BlockType extends siteBlockType
             ],
             'id' => [$this->elements['main'] => ['id' => 'logo']],
             'elements' => $this->elements,
-            'indestructible' => false,
+            'indestructible' => true,
         ];
 
         return $result;

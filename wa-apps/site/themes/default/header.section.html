@@ -17,10 +17,11 @@
                          <h2>
                              <a href="{$wa_url}">
                                  {if $theme_settings.logo}
-                                     <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
-                                     <span>{$wa->accountName()}</span>
+                                    {$_logo_width = ifset($theme_settings.logo_width)}
+                                    <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo"{if !$theme_settings.header_sitename} class="wa-show-m"{/if}{if $_logo_width} style="width: {$_logo_width}px;"{/if} />
+                                    <span{if $theme_settings.header_sitename} class="wa-show-m"{/if}>{$wa->accountName()}</span>
                                  {else}
-                                     {$wa->accountName()}
+                                    {$wa->accountName()}
                                  {/if}
                              </a>
                          </h2>
@@ -46,7 +47,9 @@
                                  {/if}
                                  {foreach $_links as $a}
                                      {if !($a.url == $wa_url && $a.name == $wa->accountName())}
-                                         <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                                         <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}>
+                                            <a href="{$a.url}"{if !empty($a.target_blank)} target="_blank"{/if}{if !empty($a.rel)} rel="{$a.rel}"{/if}{if !empty($a.download)} download{/if}>{$a.name}</a>
+                                        </li>
                                      {/if}
                                  {/foreach}
                              </ul>
@@ -171,7 +174,7 @@
          </div>
      {/if}
 
-     {if empty ($_is_order_page)}
+     {if empty($_is_order_page) && !empty($theme_settings.show_header_second_level)}
          <!-- APP NAVIGATION -->
          <div class="container appnav wa-flex space-1{if !empty($theme_settings.show_header_search)} wa-justify-content-between{/if} align-items-center" id="header-container">
              {if $wa->globals('isMyAccount')}

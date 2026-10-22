@@ -5,7 +5,6 @@ class siteConfigureRedirectSaveController extends waJsonController
     public function execute()
     {
         $path = $this->getConfig()->getPath('config', 'routing');
-
         if (file_exists($path)) {
             $routes = include($path);
             if (!is_writable($path)) {
@@ -19,7 +18,9 @@ class siteConfigureRedirectSaveController extends waJsonController
         if (empty($routes[$domain])) {
             $routes[$domain] = array();
         }
+
         $route_id = waRequest::get('route', '');
+        $url_exact = waRequest::post('url_exact', false);
         $unchanged_routes = $routes[$domain];
 
         // new route
@@ -49,13 +50,15 @@ class siteConfigureRedirectSaveController extends waJsonController
                         }
                         $this->response['add'] = 'bottom';
                     } else {
-                        if (!empty($route['show_over_another_section'])) {
-                            if (strpos(substr($route['url'], -5), '.') === false) {
-                                $route['url'] = rtrim($route['url'], '/*').'/';
-                            }
-                        } else if (strpos($route['url'], '*') === false) {
-                            if (strpos(substr($route['url'], -5), '.') === false) {
-                                $route['url'] = rtrim($route['url'], '/*').'/*';
+                        if (!$url_exact) {
+                            if (!empty($route['show_over_another_section'])) {
+                                if (strpos(substr($route['url'], -5), '.') === false) {
+                                    $route['url'] = rtrim($route['url'], '/*').'/';
+                                }
+                            } else if (strpos($route['url'], '*') === false) {
+                                if (strpos(substr($route['url'], -5), '.') === false) {
+                                    $route['url'] = rtrim($route['url'], '/*').'/*';
+                                }
                             }
                         }
                         $routes[$domain] = array($route_id => $route) + $routes[$domain];
@@ -111,30 +114,29 @@ class siteConfigureRedirectSaveController extends waJsonController
             // log
             $this->logAction('route_add', $domain.'/'.$route['url']);
 
-            $html = '<tr id="route-'.$route_id.'">
-                        <td class="s-url">
-                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">'.waIdna::dec($domain).'/</span><span class="s-editable-url" style="color:#000">'.htmlspecialchars($route['url']).'</span>
-                        </td>
-                        <td class="s-app'.(!empty($route['private']) ? ' gray' : '').'">';
+            // response
             $root_url = wa()->getRootUrl();
+            $this->response['app'] = ifset($route, 'app', null);
+            $this->response['url'] = htmlspecialchars($route['url']);
             if (!empty($route['app'])) {
-                if ($route['app'] == ':text') {
-                    $html .= '<img src="'.$root_url.'wa-apps/site/img/script-code.png?v=1" class="s-app24x24icon-menu-v" alt="">
-                                <span class="text">'.htmlspecialchars(substr($route['static_content'], 0, 32)).(strlen($route['static_content'])>32?'...':'').'</span>';
+                if ($route['app'] === ':text') {
+                    // if (!isset($route['_name'])) {
+                    //     $_name = htmlspecialchars(substr($route['static_content'], 0, 32)).(strlen($route['static_content'])>32?'...':'');
+                    // }
+                    $_name = ifset($route, '_name', null);
                 } else {
                     $app = wa()->getAppInfo($route['app']);
-                    $html .= '<img src="'.$root_url.$app['icon'][24].'" class="s-app24x24icon-menu-v" alt="">'.$app['name'];
+                    $_name = ifset($route, '_name', ifset($app, 'name', $route['app']));
+                    $this->response['app_icon'] = $root_url.ifset($app['icon'], '16', '24');
+                    $this->response['private'] = !empty($route['private']);
                 }
             } else {
-                $html .= '<img src="'.$root_url.'wa-apps/site/img/arrow.png" class="s-app24x24icon-menu-v" alt="">
-                                <span class="redirect">'.htmlspecialchars($route['redirect']).'</span>';
+                $this->response['redirect'] = htmlspecialchars(ifset($route, 'redirect', ''));
+                $this->response['disabled'] = !empty($route['disabled']);
             }
-            $html .= '</td>
-                        <td class="s-actions align-right">
-                            <a href="#" class="s-route-action s-route-settings" title="'._w('Settings').'"><i class="icon16 settings"></i></a>
-                        </td>
-                    </tr>';
-            $this->response['html'] = $html;
+            if (isset($_name)) {
+                $this->response['_name'] = htmlspecialchars($_name);
+            }
         } else {
             if (empty($routes[$domain][$route_id])) {
                 $routes[$domain][$route_id] = array();
@@ -146,7 +148,7 @@ class siteConfigureRedirectSaveController extends waJsonController
                 $new['url'] = urldecode($new['url']);
             }
 
-            if (!isset($old['redirect']) && ifset($old, 'app', '') !== ':text') {
+            if (!$url_exact && !isset($old['redirect']) && ifset($old, 'app', '') !== ':text') {
                 $is_old_rule_broken = siteHelper::isBrokenAppRouteUrl($old);
                 if (!waRequest::post('correct_url') && $is_old_rule_broken) {
                     // do not allow to change route URL if app rule was broken
@@ -226,6 +228,7 @@ class siteConfigureRedirectSaveController extends waJsonController
 
             $this->response['url'] = $routes[$domain][$route_id]['url'];
             $this->response['private'] = !empty($routes[$domain][$route_id]['private']);
+            $this->response['_name'] = isset($routes[$domain][$route_id]['_name']) ? $routes[$domain][$route_id]['_name'] : null;
 
             if (isset($routes[$domain][$route_id]['redirect'])) {
                 $this->response['redirect'] = $routes[$domain][$route_id]['redirect'];
@@ -476,8 +479,11 @@ class siteConfigureRedirectSaveController extends waJsonController
                 continue;
             }
 
-            $this->response['confirm'] = _w('The specified URL already exists.');
-            $this->response['replace'] = $r_id;
+            $this->errors[] = [
+                'field' => 'params[url]',
+                'code' => 'url_already_exists',
+                'description' => _w('The specified URL already exists.'),
+            ];
             return true;
         }
         return false;

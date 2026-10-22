@@ -133,7 +133,14 @@ class siteConfigureAction extends waViewAction
         if (!isset($domain_config['apps']) || !$domain_config['apps']) {
             $this->view->assign('domain_apps_type', 0);
             $domain_name = !empty($domain_config['name']) ? $domain_config['name'] : null;
-            $domain_config['apps'] = wa()->getFrontendApps($domain, $domain_name);
+
+            $_apps = [];
+            foreach (wa()->getFrontendApps($domain, $domain_name) as $_app) {
+                if (in_array($_app['app'], $sitemap_app_ids)) {
+                    $_apps[] = $_app;
+                }
+            }
+            $domain_config['apps'] = $_apps;
         } else {
             $this->view->assign('domain_apps_type', 1);
         }

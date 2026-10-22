@@ -279,4 +279,22 @@
             $.wa.editor.iframe_api.$wrapper.find('#js-global-seq').parent().html(html);
         });
     {/if}
+
+    $.site.external_components = $.site.external_components || {};
+
+    $.wa.loadSources([{
+        id: "ai-image-js",
+        type: "js",
+        uri: "{$wa_app_static_url}js/editor/AiImageEditorAdapter.js?v{$wa->version()}"
+    }]).then(() => {
+        $.site.external_components['component-ai-image-dropdown'] = $.site.aiImage.initEditorAdapter({
+            locale: {
+                generate: '[`Generate with AI`]',
+                create_new: '[`Create new`]',
+                edit: '[`Edit`]',
+                reference_unavailable: '[`The selected image cannot be attached.`]',
+                request_failed: '[`Request failed.`]'
+            }
+        }).getVueComponent();
+    });
 })();</script>

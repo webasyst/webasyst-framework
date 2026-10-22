@@ -113,7 +113,7 @@
                         <button class="js-delete red nobutton"><i class="fas fa-trash-alt"></i> <span class="desktop-only">[`Delete`]</span></button>
                     </div>
                 {/if}
-                <div class="js-place-for-errors state-error-hint{if strlen($route_id)} width-100{/if}"></div>
+                <div class="js-place-for-errors state-caution-hint{if strlen($route_id)} width-100{/if}"></div>
             </div>
         </footer>
     </div>
@@ -129,6 +129,7 @@
 
     const $wrapper = $('#js-settings-redirect-dialog');
     const $form = $wrapper.find('form');
+    const $old_url = $form.find('.js-old-url');
     const $save_button = $wrapper.find('.js-save');
     const $place_for_errors = $wrapper.find('.js-place-for-errors');
     var dialog;
@@ -155,6 +156,9 @@
         saveHandler();
         return false;
     });
+    $old_url.on('keydown', () => {
+        clearErrors();
+    });
 
     // Delete page when user clicks on Delete button
     $wrapper.on('click', '.js-delete', function() {
@@ -172,15 +176,17 @@
     function deleteHandler() {
         if ($route_id) {
             $.post(delete_url, { 'route': $route_id }).then(function(r) {
-                if (r.status == 'ok') {
+                handleResponse(r, () => {
                     $wrapper.data('dialog').close();
-                    $.site.reloadWithScrollTo();
-                    return
-                }
-                updateRoutingErrors(r.data.routing_errors);
+                    if (typeof $.site.reloadWithScrollTo === 'function') {
+                        $.site.reloadWithScrollTo();
+                    } else {
+                        $(document).trigger('wa_delete_route', [$route_id, r.data]);
+                    }
+                });
             }, function(r) {
-            console.log('Error saving page settings', arguments);
-            updateRoutingErrors(r.errors);
+                console.log('Error saving page settings', arguments);
+                updateRoutingErrors(r.errors);
             });
         }
     }
@@ -189,30 +195,26 @@
     let errors = [];
 
     function updateRoutingErrors(errors) {
-
         if ($.isArray(errors)) {
             errors.forEach(function(e) {
-                var $field = null;
                 if (e.field) {
-                    $field = $form.find('[name="'+e.field+'"]');
+                    const $field = $form.find('[name="'+e.field+'"]');
+                    $field.addClass('state-caution');
                 }
-                const $msg = $('<div class="state-error-hint custom-mt-4"></div>').html(e.description);
-
-                if($field && $field.length) {
-                    $field.addClass('state-error').after($msg);
+                if (e.description) {
+                    $place_for_errors.append(e.description + '<br>');
                 }
             });
-            return
+            return;
         }
-            $place_for_errors.append(errors);
 
+        $place_for_errors.append(errors);
     }
 
     function validateUrls() {
         // Rule address contains unsupported character, regexp for define it
         const invalid_url_regexp = /(\&|\$|\+|\,|\;|\=|\?|\@|\#|\[|\]|\}|\||\^|\%)/;
-        const $old_url = $form.find('.js-old-url'),
-              old_url = $old_url.val(),
+        const old_url = $old_url.val(),
               res = old_url.match(invalid_url_regexp);
         if (res) {
             //$settings_form_status.html('');
@@ -245,24 +247,31 @@
     }
 
     function saveHandler() {
-        //clear errors
-        errors = [];
-        $form.find('.state-error').removeClass('state-error');
-        $form.find('.state-error-hint').remove();
-        $place_for_errors.empty();
-
+        clearErrors();
         // Validating unsupported characters in url
         if (!validateUrls()) return
 
         $.post(save_url, $form.serialize(), 'json').then(function(r) {
             handleResponse(r, () => {
                 $wrapper.data('dialog').close();
-                $.site.reloadWithScrollTo();
+                if (typeof $.site.reloadWithScrollTo === 'function') {
+                    $.site.reloadWithScrollTo();
+                } else {
+                    $(document).trigger('wa_update_route', [$route_id, r.data]);
+                }
             });
         }, function() {
             console.log('Error saving page settings', arguments);
             updateRoutingErrors(r.errors);
         });
+    }
+
+    function clearErrors() {
+        //clear errors
+        errors = [];
+        $place_for_errors.empty();
+        $form.find('.state-caution').removeClass('state-caution');
+        $form.find('.state-caution-hint').remove();
     }
 
     {literal}
@@ -276,16 +285,17 @@
 
         $place_for_errors.empty();
 
-        if (res.errors) {
+        if (typeof res.errors === 'string') {
             $place_for_errors.append(res.errors);
 
-        } else if (res.data && res.data.confirm) {
-            $place_for_errors.append(res.data.confirm);
+        } else if (res.errors?.length) {
+            updateRoutingErrors(res.errors);
 
-        } else if (res.data && res.data?.routing_errors.incorrect) {
+        } else if (res?.data?.routing_errors?.incorrect) {
             updateRoutingErrors(res.data.routing_errors);
+        }
 
-        } else if (res.status === 'ok' && typeof cbSuccess === 'function') {
+        if (res.status === 'ok' && typeof cbSuccess === 'function') {
             cbSuccess(res);
         }
     }

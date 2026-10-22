@@ -77,9 +77,13 @@
         },
         PictureSizeGroup: {
             'type': 'picture-size',
-            'icon': 'fa-text-height',
+            'icon': '',
             'values': [
                 {name: "Default", value: "removeData"},
+                {name: "Self size", value: "custom", prevent_save: true},
+                {name: "5xl", value: "i-5xl"},
+                {name: "4xl", value: "i-4xl"},
+                {name: "3xl", value: "i-3xl"},
                 {name: "xxl", value: "i-xxl"},
                 {name: "xl", value: "i-xl"},
                 {name: "l", value: "i-l"},
@@ -88,6 +92,15 @@
                 {name: "xs", value: "i-xs"},
                 {name: "xxs", value: "i-xxs"},
                 {name: "xxxs", value: "i-xxxs"},
+            ]
+        },
+        WidthVarGroup: {
+            type: '--width',
+            default_unit: 'px',
+            units: [
+                {name: "px", value: "px"},
+                {name: "em", value: "em"},
+                {name: "rem", value: "rem"},
             ]
         },
         TextColorGroup: {

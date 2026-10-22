@@ -37,10 +37,10 @@
 #js-wa-header-publish .heading.heading.heading.heading.heading { white-space: nowrap; margin-top: .75rem; margin-left: .75rem; }
 #js-wa-header-publish .button { white-space: nowrap; }
 
-#js-wa-header-publish.is-draft > button { background-color: var(--blue); }
-#js-wa-header-publish.is-published > button { background-color: var(--green); }
-#js-wa-header-publish.is-draft.is-publishing > button { background-color: var(--green); }
-#js-wa-header-publish.is-published.has-unsaved-changes > button { background-color: var(--yellow); color: var(--black); }
+#js-wa-header-publish.is-draft > .dropdown-toggle { background-color: var(--blue); }
+#js-wa-header-publish.is-published > .dropdown-toggle { background-color: var(--green); }
+#js-wa-header-publish.is-draft.is-publishing > .dropdown-toggle { background-color: var(--green); }
+#js-wa-header-publish.is-published.has-unsaved-changes > .dropdown-toggle { background-color: var(--yellow); color: var(--black); }
 
 @media screen and (max-width: 760px) {
     .dropdown > .dropdown-body { left: auto; right: 0; }
@@ -106,6 +106,9 @@
             </li>
         </ul>
     </div>
+    <button id="js-aiimage-button" class="site-aiimage-button button nobutton light-gray custom-p-4" type="button">
+        <span class="icon webasyst-magic-wand-ai"></span>
+    </button>
 </div>
 <script>(function() { "use strict";
     const $wrapper = $("#js-wa-header-publish");

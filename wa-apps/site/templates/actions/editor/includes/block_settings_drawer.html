@@ -141,14 +141,12 @@
     // !!! тут setTimeout() нужен только чтобы сделать вид, что инициализация сложной формы
     // занимает какое-то время (vue.js, загрузка скриптов и т.п.)
     setTimeout(() => {
-
         var interface_object = new BlockSettingsDrawer({
             $wrapper: $wrapper,
             html_templates: {$_components|json_encode},
         });
 
         $wrapper.trigger('block_settings_form_ready', [interface_object]);
-
     }, 100);
 
 })();</script>

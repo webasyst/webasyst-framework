@@ -1,0 +1,199 @@
+{include file="./includes/menu_link_dialog.html" inline}
+<div id="js-menu-link-dialog" class="s-link-type-dialog dialog">
+    <div class="dialog-background"></div>
+    <form id="js-menu-link-form" class="dialog-body">
+        <header class="dialog-header">
+            <h3>[`Menu link`]</h3>
+        </header>
+
+        <div class="dialog-content">
+            <div class="fields vertical">
+
+                <div class="field">
+                    <div class="name">[`Name`]</div>
+                    <div class="value">
+                        <input class="bold width-100 small" placeholder="[`Link text`]" type="text" name="name" value="{$link.name|default:''|escape}">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="name">[`Type`]</div>
+                    <div class="value">
+                        {renderLinkTypesField types=$types selected_type=$selected_type}
+                    </div>
+                </div>
+
+                <div id="js-form-type-fields"></div>
+            </div>
+        </div>
+
+        <footer class="dialog-footer">
+            <div class="flexbox middle">
+                <div class="wide">
+                    <button class="js-submit small" type="submit">{if strlen($id)}[`Save`]{else}[`Add`]{/if}</button>
+                    <button class="js-close-dialog button light-gray small" type="button">[`Cancel`]</button>
+                </div>
+                <a class="button nobutton text-gray nowrap small desktop-and-tablet-only" href="[`https://support.webasyst.com/48863/site-menu-links/`]">
+                    <span data-wa-tooltip-content="[`Read more on setting up menu links in the support section`]" data-wa-tooltip-delay="350">
+                        <i class="fas fa-question-circle"></i>
+                        [`Help`]
+                        <i class="fas fa-external-link-alt fa-sm"></i>
+                    </span>
+                </a>
+                {if strlen($id)}
+                    <button class="js-delete nobutton red small" type="button"> <i class="fas fa-trash-alt"></i> <span class="desktop-and-tablet-only">[`Delete`]</span></button>
+                {/if}
+            </div>
+        </footer>
+    </form>
+</div>
+
+<script>
+(function($) {
+    initMenuLinkDialog({
+        $wrapper: $('#js-menu-link-dialog'),
+        $form: $('#js-menu-link-form'),
+        $type_fields: $('#js-form-type-fields'),
+        $types_select: $('#js-link-type-dropdown'),
+        id: {$id|json_encode},
+        templates: $.menu_link_dialog_templates || {},
+        urls: {
+            save: '?module=configureMenuLink&action=save&domain_id={$domain_id}&id={$id}'
+        }
+    });
+
+    function initMenuLinkDialog(options) {
+        const MenuLinkDialog = class {
+            constructor(options) {
+                this.$wrapper = options.$wrapper;
+                this.$form = options.$form;
+                this.$type_fields = options.$type_fields;
+                this.$submit_button = this.$form.find('.js-submit');
+                this.$delete_button = this.$form.find('.js-delete');
+                this.$types_select = options.$types_select;
+                this.$sitemap_select = options.$sitemap_select;
+
+                this.id = options.id;
+                this.urls = options.urls;
+                this.templates = options.templates;
+                this.dialog = this.$wrapper.data('dialog');
+
+                this.updateMenuLink = (id, name, url) => {};
+                this.deleteMenuLink = (id) => {};
+                $(() => {
+                    const options = this.dialog.options;
+                    this.updateMenuLink = options.updateMenuLink;
+                    this.deleteMenuLink = options.deleteMenuLink;
+                });
+
+                this.init();
+            }
+
+            init() {
+                this.initEvents();
+                this.initTypesSelect();
+                this.initSubmit();
+                this.initDelete();
+
+                $('[data-wa-tooltip-content]').waTooltip();
+            }
+
+            initEvents() {
+                this.$form.find('input[name="name"]').on('focus', () => {
+                    this.clearErrors();
+                });
+            }
+
+            initSubmit() {
+                this.$submit_button.on('click', (e) => {
+                    e.preventDefault();
+                    this.$submit_button.prop('disabled', true);
+                    this.save().always(() => {
+                        this.$submit_button.prop('disabled', false);
+                    });
+                });
+            }
+
+            initDelete() {
+                this.$delete_button.on('click', (e) => {
+                    e.preventDefault();
+                    this.delete();
+                });
+            }
+
+            save() {
+                this.clearErrors();
+
+                const form_data = this.$form.serializeArray();
+                return $.post(this.urls.save, form_data, (r) => {
+                    if (r?.data) {
+                        const { id, name, url } = r.data;
+                        this.updateMenuLink(id, name, url);
+                        this.closeDialog();
+                    } else if (r?.errors) {
+                        this.showFieldError(r.errors);
+                    }
+                });
+            }
+
+            delete() {
+                this.deleteMenuLink(this.id, () => {
+                    this.dialog.close();
+                });
+            }
+
+            clearErrors() {
+                this.$form.find('.state-error').removeClass('state-error');
+                this.$form.find('.state-error-hint').remove();
+            }
+
+            showFieldError({ field, message }) {
+                const $field = this.$form.find(field);
+                $field.addClass('state-error')
+                if (message) {
+                    $field.after('<div class="state-error-hint">'+message+'<div>');
+                }
+            }
+
+            initTypesSelect() {
+                const applyItem = ($item) => {
+                    const id = $item.data('id');
+                    const description = $item.data('description');
+                    this.$types_select.find('[name="type"]').val(id);
+                    this.renderFields(id);
+                    $('#js-link-type-hint').html(description);
+                    setTimeout(() => {
+                        this.dialog.resize();
+                    });
+                };
+
+                this.$types_select.waDropdown({
+                    hover: false,
+                    items: '.menu > li',
+                    ready: (dropdown) => {
+                        if (!dropdown.$active.length) return;
+                        dropdown.setTitle(dropdown.$active.children().clone());
+                        applyItem(dropdown.$active);
+                    },
+                    change: (_, target) => {
+                        applyItem($(target));
+                    }
+                })
+            }
+
+            renderFields(id) {
+                const template = this.templates[id];
+                if (template === undefined) return;
+
+                this.$type_fields.html(template);
+            }
+
+            closeDialog() {
+                this.$wrapper.data('dialog').close();
+            }
+        };
+
+        return new MenuLinkDialog(options);
+    }
+})(jQuery);
+</script>

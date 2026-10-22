@@ -12,10 +12,10 @@ class siteEditorPageSettingsSaveController extends waJsonController
 
         if (!$page_id && !$is_new) {
             // should never happen
-            $this->errors = [[
+            $this->errors[] = [
                 'code' => 'page_id_required',
                 'description' => 'page_id is required',
-            ]];
+            ];
             return;
         }
 
@@ -70,7 +70,7 @@ class siteEditorPageSettingsSaveController extends waJsonController
                     $main_page->saveRoutes();
                 } else {
                     $this->errors[] = [
-                        'error' => 'unsuitable_main_page',
+                        'code' => 'unsuitable_main_page',
                         'description' => _w('Unable to set this page or section as the site’s home page.'),
                     ];
                 }
@@ -139,7 +139,11 @@ class siteEditorPageSettingsSaveController extends waJsonController
                 'full_url' => $full_url,
                 'final_page_id' => null
         ]) > 0) {
-            $this->errors[] = _w('The specified URL already exists.');
+            $this->errors[] = [
+                'field' => 'info[url]',
+                'code' => 'url_already_exists',
+                'description' => _w('The specified URL already exists.'),
+            ];
             return true;
         }
 

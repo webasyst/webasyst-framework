@@ -474,4 +474,21 @@
             }
 
             $._waLoading.done();
+
+            $.wa.loadSources([{
+                id: "ai-image-js",
+                type: 'js',
+                uri: "{$wa_app_static_url}js/editor/AiImageEditorAdapter.js?v{$wa->version()}"
+            }]).then(() => {
+                $.site.aiImage.initHtmlEditorAdapter({
+                    locale: {
+                        html_button: '[`Image with AI`]',
+                        reference_unavailable: '[`The selected image cannot be attached.`]',
+                        request_failed: '[`Request failed.`]'
+                    },
+                    urls: {
+                        image_upload: "{$wa_app_url}?module=pages&action=uploadimage&r=2"
+                    }
+                });
+            });
         });</script>

@@ -9,6 +9,8 @@ class siteConfigureSectionDialogAction extends waViewAction
     public function execute()
     {
         $route_id = waRequest::request('route', '');
+        $url_exact = (bool)waRequest::request('url_exact');
+
         $routes = wa()->getRouting()->getRoutes(siteHelper::getDomain());
         if ($route_id && !isset($routes[$route_id])) {
             throw new waException('Route not found', 404);
@@ -95,6 +97,11 @@ class siteConfigureSectionDialogAction extends waViewAction
                         $route = $app['routing_params'];
                     }
 
+                    // Technical settlements (apps that don't appear on Site Map) default to private mode.
+                    if (!$route_id && !strlen($route_id) && !array_key_exists('private', $route) && !in_array($app_id, siteHelper::getSitemapAppIds())) {
+                        $route['private'] = true;
+                    }
+
                     if (isset($app['site']['params'])) {
                         $params = $this->getParams($route_id, $app['site']['params'], $route);
                     } else {
@@ -167,6 +174,10 @@ class siteConfigureSectionDialogAction extends waViewAction
             $themes[$route['theme_mobile']] = $route['theme_mobile'];
         }
 
+        if ($url_exact && isset($app_url)) {
+            $app_url .= '/*';
+        }
+
         $this->view->assign(array(
             'site_url'        => wa()->getAppUrl('site'),
             'domain_decoded'  => $domain_decoded,
@@ -182,6 +193,7 @@ class siteConfigureSectionDialogAction extends waViewAction
             'last_app_route'  => $last_app_route,
             'misconfigured_settlement' => $misconfigured_settlement,
             'themes'          => $themes,
+            'url_exact'       => $url_exact,
         ));
     }
 

@@ -38,11 +38,19 @@
             <ul class="js-list-of-blocks-{$n} list-of-blocks separated menu{if !$item@last} custom-mt-24 custom-mb-0{else} custom-my-24{/if}" data-category="{$n}">
                 <li><h6 style="custom-mt-12 custom-mb-24">{$item.title|escape}</h6></li>
                 {foreach $item.blocks as $b}
-                    <li{if empty($b.disabled)} data-type-id="{$b.id|escape}"{/if}{if !$is_premium && !empty($b.premium)} data-premium-required="1"{/if}>
+                    <li
+                        {if empty($b.disabled)} data-type-id="{$b.id|escape}"{/if}
+                        {if !$is_premium && !empty($b.premium)} data-premium-required="1"{/if}
+                        {if isset($b.configurator_html)} data-type-options="{$b.data->block_type->getTypeOptions()|json_encode|escape}"{/if}
+                    >
                         {if !empty($b.icon)}
                             <a href="javascript:void(0);" class="custom-p-0" style="max-width: 400px;width: 100%;display: flex;justify-content: center;align-items: center;aspect-ratio: 16 / 9;background-color: var(--background-color-skeleton);font-size: 1.5rem;">
                                 <i class="fas fa-{$b.icon|escape}" style="font-size: 2.5rem; max-width: 100%; color: var(--menu-link-color);"></i>
                             </a>
+                        {elseif !empty($b.configurator_html)}
+                            <div class="custom-p-0" style="max-width: 400px;width: 100%;height: 136px;">
+                                {$b.configurator_html}
+                            </div>
                         {elseif empty($b.image)}
                             <a href="javascript:void(0);" class="custom-p-0" style="max-width: 400px;width: 100%;display: flex;justify-content: center;align-items: center;aspect-ratio: 16 / 9;background-color: var(--background-color-skeleton);font-size: 1.5rem;">
                                 {$b.title|escape}
@@ -92,8 +100,10 @@
         is_loading = true;
 
         const type_id = $this.data('type-id');
+        const type_options = $this.data('type-options');
         $.post('?module=editor&action=addBlock', Object.assign({
-            type_id: type_id
+            type_id,
+            type_options
         }, insert_place_params))
             .done((html) => {
                 $dialog_content.trigger('site_block_added', [html]);

@@ -21,6 +21,7 @@ var that = $.site = {
         that.backend_url = opts.backend_url;
         that.app_url = opts.app_url;
         that.wa_url = opts.wa_url;
+        //that.shop_url = opts.shop_url;
 
         Object.defineProperty($.site, 'is_premium', {
             value: opts.is_premium,
@@ -29,7 +30,32 @@ var that = $.site = {
             enumerable: true
         });
 
-        //that.shop_url = opts.shop_url;
+        that.initImageGenerationNotice();
+    },
+
+    initImageGenerationNotice: function() {
+        const that = this;
+        if ('ServiceWorker' in window) {
+            const channel = new BroadcastChannel('ai-generation-channel');
+            channel.addEventListener('message', (e) => {
+                const type = e.data?.type;
+                if ($.site.aiImage?.drawer || !type) {
+                    return;
+                }
+                if (type === 'GENERATION_SUCCESS') {
+                    $.site.showAlert({
+                        text: that.opts.locale.image_generation_success,
+                        type: 'success'
+                    });
+                }
+                if (type === 'GENERATION_FAILED') {
+                    $.site.showAlert({
+                        text: that.opts.locale.image_generation_failed,
+                        type: 'danger'
+                    });
+                }
+            });
+        }
     },
 
     initAfterLoad: function(opts) {
@@ -134,6 +160,46 @@ var that = $.site = {
         if (this.opts.is_debug) {
             console.log.apply(null, arguments);
         }
+    },
+
+    showAlert: function({ text = '', header = '', type = 'info', timeout = 7000, onClose = () => null } = {}) {
+        $('body').children('.alert-fixed-box').remove();
+
+        const $alert = $(`
+            <div class="alert-fixed-box">
+                <div class="alert">
+                    <a href="javascript:void(0)" class="alert-close"><i class="fas fa-times"></i></a>
+                    <span></span>
+                </div>
+            </div>
+        `);
+
+        $alert.find('.alert').addClass(type);
+
+        const $text = $alert.find('span').text(text || '');
+
+        if (header) {
+            $text.before($('<div class="bold custom-mb-2">').text(header));
+        }
+
+        if (type === 'success') {
+            $('<i class="fas fa-check-circle custom-mr-4">').prependTo($text);
+        }
+        if (type === 'danger') {
+            $('<i class="fas fa-skull custom-mr-4">').prependTo($text);
+        }
+        $alert.find('.alert-close').on('click', function() {
+            $(this).closest('.alert-fixed-box').remove();
+            if (typeof onClose === 'function') {
+                onClose();
+            }
+        });
+
+        $('body').append($alert);
+
+        setTimeout(() => {
+            $alert.remove();
+        }, timeout);
     }
 };
 
@@ -178,14 +244,6 @@ function initContentRouter() {
             location.reload();
         }
     };
-}
-
-function initHistory() {
-    if (!history.state) {
-        history.replaceState({
-            content_url: location.href
-        }, "", location.href);
-    }
 }
 
 function initAnimation() {
@@ -243,12 +301,9 @@ $.site.helper = {
     loadSortableJS: function () {
         const dfd = $.Deferred();
 
-        const $script = $("#wa-header-js"),
-            path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
-
         const urls = [
-            "wa-content/js/sortable/sortable.min.js",
-            "wa-content/js/sortable/jquery-sortable.min.js",
+            `${$.site.wa_url}wa-content/js/sortable/sortable.min.js`,
+            `${$.site.wa_url}wa-content/js/sortable/jquery-sortable.min.js`,
         ];
 
         const sortableDeferred = urls.reduce((dfd, url) => {
@@ -256,7 +311,7 @@ $.site.helper = {
                 return $.ajax({
                     cache: true,
                     dataType: "script",
-                    url: path + url
+                    url
                 });
             });
         }, $.Deferred().resolve());

@@ -21,6 +21,30 @@
         </div>
     </div>
 {/function}
+{function _renderAppRow title='' url=''}
+    <tr>
+        <td class="s-app width-40">
+            <div class="flexbox">
+                <a href="#" onclick="return false" class="custom-pr-8 text-light-gray"><span class="s-sort icon"><i class="fas fa-grip-vertical"></i></span></a>
+                <span class="js-name semibold">{$title|escape}</span>
+                <input type="hidden" name="apps[name][]" value="{$title|escape}" />
+            </div>
+        </td>
+        <td>
+            <span class="js-url text-gray break-word">{$url|escape}</span>
+            <input type="hidden" name="apps[url][]" value="{$url|escape}" />
+        </td>
+        <td class="s-actions">
+            <button class="s-apps-edit button light-gray circle small" title="[`Edit`]" type="button"><i class="fas fa-pen fa-sm"></i></button>
+            <button class="s-apps-delete button light-gray circle small" title="[`Delete`]" type="button"><i class="fas fa-times fa-sm"></i></button>
+        </td>
+    </tr>
+{/function}
+{capture assign="_saved_apps_select_message"}
+<span  class="js-saved-select-apps-message nowrap text-green custom-ml-8" style="opacity: 0;">
+    <i class="fas fa-check-circle custom-mr-4"></i>[`Saved`]
+</span>
+{/capture}
 
 <div class="article site-base">
     <div class="article-body">
@@ -114,17 +138,17 @@
 
                     <div class="field s-field-waapps">
                         <div class="name">
-                            [`Links in the site navigation menu`]
-                            <div class="name-wa-apps">&#123;$wa-&gt;apps()&#125;</div>
+                            [`Main menu links`]
+                            <div class="hint">&#123;$wa-&gt;apps()&#125;</div>
                         </div>
                         <div class="value">
                             <div class="alert">
                                 <div class="flexbox space-12 s-small">
                                     <span> <i class="fas fa-info-circle"></i></span>
-                                    [`Visual appearance can be supplemented or completely modified by design settings.`]
+                                    [`Design themes can change the appearance and content of the main menu.`]
                                 </div>
                             </div>
-                            <div class="flexbox space-4 custom-mb-12 waapps-auto">
+                            <div class="js-waapps-radio flexbox space-4">
                                 <label for="waapps-auto">
                                     <span class="wa-radio custom-pt-4">
                                         <input type="radio" name="wa_apps_type" {if !$domain_apps_type}checked{/if} id="waapps-auto" value="0">
@@ -132,12 +156,12 @@
                                     </span>
                                 </label>
                                 <div>
-                                    <label for="waapps-auto" class="flexbox vertical custom-mb-12">
+                                    <label for="waapps-auto">
                                         [`Generate automatically from top-level sections and pages in the site map`]
                                     </label>
                                 </div>
                             </div>
-                            <div class="waapps-select">
+                            <div class="js-waapps-radio custom-mt-8">
                                 <label for="waapps-select">
                                 <span class="wa-radio custom-pt-4">
                                     <input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" />
@@ -145,26 +169,13 @@
                                 </span>
                                 </label>
                                 <label for="waapps-select"> [`Manual settings`]</label>
-                                <div class="custom-my-16" {if !$domain_apps_type}style="display:none"{/if}>
+                                <div id="s-wa-apps-wrapper" class="custom-my-16" {if !$domain_apps_type}style="display:none"{/if}>
                                     <table id="s-wa-apps" class="s-settings-apps custom-mt-16 custom-mb-8">
                                         {foreach $domain_apps as $row}
-                                        <tr>
-                                           <td class="s-app"><a href="#" onclick="return false" class="custom-pr-8 text-light-gray"><span class="s-sort icon"><i class="fas fa-grip-vertical"></i></span></a>
-                                              <span>{$row.name|escape}</span>
-                                              <input style="display:none" type="text" name="apps[name][]" value="{$row.name|escape}" />
-                                           </td>
-                                           <td>
-                                              <span>{$row.url|escape}</span>
-                                              <input style="display:none" type="text" name="apps[url][]" value="{$row.url|escape}" />
-                                           </td>
-                                           <td class="s-actions">
-                                                <a href="#" class="s-apps-edit custom-pr-16 text-light-gray" title="[`Edit`]"><i class="icon fas fa-pen edit"></i></a>
-                                                <a href="#" class="s-apps-delete text-light-gray" title="[`Delete`]"><i class="icon fas fa-times-circle delete"></i></a>
-                                           </td>
-                                        </tr>
+                                            {_renderAppRow title=$row.name url=$row.url}
                                         {/foreach}
                                     </table>
-                                    <div style="display:none; text-align: right;" class="custom-mb-8"><span class="hint">[`When you have finished editing, click “Save” to apply changes.`]</span></div>
+
                                     <a href="#" class="button rounded outlined smaller custom-mt-8" id="s-apps-add">
                                         <span class="icon add custom-pr-8"><i class="fas fa-plus"></i></span>[`Add link`]
                                     </a>
@@ -578,12 +589,13 @@
                 that.locales = options["locales"];
                 that.$wa_app_url = options["$wa_app_url"];
                 that.domain_id = options["domain_id"];
-                that.cdn_template = options["cdn_template"];
                 that.$delete_content = options["$delete_content"];
                 that.redirect_after_delete = options["redirect_after_delete"];
                 that.storage = that.initStorage();
                 that.icon_mime_types = options["icon_mime_types"];
                 that.icon_extensions = options["icon_extensions"];
+                that.templates = options["templates"];
+                that.urls = options["urls"];
 
                 // INIT
                 that.initClass(options);
@@ -619,57 +631,190 @@
                     $section = $wrapper.find('.s-field-waapps'),
                     $table = $section.find('#s-wa-apps'),
                     $input = $section.find('input[name=wa_apps_type]'),
-                    //$waapps_domain_title = $section.find('.waapps-auto-domain-title'),
-                    $waapps_select = $section.find('.waapps-select'),
-                    $waapps_select_input = $section.find('#waapps-select');
+                    $waapps_select_wrapper = $section.find('#s-wa-apps-wrapper'),
+                    $waapps_select_input = $section.find('#waapps-select'),
+                    $waapps_auto_input = $section.find('#waapps-auto');
 
-                $input.on('change', function () {
-                    if ($waapps_select_input.is(":checked")) {
-                        $waapps_select.children('div').show();
-                        //$waapps_domain_title.hide();
+                const getApps = () => {
+                    const names = $.map(that.form.find('input[name="apps[name][]"]'), (input) => input.value);
+                    const urls = $.map(that.form.find('input[name="apps[url][]"]'), (input) => input.value);
+                    const apps = [];
+                    names.forEach((name, i) => {
+                        apps.push({ name, url: urls[i] });
+                    })
+                    return apps;
+                };
+
+                const save = (is_apps_select) => {
+                    const payload = {
+                        ...(is_apps_select ? { apps: getApps() } : {})
+                    };
+                    return $.post(that.urls.save_apps_select, payload);
+                };
+
+                const saveWithConfirm = (is_apps_select) => {
+                    const deferred = $.Deferred();
+                    $.waDialog.confirm({
+                        title: that.locales["switch_to_auto_waapps_title"],
+                        text: that.locales["switch_to_auto_waapps_text"],
+                        success_button_title: that.locales["switch_to_auto_waapps_button"],
+                        success_button_class: 'danger',
+                        cancel_button_title: that.locales["delete_cancel_button"],
+                        cancel_button_class: 'light-gray',
+                        onSuccess: () => {
+                            save(is_apps_select).then(() => {
+                                deferred.resolve(is_apps_select);
+                            });
+                        },
+                        onCancel: () => {
+                            if (is_apps_select) {
+                                $waapps_auto_input.prop('checked', true);
+                            } else {
+                                $waapps_select_input.prop('checked', true);
+                            }
+                        }
+                    });
+
+                    return deferred;
+                };
+
+                const showSuccessMessage = (is_apps_select) => {
+                    $section.find('.js-saved-select-apps-message').remove();
+                    const $message = $(that.templates.saved_apps_select_message);
+                    let $radio = null;
+                    if (is_apps_select) {
+                        $radio = $waapps_select_input.closest('.js-waapps-radio');
                     } else {
-                        $waapps_select.children('div').hide();
-                        //$waapps_domain_title.show();
+                        $radio = $waapps_auto_input.closest('.js-waapps-radio');
                     }
-                });
+                    $radio.find('label:last').append($message);
 
-                $("a#s-apps-add").click(function () {
-                    $table.append('<tr><td><a style="display:inline" href="#" onclick="return false" class="custom-pr-8 text-light-gray"><i class="icon fas fa-grip-vertical sort"></i></a>' +
-                                        '<span></span><input type="text" name="apps[name][]" value="" /></td>' +
-                                        '<td><span></span><input type="text" name="apps[url][]" value="" /></td>' +
-                                        '<td class="s-actions">' +
-                                            '<a href="#" class="s-apps-edit custom-pr-16 text-light-gray" title="[`Edit`]"><i class="icon fas fa-pen edit"></i></a>' +
-                                            '<a href="#" class="s-apps-delete text-light-gray" title="[`Delete`]"><i class="icon fas fa-times-circle delete"></i></a>' +
-                                        '</td></tr>');
-                    $table.next('div').show();
-                    return false;
-                });
+                    $message.animate({ opacity: 1 }, 200, () => {
+                        setTimeout(() => {
+                            $message.animate({ opacity: 0 }, 200, () => {
+                                $message.remove();
+                            });
+                        }, 500);
+                    });
+                };
 
-                $table.on('click', 'a.s-apps-edit', function () {
-                    var tr = $(this).parents('tr');
-                    tr.find('span').hide();
-                    tr.find('input').show();
-                    $table.next('div').show();
-                    return false;
-                });
-
-                $table.on('click', 'a.s-apps-delete', function () {
-                    if (confirm('[`This will delete the link from the menu. Are you sure?`]')) {
-                        $(this).parents('tr').remove();
+                const toggleWaApps = (is_apps_select, skip_confirm = false) => {
+                    const success = () => {
+                        $waapps_select_wrapper.toggle(is_apps_select);
+                        $section.find('.js-saved-select-apps-alert').remove();
+                        showSuccessMessage(is_apps_select);
                     }
-                    $table.next('div').show();
+                    if (skip_confirm || is_apps_select) {
+                        save(is_apps_select).then(success);
+                    } else {
+                        saveWithConfirm(is_apps_select).then(success);
+                    }
+                };
+
+                $input.on('change', function (_, skip_confirm) {
+                    const is_apps_select = $waapps_select_input.is(":checked");
+                    toggleWaApps(is_apps_select, skip_confirm);
+                });
+
+                const deleteMenuLink = (index, success) => {
+                    $.waDialog.confirm({
+                        title: that.locales["delete_link_confirm_title"],
+                        text: that.locales["delete_link_confirm_text"],
+                        success_button_title: that.locales["delete_confirm_button"],
+                        success_button_class: 'danger',
+                        cancel_button_title: that.locales["delete_cancel_button"],
+                        cancel_button_class: 'light-gray',
+                        onSuccess: () => {
+                            $.post(that.urls.delete_menu_link + '&id=' + index, (r) => {
+                                if (typeof r?.errors === 'string') {
+                                    alert(r.errors);
+                                } else {
+                                    $table.find('tr').eq(index).remove();
+                                    if (typeof success === 'function') {
+                                        success();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                };
+
+                const updateLink = (index = null) => {
+                    $.site.helper.preventDupeRequest(() => {
+                        return $.get(that.urls.edit_menu_link + '&id=' + index, (html) => {
+                            $.waDialog({
+                                html,
+                                onOpen: (_, dialog) => {
+                                    dialog.options = {
+                                        deleteMenuLink,
+                                        updateMenuLink: (index, name, url) => {
+                                            let $row = $table.find('tr').eq(index);
+                                            if (!$row.length) {
+                                                $row = $(that.templates.app_row);
+                                                $table.append($row);
+                                            }
+                                            $row.find('.js-name').text(name);
+                                            $row.find('.js-url').text(url);
+                                        }
+                                    };
+                                }
+                            });
+                        });
+                    });
+                };
+
+                $("#s-apps-add").on('click', function () {
+                    updateLink();
                     return false;
                 });
 
+                $table.on('click', '.s-apps-edit', function () {
+                    const $tr = $(this).parents('tr');
+                    const index = $tr.index();
+                    updateLink(index);
+                    return false;
+                });
+
+                $table.on('click', '.s-apps-delete', function (e) {
+                    e.preventDefault();
+                    const $tr = $(this).closest('tr');
+                    const index = $tr.index();
+                    deleteMenuLink(index);
+                });
+
+                let is_saving = false;
                 $.site.helper.loadSortableJS().then(() => {
+                    const headerHeight = $('#wa-header').height() || 0;
+                    const scrollSensitivity = 70 + headerHeight;
+
                     $table.find('tbody').sortable({
                         animation: 150,
                         handle: '.s-sort',
                         draggable: 'tr',
                         opacity: 0.75,
                         tolerance: 'pointer',
-                        onEnd: function () {
-                            $table.next('div').show();
+                        scroll: true,
+                        forceFallback: true,
+                        scrollSensitivity,
+                        scrollFn: (offsetX, offsetY, originalEvent, touchEvt, hoverTargetEl) => {
+                            const clientY = (touchEvt ? (touchEvt.touches ? touchEvt.touches[0] : touchEvt) : originalEvent).clientY;
+                            if (clientY > scrollSensitivity + headerHeight && clientY < (window.innerHeight - scrollSensitivity)) {
+                                return false;
+                            }
+                            return 'continue';
+                        },
+                        onMove: () => {
+                            return !is_saving;
+                        },
+                        onEnd: function (evt) {
+                            if (is_saving || evt.oldIndex === evt.newIndex) return;
+                            is_saving = true;
+                            $.post(that.urls.move_menu_link, {
+                                id: evt.oldIndex,
+                                before_id: evt.newIndex - (evt.oldIndex > evt.newIndex ? 1 : 0)
+                            }).always(() => {
+                                is_saving = false;
+                            });
                         }
                     });
                 });
@@ -787,7 +932,7 @@
                 const $cdn_wrapper = that.$wrapper.find('.js-cdn-wrapper'),
                 $cnd_list = $cdn_wrapper.find('.js-cdn-list'),
                 $add_cdn = $cdn_wrapper.find('.js-cdn-add'),
-                cdn_template = that.cdn_template;
+                cdn_template = that.templates.cdn;
 
                 switchCdnRemoveIcon();
 
@@ -818,7 +963,7 @@
                 }
 
                 function addCdnInput() {
-                    var $item = $(cdn_template);
+                    var $item = $(that.templates.cdn);
                     $cnd_list.append($item);
                     switchCdnRemoveIcon();
                 }
@@ -832,9 +977,7 @@
             initRedirectRoutes() {
                 const that = this,
                     $wrapper = that.$wrapper,
-                    $switchers = $wrapper.find('.js-s-disable-route'),
-                    xhr = null,
-                    url = that.$wa_app_url + '?module=configure&action=saveroutes&domain_id=' + that.domain_id;
+                    $switchers = $wrapper.find('.js-s-disable-route');
 
                 $switchers.each(function () {
                     const $switch_wrapper = $(this),
@@ -903,7 +1046,7 @@
                                     app: $(this).data('app-id'),
                                 }
 
-                                $.post(that.$wa_app_url+'?module=configure&action=sectionDialog&domain_id=' + that.domain_id, data, function(html) {
+                                $.post(that.urls.section_dialog, data, function(html) {
                                     if (closed) {
                                         return;
                                     }
@@ -925,14 +1068,13 @@
                     $tr = $item.closest('tr'),
                     item_id = $tr.data('route-id');
 
-                    const href = that.$wa_app_url + "?module=configure&action=sectionDialog";
                     const data = {
                         ...(item_id !== undefined ? { route: item_id }: {}),
                         ...($item.data('app-id') !== undefined ? { app: $item.data('app-id') }: {}),
                         domain_id: that.domain_id,
                     };
 
-                    $.post(href, data, function (html) {
+                    $.post(that.urls.section_dialog, data, function (html) {
                         $.waDialog({
                             html: html,
                         })
@@ -962,12 +1104,11 @@
                         $tr = $item.closest('tr'),
                         item_id = $tr.data('id');
 
-                    const href = that.$wa_app_url + "?module=configure&action=redirectDialog";
                     const data = {
                         'route': item_id,
                         'domain_id': that.domain_id
                     };
-                    $.get(href, data, function (html) {
+                    $.get(that.urls.redirect_dialog, data, function (html) {
                         $.waDialog({
                             html: html,
                         })
@@ -977,8 +1118,7 @@
 
             initDeleteSite() {
                 const that = this,
-                $section = that.$wrapper.find('.s-footer-field'),
-                delete_url = '?module=configure&action=delete';
+                $section = that.$wrapper.find('.s-footer-field');
 
                 $section.on('click', '.js-delete', function () {
 
@@ -995,7 +1135,7 @@
                 function deleteSite() {
                     console.log('Delete site id =', that.domain_id);
 
-                    $.post(delete_url, "domain_id=" + that.domain_id, function (response) {
+                    $.post(that.urls.delete_site, "domain_id=" + that.domain_id, function (response) {
                         if (response.status === 'ok') {
                             if (that.redirect_after_delete) {
                                 location.href = that.redirect_after_delete;
@@ -1011,7 +1151,6 @@
             initSubmitSettings(){
                 const that = this,
                 $form = that.form,
-                save_url = '?module=configure&action=save&domain_id=' + that.domain_id,
                 $iframe = that.$wrapper.find("#s-settings-iframe"),
                 $form_status = that.$wrapper.find("#s-settings-form-status");
                 const wa_loading = $.waLoading();
@@ -1105,15 +1244,32 @@
             $wrapper: $("#s-settings-page"),
             domain_id: '{$domain_id}',
             $wa_app_url: '{$wa_app_url}',
-            cdn_template: {_renderCdnItem|json_encode},
             redirect_after_delete: {$wa_app_url|json_encode},
             locales: {
                 delete_confirm_title: '[`Delete entire website`]',
                 delete_confirm_text: '{$delete_content}',
                 delete_confirm_button: "[`Delete`]",
                 delete_cancel_button: "[`Cancel`]",
+                delete_link_confirm_title: '[s`Are you sure?`]',
+                delete_link_confirm_text: '[`This will delete the link from the menu. Are you sure?`]',
                 alert_title: "[`Error message`]",
-                alert_button: "[`Close`]",
+                switch_to_auto_waapps_title: "[`Switch the menu to the automatic mode?`]",
+                switch_to_auto_waapps_text: "[`The visual appearance of the menu on the site may change.<br><br>Manual menu settings will be lost.`]",
+                switch_to_auto_waapps_button: "[`Switch and clear manual settings`]",
+            },
+            templates: {
+                cdn: {_renderCdnItem|json_encode},
+                app_row: {_renderAppRow|json_encode},
+                saved_apps_select_message: {$_saved_apps_select_message|json_encode}
+            },
+            urls: {
+                section_dialog: '?module=configure&action=sectionDialog&domain_id={$domain_id}',
+                redirect_dialog: '?module=configure&action=redirectDialog&domain_id={$domain_id}',
+                delete_site: '?module=configure&action=delete',
+                edit_menu_link: '?module=configure&action=menuLinkDialog&domain_id={$domain_id}',
+                save_apps_select: '?module=configureMenuLink&action=saveAppsSelect&domain_id={$domain_id}',
+                delete_menu_link: '?module=configureMenuLink&action=delete&domain_id={$domain_id}',
+                move_menu_link: '?module=configureMenuLink&action=move&domain_id={$domain_id}',
             },
             dialog_add_app: {waRequest::get('dialog_add_app')|json_encode},
             scroll_to: {waRequest::get('scroll_to')|json_encode},

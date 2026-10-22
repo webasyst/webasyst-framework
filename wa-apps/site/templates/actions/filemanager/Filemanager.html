@@ -6,17 +6,6 @@
         {include file="templates/actions/backend/includes/domain_tabs.html" selected='files' inline}
 
         <div class="flexbox s-files-page" id="s-files-page">
-            <div class="sidebar s-internal-sidebar hidden">
-                <div class="block not-padded">
-                    <div class="s-files-baseurl">
-                        <a href="#" class="s-baseurl router-link"><i class="icon fas fa-folder"></i>wa-data/public/site</a>
-                    </div>
-
-                    <div class="hierarchical" id="s-files-tree">
-
-                    </div>
-                </div>
-            </div>
             <div class="content">
                 <div class="s-breadcrumbs custom-pb-12">
                     <ul class="breadcrumbs">
@@ -235,8 +224,6 @@
                 const that = this;
             // DOM
                 that.$wrapper = options["$wrapper"];
-                that.$files_tree = that.$wrapper.find('#s-files-tree');
-                that.$internal_sidebar = that.$wrapper.find('.s-internal-sidebar');
                 that.$content = that.$wrapper.find('.content');
                 that.$toolbar = that.$content.find('.s-grey-toolbar');
                 that.$breadcrumbs = that.$content.find('.s-breadcrumbs');
@@ -255,6 +242,7 @@
                 that.$dirs = options["$dirs"];
                 that.$files_path = options["$files_path"];
                 that.domains_decode = options["domains_decode"];
+                that.is_select_mode = false;
             // INIT
                 that.initClass();
 
@@ -272,14 +260,7 @@
                 that.initFolderActions();
                 that.initToolbar();
                 that.initFilesGrid();
-
-                that.$wrapper.on("click", "a.router-link", function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var $link = $(this),
-                        uri = $link.attr("href");
-                        that.initDispatch(uri);
-                });
+                that.initHashNavigation();
             }
 
             initDispatch(hash, unset_state = false, loaded = true) {
@@ -327,7 +308,7 @@
                 const $actions_li = that.$content.find("#s-folder-actions-li");
 
                 $actions_li.on('click', '.js-folder-action-back', function() { //add folder
-                        that.initGoBack();
+                    that.initGoBack();
                 })
 
                 $actions_li.find("#dropdown-actions-li").waDropdown({
@@ -350,7 +331,6 @@
             initToolbar() {
                 const that = this,
                 $toolbar = that.$toolbar;
-                let checkbox_hidden = true;
 
                 $toolbar.find('.alert-close').on('click', function() {
                     const $alert = $(this).closest('.s-alert-text');
@@ -362,24 +342,24 @@
                 })
 
                 $toolbar.on('click', '.js-action-select', function() {
-                    if (checkbox_hidden) {
+                    if (!that.is_select_mode) {
                         that.$files_grid.addClass('checkbox-show');
                         $(this).addClass('hidden');
                         $toolbar.find('.js-action-selected').removeClass('hidden');
-                        checkbox_hidden = false;
+                        that.is_select_mode = true;
                     }
 
                 })
 
                 $toolbar.on('click', '.js-action-remove-selected', function() {
-                    if (!checkbox_hidden) {
+                    if (that.is_select_mode) {
                         that.$files_grid.removeClass('checkbox-show')
                         $toolbar.find('.js-action-selected').addClass('hidden');
                         $toolbar.find('.js-action-select').removeClass('hidden');
-                        checkbox_hidden = true;
                         that.$files_grid.find("input").prop('checked', false);
                         that.$toolbar.find("#s-files-count").text(0);
                         that.$toolbar.find("#dropdown-selected-files .dropdown-body a").addClass('disabled');
+                        that.is_select_mode = false;
                     }
                 })
 
@@ -434,39 +414,49 @@
                     },
                 });
 
-                var jqXHR = null;
-
+                const jqXhrArray = [];
+                let has_success = false;
                 $('#s-input-file').fileupload({
                     add: function(e, data) {
                         if (data.files[0]['size'] > {waRequest::getUploadMaxFilesize()}) {
                             alert('{sprintf('[`Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file.`]', {waRequest::getUploadMaxFilesize()})}')
 
                         } else {
-                            jqXHR = data.submit();
+                            jqXhrArray.push(data.submit());
                         }
                     },
                     dataType: 'json',
                     start: function (e, data) {
+                        has_success = false;
                         const dialog_html = that.$wrapper.find("#s-upload-dialog-wrapper").html();
                         that.$dialog_upload = $.waDialog({
                             html: dialog_html,
-                            onOpen: function ($dialog, dialog_instance) {
+                            onOpen: ($dialog, dialog_instance) => {
                                 $dialog.find("div.loading").show();
                                 $dialog.find("input[type=submit]").attr('disabled', 'disabled');
-                                $dialog.on('click', '.js-close-dialog', function(){
-                                    jqXHR.abort();
-                                })
+                            },
+                            onClose: () => {
+                                while (jqXhrArray.length) {
+                                    const jqXhr = jqXhrArray.shift();
+                                    jqXhr.abort();
+                                }
                             }
                         });
                     },
                     done: function (e, data) {
                         if (data.result.status == 'fail') {
                             alert(data.result.errors);
+                            return;
                         }
-                        that.filesAction(that.filesPath());
+                        has_success = true;
                     },
                     stop: function () {
-                        that.$dialog_upload.close();
+                        const closeDialog = () => that.$dialog_upload.close();
+                        if (has_success) {
+                            that.filesAction(that.filesPath()).then(closeDialog);
+                        } else {
+                            closeDialog();
+                        }
                     }
                 });
 
@@ -478,59 +468,70 @@
 
             initFilesGrid() {
                 const that = this;
-                that.$files_grid.on('change', "input", function () {
-                    if ($(this).hasClass('all')) {
-                        if ($(this).is(':checked')) {
-                            that.$files_grid.find("input").prop('checked', true);
-                        } else {
-                            that.$files_grid.find("input").prop('checked', false);
-                        }
-                    } else {
-                        if (!$(this).is(':checked')) {
-                            that.$files_grid.find("input.all").prop('checked', false);
-                        } else if (that.$files_grid.find("input:not(:checked)").length == 1) {
-                            that.$files_grid.find("input.all").prop('checked', true);
-                        }
-                    }
-                    var n = that.$files_grid.find("input:checked").length - (that.$files_grid.find("input.all").is(":checked") ? 1 : 0);
+
+                const updateCounter = () => {
+                    const n = that.$files_grid.find("input:checked").length - that.$files_grid.find("input.all:checked").length;
                     if (n > 0) {
                         that.$toolbar.find("#dropdown-selected-files .dropdown-body a").removeClass('disabled');
                     } else {
                         that.$toolbar.find("#dropdown-selected-files .dropdown-body a").addClass('disabled');
                     }
-
                     that.$toolbar.find("#s-files-count").text(n);
+                };
+
+                that.$files_grid.on('click', ':checkbox.all', function() {
+                    const $checkbox = $(this);
+                    that.$files_grid.find(':checkbox:not(.all)').prop('checked', $checkbox.is(':checked'));
+
+                    updateCounter();
+                });
+
+                that.$files_grid.on('click', 'tr:not(:first)', function (e) {
+                    if (!that.is_select_mode) {
+                        return true;
+                    }
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+
+                    const $checkbox = $(this).find(':checkbox');
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
+
+                    if (!$checkbox.is(':checked')) {
+                        that.$files_grid.find("input.all").prop('checked', false);
+                    } else if (that.$files_grid.find("input:not(:checked)").length === 1) {
+                        that.$files_grid.find("input.all").prop('checked', true);
+                    }
+
+                    updateCounter();
                 });
             }
 
             filesAction(path, page) {
-                const that = this,
-                $files_tree = that.$files_tree;
+                const that = this;
                 //let page = 1;
                 let params = path;
 
-                if ($files_tree.length) {
-                    loadFiles();
-                }
+                return loadFiles();
 
                 function loadFiles () {
                     const $actions_li = that.$content.find("#s-folder-actions-li");
+                    params = params || '';
                     if (!params) {
                         $actions_li.hide();
                     } else {
                         $actions_li.show();
                     }
 
-                    that.filesList(params, page);
-
-                    $("#s-upload-path").val(params || '');
-                    that.current_folder = params.substr(params.lastIndexOf('/') + 1) || '';
+                    $("#s-upload-path").val(params);
+                    that.current_folder = params.substr(params.lastIndexOf('/') + 1);
                     const path = that.domains_decode[that.current_folder] || that.current_folder;
                     that.$content.find("#s-current-path").html(path);
                     that.$toolbar.find("#s-files-count").html('0');
                     that.$files_grid.find("input.all").removeAttr('checked');
                     that.$toolbar.find("#dropdown-selected-files .dropdown-body a").addClass('disabled');
-                };
+
+                    return that.filesList(params, page);
+                }
             }
 
             filesList(path, page) {
@@ -547,22 +548,24 @@
                     path: path
                 };
 
-                $.post("?module=filemanager&action=list&page=" + page, data, "json").then(function (response) {
+                const jqXhr = $.post("?module=filemanager&action=list&page=" + page, data, "json").then(function (response) {
+                    const $pagination = that.$wrapper.find('div.s-pagination');
                     that.$files_grid.find("tr.s-file").remove();
-                    $("div.s-pagination").empty();
+                    $pagination.empty();
+
                     for (let i = 0; i < response.data.files.length; i++) {
                         let r = response.data.files[i];
                         if (r.is_file) {
-                            url = 'http://' + that.domain_url + '/wa-data/public/site/' + path + '/' + r.file;
+                            url = 'http://' + that.domain_url + '/wa-data/public/site/' + (path ? path + '/' : '') + r.file;
                             url_class = 's-file-name';
                         } else {
-                            url = '#/' + path + (path ? '/' : '') + r.file;
+                            url = '#/' + (path ? path + '/' : '') + r.file;
                             url_class = 's-file-name router-link';
                         }
 
                         let checkbox = '<label><span class="wa-checkbox"><input type="checkbox" value="'+r.file+'"><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>';
                         const file_name = that.domains_decode[r.file] || r.file;
-                        let html = '<tr class="s-file small"><td class="min-width">'+ checkbox +'</td>' +
+                        let html = '<tr class="s-file cursor-pointer small"><td class="min-width">'+ checkbox +'</td>' +
                             '<td class="file-name-td"><div class="file-name flexbox middle space-8"><i class="icon text-gray fas fa-' + r.type + '"></i> <div><a class="'+ url_class +'" href="'+url+'">' + file_name + '</a><i class="shortener"></i></div></div></td>' +
                             '<td><div>' + r.datetime + '<i class="shortener"></i></div></td>' +
                             '<td><div><span class="float-right">' + getFileSize(r.size) + '</span><i class="shortener"></i></div></td>' +
@@ -575,16 +578,19 @@
                                     hover: false,
                                     ready: function(dropdown){
                                         const $menu = dropdown.$wrapper.find('.menu');
+                                        $menu.on('click', '.copy-address', function(e) {
+                                            const url = $(this).data('href');
+                                            that.copyLink(url);
+                                        });
                                         $menu.on('click', '.file-rename', function(e){
                                             that.renameDialog(r.file, r.is_file, false)
-                                        })
+                                        });
                                         $menu.on('click', '.file-delete', function(e){
                                             that.deleteDialog(r.file, r.is_file, false)
-                                        })
-
+                                        });
                                         $menu.on('click', '.file-move', function(e){
                                             that.moveDialog(r.file, r.is_file, false)
-                                        })
+                                        });
                                     },
                                     open: function(dropdown){
                                         const $menu = dropdown.$wrapper.find('.menu');
@@ -600,12 +606,13 @@
                     if (response.data.pages > 1) { //TO-DO test
                         let html = '<ul class="paging">';
                         for (let i = 1; i <= response.data.pages; i++) {
-                            html += '<li class="' + (i == page ? 'selected' : '') + '"><a class="router-link" href="#/' + path + '?page=' + i + '">' + i + '</a></li>';
+                            const hash = '#/' + path + '?page=' + i;
+                            const url = that.$wa_app_url + 'files/' + path + '/?domain_id=' + that.$domain_id + (i > 1 ? '&page=' + i : '');
+                            html += '<li class="' + (i == page ? 'selected' : '') + '"><a class="router-link" data-hash="' + hash + '" href="' + url + '">' + i + '</a></li>';
                         }
                         html += '</ul>';
-                        $("div.s-pagination").html(html).show();
+                        $pagination.html(html).show();
                     }
-                }, function() {
                 });
 
                 function filesPage(hash) { //TO-DO Change
@@ -625,29 +632,35 @@
 
                 function getFileSize(size) {
                     if (size < 1024) {
-                            return size + ' ' + that.locales['b'];
-                        } else if (size < 1024 * 1024) {
-                            return Math.round(size/1024) + ' ' + that.locales['kb'];
-                        } else if (size < 1024 * 1024 * 1024) {
-                            return Math.round(size/(1024 * 1024)) + ' ' + that.locales['mb'];
-                        } else {
-                            return Math.round(size/(1024 * 1024 * 1024)) + ' ' + that.locales['gb'];
-                        }
+                        return size + ' ' + that.locales['b'];
+                    } else if (size < 1024 * 1024) {
+                        return Math.round(size/1024) + ' ' + that.locales['kb'];
+                    } else if (size < 1024 * 1024 * 1024) {
+                        return Math.round(size/(1024 * 1024)) + ' ' + that.locales['mb'];
+                    } else {
+                        return Math.round(size/(1024 * 1024 * 1024)) + ' ' + that.locales['gb'];
                     }
+                }
+
+                return jqXhr;
             }
 
             getFileMenu(file, is_file) {
                 const that = this;
-                const open_link_class = (is_file ? '' : 'router-link');
-                const url = that.domain_url + '/wa-data/public/site/' + that.filesPath() + '/' + file;
+                const url = that.domain_url + ('/wa-data/public/site/' + that.filesPath() + '/' + file).replace(/\/\//g, '/');
                 const open_link_url = (is_file ? that.domain_protocol + url : '#/' + that.filesPath() + '/' + file);
 
                 const menu = $('<ul class="menu"></ul>');
                 if (is_file) {
                     if (file.substr(-4) != '.php' && file.substr(-6) != '.phtml' && file.substr(0,1) != '.') {
                         menu.append('<li>' +
-                            '<a href="'+ open_link_url + '" target="_blank" class="' + open_link_class + '">' +
-                            '<i class="icon fas fa-link globe smaller"></i>' + that.locales['open'] + '<i class="icon fas fa-external-link-alt new-window"></i>' +
+                            '<a href="javascript:void(0)" data-href="' + open_link_url + '" class="copy-address">' +
+                            '<i class="icon fas fa-copy smaller"></i>' + that.locales['copy_link'] +
+                            '</a>' +
+                            '</li>');
+                        menu.append('<li>' +
+                            '<a href="'+ open_link_url + '" target="_blank">' +
+                            '<i class="icon fas fa-link smaller"></i>' + that.locales['open'] + '<i class="icon fas fa-external-link-alt new-window"></i>' +
                             '</a>' +
                             '</li>');
                     }
@@ -663,6 +676,21 @@
                 menu.append($('<li></li>').append('<a href="javascript:void(0);" class="file-delete"><i class="icon fas fa-trash-alt delete"></i>' + that.locales['delete'] + '</a>'));
 
                 return menu.html();
+            }
+
+            copyLink(url) {
+                const that = this;
+                const alert_html = `
+                    <div class="alert-fixed-box">
+                        <div class="alert success small"><i class="fas fa-check-circle"></i> ${ that.locales['link_copied'] }</div>
+                    </div>
+                `;
+                that.$wrapper.find('.alert-fixed-box').remove();
+
+                $.wa.copyToClipboard(url).then(() => {
+                    const $alert = $(alert_html).appendTo(that.$wrapper);
+                    setTimeout(() => { $alert.remove(); }, 1500);
+                });
             }
 
             //Used for all rename variations on page
@@ -825,6 +853,38 @@
                 that.initDispatch(previous_path, false, load);
             }
 
+            initHashNavigation() {
+                const that = this;
+
+                const openLink = ($link) => {
+                    const url = $link.data('hash') || $link.attr('href');
+                    if (!url || !url.startsWith('#')) {
+                        return;
+                    }
+                    that.initDispatch(url);
+                };
+
+                that.$wrapper
+                    .on('click', 'a.router-link', function(e) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        openLink($(this));
+                    })
+                    .on('click', 'tr.s-file', function (e) {
+                        const $target = $(e.target);
+                        if ($target.closest('.clickable').length) {
+                            return true;
+                        }
+
+                        const $link = $(this).find('a');
+                        if ($link.hasClass('router-link')) {
+                            openLink($link);
+                        } else if (!$target.is('a')) {
+                            location.href = $link.attr('href');
+                        }
+                    });
+            }
+
             filesPath(full) {
                 const that = this;
                 const prefix = full ? 'wa-data/public/site/' : '';
@@ -924,6 +984,8 @@
                 kb: "[s`kB`]",
                 mb: "[s`MB`]",
                 gb: "[s`GB`]",
+                copy_link: "[`Copy URL`]",
+                link_copied: "[`URL copied`]",
             }
         });
         })(jQuery);

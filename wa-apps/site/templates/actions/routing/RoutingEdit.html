@@ -1,4 +1,4 @@
-{$delete_enabled = $app_id !== 'site' && $wa->user()->isAdmin('site') && !empty($route_id)}
+{$delete_enabled = $app_id !== 'site' && $wa->user()->isAdmin('site') && strlen($route_id)}
 <script type="text/javascript">
     document.title = {if $app}{json_encode($app.name)} + ' [`settings`]'{elseif $app_id eq ':text'}'[`Custom text`]'{else}'[`Redirect`]'{/if} + ' — ' + {json_encode($domain)};
 </script>
@@ -334,7 +334,7 @@
                                     <span id="s-settings-form-status"></span>
                                 </div>
                                 {if $delete_enabled}
-                                    <button type="button" class="button red outlined js-route-delete"><i class="fa fa-trash-alt"></i> [`Delete route`]</button>
+                                    <button type="button" class="button red outlined js-route-delete"><i class="fa fa-trash-alt"></i> [`Delete section`]</button>
                                 {/if}
                             </div>
                         </div>

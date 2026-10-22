@@ -10,6 +10,7 @@ class sitePageGetInfoMethod extends waAPIMethod
         $page = $page_model->getById($id);
 
         if ($page) {
+            siteHelper::assertDomainAccess($page['domain_id']);
             $page['params'] = $page_model->getParams($id);
             $this->response = $page;
         } else {

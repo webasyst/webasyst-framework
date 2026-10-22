@@ -1,0 +1,292 @@
+{function renderInputField title='' value='' placeholder='' description='' _name='' type='text'}
+<div class="field">
+    <div class="name">{$title|escape}</div>
+    <div class="value">
+        <input class="width-100 small" name="{$_name}" type="{$type}" placeholder="{$placeholder}" value="{$value}">
+        {if $description}
+        <div class="hint">{$description}</div>
+        {/if}
+    </div>
+</div>
+{/function}
+{function renderUrlField title='' placeholder='' description=''}
+    {renderInputField title=$title placeholder=$placeholder description=$description value={$link.url|default:''} _name='url' type='url'}
+{/function}
+
+{function renderSitemapField title='' placeholder='' description='' show_placeholder_row=false value={$link.url|default:''} _name='url'}
+<div class="field">
+    <div class="name">{$title|escape}</div>
+    <div class="value">
+        <div class="flexbox space-8">
+            <div id="js-sitemap-dropdown" class="dropdown width-100">
+                <button class="dropdown-toggle button light-gray width-100 small" type="button">
+                    <span style="line-height: 1.25rem;">{$placeholder|escape}</span>
+                </button>
+
+                <div class="dropdown-body small">
+                    {include file="./sitemap_table.html" table_rows=$table_rows placeholder=(($show_placeholder_row) ? $placeholder : null) selected_row_index=$selected_row_index}
+                </div>
+                <input type="hidden" name="{$_name}" value="{$value}">
+                {* DEBUG INFO *}
+                <input type="hidden" name="row_type" value="{$link.row_type|default:''}">
+                <input type="hidden" name="route_id" value="{$link.route_id|default:''}">
+                <input type="hidden" name="page_id" value="{$link.page_id|default:''}">
+            </div>
+            <a id="js-frontend-link" class="button light-gray custom-py-6 custom-px-8 small" href="javascript:void(0)" target="_blank">
+                <span class="icon text-gray"><i class="fas fa-external-link-alt fa-sm"></i></span>
+            </a>
+        </div>
+        {if $description}
+        <div class="hint">{$description}</div>
+        {/if}
+        <script>
+            (function($) {
+                const $dropdown = $('#js-sitemap-dropdown');
+
+                const applyItem = ($item) => {
+                    const url = $item.data('frontend-url') || '';
+                    $('#js-frontend-link').attr('href', url);
+                    $dropdown.find('[name="{$_name}"]').val(url);
+
+                    // debug
+                    const row_type = $item.data('row-type');
+                    const route_id = $item.data('route-id');
+                    const page_id = $item.data('page-id');
+                    $dropdown.find('[name="row_type"]').val(row_type);
+                    if (route_id !== undefined) {
+                        $dropdown.find('[name="route_id"]').val(route_id);
+                    }
+                    if (page_id !== undefined) {
+                        $dropdown.find('[name="page_id"]').val(page_id);
+                    }
+                };
+
+                $dropdown.waDropdown({
+                    hover: false,
+                    items: 'table tr',
+                    ready: (dropdown) => {
+                        if (!dropdown.$active.length) return;
+                        dropdown.setTitle(dropdown.$active.clone());
+                        applyItem(dropdown.$active);
+                    },
+                    change: (_, target, dropdown) => {
+                        dropdown.setTitle(dropdown.$active.clone());
+                        applyItem($(target));
+                    }
+                })
+            })(jQuery);
+        </script>
+    </div>
+</div>
+{/function}
+
+{function renderOpenInNewWindowField}
+<div class="s-open-new-window-field field">
+    <div class="value">
+        <label class="text-gray small">
+            <span class="wa-checkbox">
+                <input type="checkbox" name="target_blank" value="1"{if !empty($link.target_blank)} checked{/if}>
+                <span>
+                    <span class="icon">
+                        <i class="fas fa-check"></i>
+                    </span>
+                </span>
+            </span>
+            [`Open in new tab`]
+        </label>
+    </div>
+</div>
+{/function}
+
+{function renderSeoField}
+<div class="field">
+    {$has_rel = !empty($link.rel)}
+    <div class="value js-seo-fields">
+        <a class="js-toggle text-gray small" href="javascript:void(0)">
+            <span>[`SEO & privacy`]</span>
+            <span class="icon"><i class="fas fa-caret-{if $has_rel}up{else}down{/if}"></i></span>
+        </a>
+        <div class="js-fields"{if !$has_rel} style="display: none;"{/if}>
+            <div class="text-gray small flexbox vertical space-8 custom-mt-8">
+                {foreach siteMenuLinksConfig::getLinkRel() as $key => $data}
+                    {$checked = in_array($key, $link.rel)}
+                    <label>
+                        <span class="wa-checkbox">
+                            <input type="checkbox" name="rel[]" value="{$key}"{if $checked} checked{/if}>
+                            <span>
+                                <span class="icon">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </span>
+                        </span>
+                        <span>{strip}
+                            {$data.name}
+                            <span class="custom-pl-4" data-wa-tooltip-content="{$data.tooltip}">
+                                <i class="fas fa-question-circle"></i>
+                            </span>
+                        {/strip}</span>
+                    </label>
+                {/foreach}
+            </div>
+        </div>
+        <script>
+            (function($) {
+                const $wrapper = $('.js-seo-fields');
+                const dialog = $wrapper.closest('.dialog').data('dialog');
+
+                $wrapper.find('[data-wa-tooltip-content]').waTooltip();
+
+                $wrapper.find('.js-toggle').on('click', function(e) {
+                    e.preventDefault();
+                    $(this).find('svg').toggleClass('fa-caret-down fa-caret-up');
+                    $wrapper.find('.js-fields').toggle();
+                    setTimeout(() => {
+                        dialog.resize();
+                    });
+                });
+            })(jQuery);
+        </script>
+    </div>
+</div>
+{/function}
+
+{function renderLinkTypesField types=[] selected_type=null}
+<div id="js-link-type-dropdown" class="s-link-type-dropdown dropdown width-100">
+    <button class="dropdown-toggle button light-gray width-100 small" type="button"></button>
+    <div class="dropdown-body">
+        <ul class="menu">
+            {foreach $types as $id => $type}
+            <li class="{if $selected_type === $id}selected{/if}" data-id="{$id}" data-description="{$type.description|default:null|escape}">
+                <div class="item">
+                    <i class="fas fa-{$type.icon_class} text-gray"></i>
+                    <span>{$type.name|escape}</span>
+                </div>
+            </li>
+            {/foreach}
+        </ul>
+    </div>
+    <input type="hidden" name="type" value="{$selected_type}">
+</div>
+<div id="js-link-type-hint" class="hint"></div>
+{/function}
+
+{* TEMPLATES *}
+{$_templates = []}
+
+{capture assign="_sitemap_fields"}{strip}
+    {renderSitemapField
+        title=_w('Address on the site map')
+        placeholder=_w('Select')
+    }
+    {renderOpenInNewWindowField}
+    {renderSeoField}
+{/strip}{/capture}
+{$_templates[siteMenuLinksConfig::SITEMAP_LINK_TYPE] = $_sitemap_fields}
+
+{capture assign="_anchor_fields"}{strip}
+    {renderSitemapField
+        _name='base_url'
+        title=_w('Page with the block')
+        placeholder=_w('Current page')
+        show_placeholder_row=true
+        description=_w('Select “<em>Current page</em>” if the link must <strong>only scroll</strong> a page to the specified block. Or select a <em>specific website page</em> which must be <strong>opened and then scrolled</strong> to that block.<br><br>The “<em>Current page</em>” option will work only if the block is available on all pages where the main menu is displayed.')
+        value={$link.base_url|default:''}
+    }
+    {renderInputField
+        _name='block_id'
+        title=_w('Block identifier')
+        placeholder='#block-id'
+        description=_w('Enter an identifier with leading <code>#</code>, e.g. <code>#contacts</code>.')
+        value={$link.block_id|default:''}
+    }
+{/strip}{/capture}
+{$_templates[siteMenuLinksConfig::ANCHOR_LINK_TYPE] = $_anchor_fields}
+
+{capture assign="_custom_url_fields"}{strip}
+    {renderUrlField
+        title=_w('Address')
+        description=_w('It is recommended that <strong>internal addresses</strong> of website pages and sections do not include a domain and begin with a slash, e.g. <code>/some-page/</code>. The addresses of <strong>other sites or social media</strong> must be in the full format <code>https://site.com</code>.')
+    }
+    {renderOpenInNewWindowField}
+    {renderSeoField}
+{/strip}{/capture}
+{$_templates[siteMenuLinksConfig::CUSTOM_LINK_TYPE] = $_custom_url_fields}
+
+{capture assign="_phone_fields"}{strip}
+    {renderInputField
+        _name='phone'
+        type='tel'
+        title=_w('Number')
+        placeholder=_w('+12345678901')
+        description=sprintf_wp(
+            'Enter a number with the country code, without extra characters, in the format <code>%s</code>.',
+            _w('+12345678901')
+        )
+        value={$link.phone|default:''}
+    }
+{/strip}{/capture}
+{$_templates[siteMenuLinksConfig::PHONE_LINK_TYPE] = $_phone_fields}
+
+{capture assign="_email_fields"}{strip}
+    {renderInputField
+        _name='email'
+        type='email'
+        title=_w('Email address')
+        placeholder='info@mail.com'
+        value={$link.email|default:''}
+    }
+    {renderInputField
+        _name='subject'
+        title=_w('Message subject (optional)')
+        placeholder=_w('Website inquiry')
+        value={$link.subject|default:''}
+    }
+{/strip}{/capture}
+{$_templates[siteMenuLinksConfig::EMAIL_LINK_TYPE] = $_email_fields}
+
+{capture assign="_file_fields"}{strip}
+    {renderUrlField
+        title=_w('Address')
+        placeholder='/file.pdf'
+        description=sprintf_wp(
+            'Upload a file and obtain a link to it in section <a %s>%s</a> %s',
+            'href="#"',
+            _w('Files'),
+            '<i class="fas fa-external-link-alt"></i>'
+        )
+    }
+    <div class="field">
+        <div class="name">[`Link action`]</div>
+        <div class="value">
+            <div id="js-toggle-download" class="toggle small">
+                <span data-download=""{if empty($link.download)} class="selected"{/if}>[`Open in the browser`]</span>
+                <span data-download="1"{if !empty($link.download)} class="selected"{/if}>[`Offer to download`]</span>
+            </div>
+            <input id="js-download-input" type="hidden" name="download" value="{$link.download|default:''}">
+        </div>
+        <script>
+            $(function() {
+                const toggleOpenNewWindowField = (show) => {
+                    const $field = $('.s-open-new-window-field');
+                    $field.toggle(show);
+                    $field.find('input').prop('disabled', !show);
+                };
+                $('#js-toggle-download').waToggle({
+                    ready: (toggle) => {
+                      toggleOpenNewWindowField(!toggle.$active.data('download'));
+                    },
+                    change: (_, target) => {
+                        toggleOpenNewWindowField(!target.dataset.download);
+                        $('#js-download-input').val(target.dataset.download);
+                    }
+                });
+            });
+        </script>
+    </div>
+    {renderOpenInNewWindowField}
+{/strip}{/capture}
+{$_templates[siteMenuLinksConfig::FILE_LINK_TYPE] = $_file_fields}
+
+<script>
+    $.menu_link_dialog_templates = {$_templates|json_encode};
+</script>

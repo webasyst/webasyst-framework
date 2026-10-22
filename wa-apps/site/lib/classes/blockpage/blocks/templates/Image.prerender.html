@@ -1,4 +1,10 @@
 <style>
-    picture.img svg { width: 100%; height: auto; }
-    .image-wrapper svg { width: 100%; height: auto; }
-</style>    
+    .image-wrapper[data-block-id]:not(.custom):not(.i-xxxs):not(.i-xxs):not(.i-xs):not(.i-s):not(.i-m):not(.i-l):not(.i-xl):not(.i-xxl):not(.i-3xl):not(.i-4xl):not(.i-5xl) > .img > * {
+        height: auto;
+        width: 100%;
+    }
+    .image-wrapper[data-block-id].custom > .img > * {
+        max-width: 100%;
+        width: var(--width, 100%);
+    }
+</style>

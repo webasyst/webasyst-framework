@@ -95,7 +95,7 @@ function getAccentColorCssValue(accentColor, colorScheme) {
     }
 
     const darkAccentMap = {
-        '#000000': '#888888',
+        '#000000': '#ffffff',
         '#666666': '#555555'
     };
 
@@ -112,6 +112,24 @@ function getAccentColorCssValue(accentColor, colorScheme) {
     }
 
     return accentColor;
+}
+
+function applyButtonTextColor(root, colorScheme, accentColor) {
+    const isDark = colorScheme === 'dark' || (colorScheme === 'auto' && window.matchMedia && window.matchMedia(PREFERS_DARK_QUERY).matches);
+    let btnTextColor = '#ffffff';
+    if (isDark && accentColor === '#000000') {
+        btnTextColor = '#000000';
+        root.style.setProperty('--accent-contrast-color', btnTextColor);
+        root.style.setProperty('--button-text-color', btnTextColor);
+        root.style.setProperty('--button-selected-bg-color', '#888888');
+        root.style.setProperty('--button-disabled-text-color', 'var(--gray3)');
+    } else {
+        root.style.removeProperty('--accent-contrast-color');
+        root.style.removeProperty('--button-text-color');
+        root.style.removeProperty('--button-selected-bg-color');
+        root.style.removeProperty('--button-disabled-text-color');
+    }
+
 }
 
 function resolveChevronSvg(colorScheme) {
@@ -413,6 +431,8 @@ function applyThemeCheckSvg(root, colorScheme) {
         applySettingsToPage() {
             const root = document.documentElement;
 
+            applyButtonTextColor(root, this.currentSettings.colorScheme, this.currentSettings.accentColor);
+
             // Скругление углов
             root.style.setProperty('--element-border-radius', this.currentSettings.borderRadius + 'px');
 
@@ -546,6 +566,7 @@ function applyThemeCheckSvg(root, colorScheme) {
                 this.handleSystemColorSchemeChange = () => {
                     if (this.currentSettings.colorScheme === 'auto') {
                         const root = document.documentElement;
+                        applyButtonTextColor(root, 'auto', this.currentSettings.accentColor);
                         applyThemeChevronSvg(root, 'auto');
                         applyThemeCheckSvg(root, 'auto');
                         root.style.setProperty('--accent-color', getAccentColorCssValue(this.currentSettings.accentColor, 'auto'));
@@ -971,7 +992,7 @@ function applyThemeCheckSvg(root, colorScheme) {
                 transform: translateX(0);
             }
         }
-        
+
         @keyframes slideOutToRight {
             from {
                 opacity: 1;

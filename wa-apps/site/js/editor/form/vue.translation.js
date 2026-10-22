@@ -45,6 +45,7 @@
                 },
                 'picture-size': {
                     'Default': 'Default',
+                    'Self size': 'Custom size',
                 },
                 'column-max-width': {
                     'Default': 'Default',
@@ -295,6 +296,10 @@
                     'Hide': 'Hide',
                     'Block is hidden': 'This block is hidden from website visitors.',
                     'Format not supported': 'Format not supported.',
+                    'image_max_width_column_limited': 'The maximum image width is limited by the width of the column. To make the image larger, make the column wider.',
+                    'image_height_auto_preserve_aspect_ratio': 'The height is auto-adjusted according to the dimensions ratio.',
+                    'page_constructor_already_adds_doctype_html_head_body': 'The page editor automatically adds tags <code>&lt;!DOCTYPE html&gt;</code>, <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, and <code>&lt;body&gt;</code>. Duplicating them in your block’s code may cause unexpected page appearance and WYSIWYG editor’s errors.',
+                    'found_html_head_body_tags': 'Non-recommended tags detected: HTML, HEAD, BODY.',
                 },
                 'border_group': {
                     'Remove border': 'Remove border',
@@ -382,6 +387,7 @@
                 },
                 'picture-size': {
                     'Default': 'По умолчанию',
+                    'Self size': 'Свой размер',
                 },
                 'column-max-width': {
                     'Default': 'По умолчанию',
@@ -635,6 +641,10 @@
                     'Hide': 'Скрыть',
                     'Block is hidden': 'Этот блок скрыт от посетителей сайта.',
                     'Format not supported': 'Формат не поддерживается.',
+                    'image_max_width_column_limited': 'Максимальная ширина изображения ограничена шириной колонки. Если нужно сделать изображение крупнее, увеличьте ширину колонки.',
+                    'image_height_auto_preserve_aspect_ratio': 'Высота изменяется автоматически с сохранением пропорций.',
+                    'page_constructor_already_adds_doctype_html_head_body': 'Конструктор страниц автоматически добавляет теги <code>&lt;!DOCTYPE html&gt;</code>, <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code> и <code>&lt;body&gt;</code>. Дублирование их в коде блока может привести к некорректному отображению страницы и ошибкам редактора.',
+                    'found_html_head_body_tags': 'Обнаружены нерекомендуемые теги: HTML, HEAD, BODY.',
                 },
                 'border_group': {
                     'Remove border': 'Удалить обводку',

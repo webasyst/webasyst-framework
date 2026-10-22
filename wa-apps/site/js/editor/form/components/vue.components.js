@@ -118,6 +118,7 @@ var FormComponents = ( function($) {
                             value: (self.media_prop? option[`value_${self.media_prop}`] : option.value),
                             link_url: option.link_url,
                             link_target: option.link_target,
+                            prevent_save: option.prevent_save,
                             ...(self.enableIcon && option.icon ? { icon: option.icon } : {}),
                         });
                     });
@@ -146,6 +147,7 @@ var FormComponents = ( function($) {
                 methods: {
                     change: function(option) {
                         let self = this;
+                        if (option.disabled) return false;
 
                         if (self.form_type === 'custom') {
                             self.$emit("customChange", option);
@@ -157,11 +159,15 @@ var FormComponents = ( function($) {
                             self.active_option = option;
                             return false;
                         }
-                        if (option.disabled) { return false; }
+
+                        self.$emit('change', option);
+
                         let temp_active_option = self.active_option;
+                        self.active_option = option;
+                        if (!self.form_type || option.prevent_save) return false;
+
                         if (temp_active_option !== option) {
                             if (option === 'removeData' || option.value === 'removeData') {
-                                self.active_option = option;
                                 $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                     if (!self.element) {
                                         if (self.block_data.block_props) delete self.block_data.block_props[self.form_type];
@@ -173,19 +179,21 @@ var FormComponents = ( function($) {
                                 console.log('saveBlockData', self.block_data);
                                 return;
                             }
+
                             let temp_active_options = self.block_data.block_props?.[self.form_type]?.split(' ') || [];
-                            const classPosition = temp_active_options.indexOf(self.active_option.value); //deep check for media prop classes
+                            const classPosition = temp_active_options.indexOf(temp_active_option.value); //deep check for media prop classes
                             if ( classPosition >= 0 ) {
                                 temp_active_options.splice(classPosition, 1);
                             }
                             temp_active_options.push(option.value);
-                            self.active_option = option; //update base
+
+                            const classes = temp_active_options.join(' ');
                             $.wa.editor._block_settings_drawer_promise.then(function(bs) {
                                 if (!self.element) {
-                                    self.block_data.block_props[self.form_type] = temp_active_options.join(' ');
+                                    self.block_data.block_props[self.form_type] = classes;
                                 } else {
                                     if (!self.block_data.block_props[self.element]) self.block_data.block_props[self.element] = {};
-                                    self.block_data.block_props[self.element][self.form_type] = temp_active_options.join(' ');
+                                    self.block_data.block_props[self.element][self.form_type] = classes;
                                 }
 
                                 bs.saveBlockData(self.block_data);
@@ -1248,7 +1256,7 @@ var FormComponents = ( function($) {
                     if (!self.colorPicker) initColorPicker(self);
                 }
             },
-        }
+        };
         that.custom_components = {
             'component-text-color-dropdown': {
                 props: {
@@ -1693,6 +1701,7 @@ var FormComponents = ( function($) {
                                         <manual-gradient @changeColor="change" :options="gradientOptions" v-else></manual-gradient>
                                     </div>
                                     <div class="flexbox vertical space-16" v-show="active_toggle_option === 'image'">
+                                        <ai-image-dropdown :block_id="block_id" @change="changeImage" class="custom-mt-8"></ai-image-dropdown>
                                         <manual-image @changeImg="changeImage" :option="active_option" :key="active_option.type"></manual-image>
                                     </div>
                                     <div class="flexbox vertical space-16" v-show="active_toggle_option === 'video'">
@@ -1791,6 +1800,7 @@ var FormComponents = ( function($) {
                     'ManualImage': this.manual_components['component-manual-image'],
                     'ManualGradient': this.manual_components['component-manual-gradient'],
                     'ManualVideo': this.manual_components['component-manual-video'],
+                    'AiImageDropdown': $.site.external_components['component-ai-image-dropdown'],
                 },
                 mounted: function() {
                     let self = this;
@@ -2104,7 +2114,7 @@ var FormComponents = ( function($) {
                         }).waDropdown("dropdown");
                 }
             },
-        }
+        };
     }
     initColorPicker = function(obj) {
         let self = obj;

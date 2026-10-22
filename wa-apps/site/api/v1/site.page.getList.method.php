@@ -5,6 +5,7 @@ class sitePageGetListMethod extends waAPIMethod
     public function execute()
     {
         $domain_id = $this->get('domain_id', true);
+        siteHelper::assertDomainAccess($domain_id);
         $route = $this->get('route');
         if ($route) {
             $route = urldecode($route);

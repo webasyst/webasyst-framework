@@ -5,7 +5,7 @@
  */
 class siteMenuBlockType extends siteBlockType
 {
-    public $elements = [   
+    public $elements = [
         'main' => 'site-block-menu',
         'wrapper' => 'site-block-menu-wrapper',
         ];
@@ -22,7 +22,7 @@ class siteMenuBlockType extends siteBlockType
         $hseq->data['is_horizontal'] = true;
         $hseq->data['is_complex'] = 'only_columns';
         $hseq->data['indestructible'] = true;
-        
+
         //$column_count = ifset($this->options, 'columns', 2);
 
         $columns_arr = array();
@@ -50,7 +50,7 @@ class siteMenuBlockType extends siteBlockType
         $result->data = ['block_props' => $column_props, 'wrapper_props' => ['justify-align' => "y-j-cnt"]];
         //$result->data['columns'] = $columns_arr;
         $result->data['elements'] = $this->elements;
-       
+
         $app_template_prop = array();
         $app_template_prop['disabled'] = false;
         $app_template_prop['active'] = false;
@@ -72,6 +72,7 @@ class siteMenuBlockType extends siteBlockType
         return [
             'type_name' => _w('Block'),
             'type_name_original' => _w('Menu'),
+            'indestructible_columns' => true,
             'sections' => [
                 [   'type' => 'MenuToggleGroup',
                     'name' => _w('Menu toggle'),

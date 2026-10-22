@@ -31,7 +31,9 @@
             rights: {json_encode($rights)},
             lang: '{if $wa->locale() == "ru_RU"}ru{else}en{/if}',
             locale: {json_encode([
-                "unable_to_load" => _w("Unable to get the page from the server.")
+                "unable_to_load" => _w("Unable to get the page from the server."),
+                "image_generation_success" => _w("Генерация изображения завершена успешно."),
+                "image_generation_failed" => _w("Генерация изображения завершилась с ошибкой.")
             ])}
         });
     })();</script>

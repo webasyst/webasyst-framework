@@ -46,11 +46,6 @@
                                 </span>
                             </label>
                         </div>
-                        <script>(function() { "use strict";
-                            const $switch = $("#switch-show-over-another-section");
-                            $switch.parent().find("[data-wa-tooltip-content]").waTooltip();
-                            $switch.waSwitch();
-                        })();</script>
                     </div>
                 {/if}
                 {if $has_route}
@@ -609,6 +604,7 @@
 
     const $wrapper = $('#js-section-settings-dialog');
     const $form = $wrapper.find('form');
+    const $url_input = $form.find('.js-url');
 
     const $save_button = $wrapper.find('.js-save');
     const $save_and_edit_button = $wrapper.find('.js-save-and-edit');
@@ -618,7 +614,12 @@
     initToggle();
     themeSelect();
     toggleMobileThemeSelect();
-    $wrapper.find(".js-tooltip").waTooltip();
+    $wrapper.find(".js-tooltip,[data-wa-tooltip-content]").waTooltip();
+    $("#switch-show-over-another-section").waSwitch({
+        change: () => {
+            clearErrors();
+        }
+    });
 
     const loadingOnButton = function () {
         const $footer_left = $('.dialog-footer-left');
@@ -661,6 +662,9 @@
     $form.submit(function() {
         saveHandler();
         return false;
+    });
+    $url_input.on('keydown', () => {
+        clearErrors();
     });
 
     $('.js-set-main-page', $form).on('click', function () {
@@ -724,9 +728,7 @@
     }
 
     function saveHandler(is_oninput = false, is_edit = false) {
-        $form.find('.state-error').removeClass('state-error');
-        $form.find('.state-error-hint').remove();
-        $place_for_errors.empty();
+        clearErrors();
 
         // Validating unsupported characters in url
         if (!validateUrls()) return
@@ -755,6 +757,12 @@
             handleResponse(r);
             $(document).trigger('after_save_page_settings');
         });
+    }
+
+    function clearErrors() {
+        $form.find('.state-caution').removeClass('state-caution');
+        $form.find('.state-caution-hint').remove();
+        $place_for_errors.empty();
     }
 
     function validateUrls() {
@@ -794,15 +802,11 @@
         // const $install_error = $('#incorrect-install-error').show();
         $place_for_errors.empty();
 
-        if (Array.isArray(res.errors)) {
-            updateErrors(res.errors, true);
-            $place_for_errors.append(res.errors.map(err => err.description).join('<br>'));
-        } else if (res.errors) {
+        if (typeof res.errors === 'string') {
             $place_for_errors.append(res.errors);
 
-        } else if (res.data && res.data.confirm) {
-            $place_for_errors.append(res.data.confirm);
-
+        } else if (res.errors?.length) {
+            updateErrors(res.errors);
         } else if (res.status === 'ok' && typeof cbSuccess === 'function') {
             // if (res.data && res.data.routing_errors && res.data.routing_errors.incorrect) {
             //     $install_error.find('.alert-content').text(res.data.routing_errors.incorrect);
@@ -811,19 +815,14 @@
         }
     }
 
-    function updateErrors(errors, without_description = false) {
+    function updateErrors(errors) {
         errors.forEach(function(err) {
-            let $field = null;
             if (err.field) {
-                $field = $form.find('[name="'+err.field+'"],[name="params['+err.field+']"]').first();
+                const $field = $form.find('[name="'+err.field+'"],[name="params['+err.field+']"]').first();
+                $field.addClass('state-caution');
             }
-            const $msg = $('<div class="state-error-hint"></div>').html(err.description);
-
-            if($field && $field.length) {
-                $field.addClass('state-error');
-                if (!without_description) {
-                    $field.after($msg);
-                }
+            if (err.description) {
+                $place_for_errors.append(err.description + '<br>');
             }
         });
     }
@@ -841,12 +840,12 @@
     }
 
     function showLengthWarning($input) {
-            if($input.hasClass('state-error')) return
-            $input.addClass('state-error');
-            $input.closest('.s-route-block').after('<div class="state-error-hint" style="float: right;">[`Maximum 63 characters`]</p>')
+            if($input.hasClass('state-caution')) return
+            $input.addClass('state-caution');
+            $input.closest('.s-route-block').after('<div class="state-caution-hint" style="float: right;">[`Maximum 63 characters`]</p>')
                 setTimeout(() => {
-                    $input.removeClass('state-error');
-                    $input.closest('.value').find('.state-error-hint').remove();
+                    $input.removeClass('state-caution');
+                    $input.closest('.value').find('.state-caution-hint').remove();
                 }, 3000);
     }
 

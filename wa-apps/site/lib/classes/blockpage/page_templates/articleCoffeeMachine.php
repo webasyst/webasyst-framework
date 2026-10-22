@@ -602,7 +602,7 @@ return [
                                             'margin-bottom' => 'm-b-8',
                                             'margin-right' => 'm-r-12',
                                             'margin-top' => 'm-t-5',
-                                            'pictures-size' => 'i-xl',
+                                            'picture-size' => 'i-xl',
                                           ],
                                           'indestructible' => false,
                                           'image' => [
@@ -1138,7 +1138,7 @@ return [
         'site-block-columns' => [
           'background' => [
             'type' => 'self_color',
-            'value' => 'linear-gradient(#00000099, #00000099), center center / cover url(' . $img_path . 'top-bg.png)',
+            'value' => 'linear-gradient(#00000099, #00000099), center center / cover url(' . $img_path . 'top-bg.jpg)',
             'name' => 'Self color',
             'layers' => [
               [
@@ -1149,11 +1149,11 @@ return [
               ],
               [
                 'type' => 'image',
-                'value' => 'center center / cover url(' . $img_path . 'top-bg.png)',
+                'value' => 'center center / cover url(' . $img_path . 'top-bg.jpg)',
                 'alignmentX' => 'center',
                 'alignmentY' => 'center',
-                'file_name' => 'top-bg.png',
-                'file_url' => $img_path . 'top-bg',
+                'file_name' => 'top-bg.jpg',
+                'file_url' => $img_path . 'top-bg.jpg',
                 'space' => 'cover',
                 'name' => 'Image',
               ],

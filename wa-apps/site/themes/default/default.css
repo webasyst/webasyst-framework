@@ -88,17 +88,17 @@
         --button-bg-color:                 light-dark(var(--accent-color), var(--accent-color));
         --button-text-color:               light-dark(var(--white), var(--white));
         --button-hover-bg-color:           light-dark(var(--accent-color-light), var(--accent-color-light));
-        --button-hover-text-color:         light-dark(var(--white), var(--white));
+        --button-hover-text-color:         light-dark(var(--button-text-color), var(--button-text-color));
         --button-active-bg-color:          light-dark(var(--accent-color-dark), var(--accent-color-dark));
-        --button-active-text-color:        light-dark(var(--white), var(--white));
+        --button-active-text-color:        light-dark(var(--button-text-color), var(--button-text-color));
         --button-disabled-bg-color:        light-dark(var(--accent-color-lighter), var(--accent-color-lighter));
         --button-disabled-text-color:      light-dark(var(--white), var(--white));
-        --button-gray-bg-color:            light-dark(var(--gray6), var(--gray6));
-        --button-gray-text-color:          light-dark(var(--gray3), var(--gray3));
-        --button-gray-hover-bg-color:      light-dark(var(--gray7), var(--gray7));
-        --button-gray-hover-text-color:    light-dark(var(--white), var(--white));
-        --button-gray-active-bg-color:     light-dark(var(--gray5), var(--gray5));
-        --button-gray-active-text-color:   light-dark(var(--gray3), var(--gray3));
+        --button-gray-bg-color:            light-dark(var(--gray6), var(--gray1));
+        --button-gray-text-color:          light-dark(var(--gray2), var(--gray5));
+        --button-gray-hover-bg-color:      light-dark(var(--gray5), var(--gray2));
+        --button-gray-hover-text-color:    light-dark(var(--gray2), var(--gray5));
+        --button-gray-active-bg-color:     light-dark(var(--gray5), var(--gray3));
+        --button-gray-active-text-color:   light-dark(var(--gray2), var(--gray5));
         --button-gray-disabled-bg-color:   light-dark(var(--gray3), var(--gray3));
         --button-gray-disabled-text-color: light-dark(var(--white), var(--white));
         --button-blue-bg-color:            light-dark(var(--blue), var(--blue));
@@ -163,17 +163,17 @@
             --button-bg-color:                 var(--accent-color);
             --button-text-color:               var(--white);
             --button-hover-bg-color:           var(--accent-color-light);
-            --button-hover-text-color:         var(--white);
+            --button-hover-text-color:         var(--button-text-color);
             --button-active-bg-color:          var(--accent-color-dark);
-            --button-active-text-color:        var(--white);
+            --button-active-text-color:        var(--button-text-color);
             --button-disabled-bg-color:        var(--accent-color-lighter);
             --button-disabled-text-color:      var(--white);
             --button-gray-bg-color:            var(--gray6);
-            --button-gray-text-color:          var(--gray3);
-            --button-gray-hover-bg-color:      var(--gray7);
-            --button-gray-hover-text-color:    var(--white);
+            --button-gray-text-color:          var(--gray2);
+            --button-gray-hover-bg-color:      var(--gray5);
+            --button-gray-hover-text-color:    var(--gray2);
             --button-gray-active-bg-color:     var(--gray5);
-            --button-gray-active-text-color:   var(--gray3);
+            --button-gray-active-text-color:   var(--gray2);
             --button-gray-disabled-bg-color:   var(--gray3);
             --button-gray-disabled-text-color: var(--white);
             --button-blue-bg-color:            var(--blue);
@@ -430,7 +430,7 @@
     }
     input[type=radio] { border-radius: 50%; }
     input:checked { border-color: var(--link-color); }
-    input:checked[type=checkbox] { background-color: var(--accent-color); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none'%3E%3Cpath d='M5.81 11.333c-.276.44-.682.667-1.154.667-.486 0-.866-.2-1.22-.654L.341 7.488C.118 7.208 0 6.914 0 6.594c0-.654.498-1.188 1.141-1.188.393 0 .708.147 1.023.56l2.44 3.164L9.783.667c.275-.44.63-.667 1.023-.667C11.423 0 12 .44 12 1.108c0 .294-.157.614-.328.894l-5.862 9.33Z' fill='%23FFFFFF'/%3E%3C/svg%3E"); }
+    input:checked[type=checkbox] { background-color: var(--accent-contrast-color, var(--accent-color)); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none'%3E%3Cpath d='M5.81 11.333c-.276.44-.682.667-1.154.667-.486 0-.866-.2-1.22-.654L.341 7.488C.118 7.208 0 6.914 0 6.594c0-.654.498-1.188 1.141-1.188.393 0 .708.147 1.023.56l2.44 3.164L9.783.667c.275-.44.63-.667 1.023-.667C11.423 0 12 .44 12 1.108c0 .294-.157.614-.328.894l-5.862 9.33Z' fill='%23FFFFFF'/%3E%3C/svg%3E"); }
     input:checked[type=radio] { box-shadow: inset 0 0 0 .21875rem var(--bg-color-accent); background-color: var(--link-color); }
     select {
         background-color:    transparent;
@@ -924,10 +924,10 @@
     .hint a,
     .hint:visited,
     .hint a:visited { color: var(--gray3); }
-    .gray,
+    .gray:not(.button),
     .gray .dropdown ul,
     .gray a,
-    .gray:visited,
+    .gray:visited:not(.button),
     .gray a:visited { color: var(--gray3); }
 
     .text-left { text-align: left; }
@@ -1361,18 +1361,12 @@
     header h2 a:hover { color: var(--header-sitename-color); }
     header h2 a:visited { color: var(--header-sitename-color); }
 
-    @media (max-width: 768px) {
-        header h2 a img {
-            display: none
-        }
-    }
     header h2 a span { display: none; }
-
+    header h2 a img#logo { min-width: 24px; max-width: 300px; height: auto; }
     @media (max-width: 768px) {
-        header h2 a span {
-            display: inline
-        }
+        header h2 a img#logo { display: none; max-width: 100%; }
     }
+
     header .apps { padding: 6px 0; margin: 0; display: flex; align-items: center; gap: 20px; list-style: none; }
     header .apps li { flex: 1 0 auto; }
     header .apps li.apps-overflow { position: relative; }
@@ -1449,11 +1443,11 @@
     header #mobile-nav-toggle.opened .hamburger-line-1 { transform: rotate(45deg) translate(.0625rem, .3125rem); }
     header #mobile-nav-toggle.opened .hamburger-line-2 { opacity: 0; }
     header #mobile-nav-toggle.opened .hamburger-line-3 { transform: rotate(-45deg) translate(.0625rem, -0.3125rem); }
-    header #globalnav { margin-bottom: 1.125rem; }
+    header #globalnav + #header-container:has(> ul > li,> .search) { margin-top: 1.125rem; }
 
     @media (max-width: 768px) {
         header.globalheader #globalnav { margin-bottom: 0; }
-        header.globalheader .appnav { margin-top: 0.75rem; }
+        header #globalnav + #header-container:has(> ul > li,> .search) { margin-top: 0.75rem; }
     }
     header #globalnav .globalnav-bar { color: var(--gray3); }
 
@@ -1639,6 +1633,4 @@ html.my .sidebar { display: none; }
 .wa-confirm-signup-button,
 .wa-set-password-form-wrapper [type=submit] { font-size: 18px; font-weight: bold; padding-top: 8px; padding-right: 15px; padding-bottom: 8px; padding-left: 15px; }
 
-
-
-.wa-login-submit { color: var(--white); }
+.wa-login-submit { color: var(--button-text-color, var(--white)); }

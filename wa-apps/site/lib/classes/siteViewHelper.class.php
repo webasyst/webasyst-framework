@@ -118,22 +118,20 @@ class siteViewHelper extends waAppViewHelper
     }
 
     public function sanitizeHTML($str) {
-        if(!$str) {
-            return $str;
-        }
-
-        $pattern = '/<script[^>]*>.*?<\/script>/is';
-        $html = preg_replace($pattern, '', $str);
-
-        $srcPattern = '/<iframe[^>]*src\s*=\s*"(.*?)"[^>]*>/';
-        $html = preg_replace_callback($srcPattern, function($match) {
+        if(!$str) return $str;
+        // remove scritps
+        $pattern = '~<script\b[^>]*>.*?<\/script>~is';
+        $str = preg_replace($pattern, '', $str);
+        // sanitize iframe
+        $srcPattern = '~<iframe\b[^>]*src\s*=\s*"(.*?)"[^>]*>~';
+        $str = preg_replace_callback($srcPattern, function($match) {
             $src = $match[1];
             if (preg_match('/^https?:/', $src)) {
                 return $match[0];
             }
             return str_replace($src, '', $match[0]);
-        }, $html);
+        }, $str);
 
-        return $html;
+        return $str;
     }
 }

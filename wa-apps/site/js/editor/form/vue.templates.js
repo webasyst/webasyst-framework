@@ -604,7 +604,6 @@
         <div class="s-editor-option-wrapper">
         ${$.form_storage.share_parts.option_header}
             <div class="s-editor-option-body custom-mt-8 width-100" v-show="layers.length">
-                <!--<background-color-dropdown :options="arr_options" :activeOption="active_options" :element="element" :activeIcon="active_icon" :form_type="form_type" :block_data="block_data" :block_id="block_id" ref="child"></background-color-dropdown>-->
                 <div v-for="(layer, index) in layers" class="width-100 flexbox middle js-sort-toggle background-dropdown" :class="{ disabled: layer.disabled }" :key="layer.uuid">
                     <span class="sort custom-pr-12 custom-pl-4 cursor-move"><i class="fas fa-grip-vertical text-light-gray"></i></span>
                     <background-color-dropdown :element="element" @changeCss="changeCss" :layerIndex="+index" :options="arr_options" :activeOption="layer" :activeIcon="active_icon" :form_type="form_type" :block_data="block_data" :block_id="block_id" ref="child"></background-color-dropdown>
@@ -669,9 +668,35 @@
         `,
         component_line_height_group: `
         <div class="s-editor-option-wrapper">
-        <div class="s-semi-header text-gray small" v-if="semi_header">{ { $t('custom.' + semi_header, semi_header) } }</div>
+            <div class="s-semi-header text-gray small" v-if="semi_header">{ { $t('custom.' + semi_header, semi_header) } }</div>
             <div class="s-editor-option-body custom-mt-8">
                 <line-height-dropdown :options="arr_options" :activeOption="active_option" :activeIcon="active_icon" :form_type="form_type" :block_data="block_data" :block_id="block_id"></line-height-dropdown>
+            </div>
+        </div>
+        `,
+        component_image_size_group: `
+        <div class="s-editor-option-wrapper">
+            <div class="flexbox custom-mb-4">
+                <div class="s-semi-header text-gray small">{ { $t('custom.Size') } }</div>
+                <div>
+                    <span id="tooltip-column-max-width" data-wa-tooltip-template="#tooltip-line-height">
+                        <i class="fas fa-question-circle text-light-gray fa-sm"></i>
+                    </span>
+                    <div class="wa-tooltip-template" id="tooltip-line-height">
+                        <div style="width: 240px">{ { $t('custom.image_max_width_column_limited') } }</div>
+                    </div>
+                </div>
+            </div>
+            <div class="s-editor-option-body">
+                <line-height-dropdown :options="arr_options" :activeOption="active_option" :activeIcon="active_icon" :form_type="form_type" :block_data="block_data" :block_id="block_id" @change="onChangeActiveOption"></line-height-dropdown>
+            </div>
+            <div v-if="active_option === 'custom'" class="custom-mt-8">
+                <div class="s-semi-header text-gray small custom-mb-4">{ { $t('custom.Spread') } }</div>
+                <div class="flexbox full-width">
+                    <input type="text" class="width-100 small" :value="width_value" @input="onInputWidthValue">
+                    <width-unit-dropdown button_class="light-gray small" :options="width_unit_options" :activeOption="width_unit_option" @change="onChangeWidthUnit"></width-unit-dropdown>
+                </div>
+                <div class="text-gray small custom-mt-4">{ { $t('custom.image_height_auto_preserve_aspect_ratio') } }</div>
             </div>
         </div>
         `,
@@ -935,7 +960,54 @@
             </div>
         </div>
         `,
+        component_custom_code_group: `
+        <div class="s-editor-option-wrapper ">
+            <div class="tabs-wrapper-group">
+                <ul class="tabs small" v-if="arr_options">
+                    <li v-for="(item, key) in arr_options"
+                        :class="{ selected: item === selected_tab }"
+                        id="item"
+                        @click="changeTab(item)"
+                        >
+                        <a href="javascript:void(0);" class="align-center">
+                            <span class="tabs-name bold uppercase">{{item}}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="code-group-wrapper custom-mb-12 custom-mt-12">
+                <div class="code-group custom-mb-12 custom-mt-12">
+                    <div class="value js-redactor-wrapper">
+                        <textarea style="display:none" class="js-content-body" id="js-content-body" name="content"> {{block_data[selected_tab]}}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="code-group-wrapper custom-mb-12 custom-mt-12 sticky">
+                <div v-show="found_htm_head_body_tags" class="flexbox full-width small semibold text-orange">
+                    <div>{{ $t('custom.found_html_head_body_tags') }}</div>
+                    <span data-wa-tooltip-template="#tooltip-found-html-tags">
+                        <i class="fas fa-question-circle text-orange"></i>
+                    </span>
+                    <div class="wa-tooltip-template" id="tooltip-found-html-tags" >
+                        <div style="width: 240px" v-html="$t('custom.page_constructor_already_adds_doctype_html_head_body')"></div>
+                    </div>
+                </div>
 
+                <p class="hint custom-mt-8">{{$t('custom.custom_code_hint')}}</p>
+
+                <div class="code-group-buttons flexbox">
+                    <custom-button id="js-save-code" :buttonText="$t('custom.Save')" buttonClass="green blue" @click="saveCode"></custom-button>
+                    <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                    <button class="button smaller nobutton gray custom-ml-auto" title="Webasyst AI" @click="showAIPanel = !showAIPanel">
+                        <span class="icon webasyst-ai"></span>
+                    </button>
+                    <custom-button v-show="selected_tab === 'html'" id="js-show-variables" iconClass="fa-dollar-sign" :title="$t('custom.Variables')" buttonClass="gray nobutton" @click="showVariables"></custom-button>
+                    <custom-button v-show="selected_tab === 'html'" id="js-show-cheatsheet" iconClass="fa-code" :title="$t('custom.CheatSheet')" buttonClass="gray nobutton" @click="showCheatSheet"></custom-button>
+                </div>
+                <ai-generator v-if="showAIPanel" :group_config="group_config" :facility="aiFacility" @generate="handleAiAnswer" @undo="undoElement" @closeForm="showAIPanel = !showAIPanel" :block_id="block_id" container_class="custom-code-panel"></ai-generator>
+            </div>
+        </div>
+        `,
     }
 
 

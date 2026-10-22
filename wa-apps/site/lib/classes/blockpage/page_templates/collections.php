@@ -23,7 +23,7 @@ return [
         'site-block-columns' => [
           'background' => [
             'type' => 'self_color',
-            'value' => 'center center / cover url('.$img_path.'bg.png)',
+            'value' => 'center center / cover url('.$img_path.'bg.jpg)',
             'name' => 'Self color',
             'layers' => [
               [
@@ -33,9 +33,9 @@ return [
                 'type' => 'image',
                 'name' => 'Image',
                 'css' => '',
-                'file_name' => 'bg.png',
-                'file_url' => $img_path.'bg.png',
-                'value' => 'center center / cover url('.$img_path.'bg.png)',
+                'file_name' => 'bg.jpg',
+                'file_url' => $img_path.'bg.jpg',
+                'value' => 'center center / cover url('.$img_path.'bg.jpg)',
               ],
             ],
             'uuid' => 1,
@@ -889,7 +889,7 @@ return [
                             'data' => [
                               'image' => [
                                 'type' => 'address',
-                                'url_text' => $img_path.'soft-form.png',
+                                'url_text' => $img_path.'soft-form.jpg',
                               ],
                               'block_props' => [
                                 'margin-bottom' => 'm-b-12',
@@ -994,7 +994,7 @@ return [
                             'data' => [
                               'image' => [
                                 'type' => 'address',
-                                'url_text' => $img_path.'warm-fold.png',
+                                'url_text' => $img_path.'warm-fold.jpg',
                               ],
                               'block_props' => [
                                 'margin-bottom' => 'm-b-12',
@@ -1099,7 +1099,7 @@ return [
                             'data' => [
                               'image' => [
                                 'type' => 'address',
-                                'url_text' => $img_path.'calm-shape.png',
+                                'url_text' => $img_path.'calm-shape.jpg',
                               ],
                               'block_props' => [
                                 'margin-bottom' => 'm-b-12',
@@ -1453,7 +1453,7 @@ return [
                       ],
                       'background' => [
                         'type' => 'self_color',
-                        'value' => 'center center / cover url('.$img_path.'vas-et-candelae.png)',
+                        'value' => 'center center / cover url('.$img_path.'vas-et-candelae.jpg)',
                         'name' => 'Self color',
                         'layers' => [
                           [
@@ -1463,9 +1463,9 @@ return [
                             'type' => 'image',
                             'name' => 'Image',
                             'css' => '',
-                            'file_name' => 'vas-et-candelae.png',
-                            'file_url' => $img_path.'vas-et-candelae.png',
-                            'value' => 'center center / cover url('.$img_path.'vas-et-candelae.png)',
+                            'file_name' => 'vas-et-candelae.jpg',
+                            'file_url' => $img_path.'vas-et-candelae.jpg',
+                            'value' => 'center center / cover url('.$img_path.'vas-et-candelae.jpg)',
                             'uuid' => 1,
                           ],
                         ],
@@ -1699,7 +1699,7 @@ return [
                             'data' => [
                               'image' => [
                                 'type' => 'address',
-                                'url_text' => $img_path.'duo-vasa.png',
+                                'url_text' => $img_path.'duo-vasa.jpg',
                               ],
                               'block_props' => [
                                 'border-radius' => 'b-r-l',
@@ -1804,7 +1804,7 @@ return [
                             'data' => [
                               'image' => [
                                 'type' => 'address',
-                                'url_text' => $img_path.'maro-1.png',
+                                'url_text' => $img_path.'maro-1.jpg',
                               ],
                               'block_props' => [
                                 'margin-bottom' => 'm-b-14',
@@ -1909,7 +1909,7 @@ return [
                             'data' => [
                               'image' => [
                                 'type' => 'address',
-                                'url_text' => $img_path.'maro-2.png',
+                                'url_text' => $img_path.'maro-2.jpg',
                               ],
                               'block_props' => [
                                 'margin-bottom' => 'm-b-14',
@@ -2905,7 +2905,7 @@ return [
                             'data' => [
                               'image' => [
                                 'type' => 'address',
-                                'url_text' => $img_path.'oak-tray.png',
+                                'url_text' => $img_path.'oak-tray.jpg',
                               ],
                               'block_props' => [
                                 'margin-bottom' => 'm-b-14',
@@ -3115,7 +3115,7 @@ return [
                             'data' => [
                               'image' => [
                                 'type' => 'address',
-                                'url_text' => $img_path.'natural-weave.png',
+                                'url_text' => $img_path.'natural-weave.jpg',
                               ],
                               'block_props' => [
                                 'margin-bottom' => 'm-b-14',
@@ -4134,7 +4134,7 @@ return [
                                             'margin-bottom' => 'm-b-8',
                                             'margin-right' => 'm-r-12',
                                             'margin-top' => 'm-t-0',
-                                            'pictures-size' => 'i-xl',
+                                            'picture-size' => 'i-xl',
                                           ],
                                           'indestructible' => false,
                                           'default_image_url' => '/wa/wa-apps/site/img/image.svg',

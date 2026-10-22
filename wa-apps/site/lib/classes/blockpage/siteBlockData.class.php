@@ -156,7 +156,7 @@ class siteBlockData
         if (!isset($a['data'])) {
             $data = $block_type->getExampleBlockData();
             if (isset($a['replace_data'])) {
-                $data->data = array_replace($data->data, ifempty($a['replace_data'], []));
+                $data->data = array_replace($data->data, $a['replace_data']);
             }
             return $data;
         }

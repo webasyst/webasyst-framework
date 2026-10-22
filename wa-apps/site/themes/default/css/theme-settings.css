@@ -118,7 +118,7 @@
     border-radius: var(--theme-editor-radius, 12px);
 
     background: var(--accent-color, #A538DC);
-    color: #ffffff;
+    color: var(--button-text-color, #ffffff);
 
     font-size: 14px;
     font-weight: 500;
@@ -688,7 +688,7 @@
 
 .theme-editor-btn-primary {
     background: var(--accent-color, #A538DC);
-    color: #ffffff;
+    color: var(--button-text-color, #ffffff);
 }
 
 .theme-editor-btn-primary:hover {

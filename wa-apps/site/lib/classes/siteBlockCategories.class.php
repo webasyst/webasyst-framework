@@ -16,6 +16,9 @@ class siteBlockCategories {
     public function getBlockCategories() {
         $result = [
             [
+                'title' => _wd('site', 'Простой блок'),
+                'tag'   => 'category_simple',
+            ], [
                 'title' => _wd('site', 'Menu'),
                 'tag'   => 'category_menu',
             ], [
@@ -101,8 +104,14 @@ class siteBlockCategories {
     public function getPageTemplatesCategories() {
         $result = [
             [
+                'title' => _wd('site', 'Простая страница'),
+                'tag'   => 'category_simple',
+            ], [
                 'title' => _wd('site', 'Mini-pages'),
                 'tag'   => 'category_mini',
+            ], [
+                'title' => _wd('site', 'Product'),
+                'tag'   => 'category_product',
             ], [
                 'title' => _wd('site', 'Promo campaign'),
                 'tag'   => 'category_promo',

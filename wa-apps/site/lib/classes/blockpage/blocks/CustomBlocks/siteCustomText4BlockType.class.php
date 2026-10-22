@@ -173,7 +173,7 @@ class siteCustomText4BlockType extends siteBlockType {
                     'padding-top' => 'p-t-10',
                     'padding-bottom' => 'p-b-4',
                     'border-width' => [
-                        'name' => 'Толщина 1',
+                        'name' => 'Width 1',
                         'type' => 'library',
                         'unit' => 'px',
                         'value' => 'b-w-s',

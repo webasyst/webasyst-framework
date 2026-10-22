@@ -44,14 +44,13 @@ class siteEditorAddBlockController extends waController
         }
 
         $library = siteBlockpageLibrary::getInstance();
-        $is_premium = waLicensing::check('site')->isPremium();
 
-        if (!$is_premium) {
-            $block_ids = $library->getPremiumBlockIds();
-            if (isset($block_ids[$type_id])) {
+        $assertAddBlockRequiresPremium = function($block_data) {
+            $is_premium = waLicensing::check('site')->isPremium();
+            if (!$is_premium && !empty($block_data['premium'])) {
                 throw new waException('The premium license is required.');
             }
-        }
+        };
 
         if ($duplicate_block_id) {
             $block_type = siteBlockType::factory($original_block['type']);
@@ -68,6 +67,19 @@ class siteEditorAddBlockController extends waController
             if (empty($block_type_info['data'])) {
                 throw new waException('unknown type_id', 400);
             }
+
+            $assertAddBlockRequiresPremium($block_type_info);
+
+            $type_options = waRequest::post('type_options', null, 'array');
+            if ($type_options) {
+                /** @var siteBlockType */
+                $block_type = $block_type_info['data']->block_type;
+                if ($block_type instanceof siteBlockTypeOptionsInterface) {
+                    $block_type->setTypeOptions($type_options);
+                    $block_type_info['data'] = $block_type->getExampleBlockData();
+                }
+            }
+
             $block_data = $block_type_info['data'];
         }
 

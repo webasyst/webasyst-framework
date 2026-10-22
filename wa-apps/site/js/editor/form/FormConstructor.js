@@ -45,6 +45,7 @@ var FormConstructor = ( function($) {
             that.vue_components = that.components.base_components;
             that.vue_manual_components = that.components.manual_components;
             that.vue_custom_components = that.components.custom_components;
+            that.external_components = $.site.external_components;
             // CONST
 
             //append :root styles from blockpage.wrapper.html
@@ -353,59 +354,6 @@ var FormConstructor = ( function($) {
                         }
 
                     },
-                    /*"OldColumnsGroup": {
-                        props: {
-                            group_config: { type: Object },
-                            block_data: { type: Object, default: {} },
-                            block_id: { type: Number},
-                        },
-                        data() {
-                            //const form_type = that.storage_data[this.group_config.type].type;
-                            const form_type = 'customColumn';
-
-                            let columns_data = [];
-                            for (let key in this.block_data.columns) {
-                                columns_data.push(this.block_data?.columns[key]);
-                            }
-                            let arr_options = that.storage_data[this.group_config.type].values;
-                            const icons = that.storage_data[this.group_config.type].icons;
-                            const active_option = this.block_data?.block_props?.[form_type];
-                            const header_name = false;
-                            const media_prop = that.media_prop;
-                            const icon = that.media_prop ? icons[media_prop] : 'fa-desktop';
-                            //let temp_columns_data = columns_data;
-                            return { columns_data, header_name, arr_options, active_option, form_type, media_prop, icon}
-                          },
-                        template: that.templates["component_columns_group"],
-                        delimiters: ['{ { ', ' } }'],
-                        components: {
-                            'ColumnWidthDropdown': that.vue_components['component-dropdown'],
-                            'CustomButton': that.vue_components['custom-button'],
-                          },
-                        methods: {
-                            change: function(option, column_num, activeOption) { //put classes to remove in temp_active_option
-                                let self = this;
-                                let temp_active_options = self.block_data.columns['column-' + column_num].split(' ');
-                                const classPosition = temp_active_options.indexOf(activeOption.value);
-                                if ( classPosition >= 0 ) temp_active_options.splice(classPosition, 1);
-                                temp_active_options.push(option.value);
-                                $.wa.editor._block_settings_drawer_promise.then(function(bs) {
-                                    self.block_data.columns['column-' + column_num] = temp_active_options.join(' ');
-                                    bs.saveBlockData(self.block_data);
-                                });
-                                console.log('saveBlockData', self.block_data);
-                            },
-                            changeComponent: function(key) {
-                                let self = this;
-                                let $editable = that.$target_wrapper.find('.style-wrapper');
-                                $editable = $editable.length ? $editable : that.$target_wrapper;
-                                $editable = $editable.find('[data-count=' + (key + 1) + '] .site-block-column');
-                                let column_block_id = $editable.data('block-id');
-                                updateSelectedBlock(column_block_id)
-
-                            }
-                        }
-                    },*/
                     "ColumnsGroup": {
                         props: {
                             group_config: { type: Object },
@@ -3386,11 +3334,15 @@ var FormConstructor = ( function($) {
                             let url_text = image_data['url_text'] || '';
                             const wa_url = $.site.backend_url;
                             self.$editable = that.$target_wrapper.eq(0).find('.style-wrapper picture');
+                            console.log('this.group_config', this.group_config);
+                            console.log('form_type', form_type);
+                            console.log('this.block_data', this.block_data);
 
                             return { wa_url, svg_html, url_text, form_type, image_data, active_toggle_option, toggle_options, svg_placeholder }
                         },
                         template: `
                         <div class="s-editor-option-wrapper image-group-wrapper">
+                            <ai-image-dropdown :block_id="block_id" @change="changeImage" class="custom-mt-8"></ai-image-dropdown>
                             <div class="s-editor-option-body custom-mt-8">
                                 <image-data-toggle @changeToggle="changeToggle" :options="toggle_options" :activeOption="active_toggle_option" :with_text="true" form_type="custom"></image-data-toggle>
                             </div>
@@ -3439,8 +3391,6 @@ var FormConstructor = ( function($) {
                                 <picture-size-group class="width-100" :block_data="block_data" :block_id="block_id"></picture-size-group>
                             </div>
                         </div>`,
-                        computed: {
-                        },
                         components: {
                             'ImageDataToggle': that.vue_components['component-toggle'],
                             'ImageUpload': {
@@ -3559,21 +3509,103 @@ var FormConstructor = ( function($) {
                                     block_id: { type: Number},
                                 },
                                 data() {
+                                    if (!this.block_data?.inline_props) this.block_data.inline_props = {};
                                     const form_type = that.storage_data['PictureSizeGroup'].type;
+                                    const width_group = that.storage_data['WidthVarGroup'];
+                                    const width_type = width_group.type;
                                     const arr_options = that.storage_data['PictureSizeGroup'].values;
                                     const active_option = (this.block_data?.block_props||{})[form_type];
-                                    const semi_header = 'Size';
                                     const active_icon = that.storage_data['PictureSizeGroup'].icon;
-                                    return { arr_options, semi_header, active_option, form_type, active_icon }
+                                    this.prev_active_option = active_option;
+
+                                    const width_unit_options = width_group.units;
+                                    const width_unit_option = this.block_data.inline_props?.[width_type]?.unit || width_group.default_unit;
+                                    const width_value = this.block_data.inline_props?.[width_type]?.raw_value || '';
+
+                                    return { arr_options, active_option, form_type, active_icon, width_type, width_unit_options, width_unit_option, width_value }
                                   },
-                                template: that.templates["component_line_height_group"],
+                                template: that.templates["component_image_size_group"],
                                 delimiters: ['{ { ', ' } }'],
                                 components: {
                                     'LineHeightDropdown': that.vue_components['component-dropdown'],
-                                  },
-                                methods: {
+                                    'WidthUnitDropdown': that.vue_components['component-dropdown'],
                                 },
+                                methods: {
+                                    onChangeActiveOption: function(option) {
+                                        const self = this;
+                                        self.prev_active_option = self.active_option;
+                                        self.active_option = option.value;
+                                        if (self.active_option === 'custom') {
+                                            self.updateInlinePropWidth({});
+                                        } else {
+                                            self.removeInlinePropWidth();
+                                        }
+                                    },
+                                    onChangeWidthUnit: function(e) {
+                                        const self = this;
+                                        const unit = e.value;
+                                        self.width_unit_option = unit;
+                                        self.updateInlinePropWidth({ unit });
+                                    },
+                                    onInputWidthValue: function(e) {
+                                        const self = this;
+                                        const value = e.target.value;
+                                        self.width_value = value;
+                                        self.updateInlinePropWidth({ value });
+                                    },
+                                    updateInlinePropWidth: function(options) {
+                                        const self = this;
+                                        if (!options) {
+                                            self.removeInlinePropWidth();
+                                            return;
+                                        }
+
+                                        const prop = self.width_type;
+                                        if (!self.block_data.inline_props[prop]) self.block_data.inline_props[prop] = {};
+                                        const unit = options.unit || self.width_unit_option || that.storage_data['WidthVarGroup'].default_unit;
+                                        const value = options.value ?? self.width_value;
+                                        if (value === undefined || value.trim() === '' || isNaN(Number(value))) {
+                                            self.removeInlinePropWidth();
+                                            return;
+                                        }
+
+                                        self.block_data.block_props[self.form_type] = 'custom';
+
+                                        Object.assign(self.block_data.inline_props[prop], {
+                                            unit,
+                                            raw_value: value,
+                                            value: `${value}${unit}`
+                                        });
+                                        self.saveBlockData();
+                                    },
+                                    saveBlockData: function() {
+                                        const self = this;
+                                        $.wa.editor._block_settings_drawer_promise.then((bs) => {
+                                            bs.saveBlockData(self.block_data, true);
+                                        });
+                                    },
+                                    removeInlinePropWidth: function(options) {
+                                        const self = this;
+                                        delete self.block_data.inline_props[self.width_type];
+                                        if (self.prev_active_option && self.prev_active_option !== 'custom') {
+                                            self.block_data.block_props[self.form_type] = self.prev_active_option;
+                                        } else {
+                                            delete self.block_data.block_props[self.form_type];
+                                        }
+                                        self.saveBlockData();
+                                    },
+                                    saveBlockData: function() {
+                                        const self = this;
+                                        $.wa.editor._block_settings_drawer_promise.then((bs) => {
+                                            bs.saveBlockData(self.block_data, true);
+                                        });
+                                    },
+                                },
+                                mounted: function() {
+                                    $(this.$el).find("[data-wa-tooltip-template]").waTooltip();
+                                }
                             },
+                            "AiImageDropdown": that.external_components['component-ai-image-dropdown']
                           },
                         methods: {
                             change: function() {
@@ -3661,7 +3693,10 @@ var FormConstructor = ( function($) {
                                 const serializer = new XMLSerializer();
                                 return serializer.serializeToString(xmlDoc);
                                 //return svgString.replace(/\s*fill="[^"]*"/g, '').replace(/\s*fill:*"/g, '');
-                              }
+                            },
+                            changeImage: function () {
+
+                            }
                         }
                     },
                     "MenuButtonGroup": {
@@ -3782,9 +3817,7 @@ var FormConstructor = ( function($) {
                                 delimiters: ['{ { ', ' } }'],
                                 components: {
                                     'LineHeightDropdown': that.vue_components['component-dropdown'],
-                                  },
-                                methods: {
-                                },
+                                }
                             },
                           },
                         methods: {
@@ -4381,50 +4414,16 @@ var FormConstructor = ( function($) {
                             const selected_tab = 'html';
                             this.editor_session = null;
 
-                            return { selected_tab, arr_options, header_name, showAIPanel, aiFacility, prompt_options }
+                            const found_htm_head_body_tags = false;
+
+                            return { selected_tab, arr_options, header_name, showAIPanel, aiFacility, prompt_options, found_htm_head_body_tags }
                           },
-                        template: `
-                        <div class="s-editor-option-wrapper ">
-                            <div class="tabs-wrapper-group">
-                                <ul class="tabs small" v-if="arr_options">
-                                    <li v-for="(item, key) in arr_options"
-                                        :class="{ selected: item === selected_tab }"
-                                        id="item"
-                                        @click="changeTab(item)"
-                                        >
-                                        <a href="javascript:void(0);" class="align-center">
-                                            <span class="tabs-name bold uppercase">{{item}}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="code-group-wrapper custom-mb-12 custom-mt-12">
-                                <div class="code-group custom-mb-12 custom-mt-12">
-                                    <div class="value js-redactor-wrapper">
-                                        <textarea style="display:none" class="js-content-body" id="js-content-body" name="content"> {{block_data[selected_tab]}}</textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="code-group-wrapper custom-mb-12 custom-mt-12 sticky">
-                                <p class="hint custom-mt-8">{{$t('custom.custom_code_hint')}}</p>
-                                <div class="code-group-buttons flexbox">
-                                    <custom-button id="js-save-code" :buttonText="$t('custom.Save')" buttonClass="green blue" @click="saveCode"></custom-button>
-                                    <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
-                                    <button class="button smaller nobutton gray custom-ml-auto" title="Webasyst AI" @click="showAIPanel = !showAIPanel">
-                                        <span class="icon webasyst-ai"></span>
-                                    </button>
-                                    <custom-button v-show="selected_tab === 'html'" id="js-show-variables" iconClass="fa-dollar-sign" :title="$t('custom.Variables')" buttonClass="gray nobutton" @click="showVariables"></custom-button>
-                                    <custom-button v-show="selected_tab === 'html'" id="js-show-cheatsheet" iconClass="fa-code" :title="$t('custom.CheatSheet')" buttonClass="gray nobutton" @click="showCheatSheet"></custom-button>
-                                </div>
-                                <ai-generator v-if="showAIPanel" :group_config="group_config" :facility="aiFacility" @generate="handleAiAnswer" @undo="undoElement" @closeForm="showAIPanel = !showAIPanel" :block_id="block_id" container_class="custom-code-panel"></ai-generator>
-                            </div>
-                        </div>
-                        `,
+                        template: that.templates["component_custom_code_group"],
                         //delimiters: ['{ { ', ' } }'],
                         components: {
                             'CustomButton': that.vue_components['custom-button'],
                             'AiGenerator': that.vue_components['component-ai-generator'],
-                          },
+                        },
                         methods: {
                             handleAiAnswer: function(data) {
                                 let self = this;
@@ -4437,8 +4436,6 @@ var FormConstructor = ( function($) {
                                 self.editor_session.setValue(data?.someData?.[response_type]);
                                 self.saveCode();
                                 }
-                                //session.getValue();
-
                             },
                             undoElement: function() {
                                 let self = this;
@@ -4491,16 +4488,16 @@ var FormConstructor = ( function($) {
                                 $('.site-editor-wa-header-wrapper').find('.js-show-variables').click();
                             },
                             showCheatSheet(){
-                                const self = this;
-                                //$button = $(self.$el).find('#js-save-code');
                                 $('.site-editor-wa-header-wrapper').find('.js-show-cheatsheet').click();
+                            },
+                            checkRootHtmlTags(html) {
+                                const re = /<!DOCTYPE\s+html\b>|<\/?html\b[^>]*>|<\/?head\b[^>]*>|<\/?body\b[^>]*>/ig;
+                                this.found_htm_head_body_tags = re.test(html);
                             }
                         },
 
                         mounted: function() {
                             const self = this;
-                            $html_wrapper = $(self.$el).find('.js-redactor-wrapper');
-                            $textarea = $(self.$el).find('.js-content-body');
                             waEditorAceInit({ 'id': 'js-content-body','type': "html", 'save_button': 'js-save-code'});
                             //wa_editor.setOption('fontSize', 14);
                             wa_editor.$blockScrolling = Infinity;
@@ -4508,6 +4505,13 @@ var FormConstructor = ( function($) {
                             wa_editor.renderer.setShowGutter(false);
                             self.editor_session = wa_editor.getSession();
                             that.$sidebar.addClass('custom-code-mode');
+
+                            self.editor_session.on('change', () => {
+                                self.checkRootHtmlTags(self.editor_session.getValue());
+                            });
+                            self.checkRootHtmlTags(self.block_data.html);
+
+                            $(self.$el).find("[data-wa-tooltip-template]").waTooltip();
                         },
                         unmounted: function() {
                             that.$sidebar.removeClass('custom-code-mode');
@@ -5056,20 +5060,27 @@ var FormConstructor = ( function($) {
                         },
                         data() {
                             const self = this;
-                            const is_broken_block = this.form_config?.type === "site.Broken" || false;
                             self.block_wrapper = that.$target_wrapper.closest('.js-seq-wrapper');
+                            const is_hidden = !!that.states.block_data.hidden;
+                            const is_broken_block = self.form_config?.type === "site.Broken";
                             const is_hseq = self.block_wrapper.hasClass('hseq-wrapper');
                             const prev_move_icon = is_hseq ? 'fa-arrow-left' : 'fa-arrow-up';
                             const next_move_icon = is_hseq ? 'fa-arrow-right' : 'fa-arrow-down';
-                            const is_element = this.form_config.tags === 'element';
-                            const is_hidden = !!that.states.block_data.hidden;
-                            return { is_broken_block, prev_move_icon, next_move_icon, is_hidden, is_element }
+                            const is_element = self.form_config.tags === 'element';
+
+                            let is_visible = true;
+                            const parents = $.wa.editor.block_storage.getParents(self.block_id).reverse();
+                            if (parents.length === 1) {
+                                is_visible = !$.wa.editor.block_storage.form_config[parents[0].id]?.indestructible_columns;
+                            }
+
+                            return { is_broken_block, prev_move_icon, next_move_icon, is_hidden, is_element, is_visible }
                         },
                         template: `
-                        <div class="main-button-group custom-mb-32 custom-mt-8">
+                        <div v-if="is_visible" class="main-button-group custom-mb-32 custom-mt-8">
                             <custom-button buttonClass="light-gray" iconClass="fa-trash-alt" @click="removeBlock" :title="$t('custom.Delete')"></custom-button>
-                            <custom-button buttonClass="light-gray" :iconClass="prev_move_icon" @click="reorderBlocks('up')" v-if="!is_broken_block" :title="$t('custom.Move')"></custom-button>
-                            <custom-button buttonClass="light-gray" :iconClass="next_move_icon" @click="reorderBlocks('down')" v-if="!is_broken_block" :title="$t('custom.Move')"></custom-button>
+                            <custom-button v-if="!is_broken_block" buttonClass="light-gray" :iconClass="prev_move_icon" @click="reorderBlocks('up')" :title="$t('custom.Move')"></custom-button>
+                            <custom-button v-if="!is_broken_block" buttonClass="light-gray" :iconClass="next_move_icon" @click="reorderBlocks('down')" :title="$t('custom.Move')"></custom-button>
                             <custom-button buttonClass="light-gray" iconClass="fa-copy" @click="copyBlock" v-if="!is_broken_block" :title="$t('custom.Copy')"></custom-button>
                             <custom-button v-if="!is_broken_block && !is_element" :button-class="is_hidden ? 'blue' : 'light-gray'" iconClass="fa-eye-slash" @click="hideBlock" :title="$t('custom.Hide')"></custom-button>
                         </div>
@@ -5150,7 +5161,7 @@ var FormConstructor = ( function($) {
                 },
                 template: `
                     <form-header :header="header" :parents="parents" @closeDrawer="close_drawer" @updateDrawer="update_drawer" @updateDrawerHor="update_drawer_hor" @updateDrawerWidth="update_drawer_width" @goToParent="goToParent"></form-header>
-                    <main-controls-group :key="block_id+media_prop" :block_id="block_id" :form_config="form_config" v-if="!(block_data?.indestructible || false)"></main-controls-group>
+                    <main-controls-group v-if="!block_data?.indestructible" :key="block_id+media_prop" :block_id="block_id" :form_config="form_config"></main-controls-group>
                     <component
                         v-for="(item, key) in settings_array"
                         :is="item.type"
@@ -5327,26 +5338,29 @@ var FormConstructor = ( function($) {
             //console.log(Array.from(iframe_document[0].styleSheets));
             const root_style = Array.from(iframe_document[0].styleSheets)
                 .filter(
-                    sheet =>
-                    sheet
+                    sheet => sheet
                     //sheet.href === null
                 )
                 .reduce(
-                    (acc, sheet) =>
-                    (acc = [
-                        ...acc,
-                        ...Array.from(sheet.cssRules).reduce(
-                        (def, rule) =>
-                            (def =
-                            (rule.selectorText === ":root")
-                                ? [
-                                    ...def,
-                                    rule
-                                ]
-                                : def),
-                        []
-                        )
-                    ]),
+                    (acc, sheet) => {
+                        try {
+                            return [
+                                ...acc,
+                                ...Array.from(sheet.cssRules).reduce(
+                                (def, rule) =>
+                                    (def =
+                                    (rule.selectorText === ":root")
+                                        ? [
+                                            ...def,
+                                            rule
+                                        ]
+                                        : def),
+                                [])
+                            ]
+                        } catch(_) {
+                            return acc;
+                        }
+                    },
                     []
                 );
 

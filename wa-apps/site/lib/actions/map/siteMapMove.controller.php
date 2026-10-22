@@ -206,8 +206,8 @@ class siteMapMoveController extends waJsonController
             return $route_url === $by_route_url;
         }
 
-        $route_url = rtrim($route_url, '/*');
-        $by_route_url = rtrim($by_route_url, '/*');
+        $route_url = rtrim($route_url, '*');
+        $by_route_url = rtrim($by_route_url, '*');
         return substr($route_url, 0, strlen($by_route_url)) === $by_route_url;
     }
 }

@@ -721,7 +721,7 @@ return [
         'site-block-columns' => [
           'background' => [
             'type' => 'self_color',
-            'value' => 'linear-gradient(#000000c9, #000000c9), center center / cover url(' . $img_path . 'top-bg.png)',
+            'value' => 'linear-gradient(#000000c9, #000000c9), center center / cover url(' . $img_path . 'top-bg.jpg)',
             'name' => 'Self color',
             'layers' => [
               [
@@ -738,9 +738,9 @@ return [
                 'type' => 'image',
                 'name' => 'Image',
                 'css' => '',
-                'file_name' => 'top-bg.png',
-                'file_url' => $img_path . 'top-bg.png',
-                'value' => 'center center / cover url(' . $img_path . 'top-bg.png)',
+                'file_name' => 'top-bg.jpg',
+                'file_url' => $img_path . 'top-bg.jpg',
+                'value' => 'center center / cover url(' . $img_path . 'top-bg.jpg)',
                 'uuid' => 2,
               ],
             ],

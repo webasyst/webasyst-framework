@@ -29,7 +29,7 @@ class siteSettingsSaveController extends waJsonController
         if ($url != $domain) {
             // domain already exists
             if ($domain_model->getByName($url)) {
-                $this->errors = sprintf(_w("A site with domain name %s already exists in this Webasyst account."), $url);
+                $this->errors = sprintf(_w("You already have website %s set up."), $url);
                 return;
             }
             $event_params['renamed_from_domain'] = $domain;
@@ -97,14 +97,23 @@ class siteSettingsSaveController extends waJsonController
                     // create directory
                     waFiles::create($domain_config_path);
                 }
-                $domain_config['apps'] = array();
-                foreach ($apps['url'] as $i => $u) {
-                    $domain_config['apps'][] = array(
-                        'url' => $u,
-                        'name' => $apps['name'][$i]
-                    );
+                $can_save = true;
+                foreach (ifset($domain_config, 'apps', []) as $app) {
+                    if (isset($app['type'])) { // was saved in new UI
+                        $can_save = false;
+                        break;
+                    }
                 }
-                $save_config = true;
+                if ($can_save) {
+                    $domain_config['apps'] = array();
+                    foreach ($apps['url'] as $i => $u) {
+                        $domain_config['apps'][] = array(
+                            'url' => $u,
+                            'name' => $apps['name'][$i]
+                        );
+                    }
+                    $save_config = true;
+                }
             } else {
                 if (isset($domain_config['apps'])) {
                     unset($domain_config['apps']);

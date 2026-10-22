@@ -8,6 +8,7 @@ class sitePageAddMethod extends waAPIMethod
     {
         $data = waRequest::post();
         $domain_id = $this->post('domain_id', true);
+        siteHelper::assertDomainAccess($domain_id);
 
         $page_model = new sitePageModel();
         $page_id = $page_model->add($data);

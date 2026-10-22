@@ -1,0 +1,182 @@
+<table class="site-map-tree-table borderless blank">
+    <tbody>
+    {if !empty($placeholder)}
+        <tr{if $selected_row_index === null} class="selected"{/if} data-frontend-url="">
+            <td class="page-name">{$placeholder|escape}</td>
+            <td class="page-route"></td>
+        </tr>
+    {/if}
+    {foreach $table_rows as $n => $row}
+        {$p = $row}
+
+        {$c_page_id = 0}
+        {if !empty($p.id) }
+            {$c_page_id = $p.id}
+        {elseif !empty($p.route_id)}
+            {$c_page_id = $p.route_id}
+        {/if}
+
+        {$frontend_link = $p.frontend_link|default:''}
+        {$app_disabled = !empty($row.app.disabled)}
+        {$is_misconfigured_settlement = !empty($row.misconfigured_settlement)}
+        {$is_main = !$is_misconfigured_settlement && !empty($row.is_main)}
+        {$is_parent = empty($row.offset_level)}
+        {$disable_set_main_page = false}
+        {$app_id = null}
+        {$route = []}
+        {if $row['row_type'] === 'route_app'}
+            {$route = $row}
+            {$is_broken_route_url = !empty($row.is_broken_route_url) && $row.is_broken_route_url}
+            {$is_hidden_route = !empty($route.private) && $route.private || !empty($route.disabled)}
+            {$unpublished_page = (!empty($route.app) && !is_array($route.app)) || (!empty($route.root_page.id) && $route.root_page.status == '0')}
+            {$app_id = ifset($route, 'app', 'id', '')}
+            {$show_over_another_section = !empty($route.show_over_another_section)}
+            <tr
+                class="{strip}
+                    {if $app_disabled}
+                        {" "}disable-link
+                    {/if}
+                    {if $is_main}
+                        {" "}is-main
+                    {/if}
+                    {if $show_over_another_section}
+                        {" "}url-overlap
+                    {/if}
+                    {if $show_over_another_section && empty($route.show_under_another_section)}
+                        {" "}show-over-another-section
+                    {/if}
+                    {if $selected_row_index === $n}
+                        {" "}selected
+                    {/if}
+                {/strip}"
+                data-route-id="{$route.route_id}" {if !empty($route.root_page.id)}data-page-id="{$route.root_page.id}"{/if}
+                {if $app_id == 'site'}data-html-page="1"{/if} data-app-id="{$app_id}"
+                data-row-type="{$row.row_type}"{if $is_parent} data-root{/if}{if !empty($route.url)} data-route="{$route.url}"{/if}
+                data-frontend-url="{$frontend_link}"
+            >
+                <td class="page-name {if $is_hidden_route || $app_disabled}gray{/if}">
+                    <div class="flexbox space-8 page-name-wrapper">
+                        {if $row['row_type'] === 'route_app'}
+                            {if $route.app.id == 'site'}
+                                <span class="page-icon"><i class="fas fa-file-alt"></i></span>
+                                <span class="page-title">{ifset($route, '_name', ifset($route.app, 'name', $route.app.id))|escape}</span>
+                            {else}
+                                <span class="page-icon">
+                                    {if !empty($route.app.icon)}
+                                    <img src="{$wa_url}{$route.app.icon.24}" alt="">
+                                    {else}
+                                    <i class="fas fa-question"></i>
+                                    {/if}
+                                </span>
+                                <span class="page-title">
+                                    {ifset($route, '_name', ifset($route.app, 'name', $route.app.id))|escape}
+                                </span>
+                            {/if}
+                        {/if}
+                        {if $unpublished_page}
+                            <span class="icon small disabled-icon custom-mr-8" title="[`Unpublished`]"><i class="fas fa-eye-slash"></i></span>
+                        {/if}
+                        {if $app_disabled || $is_misconfigured_settlement || $is_broken_route_url}
+                            {$_title = _w('The app is disabled or deleted.')}
+                            {if $is_misconfigured_settlement}
+                                {$_title = _w('The rule is not applied because it is placed below the rule with address *')}
+                            {elseif $is_broken_route_url}
+                                {$_title = _w('The rule is incorrect: for the Site app the address must be either .../*, or .../, or *, or must be empty; for other apps it must be either .../*, or *. Switch to the “Routing mode” to fix the address.')}
+                            {/if}
+                            <span class="js-misconfigured-settlement icon small" title="{$_title}"><i class="fas fa-exclamation-triangle"></i></span>
+                        {/if}
+                    </div>
+                </td>
+                <td class="page-route{if $app_disabled || $is_misconfigured_settlement} js-misconfigured-settlement strike gray{/if}">
+                    <div>
+                        <a href="javascript:void({$route.route_id|default:0|json_encode|escape})" data-href="{$frontend_link|escape}" data-url="{$route.url_formatted|default:''|escape}" class="gray">{strip}
+                            {if $is_main}
+                                <span class="js-homepage icon gray custom-ml-4"><i class="fas fa-home"></i></span>
+                            {else}
+                                {$route.url_formatted|truncate:30:'...':false:true|escape}
+                            {/if}
+                            {if $show_over_another_section}
+                                <span data-wa-tooltip-content="[`The page is available instead of a section with the same address. Its subpages become unavailable.`]">
+                                    &nbsp;<i class="fas fa-exclamation-circle text-light-gray"></i>
+                                </span>
+                            {/if}
+                        {/strip}</a>
+                    </div>
+                </td>
+        {elseif $row['row_type'] === 'htmlpage'}
+            {$app_id = ifset($p, 'app_id', '')}
+            <tr class="{if $selected_row_index === $n}selected{/if}"
+                data-page-id="{$p.id}"
+                data-parent-id="{$p.parent_id|default:''}" data-parent-route-id="{$p.route_params.route_id|default:''}"
+                data-app-id="{$app_id}"{if !empty($row.offset_level)} data-offset="{$row.offset_level}"{/if}
+                data-html-page="1" data-row-type="{$row.row_type}"
+                data-frontend-url="{$frontend_link}"
+            >
+                <td class="page-name{if !empty($p.private) && $p.private} gray{/if}" style="padding-left: {$row.offset_level*2}em">
+                    <div class="page-name-wrapper flexbox space-8">
+                        <span class="page-icon"><i class="fas fa-file-alt"></i></span>
+                        <span class="page-title">{$p.name|escape}</span>
+                        {if $p.status == '0'}
+                            <span class="icon small disabled-icon custom-mr-8" title="[`Unpublished`]"><i class="fas fa-eye-slash"></i></span>
+                        {/if}
+                    </div>
+                </td>
+                <td class="page-route">
+                    <div>
+                        <a href="javascript:void({$row.route_id|default:0|json_encode|escape})" data-href="{$frontend_link|escape}" data-url="{$p.url|default:''|escape}" class="gray">{strip}
+                            /{if $p.url}{$p.url|escape}{/if}
+                        {/strip}</a>
+                    </div>
+                </td>
+        {elseif $row['row_type'] === 'blockpage'}
+            {$disable_set_main_page = $p.status !== 'final_published'}
+            {$app_id = 'site'}
+            <tr
+                class="{strip}
+                    {if $is_main}
+                        {" "}is-main
+                    {/if}
+                    {if !empty($p.show_over_another_section)}
+                        {" "}url-overlap
+                    {/if}
+                    {if $selected_row_index === $n}
+                        {" "}selected
+                    {/if}
+                {/strip}"
+                data-page-id="{$p.id|escape}" {if !empty($row.offset_level)}data-offset="{$row.offset_level}"{/if}
+                data-parent-id="{$p.parent_id|default:''}"
+                data-row-type="{$row.row_type}"{if $is_parent} data-root{/if}
+                data-frontend-url="{$frontend_link}"
+            >
+                <td class="page-name"{if !empty($row.offset_level)} style="padding-left: {$row.offset_level*2}em"{/if}>
+                    <div class="page-name-wrapper flexbox space-8">
+                        <span class="page-icon"><i class="fas fa-layer-group"></i></span>
+                        <span class="page-title">{$p.name|escape}</span>
+                        {if $p.status === 'final_unpublished'}
+                            <span class="icon small disabled-icon custom-mr-8" title="[`Unpublished`]"><i class="fas fa-eye-slash"></i></span>
+                        {elseif !empty($p.draft_changed)}
+                            <span class="icon smaller rounded bg-yellow custom-mr-8" title="[`Non-published changes exist`]"></span>
+                        {/if}
+                    </div>
+                </td>
+                <td class="page-route">
+                    <div>
+                        <a href="javascript:void(0)" data-href="{$frontend_link|escape}" data-url="{$p.url|default:''|escape}" class="gray">{strip}
+                            {if $is_main}
+                                <span class="js-homepage icon gray custom-ml-4"><i class="fas fa-home"></i></span>
+                            {else}
+                            /{if $p.url}{$p.url|escape}/{/if}
+                            {/if}
+                        {/strip}</a>
+                        {if !empty($p.show_over_another_section)}
+                            <span data-wa-tooltip-content="[`The page is available instead of a section with the same address. Its subpages become unavailable.`]">
+                                &nbsp;<i class="fas fa-exclamation-circle text-light-gray"></i>
+                            </span>
+                        {/if}
+                    </div>
+                </td>
+        {/if}
+            </tr>
+    {/foreach}
+    </tbody>
+</table>

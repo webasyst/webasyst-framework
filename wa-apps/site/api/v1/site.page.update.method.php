@@ -11,6 +11,7 @@ class sitePageUpdateMethod extends waAPIMethod
         $page = $page_model->getById($id);
 
         if ($page) {
+            siteHelper::assertDomainAccess($page['domain_id']);
             $data = waRequest::post();
             $keys = array('name', 'title', 'content', 'status');
             $update = array();

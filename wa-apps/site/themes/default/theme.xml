@@ -412,18 +412,32 @@
       <name locale="en_US">Header</name>
       <name locale="ru_RU">«Шапка» сайта</name>
     </setting>
-    <setting var="logo" control_type="image">
+    <setting var="logo" control_type="image" max_width="600">
       <value/>
       <filename>img/logo.*</filename>
       <name locale="en_US">Logo</name>
       <name locale="ru_RU">Логотип</name>
     </setting>
+    <setting var="logo_width" control_type="image_width" image="logo">
+      <value>100</value>
+      <name locale="en_US">Logo scale</name>
+      <name locale="ru_RU">Размер логотипа</name>
+      <description locale="ru_RU"><![CDATA[<div class="js-image-scale-retina hidden custom-mt-4 hint semibold text-orange">При текущем размере изображение может выглядеть размытым на экранах Retina (2×). Рекомендуем <span class="js-image-scale-retina-reduce">уменьшить размер до <span class="js-image-scale-width"></span> px или </span>загрузить изображение шириной не менее <span class="js-image-scale-retina-width"></span> px.</div>]]></description>
+      <description locale="en_US"><![CDATA[<div class="js-image-scale-retina hidden custom-mt-4 hint semibold text-orange">At the current scale, the image may look blurry on Retina (2×) displays. We recommend <span class="js-image-scale-retina-reduce">reducing the scale to <span class="js-image-scale-width"></span> px or </span>uploading an image at least <span class="js-image-scale-retina-width"></span> px wide.</div>]]></description>
+    </setting>
+    <setting var="header_sitename" control_type="checkbox">
+      <value>1</value>
+      <name locale="en_US">Header site name</name>
+      <name locale="ru_RU">Название сайта в верхнем меню</name>
+      <description locale="ru_RU">Если логотип загружен, то включение настройки выводит название вместо логотипа только на телефонах. Не рекомендуется отключать, если логотип не загружен.</description>
+      <description locale="en_US">If a logo has been uploaded, enabling this setting displays the name instead of the logo on phones only. Disabling this setting is not recommended if no logo has been uploaded.</description>
+    </setting>
     <setting var="header_links" control_type="select">
       <value>wa-apps</value>
       <name locale="ru_RU">Ссылки в верхнем меню</name>
       <name locale="en_US">Header links</name>
-      <description locale="ru_RU">Ссылки верхнего меню навигации могут определяться либо основной структурой сайта (меню {$wa-&gt;apps()} настраивается в приложении «Сайт» в разделе «Настройки»), либо информационным страницами выбранного приложения</description>
-      <description locale="en_US">Top header menu links will be displayed according to the site core structure (as defined in the Site app &gt; Settings &gt; {$wa-&gt;apps()}) or the list of selected app info pages</description>
+      <description locale="ru_RU">Ссылки верхнего уровня меню можно задать вручную или выводить автоматически на основе карты сайта — это настраивается в разделе «Настройки» приложения «Сайт». Также можно автоматически выводить ссылки на информационные страницы выбранного приложения.</description>
+      <description locale="en_US">Top-level menu links can be added manually or displayed automatically based on the site map — this is configured in the Settings section of the Site app. Links to the selected app’s info pages can also be displayed automatically.</description>
       <options>
         <option value="wa-apps">
           <name locale="ru_RU">Приложение «Сайт» &gt; Настройки &gt; {$wa-&gt;apps()}</name>
@@ -455,12 +469,12 @@
         </option>
       </options>
     </setting>
-    <setting var="header_sitename" control_type="checkbox">
-      <value>1</value>
-      <name locale="en_US">Header site name</name>
-      <name locale="ru_RU">Название сайта в верхнем меню</name>
-      <description locale="ru_RU">Выключите, если не хотите, чтобы название сайта показывалось в верхнем меню разделов сайта. Если загружен логотип сайта, то эта настройка действовать не будет (логотип будет показан в любом случае).</description>
-      <description locale="en_US">Disable to hide site name from the header navigation menu. If logo is uploaded, this setting will have no effect (the logo will be displayed instead of the site name).</description>
+    <setting var="show_header_second_level" control_type="checkbox">
+        <value>1</value>
+        <name locale="ru_RU">Меню второго уровня</name>
+        <name locale="en_US">Second level-menu</name>
+        <description locale="ru_RU"><![CDATA[Применяется только к текущему приложению. В зависимости от раздела сайта второй уровень меню может содержать важные элементы: кнопку каталога, поле поиска, ссылки на подразделы и т.д.<br><br>Рекомендуется отключать на сайтах с небольшим количеством контента, например, в интернет-магазине с небольшим каталогом. При необходимости ссылки на разделы каталога можно добавить в меню первого уровня в разделе «Настройки» в приложении «Сайт».]]></description>
+        <description locale="en_US"><![CDATA[Applies only to the current app. Depending on the section of the website, the second-level menu may contain important elements such as the catalog button, search field, and links to subsections.<br><br>We recommend disabling it on websites with a small amount of content, such as online stores with a small catalog. If needed, links to catalog categories can be added to the top-level menu in the Settings section of the Site app.]]></description>
     </setting>
     <setting var="header_custom_image" control_type="image">
       <value/>

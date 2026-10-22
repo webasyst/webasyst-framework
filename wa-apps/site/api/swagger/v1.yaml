@@ -1,0 +1,672 @@
+openapi: 3.0.0
+info:
+  title: 'Site API'
+  version: 1.0.0
+  description: |
+    REST API for the Webasyst Site app (HTML pages and managed domains).
+
+    ## Authentication
+    Every request must be authenticated with an API access token. Pass the token
+    in the `access_token` query parameter:
+
+        /api.php/site.page.getList?access_token=<TOKEN>&domain_id=1
+
+    Tokens are issued via the OAuth 2.0 flow exposed at `/api.php/auth` and
+    `/api.php/token`. A token's `scope` must include `site`; the token's contact
+    must have backend access to the `site` app and the per-domain rights
+    (`domain.<id>`) required by the operation.
+
+    ## Response envelope
+    Successful responses return the method's `response` payload directly as JSON.
+
+    Error responses use the `errorResponse` schema:
+
+        { "error": "invalid_param", "error_description": "Required parameter is missing: \"id\"." }
+
+    `error_description` is optional and is omitted by some errors.
+
+    ## Endpoints
+    Two URL forms are accepted by the framework:
+      - `/api.php/<app>.<method>` (e.g. `/api.php/site.page.getList`)
+      - `/api.php?app=<app>&method=<method>`
+
+    This document uses the first form. The path prefix `/api.php` is the value of `servers.url`.
+servers:
+  - url: /api.php
+    description: API endpoint
+
+paths:
+  # ─────────────────────────────────────────────────────────────────────
+  # Domains
+  # ─────────────────────────────────────────────────────────────────────
+  /site.domain.getList:
+    get:
+      tags:
+        - Domains
+      summary: Returns the list of managed domains.
+      description: |
+        Returns all domains managed by the Site app, filtered by the current
+        user's per-domain rights.
+
+        - **Site admins** (`wa()->getUser()->isAdmin('site')`) receive **all** domains.
+        - **Non-admins** receive only the domains for which they have a
+          `domain.<id>` right granted (`wa()->getUser()->getRights('site', 'domain.%')`).
+
+        This method never returns `403`; unauthorized domains are silently
+        filtered out of the list.
+      externalDocs:
+        description: site.domain.getList
+        url: https://developers.webasyst.ru/api/explorer/site/site.domain.getList/
+      security:
+        - ApiKeyAuth: [ ]
+      responses:
+        200:
+          description: List of domains visible to the current user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  domains:
+                    type: array
+                    description: Domains visible to the current user (admins see all).
+                    items:
+                      $ref: '#/components/schemas/siteDomain'
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Pages
+  # ─────────────────────────────────────────────────────────────────────
+  /site.page.getInfo:
+    get:
+      tags:
+        - Pages
+      summary: Returns detailed information about an HTML page.
+      description: |
+        Returns the full `site_page` row (all columns, including `content`)
+        plus a `params` object (key → value) of the page's parameters.
+
+        The current user must have access to the page's domain
+        (`domain.<domain_id>` right, or be a site admin); otherwise `403 access_denied`.
+      externalDocs:
+        description: site.page.getInfo
+        url: https://developers.webasyst.ru/api/explorer/site/site.page.getInfo/
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - in: query
+          name: id
+          description: Page ID.
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Page details (full row + params).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sitePage'
+        400:
+          description: Required `id` parameter is missing or empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        403:
+          description: Access denied to the page's domain.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        404:
+          description: Page not found (error code `invalid_request`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+  /site.page.getList:
+    get:
+      tags:
+        - Pages
+      summary: Returns a list of HTML pages for a domain, optionally filtered by route and organized as a tree.
+      description: |
+        Returns HTML pages belonging to the given domain (and optionally a
+        single settlement route).
+
+        The current user must have access to the requested domain
+        (`domain.<domain_id>` right, or be a site admin); otherwise `403 access_denied`.
+
+        ### Field selection
+        The list response includes a **subset** of the full page row:
+        `id, parent_id, name, title, full_url, url, route, create_datetime,
+        update_datetime, status`. The fields `domain_id`, `create_contact_id`
+        and `sort` are **not** returned by this method (use `site.page.getInfo`
+        to retrieve them). `content` is included only when the `content`
+        parameter is truthy.
+
+        ### Tree mode (default)
+        By default (or when `tree` is missing/null/truthy), pages are organized
+        as a hierarchy: top-level pages contain nested children in a `childs`
+        array (note the spelling — `childs`, not `children`). Pass `tree=0` to
+        get a flat list.
+
+        ### Params
+        Pass `params=1` to attach a `params` object (key → value) to each page.
+      externalDocs:
+        description: site.page.getList
+        url: https://developers.webasyst.ru/api/explorer/site/site.page.getList/
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - in: query
+          name: domain_id
+          description: Domain ID. Required.
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: route
+          description: |
+            Settlement route to filter pages by. The value is URL-decoded
+            server-side, so pass the URL-encoded form (e.g. `articles%2F`).
+            If omitted, pages for **all** routes on the domain are returned.
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: content
+          description: |
+            Any truthy value (e.g. `1`, `true`, `on`) includes the page's raw
+            HTML `content` field in each item. Falsy/omitted excludes it.
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: params
+          description: |
+            Any truthy value (e.g. `1`) attaches a `params` object (key → value
+            of the page's parameters) to each page item. Falsy/omitted excludes it.
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - in: query
+          name: tree
+          description: |
+            Tree mode is **enabled by default** (when the parameter is missing,
+            null, or any truthy value). Pass `tree=0` (or any falsy non-null
+            value) to return a **flat** list instead of a hierarchy.
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+      responses:
+        200:
+          description: List of pages (flat or hierarchical depending on `tree`).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pages:
+                    type: array
+                    description: Flat or hierarchical list of pages.
+                    items:
+                      $ref: '#/components/schemas/sitePageListItem'
+        400:
+          description: Required `domain_id` parameter is missing or empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        403:
+          description: Access denied to the requested domain.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+  /site.page.add:
+    post:
+      tags:
+        - Pages
+      summary: Creates a new HTML page.
+      description: |
+        Creates a new `site_page` row in the given domain.
+
+        The current user must have access to the requested domain
+        (`domain.<domain_id>` right, or be a site admin); otherwise `403 access_denied`.
+
+        ### Auto-set fields
+        The model (`waPageModel::add()`) automatically populates:
+        - `create_contact_id` — from the current API user (overridable, but
+          conventionally left to the model).
+        - `create_datetime` and `update_datetime` — current server time.
+        - `sort` — `MAX(sort) + 1` among siblings with the same
+          `domain_id` + `route` + `parent_id`.
+
+        ### URL fields
+        `url` and `full_url` are **not** auto-composed by the API. The caller
+        must provide them. If `full_url` is omitted, it is stored as `null`
+        (the column allows NULL). The auto-composition logic that exists in the
+        backend UI (`siteSavePage`) does **not** run in the API path.
+
+        ### Params
+        If `params` is provided, it becomes the page's **full initial** set of
+        parameters (there is no merge — the page is new, so this is the complete set).
+
+        ### Response
+        On success, returns the full page row + `params` (delegates to
+        `site.page.getInfo`).
+      externalDocs:
+        description: site.page.add
+        url: https://developers.webasyst.ru/api/explorer/site/site.page.add/
+      security:
+        - ApiKeyAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                domain_id:
+                  type: integer
+                  minimum: 1
+                  description: Domain ID to create the page in. Required.
+                parent_id:
+                  type: integer
+                  nullable: true
+                  description: |
+                    ID of the parent page. Omit or set to `null` for a
+                    top-level page. Note: the API does **not** validate that
+                    the parent exists; a non-existent `parent_id` will produce
+                    a page with no parent in the resulting tree.
+                name:
+                  type: string
+                  minLength: 1
+                  description: Page name (used as the default title if `title` is empty).
+                title:
+                  type: string
+                  nullable: true
+                  description: Page title shown in browser tabs and sitemap.
+                url:
+                  type: string
+                  nullable: true
+                  description: Last segment of the page URL (e.g. `about`).
+                full_url:
+                  type: string
+                  nullable: true
+                  description: |
+                    Full URL path of the page (e.g. `about/team/`). **Not
+                    auto-composed** by the API — the caller must provide it.
+                    If omitted, stored as `null`.
+                content:
+                  type: string
+                  nullable: true
+                  description: HTML content of the page. May contain Smarty template variables.
+                status:
+                  type: integer
+                  default: 0
+                  description: |
+                    Publication status.
+                    + **1**: Published (visible on frontend)
+                    + **0**: Hidden / draft (default)
+                route:
+                  type: string
+                  nullable: true
+                  description: Settlement route for the page. If omitted, defaults to an empty route.
+                params:
+                  type: object
+                  nullable: true
+                  description: |
+                    Key-value pairs of page parameters (meta tags, Open Graph
+                    tags, etc.). Becomes the page's **full initial** param set.
+                  additionalProperties:
+                    type: string
+              required:
+                - domain_id
+      responses:
+        200:
+          description: Details of the created page (full row + params).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sitePage'
+        400:
+          description: Required `domain_id` is missing or empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        403:
+          description: Access denied to the requested domain.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: |
+            Internal server error — typically the page could not be inserted
+            (error code `server_error`, no `error_description`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+  /site.page.update:
+    post:
+      tags:
+        - Pages
+      summary: Updates properties of an existing HTML page.
+      description: |
+        Updates a subset of an existing `site_page` row.
+
+        The current user must have access to the page's domain
+        (`domain.<domain_id>` right, or be a site admin); otherwise `403 access_denied`.
+
+        ### Updatable fields
+        Only `name`, `title`, `content`, and `status` can be updated via this
+        method. The fields `parent_id`, `url`, `full_url`, `route`, `domain_id`,
+        `sort`, `create_contact_id`, and `create_datetime` are **not** updatable
+        through the API (use the backend UI for structural changes). The
+        `update_datetime` column is refreshed automatically.
+
+        ### Params (full replacement)
+        If `params` is provided, it performs a **full replacement** of the
+        page's parameters:
+        - params present in the request but not in the DB → **inserted**;
+        - params present in both → **updated** (if the value changed);
+        - params present in the DB but **not** in the request → **deleted**.
+
+        If `params` is omitted or empty, existing params are left untouched.
+
+        ### No-op behavior
+        If none of `name`/`title`/`content`/`status` and no `params` are
+        provided, the method performs no write and returns the current page info.
+
+        ### Response
+        On success, returns the full page row + `params` (delegates to
+        `site.page.getInfo`).
+      externalDocs:
+        description: site.page.update
+        url: https://developers.webasyst.ru/api/explorer/site/site.page.update/
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - in: query
+          name: id
+          description: ID of the page to update. Required (passed in the query string).
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  description: New page name.
+                title:
+                  type: string
+                  nullable: true
+                  description: New page title.
+                content:
+                  type: string
+                  nullable: true
+                  description: New HTML content.
+                status:
+                  type: integer
+                  description: |
+                    New publication status.
+                    + **1**: Published (visible on frontend)
+                    + **0**: Hidden / draft
+                params:
+                  type: object
+                  nullable: true
+                  description: |
+                    Key-value pairs of page parameters. Performs **full
+                    replacement** of the page's params: params not listed here
+                    are **deleted**. Omit or set to empty to leave existing
+                    params untouched.
+                  additionalProperties:
+                    type: string
+      responses:
+        200:
+          description: Updated page details (full row + params).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sitePage'
+        400:
+          description: Required `id` is missing or empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        403:
+          description: Access denied to the page's domain.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        404:
+          description: Page not found (error code `invalid_param`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Internal server error (error code `server_error`, no `error_description`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: access_token
+      description: |
+        API access token issued via the OAuth 2.0 flow at `/api.php/auth` /
+        `/api.php/token`. Passed as the `access_token` query parameter.
+
+  schemas:
+    siteDomain:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique domain identifier.
+        name:
+          type: string
+          description: Domain hostname (e.g. `example.com`).
+        title:
+          type: string
+          description: Human-readable domain title shown in the backend.
+        style:
+          type: string
+          description: CSS class or style identifier for the domain entry in the backend list.
+      required:
+        - id
+        - name
+
+    # Full page row — returned by site.page.getInfo / site.page.add / site.page.update.
+    sitePage:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique page identifier.
+        parent_id:
+          type: integer
+          nullable: true
+          description: ID of the parent page. `null` for top-level pages.
+        domain_id:
+          type: integer
+          description: Domain ID this page belongs to.
+        route:
+          type: string
+          description: Settlement route the page is associated with (empty string for the site app's own settlement).
+        name:
+          type: string
+          description: Page name (used as the default title when title is empty).
+        title:
+          type: string
+          description: Page title shown in browser tabs, sitemap, and breadcrumbs.
+        url:
+          type: string
+          description: Last URL segment of the page.
+        full_url:
+          type: string
+          nullable: true
+          description: Full URL path from the site root (e.g. `about/team/`). May be `null` if not set.
+        content:
+          type: string
+          description: |
+            Raw HTML content of the page. May contain Smarty template
+            variables. **Always present** in `getInfo`/`add`/`update`
+            responses. (For `getList`, see `sitePageListItem` — `content` is
+            included only when the `content` parameter is truthy.)
+        create_datetime:
+          type: string
+          format: date-time
+          description: Timestamp when the page was created.
+        update_datetime:
+          type: string
+          format: date-time
+          description: Timestamp when the page was last modified.
+        create_contact_id:
+          type: integer
+          description: ID of the user who created the page.
+        sort:
+          type: integer
+          description: Sort order among sibling pages.
+        status:
+          type: integer
+          description: |
+            Publication status.
+            + **0**: Hidden / draft
+            + **1**: Published (visible on frontend)
+        params:
+          type: object
+          nullable: true
+          description: Key-value map of page parameters (SEO metadata, Open Graph tags, custom data).
+          additionalProperties:
+            type: string
+      required:
+        - id
+
+    # Subset of the page row returned by site.page.getList.
+    # Matches the actual SELECT in sitePageModel::getByDomain().
+    sitePageListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique page identifier.
+        parent_id:
+          type: integer
+          nullable: true
+          description: ID of the parent page. `null` for top-level pages.
+        name:
+          type: string
+          description: Page name (used as the default title when title is empty).
+        title:
+          type: string
+          description: Page title shown in browser tabs, sitemap, and breadcrumbs.
+        full_url:
+          type: string
+          nullable: true
+          description: Full URL path from the site root (e.g. `about/team/`). May be `null` if not set.
+        url:
+          type: string
+          description: Last URL segment of the page.
+        route:
+          type: string
+          description: Settlement route the page is associated with (empty string for the site app's own settlement).
+        create_datetime:
+          type: string
+          format: date-time
+          description: Timestamp when the page was created.
+        update_datetime:
+          type: string
+          format: date-time
+          description: Timestamp when the page was last modified.
+        status:
+          type: integer
+          description: |
+            Publication status.
+            + **0**: Hidden / draft
+            + **1**: Published (visible on frontend)
+        content:
+          type: string
+          description: Raw HTML content of the page. Included only when the `content` parameter is truthy.
+        params:
+          type: object
+          nullable: true
+          description: |
+            Key-value map of page parameters. Present only when the `params`
+            parameter is truthy.
+          additionalProperties:
+            type: string
+        childs:
+          type: array
+          nullable: true
+          description: |
+            Nested child pages. Present only in tree mode (the default, or
+            when `tree` is truthy). Note the spelling: `childs`, not `children`.
+          items:
+            $ref: '#/components/schemas/sitePageListItem'
+      required:
+        - id
+
+    errorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: |
+            Machine-readable error code. App-level codes that can occur:
+            `invalid_param` (missing required field; also "page not found" in
+            `site.page.update`), `invalid_request` ("page not found" in
+            `site.page.getInfo`), `access_denied` (insufficient domain rights),
+            `server_error` (DB / internal failure).
+        error_description:
+          type: string
+          description: |
+            Human-readable description of the error. **Optional** — omitted by
+            some errors (e.g. `access_denied` from domain rights checks,
+            `server_error` from DB failures).
+      required:
+        - error

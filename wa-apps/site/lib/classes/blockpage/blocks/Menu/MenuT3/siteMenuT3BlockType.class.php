@@ -290,7 +290,7 @@ class siteMenuT3BlockType extends siteBlockType
             'block_props'   => $params['block_props'] ?? [],
             'wrapper_props' => $params['wrapper_props'] ?? [],
             'inline_props'  => $params['inline_props'] ?? [],
-            'indestructible' => $params['indestructible'] ?? false,
+            'indestructible' => true,
             'id' => $params['id'] ?? '',
         ];
 

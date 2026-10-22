@@ -14,6 +14,7 @@
         </div>
     </div>
 {/function}
+{$can_edit_menu_links = false}
 <script type="text/javascript">
     document.title = '[`Site setup`] — ' + {json_encode($domain_idn)};
 </script>
@@ -94,7 +95,18 @@
                     <div class="value">
                         <input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" /><label for="waapps-select"> [`Set up manually`]</label>
                         <div {if !$domain_apps_type}style="display:none"{/if}>
-                            <table id="s-wa-apps" class="zebra s-settings-apps">
+                            {foreach $domain_apps as $row}
+                                {if isset($row.type)}
+                                    {$can_edit_menu_links = true}
+                                    {break}
+                                {/if}
+                            {/foreach}
+                            {if $can_edit_menu_links}
+                            <div class="s-alert">
+                                [`The menu editing is not available in the old interface because it has been changed in the new interface.`]
+                            </div>
+                            {/if}
+                            <table id="s-wa-apps" class="zebra s-settings-apps{if $can_edit_menu_links} disabled{/if}">
                                 {foreach $domain_apps as $row}
                                 <tr>
                                    <td class="s-app"><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>
@@ -113,7 +125,7 @@
                                 {/foreach}
                             </table>
                             <div style="display:none; float: right;"><em class="hint">[`When you have finished editing, click “Save” to apply changes.`]</em></div>
-                            <a href="#" class="inline-link" id="s-apps-add"><i class="icon16 add"></i>
+                            <a href="#" class="inline-link{if $can_edit_menu_links} disabled{/if}" id="s-apps-add"><i class="icon16 add"></i>
                                <b><i>[`Add link`]</i></b>
                             </a>
 
@@ -324,7 +336,7 @@
         }
     });
 
-
+    {if !$can_edit_menu_links}
     $("a#s-apps-add").click(function () {
         $('#s-wa-apps').append('<tr><td><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>' +
                               '<span></span><input type="text" name="apps[name][]" value="" /></td>' +
@@ -371,6 +383,7 @@
             $("#waapps-select").parent().children('div').hide();
         }
     });
+    {/if}
 
     $("#s-domain-title").click(function () {
         if ($(this).is(":checked")) {

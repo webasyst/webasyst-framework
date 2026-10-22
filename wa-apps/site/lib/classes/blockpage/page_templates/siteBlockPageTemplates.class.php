@@ -44,24 +44,39 @@ class siteBlockPageTemplates
         return self::readFromFile('partners.php');
     }
 
-    public static function getCoffeeMachineArticlePageTemplate()
+    public static function getArticleCoffeeMachinePageTemplate()
     {
-        return self::readFromFile('coffeeMachineArticle.php');
+        return self::readFromFile('articleCoffeeMachine.php');
     }
 
-    public static function getBlackFridayPromoPageTemplate()
+    public static function getPromoBlackFridayPageTemplate()
     {
-        return self::readFromFile('blackFridayPromo.php');
+        return self::readFromFile('promoBlackFriday.php');
     }
 
-    public static function getUnderRepairPageTemplate()
+    public static function getRepairUnderPageTemplate()
     {
-        return self::readFromFile('underRepair.php');
+        return self::readFromFile('repairUnder.php');
     }
 
     public static function getCollectionsPageTemplate()
     {
         return self::readFromFile('collections.php');
+    }
+
+    public static function getSimplePageTemplate()
+    {
+        return self::readFromFile('simplePage.php');
+    }
+
+    public static function getProductLampPageTemplate()
+    {
+        return self::readFromFile('productLamp.php');
+    }
+
+    public static function getProductHeadphonesPageTemplate()
+    {
+        return self::readFromFile('productHeadphones.php');
     }
 
     protected static function readFromFile(string $file)

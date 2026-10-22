@@ -111,7 +111,7 @@ class siteCustomCrmFormBlockType extends siteBlockType
     {
         $result = $this->getEmptyBlockData();
 
-        $bg_image = wa()->getAppStaticUrl('site').'img/blocks/apps/fitness-coach-wide.png';
+        $bg_image = wa()->getAppStaticUrl('site').'img/blocks/apps/fitness-coach-wide.jpg';
 
         // Настраиваем свойства основного блока
         $result->data = [
@@ -147,7 +147,7 @@ class siteCustomCrmFormBlockType extends siteBlockType
                                 'value' => 'center center / cover url('.$bg_image.')',
                                 'alignmentX' => 'center',
                                 'alignmentY' => 'center',
-                                'file_name' => 'fitness-coach-wide.png',
+                                'file_name' => 'fitness-coach-wide.jpg',
                                 'file_url' => $bg_image,
                                 'space' => 'cover',
                                 'name' => 'Image',

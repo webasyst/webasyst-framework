@@ -58,6 +58,7 @@ ul.menu-v.with-icons li a { word-break: break-all; position: relative; }
 .dialog-background { z-index: 1054; }
 .dialog-window { z-index: 1055 /* redactor editor z-index */; }
 .dialog .ace { padding: 15px 12px; }
+.s-alert { margin: 20px 0; background: #ffffe0; padding: 12px 16px; border: 1px solid #eed; line-height: 1.3em; font-size: 0.9em; color: #555; }
 
 /* content part */
 .s-content { margin-bottom: 70px !important; }
@@ -134,6 +135,7 @@ ul.menu-v.with-icons li a { word-break: break-all; position: relative; }
 
 .s-routing-header { border-bottom: 1px solid #ccc; padding-left: 19px;}
 table.s-settings-apps { margin-top: 10px; }
+table.s-settings-apps.disabled tr a, #s-apps-add.disabled { pointer-events: none; opacity: 0.5; }
 table.s-routing #s-routing-addrule { display: none; }
 table.s-routing .s-inc:not(.is-exclamation) .s-exclamation { display: none; }
 table.s-routing .s-inc.is-exclamation { color: #aaa; }

@@ -1,0 +1,71 @@
+{$id = uniqid('block-')}
+{$max_column_count = $available_columns[count($available_columns) - 1]}
+<div class="{$id} height-100 flexbox vertical">
+    <div class="preview-block flexbox space-12 wide custom-p-16">
+        {for $i=1 to $max_column_count}
+        <div class="js-column text-gray not-blank flexbox wide box cursor-pointer" style="display: none;border-radius: .25rem;">
+            <div class="custom-m-auto">
+                {if $i === 1}
+                <span style="display: none;">[`1 колонка`]</span>
+                {/if}
+                <span>{$i}</span>
+            </div>
+        </div>
+        {/for}
+    </div>
+    <div class="js-buttons flexbox middle space-8 custom-mt-8 width-100">
+        <button class="js-decrease button light-gray nowrap wide" type="button">
+            <i class="fas fa-minus"></i> [`Меньше колонок`]
+        </button>
+        <button class="js-increase button light-gray nowrap wide" type="button">
+            <i class="fas fa-plus"></i> [`Больше колонок`]
+        </button>
+    </div>
+</div>
+<script>(() => {
+    const $wrapper = $('.{$id}');
+    const $item = $wrapper.closest('[data-type-id]');
+    const $column = $wrapper.find('.js-column');
+    const $buttons = $wrapper.find('.js-buttons');
+    const type_options = $item.data('type-options');
+    const availabel_columns = {$available_columns|json_encode};
+
+    let cur_index = availabel_columns.findIndex(col => col === type_options.columns);
+    if (cur_index === -1) {
+        cur_index = 0;
+    }
+
+    const $increase_button = $wrapper.find('.js-increase');
+    const $decrease_button = $wrapper.find('.js-decrease');
+    const updateParams = () => {
+        $decrease_button.prop('disabled', cur_index <= 0);
+        $increase_button.prop('disabled', cur_index >= availabel_columns.length - 1);
+
+        const count = availabel_columns[cur_index];
+        for (let i = 0; i < $column.length; i++) {
+            $column.eq(i).toggle(i < count);
+        }
+
+        const $first_col_span = $column.first().find('span');
+        $first_col_span.first().toggle(cur_index < 1);
+        $first_col_span.last().toggle(cur_index > 0);
+
+        const options = { columns: count };
+        $item.data('type-options', options).attr('data-type-options', JSON.stringify(options));
+    };
+    updateParams();
+
+    $buttons.on('click', (e) => {
+        e.stopPropagation();
+    });
+    $increase_button.on('click', (e) => {
+        e.stopPropagation();
+        cur_index += 1;
+        updateParams();
+    });
+    $decrease_button.on('click', (e) => {
+        e.stopPropagation();
+        cur_index -= 1;
+        updateParams();
+    });
+})();</script>

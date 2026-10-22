@@ -56,7 +56,7 @@
             base_data = data;
             updateBlockStyles($wrapper, data, block_id);
             if (data?.image?.type === 'svg') {
-                $(this).html(data?.image?.svg_html)
+                $(this).children().html(data?.image?.svg_html)
             }
         }
     });

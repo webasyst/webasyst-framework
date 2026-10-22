@@ -1,27 +1,42 @@
 {$is_custom_text = $app_id === ':text'}
+
+{function _after_url}
+{if $url_exact}
+    <span data-wa-tooltip-placement="left" data-wa-tooltip-template="#template-url-exact">
+        <i class="fas fa-question-circle text-light-gray"></i>
+    </span>
+    <div class="wa-tooltip-template" id="template-url-exact">
+        {sprintf_wp(
+            'The URL is defined as a routing rule and may include special characters, URL patterns, and regular expressions. In most cases, a rule should end with <em>/*</em>, e.g., <em>shop/*</em>, so that the app can handle all URLs within this address range. <a %s>Learn more about routing %s</a>',
+            sprintf(
+                'href="%s" target="_blank"',
+                _w('https://www.webasyst.com/developers/docs/routing/site-app-routing/')
+            ),
+            '<i class="fas fa-external-link-alt fa-xs"></i>'
+        )}
+    </div>
+    <input type="hidden" name="url_exact" value="1">
+{elseif !$is_custom_text}
+    <span class="custom-mr-4">/</span>
+{/if}
+{/function}
+
 {function _render_field_url}
 <div class="field field-url">
     <div class="name for-input">URL</div>
     <div class="value">
-    {if strlen($route_id)}
-
-        <!-- existing route -->
         <div class="s-route-block flexbox wrap middle space-4 full-width" id="s-route-where">
-        <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
-        <input type="text" name="params[url]" value="{if $is_custom_text}{$route.url|escape}{else}{$route.url|rtrim:'/*'|escape}{/if}" class="js-url small full-width">
-        {if !$is_custom_text}<span>/</span>{/if}
+            <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
+            {if strlen($route_id)}
+                <!-- existing route -->
+                <input type="text" name="params[url]" value="{if $url_exact || $is_custom_text}{$route.url|escape}{else}{$route.url|rtrim:'/*'|escape}{/if}" class="js-url small full-width">
+            {else}
+                <!-- new route -->
+                <input type="text" name="params[url]" value="{$app_url|escape}" class="js-url small full-width">
+            {/if}
+            {_after_url}
+            <input type="hidden" name="params[app]" value="{$app_id}">
         </div>
-
-    {else}
-
-        <!-- new route -->
-        <div class="s-route-block flexbox wrap middle space-4 full-width" id="s-route-where">
-        <span class="break-word custom-py-6">http://{$domain_decoded}/</span>
-        <input type="text" name="params[url]" value="{$app_url}" class="js-url small full-width">
-        {if !$is_custom_text}<span>/</span>{/if}
-        <input type="hidden" name="params[app]" value="{$app_id}">
-        </div>
-    {/if}
     </div>
 </div>
 {/function}
@@ -61,7 +76,9 @@
         </header>
         <div class="dialog-content">
             <form>
-            {include file="templates/layouts/includes/alert_misconfigured_settlement.html" misconfigured_settlement=$misconfigured_settlement inline}
+            {if !$url_exact}
+                {include file="templates/layouts/includes/alert_misconfigured_settlement.html" misconfigured_settlement=$misconfigured_settlement inline}
+            {/if}
             <div class="fields">
                 {if $app}
                     {if !empty($route.priority_settlement)}
@@ -297,12 +314,17 @@
 
     const $wrapper = $('#js-section-settings-dialog');
     const $form = $wrapper.find('form');
+    const $url_input = $form.find('.js-url');
     const $save_button = $wrapper.find('.js-save');
     const wa_loading = $.waLoading();
     const $place_for_errors = $wrapper.find('.js-place-for-errors');
     var dialog;
 
     initToggle();
+
+    $wrapper.find('[data-wa-tooltip-template],[data-wa-tooltip-content]').waTooltip({
+        interactive: true
+    });
 
     function initToggle() {
         setTimeout(() => {
@@ -324,6 +346,9 @@
     $form.submit(function() {
         saveHandler();
         return false;
+    });
+    $url_input.on('keydown', () => {
+        clearErrors();
     });
 
     // Delete page when user clicks on Delete button
@@ -356,7 +381,11 @@
         $.post(delete_url, { route: $route_id }).then(function(r) {
             handleResponse(r, () => {
                 $wrapper.data('dialog').close();
-                $.site.reloadWithScrollTo();
+                if (typeof $.site.reloadWithScrollTo === 'function') {
+                    $.site.reloadWithScrollTo();
+                } else {
+                    $(document).trigger('wa_delete_route', [$route_id]);
+                }
             });
         }, function(r) {
             console.log('Error saving page settings', arguments);
@@ -374,14 +403,12 @@
     function updateRoutingErrors(errors) {
         if ($.isArray(errors)) {
             errors.forEach(function(e) {
-                var $field = null;
                 if (e.field) {
-                    $field = $form.find('[name="'+e.field+'"]');
+                    const $field = $form.find('[name="'+e.field+'"]');
+                    $field.addClass('state-caution');
                 }
-                const $msg = $('<div class="state-error-hint"></div>').html(e.description);
-
-                if($field && $field.length) {
-                    $field.addClass('state-error').after($msg);
+                if (e.description) {
+                    $place_for_errors.append(e.description + '<br>');
                 }
             });
             return
@@ -420,12 +447,7 @@
     }
 
     function saveHandler() {
-        //clear errors
-        errors = [];
-        $form.find('.state-error').removeClass('state-error');
-        $form.find('.state-error-hint').remove();
-        $place_for_errors.empty();
-
+        clearErrors();
         // Validating unsupported characters in url
         if (!validateUrls()) return
 
@@ -436,7 +458,13 @@
             wa_loading.done();
             handleResponse(r, () => {
                 $wrapper.data('dialog').close();
-                $.site.reloadWithScrollTo();
+                if (r?.status === 'ok') {
+                    if (typeof $.site.reloadWithScrollTo === 'function') {
+                        $.site.reloadWithScrollTo();
+                    } else {
+                        $(document).trigger('wa_update_route', [$route_id, r.data]);
+                    }
+                }
             });
         }, function() {
             console.log('Error saving page settings', arguments);
@@ -445,24 +473,32 @@
         });
     }
 
+    function clearErrors() {
+        //clear errors
+        errors = [];
+        $form.find('.state-caution').removeClass('state-caution');
+        $form.find('.state-caution-hint').remove();
+        $place_for_errors.empty();
+    }
+
     function handleResponse(res, cbSuccess) {
         if (!res) return;
 
         $place_for_errors.empty();
 
-        if (Array.isArray(res.errors)) {
-            updateErrors(res.errors, true);
-            $place_for_errors.append(res.errors.map(err => err.description).join('<br>'));
-        } else if (res.errors) {
+        if (typeof res.errors === 'string') {
             $place_for_errors.append(res.errors);
+            return;
+        } else if (res.errors?.length) {
+            updateRoutingErrors(res.errors);
+            return;
+        }
 
-        } else if (res.data && res.data.confirm) {
-            $place_for_errors.append(res.data.confirm);
+        if (res?.data?.routing_errors?.incorrect) {
+            $(document).trigger('wa_update_routing_errors', [res.data.routing_errors]);
+        }
 
-        } else if (res.data && res.data?.routing_errors.incorrect) {
-            updateRoutingErrors(res.data.routing_errors);
-
-        } else if (res.status === 'ok' && typeof cbSuccess === 'function') {
+        if (res?.status === 'ok' && typeof cbSuccess === 'function') {
             cbSuccess(res);
         }
     }

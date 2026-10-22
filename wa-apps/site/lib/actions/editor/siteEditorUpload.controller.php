@@ -223,19 +223,37 @@ class siteEditorUploadController extends waJsonController
             return false;
         }
 
-        $is_image = in_array(strtolower($f->extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+        $extension = strtolower($f->extension);
+        $is_image = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
         if ($is_image) {
             try {
-                // TODO: move constants elsewhere or read them from settings
-                $save_quality = 90;
-                $max_size = 2560;
-                $sharp_amount = 6;
+                // default quality depends on original file size
+                $save_quality = waRequest::request('optimize_quality', null, 'int');
+                if (!$save_quality) {
+                    if ($f->size > 500000) {
+                        $save_quality = 80;
+                    } else if ($f->size > 300000) {
+                        $save_quality = 85;
+                    } else if ($f->size > 200000) {
+                        $save_quality = 90;
+                    } else {
+                        $save_quality = 95;
+                    }
+                }
+                $force_save_original = waRequest::request('force_save_original');
+                $max_size = waRequest::request('max_size', 2560, 'int');
+                $sharp_amount = waRequest::request('sharp_amount', 6, 'int');
+                $force_webp_resave = !$force_save_original && $extension !== 'webp' && (waRequest::request('optimize_quality') || $f->size > 100000);
 
                 $image = $f->waImage();
-                if ($image->width > $max_size || $image->height > $max_size) {
+                if (!$force_save_original && ($image->width > $max_size || $image->height > $max_size)) {
                     $image->resize($max_size, $max_size);
                     $image->sharpen($sharp_amount);
+                    $force_webp_resave = true;
+                }
+                if ($force_webp_resave) {
                     $save_from_wa_image_quality = $save_quality;
+                    $extension = 'webp';
                 }
 
                 $image_width = $image->width;
@@ -248,13 +266,16 @@ class siteEditorUploadController extends waJsonController
             }
         }
 
-        $safe_filename = $this->transliterateFilename($f, $is_image);
+        $orig_safe_filename = $safe_filename = $this->transliterateFilename($f, $is_image);
+        if ($extension !== strtolower($f->extension)) {
+            $safe_filename = pathinfo($safe_filename, PATHINFO_FILENAME).'.'.$extension;
+        }
         $blockpage_file_model = new siteBlockpageFileModel();
         $file_id = $blockpage_file_model->insert([
             'contact_id' => wa()->getUser()->getId(),
             'create_datetime' => date('Y-m-d H:i:s'),
             'name' => $safe_filename,
-            'ext' => $f->extension,
+            'ext' => $extension,
             'orig_name' => $f->name,
             'size' => $f->size,
             'width' => $is_image ? $image_width : null,
@@ -262,7 +283,7 @@ class siteEditorUploadController extends waJsonController
         ]);
         $path = siteBlockData::getBlockpageFilePath([
             'name' => $safe_filename,
-            'ext' => $f->extension,
+            'ext' => $extension,
             'id' => $file_id,
         ]);
 
@@ -277,15 +298,45 @@ class siteEditorUploadController extends waJsonController
             return;
         }
 
-        $save_successfull = false;
-        if (!empty($save_from_wa_image_quality)) {
-            $save_successfull = $image->save($path, $save_from_wa_image_quality);
-            unset($image);
-        } else {
-            $save_successfull = $f->moveTo($path);
+        $save_successful = false;
+        if (!empty($save_from_wa_image_quality) && !empty($image)) {
+            try {
+                $save_successful = $image->save($path, $save_from_wa_image_quality);
+                unset($image);
+            } catch (Throwable $e) {
+                // unsuccessful
+            }
+            if ($save_successful) {
+                $actual_size = @filesize($path);
+                if ($actual_size === false) {
+                    $save_successful = false;
+                } else if ($actual_size < $f->size) {
+                    $blockpage_file_model->updateById($file_id, ['size' => $actual_size]);
+                } else {
+                    // revert to file copy if conversion to webp resulted in larger file size
+                    waFiles::delete($path);
+                    $save_successful = false;
+                }
+            }
+            if (!$save_successful && $extension !== strtolower($f->extension)) {
+                $extension = strtolower($f->extension);
+                $safe_filename = $orig_safe_filename;
+                $blockpage_file_model->updateById($file_id, [
+                    'name' => $safe_filename,
+                    'ext' => $extension,
+                ]);
+                $path = siteBlockData::getBlockpageFilePath([
+                    'name' => $safe_filename,
+                    'ext' => $extension,
+                    'id' => $file_id,
+                ]);
+            }
+        }
+        if (!$save_successful) {
+            $save_successful = $f->moveTo($path);
         }
 
-        if (!$save_successfull) {
+        if (!$save_successful) {
             $blockpage_file_model->deleteById($file_id);
             $this->errors = [
                 'error_code' => 'upload_failed',

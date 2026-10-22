@@ -108,20 +108,6 @@ class siteBlockpageLibrary
         return $result;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    public function getPremiumBlockIds() {
-        $result = [];
-
-        foreach ($this->getSiteBlocks() as $block) {
-            if (empty($block['data']) || empty($block['premium'])) continue;
-            $result[$this->hashBlockId($block['data'])] = 1;
-        }
-
-        return $result;
-    }
-
     protected function getSiteBlocks($skip_templates = false) {
         $img_url = wa()->getAppStaticUrl('site') . 'img/blocks/';
 
@@ -146,7 +132,7 @@ class siteBlockpageLibrary
                     'image'    => $img_url . 'page_templates/promo/black_friday/black-friday.jpg',
                     'image_2x' => $img_url . 'page_templates/promo/black_friday/black-friday@2x.jpg',
                     'title' => _w('Promo campaign'),
-                    'data'  => siteBlockPageTemplates::getBlackFridayPromoPageTemplate(),
+                    'data'  => siteBlockPageTemplates::getPromoBlackFridayPageTemplate(),
                     'tags'  => ['template', 'category_promo'],
                     'premium' => true,
                 ],
@@ -169,7 +155,7 @@ class siteBlockpageLibrary
                     'image'    => $img_url . 'page_templates/articles/coffee_machine/article.jpg',
                     'image_2x' => $img_url . 'page_templates/articles/coffee_machine/article@2x.jpg',
                     'title' => _w('Articles & reviews'),
-                    'data'  => siteBlockPageTemplates::getCoffeeMachineArticlePageTemplate(),
+                    'data'  => siteBlockPageTemplates::getArticleCoffeeMachinePageTemplate(),
                     'tags'  => ['template', 'category_articles'],
                     'premium' => true,
                 ],
@@ -214,14 +200,42 @@ class siteBlockpageLibrary
                     'image'    => $img_url . 'page_templates/repair/under-repair.jpg',
                     'image_2x' => $img_url . 'page_templates/repair/under-repair@2x.jpg',
                     'title' => _w('Website under maintenance'),
-                    'data'  => siteBlockPageTemplates::getUnderRepairPageTemplate(),
+                    'data'  => siteBlockPageTemplates::getRepairUnderPageTemplate(),
                     'tags'  => ['template', 'category_repair'],
                     'premium' => true,
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/simple_page/simple-page.png',
+                    'image_2x' => $img_url . 'page_templates/simple_page/simple-page@2x.jpg',
+                    'title' => _w('Простая страница'),
+                    'data'  => siteBlockPageTemplates::getSimplePageTemplate(),
+                    'tags'  => ['template', 'category_simple'],
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/product/lamp/cover.jpg',
+                    'image_2x' => $img_url . 'page_templates/product/lamp/cover@2x.jpg',
+                    'title' => _w('Product'),
+                    'data'  => siteBlockPageTemplates::getProductLampPageTemplate(),
+                    'tags'  => ['template', 'category_product'],
+                ],
+                [
+                    'image'    => $img_url . 'page_templates/product/headphones/cover.jpg',
+                    'image_2x' => $img_url . 'page_templates/product/headphones/cover@2x.jpg',
+                    'title' => _w('Product'),
+                    'data'  => siteBlockPageTemplates::getProductHeadphonesPageTemplate(),
+                    'tags'  => ['template', 'category_product'],
                 ],
             ];
         }
 
         return array_merge([
+            [
+                'image' => '',
+                'title' => _w('Простой блок'),
+                'data'  => (new siteCustomColumnsBlockType(['columns' => 1]))->getExampleBlockData(),
+                'configurator_html' => siteCustomColumnsBlockType::getConfiguratorHtml(),
+                'tags'  => ['category_simple'],
+            ],
             [
                 'image'    => $img_url . 'footer/footer-4.jpg',
                 'image_2x' => $img_url . 'footer/footer-4@2x.jpg',
@@ -849,13 +863,13 @@ class siteBlockpageLibrary
                 'data'  => (new siteSubColumnBlockType())->getExampleBlockData(),
                 'tags'  => ['element'], // ['element', 'complex-row'],
             ],
-            [
-                'image' => '',
-                'icon'  => 'table',
-                'title' => _w('Column'),
-                'data'  => (new siteColumnBlockType())->getExampleBlockData(),
-                'tags'  => ['element', 'complex-column'],
-            ],
+            // [
+            //     'image' => '',
+            //     'icon'  => 'table',
+            //     'title' => _w('Column'),
+            //     'data'  => (new siteColumnBlockType())->getExampleBlockData(),
+            //     'tags'  => ['element', 'complex-column'],
+            // ],
             [
                 'image' => '',
                 'icon'  => 'code black',
