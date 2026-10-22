@@ -49,6 +49,7 @@ class waSignupForm
 
         $this->options['show_title'] = isset($this->options['show_title']) ? (bool)$this->options['show_title'] : false;
         $this->options['show_oauth_adapters'] = isset($this->options['show_oauth_adapters']) ? (bool)$this->options['show_oauth_adapters'] : false;
+        $this->options['format_phone'] = isset($this->options['format_phone']) ? (bool)$this->options['format_phone'] : false;
 
         if (isset($this->options['namespace']) && is_scalar($this->options['namespace'])) {
             $this->namespace = (string)$this->options['namespace'];
@@ -490,6 +491,7 @@ class waSignupForm
             'namespace' => $this->namespace,
             'show_title' => $this->options['show_title'],
             'show_oauth_adapters' => $this->options['show_oauth_adapters'],
+            'format_phone' => $this->options['format_phone'] && !!$this->config->getSMSVerificationChannel(),
             'need_redirects' => $this->options['need_redirects'],
             'need_placeholders' => $this->options['need_placeholders'],
             'contact_type' => $this->options['contact_type'],

@@ -1169,6 +1169,427 @@
 })(jQuery);
 
 /**
+ * @description multiselect component
+ * @example /webasyst/ui/component/multiselect/
+ * */
+( function($) { "use strict";
+
+    var Multiselect = ( function($) {
+
+        var sequence = 0;
+
+        Multiselect = function(options) {
+            var that = this;
+
+            // DOM
+            that.$select = options["$select"];
+
+            // VARS
+            that.locales = $.extend({
+                placeholder: "Выберите значения",
+                searchPlaceholder: "Поиск",
+                loading: "Загрузка…",
+                empty: "Ничего не найдено",
+                error: "Не удалось загрузить список",
+                remove: "Удалить"
+            }, options.locales);
+            that.options = $.extend({ load: null }, options);
+            that.original = { tabindex: that.$select.attr("tabindex"), ariaHidden: that.$select.attr("aria-hidden") };
+
+            // DYNAMIC VARS
+            that.id = "wa-multiselect-" + (++sequence);
+            that.ns = ".waMultiselect" + sequence;
+            that.is_opened = false;
+            that.destroyed = false;
+            that.request = 0;
+            that.results = [];
+            that.active = -1;
+
+            // INIT
+            that.initClass();
+        };
+
+        Multiselect.prototype.initClass = function() {
+            var that = this,
+                $select = that.$select,
+                select = $select[0];
+
+            var labelledBy = $select.attr("aria-labelledby");
+            var labelledName = (labelledBy || "").split(/\s+/).map(function(id) {
+                var label = document.getElementById(id);
+                return label ? labelText(label) : "";
+            }).filter(Boolean).join(" ");
+            var name = labelledName || $select.attr("aria-label") || Array.from(select.labels || []).map(labelText).join(" ") || that.locales.placeholder;
+
+            that.sourceClasses = [];
+            that.$wrapper = $('<div class="wa-multiselect">');
+            that.$control = $('<div class="wa-multiselect-control" role="combobox" aria-haspopup="listbox" aria-expanded="false" tabindex="0">')
+                .attr({ "aria-label": name, "aria-labelledby": labelledBy, "aria-controls": that.id + "-list", "aria-describedby": $select.attr("aria-describedby") });
+            that.$chips = $('<ul class="chips">').appendTo(that.$control);
+            that.$placeholder = $('<span class="wa-multiselect-placeholder">').text(that.locales.placeholder).appendTo(that.$control);
+            $('<span class="wa-multiselect-arrow" aria-hidden="true">').appendTo(that.$control);
+            that.$wrapper.append(that.$control).insertAfter($select);
+            // A viewport-positioned portal avoids clipping by dialog and scrolling containers.
+            that.$popup = $('<div class="wa-multiselect wa-multiselect-popup" hidden>');
+            that.$search = $('<input type="search" class="wa-multiselect-search" role="combobox" aria-autocomplete="list" aria-expanded="true" autocomplete="off">')
+                .attr({ placeholder: that.locales.searchPlaceholder, "aria-label": name + ": " + that.locales.searchPlaceholder,
+                    "aria-controls": that.id + "-list" }).appendTo(that.$popup);
+            that.$status = $('<div class="wa-multiselect-status" role="status" aria-live="polite" hidden>').appendTo(that.$popup);
+            that.$list = $('<div class="wa-multiselect-list" role="listbox" aria-multiselectable="true">')
+                .attr({ id: that.id + "-list", "aria-label": name }).appendTo(that.$popup);
+            $select.addClass("wa-multiselect-native").attr({ tabindex: "-1", "aria-hidden": "true" });
+            that.$control.on("click" + that.ns, function(event) {
+                if ($(event.target).closest(".wa-multiselect-remove").length) { return; }
+                event.preventDefault();
+                if (that.is_opened) { that.close(); } else { that.open(); }
+            }).on("keydown" + that.ns, function(event) { that.keydown(event); });
+            that.$chips.on("click" + that.ns, ".wa-multiselect-remove", function(event) {
+                event.preventDefault(); event.stopPropagation();
+                that.toggle($(this).data("item"));
+                that.$control.trigger("focus");
+            });
+            that.$search.on("input" + that.ns, function() { that.search(); })
+                .on("keydown" + that.ns, function(event) { that.keydown(event); });
+            that.$control.add(that.$search).on("keyup" + that.ns, function(event) {
+                // waDialog closes on keyup; consume the Escape already used to close this menu.
+                if (event.key === "Escape" && that.escapeHandled) {
+                    that.escapeHandled = false; event.stopPropagation();
+                }
+            });
+            that.$list.on("mousedown" + that.ns, function(event) { event.preventDefault(); })
+                .on("click" + that.ns, '[role="option"]', function() { that.toggle($(this).data("item")); });
+            that.onInvalid = function(event) {
+                event.preventDefault(); that.$control.attr("aria-invalid", "true");
+                var firstInvalid = select.form && Array.from(select.form.elements).find(function(field) {
+                    return field.willValidate && !field.validity.valid;
+                });
+                if (!select.form || firstInvalid === select) {
+                    that.open(); that.$search.trigger("focus");
+                } else { that.close(); }
+            };
+            select.addEventListener("invalid", that.onInvalid);
+            $select.on("change" + that.ns, function() {
+                that.updateSelection();
+                if (that.is_opened) { that.position(); }
+            })
+                .on("focus" + that.ns, function() { that.open(); });
+            that.$form = $(select.form);
+            that.$form.on("reset" + that.ns, function() {
+                clearTimeout(that.resetTimer);
+                that.resetTimer = setTimeout(function() { that.refresh(); }, 0);
+            });
+            that.reposition = function(event) {
+                if (!event || event.type === "resize" || !that.$popup[0].contains(event.target)) { that.position(); }
+            };
+            that.refresh();
+        };
+
+        Multiselect.prototype.disabled = function() { return this.$select.is(":disabled"); };
+
+        Multiselect.prototype.localItems = function() {
+            return Array.from(this.$select[0].options).map(function(option) {
+                var group = option.parentElement.tagName === "OPTGROUP" ? option.parentElement : null;
+                return { value: option.value, text: option.text, disabled: option.disabled || !!(group && group.disabled),
+                    group: group, option: option };
+            });
+        };
+
+        Multiselect.prototype.updateSelection = function() {
+            if (this.destroyed) { return; }
+            var that = this, disabled = that.disabled();
+            var classes = Array.from(that.$select[0].classList).filter(function(name) { return name !== "wa-multiselect-native"; });
+            that.$wrapper.removeClass(that.sourceClasses.filter(function(name) { return !classes.includes(name); }).join(" "))
+                .addClass("wa-multiselect " + classes.join(" ")).toggleClass("is-valid", that.$select[0].validity.valid)
+                .toggleClass("is-invalid", !that.$select[0].validity.valid);
+            that.sourceClasses = classes;
+            that.$control.attr({ "aria-disabled": String(disabled), "aria-required": String(that.$select.prop("required")),
+                tabindex: disabled ? "-1" : (that.original.tabindex || "0") });
+            that.$wrapper.toggleClass("is-disabled", disabled);
+            that.$chips.empty();
+            that.localItems().forEach(function(item) {
+                if (!item.option.selected) { return; }
+                var $chip = $('<span class="chip">');
+                $('<span>').text(item.text).appendTo($chip);
+                $('<button type="button" class="wa-multiselect-remove">').append('<i class="fas fa-times-circle"></i>')
+                    .attr("aria-label", that.locales.remove + ": " + item.text).prop("disabled", disabled || item.disabled)
+                    .data("item", item).appendTo($chip);
+                that.$chips.append($('<li>').append($chip));
+            });
+            that.$placeholder.prop("hidden", that.$chips.children().length > 0);
+            if (that.$select[0].validity.valid) { that.$control.removeAttr("aria-invalid"); }
+            if (disabled) { that.close(); }
+            if (that.is_opened) {
+                var options = that.options.load ? that.optionMap() : null;
+                that.$list.find('[role="option"]').each(function() {
+                    var $row = $(this), item = $row.data("item"), option = item.option || options.get(item.value);
+                    var selected = !!(option && option.selected);
+                    var disabled = !!(that.options.load && item.disabled) || !!(option && $(option).is(":disabled"));
+                    if (this.getAttribute("aria-selected") !== String(selected)) { $row.attr("aria-selected", String(selected)); }
+                    if (this.getAttribute("aria-disabled") !== String(disabled)) { $row.attr("aria-disabled", String(disabled)); }
+                    var checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = selected; checkbox.disabled = disabled;
+                });
+            }
+        };
+
+        Multiselect.prototype.refresh = function() {
+            if (this.destroyed) { return; }
+            this.updateSelection();
+            if (!this.is_opened) { return; }
+            if (!this.options.load || (this.state !== "loading" && this.state !== "error")) { this.render(); }
+            this.position();
+        };
+
+        Multiselect.prototype.open = function() {
+            var that = this;
+            if (that.destroyed || that.disabled() || that.is_opened) { return; }
+            that.is_opened = true;
+            that.$control.attr("aria-expanded", "true");
+            that.$popup.appendTo(document.body).prop("hidden", false);
+            var style = getComputedStyle(that.$wrapper[0]), zIndex = 110;
+            that.$wrapper.parents().each(function() {
+                zIndex = Math.max(zIndex, parseInt(getComputedStyle(this).zIndex, 10) || 0);
+            });
+            that.$popup.css({ zIndex: zIndex + 1, fontSize: style.fontSize });
+            that.$search.val("");
+            that.search();
+            that.$search.trigger("focus");
+            $(document).on("pointerdown" + that.ns, function(event) {
+                if (!that.$wrapper[0].contains(event.target) && !that.$popup[0].contains(event.target)) { that.close(); }
+            });
+            window.addEventListener("resize", that.reposition);
+            document.addEventListener("scroll", that.reposition, true);
+        };
+
+        Multiselect.prototype.close = function() {
+            this.is_opened = false;
+            this.request++;
+            clearTimeout(this.timer);
+            this.$popup.prop("hidden", true);
+            this.$control.attr("aria-expanded", "false");
+            $(document).off(this.ns);
+            window.removeEventListener("resize", this.reposition);
+            document.removeEventListener("scroll", this.reposition, true);
+        };
+
+        Multiselect.prototype.position = function() {
+            if (!this.is_opened) { return; }
+            var rect = this.$control[0].getBoundingClientRect(), gap = 4, margin = 8;
+            var height = document.documentElement.clientHeight, width = document.documentElement.clientWidth;
+            if (!this.$wrapper[0].isConnected || rect.bottom < 0 || rect.top > height) { this.close(); return; }
+            var below = Math.max(0, height - rect.bottom - margin - gap), above = Math.max(0, rect.top - margin - gap);
+            var upwards = below < 280 && above > below;
+            this.$popup.css({ width: Math.min(rect.width, width - margin * 2),
+                left: Math.max(margin, Math.min(rect.left, width - rect.width - margin)),
+                maxHeight: Math.min(320, upwards ? above : below),
+                top: upwards ? "auto" : rect.bottom + gap, bottom: upwards ? height - rect.top + gap : "auto" });
+        };
+
+        Multiselect.prototype.search = function() {
+            var that = this, query = that.$search.val(), request = ++that.request;
+            clearTimeout(that.timer);
+            if (!that.options.load) {
+                that.render();
+                if (that.is_opened) { that.position(); }
+                return;
+            }
+            that.state = "loading";
+            that.showStatus(that.locales.loading);
+            if (that.is_opened) { that.position(); }
+            that.timer = setTimeout(function() {
+                Promise.resolve().then(function() { return that.options.load(query); }).then(function(items) {
+                    if (request !== that.request || that.destroyed) { return; }
+                    if (!Array.isArray(items)) { throw new Error("Expected an array of options"); }
+                    var seen = new Set();
+                    that.results = items.map(function(item) {
+                        if (!item || !(typeof item.value === "string" || (typeof item.value === "number" && Number.isFinite(item.value))) ||
+                            typeof item.text !== "string" || (item.disabled !== undefined && typeof item.disabled !== "boolean")) {
+                            throw new Error("Invalid option");
+                        }
+                        return { value: String(item.value), text: item.text, disabled: !!item.disabled };
+                    }).filter(function(item) {
+                        if (seen.has(item.value)) { return false; }
+                        seen.add(item.value); return true;
+                    });
+                    that.state = "ready"; that.render();
+                    if (that.is_opened) { that.position(); }
+                }).catch(function() {
+                    if (request !== that.request || that.destroyed) { return; }
+                    that.state = "error"; that.showStatus(that.locales.error);
+                });
+            }, 250);
+        };
+
+        Multiselect.prototype.showStatus = function(message) {
+            this.$list.empty(); this.active = -1;
+            this.$search.removeAttr("aria-activedescendant");
+            this.$status.text(message).prop("hidden", false);
+            this.$list.attr("aria-busy", String(this.state === "loading"));
+        };
+
+        Multiselect.prototype.render = function() {
+            var that = this, query = that.$search.val().toLowerCase(), items = that.options.load ? that.results : that.localItems();
+            var options = that.options.load ? that.optionMap() : null;
+            that.$list.empty().attr("aria-busy", "false"); that.active = -1;
+            that.$search.removeAttr("aria-activedescendant");
+            var group, $container = that.$list, count = 0;
+            items.forEach(function(item) {
+                if (!that.options.load && !item.text.toLowerCase().includes(query)) { return; }
+                if (group !== item.group) {
+                    group = item.group; $container = that.$list;
+                    if (group) {
+                        $container = $('<div role="group">').attr("aria-label", group.label).appendTo(that.$list);
+                        $('<div class="wa-multiselect-group" aria-hidden="true">').text(group.label).appendTo($container);
+                    }
+                }
+                var option = item.option || options.get(item.value), disabled = item.disabled || !!(option && $(option).is(":disabled"));
+                var selected = !!(option && option.selected);
+                var $row = $('<div class="wa-multiselect-option" role="option">').attr({ id: that.id + "-option-" + count++,
+                    "aria-selected": String(selected), "aria-disabled": String(disabled) }).data("item", item);
+                // Selection is exposed by role=option; the checkbox only supplies the Webasyst appearance.
+                var $checkbox = $('<span class="wa-checkbox" aria-hidden="true">').appendTo($row);
+                $('<input type="checkbox" tabindex="-1">').prop({ checked: selected, disabled: disabled }).appendTo($checkbox);
+                $('<span><span class="icon"><svg width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"><path d="M6 12.5 1.5 8l1.4-1.4L6 9.7l7.1-7.1L14.5 4z"/></svg></span></span>').appendTo($checkbox);
+                $('<span>').text(item.text).appendTo($row);
+                $container.append($row);
+            });
+            that.$status.text(that.locales.empty).prop("hidden", count > 0);
+        };
+
+        Multiselect.prototype.optionMap = function() {
+            var options = new Map();
+            Array.from(this.$select[0].options).forEach(function(option) {
+                if (!options.has(option.value)) { options.set(option.value, option); }
+            });
+            return options;
+        };
+
+        Multiselect.prototype.findOption = function(value) {
+            return Array.from(this.$select[0].options).find(function(option) { return option.value === value; });
+        };
+
+        Multiselect.prototype.toggle = function(item) {
+            if (this.destroyed || this.disabled() || item.disabled) { return; }
+            var option = item.option || this.findOption(item.value);
+            if (option && $(option).is(":disabled")) { return; }
+            if (!option) {
+                option = new Option(item.text, item.value, false, false);
+                this.$select.append(option);
+            }
+            option.selected = !option.selected;
+            this.$select.trigger("change");
+        };
+
+        Multiselect.prototype.keydown = function(event) {
+            if (event.isComposing || event.originalEvent && event.originalEvent.isComposing) { return; }
+            var that = this, key = event.key;
+            if (key === "Escape" && that.is_opened) {
+                that.escapeHandled = true;
+                event.preventDefault(); event.stopPropagation();
+                if (that.$search.val()) {
+                    that.$search.val(""); that.search(); that.$search.trigger("focus");
+                } else {
+                    that.close(); that.$control.trigger("focus");
+                }
+                return;
+            }
+            if ($(event.target).is(".wa-multiselect-remove")) {
+                if (key === "Enter" || key === " ") {
+                    event.preventDefault(); $(event.target).trigger("click");
+                }
+                return;
+            }
+            if (key === "Tab" && that.is_opened) { that.close(); that.$control.trigger("focus"); return; }
+            if (!that.is_opened && ["Enter", " ", "ArrowDown", "ArrowUp"].includes(key)) {
+                event.preventDefault(); that.open(); return;
+            }
+            if (!that.is_opened) { return; }
+            var $rows = that.$list.find('[role="option"][aria-disabled="false"]');
+            if (key === "ArrowDown" || key === "ArrowUp") {
+                event.preventDefault();
+                if (!$rows.length) { return; }
+                that.active = (that.active + (key === "ArrowDown" ? 1 : (that.active < 0 ? 0 : -1)) + $rows.length) % $rows.length;
+                that.$list.find(".is-active").removeClass("is-active");
+                var row = $rows.eq(that.active).addClass("is-active")[0];
+                that.$search.attr("aria-activedescendant", row.id);
+                var list = that.$list[0], rect = row.getBoundingClientRect(), bounds = list.getBoundingClientRect();
+                if (rect.bottom > bounds.bottom) { list.scrollTop += rect.bottom - bounds.bottom; }
+                if (rect.top < bounds.top) { list.scrollTop -= bounds.top - rect.top; }
+            } else if (key === "Enter") {
+                event.preventDefault();
+                if (that.active >= 0 && $rows[that.active]) {
+                    that.toggle($rows.eq(that.active).data("item"));
+                }
+            }
+        };
+
+        Multiselect.prototype.destroy = function() {
+            if (this.destroyed) { return; }
+            this.close(); this.destroyed = true;
+            clearTimeout(this.resetTimer);
+            this.$select.off(this.ns).removeData("multiselect").removeClass("wa-multiselect-native");
+            this.$select[0].removeEventListener("invalid", this.onInvalid);
+            this.$form.off(this.ns);
+            var that = this;
+            [["tabindex", "tabindex"], ["aria-hidden", "ariaHidden"]].forEach(function(pair) {
+                var value = that.original[pair[1]];
+                if (value === undefined) { that.$select.removeAttr(pair[0]); } else { that.$select.attr(pair[0], value); }
+            });
+            this.$wrapper.remove(); this.$popup.remove();
+        };
+
+        return Multiselect;
+
+        function labelText(label) {
+            return $(label).clone().find("select, input, textarea, button").remove().end().text().trim();
+        }
+
+    })($);
+
+    var plugin_name = "multiselect";
+
+    $.fn.waMultiselect = function(plugin_options) {
+        var return_instance = ( typeof plugin_options === "string" && plugin_options === plugin_name),
+            $items = this,
+            result = this;
+
+        if (!return_instance && plugin_options !== undefined && (plugin_options === null || typeof plugin_options !== "object")) {
+            throw new Error("Expected waMultiselect options");
+        }
+
+        plugin_options = ( typeof plugin_options === "object" ? plugin_options : {});
+
+        if (return_instance) { result = getInstance(); } else { init(); }
+
+        return result;
+
+        function init() {
+            $items.each( function(index, item) {
+                if (item.tagName !== "SELECT" || !item.multiple) {
+                    throw new Error("waMultiselect requires <select multiple>");
+                }
+
+                var $select = $(item);
+
+                if (!$select.data(plugin_name)) {
+                    var options = $.extend({}, plugin_options, {
+                        $select: $select
+                    });
+
+                    $select.data(plugin_name, new Multiselect(options));
+                }
+            });
+        }
+
+        function getInstance() {
+            return $items.first().data(plugin_name);
+        }
+    };
+
+})(jQuery);
+
+
+/**
  * @description progressbar component
  * @example /webasyst/ui/component/progressbar/
  * */

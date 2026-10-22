@@ -32,6 +32,8 @@ var WaFrontendLogin = ( function($) {
         that.is_onetime_password_auth_type = options.is_onetime_password_auth_type || false;
         that.env = 'frontend';
         that.is_need_confirm = options.is_need_confirm || false;
+        that.format_phone = !!options.format_phone;
+        that.is_email_channel_available = !!options.is_email_channel_available;
     };
 
     Self.prototype.initView = function () {
@@ -46,6 +48,10 @@ var WaFrontendLogin = ( function($) {
         }
 
         //that.initAuthAdapters();
+
+        if (that.format_phone) {
+            that.initPhoneMask();
+        }
     };
 
     Self.prototype.initAuthAdapters = function() {
@@ -448,6 +454,12 @@ var WaFrontendLogin = ( function($) {
 
         };
         return handlers;
+    };
+
+    Self.prototype.initPhoneMask = function () {
+        this.$wrapper.find('input[name="login"]').waPhoneMask({
+            allow_email: this.is_email_channel_available
+        });
     };
 
     return Self;

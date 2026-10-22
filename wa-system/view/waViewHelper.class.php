@@ -1255,7 +1255,9 @@ HTML;
      *   bool   'show_title' - need show own title. Default - FALSE
      *
      *   bool   'show_oauth_adapters' - need show html block of o-auth adapters - Eg vk, facebook etc. Default - FALSE
-     **
+     *
+     *   bool   'format_phone' - whether to format the phone number entered in the input field. Default - FALSE
+     *
      *   bool   'need_redirects' - need server trigger redirects. Default - TRUE
      *
      *   string 'contact_type' - what type of contact to create 'person' or 'company'. Default - 'person'

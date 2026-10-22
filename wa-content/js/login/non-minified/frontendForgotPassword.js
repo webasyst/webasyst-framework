@@ -19,6 +19,8 @@ var WaFrontendForgotPassword = ( function($) {
         };
         Parent.prototype.initVars.call(that, options);
         that.env = 'frontend';
+        that.format_phone = !!options.format_phone;
+        that.is_email_channel_available = !!options.is_email_channel_available;
     };
 
     Self.prototype.init = function (options) {
@@ -42,6 +44,10 @@ var WaFrontendForgotPassword = ( function($) {
             // Links must be hidden
             that.$wrapper.find('.wa-edit-login-link-wrapper').hide();
             that.$wrapper.find('.wa-send-again-confirmation-code-link-wrapper').hide();
+
+            if (that.format_phone) {
+                that.initPhoneMask();
+            }
         };
 
         initView();
@@ -113,7 +119,7 @@ var WaFrontendForgotPassword = ( function($) {
             that.getFormInput('confirmation_code').val('');
 
             // Hide main Submit button
-            that.turnOffBlock(that.$wrapper.find('.wa-forgotpassword-button')); 
+            that.turnOffBlock(that.$wrapper.find('.wa-forgotpassword-button'));
 
             showSentMessage(r);
 
@@ -162,6 +168,12 @@ var WaFrontendForgotPassword = ( function($) {
             }
         };
         return handlers;
+    };
+
+    Self.prototype.initPhoneMask = function () {
+        this.$wrapper.find('input[name="login"]').waPhoneMask({
+            allow_email: this.is_email_channel_available
+        });
     };
 
     return Self;

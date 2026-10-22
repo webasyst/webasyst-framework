@@ -10,6 +10,7 @@ class installerBackendStoreLayout extends waLayout
     public function execute()
     {
         $messages = $this->getMessages();
+        $store_sidebar_items = $this->getStoreSidebarItems();
 
         if (wa()->isSingleAppMode() && wa()->isSingleAppMode() !== 'installer') {
             return wa()->getResponse()->redirect(installerStoreHelper::getStoreUrl().installerStoreHelper::getStorePath());
@@ -20,8 +21,8 @@ class installerBackendStoreLayout extends waLayout
             'update_counter'      => $this->getUpdateCounter(),
             'module'              => waRequest::param('module', 'backend'),
             'filters'             => installerStoreHelper::getFilters(),
-            'store_sidebar_items' => $this->getStoreSidebarItems(),
-            'store_sidebar_type'  => installerStoreHelper::getSidebarType(),
+            'store_sidebar_items' => $store_sidebar_items,
+            'store_sidebar_type'  => installerStoreHelper::getSidebarType($store_sidebar_items),
             'store_path'          => installerStoreHelper::getStorePath(),
             'sidebar_only'        => $this->isSidebarOnly(),
         ));

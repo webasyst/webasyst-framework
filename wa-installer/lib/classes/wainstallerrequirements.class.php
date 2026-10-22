@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Webasyst framework.
  *
@@ -11,28 +10,31 @@
  * @copyright 2011 Webasyst LLC
  * @package wa-installer
  */
-
 class waInstallerRequirements
 {
-    private $root;
-    private $wa_locale;
+    protected const INTERNAL_REQUIREMENT_KEYS = ['passed', 'note', 'warning', 'update'];
+    protected const DB_SERVER_NAMES = ['mariadb' => 'MariaDB', 'mysql' => 'MySQL'];
+
+    protected $root;
+    protected $wa_locale;
 
     /**
      *
      * @return waInstallerRequirements
      */
-    private static function getInstance()
+    protected static $instance;
+
+    protected static function getInstance()
     {
-        static $instance;
-        if (!$instance) {
-            $instance = new self();
+        if (!static::$instance) {
+            static::$instance = new static();
         }
-        return $instance;
+        return static::$instance;
     }
 
-    private function __construct()
+    protected function __construct()
     {
-        $this->root = dirname(__FILE__).'/../../../';
+        $this->root = dirname(__FILE__) . '/../../../';
         $this->root = preg_replace('@([/\\\\]+)@', '/', $this->root);
         while (preg_match('@/\.\./@', $this->root)) {
             $this->root = preg_replace('@/[^/]+/\.\./@', '/', $this->root);
@@ -47,26 +49,285 @@ class waInstallerRequirements
     /**
      *
      * Run test case
-     * @param string $case
-     * @param array  $requirement
+     * @param string|int $case
+     * @param array $requirement
+     * @param int $level Deepness level
+     * @throws Exception
      */
-    public static function test($case, &$requirement)
+    public static function test($case, &$requirement, int $level = 0)
     {
-        $subject = null;
-        if (strpos($case, '.') !== false) {
-            list($case, $subject) = explode('.', $case, 2);
+        [$case, $subject, $requirement] = self::extractCaseAndSubject($case, $requirement, $level);
+
+        $camel_case = preg_split('/[-_]/', $case);
+        if ($camel_case) {
+            $method = 'test' . implode('', array_map('ucfirst', $camel_case));
+        } else {
+            $method = 'test' . ucfirst($case);
         }
-        if (empty($subject) && !empty($requirement['subject'])) {
-            $subject = $requirement['subject'];
-        }
-        $method = 'test'.ucfirst($case);
 
         $instance = self::getInstance();
         if (!method_exists($instance, $method)) {
             $method = 'testDefault';
             $subject = $case;
         }
+
         return $instance->$method($subject, $requirement);
+    }
+
+    /**
+     *
+     * @param string $subject
+     * @param array $requirement
+     * @return bool
+     * @throws Exception
+     */
+    protected function testOneOf(string $subject, array &$requirement): bool
+    {
+        $internal_fields = [
+            'passed'  => $requirement['passed'],
+            'note'    => $requirement['note'],
+            'warning' => $requirement['warning'],
+            'update'  => $requirement['update']
+        ];
+
+        foreach ($requirement as $key => &$item) {
+            if (in_array($key, self::INTERNAL_REQUIREMENT_KEYS, true)) {
+                continue;
+            }
+            $item = array_merge($item, $internal_fields);
+            self::test($key, $item, 1);
+            $requirement['passed'] = $item['passed'];
+            $requirement['note'] = $item['note'];
+            $requirement['warning'] = $item['warning'];
+            $requirement['update'] = $item['update'];
+            if ($item['passed']) {
+                break;
+            }
+        }
+        unset($item);
+
+        return $requirement['passed'];
+    }
+
+    /**
+     * @param string $subject database server code (mysql, MariaDB e.t.c.)
+     * @param array $requirement
+     * @return bool
+     */
+    protected function testDb(string $subject, array &$requirement): bool
+    {
+        $is_strict = !empty($requirement['strict']);
+        $requirement['passed'] = !$is_strict;
+        $this->castDatabaseServer($subject, $requirement);
+
+        $required_db_servers = array_map(function($v) {return strtolower($v); }, $requirement['server'] ?? []);
+
+        ['version' => $db_server_version, 'server' => $db_server] = $this->detectDatabaseServer();
+        self::setDefaultDescription($requirement, 'Database');
+        if (!$required_db_servers || in_array($db_server,  $required_db_servers, true)) {
+            $this->castVersion($requirement);
+            if (isset($requirement['version'])) {
+                $relation = $this->getRelation($requirement['version']);
+                if (version_compare($db_server_version, $requirement['version'], $relation)) {
+                    $requirement['passed'] = true;
+                    $requirement['note'] = $db_server_version;
+                } else {
+                    $requirement['warning'] = $is_strict
+                        ? $this->wa_locale->_('You use %s server version %s but version %s %s required')
+                        : $this->wa_locale->_('You use %s server version %s but version %s %s recommended');
+                    $requirement['warning'] = sprintf(
+                        $requirement['warning'],
+                        self::DB_SERVER_NAMES[$db_server] ?? $db_server,
+                        $db_server_version,
+                        $relation,
+                        $requirement['version']
+                    );
+                }
+            } else {
+                $requirement['passed'] = true;
+            }
+            if ($requirement['passed'] && !empty($requirement['engine'])) {
+                $this->castDatabaseTableEngine($requirement);
+                $supported_engines = $this->getSupportedTableEngines();
+                $required_engines_lc = array_map(function($val) { return strtolower($val); }, $requirement['engine']);
+                $supported_engines_lc = array_map(function ($val) { return strtolower($val); }, $supported_engines);
+                if (empty(array_intersect($required_engines_lc, $supported_engines_lc))) {
+                    $requirement['passed'] = !$is_strict;
+                    $requirement['warning'] = $is_strict
+                        ? $this->wa_locale->_('Your %s server supports %s table engines but %s required')
+                        : $this->wa_locale->_('Your %s server supports %s table engines but %s recommended');
+                    $requirement['warning'] = sprintf(
+                        $requirement['warning'],
+                        self::DB_SERVER_NAMES[$db_server] ?? $db_server,
+                        $this->stringToList($supported_engines),
+                        $this->stringToList($requirement['engine'], $this->wa_locale->_('or'))
+                    );
+                }
+            }
+        } else {
+            $requirement['warning'] = sprintf(
+                $is_strict
+                    ? $this->wa_locale->_('Your database server is %s but %s required')
+                    : $this->wa_locale->_('Your database server is %s but %s recommended'),
+                self::DB_SERVER_NAMES[$db_server] ?? $db_server,
+                $this->stringToList($requirement['server'], $this->wa_locale->_('or'))
+            );
+        }
+
+        return $requirement['passed'];
+    }
+
+    /**
+     * Implode array items into the string, where two last items are joined with $and
+     *
+     * @param array $list
+     * @param string|null $and
+     * @param string $separator
+     * @return string
+     * @example ['a', 'b', 'c', 'd'] => 'a, b, c and d'
+     *
+     */
+    protected function stringToList(array $list, ?string $and = null, string $separator = ', '): string
+    {
+        if ($and === null) {
+            $and = $this->wa_locale->_('and');
+        }
+        if (count($list) > 1) {
+            return implode($separator, array_slice($list, 0, -1)) . ' ' . $and . ' ' . array_pop($list);
+        }
+
+        return $list ? array_pop($list) : '';
+    }
+
+    protected function castDatabaseServer(string $subject, &$requirement): void
+    {
+        $server = null;
+
+        if ($subject) {
+            $server = [trim($subject)];
+        } elseif (!empty($requirement['server'])) {
+            if (is_string($requirement['server'])) {
+                $server = explode(',', $requirement['server']);
+            } elseif (is_array($requirement['server'])) {
+                $server = $requirement['server'];
+            }
+        }
+
+        if ($server) {
+            $server = array_map(function($v) { return trim($v); }, $server);
+            $requirement['server'] = array_values($server);
+        }
+    }
+
+    /**
+     * Cast a list of required db table engines to the unified array
+     *
+     * @param array $requirement
+     * @return void
+     */
+    protected function castDatabaseTableEngine(array &$requirement): void
+    {
+        if (isset($requirement['engine'])) {
+            if (is_string($requirement['engine'])) {
+                $engines = explode(',', $requirement['engine']);
+                $requirement['engine'] = array_map(function($e) { return trim($e); }, $engines);
+            }
+        }
+    }
+
+    /**
+     * List supported database table engines like MyISAM, InnoDB
+     * @return array
+     */
+    protected function getSupportedTableEngines(): array
+    {
+        $engines = [];
+        try {
+            if (class_exists('waModel')) {
+                $engines = (new waModel)->query('SHOW ENGINES')->fetchAll();
+                $engines = array_filter($engines, function($e) { return in_array(strtolower($e['Support']), ['yes', 'default'], true); });
+            }
+        } catch (waDbException $e) {
+            // db not set up yet, can't check
+        }
+
+        return array_values(array_map(function($e) { return $e['Engine']; }, $engines));
+    }
+
+    /**
+     * Currently we don't differ mysql and percona engines
+     *
+     * @return array{version:string, server:string}
+     */
+    protected function detectDatabaseServer(): array
+    {
+        try {
+            if (class_exists('waModel')) {
+                $database_data = (new waModel)->query('SELECT VERSION() AS `version`, @@version_comment AS `version_comment`')->fetchAssoc();
+            }
+        } catch (waDbException $e) {
+            // db not set up yet, can't check
+        }
+
+        return [
+            'version' => $database_data['version'] ?? '',
+            'server'  => stripos($database_data['version_comment'] ?? '', 'mariadb') === false ? 'mysql' : 'mariadb'
+        ];
+    }
+
+    /**
+     * @param $case
+     * @param $requirement
+     * @param $level
+     * @return array
+     * @throws Exception
+     */
+    protected static function extractCaseAndSubject($case, $requirement, $level = 0): array
+    {
+        $subject = '';
+
+        if (is_numeric($case)) {
+            $is_one_of = !$level
+                && is_array($requirement)
+                && !array_filter($requirement, function($value, $key) {
+                    return (
+                        !is_numeric($key) && !in_array($key, self::INTERNAL_REQUIREMENT_KEYS, true)
+                    ) || (
+                        is_numeric($key) && !is_array($value)
+                    );
+                }, ARRAY_FILTER_USE_BOTH);
+
+            if ($is_one_of) {
+                $case = 'one_of';
+            } else {
+                if (isset($requirement[0]) && is_scalar($requirement[0])) {
+                    $case = $requirement[0];
+                    if (isset($requirement[1]) && is_array($requirement[1])) {
+                        // e.g. ['db.mariadb', ['version' => '>=10']]
+                        // replace $requirements but keep all keys of root array except 0 and 1 (there can be non-numeric keys)
+                        $requirement = $requirement[1] + array_diff_key($requirement, ['', '']);
+                    } else {
+                        // e.g. ['php', 'version' => '>=7.4']
+                        unset($requirement[0]);
+                    }
+                } else {
+                    $case = '';
+                }
+                return self::extractCaseAndSubject($case, $requirement, $level);
+            }
+        } elseif (is_string($case)) {
+            if (strpos($case, '.') !== false) {
+                [$case, $subject] = explode('.', $case, 2);
+            }
+        } else {
+            throw new Exception('Invalid requirement format');
+        }
+
+        if (!$subject && !empty($requirement['subject'])) {
+            $subject = $requirement['subject'];
+        }
+
+        return [$case, $subject, $requirement];
     }
 
     public function __call($name, $args)
@@ -78,15 +339,15 @@ class waInstallerRequirements
         }
     }
 
-    private function getAppsConfig()
+    protected function getAppsConfig()
     {
         static $apps;
         if ($apps === null) {
             $apps = array();
             if (class_exists('waConfig')) {
                 $path = waConfig::get('wa_path_config');
-                if ($path && file_exists($path.'/apps.php')) {
-                    $apps = include($path.'/apps.php');
+                if ($path && file_exists($path . '/apps.php')) {
+                    $apps = include($path . '/apps.php');
                 }
             }
         }
@@ -97,11 +358,11 @@ class waInstallerRequirements
      * @param $app_id
      * @return bool|string
      */
-    private function appVersion($app_id)
+    protected function appVersion($app_id)
     {
         $app_id = preg_replace('@\\/@', '', strtolower($app_id));
-        $path = $this->root.'wa-apps/'.$app_id.'/lib/config/app.php';
-        $build_path = $this->root.'wa-apps/'.$app_id.'/lib/config/build.php';
+        $path = $this->root . 'wa-apps/' . $app_id . '/lib/config/app.php';
+        $build_path = $this->root . 'wa-apps/' . $app_id . '/lib/config/build.php';
         $version = false;
         if (file_exists($path)) {
             $apps = $this->getAppsConfig();
@@ -123,7 +384,7 @@ class waInstallerRequirements
         return $version;
     }
 
-    private static function setDefaultDescription(&$requirement, $name = '', $description = '')
+    protected static function setDefaultDescription(&$requirement, $name = '', $description = '')
     {
         if (is_array($requirement)) {
             if (!isset($requirement['name']) || !$requirement['name']) {
@@ -147,7 +408,7 @@ class waInstallerRequirements
         }
     }
 
-    private function testDefault($subject, &$requirement)
+    protected function testDefault($subject, &$requirement)
     {
         $requirement['passed'] = empty($requirement['strict']);
         $requirement['note'] = false;
@@ -156,7 +417,7 @@ class waInstallerRequirements
         return $requirement['passed'];
     }
 
-    private function testPhpini($subject, &$requirement)
+    protected function testPhpini($subject, &$requirement)
     {
         $requirement['passed'] = empty($requirement['strict']);
         $requirement['note'] = false;
@@ -177,7 +438,7 @@ class waInstallerRequirements
                         if (empty($requirement['strict'])) {
                             $format = $this->wa_locale->_('Value of PHP configuration parameter %s: %s. Recommended value: %s.');
                         }
-                        $requirement['warning'] = sprintf($format, $subject, $value, $relation.$requirement['value']);
+                        $requirement['warning'] = sprintf($format, $subject, $value, $relation . $requirement['value']);
                     } else {
                         $requirement['passed'] = true;
                         if ($value === true) {
@@ -220,7 +481,7 @@ class waInstallerRequirements
         return $requirement['passed'];
     }
 
-    private function testPhp($subject, &$requirement)
+    protected function testPhp($subject, &$requirement)
     {
         $requirement['passed'] = empty($requirement['strict']);
         $requirement['note'] = false;
@@ -273,7 +534,7 @@ class waInstallerRequirements
         return $requirement['passed'];
     }
 
-    private function testApp($subject, &$requirement)
+    protected function testApp($subject, &$requirement)
     {
         if (isset($requirement['update']) && !$requirement['update']) {
             $requirement['strict'] = false;
@@ -307,9 +568,10 @@ class waInstallerRequirements
         } else {
             $requirement['warning'] = sprintf($this->wa_locale->_('%s not installed'), $app_name);
         }
+        return $requirement['passed'];
     }
 
-    private function testRights($folders, &$requirement)
+    protected function testRights($folders, &$requirement)
     {
         $requirement['passed'] = true;
         $requirement['note'] = false;
@@ -323,8 +585,8 @@ class waInstallerRequirements
         self::setDefaultDescription($requirement, 'Files access rights');
         //TODO make it recursive
         foreach ($folders as $folder) {
-            $path = $this->root.$folder;
-            $folder_name = $root_path.preg_replace('@^\.?/?@', '/', $folder);
+            $path = $this->root . $folder;
+            $folder_name = $root_path . preg_replace('@^\.?/?@', '/', $folder);
 
             if (file_exists($path)) {
                 //XXX skip symbolic link
@@ -348,16 +610,17 @@ class waInstallerRequirements
         if ($good_folders) {
             $requirement['note'] .= '<div><div>'.sprintf($this->wa_locale->_('%s is writable'), implode('</div><div>', $good_folders)).'</div></div>';
         }
+        return $requirement['passed'];
     }
 
-    private function testServer($subject, &$requirement)
+    protected function testServer($subject, &$requirement)
     {
         $requirement['passed'] = empty($requirement['strict']);
         $requirement['note'] = false;
         $requirement['warning'] = false;
         $requirement['value'] = empty($requirement['strict']);
 
-        $server = (isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '').(isset($_SERVER['SERVER_SIGNATURE']) ? $_SERVER['SERVER_SIGNATURE'] : '');
+        $server = (isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '') . (isset($_SERVER['SERVER_SIGNATURE']) ? $_SERVER['SERVER_SIGNATURE'] : '');
 
         if ($subject) { //check server module
             self::setDefaultDescription($requirement, array('Server module %s', htmlentities($subject, ENT_QUOTES, 'utf-8')));
@@ -384,21 +647,22 @@ class waInstallerRequirements
                 $requirement['note'] = $server;
             }
         }
+        return $requirement['passed'];
     }
 
     /**
      *
      * Verify MD5 hashes
      * @param string $pattern
-     * @param array  $requirement
+     * @param array $requirement
      */
-    private function testMd5($pattern, &$requirement)
+    protected function testMd5($pattern, &$requirement)
     {
 
         $requirement['passed'] = empty($requirement['strict']);
         $requirement['note'] = false;
         $requirement['warning'] = false;
-        $md5_path = $this->root.'.files.md5';
+        $md5_path = $this->root . '.files.md5';
 
         if ($pattern) { //check files by mask
 
@@ -415,8 +679,8 @@ class waInstallerRequirements
                 unset($char);
             }
 
-            $cleanup_pattern = '@({'.implode('|', $meta_characters).')@';
-            $command_pattern = '@({'.implode('|', $command_characters).')@';
+            $cleanup_pattern = '@({' . implode('|', $meta_characters) . ')@';
+            $command_pattern = '@({' . implode('|', $command_characters) . ')@';
             $pattern = preg_replace($cleanup_pattern, '\\\\$1', $pattern);
             $pattern = preg_replace($command_pattern, '.$1', $pattern);
             $hash_pattern = "@^([\\da-f]{32})\\s+\\*({$pattern})$@m";
@@ -425,7 +689,7 @@ class waInstallerRequirements
                 if (preg_match_all($hash_pattern, $hashes, $file_matches)) {
                     $requirement['passed'] = true;
                     foreach ($file_matches[2] as $id => $file) {
-                        $path = $this->root.$file;
+                        $path = $this->root . $file;
                         if (file_exists($path)) {
                             $md5_hash = md5_file($path);
                             if ($file_matches[1][$id] != $md5_hash) {
@@ -452,9 +716,10 @@ class waInstallerRequirements
         } else {
             $requirement['note'] = 'incomplete case';
         }
+        return $requirement['passed'];
     }
 
-    private function testCloud($subject, &$requirement)
+    protected function testCloud($subject, &$requirement)
     {
         $requirement['passed'] = empty($requirement['strict']);
 
@@ -467,7 +732,7 @@ class waInstallerRequirements
         return $requirement['passed'];
     }
 
-    private function testExpired($subject, &$requirement)
+    protected function testExpired($subject, &$requirement)
     {
         $requirement['passed'] = empty($requirement['strict']);
         $target = $requirement['passed'] ? 'note' : 'warning';
@@ -479,7 +744,7 @@ class waInstallerRequirements
         return $requirement['passed'];
     }
 
-    private function getRelation(&$version, $strict = false)
+    protected function getRelation(&$version, $strict = false)
     {
         $relation = $strict ? false : '>=';
         if (preg_match('/^(<|<=|=|>|>=)\s*(\d+.*)$/', $version, $matches)) {
@@ -489,7 +754,7 @@ class waInstallerRequirements
         return $relation;
     }
 
-    private function castVersion(&$requirement)
+    protected function castVersion(&$requirement)
     {
         if (!isset($requirement['version'])
             && isset($requirement['value'])

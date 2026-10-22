@@ -286,7 +286,7 @@ class installerServicesApi extends waWebasystIDApi
         if (empty($api_result['status']) || $api_result['status'] >= 300) {
             $this->logError($data);
             $this->logError($api_result);
-            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst CRON API error.')), ifempty($api_result, 'status', 500));
+            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst Cron API error.')), ifempty($api_result, 'status', 500));
         } else {
             return ifset($api_result, 'response', null);
         }
@@ -298,7 +298,7 @@ class installerServicesApi extends waWebasystIDApi
         $api_result = $this->serviceCall(self::CRON_SERVICE, [], waNet::METHOD_GET, [], $path);
         if (empty($api_result['status']) || $api_result['status'] >= 300) {
             $this->logError($api_result);
-            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst CRON API error.')), ifempty($api_result, 'status', 500));
+            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst Cron API error.')), ifempty($api_result, 'status', 500));
         } else {
             return ifset($api_result, 'response', []);
         }
@@ -311,7 +311,7 @@ class installerServicesApi extends waWebasystIDApi
         $api_result = $this->serviceCall(self::CRON_SERVICE, [], waNet::METHOD_DELETE, [], $path);
         if (empty($api_result['status']) || $api_result['status'] >= 300) {
             $this->logError($api_result);
-            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst CRON API error.')), ifempty($api_result, 'status', 500));
+            throw new waException(ifset($api_result, 'response', 'message', _w('Webasyst Cron API error.')), ifempty($api_result, 'status', 500));
         } else {
             return ifset($api_result, 'response', null);
         }

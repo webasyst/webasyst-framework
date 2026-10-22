@@ -15,6 +15,12 @@ class waWebasystIDApi
     const TIMEOUT = 10;
 
     /**
+     * How long (seconds) wait for exclusive refresh token lock before give up.
+     * Must be not less than timeout of refresh API call (20 sec)
+     */
+    const REFRESH_TOKEN_LOCK_TIMEOUT = 30;
+
+    /**
      * waWebasystIDApi constructor.
      * @param array $options
      *      waWebasystIDConfig $options['config'] [optional]
@@ -474,6 +480,11 @@ class waWebasystIDApi
 
     /**
      * Refresh token and update token_params input argument
+     *
+     * Refresh is exclusive: only one process per contact can refresh token at a time (MySQL advisory lock).
+     * If token has been already refreshed by another process while we were waiting for the lock,
+     * fresh token params are reused as is, without extra refresh API call.
+     *
      * @param &$token_params - side effect is here
      * @param $contact_id
      * @return bool
@@ -482,12 +493,94 @@ class waWebasystIDApi
      */
     protected function refreshedTokenParams(&$token_params, $contact_id)
     {
-        $ok = $this->refreshToken($token_params['refresh_token'], $contact_id);
-        if ($ok) {
-            $contact = new waContact($contact_id);
-            $token_params = $contact->getWebasystTokenParams();
+        if (!$this->lockRefreshToken($contact_id)) {
+            return false;
         }
-        return $ok;
+        try {
+            // double check: another process could refresh the token while we were waiting for the lock
+            $contact = $this->getWaidContact($contact_id);
+            $fresh_token_params = $contact->getWebasystTokenParams();
+            if (empty($fresh_token_params['refresh_token'])) {
+                return false;
+            }
+            if ($fresh_token_params['refresh_token'] !== ifset($token_params, 'refresh_token', null)) {
+                // token has been already refreshed by another process - use fresh params as is
+                $token_params = $fresh_token_params;
+                return true;
+            }
+
+            $ok = $this->refreshToken($fresh_token_params['refresh_token'], $contact_id);
+            if ($ok) {
+                $token_params = $contact->getWebasystTokenParams();
+            }
+            return $ok;
+        } finally {
+            $this->unlockRefreshToken($contact_id);
+        }
+    }
+
+    /**
+     * @param int $contact_id
+     * @return waContact
+     */
+    protected function getWaidContact($contact_id)
+    {
+        return new waContact($contact_id);
+    }
+
+    /**
+     * Exclusive MySQL advisory lock that serializes refresh token operations for one contact
+     * @param int $contact_id
+     * @return bool - TRUE if lock is acquired, FALSE otherwise (timeout or DB error)
+     */
+    protected function lockRefreshToken($contact_id)
+    {
+        try {
+            $model = new waAppSettingsModel();
+            $result = $model->query("SELECT GET_LOCK(?, ?)", [
+                $this->getRefreshTokenLockName($contact_id),
+                self::REFRESH_TOKEN_LOCK_TIMEOUT
+            ])->fetchField();
+        } catch (Exception $e) {
+            $this->logException($e);
+            return false;
+        }
+        if ((int)$result !== 1) {
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => sprintf("Can't acquire refresh token lock for contact %s", $contact_id)
+            ]);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Release exclusive lock taken by lockRefreshToken
+     * @param int $contact_id
+     * @return bool
+     */
+    protected function unlockRefreshToken($contact_id)
+    {
+        try {
+            $model = new waAppSettingsModel();
+            $model->query("SELECT RELEASE_LOCK(?)", [
+                $this->getRefreshTokenLockName($contact_id)
+            ]);
+        } catch (Exception $e) {
+            $this->logException($e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param int $contact_id
+     * @return string
+     */
+    protected function getRefreshTokenLockName($contact_id)
+    {
+        return 'wa_waid_refresh_token_' . (int)$contact_id;
     }
 
     /**
@@ -599,7 +692,7 @@ class waWebasystIDApi
         } catch (Exception $e) {
             if ($e instanceof waNetTimeoutException) {
                 if ($do_handle_timeout) {
-                    if (wa()->appExists('installer')) {
+                    if (wa()->appExists('installer') && !waConfig::get('is_template')) {
                         wa('installer');
                         $zone_detect_result = installerHelper::getInstaller()->detectBestZone();
                         if (!empty($zone_detect_result['is_zone_changed'])) {

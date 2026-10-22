@@ -39,7 +39,7 @@ class webasystSettingsSidebarAction extends webasystSettingsViewAction
         $errors = [];
         $balance_amount = 0;
 
-        $res = $wa_service_api->getBalance([waServicesApi::EMAIL_MESSAGE_SERVICE, waServicesApi::SMS_SERVICE]);
+        $res = $wa_service_api->getBalance([waServicesApi::EMAIL_MESSAGE_SERVICE, waServicesApi::SMS_SERVICE, 'AI']);
 
         $status = ifset($res, 'status', null);
         if (empty($status) || $status >= 400) {
@@ -66,6 +66,15 @@ class webasystSettingsSidebarAction extends webasystSettingsViewAction
             $remaining_free_sms = ifempty($res, 'response', 'services', waServicesApi::SMS_SERVICE, 'remaining_free_calls', []);
             $remaining_pack_sms = ifset($remaining_free_sms, 'pack', 0);
             unset($remaining_free_sms['pack']);
+
+            // ai
+            $ai_price_value = ifset($res, 'response', 'services', 'AI', 'price', 0);
+            if ($balance_amount > 0 && $ai_price_value > 0) {
+                $ai_count = intval(floor($balance_amount / $ai_price_value));
+            }
+            $remaining_free_ai = ifempty($res, 'response', 'services', 'AI', 'remaining_free_calls', []);
+            $remaining_pack_ai = ifset($remaining_free_ai, 'pack', 0);
+            unset($remaining_free_ai['pack']);
         }
 
         $this->view->assign([
@@ -78,6 +87,9 @@ class webasystSettingsSidebarAction extends webasystSettingsViewAction
             'wa_total_sms'      => ifset($sms_count, 0)
                                     + ifset($remaining_free_sms, 'total', 0) // min(array_values($remaining_free_sms) ?: [0]) 
                                     + ifset($remaining_pack_sms, 0),
+            'wa_total_ai'       => ifset($ai_count, 0)
+                                    + ifset($remaining_free_ai, 'total', 0) // min(array_values($remaining_free_ai) ?: [0]) 
+                                    + ifset($remaining_pack_ai, 0),
         ]);
     }
 }

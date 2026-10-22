@@ -1,0 +1,211 @@
+{$_title = ".waMultiselect()"}
+{$wa->title($_title)}
+
+{function name="_render_multiselect"}
+<form id="multiselect-form">
+    <div class="fields">
+        <div class="field">
+            <div class="name">Валюты</div>
+            <div class="value">
+                <select multiple required name="currencies[]" id="multiselect-local">
+                    <optgroup label="Фиат">
+                        <option value="rub" selected>Российский рубль</option>
+                        <option value="eur">Евро</option>
+                        <option value="usd">Доллар США</option>
+                    </optgroup>
+                    <optgroup label="Криптовалюты">
+                        <option value="btc">Bitcoin</option>
+                        <option value="eth">Ethereum</option>
+                        <option value="usdt" disabled>USDT (недоступно)</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <div class="value">
+                <button type="submit">Показать значения</button>
+                <button type="reset" class="light-gray">Сбросить</button>
+            </div>
+        </div>
+    </div>
+
+    <blockquote class="js-values break-all custom-mt-8" aria-live="polite" style="display: none;"></blockquote>
+</form>
+<script>
+    (function($) {
+        $("#multiselect-local").waMultiselect();
+        $("#multiselect-form").on("submit", function(event) {
+            event.preventDefault();
+            $(this).find(".js-values").text($(this).serialize()).slideDown();
+        }).on("reset", function() {
+            $(this).find(".js-values").empty().slideUp();
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_multiselect_remote"}
+<div class="fields">
+    <div class="field">
+        <div class="name">Контакты</div>
+        <div class="value">
+            <select multiple name="contacts[]" id="multiselect-remote" class="full-width">
+                <option value="1" selected>Анна</option>
+            </select>
+        </div>
+    </div>
+</div>
+<script>
+    (function($) {
+        $("#multiselect-remote").waMultiselect({
+            load: function(query) {
+                return new Promise(function(resolve, reject) {
+                    setTimeout(function() {
+                        if (query === "ошибка") { reject(new Error("Demo")); return; }
+                        resolve(["Анна", "Борис", "Виктор", "Галина", "Дмитрий"].map(function(text, index) {
+                            return { value: String(index + 1), text: text };
+                        }).filter(function(item) {
+                            return item.text.toLowerCase().includes(query.toLowerCase());
+                        }));
+                    }, 400);
+                });
+            }
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_multiselect_dialog"}
+<button type="button" class="outlined" id="multiselect-dialog-open">Открыть в диалоге</button>
+<script>
+    (function($) {
+        $("#multiselect-dialog-open").on("click", function() {
+            $.waDialog({
+                header: '<h3>Множественный выбор</h3>',
+                content: '<div style="overflow:hidden"><label for="multiselect-dialog">Варианты</label><p><select multiple id="multiselect-dialog" class="full-width"></select></p></div>',
+                footer: '<button type="button" class="js-close-dialog">Закрыть</button>',
+                onOpen: function($dialog) {
+                    var $select = $dialog.find("select");
+                    for (var i = 1; i <= 40; i++) {
+                        $select.append(new Option("Вариант " + i, String(i)));
+                    }
+                    $select.waMultiselect();
+                },
+                onClose: function(instance) {
+                    instance.$wrapper.find("select").hide().waMultiselect("multiselect").destroy();
+                }
+            });
+        });
+    })(jQuery);
+</script>
+{/function}
+
+<div class="u-component-page" id="multiselect-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> - файла, в котором реализованы все базовые JS-компоненты Webasyst 2.</blockquote>
+    <p>Множественный выбор с поиском и тегами выбранных значений на основе <code>&lt;select multiple&gt;</code>. Исходный <em>&lt;select&gt;</em> хранит значения, участвует в отправке и валидации формы.</p>
+
+    <div class="u-example-section">
+        <h2>Локальный поиск и форма</h2>
+        <p>Поддерживаются атрибуты <code>optgroup</code>, <code>selected</code>, <code>disabled</code>, <code>required</code>. Поиск фильтрует текст без учёта регистра. Выбор значений вызывает событие <code>change</code>; сброс формы восстанавливает начальные значения.</p>
+        {_render_multiselect}
+        <pre class="prettyprint">{_render_multiselect|escape}</pre>
+        <h3>Клавиатура</h3>
+        <ul>
+            <li><code>Enter</code>, <code>пробел</code> и <code>стрелки &darr;&uarr;</code> раскрывают список.</li>
+            <li><code>Стрелки &darr;&uarr;</code> перемещают выделение по списку.</li>
+            <li><code>Enter</code> выбирает выделенное значение.</li>
+            <li><code>Esc</code> очищает поле поиска. Если это поле пустое, то закрывает список и возвращает фокус.</li>
+            <li><code>Tab</code> закрывает список и переводит фокус дальше.</li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h2>Размеры и оформление</h2>
+        <p>Классы задаются для исходного <em>&lt;select&gt;</em>: <code>small</code>, <code>smaller</code>, <code>smallest</code>, <code>large</code>, <code>larger</code>, <code>largest</code>, <code>outlined</code>, <code>full-width</code>, <code>state-error</code>, <code>state-success</code>, <code>state-caution</code>, <code>state-valid</code>, <code>state-invalid</code>, <code>state-both</code>.</p>
+        {foreach ["smallest", "smaller", "small", "", "large", "larger", "largest", "outlined", "full-width", "state-error", "state-success", "state-caution", "state-valid", "state-invalid", "state-both"] as $_class}
+            <p><select multiple required class="{$_class}" aria-label="Оформление: {$_class|default:'обычный'}" data-multiselect-demo>
+                <option value="a"{if $_class != "state-invalid"} selected{/if}>Альфа</option><option value="b">Бета</option>
+            </select> <code>{$_class|default:'обычный'}</code></p>
+        {/foreach}
+        <p><select multiple disabled aria-label="Недоступный список" data-multiselect-demo><option selected>Недоступно</option></select></p>
+        <pre class="prettyprint">&lt;select multiple class="outlined small" id="items"&gt;
+    &lt;option value="a" selected&gt;Альфа&lt;/option&gt;
+&lt;/select&gt;
+&lt;script&gt;$("#items").waMultiselect();&lt;/script&gt;</pre>
+    </div>
+
+    <div class="u-example-section">
+        <h2>Асинхронный поиск</h2>
+        <p>Метод <code>.load(<em>query</em>)</code> возвращает одиночный массив или массив объектов вида <code>{literal}{ value: "1", text: "Анна", disabled: false }{/literal}</code>. Значение — строка или число, подпись — строка, необязательный атрибут <code>disabled</code> — <em>boolean</em>. Дубликаты значений отбрасываются. Поиск запускается с задержкой <strong>250 мс</strong>, устаревшие ответы игнорируются. Постраничная навигация не используется.</p>
+
+        <h3>Пример обращения к серверу</h3>
+        <p>Введите «<em>ошибка</em>», чтобы получить состояние ошибки или неизвестное имя — для демонстрации получения пустого результата. Начальные выбранные значения задаются с помощью  атрибута <code class="nowrap">&lt;option <strong>selected</strong>&gt;</code>.</p>
+        {_render_multiselect_remote}
+        <pre class="prettyprint">{_render_multiselect_remote|escape}</pre>
+        <p>Для выполнения реального запроса напишите свою логику в методе <code>.load()</code>:</p>
+        <pre class="prettyprint">{literal}load: function(query) {
+    return $.getJSON("/your-endpoint", { query: query });
+}{/literal}</pre>
+    </div>
+
+    <div class="u-example-section">
+        <h2>Локализация</h2>
+        <p>Укажите нужные тексты вместо стандартных в свойстве <code>locales</code>. Язык по умолчанию — русский.</p>
+        <pre class="prettyprint">{literal}$("#items").waMultiselect({
+    locales: {
+        placeholder: "Select values",
+        searchPlaceholder: "Search",
+        loading: "Loading…",
+        empty: "No results",
+        error: "Unable to load results",
+        remove: "Remove"
+    }
+});{/literal}</pre>
+        <p>Стандартные значения: «<em>Выберите значения</em>», «<em>Поиск</em>», «<em>Загрузка…</em>», «<em>Ничего не найдено</em>», «<em>Не удалось загрузить список</em>», «<em>Удалить</em>». Подписи отображаются в виде текста.</p>
+    </div>
+
+    <div class="u-example-section">
+        <h2>Значения, события и методы</h2>
+        <pre class="prettyprint">{literal}var $select = $("#items").waMultiselect();
+var instance = $select.waMultiselect("multiselect");
+
+$select.on("change", function() { console.log($(this).val()); });
+$select.val(["a"]).trigger("change");
+
+instance.open();
+instance.close();
+
+// После изменения option, disabled или классов элемента select:
+instance.refresh();
+
+// Перед удалением компонента, в том числе при закрытии диалога:
+instance.destroy();{/literal}</pre>
+        <p>Повторная инициализация возвращает jQuery-коллекцию и сохраняет существующий экземпляр. Метод <code>destroy()</code> восстанавливает исходный <em>&lt;select&gt;</em>, удаляет панель, обработчики и данные экземпляра. Перед удалением HTML-разметки из DOM вызывайте <code>.destroy()</code> самостоятельно.</p>
+    </div>
+
+    <div class="u-example-section">
+        <h2>В диалоге</h2>
+        <p>Панель добавляется в <code>&lt;body&gt;</code> и позиционируется относительно окна таким образом, чтобы не обрезаться контейнером диалога. При нехватке места снизу список открывается вверх.</p>
+        {_render_multiselect_dialog}
+        <pre class="prettyprint">{_render_multiselect_dialog|escape}</pre>
+    </div>
+</div>
+<script>
+    (function($) {
+        var $page = $("#multiselect-page");
+        $page.find("[data-multiselect-demo]").waMultiselect();
+        $(document).one("wa_before_render.waMultiselectDemo", function() {
+            $page.find("select[multiple]").each(function() {
+                var instance = $(this).waMultiselect("multiselect");
+                if (instance) { instance.destroy(); }
+            });
+        });
+    })(jQuery);
+
+    $.wa_ui.title.set({$_title|json_encode});
+
+    if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+        prettyPrint();
+    }
+</script>

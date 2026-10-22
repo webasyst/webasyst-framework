@@ -1353,8 +1353,9 @@ var WAThemeSettings = ( function($) {
 
         // Delete image
         that.$wrapper.on('click', 'a.delete-image', function () {
-            $(this).closest('div.value').find("input:hidden").val('');
-            $(this).parent().remove();
+            const $wrapper = $(this).closest('div.value');
+            $wrapper.find('.image').remove();
+            $wrapper.find("input:hidden,input:file").val('').trigger('change');
             return false;
         });
 
@@ -1508,6 +1509,169 @@ var WAThemeSettings = ( function($) {
                 that.$button.removeClass('green').addClass('yellow');
             });
         });
+
+        that.initImageScaleControl();
+
+        // display uploaded image
+        const $upload_control = that.$form.find(".upload-control");
+        $upload_control.waUpload();
+        $upload_control.on('change', function(e) {
+            const input = e.target;
+            const file = input?.files?.[0];
+            const triggerUpdate = () => $(input).trigger('update');
+            if (!file) {
+                triggerUpdate();
+                return;
+            }
+
+            const $control = $(this);
+            const $prev_img_wrapper = $control.next('.image');
+            if ($prev_img_wrapper.length) {
+                const src = $prev_img_wrapper.find('img').attr('src');
+                URL.revokeObjectURL(src);
+                $prev_img_wrapper.remove();
+            }
+
+            if (input.accept && !input.accept.split(',').includes(file.type)) {
+                triggerUpdate();
+                return;
+            }
+            $control.find('.filename').remove();
+
+            const preview_url = URL.createObjectURL(file);
+            const $img_wrapper = $(that.templates.image_control);
+
+            $img_wrapper.find('img').attr('src', preview_url);
+
+            $control.after($img_wrapper);
+
+            triggerUpdate();
+        });
+    };
+
+    WAThemeSettings.prototype.initImageScaleControl = function() {
+        const that = this;
+        const min_width = 24;
+
+        const checkRetinaRecommendation = (max_width, natural_width, changed_width) => {
+            const displayed_width = Math.max(min_width, Math.min(changed_width, max_width));
+
+            const show_retina_hint = natural_width > 0 && natural_width < 2 * displayed_width;
+            const recommended_width = Math.min(Math.ceil(natural_width / 2), max_width);
+            const recommended_retina_width = Math.ceil(2 * displayed_width);
+
+            const can_reduce_scale = natural_width >= min_width * 2;
+            return { can_reduce_scale, show_retina_hint, recommended_width, recommended_retina_width };
+        };
+
+        const initImageScale = function() {
+            const $image_scale = $(this);
+            const image_name = $image_scale.data("image-name");
+            const $target_image_input = that.$form.find(`[name="${image_name}"]`);
+            if (!$target_image_input.length) {
+                console.error('No image: ' + image_name);
+                return;
+            }
+
+            const max_width = $target_image_input.data("max-width");
+            if (!max_width) return;
+
+            const half_max_width = Math.ceil(max_width / 2);
+            const $input = $image_scale.find('input');
+
+            const getImage = () => {
+                return $target_image_input.closest('.value').find('img').first();
+            };
+            const setVisibility = (visible = false) => {
+                $image_scale.closest('.field').toggleClass('hidden', !visible);
+            };
+            const notice = ({
+                can_reduce_scale = false,
+                show_retina_hint = false,
+                recommended_width = '',
+                recommended_retina_width = ''
+            } = {}) => {
+                const $notice = $image_scale.find('.js-image-scale-retina')
+                    .toggleClass('hidden', !show_retina_hint);
+                $notice.find('.js-image-scale-retina-reduce').toggleClass('hidden', !can_reduce_scale);
+                $notice.find('.js-image-scale-width').text(recommended_width);
+                $notice.find('.js-image-scale-retina-width').text(recommended_retina_width);
+            };
+            const retinaRecommendationUpdater = (natural_width, $image, is_svg) => (changed_width) => {
+                const result = checkRetinaRecommendation(half_max_width, natural_width, changed_width);
+
+                if (result.can_reduce_scale) {
+                    const new_width = Math.ceil(changed_width);
+                    $image.css('width', `${new_width}px`);
+                }
+
+                if (!is_svg) {
+                    notice(result);
+                }
+            };
+
+            const getValueSafely = (value = $input.val()) => {
+                value = parseInt(value) || min_width;
+                value = Math.max(min_width, Math.min(value, half_max_width));
+                return value;
+            };
+            const setInputValue = (value = 0) => {
+                $input.val(getValueSafely(value)).trigger('change');
+                return value;
+            };
+
+            const handle = async (is_image_changed  = false) => {
+                const $image = getImage();
+                const src = $image.attr('src');
+                const visible = !!src;
+                setVisibility(visible);
+                if (!visible) {
+                    setInputValue(0);
+                    return;
+                }
+                $image.css('width', `${getValueSafely()}px`);
+
+                await new Promise((resolve) => setTimeout(resolve, 50)); // Firefox fix
+                const blob = await (await fetch(src, { credentials: 'same-origin'})).blob();
+
+                const is_svg = blob.type === 'image/svg+xml';
+                const natural_width = $image.prop('naturalWidth');
+                const width = Math.min(natural_width, half_max_width);
+                const updateRetinaRecommendation = retinaRecommendationUpdater(natural_width, $image, is_svg);
+
+                const $slider_wrapper = $image_scale.find(".slider-wrapper").empty();
+                const $slider = $('<div class="slider">').waSlider({
+                    $input_max: $input,
+                    hide: { min: true, max: false },
+                    limit: { min: min_width, max: width },
+                    move: (values) => {
+                        setInputValue(values[1]);
+                    }
+                });
+                $slider_wrapper.append($slider);
+
+                const updateWidth = () => {
+                    const width = getValueSafely();
+                    $slider.data('slider').setValues([min_width, width]);
+                    updateRetinaRecommendation(width);
+                };
+                $input.prop('min', min_width)
+                    .prop('max', width)
+                    .off('change')
+                    .on('change', () => updateWidth());
+
+                if (is_image_changed) {
+                    setInputValue(width);
+                } else {
+                    updateWidth();
+                }
+            };
+
+            handle();
+            $target_image_input.on('update', () => handle(true));
+        };
+
+        that.$form.find(".image-scale-control").each(initImageScale);
     };
 
     WAThemeSettings.prototype.initScrollToTopButton = function() {
@@ -1702,7 +1866,7 @@ var WAThemeSettings = ( function($) {
         var that = this,
             $iframe = that.$wrapper.find('#theme-settings-iframe');
 
-        that.$form.on('input', function () {
+        that.$form.on('input change', function () {
             that.$button.removeClass('green').addClass('yellow');
         });
 

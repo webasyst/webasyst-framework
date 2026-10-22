@@ -1097,7 +1097,8 @@ class waSystem
         $all_apps = $this->getApps();
         foreach ($routes as $r) {
             if (isset($r['app']) && isset($all_apps[$r['app']])) {
-                if (!empty($r['private'])) {
+                $app_defaults_to_private = !empty($all_apps[$r['app']]['routing_params']['private']) || empty($all_apps[$r['app']]['frontend']);
+                if (!empty($r['private']) || (!isset($r['private']) && $app_defaults_to_private)) {
                     continue;
                 }
                 $url = $r['url'];

@@ -17,6 +17,10 @@ return array(
     'frac_digits' => '2',
     'thousands_sep' => ',',
     'first_day' => 7,
+    'plural_forms' => array(
+        'nplurals' => 2,
+        'plural' => '(n != 1)'
+    ),
     'amount_in_words' => array(
         'delim' => array(
             10 => '-',

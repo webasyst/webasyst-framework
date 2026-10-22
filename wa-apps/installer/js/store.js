@@ -336,6 +336,10 @@ var InstallerStore = (function ($) {
             }
         }
 
+        if (data.beta) {
+            fields.push({name: 'beta', value: data.beta});
+        }
+
         if (!that.options.in_app) {
             that.initForm(url, fields);
             return;

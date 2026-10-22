@@ -418,6 +418,14 @@ class waTheme implements ArrayAccess
                                     }
                                 }
                             }
+
+                            if ($s['control_type'] === 'image') {
+                                $s['max_width'] = isset($setting['max_width']) ? (string)$setting['max_width'] : null;
+                            }
+                            if ($s['control_type'] === 'image_width') {
+                                $s['image'] = isset($setting['image']) ? (string)$setting['image'] : '';
+                            }
+
                             unset($s);
                         }
                     }

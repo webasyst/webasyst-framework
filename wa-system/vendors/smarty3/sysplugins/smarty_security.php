@@ -411,6 +411,28 @@ class Smarty_Security {
         if (substr($filepath, -4) == '.php') {
             throw new SmartyException("file '".basename($filepath)."' not allowed by security setting");
         }
+        if (class_exists('waConfig') && waConfig::has('wa_path_root')) {
+            $real_filepath = realpath($filepath);
+            if ($real_filepath === false) {
+                return;
+            }
+
+            static $trusted_dirs = null;
+            if ($trusted_dirs === null) {
+                $trusted_dirs = waSystemConfig::systemOption('trusted_template_dirs');
+                $trusted_dirs = (array) ifempty($trusted_dirs, []);
+                array_unshift($trusted_dirs, waConfig::get('wa_path_root'));
+                $trusted_dirs = array_filter(array_map('realpath', $trusted_dirs));
+            }
+
+            foreach ($trusted_dirs as $real_root_path) {
+                $real_root_path .= DIRECTORY_SEPARATOR;
+                if (strncmp($real_filepath, $real_root_path, strlen($real_root_path)) === 0) {
+                    return; // found trusted root dir that contains the template
+                }
+            }
+            throw new SmartyException("file '".basename($filepath)."' not within allowed directory");
+        }
     }
 
     /**

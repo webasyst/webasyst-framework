@@ -39,6 +39,8 @@ var WaSignup = ( function($) {
         that.need_redirects = options.need_redirects !== undefined ? !!options.need_redirects : true;
         that.contact_type = options.contact_type || '';
 
+        that.format_phone = !!options.format_phone;
+
         // INIT
         that.init();
     };
@@ -55,6 +57,10 @@ var WaSignup = ( function($) {
 
         if (that.is_need_confirm) {
             that.initNeedConfirmView();
+        }
+
+        if (that.format_phone) {
+            that.initPhoneMask();
         }
 
         that.initCaptcha();
@@ -912,6 +918,10 @@ var WaSignup = ( function($) {
         } else {
             that.triggerEvent('wa_auth_form_loaded');
         }
+    };
+
+    WaSignup.prototype.initPhoneMask = function () {
+        this.$wrapper.find('input[name="data[phone]"]').waPhoneMask();
     };
 
     return WaSignup;

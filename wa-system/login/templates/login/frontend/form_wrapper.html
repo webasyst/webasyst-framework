@@ -47,6 +47,13 @@
             'uri'  => "`$wa_url`wa-content/js/login/login-frontend-form.min.js?v=`$wa->version()`"
         ]
     ]}
+    {if $format_phone}
+        {$_resources[] = [
+            'id'   => "wa-content-phone-mask-js",
+            'type' => "js",
+            'uri'  => "`$wa_url`wa-content/js/phone-mask/phone-mask.js?v=`$wa->version()`"
+        ]}
+    {/if}
 
     {if $include_css}
         {$_resources[] = [
@@ -185,7 +192,9 @@
                     is_json_mode: {$is_json_mode|default:false|json_encode},
                     need_redirects: {$need_redirects|default:false|json_encode},
                     is_need_confirm: {$is_need_confirm|default:false|json_encode},
-                    oauth_adapter_sizes: {$oauth_adapter_sizes|default:[]|json_encode}
+                    oauth_adapter_sizes: {$oauth_adapter_sizes|default:[]|json_encode},
+                    format_phone: {$format_phone|default:false|json_encode},
+                    is_email_channel_available: {$is_email_channel_available|default:false|json_encode}
                 });
             }
 

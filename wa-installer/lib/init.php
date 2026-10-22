@@ -27,6 +27,7 @@ function wa_installer_autoload($name)
             'wainstallerrequirements' => 'wa-installer/lib/classes/wainstallerrequirements.class.php',
             'wainstallerlocale'       => 'wa-installer/lib/classes/wainstallerlocale.class.php',
             'wainstallerfile'         => 'wa-installer/lib/classes/wainstallerfile.class.php',
+            'wainstallercli'          => 'wa-installer/lib/classes/wainstallercli.class.php',
             'waInstallerDownloadException' => 'wa-installer/lib/classes/waInstallerDownloadException.class.php',
         ] as $class => $path) {
             $depended_classes[strtolower($class)] = $path;

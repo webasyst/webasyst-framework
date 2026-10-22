@@ -46,6 +46,13 @@
                 'uri'  => "`$wa_url`wa-content/js/signup/signup.js?v=`$wa->version()`"
             ]
         ]}
+        {if $format_phone}
+            {$_resources[] = [
+                'id'   => "wa-content-phone-mask-js",
+                'type' => "js",
+                'uri'  => "`$wa_url`wa-content/js/phone-mask/phone-mask.js?v=`$wa->version()`"
+            ]}
+        {/if}
 
         {if $include_css}
             {$_resources[] = [
@@ -182,7 +189,8 @@
                         is_onetime_password_auth_type: {$is_onetime_password_auth_type|json_encode},
                         is_need_confirm: {$is_need_confirm|json_encode},
                         need_redirects: {$need_redirects|default:''|json_encode},
-                        contact_type: {$contact_type|default:''|json_encode}
+                        contact_type: {$contact_type|default:''|json_encode},
+                        format_phone: {$format_phone|default:false|json_encode}
                     });
                 }
             })(jQuery);

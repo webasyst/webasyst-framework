@@ -1,9 +1,16 @@
 <?php
 
 return array(
+    'iso3' => 'esp',
     'name' => 'Español',
     'region' => 'España',
     'english_name' => 'Spanish',
-    'english_region' => 'Spain'
-
+    'english_region' => 'Spain',
+    'decimal_point' => ',',
+    'frac_digits' => '2',
+    'thousands_sep' => '.',
+    'plural_forms' => array(
+        'nplurals' => 2,
+        'plural' => '(n != 1)'
+    ),
 );

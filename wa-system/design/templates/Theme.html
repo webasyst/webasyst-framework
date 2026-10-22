@@ -4,6 +4,13 @@
 
 <script src="{$wa_url}wa-content/js/jquery-wa/design/theme.settings.js?v{$wa->version()}"></script>
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design/theme.settings.css?{$wa->version()}">
+{function name="_render_image" url=''}
+<div class="image custom-mt-12 custom-mb-8">
+    <img class="transparent-sprite" src="{$url}">
+    <br>
+    <a class="small delete-image text-red" href="#"><i class="fas fa-trash-alt"></i> [s`Delete`]</a>
+</div>
+{/function}
 {function name="_renderThemeSetting" _setting_var=_setting_var _setting=[]}
     {strip}
         {$_h_level = $_setting.level + 2}
@@ -47,7 +54,7 @@
 
         {* SETTING *}
         {else}
-            <div class="field{if !empty($_setting.invisible)} invisible-setting{/if} js-search-item"
+            <div class="field{if !empty($_setting.invisible)} invisible-setting{/if}{if $_setting.control_type == 'image_width'} hidden{/if} js-search-item"
                  data-name="{$_setting.name|escape}"
                  data-search="{strip_tags($_setting.name)}">
                 <div class="name">
@@ -164,7 +171,7 @@
                                 <label class="link">
                                     <i class="fas fa-file-upload"></i>
                                     <span>[s`Select file`]</span>
-                                    <input type="file" name="{if !empty($_setting.parent)}parent_{/if}image[{$_setting_var}]" autocomplete="off">
+                                    <input type="file" data-max-width="{$_setting.max_width}" name="{if !empty($_setting.parent)}parent_{/if}image[{$_setting_var}]" accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml" autocomplete="off">
                                 </label>
                             </div>
                         </div>
@@ -174,16 +181,22 @@
                             {else}
                                 {$_url = $theme->getUrl()}
                             {/if}
-                            <div class="image"><br>
-                                <img class="transparent-sprite" src="{$_url}{$_setting.value}">
-                                <br>
-                                <a class="small delete-image text-red" href="#"><i class="fas fa-trash-alt"></i> [s`Delete`]</a>
-                            </div>
+                            {_render_image url=({$_url|cat:$_setting.value})}
                         {/if}
                         {if !empty($_setting.description)}
                             <div class="hint">{$_setting.description}</div>
                         {/if}
-
+                    {elseif $_setting.control_type == 'image_width'}
+                        <div class="image-scale-control" data-image-name="{if !empty($_setting.parent)}parent_{/if}image[{$_setting.image}]">
+                            <div class="flexbox middle space-8">
+                                <div class="slider-wrapper wide custom-mr-12"></div>
+                                <input type="number" class="shortest" value="{ifset($_setting.value)}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">
+                                <span>px</span>
+                            </div>
+                            {if !empty($_setting.description)}
+                                <div>{$_setting.description}</div>
+                            {/if}
+                        </div>
                     {* OTHER *}
                     {else}
                         <div>
@@ -839,9 +852,6 @@
         }
         $theme_settings_section.data('loaded', true).html($theme_settings_list.html());
 
-        // display uploaded filename
-        $(".upload-control").waUpload();
-
         $(".js-theme-actions-dropdown").waDropdown();
 
         new WAThemeSettings({
@@ -859,7 +869,8 @@
             },
             templates: {
                 toggle_group_all_settings: '<span class="button custom-ml-16 js-group-all-settings light-gray rounded smallest wa-theme-group-all-settings" style="font-size: 73%;padding: 3px 6px;">[s`Show all group’s settings`] <i class="js-icon fas fa-chevron-down"></i></span>',
-                using_dialog_theme_row: {$_theme_row|strip|json_encode}
+                using_dialog_theme_row: {$_theme_row|strip|json_encode},
+                image_control: {_render_image|json_encode}
             },
             locales: {
                 theme_not_installed: '[s`The theme is not installed.`]',

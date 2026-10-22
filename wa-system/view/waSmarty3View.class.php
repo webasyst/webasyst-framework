@@ -97,7 +97,7 @@ class waSmarty3View extends waView
     {
         if ($escape) {
             if (is_array($value)) {
-                $value = array_map('htmlspecialchars', $value);
+                $value = array_map('htmlspecialchars', array_map('strval', $value));
             } else {
                 $value = htmlspecialchars((string) $value);
             }

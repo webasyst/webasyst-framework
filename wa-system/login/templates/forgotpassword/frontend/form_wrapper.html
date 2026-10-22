@@ -41,6 +41,13 @@
             'uri'  => "`$wa_url`wa-content/js/login/forgotpassword-frontend-form.min.js?v=`$wa->version()`"
         ]
     ]}
+    {if $format_phone}
+        {$_resources[] = [
+            'id'   => "wa-content-phone-mask-js",
+            'type' => "js",
+            'uri'  => "`$wa_url`wa-content/js/phone-mask/phone-mask.js?v=`$wa->version()`"
+        ]}
+    {/if}
 
     {if $include_css}
         {$_resources[] = [
@@ -176,7 +183,9 @@
                     login_url: {$login_url|json_encode},
                     locale: {$_locale|json_encode},
                     is_json_mode: {$is_json_mode|default:false|json_encode},
-                    need_redirects: {$need_redirects|default:false|json_encode}
+                    need_redirects: {$need_redirects|default:false|json_encode},
+                    format_phone: {$format_phone|default:false|json_encode},
+                    is_email_channel_available: {$is_email_channel_available|default:false|json_encode}
                 });
             }
 

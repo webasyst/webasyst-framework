@@ -15,6 +15,10 @@ return array(
     'decimal_point' => ',',
     'frac_digits' => '2',
     'thousands_sep' => ',',
+    'plural_forms' => array(
+        'nplurals' => 2,
+        'plural' => '(n != 1)'
+    ),
     'amount_in_words' => array(
         'delim' => array(
             10 => 'und',

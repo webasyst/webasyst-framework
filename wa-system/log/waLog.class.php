@@ -39,7 +39,10 @@ class waLog
         }
 
         $result = false;
-        $fd = fopen($file, 'a');
+        $fd = @fopen($file, 'a');
+        if (!$fd) {
+            return false;
+        }
         if (flock($fd, LOCK_EX)) {
             if (is_object($message)) {
                 try {
@@ -129,7 +132,14 @@ class waLog
             if (!self::$path) {
                 self::$path = wa()->getConfig()->getRootPath().DIRECTORY_SEPARATOR.'wa-log';
             }
-            self::$path = realpath(self::$path).DIRECTORY_SEPARATOR;
+            if (!is_dir(self::$path)) {
+                // Log dir can be missing on a fresh install (e.g. CLI): create it here,
+                // otherwise realpath() below collapses the path to filesystem root
+                waFiles::create(self::$path, true);
+            }
+            waFiles::protect(self::$path);
+            $realpath = realpath(self::$path);
+            self::$path = ($realpath ? $realpath : self::$path).DIRECTORY_SEPARATOR;
         }
     }
 }

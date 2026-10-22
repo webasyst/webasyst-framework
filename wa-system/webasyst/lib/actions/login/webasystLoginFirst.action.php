@@ -175,100 +175,16 @@ class webasystLoginFirstAction extends waViewAction
 
     protected function createFirstUser(waUser $user, $login, $password = null, $account_name = null)
     {
-        if (empty($account_name)) {
-            $account_name = _ws('My company');
+        $result = webasystFirstUser::createFirstUser($user, $login, $password, $account_name);
+        if (empty($result['errors'])) {
+            waSystem::getInstance()->getAuth()->auth(array(
+                'login' => $login,
+                'password' => $result['password']
+            ));
+            return null;
         }
-        $app_settings_model = new waAppSettingsModel();
-        $app_settings_model->set('webasyst', 'name', $account_name);
-        $email = $user->get('email', 'default');
-        if ($email) {
-            $app_settings_model->set('webasyst', 'email', $email);
-            $app_settings_model->set('webasyst', 'sender', $email);
-        }
-
-        if (empty($password)) {
-            $password = waUtils::getRandomHexString(16);
-        }
-
-        $user['locale'] = empty($user['locale']) ? wa()->getLocale() : $user['locale'];
-        $user['is_user'] = 1;
-        $user['login'] = $login;
-        $user['password'] = $password;
-        $user['create_method'] = 'install';
-        if ($errors = $user->save()) {
-            $result = array();
-            foreach ($errors as $k => $v) {
-                $result['all'][] = $k.": ".(is_array($v) ? implode(', ', $v) : $v);
-            }
-            $result['all'] = implode("\r\n", $result['all']);
-            return $result;
-        }
-
-        $user->setRight('webasyst', 'backend', 1);
-        waSystem::getInstance()->getAuth()->auth(array(
-            'login' => $login,
-            'password' => $password
-        ));
-
-        $this->createRouting();
-        $this->setWebasystEmailTransport();
-    }
-
-    protected function createRouting()
-    {
-        $path = $this->getConfig()->getPath('config');
-        if (file_exists($path.'/routing.php')) {
-            return;
-        }
-
-        $apps = wa()->getApps();
-        $data = array();
-        $domain = $this->getConfig()->getDomain();
-        $site = false;
-        foreach ($apps as $app_id => $app) {
-            if ($app_id == 'site') {
-                $site = true;
-            } elseif (!empty($app['frontend'])) {
-                $routing = array(
-                    'url' => $app_id.'/*',
-                    'app' => $app_id,
-                );
-
-                if (!empty($app['routing_params']) && is_array($app['routing_params'])) {
-                    wa($app_id);
-                    foreach ($app['routing_params'] as $routing_param => $routing_param_value) {
-                        if (is_callable($routing_param_value)) {
-                            $app['routing_params'][$routing_param] = call_user_func($routing_param_value);
-                        }
-                    }
-                    $routing = array_merge($routing, $app['routing_params']);
-                }
-                $data[$domain][] = $routing;
-            }
-        }
-        if ($site) {
-            $data[$domain][] = [
-                'url' => '*',
-                'app' => 'site',
-                '_name' => _ws('Home page')
-            ];
-        }
-        waUtils::varExportToFile($data, $path.'/routing.php');
-    }
-
-    protected function setWebasystEmailTransport()
-    {
-        $path = $this->getConfig()->getPath('config');
-        if (file_exists($path.'/mail.php')) {
-            return;
-        }
-
-        $auth = new waWebasystIDWAAuth();
-        if (!$auth->isClientConnected()) {
-            return;
-        }
-
-        waUtils::varExportToFile([ 'default' => [ 'type' => 'wasender' ] ], $path.'/mail.php');
+        $result['all'] = implode("\r\n", $result['errors']['all']);
+        return $result;
     }
 
     protected function getWebasystIDAuthUrl()

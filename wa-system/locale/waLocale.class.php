@@ -179,6 +179,9 @@ class waLocale
             $path = wa()->getConfig()->getPath('system')."/locale/data/".$locale.".php";
             if (file_exists($path)) {
                 self::$locale_info[$locale] = include($path);
+                if (self::$locale_info[$locale]) {
+                    self::$locale_info[$locale]['locale'] = $locale;
+                }
             } else {
                 return null;
             }
@@ -209,10 +212,10 @@ class waLocale
                 $decimals = strlen(rtrim($n, '0')) - $i - 1;
             }
         } elseif ($decimals === null) {
-            $decimals = $locale_info['frac_digits'];
+            $decimals = ifset($locale_info, 'frac_digits', 2);
         }
 
-        return number_format($n, $decimals, ifset($locale_info, 'decimal_point', '.'), ifset($locale_info, 'thousands_sep', ''));
+        return number_format((float) $n, $decimals, ifset($locale_info, 'decimal_point', '.'), ifset($locale_info, 'thousands_sep', ''));
     }
 
     /**

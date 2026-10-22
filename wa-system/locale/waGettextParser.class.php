@@ -11,6 +11,14 @@ class waGettextParser
 
     protected $report = [];
 
+    /**
+     * Used for locales that have no data file in wa-system/locale/data/
+     * @var array
+     */
+    protected static $default_plural_forms = [
+        'nplurals' => 2,
+        'plural'   => '(n != 1)',
+    ];
 
     /**
      * waLocaleParse constructor.
@@ -50,8 +58,13 @@ class waGettextParser
             $clone_msg = $this->extendBySavedData($clone_msg, $gettext_data, $additional_messages);
             $this->entity->preSave($clone_msg, $locale);
 
-            // Get metadata for file
-            $text = $this->getOldMeta($gettext_data['meta']);
+            // Get metadata for file.
+            // Number of plural forms written below must match the Plural-Forms header written here,
+            // so both are taken from the same prepared meta.
+            $locale_info = waLocale::getInfo($locale);
+            $meta = $this->prepareMeta($gettext_data['meta'], $locale_info);
+            $nplurals = $this->getNplurals($meta);
+            $text = $this->getOldMeta($meta, $locale_info);
             foreach ($clone_msg as $msgid => $msg_data) {
                 $translates = ifset($msg_data, 'translate', '');
                 $plural = ifset($msg_data, 'msgid_plural', false);
@@ -63,7 +76,7 @@ class waGettextParser
                 }
 
                 if ($plural !== false) {
-                    $text .= $this->getPluralsText($msgid, $translates, $comments, $plural);
+                    $text .= $this->getPluralsText($msgid, $translates, $comments, $plural, $nplurals);
                 } else {
                     $text .= $this->getStringsText($msgid, $translates, $comments);
                 }
@@ -173,10 +186,11 @@ class waGettextParser
      * @param array $msgstr
      * @param null $comments
      * @param null|string|array $plural     plural form or a list of plural forms found (if more than one), e.g. '%d reviews for'
+     * @param int|null $nplurals            number of forms to write; must match the catalog's Plural-Forms header
      * @return string
      * @throws waException
      */
-    protected function getPluralsText($msgid, $msgstr = [], $comments = null, $plural = null)
+    protected function getPluralsText($msgid, $msgstr = [], $comments = null, $plural = null, $nplurals = null)
     {
         $msg_str = (array)$msgstr;
         if (is_array($plural)) {
@@ -191,7 +205,8 @@ class waGettextParser
         $result .= "msgid_plural ".$this->getStrings($plural);
 
         // Create plural forms
-        for ($i = 0; $i < 3; $i++) {
+        $nplurals = $nplurals === null ? self::$default_plural_forms['nplurals'] : max(1, (int)$nplurals);
+        for ($i = 0; $i < $nplurals; $i++) {
             $form = ifset($msg_str, $i, '');
             $result .= "msgstr[{$i}] ".$this->getStrings($form);
         }
@@ -314,15 +329,83 @@ class waGettextParser
         return $this->write($path, $text);
     }
 
-    protected function getPluralByLocale($locale)
+    /**
+     * Number of plural forms and the plural expression of a locale, as declared in
+     * wa-system/locale/data/{locale}.php. Locales without a data file, or with no plural
+     * forms declared in it, get the default two-forms rule.
+     *
+     * @param ?array $locale_info
+     * @return array ['nplurals' => int, 'plural' => string]
+     * @throws waException
+     */
+    protected function getPluralForms($locale_info)
     {
-        if ($locale == 'ru_RU') {
-            $plural = 'Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n';
-        } else {
-            $plural = 'Plural-Forms: nplurals=2; plural=(n != 1);\n';
+        $plural_forms = ifset($locale_info, 'plural_forms', []);
+
+        if (empty($plural_forms['nplurals']) || empty($plural_forms['plural'])) {
+            return self::$default_plural_forms;
         }
 
-        return $plural;
+        return [
+            'nplurals' => max(1, (int)$plural_forms['nplurals']),
+            'plural'   => (string)$plural_forms['plural'],
+        ];
+    }
+
+    /**
+     * Plural-Forms header of a locale
+     * @param string $locale
+     * @return string
+     * @throws waException
+     */
+    protected function getPluralByLocale($locale)
+    {
+        $plural_forms = $this->getPluralForms(waLocale::getInfo($locale));
+
+        return 'Plural-Forms: nplurals='.$plural_forms['nplurals'].'; plural='.$plural_forms['plural'].';\n';
+    }
+
+    /**
+     * Number of plural forms declared by a catalog's Plural-Forms header
+     *
+     * @param array $meta as returned by waGettext::getMessagesMetaPlurals()
+     * @return int 0 if the header is missing or unusable
+     */
+    protected function getNplurals($meta)
+    {
+        return max(0, (int)ifset($meta, 'Plural-Forms', 'nplurals', 0));
+    }
+
+    /**
+     * Add the headers a catalog must have but might be missing.
+     *
+     * @param array $meta as returned by waGettext::getMessagesMetaPlurals()
+     * @param array|null $locale_info
+     * @return array
+     * @throws waException
+     */
+    protected function prepareMeta($meta, $locale_info = null)
+    {
+        $meta = (array)$meta;
+        if ($locale_info === null) {
+            return $meta;
+        }
+
+        if (empty($meta['Language'])) {
+            $meta['Language'] = $locale_info['locale'];
+        }
+
+        $plural_forms = $this->getPluralForms($locale_info);
+        $declared = $this->getNplurals($meta);
+
+        if (!$declared || $declared < $plural_forms['nplurals']) {
+            $meta['Plural-Forms'] = [
+                'nplurals' => (string)$plural_forms['nplurals'],
+                'plural'   => $plural_forms['plural'],
+            ];
+        }
+
+        return $meta;
     }
 
     /**
@@ -357,12 +440,13 @@ msgstr ""
 "PO-Revision-Date: {$meta['revision']}\\n"
 "Last-Translator:  {$meta['project']}\\n"
 "Language-Team:  {$meta['project']}\\n"
+"Language: {$meta['locale']}\\n"
 "MIME-Version: {$meta['mime']}\\n"
 "Content-Type: {$meta['content_type']}\\n"
 "Content-Transfer-Encoding: {$meta['encoding']}\\n{$meta['plural']}"
 "X-Poedit-Language: {$meta['locale']}\\n"
 "X-Poedit-SourceCharset: {$meta['charset']}\\n"
-"X-Poedit-Basepath: {$meta['charset']}\\n"
+"X-Poedit-Basepath: {$meta['basepath']}\\n"
 "X-Poedit-SearchPath-0: {$meta['path0']}\\n"
 "X-Poedit-SearchPath-1: {$meta['path1']}\\n"
 
@@ -371,11 +455,15 @@ TEXT;
 
     /**
      * Collect previous meta description
-     * @param $meta
+     * @param array $meta
+     * @param array|null $locale_info locale of the catalog, to fill in the headers it is missing
      * @return string
+     * @throws waException
      */
-    protected function getOldMeta($meta)
+    protected function getOldMeta($meta, $locale_info = null)
     {
+        $meta = $this->prepareMeta($meta, $locale_info);
+
         $text = <<<TEXT
 msgid ""
 msgstr ""

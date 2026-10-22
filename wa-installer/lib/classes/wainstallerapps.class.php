@@ -802,7 +802,7 @@ class waInstallerApps
         if ($new_items) {
             foreach ($new_items as $slug => $item) {
                 $slug = preg_replace('@^wa-plugins/([^/]+)/plugins/(.+)$@', 'wa-plugins/$1/$2', $slug);
-                $version = isset($versions[$slug]) ? $versions[$slug] : '0';
+                $version = isset($item['beta']) ? 'beta' : (isset($versions[$slug]) ? $versions[$slug] : '0');
                 $query[$slug] = sprintf('%s=%s', (sprintf('v[%s]', $slug)), rawurlencode($version));
             }
             //XXX TODO compare local & new edition & version
@@ -835,6 +835,9 @@ class waInstallerApps
                             $extras_item['action'] = self::applicableAction($extras_item);
                             $extras_item['applicable'] = self::checkRequirements($extras_item['requirements'], false, $extras_item['action']);
                             $this->buildUrl($extras_item['download_url']);
+                            if (ifset($new_items, $extras_item['slug'], 'beta', null)) {
+                                $extras_item['download_url'] .= '&beta=1';
+                            }
                             unset($extras_item);
                         }
                     }
@@ -860,6 +863,9 @@ class waInstallerApps
                     $item['applicable'] = self::checkRequirements($item['requirements'], false, $item['action']);
                     $item['domains'] = isset(self::$app_domains[$app_id]) ? self::$app_domains[$app_id] : array();
                     $this->buildUrl($item['download_url']);
+                    if (ifset($new_items, $item['slug'], 'beta', null)) {
+                        $item['download_url'] .= '&beta=1';
+                    }
                 } elseif (!empty($items[$app_id])) {
                     if (empty($item['name'])) {
                         if (!empty($items[$app_id]['installed']) && is_array($items[$app_id]['installed'])) {

@@ -5,13 +5,13 @@
         <div class="wide"><h1 class="s-page-header custom-mb-0">[s`Webasyst AI`]</h1></div>
     </div>
 
-    <p class="small">[`Transactional AI service for promo text generation, spell check, and other kinds of text job handled by Webasyst apps.`]</p>
+    <p class="small">[`Built-in AI service for text generation, spell checking, image creation, and other creative and everyday tasks handled by Webasyst apps.`]</p>
 
     <div class="fields">
         <div class="fields-group blank">
             {if $waid_is_connected}
                 <div class="flexbox middle space-16 wrap-mobile">
-                    <span>{sprintf_wp('Remaining Webasyst AI prompts: %s', '<strong>'|cat:$remaining_count|cat:'</strong>')}</span>
+                    <span>{sprintf_wp('Remaining Webasyst AI tokens: %s', '<strong>'|cat:$remaining_count|cat:'</strong>')}</span>
                     <div>
                         <a href="javascript:void(0)" class="button small green" id="js-ai-balance-button">[s`Add credit`]</a>
                         <a href="[`https://www.webasyst.com/ai/`]" target="_blank" class="button nobutton custom-mr-auto small">

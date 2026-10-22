@@ -66,7 +66,7 @@
         {if !empty($store_sidebar_items.FEATURED)}
             <ul class="menu js-installer-sidebar-menu js-installer-sidebar-nav" data-type="FEATURED"{if $store_sidebar_type !== 'FEATURED'} style="display: none;"{/if}>
                 {foreach $store_sidebar_items.FEATURED.CATEGORIES as $_category}
-                    {$_store_url = "`$store_sidebar_items.FEATURED.TOP.base_url``$_category.url`"}
+                    {$_store_url = "/"|cat:($_category.url|ltrim:'/')}
                     {$_link = "`$wa_app_url`store`$_store_url`"}
                     {$_is_active = false}
                     {if $wa->currentUrl(true)|strstr:$_link}
@@ -89,6 +89,7 @@
         {foreach $store_sidebar_items as $_type => $_sidebar_item}
             <div class="js-installer-sidebar-menu js-installer-sidebar-filters" data-type="{$_type|escape}"{if $store_sidebar_type !== $_type} style="display: none;"{/if}>
                 {foreach ifset($_sidebar_item.FILTERS, []) as $_filter_id => $_filter_data}
+                {if $_filter_id == 'price'}{continue}{/if}
                 <h5 class="heading">{$_filter_data.name|escape}</h5>
 
                 {if $_filter_id == 'color'}

@@ -241,6 +241,10 @@ class installerUpdateManagerAction extends waViewAction
                 $this->vendors[] = $info['vendor'];
                 unset($info);
             }
+            $beta_slug = waRequest::request('beta');
+            if (isset($app_ids[$beta_slug])) {
+                $app_ids[$beta_slug]['beta'] = true;
+            }
         } else {
             $app_ids = array();
         }

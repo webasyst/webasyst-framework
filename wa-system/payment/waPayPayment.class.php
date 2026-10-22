@@ -202,7 +202,7 @@ HTML
                 'merchant_currency' => [
                     'value'        => 'RUB',
                     'title'        => 'Валюта',
-                    'description'  => 'Выберите валюту, отличную от российского рубля, в которой нужно принимать платежи.',
+                    'description'  => 'Прием платежей по СБП и картам российских банков возможен только для заказов в рублях.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => 'RUB', 'title' => 'RUB'],
@@ -263,8 +263,8 @@ HTML
                 ],
                 'currency_id' => [
                     'value'        => 'RUB',
-                    'title'        => 'Валюта платежей',
-                    'description'  => '',
+                    'title'        => 'Валюта',
+                    'description'  => 'Прием платежей по СБП и картам российских банков возможен только для заказов в рублях.',
                     'control_type' => waHtmlControl::SELECT,
                     'options'      => [
                         ['value' => 'RUB', 'title' => 'RUB'],
@@ -484,7 +484,7 @@ HTML
                     'provider' => 'tbank',
                     'settings' => array_intersect_key($settings + $defaults, $defaults),
                 ];
-        
+
                 foreach (array_keys($api_save_request['settings']) as $k) {
                     if (substr($k, -6) === '_tbank') {
                         $api_save_request['settings'][substr($k, 0, -6)] = $api_save_request['settings'][$k];
@@ -1087,8 +1087,8 @@ EOF;
 
         if (!empty($response['response']['declare_fiscalization'])) {
             $this->getAdapter()->declareFiscalization(
-                $order['id'], 
-                $this, 
+                $order['id'],
+                $this,
                 ifset($response, 'response', 'declare_fiscalization_data', null)
             );
         }
@@ -1169,8 +1169,8 @@ EOF;
 
         if ($do_fiscalization) {
             $this->getAdapter()->declareFiscalization(
-                $order_id, 
-                $this, 
+                $order_id,
+                $this,
                 is_array($do_fiscalization) ? $do_fiscalization : null
             );
         }
@@ -1277,8 +1277,8 @@ EOF;
 
         if (!empty($request['declare_fiscalization'])) {
             $this->getAdapter()->declareFiscalization(
-                $order_id, 
-                $this, 
+                $order_id,
+                $this,
                 ifset($request, 'declare_fiscalization_data', null)
             );
         }

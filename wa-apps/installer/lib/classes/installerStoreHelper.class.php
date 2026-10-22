@@ -38,7 +38,7 @@ class installerStoreHelper
         return $store_path;
     }
 
-    public static function getSidebarType()
+    public static function getSidebarType($sidebar = null)
     {
         $store_path = self::getStorePath();
         $sidebar_type = 'APPS';
@@ -48,6 +48,10 @@ class installerStoreHelper
         }
 
         if (preg_match('~^(featured\/)~ui', $store_path)) {
+            $sidebar_type = 'FEATURED';
+        }
+
+        if (!empty($sidebar['FEATURED']) && preg_match('~^(category|collection(s)?)\/~ui', $store_path)) {
             $sidebar_type = 'FEATURED';
         }
 

@@ -96,6 +96,7 @@ abstract class waLoginFormRenderer
         $this->options['show_title'] = $this->getBoolVal($this->options, 'show_title');
         $this->options['show_sub_title'] = $this->getBoolVal($this->options, 'show_sub_title');
         $this->options['show_oauth_adapters'] = $this->getBoolVal($this->options, 'show_oauth_adapters');
+        $this->options['format_phone'] = $this->getBoolVal($this->options, 'format_phone');
         $this->options['need_redirects'] = $this->getBoolVal($this->options, 'need_redirects', true);
         $this->options['need_placeholders'] = $this->getBoolVal($this->options, 'need_placeholders', true);
         $this->options['include_css'] = $this->getBoolVal($this->options, 'include_css', true);
@@ -469,6 +470,7 @@ abstract class waLoginFormRenderer
             'show_title'                    => $this->options['show_title'],
             'show_sub_title'                => $this->options['show_sub_title'],
             'show_oauth_adapters'           => $this->options['show_oauth_adapters'],
+            'format_phone'                  => $this->options['format_phone'] && !!$this->auth_config->getSMSVerificationChannel(),
             'need_redirects'                => $this->options['need_redirects'],
             'need_placeholders'             => $this->options['need_placeholders'],
             'is_onetime_password_auth_type' => $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD,

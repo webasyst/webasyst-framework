@@ -465,7 +465,7 @@ and (orientation : portrait) {
 .is-wa2 .wa-theme-settings-list > div.selected {
     display: block;
 }
-.is-wa2 .wa-theme-settings-list .image img { max-width: 420px; }
+.is-wa2 .wa-theme-settings-list .image img { min-width: 24px; max-width: 300px; }
 
 .is-wa2 .wa-theme-block .heading { margin-top: 1rem; margin-bottom: 1rem; word-break: break-all; }
 

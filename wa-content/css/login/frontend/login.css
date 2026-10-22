@@ -38,8 +38,8 @@
 .wa-login-form-wrapper input.wa-error,
 .wa-login-form-wrapper select.wa-error,
 .wa-login-form-wrapper textarea.wa-error {
-  border-color: #f00;
-  color: #f00;
+  --input-border-color: #f00;
+  border-color: var(--input-border-color);
 }
 .wa-login-form-wrapper input,
 .wa-login-form-wrapper select,
@@ -365,7 +365,7 @@
   height: 11px;
 }
 .wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value input[type=text],
-.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value input[type=number]{
+.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value input[type=number] {
   width: 80px;
   min-width: 80px;
   display: inline-block;

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webasyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2026-07-06 16:21+0300\n"
+"PO-Revision-Date: 2026-10-05 11:03+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -4043,13 +4043,13 @@ msgid "Bytes"
 msgstr "Байт"
 
 msgid "KBytes"
-msgstr "КБайт"
+msgstr "Кбайт"
 
 msgid "MBytes"
-msgstr "МБайт"
+msgstr "Мбайт"
 
 msgid "GBytes"
-msgstr "ГБайт"
+msgstr "Гбайт"
 
 msgid "Hello world"
 msgstr "Hello world"
@@ -6292,14 +6292,14 @@ msgstr "Активирован вход с Webasyst ID по умолчанию, 
 msgid "You need to connect Webasyst ID to your account."
 msgstr "Необходимо подключить Webasyst ID для своего аккаунта."
 
-msgid "Obtain an API key for the <strong>free or paid version</strong> on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “<strong>JavaScript API, Geocoding API</strong>” option."
-msgstr "Получите ключ API для <strong>бесплатной или платной версии</strong> в <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">кабинете разработчика</a>. Выберите тип карт «<strong>JavaScript API и HTTP Геокодер</strong>»."
+msgid "Enable the <strong>free or paid</strong> version of the <strong>JavaScript API</strong> on the <a %s>Yandex developer dashboard</a> and copy the generated <strong>key</strong>."
+msgstr "Подключите <strong>платную или бесплатную</strong> версию <strong>JavaScript API</strong> в <a %s>кабинете разработчика Яндекс</a> и скопируйте сформированный <strong>ключ</strong>."
 
-msgid "Obtain an API key for the <strong>paid version</strong> on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “<strong>JavaScript API, Geocoding API</strong>” option."
-msgstr "Получите ключ API для <strong>платной версии</strong> в <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">кабинете разработчика</a>. Выберите тип карт «<strong>JavaScript API и HTTP Геокодер</strong>»."
+msgid "Enable the <strong>paid</strong> version of the <strong>JavaScript API</strong> on the <a %s>Yandex developer dashboard</a> and copy the generated <strong>key</strong>."
+msgstr "Подключите <strong>платную</strong> версию <strong>JavaScript API</strong> в <a %s>кабинете разработчика Яндекс</a> и скопируйте сформированный <strong>ключ</strong>."
 
-msgid "If the free version’s API key is specified, only a link to the map will be displayed."
-msgstr "Если указать ключ API для бесплатной версии, то будет показана только ссылка на карту."
+msgid "With the <strong>free</strong> version, instead of the map, only a link to the map will be displayed."
+msgstr "С <strong>бесплатной версией</strong> вместо карты будет показана только ссылка на карту."
 
 msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> to get a map displayed."
 msgstr "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Получите ключ API «Карт Google»</a> для отображения карты."
@@ -7804,17 +7804,17 @@ msgstr "Для этого выключите вход с Webasyst ID и вклю
 msgid "AI"
 msgstr "ИИ"
 
-msgid "Remaining Webasyst AI prompts: %s"
-msgstr "Остаток запросов к Webasyst AI: %s"
+msgid "Remaining Webasyst AI tokens: %s"
+msgstr "Остаток токенов Webasyst AI: %s"
 
-msgid "prompt"
-msgid_plural "prompts"
-msgstr[0] "запрос"
-msgstr[1] "запроса"
-msgstr[2] "запросов"
+msgid "token"
+msgid_plural "tokens"
+msgstr[0] "токен"
+msgstr[1] "токена"
+msgstr[2] "токенов"
 
-msgid "Transactional AI service for promo text generation, spell check, and other kinds of text job handled by Webasyst apps."
-msgstr "ИИ-генерация текстов, проверка орфографии и другие задачи по работе с текстом в приложениях Webasyst."
+msgid "Built-in AI service for text generation, spell checking, image creation, and other creative and everyday tasks handled by Webasyst apps."
+msgstr "Встроенная ИИ-генерация текстов, проверка орфографии, создание изображений и другие творческие и повседневные задачи в приложениях Webasyst."
 
 msgid "https://www.webasyst.com/ai/"
 msgstr "https://www.webasyst.ru/ai/"

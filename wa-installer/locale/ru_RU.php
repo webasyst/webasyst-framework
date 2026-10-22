@@ -173,4 +173,50 @@ return array(
     => 'Поддержка формата данных JavaScript',
     'Correct Smarty functioning'
     => 'Корректная работа Smarty',
+
+    // Console installer (wa-installer/cli.php)
+    'Installation aborted.'
+    => 'Установка прервана.',
+    'Select locale'
+    => 'Выберите язык',
+    'Site domain (used in routing config and backend URL)'
+    => 'Домен сайта (используется в файле маршрутизации и в URL бэкенда)',
+    'MySQL server host'
+    => 'Сервер MySQL',
+    'MySQL server port'
+    => 'Порт сервера MySQL',
+    'MySQL user'
+    => 'Пользователь MySQL',
+    'MySQL password'
+    => 'Пароль MySQL',
+    'Database name'
+    => 'Имя базы данных',
+    'Database name is required.'
+    => 'Не указано имя базы данных.',
+    'Connecting to'
+    => 'Подключение к',
+    'Applications'
+    => 'Приложения',
+    'system app'
+    => 'системное приложение',
+    'System configuration'
+    => 'Конфигурация системы',
+    'Database schema'
+    => 'Структура базы данных',
+    'First user'
+    => 'Первый пользователь',
+    'Create the first backend user now? (Otherwise you will be able to do it by opening the backend in a browser)'
+    => 'Создать первого пользователя бэкенда сейчас? (Иначе это можно будет сделать, открыв бэкенд в браузере)',
+    'Login'
+    => 'Логин',
+    'Email'
+    => 'Email',
+    'Contacts already exist. Skipping first user creation.'
+    => 'Контакты уже существуют. Создание первого пользователя пропущено.',
+    'Specified password is too long.'
+    => 'Указанный пароль слишком длинный.',
+    'Backend URL'
+    => 'Адрес бэкенда',
+    'Open %s in a browser to create the first user and finish the setup.'
+    => 'Откройте %s в браузере, чтобы создать первого пользователя и завершить настройку.',
 );

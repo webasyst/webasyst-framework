@@ -1521,7 +1521,7 @@ HTACCESS;
             if (isset($old_settings[$k])) {
                 $error = '';
                 $filename = str_replace('*', $f->extension, $old_settings[$k]['filename']);
-                if ($this->uploadImage($f, $theme->path.'/'.$filename, $error)) {
+                if ($this->uploadThemeImage($f, $theme->path.'/'.$filename, $old_settings[$k], $error)) {
                     $settings[$k] = $filename. '?v'. time();
                     $edition = true;
                 } elseif ($error) {
@@ -1560,6 +1560,35 @@ HTACCESS;
             }
             return false;
         }
+    }
+
+    /** Resize only opted-in raster uploads; leave SVG and animated GIF files unchanged. */
+    protected function uploadThemeImage(waRequestFile $file, $path, array $setting, &$error = '')
+    {
+        $max_width = (int)ifset($setting['max_width'], 0);
+        $extension = strtolower($file->extension);
+        if ($file->uploaded() && $max_width > 0 && in_array($extension, array('png', 'jpg', 'jpeg', 'webp', 'gif'))) {
+            try {
+                $image = $file->waImage();
+                if ($image->width > $max_width) {
+                    // Save alongside the destination and replace it only after a successful resize.
+                    waFiles::create(dirname($path), true);
+                    $tmp_path = $path.'.'.uniqid('upload-', true).'.'.$extension;
+                    if (!$image->resize($max_width, null)->save($tmp_path) || !waFiles::move($tmp_path, $path)) {
+                        throw new waException(sprintf(_ws('Failed to upload file %s.'), $file->name));
+                    }
+                    return true;
+                }
+            } catch (waException $exception) {
+                if (isset($tmp_path) && file_exists($tmp_path)) {
+                    waFiles::delete($tmp_path);
+                }
+                $error = $exception->getMessage();
+                return false;
+            }
+        }
+
+        return $this->uploadImage($file, $path, $error);
     }
 
     /**

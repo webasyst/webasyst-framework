@@ -681,7 +681,7 @@ HTML;
         $id = 0;
         $options = isset($params['options']) ? (is_array($params['options']) ? $params['options'] : array($params['options'])) : array();
         $control .= "<select name=\"{$name}\" autocomplete=\"off\"";
-        $control .= $this->addCustomParams(array('id', 'class', 'style', 'title', 'readonly', 'autofocus', 'disabled'), $params);
+        $control .= $this->addCustomParams(array('id', 'class', 'style', 'title', 'readonly', 'autofocus', 'disabled', 'multiple'), $params);
         $control .= ">\n";
         $group = null;
         foreach ($options as $option) {
