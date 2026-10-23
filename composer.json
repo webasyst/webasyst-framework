@@ -4,9 +4,9 @@
     "description": "Webasyst PHP framework: a multi-app MVC platform for building web apps and SaaS services.",
     "keywords": ["framework", "mvc", "cms", "webasyst", "shop-script"],
     "homepage": "https://www.webasyst.com/",
-    "license": "LGPL-3.0-or-later",
+    "license": "LGPL-3.0",
     "require": {
-        "php": ">=7.4.24",
+        "php": ">=8.2.35",
         "ext-ctype": "*",
         "ext-dom": "*",
         "ext-json": "*",
