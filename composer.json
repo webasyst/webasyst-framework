@@ -1,0 +1,30 @@
+{
+    "name": "webasyst/framework",
+    "type": "project",
+    "description": "Webasyst PHP framework: a multi-app MVC platform for building web apps and SaaS services.",
+    "keywords": ["framework", "mvc", "cms", "webasyst", "shop-script"],
+    "homepage": "https://www.webasyst.com/",
+    "license": "LGPL-3.0-or-later",
+    "require": {
+        "php": ">=7.4.24",
+        "ext-ctype": "*",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-simplexml": "*"
+    },
+    "suggest": {
+        "ext-curl": "Required for updates from Webasyst update servers",
+        "ext-mysqli": "Required to connect to the MySQL database"
+    },
+    "support": {
+        "issues": "https://github.com/webasyst/webasyst-framework/issues",
+        "source": "https://github.com/webasyst/webasyst-framework",
+        "docs": "https://www.webasyst.com/developers/"
+    },
+    "scripts": {
+        "post-create-project-cmd": [
+            "php wa-installer/cli.php --from-composer"
+        ]
+    }
+}
